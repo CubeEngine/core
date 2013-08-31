@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
-import de.cubeisland.engine.locker.storage.GuardManager;
+import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -31,13 +31,13 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 
-public class GuardCommands extends ContainerCommand
+public class LockerCommands extends ContainerCommand
 {
-    GuardManager manager;
+    LockManager manager;
 
-    public GuardCommands(Locker module, GuardManager manager)
+    public LockerCommands(Locker module, LockManager manager)
     {
-        super(module, "bguard", "ContainerGuard Commands", Arrays.asList("locker", "bg"));
+        super(module, "locker", "Locker commands", Arrays.asList("l"));
         this.manager = manager;
     }
 
@@ -51,7 +51,7 @@ public class GuardCommands extends ContainerCommand
     }
 
     @Alias(names = "cpersist")
-    @Command(desc = "persists your last container guard command")
+    @Command(desc = "persists your last locker command")
     public void persist(ParameterizedContext context)
     {
         if (this.manager.commandListener.persist((User)context.getSender()))
@@ -119,6 +119,7 @@ public class GuardCommands extends ContainerCommand
              flags = @Flag(longName = "invalidate", name = "i"))
     public void key(ParameterizedContext context)
     {
+        // TODO check configuration if this is enabled
         if (context.hasFlag("i"))
         {
             this.manager.commandListener.setCommandType(context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));

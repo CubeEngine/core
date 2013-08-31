@@ -51,6 +51,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
@@ -67,20 +68,20 @@ import org.bukkit.material.Door;
 import org.bukkit.material.Openable;
 import org.bukkit.util.Vector;
 
-import de.cubeisland.engine.locker.storage.Guard;
-import de.cubeisland.engine.locker.storage.GuardManager;
+import de.cubeisland.engine.locker.storage.Lock;
+import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 
 import static de.cubeisland.engine.locker.storage.ProtectionFlags.*;
 
-public class GuardListener implements Listener
+public class LockerListener implements Listener
 {
-    private GuardManager manager;
-    private Locker module;
+    private LockManager manager;
+    private de.cubeisland.engine.locker.Locker module;
 
-    public GuardListener(Locker module, GuardManager manager)
+    public LockerListener(de.cubeisland.engine.locker.Locker module, LockManager manager)
     {
         this.module = module;
         this.manager = manager;
@@ -94,54 +95,54 @@ public class GuardListener implements Listener
         if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getClickedBlock().getLocation();
-        Guard guard = this.manager.getGuardAtLocation(location);
-        if (guard != null && !guard.isValidType())
+        Lock lock = this.manager.getLockAtLocation(location);
+        if (lock != null && !lock.isValidType())
         {
             user.sendTranslated("&eExisting BlockProtection is not valid!");
-            guard.delete(user);
+            lock.delete(user);
             return;
         }
         if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder)
         {
-            if (GuardPerm.DENY_CONTAINER.isAuthorized(user))
+            if (LockerPerm.DENY_CONTAINER.isAuthorized(user))
             {
                 user.sendTranslated("&cStrong magic prevents you from accessing any inventory!");
                 event.setCancelled(true);
                 return;
             }
-            if (this.handleAccess(guard, user, null, event)) return;
-            guard.handleInventoryOpen(event, null, user);
+            if (this.handleAccess(lock, user, null, event)) return;
+            lock.handleInventoryOpen(event, null, user);
         }
         else if (event.getClickedBlock().getState().getData() instanceof Openable)
         {
-            if (GuardPerm.DENY_DOOR.isAuthorized(user))
+            if (LockerPerm.DENY_DOOR.isAuthorized(user))
             {
                 user.sendTranslated("&cStrong magic prevents you from accessing any door!");
                 event.setCancelled(true);
                 return;
             }
-            if (this.handleAccess(guard, user, location, event))
+            if (this.handleAccess(lock, user, location, event))
             {
-                if (guard == null) return;
-                guard.doorUse(user, location);
+                if (lock == null) return;
+                lock.doorUse(user, location);
                 return;
             }
-            guard.handleBlockDoorUse(event, user, location);
+            lock.handleBlockDoorUse(event, user, location);
         }
         if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
     }
 
-    private boolean handleAccess(Guard guard, User user, Location soundLocation, Cancellable event)
+    private boolean handleAccess(Lock lock, User user, Location soundLocation, Cancellable event)
     {
-        if (guard == null) return true;
-        if (guard.isOwner(user)) return true;
-        Boolean keyBookUsed = this.checkForKeyBook(guard, user, soundLocation);
+        if (lock == null) return true;
+        if (lock.isOwner(user)) return true;
+        Boolean keyBookUsed = this.checkForKeyBook(lock, user, soundLocation);
         if (keyBookUsed == null)
         {
             event.setCancelled(true);
             return false;
         }
-        return keyBookUsed || this.checkForUnlocked(guard, user);
+        return keyBookUsed || this.checkForUnlocked(lock, user);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -149,23 +150,23 @@ public class GuardListener implements Listener
     {
         Entity entity = event.getRightClicked();
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        if (GuardPerm.DENY_ENTITY.isAuthorized(user))
+        if (LockerPerm.DENY_ENTITY.isAuthorized(user))
         {
             user.sendTranslated("&cStrong magic prevents you from reaching this Entity!");
             event.setCancelled(true);
             return;
         }
-        Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
-        if (guard == null) return;
-        if (this.handleAccess(guard, user, null, event)) return;
+        Lock lock = this.manager.getLockForEntityUID(entity.getUniqueId());
+        if (lock == null) return;
+        if (this.handleAccess(lock, user, null, event)) return;
         if (entity instanceof StorageMinecart || entity instanceof HopperMinecart
             || (entity.getType() == EntityType.HORSE && entity instanceof InventoryHolder && event.getPlayer().isSneaking()))
         {
-            guard.handleInventoryOpen(event, null, user);
+            lock.handleInventoryOpen(event, null, user);
         }
         else
         {
-            guard.handleEntityInteract(event, entity, user);
+            lock.handleEntityInteract(event, user);
         }
     }
 
@@ -174,56 +175,56 @@ public class GuardListener implements Listener
     {
         if (!(event.getPlayer() instanceof Player)) return;
         Location holderLoc = new Location(null, 0,0,0);
-        Guard guard = this.getGuardOfInventory(event.getInventory(), holderLoc);
-        if (guard != null)
+        Lock lock = this.getLockOfInventory(event.getInventory(), holderLoc);
+        if (lock != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            if (this.handleAccess(guard, user, holderLoc, event)) return;
-            guard.handleInventoryOpen(event, event.getInventory(), user);
+            if (this.handleAccess(lock, user, holderLoc, event)) return;
+            lock.handleInventoryOpen(event, event.getInventory(), user);
         }
     }
 
     /**
-     * Returns the guard for given inventory it exists, also sets the location to the holders location if not null
+     * Returns the lock for given inventory it exists, also sets the location to the holders location if not null
      *
      * @param inventory
-     * @param holderLoc a location object to hold the GuardLocation
-     * @return the guard for given inventory
+     * @param holderLoc a location object to hold the LockLocation
+     * @return the lock for given inventory
      */
-    public Guard getGuardOfInventory(Inventory inventory, Location holderLoc)
+    public Lock getLockOfInventory(Inventory inventory, Location holderLoc)
     {
         InventoryHolder holder = inventory.getHolder();
-        Guard guard;
+        Lock lock;
         if (holderLoc == null)
         {
             holderLoc = new Location(null, 0, 0, 0);
         }
         if (holder instanceof Entity)
         {
-            guard = this.manager.getGuardForEntityUID(((Entity)holder).getUniqueId());
+            lock = this.manager.getLockForEntityUID(((Entity)holder).getUniqueId());
             ((Entity)holder).getLocation(holderLoc);
         }
         else
         {
-            Location guardLoc;
+            Location lockLoc;
             if (holder instanceof BlockState)
             {
-                guardLoc = ((BlockState)holder).getLocation(holderLoc);
+                lockLoc = ((BlockState)holder).getLocation(holderLoc);
             }
             else if (holder instanceof DoubleChest)
             {
-                guardLoc = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation(holderLoc);
+                lockLoc = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation(holderLoc);
             }
             else return null;
-            guard = this.manager.getGuardAtLocation(guardLoc);
+            lock = this.manager.getLockAtLocation(lockLoc);
         }
-        return guard;
+        return lock;
     }
 
-    private boolean checkForUnlocked(Guard guard, User user)
+    private boolean checkForUnlocked(Lock lock, User user)
     {
-        GuardAttachment guardAttachment = user.get(GuardAttachment.class);
-        return guardAttachment != null && guardAttachment.hasUnlocked(guard);
+        LockerAttachment lockerAttachment = user.get(LockerAttachment.class);
+        return lockerAttachment != null && lockerAttachment.hasUnlocked(lock);
     }
 
     /**
@@ -231,12 +232,12 @@ public class GuardListener implements Listener
      * <p>null if the chest cannot be opened with the KeyBook
      * <p>false if the user has no KeyBook in hand
      *
-     * @param guard
+     * @param lock
      * @param user
      * @param effectLocation
      * @return
      */
-    private Boolean checkForKeyBook(Guard guard, User user, Location effectLocation)
+    private Boolean checkForKeyBook(Lock lock, User user, Location effectLocation)
     {
         if (user.getItemInHand().getType() == Material.ENCHANTED_BOOK && user.getItemInHand().getItemMeta().getDisplayName().contains("KeyBook"))
         {
@@ -244,15 +245,15 @@ public class GuardListener implements Listener
             try
             {
                 long id = Long.valueOf(keyBookName.substring(keyBookName.indexOf('#')+1, keyBookName.length()));
-                if (guard.getId().equals(id)) // Id matches ?
+                if (lock.getId().equals(id)) // Id matches ?
                 {
                     // Validate book
-                    if (keyBookName.startsWith(guard.getColorPass()))
+                    if (keyBookName.startsWith(lock.getColorPass()))
                     {
                         if (effectLocation != null) user.sendTranslated("&aAs you approach with your KeyBook the magic lock disappears!");
                         user.playSound(effectLocation, Sound.PISTON_EXTEND, 1, 2);
                         user.playSound(effectLocation, Sound.PISTON_EXTEND, 1, (float)1.5);
-                        if (effectLocation != null) guard.notifyKeyUsage(user);
+                        if (effectLocation != null) lock.notifyKeyUsage(user);
                         return true;
                     }
                     else
@@ -294,12 +295,12 @@ public class GuardListener implements Listener
     public void onEntityDamageEntity(EntityDamageByEntityEvent event)
     {
         Entity entity = event.getEntity();
-        Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
-        if (guard == null) return;
+        Lock lock = this.manager.getLockForEntityUID(entity.getUniqueId());
+        if (lock == null) return;
         if (event.getDamager() instanceof Player)
         {
             User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getDamager()).getName());
-            guard.handleEntityDamage(event, user);
+            lock.handleEntityDamage(event, user);
             return;
         }
         else if (event.getDamager() instanceof TNTPrimed)
@@ -308,7 +309,7 @@ public class GuardListener implements Listener
             if (source != null && source instanceof Player)
             {
                 User user = this.module.getCore().getUserManager().getExactUser(((Player)source).getPlayer().getName());
-                guard.handleEntityDamage(event, user);
+                lock.handleEntityDamage(event, user);
                 return;
             }
         }
@@ -318,7 +319,7 @@ public class GuardListener implements Listener
             if (shooter != null && shooter instanceof Player)
             {
                 User user = this.module.getCore().getUserManager().getExactUser(((Player)shooter).getName());
-                guard.handleEntityDamage(event, user);
+                lock.handleEntityDamage(event, user);
                 return;
             }
         }
@@ -339,8 +340,8 @@ public class GuardListener implements Listener
         else if (module.getConfig().protectEntityFromEnvironementalDamage)
         {
             Entity entity = event.getEntity();
-            Guard guard = this.manager.getGuardForEntityUID(entity.getUniqueId());
-            if (guard == null) return;
+            Lock lock = this.manager.getLockForEntityUID(entity.getUniqueId());
+            if (lock == null) return;
             event.setCancelled(true);
         }
     }
@@ -349,22 +350,22 @@ public class GuardListener implements Listener
     public void onEntityDeath(EntityDeathEvent event)
     {
         // no need to check if allowed to kill as this would have caused an DamageEvent before / this is only to cleanup database a bit
-        Guard guard = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
-        if (guard == null) return;
+        Lock lock = this.manager.getLockForEntityUID(event.getEntity().getUniqueId());
+        if (lock == null) return;
         EntityDamageEvent lastDamage = event.getEntity().getLastDamageCause();
         User user = null;
         if (lastDamage != null && lastDamage instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)lastDamage).getDamager() instanceof Player)
         {
             user = this.module.getCore().getUserManager().getExactUser(((Player)((EntityDamageByEntityEvent)lastDamage).getDamager()).getName());
         }
-        guard.handleEntityDeletion(user);
+        lock.handleEntityDeletion(user);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onVehicleBreak(VehicleDestroyEvent event)
     {
-        Guard guard = this.manager.getGuardForEntityUID(event.getVehicle().getUniqueId());
-        if (guard == null) return;
+        Lock lock = this.manager.getLockForEntityUID(event.getVehicle().getUniqueId());
+        if (lock == null) return;
         if (event.getAttacker() == null)
         {
             if (module.getConfig().protectVehicleFromEnvironmental)
@@ -374,9 +375,9 @@ public class GuardListener implements Listener
             return;
         }
         User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getAttacker()).getName());
-        if (guard.isOwner(user))
+        if (lock.isOwner(user))
         {
-            guard.handleEntityDeletion(user);
+            lock.handleEntityDeletion(user);
             return;
         }
         event.setCancelled(true);
@@ -395,23 +396,35 @@ public class GuardListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType()) // bindable chest
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Guard guard = this.manager.getGuardAtLocation(relativeLoc);
-                    if (guard != null)
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc);
+                    if (lock != null)
                     {
-                        if (guard.isValidType())
+                        if (lock.isValidType())
                         {
                             user.sendTranslated("&eNearby BlockProtection is not valid!");
-                            guard.delete(user);
+                            lock.delete(user);
                         }
-                        else if (guard.isOwner(user) || guard.hasAdmin(user)) // TODO perm
+                        else if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.EXPAND_OTHER.isAuthorized(user))
                         {
-                            this.manager.extendGuard(guard, event.getBlockPlaced().getLocation());
+                            this.manager.extendLock(lock, event.getBlockPlaced().getLocation());
                             user.sendTranslated("&aProtection expanded!");
                         }
                         else
                         {
                             event.setCancelled(true);
                             user.sendTranslated("&cThe nearby chest is protected by someone else!");
+                        }
+                    }
+                    else
+                    {
+                        for (BlockLockerConfiguration blockprotection : this.module.getConfig().blockprotections)
+                        {
+                            if (blockprotection.isType(placed.getType()))
+                            {
+                                if (!blockprotection.autoProtect) return;
+                                this.manager.createLock(placed.getType(), placed.getLocation(), user, blockprotection.autoProtectType, null, false);
+                                return;
+                            }
                         }
                     }
                 }
@@ -426,13 +439,13 @@ public class GuardListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType())
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Guard guard = this.manager.getGuardAtLocation(relativeLoc);
-                    if (guard != null)
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc);
+                    if (lock != null)
                     {
-                        if (guard.isValidType())
+                        if (lock.isValidType())
                         {
                             user.sendTranslated("&eNearby BlockProtection is not valid!");
-                            guard.delete(user);
+                            lock.delete(user);
                         }
                         else
                         {
@@ -446,10 +459,10 @@ public class GuardListener implements Listener
                             {
                                 if (topDoor.getData() != topRelative.getData()) // This is a doubleDoor!
                                 {
-                                    if (guard.isOwner(user) || guard.hasAdmin(user)) // TODO perm
+                                    if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.EXPAND_OTHER.isAuthorized(user))
                                     {
-                                        this.manager.extendGuard(guard, loc); // bot half
-                                        this.manager.extendGuard(guard, loc.clone().add(0,1,0)); // top half
+                                        this.manager.extendLock(lock, loc); // bot half
+                                        this.manager.extendLock(lock, loc.clone().add(0, 1, 0)); // top half
                                         user.sendTranslated("&aProtection expanded!");
                                     }
                                     else
@@ -471,18 +484,18 @@ public class GuardListener implements Listener
     public void onBlockRedstone(BlockRedstoneEvent event)
     {
         Block block = event.getBlock();
-        Guard guard = this.manager.getGuardAtLocation(block.getLocation());
-        if (guard != null)
+        Lock lock = this.manager.getLockAtLocation(block.getLocation());
+        if (lock != null)
         {
-            if (guard.isValidType())
+            if (lock.isValidType())
             {
-                if (guard.hasFlag(BLOCK_REDSTONE))
+                if (lock.hasFlag(BLOCK_REDSTONE))
                 {
                     event.setNewCurrent(0);
                 }
                 return;
             }
-            guard.delete(null);
+            lock.delete(null);
         }
     }
 
@@ -492,59 +505,60 @@ public class GuardListener implements Listener
         Location location = event.getBlock().getLocation();
         for (Block block : event.getBlocks())
         {
-            Guard guard = this.manager.getGuardAtLocation(block.getLocation(location));
-            if (guard != null)
+            Lock lock = this.manager.getLockAtLocation(block.getLocation(location));
+            if (lock != null)
             {
-                if (guard.isValidType())
+                if (lock.isValidType())
                 {
                     event.setCancelled(true);
                     return;
                 }
-                guard.delete(null);
+                lock.delete(null);
             }
         }
-        Guard guard = this.manager.getGuardAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location));
-        if (guard != null)
+        Lock lock = this.manager.getLockAtLocation(location.getBlock().getRelative(event.getDirection())
+                                                           .getLocation(location));
+        if (lock != null)
         {
-            if (guard.isValidType())
+            if (lock.isValidType())
             {
                 event.setCancelled(true);
                 return;
             }
-            guard.delete(null);
+            lock.delete(null);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPistonRetract(BlockPistonRetractEvent event)
     {
-        Guard guard = this.manager.getGuardAtLocation(event.getRetractLocation());
-        if (guard != null)
+        Lock lock = this.manager.getLockAtLocation(event.getRetractLocation());
+        if (lock != null)
         {
-            if (guard.isValidType())
+            if (lock.isValidType())
             {
                 event.setCancelled(true);
                 return;
             }
-            guard.delete(null);
+            lock.delete(null);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
-        Guard guard = this.manager.getGuardAtLocation(event.getBlock().getLocation());
+        Lock lock = this.manager.getLockAtLocation(event.getBlock().getLocation());
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        if (guard != null)
+        if (lock != null)
         {
-            if (guard.isValidType())
+            if (lock.isValidType())
             {
                 user.sendTranslated("&eExisting BlockProtection is not valid!");
-                guard.delete(user);
+                lock.delete(user);
             }
             else
             {
-                guard.handleBlockBreak(event, user);
+                lock.handleBlockBreak(event, user);
             }
         }
         else
@@ -552,17 +566,17 @@ public class GuardListener implements Listener
             Location location = new Location(null,0,0,0);
             for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
             {
-                guard = this.manager.getGuardAtLocation(block.getLocation(location));
-                if (guard != null)
+                lock = this.manager.getLockAtLocation(block.getLocation(location));
+                if (lock != null)
                 {
-                    if (guard.isValidType())
+                    if (lock.isValidType())
                     {
                         user.sendTranslated("&eExisting BlockProtection is not valid!");
-                        guard.delete(user);
+                        lock.delete(user);
                     }
                     else
                     {
-                        guard.handleBlockBreak(event, user);
+                        lock.handleBlockBreak(event, user);
                         return;
                     }
                 }
@@ -577,15 +591,15 @@ public class GuardListener implements Listener
         Location location = new Location(null,0,0,0);
         for (Block block : event.blockList())
         {
-            Guard guard = this.manager.getGuardAtLocation(block.getLocation(location));
-            if (guard != null)
+            Lock lock = this.manager.getLockAtLocation(block.getLocation(location));
+            if (lock != null)
             {
-                if (guard.isValidType())
+                if (lock.isValidType())
                 {
                     event.setCancelled(true);
                     return;
                 }
-                guard.delete(null);
+                lock.delete(null);
             }
         }
     }
@@ -595,27 +609,27 @@ public class GuardListener implements Listener
     {
         // TODO allow burn flag
         Location location = event.getBlock().getLocation();
-        Guard guard = this.manager.getGuardAtLocation(location);
-        if (guard != null)
+        Lock lock = this.manager.getLockAtLocation(location);
+        if (lock != null)
         {
-            if (guard.isValidType())
+            if (lock.isValidType())
             {
                 event.setCancelled(true);
                 return;
             }
-            guard.delete(null);
+            lock.delete(null);
         }
         for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
         {
-            guard = this.manager.getGuardAtLocation(block.getLocation(location));
-            if (guard != null)
+            lock = this.manager.getLockAtLocation(block.getLocation(location));
+            if (lock != null)
             {
-                if (guard.isValidType())
+                if (lock.isValidType())
                 {
                     event.setCancelled(true);
                     return;
                 }
-                guard.delete(null);
+                lock.delete(null);
             }
         }
     }
@@ -624,20 +638,20 @@ public class GuardListener implements Listener
     public void onHopperItemMove(InventoryMoveItemEvent event)
     {
         Inventory inventory = event.getSource();
-        Guard guard = this.getGuardOfInventory(inventory, null);
-        if (guard != null)
+        Lock lock = this.getLockOfInventory(inventory, null);
+        if (lock != null)
         {
             InventoryHolder dest = event.getDestination().getHolder();
-            if ((dest instanceof Hopper && guard.hasFlag(BLOCK_HOPPER_OUT))
-             || (dest instanceof HopperMinecart && guard.hasFlag(BLOCK_HOPPER_MINECART_OUT)))
+            if ((dest instanceof Hopper && lock.hasFlag(BLOCK_HOPPER_OUT))
+             || (dest instanceof HopperMinecart && lock.hasFlag(BLOCK_HOPPER_MINECART_OUT)))
             {
                 event.setCancelled(true);
             }
         }
         if (event.isCancelled()) return;
         inventory = event.getDestination();
-        guard = this.getGuardOfInventory(inventory, null);
-        if (guard != null && guard.hasFlag(BLOCK_HOPPER_ANY_IN))
+        lock = this.getLockOfInventory(inventory, null);
+        if (lock != null && lock.hasFlag(BLOCK_HOPPER_ANY_IN))
         {
             event.setCancelled(true);
         }
@@ -648,15 +662,15 @@ public class GuardListener implements Listener
     {
         if (this.module.getConfig().protectBlocksFromWaterLava && BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
         {
-            Guard guard = this.manager.getGuardAtLocation(event.getToBlock().getLocation());
-            if (guard != null)
+            Lock lock = this.manager.getLockAtLocation(event.getToBlock().getLocation());
+            if (lock != null)
             {
-                if (guard.isValidType())
+                if (lock.isValidType())
                 {
                     event.setCancelled(true);
                     return;
                 }
-                guard.delete(null);
+                lock.delete(null);
             }
         }
     }
@@ -668,17 +682,17 @@ public class GuardListener implements Listener
         {
             if (((HangingBreakByEntityEvent)event).getRemover() instanceof Player)
             {
-                Guard guard = this.manager.getGuardForEntityUID(event.getEntity().getUniqueId());
+                Lock lock = this.manager.getLockForEntityUID(event.getEntity().getUniqueId());
                 User user = this.module.getCore().getUserManager().getExactUser(((Player)((HangingBreakByEntityEvent)event).getRemover()).getName());
-                if (GuardPerm.DENY_HANGING.isAuthorized(user))
+                if (LockerPerm.DENY_HANGING.isAuthorized(user))
                 {
                     event.setCancelled(true);
                     return;
                 }
-                if (guard == null) return;
-                if (guard.isOwner(user))
+                if (lock == null) return;
+                if (lock.isOwner(user))
                 {
-                    guard.delete(user);
+                    lock.delete(user);
                     return;
                 }
             }
@@ -686,6 +700,10 @@ public class GuardListener implements Listener
         event.setCancelled(true);
     }
 
-    // TODO auto-protect
+    @EventHandler(ignoreCancelled = true)
+    public void onTame(EntityTameEvent event)
+    {
+        // TODO auto-protect on tame
+    }
     // TODO expand protections for hangings/attachables
 }

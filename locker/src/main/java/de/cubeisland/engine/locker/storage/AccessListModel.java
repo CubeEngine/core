@@ -34,9 +34,9 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
         super(TABLE_ACCESS_LIST);
     }
 
-    public AccessListModel newAccess(GuardModel model, User modifyUser)
+    public AccessListModel newAccess(LockModel model, User modifyUser)
     {
-        this.setGuardId(model.getId());
+        this.setLockId(model.getId());
         this.setUserId(modifyUser.getEntity().getKey());
         this.setLevel(ACCESS_FULL);
         return this;
@@ -75,11 +75,11 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
         return (UInteger) getValue(1);
     }
 
-    public void setGuardId(UInteger value) {
+    public void setLockId(UInteger value) {
         setValue(2, value);
     }
 
-    public UInteger getGuardId() {
+    public UInteger getLockId() {
         return (UInteger) getValue(2);
     }
 
@@ -126,7 +126,7 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
 
     @Override
     public Field<UInteger> field3() {
-        return TABLE_ACCESS_LIST.GUARD_ID;
+        return TABLE_ACCESS_LIST.LOCK_ID;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
 
     @Override
     public UInteger value3() {
-        return getGuardId();
+        return getLockId();
     }
 
     @Override

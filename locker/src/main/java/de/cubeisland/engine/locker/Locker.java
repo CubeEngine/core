@@ -17,39 +17,39 @@
  */
 package de.cubeisland.engine.locker;
 
-import de.cubeisland.engine.locker.BlockGuardConfiguration.BlockGuardConfigConverter;
-import de.cubeisland.engine.locker.EntityGuardConfiguration.EntityGuardConfigConverter;
-import de.cubeisland.engine.locker.commands.GuardCommands;
-import de.cubeisland.engine.locker.commands.GuardCreateCommands;
-import de.cubeisland.engine.locker.storage.GuardManager;
+import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
+import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityLockerConfigConverter;
+import de.cubeisland.engine.locker.commands.LockerCommands;
+import de.cubeisland.engine.locker.commands.LockerCreateCommands;
+import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.TableAccessList;
-import de.cubeisland.engine.locker.storage.TableGuardLocations;
-import de.cubeisland.engine.locker.storage.TableGuards;
+import de.cubeisland.engine.locker.storage.TableLockLocations;
+import de.cubeisland.engine.locker.storage.TableLocks;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.convert.Convert;
 
 public class Locker extends Module
 {
-    private GuardConfig config;
-    private GuardManager manager;
+    private LockerConfig config;
+    private LockManager manager;
 
     @Override
     public void onEnable()
     {
-        Convert.registerConverter(BlockGuardConfiguration.class, new BlockGuardConfigConverter());
-        Convert.registerConverter(EntityGuardConfiguration.class, new EntityGuardConfigConverter());
-        this.config = Configuration.load(GuardConfig.class, this);
-        new GuardPerm(this);
-        this.getCore().getDB().registerTable(TableGuards.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableGuardLocations.initTable(this.getCore().getDB()));
+        Convert.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
+        Convert.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
+        this.config = Configuration.load(LockerConfig.class, this);
+        this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
-        manager = new GuardManager(this);
-        GuardCommands mainCmd = new GuardCommands(this, manager);
+        manager = new LockManager(this);
+        LockerCommands mainCmd = new LockerCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
-        GuardCreateCommands createCmds = new GuardCreateCommands(this, manager);
-        this.getCore().getCommandManager().registerCommand(createCmds, "bguard");
-        new de.cubeisland.engine.locker.GuardListener(this, manager);
+        LockerCreateCommands createCmds = new LockerCreateCommands(this, manager);
+        this.getCore().getCommandManager().registerCommand(createCmds, "locker");
+        new LockerPerm(this, mainCmd);
+        new LockerListener(this, manager);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class Locker extends Module
         this.manager.saveAll();
     }
 
-    public GuardConfig getConfig()
+    public LockerConfig getConfig()
     {
         return this.config;
     }

@@ -36,16 +36,16 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableGuards.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
-public class TableGuardLocations extends TableImpl<GuardLocationModel>implements TableCreator<GuardLocationModel>
+public class TableLockLocations extends TableImpl<LockLocationModel>implements TableCreator<LockLocationModel>
 {
-        public static TableGuardLocations TABLE_GUARD_LOCATION;
+        public static TableLockLocations TABLE_GUARD_LOCATION;
 
-        private TableGuardLocations(String prefix)
+        private TableLockLocations(String prefix)
         {
-            super(prefix + "guardlocation");
+            super(prefix + "locklocation");
             IDENTITY = Keys.identity(this, this.ID);
             PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
             UNIQUE_LOCATION = Keys.uniqueKey(this, this.WORLD_ID, this.X, this.Y, this.Z);
@@ -53,10 +53,10 @@ public class TableGuardLocations extends TableImpl<GuardLocationModel>implements
             FOREIGN_GUARD = Keys.foreignKey(TABLE_GUARD.PRIMARY_KEY, this, this.GUARD_ID);
         }
 
-    public static TableGuardLocations initTable(Database database)
+    public static TableLockLocations initTable(Database database)
     {
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_GUARD_LOCATION = new TableGuardLocations(config.tablePrefix);
+        TABLE_GUARD_LOCATION = new TableLockLocations(config.tablePrefix);
         return TABLE_GUARD_LOCATION;
     }
 
@@ -71,12 +71,12 @@ public class TableGuardLocations extends TableImpl<GuardLocationModel>implements
                                         "`z` int(11) NOT NULL,\n" +
                                         "`chunkX` int(11) NOT NULL,\n" +
                                         "`chunkZ` int(11) NOT NULL,\n" +
-                                        "`guard_id` int(10) unsigned NOT NULL,\n" +
+                                        "`lock_id` int(10) unsigned NOT NULL,\n" +
                                         "PRIMARY KEY (`id`),\n" +
                                         "KEY `i_chunk` (`chunkX`, `chunkZ`),\n" +
                                         "UNIQUE KEY (`world_id`, `x`, `y`, `z`),\n" +
                                         "FOREIGN KEY f_world (`world_id`) REFERENCES " + TABLE_WORLD.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY f_guard (`guard_id`) REFERENCES " + TABLE_GUARD.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
+                                        "FOREIGN KEY f_guard (`lock_id`) REFERENCES " + TABLE_GUARD.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
     }
@@ -89,46 +89,46 @@ public class TableGuardLocations extends TableImpl<GuardLocationModel>implements
         return version;
     }
 
-    public final Identity<GuardLocationModel, UInteger> IDENTITY;
-    public final UniqueKey<GuardLocationModel> PRIMARY_KEY;
-    public final UniqueKey<GuardLocationModel> UNIQUE_LOCATION;
-    public final ForeignKey<GuardLocationModel, WorldEntity> FOREIGN_WORLD;
-    public final ForeignKey<GuardLocationModel, GuardModel> FOREIGN_GUARD;
+    public final Identity<LockLocationModel, UInteger> IDENTITY;
+    public final UniqueKey<LockLocationModel> PRIMARY_KEY;
+    public final UniqueKey<LockLocationModel> UNIQUE_LOCATION;
+    public final ForeignKey<LockLocationModel, WorldEntity> FOREIGN_WORLD;
+    public final ForeignKey<LockLocationModel, LockModel> FOREIGN_GUARD;
 
-    public final TableField<GuardLocationModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<GuardLocationModel, UInteger> WORLD_ID = createField("world_id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<GuardLocationModel, Integer> X = createField("x", SQLDataType.INTEGER, this);
-    public final TableField<GuardLocationModel, Integer> Y = createField("y", SQLDataType.INTEGER, this);
-    public final TableField<GuardLocationModel, Integer> Z = createField("z", SQLDataType.INTEGER, this);
-    public final TableField<GuardLocationModel, Integer> CHUNKX = createField("chunkX", SQLDataType.INTEGER, this);
-    public final TableField<GuardLocationModel, Integer> CHUNKZ = createField("chunkZ", SQLDataType.INTEGER, this);
-    public final TableField<GuardLocationModel, UInteger> GUARD_ID = createField("guard_id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<LockLocationModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<LockLocationModel, UInteger> WORLD_ID = createField("world_id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<LockLocationModel, Integer> X = createField("x", SQLDataType.INTEGER, this);
+    public final TableField<LockLocationModel, Integer> Y = createField("y", SQLDataType.INTEGER, this);
+    public final TableField<LockLocationModel, Integer> Z = createField("z", SQLDataType.INTEGER, this);
+    public final TableField<LockLocationModel, Integer> CHUNKX = createField("chunkX", SQLDataType.INTEGER, this);
+    public final TableField<LockLocationModel, Integer> CHUNKZ = createField("chunkZ", SQLDataType.INTEGER, this);
+    public final TableField<LockLocationModel, UInteger> GUARD_ID = createField("lock_id", SQLDataType.INTEGERUNSIGNED, this);
 
     @Override
-    public Identity<GuardLocationModel, UInteger> getIdentity()
+    public Identity<LockLocationModel, UInteger> getIdentity()
     {
         return IDENTITY;
     }
 
     @Override
-    public UniqueKey<GuardLocationModel> getPrimaryKey()
+    public UniqueKey<LockLocationModel> getPrimaryKey()
     {
         return PRIMARY_KEY;
     }
 
     @Override
-    public List<UniqueKey<GuardLocationModel>> getKeys()
+    public List<UniqueKey<LockLocationModel>> getKeys()
     {
         return Arrays.asList(PRIMARY_KEY, UNIQUE_LOCATION);
     }
 
     @Override
-    public List<ForeignKey<GuardLocationModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<GuardLocationModel, ?>>asList(FOREIGN_WORLD, FOREIGN_GUARD);
+    public List<ForeignKey<LockLocationModel, ?>> getReferences() {
+        return Arrays.<ForeignKey<LockLocationModel, ?>>asList(FOREIGN_WORLD, FOREIGN_GUARD);
     }
 
     @Override
-    public Class<GuardLocationModel> getRecordType() {
-        return GuardLocationModel.class;
+    public Class<LockLocationModel> getRecordType() {
+        return LockLocationModel.class;
     }
 }

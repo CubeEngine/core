@@ -17,10 +17,15 @@
  */
 package de.cubeisland.engine.locker;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.EntityType;
 
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.config.node.ListNode;
+import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.locker.storage.ProtectedType;
 import de.cubeisland.engine.core.config.node.BooleanNode;
 import de.cubeisland.engine.core.config.node.MapNode;
@@ -30,14 +35,18 @@ import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.convert.ConversionException;
 import de.cubeisland.engine.core.util.convert.Converter;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.locker.storage.ProtectionFlags;
 
-public class EntityGuardConfiguration
+public class EntityLockerConfiguration
 {
     protected final ProtectedType protectedType;
+    protected boolean autoProtect = false;
+    protected LockType autoProtectType = LockType.PRIVATE; // defaults to private
+    protected List<ProtectionFlags> defaultFlags;
     private final EntityType entityType;
     private boolean enable = true;
 
-    public EntityGuardConfiguration(EntityType entityType)
+    public EntityLockerConfiguration(EntityType entityType)
     {
         this.protectedType = ProtectedType.getProtectedType(entityType);
         this.entityType = entityType;
@@ -48,21 +57,41 @@ public class EntityGuardConfiguration
         return entityType.name();
     }
 
+    public EntityLockerConfiguration autoProtect(LockType type)
+    {
+        this.autoProtectType = type;
+        this.autoProtect = type != null;
+        return this;
+    }
+
     public boolean isType(EntityType type)
     {
         return this.entityType.equals(type);
     }
 
-    public static class EntityGuardConfigConverter implements Converter<EntityGuardConfiguration>
+    public static class EntityLockerConfigConverter implements Converter<EntityLockerConfiguration>
     {
         @Override
-        public Node toNode(EntityGuardConfiguration object) throws ConversionException
+        public Node toNode(EntityLockerConfiguration object) throws ConversionException
         {
             MapNode root = MapNode.emptyMap();
             MapNode config = MapNode.emptyMap();
             if (!object.enable)
             {
                 config.setNode(StringNode.of("enable"), BooleanNode.falseNode());
+            }
+            if (object.autoProtect)
+            {
+                config.setNode(StringNode.of("auto-protect"), StringNode.of(object.autoProtectType.name()));
+                if (object.defaultFlags != null && !object.defaultFlags.isEmpty())
+                {
+                    ListNode flags = ListNode.emptyList();
+                    for (ProtectionFlags defaultFlag : object.defaultFlags)
+                    {
+                        flags.addNode(StringNode.of(defaultFlag.name()));
+                    }
+                    config.setNode(StringNode.of("default-flags"), flags);
+                }
             }
             if (config.isEmpty())
             {
@@ -72,7 +101,7 @@ public class EntityGuardConfiguration
             return root;
         }
 
-        private EntityGuardConfiguration fromString(String s) throws ConversionException
+        private EntityLockerConfiguration fromString(String s) throws ConversionException
         {
             EntityType entityType;
             try
@@ -94,14 +123,14 @@ public class EntityGuardConfiguration
             {
                 throw new ConversionException(s + " is not a valid EntityType!");
             }
-            return new EntityGuardConfiguration(entityType);
+            return new EntityLockerConfiguration(entityType);
         }
 
         @Override
-        public EntityGuardConfiguration fromNode(Node node) throws ConversionException
+        public EntityLockerConfiguration fromNode(Node node) throws ConversionException
         {
             if (node instanceof NullNode) return null;
-            EntityGuardConfiguration configuration;
+            EntityLockerConfiguration configuration;
             if (node instanceof StringNode)
             {
                 configuration = fromString(node.unwrap());
@@ -118,6 +147,28 @@ public class EntityGuardConfiguration
                     if (entry.getKey().equals("enable"))
                     {
                         configuration.enable = ((BooleanNode)entry.getValue()).getValue();
+                    }
+                    if (entry.getKey().equals("auto-protect"))
+                    {
+                        configuration.autoProtect = true;
+                        configuration.autoProtectType = LockType.valueOf(entry.getValue().unwrap());
+                    }
+                    if (entry.getKey().equals("default-flags"))
+                    {
+                        ListNode list = (ListNode)entry.getValue();
+                        configuration.defaultFlags = new ArrayList<>();
+                        for (Node listedNode : list.getListedNodes())
+                        {
+                            ProtectionFlags flag = ProtectionFlags.valueOf(listedNode.unwrap());
+                            if (configuration.protectedType.supportedFlags.contains(flag))
+                            {
+                                configuration.defaultFlags.add(flag);
+                            }
+                            else
+                            {
+                                CubeEngine.getCore().getLog().warn("[Locker] Unsupported flag for protectedType! {}: {}", configuration.protectedType.name(), flag.name());
+                            }
+                        }
                     }
                 }
             }

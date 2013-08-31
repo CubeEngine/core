@@ -27,19 +27,19 @@ import org.jooq.Row8;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableGuardLocations.TABLE_GUARD_LOCATION;
+import static de.cubeisland.engine.locker.storage.TableLockLocations.TABLE_GUARD_LOCATION;
 
-public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> implements Record8<UInteger, UInteger, Integer, Integer, Integer, Integer, Integer, UInteger>
+public class LockLocationModel extends UpdatableRecordImpl<LockLocationModel> implements Record8<UInteger, UInteger, Integer, Integer, Integer, Integer, Integer, UInteger>
 {
-    public GuardLocationModel()
+    public LockLocationModel()
     {
         super(TABLE_GUARD_LOCATION);
     }
 
-    public GuardLocationModel newLocation(GuardModel model, Location location)
+    public LockLocationModel newLocation(LockModel model, Location location)
     {
         this.setLocation(location);
-        this.setGuardId(model.getId());
+        this.setLockId(model.getId());
         return this;
     }
 
@@ -109,11 +109,11 @@ public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> 
         return (Integer) getValue(6);
     }
 
-    public void setGuardId(UInteger value) {
+    public void setLockId(UInteger value) {
         setValue(7, value);
     }
 
-    public UInteger getGuardId() {
+    public UInteger getLockId() {
         return (UInteger) getValue(7);
     }
 
@@ -217,6 +217,6 @@ public class GuardLocationModel extends UpdatableRecordImpl<GuardLocationModel> 
 
     @Override
     public UInteger value8() {
-        return getGuardId();
+        return getLockId();
     }
 }

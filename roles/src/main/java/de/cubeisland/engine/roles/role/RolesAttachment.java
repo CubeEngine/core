@@ -327,7 +327,7 @@ public class RolesAttachment extends UserAttachment
 
     protected void makeDirty(long worldID)
     {
-        if (this.getHolder().getWorldId() == worldID)
+        if (this.getHolder().getWorld() != null && this.getHolder().getWorldId() == worldID)
         {
             this.currentMetaData = null;
         }

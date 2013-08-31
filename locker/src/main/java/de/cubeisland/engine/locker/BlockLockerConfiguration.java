@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.locker.storage.GuardType;
+import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.locker.storage.ProtectedType;
 import de.cubeisland.engine.locker.storage.ProtectionFlags;
 import de.cubeisland.engine.core.CubeEngine;
@@ -45,16 +45,16 @@ import de.cubeisland.engine.core.util.matcher.Match;
  *      - BLOCK_REDSTONE
  *      - AUTOCLOSE
  */
-public class BlockGuardConfiguration
+public class BlockLockerConfiguration
 {
     protected final ProtectedType protectedType;
     protected boolean autoProtect = false;
-    protected GuardType autoProtectType = GuardType.PRIVATE; // defaults to private
+    protected LockType autoProtectType = LockType.PRIVATE; // defaults to private
     protected List<ProtectionFlags> defaultFlags;
     private final Material material;
     private boolean enable = true;
 
-    public BlockGuardConfiguration(Material material)
+    public BlockLockerConfiguration(Material material)
     {
         this.protectedType = ProtectedType.getProtectedType(material);
         this.material = material;
@@ -65,7 +65,7 @@ public class BlockGuardConfiguration
         return material.name();
     }
 
-    public BlockGuardConfiguration autoProtect(GuardType type)
+    public BlockLockerConfiguration autoProtect(LockType type)
     {
         this.autoProtectType = type;
         this.autoProtect = type != null;
@@ -77,10 +77,10 @@ public class BlockGuardConfiguration
         return this.material.equals(type);
     }
 
-    public static class BlockGuardConfigConverter implements Converter<BlockGuardConfiguration>
+    public static class BlockLockerConfigConverter implements Converter<BlockLockerConfiguration>
     {
         @Override
-        public Node toNode(BlockGuardConfiguration object) throws ConversionException
+        public Node toNode(BlockLockerConfiguration object) throws ConversionException
         {
             MapNode root = MapNode.emptyMap();
             MapNode config = MapNode.emptyMap();
@@ -109,7 +109,7 @@ public class BlockGuardConfiguration
             return root;
         }
 
-        private BlockGuardConfiguration fromString(String s) throws ConversionException
+        private BlockLockerConfiguration fromString(String s) throws ConversionException
         {
             Material material;
             try
@@ -131,14 +131,14 @@ public class BlockGuardConfiguration
             {
                 throw new ConversionException(s + " is not a valid BlockType!");
             }
-            return new BlockGuardConfiguration(material);
+            return new BlockLockerConfiguration(material);
         }
 
         @Override
-        public BlockGuardConfiguration fromNode(Node node) throws ConversionException
+        public BlockLockerConfiguration fromNode(Node node) throws ConversionException
         {
             if (node instanceof NullNode) return null;
-            BlockGuardConfiguration configuration;
+            BlockLockerConfiguration configuration;
             if (node instanceof StringNode)
             {
                 configuration = fromString(node.unwrap());
@@ -159,7 +159,7 @@ public class BlockGuardConfiguration
                     if (entry.getKey().equals("auto-protect"))
                     {
                         configuration.autoProtect = true;
-                        configuration.autoProtectType = GuardType.valueOf(entry.getValue().unwrap());
+                        configuration.autoProtectType = LockType.valueOf(entry.getValue().unwrap());
                     }
                     if (entry.getKey().equals("default-flags"))
                     {
@@ -174,7 +174,7 @@ public class BlockGuardConfiguration
                             }
                             else
                             {
-                                CubeEngine.getCore().getLog().warn("[BaumGuard] Unsupported flag for protectedType! {}: {}", configuration.protectedType.name(), flag.name());
+                                CubeEngine.getCore().getLog().warn("[Locker] Unsupported flag for protectedType! {}: {}", configuration.protectedType.name(), flag.name());
                             }
                         }
                     }

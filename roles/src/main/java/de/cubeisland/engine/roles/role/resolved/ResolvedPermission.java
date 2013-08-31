@@ -22,15 +22,22 @@ import de.cubeisland.engine.roles.role.RawDataStore;
 public class ResolvedPermission extends ResolvedData
 {
     private boolean value;
+    private String originPerm;
 
-    public ResolvedPermission(RawDataStore origin, String key, boolean value)
+    public ResolvedPermission(RawDataStore origin, String key, boolean value, String originPerm)
     {
         super(origin, key);
         this.value = value;
+        this.originPerm = originPerm;
     }
 
     public boolean isSet()
     {
         return value;
+    }
+
+    public String getOriginPermission()
+    {
+        return this.originPerm;
     }
 }

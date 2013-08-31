@@ -26,33 +26,38 @@ public enum ProtectionFlags
     /**
      * Ignore Redstone changes to protected block
      */
-    BLOCK_REDSTONE(1 << 0),
+    BLOCK_REDSTONE("redstone", 1 << 0),
     /**
      * Suck up items in a configured radius
      */
-    MAGNET(1 << 1),
+    MAGNET("magnet", 1 << 1),
     /**
      * Autoclose doors etc. after a configured time
      */
-    AUTOCLOSE(1 << 2),
+    AUTOCLOSE("autoclose", 1 << 2),
     /**
      * Block items to get moved into a chest by a hopper OR hopper-minecart
      */
-    BLOCK_HOPPER_ANY_IN(1 << 3),
+    BLOCK_HOPPER_ANY_IN("hopperIn", 1 << 3),
     /**
      * Block items to get moved out of a chest by a hopper-block
      */
-    BLOCK_HOPPER_OUT(1 << 4),
+    BLOCK_HOPPER_OUT("hopperOut", 1 << 4),
     /**
      * Block items to get moved out of a chest by a hopper-minecart
      */
-    BLOCK_HOPPER_MINECART_OUT(1 << 5),
+    BLOCK_HOPPER_MINECART_OUT("hopperMinecartOut", 1 << 5),
+    /**
+     * Enables drop-transfer mode
+     */
+    DROPTRANSFER("droptransfer", 1 << 6),
     ;
-
     public final short flagValue;
+    public final String flagname;
 
-    private ProtectionFlags(int flag)
+    private ProtectionFlags(String flagname, int flag)
     {
+        this.flagname = flagname;
         this.flagValue = (short)flag;
     }
 }

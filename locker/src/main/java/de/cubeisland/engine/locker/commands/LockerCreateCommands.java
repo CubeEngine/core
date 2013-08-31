@@ -19,7 +19,7 @@ package de.cubeisland.engine.locker.commands;
 
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
-import de.cubeisland.engine.locker.storage.GuardManager;
+import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -29,11 +29,11 @@ import de.cubeisland.engine.core.command.reflected.Command;
 
 import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
 
-public class GuardCreateCommands extends ContainerCommand
+public class LockerCreateCommands extends ContainerCommand
 {
-    private GuardManager manager;
+    private LockManager manager;
 
-    public GuardCreateCommands(Locker module, GuardManager manager)
+    public LockerCreateCommands(Locker module, LockManager manager)
     {
         super(module, "create", "Creates various protections");
         this.manager = manager;

@@ -39,23 +39,23 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class TableGuards extends TableImpl<GuardModel> implements TableCreator<GuardModel>
+public class TableLocks extends TableImpl<LockModel> implements TableCreator<LockModel>
 {
-    public static TableGuards TABLE_GUARD;
+    public static TableLocks TABLE_GUARD;
 
-    private TableGuards(String prefix)
+    private TableLocks(String prefix)
     {
-        super(prefix + "guard");
+        super(prefix + "locks");
         IDENTITY = Keys.identity(this, this.ID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
         UNIQUE_ENTITY_UID = Keys.uniqueKey(this, this.ENTITY_UID_LEAST, this.ENTITY_UID_MOST);
         FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.OWNER_ID);
     }
 
-    public static TableGuards initTable(Database database)
+    public static TableLocks initTable(Database database)
     {
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_GUARD = new TableGuards(config.tablePrefix);
+        TABLE_GUARD = new TableLocks(config.tablePrefix);
         return TABLE_GUARD;
     }
 
@@ -67,7 +67,7 @@ public class TableGuards extends TableImpl<GuardModel> implements TableCreator<G
                                         "`owner_id` int(10) unsigned NOT NULL,\n" +
                                         "`flags` smallint NOT NULL,\n" +
                                         "`type` tinyint NOT NULL,\n" +
-                                        "`guard_type` tinyint NOT NULL,\n" +
+                                        "`lock_type` tinyint NOT NULL,\n" +
                                         "`password` varbinary(128) NOT NULL,\n" +
                                         "`droptransfer` tinyint(1) NOT NULL,\n" +
                                         "`entity_uid_least` bigint DEFAULT NULL,\n" +
@@ -89,67 +89,64 @@ public class TableGuards extends TableImpl<GuardModel> implements TableCreator<G
         return version;
     }
 
-    public final Identity<GuardModel, UInteger> IDENTITY;
-    public final UniqueKey<GuardModel> PRIMARY_KEY;
-    public final UniqueKey<GuardModel> UNIQUE_ENTITY_UID;
-    public final ForeignKey<GuardModel, UserEntity> FOREIGN_OWNER;
+    public final Identity<LockModel, UInteger> IDENTITY;
+    public final UniqueKey<LockModel> PRIMARY_KEY;
+    public final UniqueKey<LockModel> UNIQUE_ENTITY_UID;
+    public final ForeignKey<LockModel, UserEntity> FOREIGN_OWNER;
 
-    public final TableField<GuardModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<GuardModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<LockModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<LockModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
 
     /**
      * Flags see {@link ProtectionFlags}
      */
-    public final TableField<GuardModel, Short> FLAGS = createField("flags", SQLDataType.SMALLINT, this);
+    public final TableField<LockModel, Short> FLAGS = createField("flags", SQLDataType.SMALLINT, this);
 
     /**
      * Protected Type see {@link ProtectedType}
      */
-    public final TableField<GuardModel, Byte> GUARDED_TYPE = createField("type", SQLDataType.TINYINT, this);
+    public final TableField<LockModel, Byte> PROTECTED_TYPE = createField("type", SQLDataType.TINYINT, this);
 
     /**
-     * GuardType see {@link GuardType}
+     * LockType see {@link LockType}
      */
-    public final TableField<GuardModel, Byte> GUARD_TYPE = createField("guard_type", SQLDataType.TINYINT, this);
+    public final TableField<LockModel, Byte> LOCK_TYPE = createField("lock_type", SQLDataType.TINYINT, this);
 
     // eg. /cguarded [pass <password>] (flag to create pw book/key?)
-    public final TableField<GuardModel, byte[]> PASSWORD = createField("password", SQLDataType.VARBINARY.length(128), this);
-
-    // 0 false 1 true
-    public final TableField<GuardModel, Byte> DROPTRANSFER = createField("droptransfer", SQLDataType.TINYINT, this);
+    public final TableField<LockModel, byte[]> PASSWORD = createField("password", SQLDataType.VARBINARY.length(128), this);
 
     // optional for entity protection:
-    public final TableField<GuardModel, Long> ENTITY_UID_LEAST = createField("entity_uid_least", SQLDataType.BIGINT, this);
-    public final TableField<GuardModel, Long> ENTITY_UID_MOST = createField("entity_uid_most", SQLDataType.BIGINT, this);
+    public final TableField<LockModel, Long> ENTITY_UID_LEAST = createField("entity_uid_least", SQLDataType.BIGINT, this);
+    public final TableField<LockModel, Long> ENTITY_UID_MOST = createField("entity_uid_most", SQLDataType.BIGINT, this);
 
-    public final TableField<GuardModel, Timestamp> LAST_ACCESS = createField("last_access", SQLDataType.TIMESTAMP, this);
-    public final TableField<GuardModel, Timestamp> CREATED = createField("created", SQLDataType.TIMESTAMP, this);
+    public final TableField<LockModel, Timestamp> LAST_ACCESS = createField("last_access", SQLDataType.TIMESTAMP, this);
+    public final TableField<LockModel, Timestamp> CREATED = createField("created", SQLDataType.TIMESTAMP, this);
 
     @Override
-    public Identity<GuardModel, UInteger> getIdentity()
+    public Identity<LockModel, UInteger> getIdentity()
     {
         return IDENTITY;
     }
 
     @Override
-    public UniqueKey<GuardModel> getPrimaryKey()
+    public UniqueKey<LockModel> getPrimaryKey()
     {
         return PRIMARY_KEY;
     }
 
     @Override
-    public List<UniqueKey<GuardModel>> getKeys()
+    public List<UniqueKey<LockModel>> getKeys()
     {
         return Arrays.asList(PRIMARY_KEY, UNIQUE_ENTITY_UID);
     }
 
     @Override
-    public List<ForeignKey<GuardModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<GuardModel, ?>>asList(FOREIGN_OWNER);
+    public List<ForeignKey<LockModel, ?>> getReferences() {
+        return Arrays.<ForeignKey<LockModel, ?>>asList(FOREIGN_OWNER);
     }
 
     @Override
-    public Class<GuardModel> getRecordType() {
-        return GuardModel.class;
+    public Class<LockModel> getRecordType() {
+        return LockModel.class;
     }
 }
