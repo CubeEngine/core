@@ -65,18 +65,6 @@ public class Locker extends Module
 
     /*
     Features:
-    /cpersist -> so you dont have to repeat the commands (try suggesting when using a cmd alot)
-    Protection:
-        BlockProtection
-            cprivate
-            cpublic
-            cremove
-            cpassword
-            cunlock
-        ContainerProtection
-            cprotect // allows looking inside the chest
-      /cinfo: Owner, Type, flags, accessors, last access, creationtime
-      /cmodify: Grant or take away full access to container (later support setting roles that can access)
       //"admin-access" allowing /cmodify prepend @ tp playername
       /cgive transfer ownership of a protection (you will loose acess if you are not in access-list)
       hopper protection / minecart/wHopper

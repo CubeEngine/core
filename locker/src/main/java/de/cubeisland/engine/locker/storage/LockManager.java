@@ -33,6 +33,7 @@ import java.util.UUID;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -41,24 +42,29 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
+import org.bukkit.util.Vector;
 
-import de.cubeisland.engine.locker.BlockLockerConfiguration;
-import de.cubeisland.engine.locker.EntityLockerConfiguration;
-import de.cubeisland.engine.locker.LockerPerm;
-import de.cubeisland.engine.locker.commands.CommandListener;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.world.WorldManager;
+import de.cubeisland.engine.locker.BlockLockerConfiguration;
+import de.cubeisland.engine.locker.EntityLockerConfiguration;
+import de.cubeisland.engine.locker.LockerAttachment;
+import de.cubeisland.engine.locker.LockerPerm;
+import de.cubeisland.engine.locker.commands.CommandListener;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
@@ -127,11 +133,17 @@ public class LockManager implements Listener
     public Lock getLockAtLocation(Location location, boolean access)
     {
         Lock lock = this.loadedLocks.get(location);
-        if (access && lock != null) lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
-        if (lock != null)
+        if (lock != null && access)
         {
             lock.validateTypeAt(location);
+            if ((this.module.getConfig().protectWhenOnlyOffline && lock.getOwner().isOnline())
+             || (this.module.getConfig().protectWhenOnlyOnline && !lock.getOwner().isOnline()))
+            {
+                return null;
+            }
+            lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
         }
+
         return lock;
     }
 
@@ -148,7 +160,15 @@ public class LockManager implements Listener
                 this.loadedEntityLocks.put(uniqueId, lock);
             }
         }
-        if (access && lock != null) lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        if (lock != null && access)
+        {
+            if ((this.module.getConfig().protectWhenOnlyOffline && lock.getOwner().isOnline())
+                || (this.module.getConfig().protectWhenOnlyOnline && !lock.getOwner().isOnline()))
+            {
+                return null;
+            }
+            lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
+        }
         return lock;
         // TODO handle unloading & garbage collection e.g. when entities got removed by WE
     }
@@ -397,19 +417,19 @@ public class LockManager implements Listener
         switch (lock.getLockType())
         {
             case PRIVATE:
-                user.sendTranslated("&cPrivate Lock created!");
+                user.sendTranslated("&aPrivate Lock created!");
                 break;
             case PUBLIC:
-                user.sendTranslated("&cPublic Lock created!");
+                user.sendTranslated("&aPublic Lock created!");
                 break;
             case GUARDED:
-                user.sendTranslated("&cGuarded Lock created!");
+                user.sendTranslated("&aGuarded Lock created!");
                 break;
             case DONATION:
-                user.sendTranslated("&cDonation Lock created!");
+                user.sendTranslated("&aDonation Lock created!");
                 break;
             case FREE:
-                user.sendTranslated("&cFree Lock created!");
+                user.sendTranslated("&aFree Lock created!");
                 break;
         }
     }
@@ -521,7 +541,7 @@ public class LockManager implements Listener
         return false;
     }
 
-    public void modifyLock(Lock lock, User user, String usersString, Boolean adminAccess)
+    public void modifyLock(Lock lock, User user, String usersString)
     {
         // TODO separate in & out for containers
         if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
@@ -532,6 +552,12 @@ public class LockManager implements Listener
                 for (String name : explode)
                 {
                     boolean add = true;
+                    boolean admin = false;
+                    if (name.startsWith("@"))
+                    {
+                        name = name.substring(1);
+                        admin = true;
+                    }
                     if (name.startsWith("-"))
                     {
                         name = name.substring(1);
@@ -540,18 +566,15 @@ public class LockManager implements Listener
                     User modifyUser = this.module.getCore().getUserManager().getUser(name, false);
                     if (modifyUser == null) throw new IllegalArgumentException(); // This is prevented by checking first in the cmd execution
                     short accessType = ACCESS_FULL;
-                    if (add)
+                    if (add && admin)
                     {
-                        if (adminAccess)
-                        {
-                            accessType = ACCESS_ALL; // + AdminAccess
-                        }
+                        accessType = ACCESS_ALL; // with AdminAccess
                     }
                     if (this.setAccess(lock, modifyUser, add, accessType))
                     {
                         if (add)
                         {
-                            if (adminAccess)
+                            if (admin)
                             {
                                 user.sendTranslated("&aGranted &2%s&a admin access to this protection!", modifyUser.getName());
                             }
@@ -569,7 +592,7 @@ public class LockManager implements Listener
                     {
                         if (add)
                         {
-                            if (adminAccess)
+                            if (admin)
                             {
                                 user.sendTranslated("&aUdated &2%s's&a access to admin access!", modifyUser.getName());
                             }
@@ -602,5 +625,126 @@ public class LockManager implements Listener
         {
             lock.model.update();
         }
+    }
+
+    /**
+     * Returns true if the chest could open
+     * <p>null if the chest cannot be opened with the KeyBook
+     * <p>false if the user has no KeyBook in hand
+     *
+     * @param lock
+     * @param user
+     * @param effectLocation
+     * @return
+     */
+    public Boolean checkForKeyBook(Lock lock, User user, Location effectLocation)
+    {
+        if (user.getItemInHand().getType() == Material.ENCHANTED_BOOK && user.getItemInHand().getItemMeta().getDisplayName().contains("KeyBook"))
+        {
+            String keyBookName = user.getItemInHand().getItemMeta().getDisplayName();
+            try
+            {
+                long id = Long.valueOf(keyBookName.substring(keyBookName.indexOf('#')+1, keyBookName.length()));
+                if (lock.getId().equals(id)) // Id matches ?
+                {
+                    // Validate book
+                    if (keyBookName.startsWith(lock.getColorPass()))
+                    {
+                        if (effectLocation != null) user.sendTranslated("&aAs you approach with your KeyBook the magic lock disappears!");
+                        user.playSound(effectLocation, Sound.PISTON_EXTEND, 1, 2);
+                        user.playSound(effectLocation, Sound.PISTON_EXTEND, 1, (float)1.5);
+                        if (effectLocation != null) lock.notifyKeyUsage(user);
+                        return true;
+                    }
+                    else
+                    {
+                        user.sendTranslated("&cYou try to open the container with your KeyBook\n" +
+                                                "but forcefully get pushed away!");
+                        ItemStack itemInHand = user.getItemInHand();
+                        ItemMeta itemMeta = itemInHand.getItemMeta();
+                        itemMeta.setDisplayName(ChatFormat.parseFormats("&4Broken KeyBook"));
+                        itemMeta.setLore(Arrays.asList(ChatFormat.parseFormats(user.translate("&eThis KeyBook")),
+                                                       ChatFormat.parseFormats(user.translate("&elooks old and")),
+                                                       ChatFormat.parseFormats(user.translate("&eused up. It")),
+                                                       ChatFormat.parseFormats(user.translate("&ewont let you")),
+                                                       ChatFormat.parseFormats(user.translate("&eopen any containers!"))));
+                        itemInHand.setItemMeta(itemMeta);
+                        itemInHand.setType(Material.PAPER);
+                        user.updateInventory();
+                        user.playSound(effectLocation, Sound.GHAST_SCREAM, 1, 1);
+                        final Vector userDirection = user.getLocation().getDirection();
+                        user.damage(1);
+                        user.setVelocity(userDirection.multiply(-3));
+                        return null;
+                    }
+                }
+                else
+                {
+                    user.sendTranslated("&eYou try to open the container with your KeyBook but nothing happens!");
+                    user.playSound(effectLocation, Sound.BLAZE_HIT, 1, 1);
+                    user.playSound(effectLocation, Sound.BLAZE_HIT, 1, (float)0.8);
+                    return null;
+                }
+            }
+            catch (NumberFormatException|IndexOutOfBoundsException ignore) // invalid book / we do not care
+            {}
+        }
+        return false;
+    }
+
+    public boolean handleAccess(Lock lock, User user, Location soundLocation, Cancellable event)
+    {
+        if (lock == null) return true;
+        if (lock.isOwner(user)) return true;
+        Boolean keyBookUsed = this.checkForKeyBook(lock, user, soundLocation);
+        if (keyBookUsed == null)
+        {
+            event.setCancelled(true);
+            return false;
+        }
+        return keyBookUsed || this.checkForUnlocked(lock, user);
+    }
+
+    public boolean checkForUnlocked(Lock lock, User user)
+    {
+        LockerAttachment lockerAttachment = user.get(LockerAttachment.class);
+        return lockerAttachment != null && lockerAttachment.hasUnlocked(lock);
+    }
+
+    /**
+     * Returns the lock for given inventory it exists, also sets the location to the holders location if not null
+     *
+     * @param inventory
+     * @param holderLoc a location object to hold the LockLocation
+     * @return the lock for given inventory
+     */
+    public Lock getLockOfInventory(Inventory inventory, Location holderLoc)
+    {
+        InventoryHolder holder = inventory.getHolder();
+        Lock lock;
+        if (holderLoc == null)
+        {
+            holderLoc = new Location(null, 0, 0, 0);
+        }
+        if (holder instanceof Entity)
+        {
+            lock = this.getLockForEntityUID(((Entity)holder).getUniqueId());
+            ((Entity)holder).getLocation(holderLoc);
+        }
+        else
+        {
+            Location lockLoc;
+            if (holder instanceof BlockState)
+            {
+                lockLoc = ((BlockState)holder).getLocation(holderLoc);
+            }
+            else if (holder instanceof DoubleChest)
+            {
+                lockLoc = ((BlockState)((DoubleChest)holder).getRightSide()).getLocation(holderLoc);
+            }
+            else return null;
+            lock = this.getLockAtLocation(lockLoc);
+        }
+        return lock;
     }
 }

@@ -171,7 +171,7 @@ public class CommandListener implements Listener
                 lock.showInfo(user);
                 break;
             case MODIFY:
-                this.manager.modifyLock(lock, user, triplet.getSecond(), triplet.getThird());
+                this.manager.modifyLock(lock, user, triplet.getSecond());
                 break;
             case REMOVE:
                 this.manager.removeLock(lock, user, false);
@@ -304,7 +304,7 @@ public class CommandListener implements Listener
             lock.showInfo(user);
             break;
         case MODIFY:
-            this.manager.modifyLock(lock, user, triplet.getSecond(), triplet.getThird());
+            this.manager.modifyLock(lock, user, triplet.getSecond());
             break;
         case REMOVE:
             this.manager.removeLock(lock, user, false);

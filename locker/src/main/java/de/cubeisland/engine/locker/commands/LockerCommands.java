@@ -83,13 +83,16 @@ public class LockerCommands extends ContainerCommand
     @Alias(names = "cmodify")
     @Command(names = "modify",
              desc = "adds or removes player from the accesslist",
-                usage = "<players...>",
-    flags = @Flag(longName = "admin", name = "a"), min = 1, max = 1)
+                usage = "<players...>", min = 1, max = 1)
     public void modify(ParameterizedContext context) // global flag to allow a user to access ALL your protections
     {
         String[] explode = StringUtils.explode(",", context.getString(0));
         for (String name : explode)
         {
+            if (name.startsWith("@"))
+            {
+                name = name.substring(1);
+            }
             if (name.startsWith("-"))
             {
                 name = name.substring(1);

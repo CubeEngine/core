@@ -180,7 +180,14 @@ public class Lock
         if (access == null && this.getLockType() == LockType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
-            user.sendTranslated("&cA magical lock prevents you from accessing this inventory!"); // TODO better
+            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&cA magical lock from &2%s&c prevents you from accessing this inventory!", this.getOwner().getName());
+            }
+            else
+            {
+                user.sendTranslated("&cA magical lock prevents you from accessing this inventory!");
+            }
         }
         else // Has access access -> new InventoryGuard
         {
@@ -216,7 +223,14 @@ public class Lock
         if (access == null && this.getLockType() == LockType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
-            user.sendTranslated("&cMagic repelled your attempts to reach this entity!"); // TODO better
+            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&cMagic from &2%s&c repelled your attempts to reach this entity!", this.getOwner().getName());
+            }
+            else
+            {
+                user.sendTranslated("&cMagic repelled your attempts to reach this entity!");
+            }
             return;
         }
         if (LockerPerm.SHOW_OWNER.isAuthorized(user))
@@ -252,17 +266,16 @@ public class Lock
         user.sendTranslated("&cMagic prevents you from breaking this protection!");
     }
 
-    public void handleEntityDamage(Cancellable event, User user)
+    public boolean handleEntityDamage(Cancellable event, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey()))
         {
             user.sendTranslated("&eThe magic surrounding this entity quivers as you hit it!");
+            return true;
         }
-        else
-        {
-            event.setCancelled(true); // private & no access
-            user.sendTranslated("&cMagic repelled your attempts to hurt this entity!");
-        }
+        event.setCancelled(true); // private & no access
+        user.sendTranslated("&cMagic repelled your attempts to hit this entity!");
+        return false;
     }
 
     public void handleEntityDeletion(User user)
