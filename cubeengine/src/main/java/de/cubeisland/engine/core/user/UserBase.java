@@ -1662,8 +1662,6 @@ public class UserBase implements Player
     {
         assert CubeEngine.isMainThread(): "Must be called from the main thread!";
 
-        CubeEngine.getLog().trace("teleport to: [{},{},{}] in chunk [{},{}]", lctn.getBlockX(), lctn.getBlockY(), lctn.getBlockZ(), lctn.getChunk().getX(), lctn.getChunk().getZ());
-
         if (lctn == null)
         {
             return false;
@@ -1675,8 +1673,6 @@ public class UserBase implements Player
     public boolean teleport(Location lctn, TeleportCause tc)
     {
         assert CubeEngine.isMainThread(): "Must be called from the main thread!";
-
-        CubeEngine.getLog().trace("teleport to: [{},{},{}] in chunk [{},{}]", lctn.getBlockX(), lctn.getBlockY(), lctn.getBlockZ(), lctn.getChunk().getX(), lctn.getChunk().getZ());
 
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
