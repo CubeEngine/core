@@ -52,6 +52,7 @@ public enum ProtectionFlags
      */
     DROPTRANSFER("droptransfer", 1 << 6),
     ;
+    // TODO NOTIFY_ACCESS
     public final short flagValue;
     public final String flagname;
 

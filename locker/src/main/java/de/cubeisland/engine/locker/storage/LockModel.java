@@ -17,11 +17,13 @@
  */
 package de.cubeisland.engine.locker.storage;
 
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.UUID;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.StringUtils;
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record10;
@@ -93,6 +95,31 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
             this.uuid = new UUID(this.getEntityUidMost(), this.getEntityUidLeast());
         }
         return this.uuid;
+    }
+
+    /**
+     * Sets a new password for given lock-model
+     *
+     * @param manager
+     * @param pass
+     *
+     * @return fluent interface
+     */
+    protected LockModel createPassword(LockManager manager, String pass)
+    {
+        if (pass != null)
+        {
+            synchronized (manager.messageDigest)
+            {
+                manager.messageDigest.reset();
+                this.setPassword(manager.messageDigest.digest(pass.getBytes()));
+            }
+        }
+        else
+        {
+            this.setPassword(StringUtils.randomString(new SecureRandom(), 4, "0123456789abcdefklmnor").getBytes());
+        }
+        return this;
     }
 
     public void setId(UInteger value) {
