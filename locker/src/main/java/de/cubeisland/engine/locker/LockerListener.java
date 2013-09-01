@@ -86,13 +86,7 @@ public class LockerListener implements Listener
         if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Location location = event.getClickedBlock().getLocation();
-        Lock lock = this.manager.getLockAtLocation(location);
-        if (lock != null && !lock.isValidType())
-        {
-            user.sendTranslated("&eExisting BlockProtection is not valid!");
-            lock.delete(user);
-            return;
-        }
+        Lock lock = this.manager.getLockAtLocation(location, user);
         if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder)
         {
             if (LockerPerm.DENY_CONTAINER.isAuthorized(user))
@@ -101,8 +95,8 @@ public class LockerListener implements Listener
                 event.setCancelled(true);
                 return;
             }
-            if (this.manager.handleAccess(lock, user, null, event)) return;
-            lock.handleInventoryOpen(event, null, user);
+            if (lock == null) return;
+            lock.handleInventoryOpen(event, null, null, user);
         }
         else if (event.getClickedBlock().getState().getData() instanceof Openable)
         {
@@ -112,12 +106,7 @@ public class LockerListener implements Listener
                 event.setCancelled(true);
                 return;
             }
-            if (this.manager.handleAccess(lock, user, location, event))
-            {
-                if (lock == null) return;
-                lock.doorUse(user, location);
-                return;
-            }
+            if (lock == null) return;
             lock.handleBlockDoorUse(event, user, location);
         }
         if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
@@ -137,11 +126,11 @@ public class LockerListener implements Listener
         }
         Lock lock = this.manager.getLockForEntityUID(entity.getUniqueId());
         if (lock == null) return;
-        if (this.manager.handleAccess(lock, user, null, event)) return;
-        if (entity instanceof StorageMinecart || entity instanceof HopperMinecart
-            || (entity.getType() == EntityType.HORSE && entity instanceof InventoryHolder && event.getPlayer().isSneaking()))
+        if (entity instanceof StorageMinecart
+            || entity instanceof HopperMinecart
+            || (entity.getType() == EntityType.HORSE && event.getPlayer().isSneaking()))
         {
-            lock.handleInventoryOpen(event, null, user);
+            lock.handleInventoryOpen(event, null, null, user);
         }
         else
         {
@@ -155,12 +144,9 @@ public class LockerListener implements Listener
         if (!(event.getPlayer() instanceof Player)) return;
         Location holderLoc = new Location(null, 0,0,0);
         Lock lock = this.manager.getLockOfInventory(event.getInventory(), holderLoc);
-        if (lock != null)
-        {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            if (this.manager.handleAccess(lock, user, holderLoc, event)) return;
-            lock.handleInventoryOpen(event, event.getInventory(), user);
-        }
+        if (lock == null) return;
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        lock.handleInventoryOpen(event, event.getInventory(), holderLoc, user);
     }
 
     public void onEntityDamageEntity(EntityDamageByEntityEvent event)
@@ -269,10 +255,10 @@ public class LockerListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType()) // bindable chest
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Lock lock = this.manager.getLockAtLocation(relativeLoc);
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc, user, false);
                     if (lock != null)
                     {
-                        if (!lock.isValidType())
+                        if (!lock.validateTypeAt(relativeLoc))
                         {
                             user.sendTranslated("&eNearby BlockProtection is not valid!");
                             lock.delete(user);
@@ -301,10 +287,10 @@ public class LockerListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType())
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Lock lock = this.manager.getLockAtLocation(relativeLoc);
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc, null, false);
                     if (lock != null)
                     {
-                        if (!lock.isValidType())
+                        if (!lock.validateTypeAt(relativeLoc))
                         {
                             user.sendTranslated("&eNearby BlockProtection is not valid!");
                             lock.delete(user);
@@ -357,18 +343,13 @@ public class LockerListener implements Listener
     {
         if (!this.module.getConfig().protectFromRedstone) return;
         Block block = event.getBlock();
-        Lock lock = this.manager.getLockAtLocation(block.getLocation());
+        Lock lock = this.manager.getLockAtLocation(block.getLocation(), null);
         if (lock != null)
         {
-            if (lock.isValidType())
+            if (lock.hasFlag(BLOCK_REDSTONE))
             {
-                if (lock.hasFlag(BLOCK_REDSTONE))
-                {
-                    event.setNewCurrent(0);
-                }
-                return;
+                event.setNewCurrent(0);
             }
-            lock.delete(null);
         }
     }
 
@@ -379,27 +360,18 @@ public class LockerListener implements Listener
         Location location = event.getBlock().getLocation();
         for (Block block : event.getBlocks())
         {
-            Lock lock = this.manager.getLockAtLocation(block.getLocation(location));
+            Lock lock = this.manager.getLockAtLocation(block.getLocation(location), null);
             if (lock != null)
-            {
-                if (lock.isValidType())
-                {
-                    event.setCancelled(true);
-                    return;
-                }
-                lock.delete(null);
-            }
-        }
-        Lock lock = this.manager.getLockAtLocation(location.getBlock().getRelative(event.getDirection())
-                                                           .getLocation(location));
-        if (lock != null)
-        {
-            if (lock.isValidType())
             {
                 event.setCancelled(true);
                 return;
             }
-            lock.delete(null);
+        }
+        Lock lock = this.manager.getLockAtLocation(location.getBlock().getRelative(event.getDirection()).getLocation(location), null);
+        if (lock != null)
+        {
+            event.setCancelled(true);
+            return;
         }
     }
 
@@ -407,15 +379,11 @@ public class LockerListener implements Listener
     public void onBlockPistonRetract(BlockPistonRetractEvent event)
     {
         if (!this.module.getConfig().protectFromPistonMove) return;
-        Lock lock = this.manager.getLockAtLocation(event.getRetractLocation());
+        Lock lock = this.manager.getLockAtLocation(event.getRetractLocation(), null);
         if (lock != null)
         {
-            if (lock.isValidType())
-            {
-                event.setCancelled(true);
-                return;
-            }
-            lock.delete(null);
+            event.setCancelled(true);
+            return;
         }
     }
 
@@ -424,38 +392,22 @@ public class LockerListener implements Listener
     {
         // TODO hanging Entities that could be protected
         if (!this.module.getConfig().protectFromBlockBreak) return;
-        Lock lock = this.manager.getLockAtLocation(event.getBlock().getLocation());
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        Lock lock = this.manager.getLockAtLocation(event.getBlock().getLocation(), user);
         if (lock != null)
         {
-            if (lock.isValidType())
-            {
-                lock.handleBlockBreak(event, user);
-            }
-            else
-            {
-                user.sendTranslated("&eExisting BlockProtection is not valid!");
-                lock.delete(user);
-            }
+            lock.handleBlockBreak(event, user);
         }
         else
         {
             Location location = new Location(null,0,0,0);
             for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
             {
-                lock = this.manager.getLockAtLocation(block.getLocation(location));
+                lock = this.manager.getLockAtLocation(block.getLocation(location), user);
                 if (lock != null)
                 {
-                    if (lock.isValidType())
-                    {
-                        lock.handleBlockBreak(event, user);
-                        return;
-                    }
-                    else
-                    {
-                        user.sendTranslated("&eExisting BlockProtection is not valid!");
-                        lock.delete(user);
-                    }
+                    lock.handleBlockBreak(event, user);
+                    return;
                 }
             }
         }
@@ -468,15 +420,10 @@ public class LockerListener implements Listener
         Location location = new Location(null,0,0,0);
         for (Block block : event.blockList())
         {
-            Lock lock = this.manager.getLockAtLocation(block.getLocation(location));
+            Lock lock = this.manager.getLockAtLocation(block.getLocation(location), null);
             if (lock != null)
             {
-                if (lock.isValidType())
-                {
-                    event.setCancelled(true);
-                    return;
-                }
-                lock.delete(null);
+                event.setCancelled(true);
             }
         }
     }
@@ -486,27 +433,19 @@ public class LockerListener implements Listener
     {
         if (!this.module.getConfig().protectBlockFromFire) return;
         Location location = event.getBlock().getLocation();
-        Lock lock = this.manager.getLockAtLocation(location);
+        Lock lock = this.manager.getLockAtLocation(location, null);
         if (lock != null)
         {
-            if (lock.isValidType())
-            {
-                event.setCancelled(true);
-                return;
-            }
-            lock.delete(null);
+            event.setCancelled(true);
+            return;
         }
         for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
         {
-            lock = this.manager.getLockAtLocation(block.getLocation(location));
+            lock = this.manager.getLockAtLocation(block.getLocation(location), null);
             if (lock != null)
             {
-                if (lock.isValidType())
-                {
-                    event.setCancelled(true);
-                    return;
-                }
-                lock.delete(null);
+                event.setCancelled(true);
+                return;
             }
         }
     }
@@ -540,15 +479,10 @@ public class LockerListener implements Listener
     {
         if (this.module.getConfig().protectBlocksFromWaterLava && BlockUtil.isNonFluidProofBlock(event.getToBlock().getType()))
         {
-            Lock lock = this.manager.getLockAtLocation(event.getToBlock().getLocation());
+            Lock lock = this.manager.getLockAtLocation(event.getToBlock().getLocation(), null);
             if (lock != null)
             {
-                if (lock.isValidType())
-                {
-                    event.setCancelled(true);
-                    return;
-                }
-                lock.delete(null);
+                event.setCancelled(true);
             }
         }
     }

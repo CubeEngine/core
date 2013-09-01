@@ -80,11 +80,13 @@ public class LockerCommands extends ContainerCommand
         context.sendTranslated("&aRightclick to unlock a password protected chest!");
     }
 
+    // TODO modify global access
+
     @Alias(names = "cmodify")
     @Command(names = "modify",
              desc = "adds or removes player from the accesslist",
                 usage = "<players...>", min = 1, max = 1)
-    public void modify(ParameterizedContext context) // global flag to allow a user to access ALL your protections
+    public void modify(ParameterizedContext context)
     {
         String[] explode = StringUtils.explode(",", context.getString(0));
         for (String name : explode)

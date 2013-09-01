@@ -62,7 +62,7 @@ public class LockerConfig extends YamlConfiguration
     @Option("settings.protect.blocks.from-rightclick")
     public boolean protectBlockFromRClick = true;
 
-    @Option("settings.protect.blocks.entity-rightclick")
+    @Option("settings.protect.entity.from-rightclick")
     public boolean protectEntityFromRClick = true;
 
     @Option("settings.protect.blocks.from-break")
@@ -76,7 +76,7 @@ public class LockerConfig extends YamlConfiguration
 
     @Comment("Protection from Hoppers can potentially cause lag.\n" +
                  "Set to true if you are experiencing lag because of protection from hoppers")
-    @Option("settings.protect.disable-hopper-protection")
+    @Option("settings.disable-hopper-protection")
     public boolean noProtectFromHopper = false;
 
     @Option("settings.protect.only-when-online")

@@ -62,6 +62,7 @@ public class Locker extends Module
     {
         return this.config;
     }
+    // TODO handle unloading & garbage collection e.g. when entities got removed by WE
 
     /*
     Features:
