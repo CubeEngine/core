@@ -211,6 +211,17 @@ public class CommandListener implements Listener
                     }
                 }
                 break;
+            case GIVE:
+                if (!lock.isOwner(user))
+                {
+                    user.sendTranslated("&cThis is not your protection!");
+                }
+                else
+                {
+                    User newOwner = this.module.getCore().getUserManager().getExactUser(triplet.getSecond());
+                    lock.setOwner(newOwner);
+                    user.sendTranslated("&2%s&e is now the owner of this protection.", newOwner.getName());
+                }
             }
             this.cmdUsed(user);
             event.setCancelled(true);
@@ -345,6 +356,17 @@ public class CommandListener implements Listener
                 }
             }
             break;
+        case GIVE:
+            if (!lock.isOwner(user))
+            {
+                user.sendTranslated("&cThis is not your protection!");
+            }
+            else
+            {
+                User newOwner = this.module.getCore().getUserManager().getExactUser(triplet.getSecond());
+                lock.setOwner(newOwner);
+                user.sendTranslated("&2%s&e is now the owner of this protection.", newOwner.getName());
+            }
         }
         this.cmdUsed(user);
         event.setCancelled(true);
@@ -362,8 +384,8 @@ public class CommandListener implements Listener
         REMOVE,
         UNLOCK,
         INVALIDATE_KEYS,
-        KEYS
-        ;
+        KEYS,
+        GIVE;
 
         private CommandType(LockType lockType)
         {

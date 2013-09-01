@@ -932,4 +932,10 @@ public class Lock
         }
         return this.isValidType;
     }
+
+    public void setOwner(User owner)
+    {
+        this.model.setOwnerId(owner.getEntity().getKey());
+        this.model.update();
+    }
 }

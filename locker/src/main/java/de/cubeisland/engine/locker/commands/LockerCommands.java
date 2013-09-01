@@ -33,11 +33,13 @@ import de.cubeisland.engine.core.util.StringUtils;
 
 public class LockerCommands extends ContainerCommand
 {
+    private Locker module;
     LockManager manager;
 
     public LockerCommands(Locker module, LockManager manager)
     {
         super(module, "locker", "Locker commands", Arrays.asList("l"));
+        this.module = module;
         this.manager = manager;
     }
 
@@ -110,9 +112,17 @@ public class LockerCommands extends ContainerCommand
         context.sendTranslated("&aRightclick a protection to modify it!");
     }
 
-    public void cGive(ParameterizedContext context)
+    @Command(desc = "gives a protection to someone else",
+    usage = "<player>", max = 1)
+    public void give(ParameterizedContext context)
     {
-        // TODO
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
+            return;
+        }
+        this.manager.commandListener.setCommandType(context.getSender(), CommandType.GIVE, context.getString(0));
     }
 
     // TODO masterKeys / multiKeys
@@ -124,7 +134,11 @@ public class LockerCommands extends ContainerCommand
              flags = @Flag(longName = "invalidate", name = "i"))
     public void key(ParameterizedContext context)
     {
-        // TODO check configuration if this is enabled
+        if (!this.module.getConfig().allowKeyBooks)
+        {
+            context.sendTranslated("&cKeyBooks are deactivated!");
+            return;
+        }
         if (context.hasFlag("i"))
         {
             this.manager.commandListener.setCommandType(context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));
@@ -137,9 +151,13 @@ public class LockerCommands extends ContainerCommand
         }
     }
 
-    // TODO subcmd for flags
+    public void flag(ParameterizedContext context)
+    {
+        // TODO flag command /w tab-completion for the possible flags
+
+    }
+
     // TODO subcmd for droptransfer
-    // TODO subcmd for admin stuff
 
     public static boolean isNotUser(CommandSender sender)
     {

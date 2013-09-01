@@ -83,15 +83,15 @@ public class EntityLockerConfiguration
             if (object.autoProtect)
             {
                 config.setNode(StringNode.of("auto-protect"), StringNode.of(object.autoProtectType.name()));
-                if (object.defaultFlags != null && !object.defaultFlags.isEmpty())
+            }
+            if (object.defaultFlags != null && !object.defaultFlags.isEmpty())
+            {
+                ListNode flags = ListNode.emptyList();
+                for (ProtectionFlags defaultFlag : object.defaultFlags)
                 {
-                    ListNode flags = ListNode.emptyList();
-                    for (ProtectionFlags defaultFlag : object.defaultFlags)
-                    {
-                        flags.addNode(StringNode.of(defaultFlag.name()));
-                    }
-                    config.setNode(StringNode.of("default-flags"), flags);
+                    flags.addNode(StringNode.of(defaultFlag.name()));
                 }
+                config.setNode(StringNode.of("default-flags"), flags);
             }
             if (config.isEmpty())
             {

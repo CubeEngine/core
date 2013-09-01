@@ -30,6 +30,8 @@ import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 
 import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
+import static de.cubeisland.engine.locker.storage.ProtectionFlags.AUTOCLOSE;
+import static de.cubeisland.engine.locker.storage.ProtectionFlags.BLOCK_REDSTONE;
 
 public class LockerConfig extends YamlConfiguration
 {
@@ -126,10 +128,10 @@ public class LockerConfig extends YamlConfiguration
             blockprotections.add(new BlockLockerConfiguration(Material.DISPENSER));
             blockprotections.add(new BlockLockerConfiguration(Material.SIGN_POST));
             blockprotections.add(new BlockLockerConfiguration(Material.WALL_SIGN));
-            blockprotections.add(new BlockLockerConfiguration(Material.WOODEN_DOOR));
+            blockprotections.add(new BlockLockerConfiguration(Material.WOODEN_DOOR).defaultFlags(BLOCK_REDSTONE, AUTOCLOSE));
             blockprotections.add(new BlockLockerConfiguration(Material.IRON_DOOR_BLOCK));
-            blockprotections.add(new BlockLockerConfiguration(Material.TRAP_DOOR));
-            blockprotections.add(new BlockLockerConfiguration(Material.FENCE_GATE));
+            blockprotections.add(new BlockLockerConfiguration(Material.TRAP_DOOR).defaultFlags(BLOCK_REDSTONE, AUTOCLOSE));
+            blockprotections.add(new BlockLockerConfiguration(Material.FENCE_GATE).defaultFlags(AUTOCLOSE));
         }
         if (protEntityEnable && (entityProtections == null || entityProtections.isEmpty()))
         {
@@ -141,6 +143,7 @@ public class LockerConfig extends YamlConfiguration
         {
             CubeEngine.getCore().getLog().warn("[Locker] Invalid Configuration! Cannot protect only when offline AND only when online");
         }
+        // TODO disallow DROPTRANSFER Flag as default
     }
 }
 

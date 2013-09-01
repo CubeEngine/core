@@ -19,6 +19,7 @@ package de.cubeisland.engine.locker;
 
 import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
 import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityLockerConfigConverter;
+import de.cubeisland.engine.locker.commands.LockerAdminCommands;
 import de.cubeisland.engine.locker.commands.LockerCommands;
 import de.cubeisland.engine.locker.commands.LockerCreateCommands;
 import de.cubeisland.engine.locker.storage.LockManager;
@@ -46,8 +47,8 @@ public class Locker extends Module
         manager = new LockManager(this);
         LockerCommands mainCmd = new LockerCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
-        LockerCreateCommands createCmds = new LockerCreateCommands(this, manager);
-        this.getCore().getCommandManager().registerCommand(createCmds, "locker");
+        this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
+        this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
         new LockerPerm(this, mainCmd);
         new LockerListener(this, manager);
     }
@@ -66,32 +67,16 @@ public class Locker extends Module
 
     /*
     Features:
-      //"admin-access" allowing /cmodify prepend @ tp playername
-      /cgive transfer ownership of a protection (you will loose acess if you are not in access-list)
       hopper protection / minecart/wHopper
-      using a book as a password(key)
-      locking entities: horse in particular
       lock leashknot / or fence from leashing on it
-      donation chest (only allow input) + filter? /cdonation
-      free chest (only allow output) + filter?
       global access list
-    show notice if someone accessed your protected chest (flag)
-    show if chest is protected by who (perm)
     MagnetContainer: collect Items around (config for min/max/default)
-    Redstone: Block Redstone interaction (doors only?)
-    AutoClose Doors/Fencegate etc.
-    allow Explosion to destroy protection?
     Drop Transfer: Dropped items are teleported into selected chest
       /droptransfer select
       /droptransfer on
       /droptransfer off
       /droptransfer status
     lock beacon effects?
-    purge protections:
-     per user
-     not accessed for a long time
-     in selection
-mass protect e.g. railtracks
      */
 }
 

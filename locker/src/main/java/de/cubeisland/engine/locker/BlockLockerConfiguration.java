@@ -18,6 +18,7 @@
 package de.cubeisland.engine.locker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -72,6 +73,12 @@ public class BlockLockerConfiguration
         return this;
     }
 
+    public BlockLockerConfiguration defaultFlags(ProtectionFlags... flags)
+    {
+        this.defaultFlags = Arrays.asList(flags);
+        return this;
+    }
+
     public boolean isType(Material type)
     {
         return this.material.equals(type);
@@ -91,15 +98,15 @@ public class BlockLockerConfiguration
             if (object.autoProtect)
             {
                 config.setNode(StringNode.of("auto-protect"), StringNode.of(object.autoProtectType.name()));
-                if (object.defaultFlags != null && !object.defaultFlags.isEmpty())
+            }
+            if (object.defaultFlags != null && !object.defaultFlags.isEmpty())
+            {
+                ListNode flags = ListNode.emptyList();
+                for (ProtectionFlags defaultFlag : object.defaultFlags)
                 {
-                    ListNode flags = ListNode.emptyList();
-                    for (ProtectionFlags defaultFlag : object.defaultFlags)
-                    {
-                        flags.addNode(StringNode.of(defaultFlag.name()));
-                    }
-                    config.setNode(StringNode.of("default-flags"), flags);
+                    flags.addNode(StringNode.of(defaultFlag.name()));
                 }
+                config.setNode(StringNode.of("default-flags"), flags);
             }
             if (config.isEmpty())
             {
