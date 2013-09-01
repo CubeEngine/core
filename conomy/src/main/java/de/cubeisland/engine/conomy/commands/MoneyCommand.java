@@ -170,6 +170,11 @@ public class MoneyCommand extends ContainerCommand
             context.sendTranslated("&cCould not parse amount!");
             return;
         }
+        if (amount < 0)
+        {
+            context.sendTranslated("&cWhat are you trying there?");
+            return;
+        }
         String format = manager.format(amount);
         User sender;
         boolean asSomeOneElse = false;
