@@ -188,7 +188,7 @@ public class BukkitModuleManager extends BaseModuleManager
             consoleAppender.setLogger(((BukkitCore)CubeEngine.getCore()).getLogger());
             PatternLayout consoleLayout = new PatternLayout();
             consoleLayout.setContext(logger.getLoggerContext());
-            consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)");
+            consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)\n"); // The trailing \n is kind of a workaround, have a look in JULAppender.java:83
             consoleAppender.setLayout(consoleLayout);
             ThresholdFilter consoleFilter = new ThresholdFilter();
             consoleFilter.setLevel(this.core.getConfiguration().loggingConsoleLevel.toString());

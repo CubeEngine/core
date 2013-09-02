@@ -79,14 +79,14 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
             level = LogBackLevel.info;
         }
 
-        if (event.getThrowableProxy() != null)
+        // The PatternFormat have to have a newline at the end to give a newline to the exceptions, but we don't want an
+        // extra newline if the exception isn't there.
+        String message = layout.doLayout(event);
+        if (message.endsWith("\n"))
         {
-            this.logger.log(level, layout.doLayout(event), event.getThrowableProxy());
+            message = message.substring(0,message.length()-1);
         }
-        else
-        {
-            this.logger.log(level, layout.doLayout(event), event.getArgumentArray());
-        }
+        this.logger.log(level, message, event.getArgumentArray());
     }
 
     public void setLayout(Layout<ILoggingEvent> layout)

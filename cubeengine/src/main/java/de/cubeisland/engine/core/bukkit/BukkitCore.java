@@ -210,7 +210,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         consoleAppender.setLogger(this.getLogger());
         PatternLayout consoleLayout = new PatternLayout();
         consoleLayout.setContext(parentLogger.getLoggerContext());
-        consoleLayout.setPattern("%color(%msg)");
+        consoleLayout.setPattern("%color(%msg)\n");// The trailing \n is kind of a workaround, have a look in JULAppender.java:83
         consoleAppender.setLayout(consoleLayout);
         parentLogger.addAppender(consoleAppender);
         consoleLayout.start();
