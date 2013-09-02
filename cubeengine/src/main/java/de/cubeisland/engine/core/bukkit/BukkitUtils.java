@@ -132,7 +132,7 @@ public class BukkitUtils
     private static Filter filter = null;
     private static CommandLogFilter commandFilter = null;
 
-    static void disableCommandLogging()
+    public static void disableCommandLogging()
     {
         if (commandFilter == null)
         {

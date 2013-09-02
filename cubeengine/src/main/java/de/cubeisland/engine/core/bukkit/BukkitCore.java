@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -41,14 +40,6 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.filter.ThresholdFilter;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -69,8 +60,9 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logger.ColorConverter;
-import de.cubeisland.engine.core.logger.JULAppender;
+import de.cubeisland.engine.core.logger.logback.LogBackLoggerFactory;
+import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logger.wrapper.LoggerFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -87,11 +79,9 @@ import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
-import static java.util.logging.Level.WARNING;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -122,9 +112,9 @@ public final class BukkitCore extends JavaPlugin implements Core
     //endregion
 
     private List<Runnable> initHooks;
-    private LoggerContext loggerContext;
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
+    private LoggerFactory loggerFactory;
 
     @Override
     public void onLoad()
@@ -179,47 +169,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
-        this.loggerContext = (LoggerContext)LoggerFactory.getILoggerFactory();
-        this.loggerContext.start();
+        this.loggerFactory = new LogBackLoggerFactory(this);
 
-        try
-        {
-            File logbackXML = new File(this.getDataFolder(), "logback.xml");
-            JoranConfigurator logbackConfigurator = new JoranConfigurator();
-            logbackConfigurator.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
-            ((LoggerContext)LoggerFactory.getILoggerFactory()).reset();
-            if (logbackXML.exists())
-            {
-                logbackConfigurator.doConfigure(logbackXML.getAbsolutePath());
-            }
-            else
-            {
-                logbackConfigurator.doConfigure(new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true));
-            }
-        }
-        catch (JoranException e)
-        {
-            this.getLogger().log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e
-                .getLocalizedMessage(), e);
-        }
-        // Configure the logger
-        Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
-        JULAppender consoleAppender = new JULAppender();
-        consoleAppender.setContext(parentLogger.getLoggerContext());
-        consoleAppender.setName("cubeengine-console");
-        consoleAppender.setLogger(this.getLogger());
-        PatternLayout consoleLayout = new PatternLayout();
-        consoleLayout.setContext(parentLogger.getLoggerContext());
-        consoleLayout.setPattern("%color(%msg)\n");// The trailing \n is kind of a workaround, have a look in JULAppender.java:83
-        consoleAppender.setLayout(consoleLayout);
-        parentLogger.addAppender(consoleAppender);
-        consoleLayout.start();
-        consoleAppender.start();
-
-        this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
-        this.logger.setLevel(Level.DEBUG);
-        ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
+        this.logger = loggerFactory.createCoreLogger(this.getLogger(), this.getDataFolder());
 
         this.fileManager.clearTempDir();
 
@@ -230,24 +182,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
 
 
-        parentLogger.setLevel(Level.ALL);
-        this.logger.setLevel(parentLogger.getLevel());
-        // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
-        ThresholdFilter consoleFilter = new ThresholdFilter();
-        consoleFilter.setLevel(this.config.loggingConsoleLevel.toString());
-        parentLogger.getAppender("cubeengine-console").addFilter(consoleFilter);
-        consoleFilter.start();
-        // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
-        ThresholdFilter fileFilter = new ThresholdFilter();
-        fileFilter.setLevel(this.config.loggingFileLevel.toString());
-        this.logger.getAppender("core-file").addFilter(fileFilter);
-        fileFilter.start();
-
-        if (!this.config.logCommands)
-        {
-            BukkitUtils.disableCommandLogging();
-            ((Logger)LoggerFactory.getLogger("cubeengine.commands")).setAdditive(false);
-        }
+        ((LogBackLoggerFactory)this.loggerFactory).configureLoggers(this.config);
 
         if (this.config.catchSystemSignals)
         {
@@ -487,9 +422,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.fileManager.clean();
         }
 
-        if (this.loggerContext != null)
+        if (this.loggerFactory != null)
         {
-            this.loggerContext.stop();
+            ((LogBackLoggerFactory)this.loggerFactory).stop();
         }
 
         if (this.fileManager != null)
@@ -664,12 +599,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public boolean isDebug()
-    {
-        return Level.DEBUG.isGreaterOrEqual(this.logger.getLevel());
-    }
-
-    @Override
     public ApiServer getApiServer()
     {
         return this.apiServer;
@@ -708,6 +637,11 @@ public final class BukkitCore extends JavaPlugin implements Core
     public ServiceManager getServiceManager()
     {
         return this.serviceManager;
+    }
+
+    public LoggerFactory getLoggerFactory()
+    {
+        return loggerFactory;
     }
     //endregion
 }

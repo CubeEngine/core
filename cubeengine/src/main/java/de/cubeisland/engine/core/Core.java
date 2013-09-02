@@ -36,8 +36,6 @@ import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
 
-import org.slf4j.Logger;
-
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
  * The core provides essential APIs like the I18n API and all the managers like
@@ -101,7 +99,7 @@ public interface Core
      *
      * @return the engine logger
      */
-    Logger getLog();
+    de.cubeisland.engine.core.logger.wrapper.Logger getLog();
 
     /**
      * This method returns the module manager
@@ -137,13 +135,6 @@ public interface Core
      * @return the TaskManager
      */
     TaskManager getTaskManager();
-
-    /**
-     * This method returns the DebugMode
-     *
-     * @return the debugMode
-     */
-    boolean isDebug();
 
     /**
      * This method returns the web API server

@@ -51,7 +51,7 @@ public class BukkitFileManager extends FileManager
     {
         if (this.core.getConfiguration().loggingArchiveLogs)
         {
-            String dateString = LOG_DIR_DATE_FORMAT.format(new Date(core.getLog().getLoggerContext().getBirthTime()));
+            String dateString = LOG_DIR_DATE_FORMAT.format(new Date(core.getLoggerFactory().getBirthTime()));
             final Path base = Paths.get(System.getProperty("cubeengine.logger.default-path"));
             final Path folderPath = base.resolve(dateString);
             final Path zipPath = base.resolve(dateString + ".zip");
