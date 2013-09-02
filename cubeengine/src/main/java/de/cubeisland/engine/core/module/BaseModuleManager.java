@@ -42,6 +42,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
+import de.cubeisland.engine.core.logger.logback.LogbackLogger;
+import de.cubeisland.engine.core.logger.wrapper.Logger;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -55,7 +57,6 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
@@ -73,11 +74,11 @@ public abstract class BaseModuleManager implements ModuleManager
 
     private final Map<String, String> serviceProviders;
 
-    public BaseModuleManager(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
+    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
         this.logger = core.getLog();
-        this.loader = new ModuleLoader(core, parentClassLoader, loggerFactory);
+        this.loader = new ModuleLoader(core, parentClassLoader);
         this.modules = new LinkedHashMap<>();
         this.moduleInfos = new THashMap<>();
         this.classMap = new THashMap<>();
@@ -461,7 +462,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
-        ((ch.qos.logback.classic.Logger)module.getLog()).detachAndStopAllAppenders();
+        ((LogbackLogger)module.getLog()).getOriginalLogger().detachAndStopAllAppenders();
 
         this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS) + "ms - null fields");
         // null all the fields referencing this module

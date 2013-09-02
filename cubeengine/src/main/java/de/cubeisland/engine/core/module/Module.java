@@ -23,11 +23,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.logger.wrapper.Logger;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
-import org.slf4j.Logger;
 
 
 /**

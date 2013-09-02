@@ -44,8 +44,6 @@ import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.ModuleLoggerFactory;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BukkitModuleManager extends BaseModuleManager
 {
@@ -54,7 +52,7 @@ public class BukkitModuleManager extends BaseModuleManager
 
     public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
     {
-        super(core, parentClassLoader, new BukkitModuleLoggerFactory(core));
+        super(core, parentClassLoader);
         this.pluginManager = core.getServer().getPluginManager();
         this.core = core;
     }
@@ -151,90 +149,5 @@ public class BukkitModuleManager extends BaseModuleManager
             pluginClassMap.put(plugin.getClass(), plugin);
         }
         return pluginClassMap;
-    }
-
-    public static class BukkitModuleLoggerFactory implements ModuleLoggerFactory
-    {
-
-        private final Map<ModuleInfo, Logger> loggers;
-        private final BukkitCore core;
-
-        public BukkitModuleLoggerFactory(BukkitCore core)
-        {
-            this.core = core;
-            this.loggers = new HashMap<>();
-        }
-
-        @Override
-        public Logger getLogger(ModuleInfo module)
-        {
-            if (this.loggers.containsKey(module))
-            {
-                return this.loggers.get(module);
-            }
-            return createLogger(module);
-        }
-
-        private Logger createLogger(ModuleInfo module)
-        {
-            ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)LoggerFactory
-                .getLogger("cubeengine." + module.getName().toLowerCase());
-            logger.setLevel(Level.ALL);
-            //The module has it's own logger
-            logger.setAdditive(false);
-            // Setup the module's console logger
-            JULAppender consoleAppender = new JULAppender();
-            consoleAppender.setContext(logger.getLoggerContext());
-            consoleAppender.setLogger(((BukkitCore)CubeEngine.getCore()).getLogger());
-            PatternLayout consoleLayout = new PatternLayout();
-            consoleLayout.setContext(logger.getLoggerContext());
-            consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)\n"); // The trailing \n is kind of a workaround, have a look in JULAppender.java:83
-            consoleAppender.setLayout(consoleLayout);
-            ThresholdFilter consoleFilter = new ThresholdFilter();
-            consoleFilter.setLevel(this.core.getConfiguration().loggingConsoleLevel.toString());
-            consoleAppender.addFilter(consoleFilter);
-            consoleFilter.start();
-
-            // Setup the module's file logger
-            String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
-                new SimpleDateFormat("yyyy-MM-dd--HHmm").format(new Date(logger.getLoggerContext().getBirthTime()))
-                + "/" + module.getName().toLowerCase();
-            RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<>();
-            fileAppender.setContext(logger.getLoggerContext());
-            fileAppender.setFile(logFile + ".log");
-            PatternLayoutEncoder fileEnconder = new PatternLayoutEncoder();
-            fileEnconder.setContext(logger.getLoggerContext());
-            fileEnconder.setPattern("%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n");
-            fileAppender.setEncoder(fileEnconder);
-            FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
-            rollingPolicy.setContext(logger.getLoggerContext());
-            rollingPolicy.setParent(fileAppender);
-            rollingPolicy.setMinIndex(0);
-            rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logger.max-file-count")));
-            rollingPolicy.setFileNamePattern(logFile + ".%i.log");
-            fileAppender.setRollingPolicy(rollingPolicy);
-            SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
-            triggeringPolicy.setContext(logger.getLoggerContext());
-            triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
-            fileAppender.setTriggeringPolicy(triggeringPolicy);
-            ThresholdFilter fileFilter = new ThresholdFilter();
-            fileFilter.setLevel(this.core.getConfiguration().loggingFileLevel.toString());
-            fileAppender.addFilter(fileFilter);
-            fileFilter.start();
-
-            // Add the appenders to the logger and start everything
-            logger.addAppender(consoleAppender);
-            logger.addAppender(fileAppender);
-            logger.addAppender(((ch.qos.logback.classic.Logger)LoggerFactory.getLogger("cubeengine"))
-                                   .getAppender("exceptions-file"));
-            rollingPolicy.start();
-            triggeringPolicy.start();
-            fileAppender.start();
-            fileEnconder.start();
-            consoleLayout.start();
-            consoleAppender.start();
-
-            return logger;
-        }
     }
 }

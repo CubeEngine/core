@@ -34,12 +34,11 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.engine.core.logger.wrapper.Logger;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BukkitCommandManager implements CommandManager
 {
@@ -59,7 +58,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandBackend = commandBackend;
         this.commandFactories = new THashMap<>();
 
-        this.commandLogger = LoggerFactory.getLogger("cubeengine.commands");
+        this.commandLogger = core.getLoggerFactory().createCommandLogger();
         // TODO
         this.confirmManager = new ConfirmManager(this, core);
     }

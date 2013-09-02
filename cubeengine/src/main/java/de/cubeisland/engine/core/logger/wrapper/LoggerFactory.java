@@ -40,4 +40,6 @@ public interface LoggerFactory
     public Logger createModuleLogger(ModuleInfo module);
 
     long getBirthTime();
+
+    public Logger createCommandLogger();
 }

@@ -28,6 +28,8 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;
 import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.logger.logback.LogbackLogger;
+import de.cubeisland.engine.core.logger.wrapper.Logger;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -40,7 +42,6 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -51,7 +52,7 @@ public class TestCore implements Core
 {
     private final Version version = Version.ONE;
     private final String sourceVersion = "master-aaaaaaaa";
-    private final Logger logger = LoggerFactory.getLogger("");
+    private final Logger logger = new LogbackLogger((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(""));
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
@@ -97,7 +98,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public org.slf4j.Logger getLog()
+    public Logger getLog()
     {
         return this.logger;
     }
@@ -163,12 +164,6 @@ public class TestCore implements Core
     public UserManager getUserManager()
     {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean isDebug()
-    {
-        return false;
     }
 
     @Override

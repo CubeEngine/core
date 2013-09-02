@@ -19,13 +19,14 @@ package de.cubeisland.engine.core.logger.logback;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.core.spi.AppenderAttachable;
 
 public class LogbackLogger extends de.cubeisland.engine.core.logger.wrapper.Logger
 {
 
     private final Logger logger;
 
-    protected LogbackLogger(Logger logger)
+    public LogbackLogger(Logger logger)
     {
         this.logger = logger;
     }
@@ -91,5 +92,10 @@ public class LogbackLogger extends de.cubeisland.engine.core.logger.wrapper.Logg
     public void error(Throwable throwable, String message, Object... args)
     {
         this.log(Level.ERROR, throwable, message, args);
+    }
+
+    public Logger getOriginalLogger()
+    {
+        return this.logger;
     }
 }

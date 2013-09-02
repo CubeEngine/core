@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.logger.wrapper.Logger;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 
@@ -45,7 +46,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang.Validate;
-import org.slf4j.Logger;
 
 /**
  * This class represents the API server and provides methods to configure and
