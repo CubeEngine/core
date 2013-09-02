@@ -17,11 +17,16 @@
  */
 package de.cubeisland.engine.locker.storage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Flags that can be given to a protection.
  * <p>Flags may not be supported by all {@link ProtectedType}
  */
-public enum ProtectionFlags
+public enum ProtectionFlag
 {
     /**
      * Ignore Redstone changes to protected block
@@ -51,14 +56,41 @@ public enum ProtectionFlags
      * Enables drop-transfer mode
      */
     DROPTRANSFER("droptransfer", 1 << 6),
+    /**
+     * Notify the owner when accessing
+     */
+    NOTIFY_ACCESS("notify", 1 << 7)
     ;
-    // TODO NOTIFY_ACCESS
     public final short flagValue;
     public final String flagname;
 
-    private ProtectionFlags(String flagname, int flag)
+    private ProtectionFlag(String flagname, int flag)
     {
         this.flagname = flagname;
         this.flagValue = (short)flag;
+    }
+
+    private static Map<String, ProtectionFlag> flags;
+
+    static
+    {
+        flags = new HashMap<>();
+        for (ProtectionFlag protectionFlag : ProtectionFlag.values())
+        {
+            flags.put(protectionFlag.flagname, protectionFlag);
+        }
+    }
+
+    public static List<String> match(String token, String subToken)
+    {
+        List<String> result = new ArrayList<>();
+        for (String flag : flags.keySet())
+        {
+            if (flag.startsWith(subToken))
+            {
+                result.add(token + flag.replaceFirst(subToken, ""));
+            }
+        }
+        return result;
     }
 }

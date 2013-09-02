@@ -30,8 +30,8 @@ import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 
 import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
-import static de.cubeisland.engine.locker.storage.ProtectionFlags.AUTOCLOSE;
-import static de.cubeisland.engine.locker.storage.ProtectionFlags.BLOCK_REDSTONE;
+import static de.cubeisland.engine.locker.storage.ProtectionFlag.AUTOCLOSE;
+import static de.cubeisland.engine.locker.storage.ProtectionFlag.BLOCK_REDSTONE;
 
 public class LockerConfig extends YamlConfiguration
 {

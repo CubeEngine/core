@@ -35,14 +35,14 @@ import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.convert.ConversionException;
 import de.cubeisland.engine.core.util.convert.Converter;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.locker.storage.ProtectionFlags;
+import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
 public class EntityLockerConfiguration
 {
     protected final ProtectedType protectedType;
     protected boolean autoProtect = false;
     protected LockType autoProtectType = LockType.PRIVATE; // defaults to private
-    protected List<ProtectionFlags> defaultFlags;
+    protected List<ProtectionFlag> defaultFlags;
     private final EntityType entityType;
     private boolean enable = true;
 
@@ -87,7 +87,7 @@ public class EntityLockerConfiguration
             if (object.defaultFlags != null && !object.defaultFlags.isEmpty())
             {
                 ListNode flags = ListNode.emptyList();
-                for (ProtectionFlags defaultFlag : object.defaultFlags)
+                for (ProtectionFlag defaultFlag : object.defaultFlags)
                 {
                     flags.addNode(StringNode.of(defaultFlag.name()));
                 }
@@ -159,7 +159,7 @@ public class EntityLockerConfiguration
                         configuration.defaultFlags = new ArrayList<>();
                         for (Node listedNode : list.getListedNodes())
                         {
-                            ProtectionFlags flag = ProtectionFlags.valueOf(listedNode.unwrap());
+                            ProtectionFlag flag = ProtectionFlag.valueOf(listedNode.unwrap());
                             if (configuration.protectedType.supportedFlags.contains(flag))
                             {
                                 configuration.defaultFlags.add(flag);

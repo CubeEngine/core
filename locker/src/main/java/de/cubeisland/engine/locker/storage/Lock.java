@@ -505,6 +505,7 @@ public class Lock
             {
                 user.sendTranslated("&eThis container is protected by &2%s", this.getOwner().getName());
             }
+            this.notifyUsage(user);
         }
     }
 
@@ -529,6 +530,7 @@ public class Lock
                 user.sendTranslated("&cMagic repelled your attempts to reach this entity!");
             }
         }
+        this.notifyUsage(user);
     }
 
     private void checkLockType()
@@ -630,6 +632,26 @@ public class Lock
         }
     }
 
+    private Map<String, Long> lastNotify;
+
+    public void notifyUsage(User user)
+    {
+        if (this.hasFlag(ProtectionFlag.NOTIFY_ACCESS))
+        {
+            if (lastKeyNotify == null)
+            {
+                this.lastKeyNotify = new HashMap<>();
+            }
+            User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
+            Long last = this.lastKeyNotify.get(owner.getName());
+            if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
+            {
+                this.lastKeyNotify.put(owner.getName(), System.currentTimeMillis());
+                owner.sendTranslated("&2%s&e accessed one of your protections!", user.getName());
+            }
+        }
+    }
+
     public User getOwner()
     {
         return this.manager.module.getCore().getUserManager().getUser(this.model.getOwnerId().longValue());
@@ -640,7 +662,7 @@ public class Lock
         return this.getLockType() == PUBLIC;
     }
 
-    public boolean hasFlag(ProtectionFlags flag)
+    public boolean hasFlag(ProtectionFlag flag)
     {
         return flag.flagValue == (this.model.getFlags() & flag.flagValue);
     }
@@ -667,7 +689,7 @@ public class Lock
 
 
             List<String> flags = new ArrayList<>();
-            for (ProtectionFlags flag : ProtectionFlags.values())
+            for (ProtectionFlag flag : ProtectionFlag.values())
             {
                 if (this.hasFlag(flag))
                 {
@@ -689,7 +711,7 @@ public class Lock
                 user.sendTranslated("&aThe following users do have direct access to this protection");
                 for (AccessListModel listModel : accessors)
                 {
-                    User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getId().longValue());
+                    User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId().longValue());
                     if ((listModel.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN)
                     {
                         user.sendMessage(String.format(ChatFormat.parseFormats("  &7- &2%s&6 [Admin]"), accessor.getName()));
@@ -863,6 +885,7 @@ public class Lock
             {
                 user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
             }
+            this.notifyUsage(user);
         }
     }
 

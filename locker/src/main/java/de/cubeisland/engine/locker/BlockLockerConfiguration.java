@@ -26,7 +26,7 @@ import org.bukkit.Material;
 
 import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.locker.storage.ProtectedType;
-import de.cubeisland.engine.locker.storage.ProtectionFlags;
+import de.cubeisland.engine.locker.storage.ProtectionFlag;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.node.BooleanNode;
 import de.cubeisland.engine.core.config.node.ListNode;
@@ -50,8 +50,8 @@ public class BlockLockerConfiguration
 {
     protected final ProtectedType protectedType;
     protected boolean autoProtect = false;
-    protected LockType autoProtectType = LockType.PRIVATE; // defaults to private
-    protected List<ProtectionFlags> defaultFlags;
+    protected LockType autoProtectType;
+    protected List<ProtectionFlag> defaultFlags;
     private final Material material;
     private boolean enable = true;
 
@@ -73,7 +73,7 @@ public class BlockLockerConfiguration
         return this;
     }
 
-    public BlockLockerConfiguration defaultFlags(ProtectionFlags... flags)
+    public BlockLockerConfiguration defaultFlags(ProtectionFlag... flags)
     {
         this.defaultFlags = Arrays.asList(flags);
         return this;
@@ -102,7 +102,7 @@ public class BlockLockerConfiguration
             if (object.defaultFlags != null && !object.defaultFlags.isEmpty())
             {
                 ListNode flags = ListNode.emptyList();
-                for (ProtectionFlags defaultFlag : object.defaultFlags)
+                for (ProtectionFlag defaultFlag : object.defaultFlags)
                 {
                     flags.addNode(StringNode.of(defaultFlag.name()));
                 }
@@ -174,7 +174,7 @@ public class BlockLockerConfiguration
                         configuration.defaultFlags = new ArrayList<>();
                         for (Node listedNode : list.getListedNodes())
                         {
-                            ProtectionFlags flag = ProtectionFlags.valueOf(listedNode.unwrap());
+                            ProtectionFlag flag = ProtectionFlag.valueOf(listedNode.unwrap());
                             if (configuration.protectedType.supportedFlags.contains(flag))
                             {
                                 configuration.defaultFlags.add(flag);

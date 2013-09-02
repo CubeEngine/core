@@ -215,7 +215,7 @@ public class LockManager implements Listener
                 return null;
             }
             lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
-            if (lock.validateTypeAt(location))
+            if (!lock.validateTypeAt(location))
             {
                 lock.delete(user);
                 if (user != null)
@@ -386,7 +386,10 @@ public class LockManager implements Listener
                 }
             }
         }
-        locations.add(location);
+        if (locations.isEmpty())
+        {
+            locations.add(location);
+        }
         System.out.print(locations.size());
         for (Location loc : locations)
         {

@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 
-import static de.cubeisland.engine.locker.storage.ProtectionFlags.*;
+import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 
 public enum ProtectedType
 {
@@ -44,7 +44,7 @@ public enum ProtectedType
     private static TByteObjectMap<ProtectedType> protectedTypes = new TByteObjectHashMap<>();
 
     public final byte id;
-    public final Collection<ProtectionFlags> supportedFlags;
+    public final Collection<ProtectionFlag> supportedFlags;
 
     static
     {
@@ -54,7 +54,7 @@ public enum ProtectedType
         }
     }
 
-    private ProtectedType(int id, ProtectionFlags... supportedFlags)
+    private ProtectedType(int id, ProtectionFlag... supportedFlags)
     {
         this.supportedFlags = Arrays.asList(supportedFlags);
         this.id = (byte)id;

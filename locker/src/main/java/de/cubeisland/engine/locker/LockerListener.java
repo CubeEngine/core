@@ -64,7 +64,7 @@ import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 
-import static de.cubeisland.engine.locker.storage.ProtectionFlags.*;
+import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 
 public class LockerListener implements Listener
 {

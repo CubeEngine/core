@@ -18,7 +18,10 @@
 package de.cubeisland.engine.locker.commands;
 
 import java.util.Arrays;
+import java.util.List;
 
+import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
 import de.cubeisland.engine.locker.storage.LockManager;
@@ -30,6 +33,7 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
 public class LockerCommands extends ContainerCommand
 {
@@ -151,10 +155,30 @@ public class LockerCommands extends ContainerCommand
         }
     }
 
+    @Command(desc = "Sets or unsets flags",
+             usage = "flag <flags...>",
+             params = {
+                 @Param(names = "set", completer = FlagCompleter.class),
+                 @Param(names = "unSet", completer = FlagCompleter.class),
+             })
     public void flag(ParameterizedContext context)
     {
         // TODO flag command /w tab-completion for the possible flags
 
+    }
+
+    private class FlagCompleter implements Completer
+    {
+        @Override
+        public List<String> complete(CommandSender sender, String token)
+        {
+            String subToken = token;
+            if (subToken.contains(","))
+            {
+                subToken = subToken.substring(subToken.lastIndexOf(",") + 1);
+            }
+            return ProtectionFlag.match(token, subToken);
+        }
     }
 
     // TODO subcmd for droptransfer
@@ -168,6 +192,8 @@ public class LockerCommands extends ContainerCommand
         }
         return false;
     }
+
+
 
     // TODO add buttons to door-protection to open door for x-sec = autoclose time BUT deny redstone so ONLY that button can open the door/doubledoor
 }

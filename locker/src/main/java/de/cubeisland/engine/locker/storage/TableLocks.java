@@ -98,7 +98,7 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
     public final TableField<LockModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
 
     /**
-     * Flags see {@link ProtectionFlags}
+     * Flags see {@link ProtectionFlag}
      */
     public final TableField<LockModel, Short> FLAGS = createField("flags", SQLDataType.SMALLINT, this);
 
