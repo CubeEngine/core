@@ -20,19 +20,19 @@ package de.cubeisland.engine.locker.commands;
 import java.util.Arrays;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.Param;
-import de.cubeisland.engine.locker.Locker;
-import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
-import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.locker.Locker;
+import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
+import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
 public class LockerCommands extends ContainerCommand
@@ -159,15 +159,32 @@ public class LockerCommands extends ContainerCommand
              usage = "flag <flags...>",
              params = {
                  @Param(names = "set", completer = FlagCompleter.class),
-                 @Param(names = "unSet", completer = FlagCompleter.class),
+                 @Param(names = "unset", completer = FlagCompleter.class),
              })
     public void flag(ParameterizedContext context)
     {
-        // TODO flag command /w tab-completion for the possible flags
-
+        if (context.getParams().isEmpty())
+        {
+            context.sendTranslated("&eYou need to define which flags to &6set&a or &6unSet&a!");
+            return;
+        }
+        if (context.hasParam("set") && context.hasParam("unSet"))
+        {
+            context.sendTranslated("&cYou have cannot set and unset flags at the same time!");
+            return;
+        }
+        if (context.hasParam("set"))
+        {
+            this.manager.commandListener.setCommandType(context.getSender(), CommandType.FLAGS_SET, context.getString("set"));
+        }
+        else
+        {
+            this.manager.commandListener.setCommandType(context.getSender(), CommandType.FLAGS_UNSET, context.getString("unset"));
+        }
+        context.sendTranslated("&aRightclick a protection to change its flags!");
     }
 
-    private class FlagCompleter implements Completer
+    public static class FlagCompleter implements Completer
     {
         @Override
         public List<String> complete(CommandSender sender, String token)
@@ -177,7 +194,7 @@ public class LockerCommands extends ContainerCommand
             {
                 subToken = subToken.substring(subToken.lastIndexOf(",") + 1);
             }
-            return ProtectionFlag.match(token, subToken);
+            return ProtectionFlag.getTabCompleteList(token, subToken);
         }
     }
 

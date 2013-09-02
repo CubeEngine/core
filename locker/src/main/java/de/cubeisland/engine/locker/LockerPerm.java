@@ -60,7 +60,9 @@ public class LockerPerm extends PermissionContainer<Locker>
     private static final Permission LOCKER_COMMAND = Permission.createAbstractPermission("command").createAbstractChild("locker");
     public static final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.createAbstractChild("remove").createChild("other");
     public static final Permission CMD_INFO_OTHER = LOCKER_COMMAND.createAbstractChild("info").createChild("other");
+    public static final Permission CMD_KEY_OTHER = LOCKER_COMMAND.createAbstractChild("key").createChild("other");
     public static final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.createAbstractChild("modify").createChild("other");
+    public static final Permission CMD_GIVE_OTHER = LOCKER_COMMAND.createAbstractChild("give").createChild("other");
 
     public static final Permission PROTECT = Permission.createPermission("protect");
     public static final Permission ADMIN = Permission.createPermission("admin"); // TODO sub perms

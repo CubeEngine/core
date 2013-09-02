@@ -18,9 +18,17 @@
 package de.cubeisland.engine.locker.storage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.matcher.Match;
+
+import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
  * Flags that can be given to a protection.
@@ -61,6 +69,8 @@ public enum ProtectionFlag
      */
     NOTIFY_ACCESS("notify", 1 << 7)
     ;
+    public static final short NONE = 0;
+
     public final short flagValue;
     public final String flagname;
 
@@ -77,20 +87,56 @@ public enum ProtectionFlag
         flags = new HashMap<>();
         for (ProtectionFlag protectionFlag : ProtectionFlag.values())
         {
-            flags.put(protectionFlag.flagname, protectionFlag);
+            if (flags.put(protectionFlag.flagname, protectionFlag) != null)
+            {
+                throw new IllegalArgumentException("Duplicate ProtectionFlag!");
+            }
         }
     }
 
-    public static List<String> match(String token, String subToken)
+    public static List<String> getTabCompleteList(String token, String subToken)
     {
-        List<String> result = new ArrayList<>();
+        List<String> previousTokens = Arrays.asList(StringUtils.explode(",", token));
+        List<String> matchedFlags = new ArrayList<>();
         for (String flag : flags.keySet())
         {
-            if (flag.startsWith(subToken))
+            if (startsWithIgnoreCase(flag, subToken))
             {
-                result.add(token + flag.replaceFirst(subToken, ""));
+                matchedFlags.add(flag);
+            }
+        }
+        matchedFlags.removeAll(previousTokens); // do not duplicate!
+        List<String> result = new ArrayList<>();
+        for (String flag : matchedFlags)
+        {
+            result.add(token + flag.replaceFirst(subToken, ""));
+        }
+        return result;
+    }
+
+    public static ProtectionFlag match(String toMatch)
+    {
+        String match = Match.string().matchString(toMatch, flags.keySet());
+        return flags.get(match);
+    }
+
+    public static Set<ProtectionFlag> matchFlags(String param)
+    {
+        HashSet<ProtectionFlag> result = new HashSet<>();
+        if (param == null)
+        {
+            return result;
+        }
+        String[] flags = StringUtils.explode(",", param);
+        for (String flag : flags)
+        {
+            ProtectionFlag match = ProtectionFlag.match(flag);
+            if (match != null)
+            {
+                result.add(match);
             }
         }
         return result;
     }
+
 }

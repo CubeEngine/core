@@ -961,4 +961,15 @@ public class Lock
         this.model.setOwnerId(owner.getEntity().getKey());
         this.model.update();
     }
+
+    public void setFlags(short flags)
+    {
+        this.model.setFlags(flags);
+        this.model.update();
+    }
+
+    public short getFlags()
+    {
+        return this.model.getFlags();
+    }
 }

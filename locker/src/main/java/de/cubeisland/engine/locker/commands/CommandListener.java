@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -31,12 +32,14 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import de.cubeisland.engine.locker.storage.Lock;
-import de.cubeisland.engine.locker.storage.LockManager;
-import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.locker.LockerPerm;
+import de.cubeisland.engine.locker.storage.Lock;
+import de.cubeisland.engine.locker.storage.LockManager;
+import de.cubeisland.engine.locker.storage.LockType;
+import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
 import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
 import static de.cubeisland.engine.locker.commands.LockerCommands.isNotUser;
@@ -56,14 +59,14 @@ public class CommandListener implements Listener
         this.manager = manager;
     }
 
-    public void setCommandType(CommandSender sender, CommandType commandType, String pass, boolean createKeyBook)
+    public void setCommandType(CommandSender sender, CommandType commandType, String s, boolean b)
     {
-        this.setCommandType0(sender, commandType, pass, createKeyBook);
+        this.setCommandType0(sender, commandType, s, b);
     }
 
-    public void setCommandType(CommandSender sender, CommandType commandType, String players)
+    public void setCommandType(CommandSender sender, CommandType commandType, String s)
     {
-        this.setCommandType0(sender, commandType, players, false);
+        this.setCommandType0(sender, commandType, s, false);
     }
 
     private void setCommandType0(CommandSender sender, CommandType commandType, String s, boolean b)
@@ -105,45 +108,12 @@ public class CommandListener implements Listener
             Location location = event.getClickedBlock().getLocation();
             Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
             Lock lock = this.manager.getLockAtLocation(location, user, triplet.getFirst() != INFO);
-            if (triplet.getFirst().isCreator())
+            if (this.handleInteract1(triplet, lock, user, location.getBlock().getState() instanceof InventoryHolder,
+                     !this.manager.canProtect(event.getClickedBlock().getType()), event))
             {
-                if (lock != null)
-                {
-                    user.sendTranslated("&eThis block is already protected!");
-                    this.cmdUsed(user);
-                    event.setCancelled(true);
-                    return;
-                }
-                else
-                {
-                    if (!(location.getBlock().getState() instanceof InventoryHolder))
-                    {
-                        switch (triplet.getFirst())
-                        {
-                            case C_DONATION:
-                            case C_FREE:
-                            case C_GUARDED:
-                                user.sendTranslated("&eYou can only apply guarded, donation and free protections to inventory-holders!");
-                                event.setCancelled(true);
-                                this.cmdUsed(user);
-                                return;
-                        }
-                    }
-                    if (!this.manager.canProtect(event.getClickedBlock().getType()))
-                    {
-                        this.cmdUsed(user);
-                        user.sendTranslated("&cYou cannot protect this!");
-                        return; // do nothing block is not protectable
-                    }
-                }
-            }
-            else if (lock == null)
-            {
-                user.sendTranslated("&6No protection detected here!");
-                event.setCancelled(true);
-                this.cmdUsed(user);
                 return;
             }
+
             switch (triplet.getFirst())
             {
             case C_PRIVATE:
@@ -161,67 +131,9 @@ public class CommandListener implements Listener
             case C_GUARDED:
                 this.manager.createLock(event.getClickedBlock().getType(), location, user, C_GUARDED.lockType, triplet.getSecond(), triplet.getThird());
                 break;
-            case INFO:
-                lock.showInfo(user);
-                break;
-            case MODIFY:
-                lock.modifyLock(user, triplet.getSecond());
-                break;
-            case REMOVE:
-                this.manager.removeLock(lock, user, false);
-                break;
-            case UNLOCK:
-                lock.unlock(user, location, triplet.getSecond());
-                break;
-            case INVALIDATE_KEYS:
-                if (!lock.isOwner(user))
-                {
-                    user.sendTranslated("&cThis is not your protection!");
-                }
-                else if (lock.hasPass())
-                {
-                    user.sendTranslated("&eYou cannot invalidate BookKeys for password protected chests. &aChange the password to invalidate them!");
-                }
-                else
-                {
-                    lock.invalidateKeyBooks();
-                    if (event.getClickedBlock().getState() instanceof InventoryHolder)
-                    {
-                        for (HumanEntity viewer : ((InventoryHolder)event.getClickedBlock().getState()).getInventory().getViewers())
-                        {
-                            viewer.closeInventory();
-                        }
-                    }
-                }
-                break;
-            case KEYS:
-                if (!lock.isOwner(user))
-                {
-                    user.sendTranslated("&cThis is not your protection!");
-                }
-                else
-                {
-                    if (lock.isPublic())
-                    {
-                        user.sendTranslated("&eThis container is public!");
-                    }
-                    else
-                    {
-                        lock.attemptCreatingKeyBook(user, triplet.getThird());
-                    }
-                }
-                break;
-            case GIVE:
-                if (!lock.isOwner(user))
-                {
-                    user.sendTranslated("&cThis is not your protection!");
-                }
-                else
-                {
-                    User newOwner = this.module.getCore().getUserManager().getExactUser(triplet.getSecond());
-                    lock.setOwner(newOwner);
-                    user.sendTranslated("&2%s&e is now the owner of this protection.", newOwner.getName());
-                }
+            default:
+                this.handleInteract2(triplet.getFirst(), lock, user, triplet.getSecond(), triplet.getThird(), location,
+                     event.getClickedBlock().getState() instanceof InventoryHolder ? (InventoryHolder)event.getClickedBlock().getState() : null);
             }
             this.cmdUsed(user);
             event.setCancelled(true);
@@ -236,26 +148,20 @@ public class CommandListener implements Listener
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onRightClickEntity(PlayerInteractEntityEvent event)
+    private boolean handleInteract1(Triplet<CommandType, String, Boolean> triplet, Lock lock, User user, boolean isHolder, boolean canProtect, Cancellable event)
     {
-        if (!map.keySet().contains(event.getPlayer().getName())) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        Location location = event.getRightClicked().getLocation();
-        Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-        Lock lock = this.manager.getLockForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
         if (triplet.getFirst().isCreator())
         {
             if (lock != null)
             {
-                user.sendTranslated("&eThis entity is already protected!");
+                user.sendTranslated("&eThere is already a protection here!");
                 this.cmdUsed(user);
                 event.setCancelled(true);
-                return;
+                return true;
             }
             else
             {
-                if (!(event.getRightClicked() instanceof InventoryHolder))
+                if (!isHolder)
                 {
                     switch (triplet.getFirst())
                     {
@@ -265,14 +171,15 @@ public class CommandListener implements Listener
                         user.sendTranslated("&eYou can only apply guarded, donation and free protections to inventory-holders!");
                         event.setCancelled(true);
                         this.cmdUsed(user);
-                        return;
+                        return true;
                     }
                 }
-                if (!this.manager.canProtect(event.getRightClicked().getType()))
+                if (!canProtect)
                 {
                     this.cmdUsed(user);
                     user.sendTranslated("&cYou cannot protect this!");
-                    return; // do nothing entity is not protectable
+                    event.setCancelled(true);
+                    return true; // do nothing entity is not protectable
                 }
             }
         }
@@ -281,6 +188,21 @@ public class CommandListener implements Listener
             user.sendTranslated("&6No protection detected here!");
             event.setCancelled(true);
             this.cmdUsed(user);
+            return true;
+        }
+        return false;
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onRightClickEntity(PlayerInteractEntityEvent event)
+    {
+        if (!map.keySet().contains(event.getPlayer().getName())) return;
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        Location location = event.getRightClicked().getLocation();
+        Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
+        Lock lock = this.manager.getLockForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
+        if (this.handleInteract1(triplet, lock, user, event.getRightClicked() instanceof InventoryHolder, !this.manager.canProtect(event.getRightClicked().getType()), event))
+        {
             return;
         }
         switch (triplet.getFirst())
@@ -305,17 +227,29 @@ public class CommandListener implements Listener
             this.manager.createLock(event.getRightClicked(), user, C_GUARDED.lockType, triplet.getSecond(), triplet
                 .getThird());
             break;
+        default:
+            this.handleInteract2(triplet.getFirst(), lock, user, triplet.getSecond(), triplet.getThird(), location,
+                event.getRightClicked() instanceof InventoryHolder ? (InventoryHolder)event.getRightClicked() : null);
+        }
+        this.cmdUsed(user);
+        event.setCancelled(true);
+    }
+
+    private void handleInteract2(CommandType first, Lock lock, User user, String second, Boolean third, Location location, InventoryHolder possibleHolder)
+    {
+        switch (first)
+        {
         case INFO:
             lock.showInfo(user);
             break;
         case MODIFY:
-            lock.modifyLock(user, triplet.getSecond());
+            lock.modifyLock(user, second);
             break;
         case REMOVE:
             this.manager.removeLock(lock, user, false);
             break;
         case UNLOCK:
-            lock.unlock(user, location, triplet.getSecond());
+            lock.unlock(user, location, second);
             break;
         case INVALIDATE_KEYS:
 
@@ -325,14 +259,14 @@ public class CommandListener implements Listener
             }
             else if (lock.hasPass())
             {
-                user.sendTranslated("&eYou cannot invalidate BookKeys for password protected chests. &aChange the password to invalidate them!");
+                user.sendTranslated("&eYou cannot invalidate KeyBooks for password protected locks. &aChange the password to invalidate them!");
             }
             else
             {
                 lock.invalidateKeyBooks();
-                if (event.getRightClicked() instanceof InventoryHolder)
+                if (possibleHolder != null)
                 {
-                    for (HumanEntity viewer : ((InventoryHolder)event.getRightClicked()).getInventory().getViewers())
+                    for (HumanEntity viewer : possibleHolder.getInventory().getViewers())
                     {
                         viewer.closeInventory();
                     }
@@ -340,7 +274,7 @@ public class CommandListener implements Listener
             }
             break;
         case KEYS:
-            if (!lock.isOwner(user))
+            if (!lock.isOwner(user) || LockerPerm.CMD_KEY_OTHER.isAuthorized(user))
             {
                 user.sendTranslated("&cThis is not your protection!");
             }
@@ -352,24 +286,62 @@ public class CommandListener implements Listener
                 }
                 else
                 {
-                    lock.attemptCreatingKeyBook(user, triplet.getThird());
+                    lock.attemptCreatingKeyBook(user, third);
                 }
             }
             break;
         case GIVE:
-            if (!lock.isOwner(user))
+            if (!lock.isOwner(user) || LockerPerm.CMD_GIVE_OTHER.isAuthorized(user))
             {
                 user.sendTranslated("&cThis is not your protection!");
             }
             else
             {
-                User newOwner = this.module.getCore().getUserManager().getExactUser(triplet.getSecond());
+                User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
                 user.sendTranslated("&2%s&e is now the owner of this protection.", newOwner.getName());
             }
+        case FLAGS_SET:
+            if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
+            {
+                short flags = 0;
+                for (ProtectionFlag protectionFlag : ProtectionFlag.matchFlags(second))
+                {
+                    flags |= protectionFlag.flagValue;
+                }
+                lock.setFlags((short)(flags | lock.getFlags()));
+            }
+            else
+            {
+                user.sendTranslated("&cYou are not allowed to modify this protections flags!");
+            }
+            break;
+        case FLAGS_UNSET:
+            if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
+            {
+                if ("all".equalsIgnoreCase(second))
+                {
+                    lock.setFlags(ProtectionFlag.NONE);
+                    user.sendTranslated("&aAll flags are now unset!");
+                }
+                else
+                {
+                    short flags = 0;
+                    for (ProtectionFlag protectionFlag : ProtectionFlag.matchFlags(second))
+                    {
+                        flags |= protectionFlag.flagValue;
+                    }
+                    lock.setFlags((short)(lock.getFlags() & ~flags));
+                }
+            }
+            else
+            {
+                user.sendTranslated("&cYou are not allowed to modify this protections flags!");
+            }
+            break;
+        default: throw new IllegalArgumentException();
         }
-        this.cmdUsed(user);
-        event.setCancelled(true);
+
     }
 
     public enum CommandType
@@ -385,7 +357,9 @@ public class CommandListener implements Listener
         UNLOCK,
         INVALIDATE_KEYS,
         KEYS,
-        GIVE;
+        GIVE,
+        FLAGS_SET,
+        FLAGS_UNSET;
 
         private CommandType(LockType lockType)
         {
