@@ -1,26 +1,43 @@
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ *
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.cubeisland.engine.core.logger.wrapper;
 
 public abstract class Logger
 {
-    
+    // The casts to Throwable are necessary
     public void trace(String message)
     {
-        trace(null, message, new Object[]{});
+        trace((Throwable)null, message, new Object[]{});
     }
 
     public void trace(String message, Object arg)
     {
-        trace(null, message, new Object[]{arg});
+        trace((Throwable)null, message, new Object[]{arg});
     }
 
     public void trace(String message, Object arg1, Object arg2)
     {
-        trace(null, message, new Object[]{arg1, arg2});
+        trace((Throwable)null, message, new Object[]{arg1, arg2});
     }
 
     public void trace(String message, Object... args)
     {
-        trace(null, message, args);
+        trace((Throwable)null, message, args);
     }
 
     public void trace(Throwable throwable, String message)
@@ -42,22 +59,22 @@ public abstract class Logger
 
     public void debug(String message)
     {
-        debug(null, message, new Object[]{});
+        debug((Throwable)null, message, new Object[]{});
     }
 
     public void debug(String message, Object arg)
     {
-        debug(null, message, new Object[]{arg});
+        debug((Throwable)null, message, new Object[]{arg});
     }
 
     public void debug(String message, Object arg1, Object arg2)
     {
-        debug(null, message, new Object[]{arg1, arg2});
+        debug((Throwable)null, message, new Object[]{arg1, arg2});
     }
 
     public void debug(String message, Object... args)
     {
-        debug(null, message, args);
+        debug((Throwable)null, message, args);
     }
 
     public void debug(Throwable throwable, String message)
@@ -79,22 +96,22 @@ public abstract class Logger
 
     public void info(String message)
     {
-        info(null, message, new Object[]{});
+        info((Throwable)null, message, new Object[]{});
     }
 
     public void info(String message, Object arg)
     {
-        info(null, message, new Object[]{arg});
+        info((Throwable)null, message, new Object[]{arg});
     }
 
     public void info(String message, Object arg1, Object arg2)
     {
-        info(null, message, new Object[]{arg1, arg2});
+        info((Throwable)null, message, new Object[]{arg1, arg2});
     }
 
     public void info(String message, Object... args)
     {
-        info(null, message, args);
+        info((Throwable)null, message, args);
     }
 
     public void info(Throwable throwable, String message)
@@ -116,22 +133,22 @@ public abstract class Logger
 
     public void warn(String message)
     {
-        warn(null, message, new Object[]{});
+        warn((Throwable)null, message, new Object[]{});
     }
 
     public void warn(String message, Object arg)
     {
-        warn(null, message, new Object[]{arg});
+        warn((Throwable)null, message, new Object[]{arg});
     }
 
     public void warn(String message, Object arg1, Object arg2)
     {
-        warn(null, message, new Object[]{arg1, arg2});
+        warn((Throwable)null, message, new Object[]{arg1, arg2});
     }
 
     public void warn(String message, Object... args)
     {
-        warn(null, message, args);
+        warn((Throwable)null, message, args);
     }
 
     public void warn(Throwable throwable, String message)
@@ -153,22 +170,22 @@ public abstract class Logger
 
     public void error(String message)
     {
-        error(null, message, new Object[]{});
+        error((Throwable)null, message, new Object[]{});
     }
 
     public void error(String message, Object arg)
     {
-        error(null, message, new Object[]{arg});
+        error((Throwable)null, message, new Object[]{arg});
     }
 
     public void error(String message, Object arg1, Object arg2)
     {
-        error(null, message, new Object[]{arg1, arg2});
+        error((Throwable)null, message, new Object[]{arg1, arg2});
     }
 
     public void error(String message, Object... args)
     {
-        error(null, message, args);
+        error((Throwable)null, message, args);
     }
 
     public void error(Throwable throwable, String message)
