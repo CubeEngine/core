@@ -109,10 +109,6 @@ public class EditCommand
             else
             {
                 user.sendTranslated("&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away");
-                if (context.getCore().isDebug())
-                {
-                    user.sendTranslated("You where looking at: %s", target.getType().name());
-                }
             }
         }
     }
