@@ -50,6 +50,7 @@ import org.bukkit.material.Door;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.BlockUtil;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.locker.BlockLockerConfiguration;
 import de.cubeisland.engine.locker.EntityLockerConfiguration;
@@ -60,9 +61,12 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ALL;
+import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_FULL;
 import static de.cubeisland.engine.locker.storage.ProtectedType.getProtectedType;
-import static de.cubeisland.engine.locker.storage.TableLockLocations.TABLE_GUARD_LOCATION;
-import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_LIST;
+import static de.cubeisland.engine.locker.storage.TableLockLocations.TABLE_LOCK_LOCATION;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_LOCK;
 
 public class LockManager implements Listener
 {
@@ -77,6 +81,7 @@ public class LockManager implements Listener
     private final Map<Location, Lock> loadedLocks = new HashMap<>();
     private final Map<Chunk, Set<Lock>> loadedLocksInChunk = new HashMap<>();
     private final Map<UUID, Lock> loadedEntityLocks = new HashMap<>();
+    private final Map<Long, Lock> locksById = new HashMap<>();
 
     public final MessageDigest messageDigest;
 
@@ -115,15 +120,15 @@ public class LockManager implements Listener
     private void loadFromChunk(Chunk chunk)
     {
         UInteger world_id = UInteger.valueOf(this.wm.getWorldId(chunk.getWorld()));
-        Result<LockModel> models = this.dsl.selectFrom(TABLE_GUARD).where(
-            TABLE_GUARD.ID.in(this.dsl.select(TABLE_GUARD_LOCATION.GUARD_ID)
-                                      .from(TABLE_GUARD_LOCATION)
-                                      .where(TABLE_GUARD_LOCATION.WORLD_ID.eq(world_id),
-                                             TABLE_GUARD_LOCATION.CHUNKX.eq(chunk.getX()),
-                                             TABLE_GUARD_LOCATION.CHUNKZ.eq(chunk.getZ())))).fetch();
-        Map<UInteger, Result<LockLocationModel>> locations = this.dsl.selectFrom(TABLE_GUARD_LOCATION)
-                                                                     .where(TABLE_GUARD_LOCATION.GUARD_ID.in(models.getValues(TABLE_GUARD.ID)))
-                                                                     .fetch().intoGroups(TABLE_GUARD_LOCATION.GUARD_ID);
+        Result<LockModel> models = this.dsl.selectFrom(TABLE_LOCK).where(
+            TABLE_LOCK.ID.in(this.dsl.select(TABLE_LOCK_LOCATION.GUARD_ID)
+                                      .from(TABLE_LOCK_LOCATION)
+                                      .where(TABLE_LOCK_LOCATION.WORLD_ID.eq(world_id),
+                                             TABLE_LOCK_LOCATION.CHUNKX.eq(chunk.getX()),
+                                             TABLE_LOCK_LOCATION.CHUNKZ.eq(chunk.getZ())))).fetch();
+        Map<UInteger, Result<LockLocationModel>> locations = this.dsl.selectFrom(TABLE_LOCK_LOCATION)
+                                                                     .where(TABLE_LOCK_LOCATION.GUARD_ID.in(models.getValues(TABLE_LOCK.ID)))
+                                                                     .fetch().intoGroups(TABLE_LOCK_LOCATION.GUARD_ID);
         for (LockModel model : models)
         {
             Result<LockLocationModel> lockLoc = locations.get(model.getId());
@@ -133,6 +138,7 @@ public class LockManager implements Listener
 
     private void addLoadedLocationLock(Lock lock)
     {
+        this.locksById.put(lock.getId(), lock);
         for (Location loc : lock.getLocations())
         {
             if (loc.getChunk().isLoaded())
@@ -156,6 +162,7 @@ public class LockManager implements Listener
         if (remove == null) return; // nothing to remove
         for (Lock lock : remove) // remove from chunks
         {
+            this.locksById.remove(lock.getId());
             if (lock.isSingleBlockLock())
             {
                 this.loadedLocks.remove(lock.getLocation()); // remove loc
@@ -245,8 +252,8 @@ public class LockManager implements Listener
         Lock lock = this.loadedEntityLocks.get(uniqueId);
         if (lock == null)
         {
-            LockModel model = this.dsl.selectFrom(TABLE_GUARD).where(TABLE_GUARD.ENTITY_UID_LEAST.eq(uniqueId.getLeastSignificantBits()),
-                                                                      TABLE_GUARD.ENTITY_UID_MOST.eq(uniqueId.getMostSignificantBits())).fetchOne();
+            LockModel model = this.dsl.selectFrom(TABLE_LOCK).where(TABLE_LOCK.ENTITY_UID_LEAST.eq(uniqueId.getLeastSignificantBits()),
+                                                                      TABLE_LOCK.ENTITY_UID_MOST.eq(uniqueId.getMostSignificantBits())).fetchOne();
             if (model != null)
             {
                 lock = new Lock(this, model);
@@ -280,7 +287,7 @@ public class LockManager implements Listener
     {
         assert this.getLockAtLocation(location, null, false) == null : "Cannot extend Lock onto another!";
         lock.locations.add(location);
-        LockLocationModel model = this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(lock.model, location);
+        LockLocationModel model = this.dsl.newRecord(TABLE_LOCK_LOCATION).newLocation(lock.model, location);
         model.insert();
         this.loadedLocks.put(location.clone(), lock);
     }
@@ -296,6 +303,7 @@ public class LockManager implements Listener
     {
         if (destroyed || lock.isOwner(user) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user))
         {
+            this.locksById.remove(lock.getId());
             lock.model.delete();
             if (lock.isBlockLock())
             {
@@ -335,7 +343,7 @@ public class LockManager implements Listener
      */
     public Lock createLock(Material material, Location location, User user, LockType lockType, String password, boolean createKeyBook)
     {
-        LockModel model = this.dsl.newRecord(TABLE_GUARD).newLock(user, lockType, getProtectedType(material));
+        LockModel model = this.dsl.newRecord(TABLE_LOCK).newLock(user, lockType, getProtectedType(material));
         model.createPassword(this, password).insert();
         List<Location> locations = new ArrayList<>();
         Block block = location.getBlock();
@@ -393,7 +401,7 @@ public class LockManager implements Listener
         System.out.print(locations.size());
         for (Location loc : locations)
         {
-            this.dsl.newRecord(TABLE_GUARD_LOCATION).newLocation(model, loc).insert();
+            this.dsl.newRecord(TABLE_LOCK_LOCATION).newLocation(model, loc).insert();
         }
         Lock lock = new Lock(this, model, locations);
         this.addLoadedLocationLock(lock);
@@ -414,11 +422,12 @@ public class LockManager implements Listener
      */
     public Lock createLock(Entity entity, User user, LockType lockType, String password, boolean createKeyBook)
     {
-        LockModel model = this.dsl.newRecord(TABLE_GUARD).newLock(user, lockType, getProtectedType(entity.getType()), entity.getUniqueId());
+        LockModel model = this.dsl.newRecord(TABLE_LOCK).newLock(user, lockType, getProtectedType(entity.getType()), entity.getUniqueId());
         model.createPassword(this, password);
         model.insert();
         Lock lock = new Lock(this, model);
         this.loadedEntityLocks.put(entity.getUniqueId(), lock);
+        this.locksById.put(lock.getId(), lock);
         lock.showCreatedMessage(user);
         lock.attemptCreatingKeyBook(user, createKeyBook);
         return lock;
@@ -495,5 +504,95 @@ public class LockManager implements Listener
             lock = this.getLockAtLocation(lockLoc, null);
         }
         return lock;
+    }
+
+    /**
+     * The returned Lock should not be saved for later use!
+     *
+     * @param lockID the locks id
+     * @return a copy of the Lock with given id
+     */
+    public Lock getLockById(long lockID)
+    {
+        Lock lock = this.locksById.get(lockID);
+        if (lock != null)
+        {
+            return lock;
+        }
+        LockModel lockModel = this.dsl.selectFrom(TABLE_LOCK).where(TABLE_LOCK.ID.eq(UInteger.valueOf(lockID))).fetchOne();
+        if (lockModel != null)
+        {
+            Result<LockLocationModel> fetch = this.dsl.selectFrom(TABLE_LOCK_LOCATION)
+                                                      .where(TABLE_LOCK_LOCATION.GUARD_ID.eq(lockModel.getId()))
+                                                      .fetch();
+            if (fetch.isEmpty())
+            {
+                return new Lock(this, lockModel);
+            }
+            return new Lock(this, lockModel, fetch);
+        }
+        return null;
+    }
+
+    public void setGlobalAccess(User sender, String string)
+    {
+        String[] explode = StringUtils.explode(",", string);
+        for (String name : explode)
+        {
+            boolean add = true;
+            boolean admin = false;
+            if (name.startsWith("@"))
+            {
+                name = name.substring(1);
+                admin = true;
+            }
+            if (name.startsWith("-"))
+            {
+                name = name.substring(1);
+                add = false;
+            }
+            User modifyUser = this.um.getUser(name, false);
+            if (modifyUser == null) throw new IllegalArgumentException(); // This is prevented by checking first in the cmd execution
+            short accessType = ACCESS_FULL;
+            if (add && admin)
+            {
+                accessType = ACCESS_ALL; // with AdminAccess
+            }
+            AccessListModel accessListModel = this.dsl.selectFrom(TABLE_ACCESS_LIST).where(
+                TABLE_ACCESS_LIST.USER_ID.eq(modifyUser.getEntity().getKey()),
+                TABLE_ACCESS_LIST.OWNER_ID.eq(sender.getEntity().getKey())).fetchOne();
+            if (add)
+            {
+                if (accessListModel == null)
+                {
+                    accessListModel = this.dsl.newRecord(TABLE_ACCESS_LIST).newGlobalAccess(sender, modifyUser, accessType);
+                    accessListModel.insert();
+                    sender.sendTranslated("&aGlobal access for &2%s&a set!", modifyUser.getName());
+                }
+                else
+                {
+                    accessListModel.setLevel(accessType);
+                    accessListModel.update();
+                    sender.sendTranslated("&aUpdated global access-level for &2%s&a!", modifyUser.getName());
+                }
+            }
+            else
+            {
+                if (accessListModel == null)
+                {
+                    sender.sendTranslated("&2%s&e had no global access!", modifyUser.getName());
+                }
+                else
+                {
+                    accessListModel.delete();
+                    sender.sendTranslated("&aRemoved global access from &2%s", modifyUser.getName());
+                }
+            }
+        }
+    }
+
+    public void purgeLocksFrom(User user)
+    {
+        this.dsl.delete(TABLE_LOCK).where(TABLE_LOCK.OWNER_ID.eq(user.getEntity().getKey())).execute();
     }
 }

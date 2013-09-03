@@ -27,13 +27,13 @@ import org.jooq.Row8;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableLockLocations.TABLE_GUARD_LOCATION;
+import static de.cubeisland.engine.locker.storage.TableLockLocations.TABLE_LOCK_LOCATION;
 
 public class LockLocationModel extends UpdatableRecordImpl<LockLocationModel> implements Record8<UInteger, UInteger, Integer, Integer, Integer, Integer, Integer, UInteger>
 {
     public LockLocationModel()
     {
-        super(TABLE_GUARD_LOCATION);
+        super(TABLE_LOCK_LOCATION);
     }
 
     public LockLocationModel newLocation(LockModel model, Location location)
@@ -142,42 +142,42 @@ public class LockLocationModel extends UpdatableRecordImpl<LockLocationModel> im
 
     @Override
     public Field<UInteger> field1() {
-        return TABLE_GUARD_LOCATION.ID;
+        return TABLE_LOCK_LOCATION.ID;
     }
 
     @Override
     public Field<UInteger> field2() {
-        return TABLE_GUARD_LOCATION.WORLD_ID;
+        return TABLE_LOCK_LOCATION.WORLD_ID;
     }
 
     @Override
     public Field<Integer> field3() {
-        return TABLE_GUARD_LOCATION.X;
+        return TABLE_LOCK_LOCATION.X;
     }
 
     @Override
     public Field<Integer> field4() {
-        return TABLE_GUARD_LOCATION.Y;
+        return TABLE_LOCK_LOCATION.Y;
     }
 
     @Override
     public Field<Integer> field5() {
-        return TABLE_GUARD_LOCATION.Z;
+        return TABLE_LOCK_LOCATION.Z;
     }
 
     @Override
     public Field<Integer> field6() {
-        return TABLE_GUARD_LOCATION.CHUNKX;
+        return TABLE_LOCK_LOCATION.CHUNKX;
     }
 
     @Override
     public Field<Integer> field7() {
-        return TABLE_GUARD_LOCATION.CHUNKZ;
+        return TABLE_LOCK_LOCATION.CHUNKZ;
     }
 
     @Override
     public Field<UInteger> field8() {
-        return TABLE_GUARD_LOCATION.GUARD_ID;
+        return TABLE_LOCK_LOCATION.GUARD_ID;
     }
 
     @Override

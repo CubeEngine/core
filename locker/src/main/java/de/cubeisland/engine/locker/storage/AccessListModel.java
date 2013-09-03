@@ -20,14 +20,14 @@ package de.cubeisland.engine.locker.storage;
 import de.cubeisland.engine.core.user.User;
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record4;
-import org.jooq.Row4;
+import org.jooq.Record5;
+import org.jooq.Row5;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_LIST;
 
-public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implements Record4<UInteger, UInteger, UInteger, Short>
+public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implements Record5<UInteger, UInteger, UInteger, Short, UInteger>
 {
     public AccessListModel()
     {
@@ -39,6 +39,16 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
         this.setLockId(model.getId());
         this.setUserId(modifyUser.getEntity().getKey());
         this.setLevel(ACCESS_FULL);
+        return this;
+    }
+
+
+    public AccessListModel newGlobalAccess(User sender, User modifyUser, short accessType)
+    {
+        this.setLockId(null);
+        this.setUserId(modifyUser.getEntity().getKey());
+        this.setLevel(accessType);
+        this.setOwner(sender.getEntity().getKey());
         return this;
     }
 
@@ -91,6 +101,14 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
         return (Short) getValue(3);
     }
 
+    public void setOwner(UInteger value) {
+        setValue(4, value);
+    }
+
+    public UInteger getOwner() {
+        return (UInteger) getValue(4);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -105,13 +123,13 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<UInteger, UInteger, UInteger, Short> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<UInteger, UInteger, UInteger, Short, UInteger> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 
     @Override
-    public Row4<UInteger, UInteger, UInteger, Short> valuesRow() {
-        return (Row4) super.valuesRow();
+    public Row5<UInteger, UInteger, UInteger, Short, UInteger> valuesRow() {
+        return (Row5) super.valuesRow();
     }
 
     @Override
@@ -135,6 +153,12 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
     }
 
     @Override
+    public Field<UInteger> field5()
+    {
+        return TABLE_ACCESS_LIST.OWNER_ID;
+    }
+
+    @Override
     public UInteger value1() {
         return getId();
     }
@@ -153,4 +177,11 @@ public class AccessListModel extends UpdatableRecordImpl<AccessListModel> implem
     public Short value4() {
         return getLevel();
     }
+
+    @Override
+    public UInteger value5()
+    {
+        return getOwner();
+    }
+
 }

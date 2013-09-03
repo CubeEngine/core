@@ -43,8 +43,9 @@ public class LockerPerm extends PermissionContainer<Locker>
                        Permission.createPermission(createCmd.getChild("donation").getPermission()),
                        Permission.createPermission(createCmd.getChild("free").getPermission()),
                        Permission.createPermission(createCmd.getChild("password").getPermission()),
-                       Permission.createPermission(createCmd.getChild("guarded").getPermission()),
-                       BREAK_OTHER, EXPAND_OTHER);
+                       Permission.createPermission(createCmd.getChild("guarded").getPermission()));
+        ADMIN.attach(BREAK_OTHER, EXPAND_OTHER, ACCESS_OTHER, CMD_REMOVE_OTHER, CMD_REMOVE_OTHER, CMD_KEY_OTHER, CMD_MODIFY_OTHER, CMD_GIVE_OTHER);
+        // TODO admin sub perms
         this.registerAllPermissions();
     }
 
@@ -58,15 +59,19 @@ public class LockerPerm extends PermissionContainer<Locker>
     public static final Permission SHOW_OWNER = Permission.createPermission("show-owner");
 
     private static final Permission LOCKER_COMMAND = Permission.createAbstractPermission("command").createAbstractChild("locker");
+
     public static final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.createAbstractChild("remove").createChild("other");
     public static final Permission CMD_INFO_OTHER = LOCKER_COMMAND.createAbstractChild("info").createChild("other");
     public static final Permission CMD_KEY_OTHER = LOCKER_COMMAND.createAbstractChild("key").createChild("other");
     public static final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.createAbstractChild("modify").createChild("other");
     public static final Permission CMD_GIVE_OTHER = LOCKER_COMMAND.createAbstractChild("give").createChild("other");
 
+    private static final Permission CMD_ADMIN = LOCKER_COMMAND.createAbstractChild("admin");
+
     public static final Permission PROTECT = Permission.createPermission("protect");
-    public static final Permission ADMIN = Permission.createPermission("admin"); // TODO sub perms
+    public static final Permission ADMIN = Permission.createPermission("admin");
 
     public static final Permission BREAK_OTHER = ADMIN.createNew("break-other");
+    public static final Permission ACCESS_OTHER = ADMIN.createNew("access-other");
     public static final Permission EXPAND_OTHER = ADMIN.createNew("break-other");
 }

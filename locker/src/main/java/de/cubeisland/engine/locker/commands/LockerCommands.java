@@ -32,6 +32,8 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
+import de.cubeisland.engine.locker.storage.KeyBook;
+import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
@@ -51,9 +53,32 @@ public class LockerCommands extends ContainerCommand
     @Command(desc = "Shows information about a protection")
     public void info(ParameterizedContext context)
     {
-        // TODO if keybook in hand show info
-        manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
-        context.sendTranslated("&aRightclock to show protection-info");
+        if (context.getSender() instanceof User)
+        {
+            KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender());
+            if (keyBook != null)
+            {
+                Lock lock = this.manager.getLockById(keyBook.lockID);
+                if (lock != null && keyBook.isValidFor(lock))
+                {
+                    context.sendTranslated("&aThe strong magic surrounding this KeyBook allows you to access the designated protection");
+                    // TODO more info /w perms
+                }
+                else
+                {
+                    context.sendTranslated("&eAs you inspect the KeyBook closer you realize that its magic power has disappeared!");
+                    keyBook.invalidate();
+                }
+                return;
+            }
+            manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
+            context.sendTranslated("&aRightclock to show protection-info");
+        }
+        else
+        {
+            context.sendTranslated("cThis command can only be used ingame");
+        }
+
     }
 
     @Alias(names = "cpersist")
@@ -86,14 +111,20 @@ public class LockerCommands extends ContainerCommand
         context.sendTranslated("&aRightclick to unlock a password protected chest!");
     }
 
-    // TODO modify global access
+
 
     @Alias(names = "cmodify")
     @Command(names = "modify",
              desc = "adds or removes player from the accesslist",
-                usage = "<players...>", min = 1, max = 1)
+                usage = "<players...>", min = 1, max = 1,
+    flags = @Flag(name = "g", longName = "global"))
     public void modify(ParameterizedContext context)
     {
+        if (!(context.getSender() instanceof User))
+        {
+            context.sendTranslated("&cThis command can only be used ingame!");
+            return;
+        }
         String[] explode = StringUtils.explode(",", context.getString(0));
         for (String name : explode)
         {
@@ -112,12 +143,19 @@ public class LockerCommands extends ContainerCommand
                 return;
             }
         } // All users do exist!
-        this.manager.commandListener.setCommandType(context.getSender(), CommandType.MODIFY, context.getString(0));
-        context.sendTranslated("&aRightclick a protection to modify it!");
+        if (context.hasFlag("g"))
+        {
+            this.manager.setGlobalAccess((User)context.getSender(), context.getString(0));
+        }
+        else
+        {
+            this.manager.commandListener.setCommandType(context.getSender(), CommandType.MODIFY, context.getString(0));
+            context.sendTranslated("&aRightclick a protection to modify it!");
+        }
     }
 
     @Command(desc = "gives a protection to someone else",
-    usage = "<player>", max = 1)
+    usage = "<player>", min = 1, max = 1)
     public void give(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -128,8 +166,6 @@ public class LockerCommands extends ContainerCommand
         }
         this.manager.commandListener.setCommandType(context.getSender(), CommandType.GIVE, context.getString(0));
     }
-
-    // TODO masterKeys / multiKeys
 
     @Alias(names = "ckey")
     @Command(names = "key",
@@ -209,8 +245,4 @@ public class LockerCommands extends ContainerCommand
         }
         return false;
     }
-
-
-
-    // TODO add buttons to door-protection to open door for x-sec = autoclose time BUT deny redstone so ONLY that button can open the door/doubledoor
 }

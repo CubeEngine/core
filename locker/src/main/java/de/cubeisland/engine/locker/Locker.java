@@ -77,6 +77,13 @@ public class Locker extends Module
       /droptransfer off
       /droptransfer status
     lock beacon effects?
+    golden masterKey for Admin/Mod to open all chests (explode in hand if no perm)
+    masterKeys to open all chests of one user
+    multiKeys to open multiple chests
+    buttons to door-protection to open door for x-sec = autoclose time BUT deny redstone so ONLY that button can open the door/doubledoor
+
+    implement usage of separate access-level for in & out in containers
      */
+
 }
 

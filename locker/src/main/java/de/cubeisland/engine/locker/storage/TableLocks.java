@@ -41,7 +41,7 @@ import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 public class TableLocks extends TableImpl<LockModel> implements TableCreator<LockModel>
 {
-    public static TableLocks TABLE_GUARD;
+    public static TableLocks TABLE_LOCK;
 
     private TableLocks(String prefix)
     {
@@ -55,8 +55,8 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
     public static TableLocks initTable(Database database)
     {
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_GUARD = new TableLocks(config.tablePrefix);
-        return TABLE_GUARD;
+        TABLE_LOCK = new TableLocks(config.tablePrefix);
+        return TABLE_LOCK;
     }
 
     @Override

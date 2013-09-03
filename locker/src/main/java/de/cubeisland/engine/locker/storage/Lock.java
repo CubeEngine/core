@@ -36,7 +36,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
-import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -44,12 +43,9 @@ import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.locker.LockerAttachment;
 import de.cubeisland.engine.locker.LockerPerm;
-import org.jooq.Record1;
 import org.jooq.Result;
 
-import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ADMIN;
-import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ALL;
-import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_FULL;
+import static de.cubeisland.engine.locker.storage.AccessListModel.*;
 import static de.cubeisland.engine.locker.storage.LockType.PUBLIC;
 import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_LIST;
 
@@ -131,12 +127,12 @@ public class Lock
     {
         if (this.isOwner(user)) return true;
         Boolean keyBookUsed = this.checkForKeyBook(user, soundLocation);
-        if (keyBookUsed == null)
+        if (keyBookUsed != null && !keyBookUsed)
         {
             event.setCancelled(true);
             return false;
         }
-        return keyBookUsed || this.checkForUnlocked(user);
+        return keyBookUsed != null || this.checkForUnlocked(user);
     }
 
     public boolean checkForUnlocked(User user)
@@ -160,7 +156,7 @@ public class Lock
                 int amount = user.getItemInHand().getAmount() -1;
                 ItemStack itemStack = new ItemStack(Material.ENCHANTED_BOOK, 1);
                 ItemMeta itemMeta = itemStack.getItemMeta();
-                itemMeta.setDisplayName(this.getColorPass() + ChatFormat.parseFormats("&r&6KeyBook &8#" + this.getId()));
+                itemMeta.setDisplayName(this.getColorPass() + KeyBook.TITLE + this.getId());
                 itemMeta.setLore(Arrays.asList(user.translate(ChatFormat.parseFormats("&eThis book can")), user
                     .translate(ChatFormat.parseFormats("&eunlock a magically")), user
                                                    .translate(ChatFormat.parseFormats("&elocked protection"))));
@@ -223,7 +219,6 @@ public class Lock
      */
     public void modifyLock(User user, String usersString)
     {
-        // TODO separate in & out for containers
         if (this.isOwner(user) || this.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
         {
             if (!this.isPublic())
@@ -297,8 +292,8 @@ public class Lock
 
     /**
      * Returns true if the chest could open
-     * <p>null if the chest cannot be opened with the KeyBook
-     * <p>false if the user has no KeyBook in hand
+     * <p>false if the chest cannot be opened with the KeyBook
+     * <p>null if the user has no KeyBook in hand
      *
      * @param user
      * @param effectLocation
@@ -306,57 +301,12 @@ public class Lock
      */
     public Boolean checkForKeyBook(User user, Location effectLocation)
     {
-        if (user.getItemInHand().getType() == Material.ENCHANTED_BOOK && user.getItemInHand().getItemMeta().getDisplayName().contains("KeyBook"))
+        KeyBook keyBook = KeyBook.getKeyBook(user.getItemInHand(), user);
+        if (keyBook != null)
         {
-            String keyBookName = user.getItemInHand().getItemMeta().getDisplayName();
-            try
-            {
-                long id = Long.valueOf(keyBookName.substring(keyBookName.indexOf('#')+1, keyBookName.length()));
-                if (this.getId().equals(id)) // Id matches ?
-                {
-                    // Validate book
-                    if (keyBookName.startsWith(this.getColorPass()))
-                    {
-                        if (effectLocation != null) user.sendTranslated("&aAs you approach with your KeyBook the magic lock disappears!");
-                        user.playSound(effectLocation, Sound.PISTON_EXTEND, 1, 2);
-                        user.playSound(effectLocation, Sound.PISTON_EXTEND, 1, (float)1.5);
-                        if (effectLocation != null) this.notifyKeyUsage(user);
-                        return true;
-                    }
-                    else
-                    {
-                        user.sendTranslated("&cYou try to open the container with your KeyBook\n" +
-                                                "but forcefully get pushed away!");
-                        ItemStack itemInHand = user.getItemInHand();
-                        ItemMeta itemMeta = itemInHand.getItemMeta();
-                        itemMeta.setDisplayName(ChatFormat.parseFormats("&4Broken KeyBook"));
-                        itemMeta.setLore(Arrays.asList(ChatFormat.parseFormats(user.translate("&eThis KeyBook")),
-                                                       ChatFormat.parseFormats(user.translate("&elooks old and")),
-                                                       ChatFormat.parseFormats(user.translate("&eused up. It")),
-                                                       ChatFormat.parseFormats(user.translate("&ewont let you")),
-                                                       ChatFormat.parseFormats(user.translate("&eopen any containers!"))));
-                        itemInHand.setItemMeta(itemMeta);
-                        itemInHand.setType(Material.PAPER);
-                        user.updateInventory();
-                        user.playSound(effectLocation, Sound.GHAST_SCREAM, 1, 1);
-                        final Vector userDirection = user.getLocation().getDirection();
-                        user.damage(1);
-                        user.setVelocity(userDirection.multiply(-3));
-                        return null;
-                    }
-                }
-                else
-                {
-                    user.sendTranslated("&eYou try to open the container with your KeyBook but nothing happens!");
-                    user.playSound(effectLocation, Sound.BLAZE_HIT, 1, 1);
-                    user.playSound(effectLocation, Sound.BLAZE_HIT, 1, (float)0.8);
-                    return null;
-                }
-            }
-            catch (NumberFormatException|IndexOutOfBoundsException ignore) // invalid book / we do not care
-            {}
+            return keyBook.check(this, effectLocation);
         }
-        return false;
+        return null;
     }
 
     public boolean checkPass(String pass)
@@ -440,9 +390,16 @@ public class Lock
 
     private AccessListModel getAccess(User user)
     {
-        return this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
+        AccessListModel model = this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
             where(TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId()),
                   TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey())).fetchOne();
+        if (model == null)
+        {
+            model = this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
+                where(TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey()),
+                      TABLE_ACCESS_LIST.OWNER_ID.eq(this.getOwner().getEntity().getKey())).fetchOne();
+        }
+        return model;
     }
 
     public void handleInventoryOpen(Cancellable event, Inventory protectedInventory, Location soundLocation, User user)
@@ -468,7 +425,7 @@ public class Lock
                 out = true;
         }
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.getLockType() == LockType.PRIVATE)
+        if (access == null && this.getLockType() == LockType.PRIVATE && !LockerPerm.ACCESS_OTHER.isAuthorized(user))
         {
             event.setCancelled(true); // private & no access
             if (LockerPerm.SHOW_OWNER.isAuthorized(user))
@@ -487,7 +444,7 @@ public class Lock
                 in = in || access.canIn();
                 out = out || access.canOut();
             }
-            if (in && out) return; // Has full access
+            if ((in && out) || LockerPerm.ACCESS_OTHER.isAuthorized(user)) return; // Has full access
             if (protectedInventory == null) return; // Just checking else do lock
             InventoryGuardFactory inventoryGuardFactory = InventoryGuardFactory.prepareInventory(protectedInventory, user);
             if (!in)
@@ -592,10 +549,8 @@ public class Lock
 
     public boolean hasAdmin(User user)
     {
-        Record1<Short> record1 = this.manager.dsl.select(TABLE_ACCESS_LIST.LEVEL).from(TABLE_ACCESS_LIST)
-                                                  .where(TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey()),
-                                                         TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId())).fetchOne();
-        return record1 != null && (record1.value1() & ACCESS_ADMIN) == ACCESS_ADMIN;
+        AccessListModel access = this.getAccess(user);
+        return access != null && (access.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN;
     }
 
     public String getColorPass()
@@ -760,7 +715,6 @@ public class Lock
                         user.sendTranslated("&abut it lets you interact as if you were not there");
                     }
                 }
-                // TODO other access-level combinations
             }
         }
         if (this.manager.module.getConfig().protectWhenOnlyOffline && this.getOwner().isOnline())
@@ -891,29 +845,29 @@ public class Lock
     {
         if (!this.manager.module.getConfig().autoCloseEnable) return;
         taskId = this.manager.module.getCore().getTaskManager().runTaskDelayed(this.manager.module, new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    door1.setOpen(false);
-                                    state1.setData(door1);
-                                    if (state1.update())
-                                    {
-                                        Location location = state1.getLocation();
-                                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                                    }
-                                    if (door2 != null)
-                                    {
-                                        door2.setOpen(false);
-                                        state2.setData(door2);
-                                        if (state2.update())
-                                        {
-                                            Location location = state2.getLocation();
-                                            location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                                        }
-                                    }
-                                }
-                            }, this.manager.module.getConfig().autoCloseSeconds * 20);
+        {
+            @Override
+            public void run()
+            {
+                door1.setOpen(false);
+                state1.setData(door1);
+                if (state1.update())
+                {
+                    Location location = state1.getLocation();
+                    location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                }
+                if (door2 != null)
+                {
+                    door2.setOpen(false);
+                    state2.setData(door2);
+                    if (state2.update())
+                    {
+                        Location location = state2.getLocation();
+                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                    }
+                }
+            }
+        }, this.manager.module.getConfig().autoCloseSeconds * 20);
     }
 
     /**

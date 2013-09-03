@@ -252,7 +252,6 @@ public class CommandListener implements Listener
             lock.unlock(user, location, second);
             break;
         case INVALIDATE_KEYS:
-
             if (!lock.isOwner(user))
             {
                 user.sendTranslated("&cThis is not your protection!");
@@ -274,32 +273,32 @@ public class CommandListener implements Listener
             }
             break;
         case KEYS:
-            if (!lock.isOwner(user) || LockerPerm.CMD_KEY_OTHER.isAuthorized(user))
-            {
-                user.sendTranslated("&cThis is not your protection!");
-            }
-            else
+            if (lock.isOwner(user) || LockerPerm.CMD_KEY_OTHER.isAuthorized(user))
             {
                 if (lock.isPublic())
                 {
-                    user.sendTranslated("&eThis container is public!");
+                    user.sendTranslated("&eThis protection is public!");
                 }
                 else
                 {
                     lock.attemptCreatingKeyBook(user, third);
                 }
             }
-            break;
-        case GIVE:
-            if (!lock.isOwner(user) || LockerPerm.CMD_GIVE_OTHER.isAuthorized(user))
+            else
             {
                 user.sendTranslated("&cThis is not your protection!");
             }
-            else
+            break;
+        case GIVE:
+            if (lock.isOwner(user) || LockerPerm.CMD_GIVE_OTHER.isAuthorized(user))
             {
                 User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
                 user.sendTranslated("&2%s&e is now the owner of this protection.", newOwner.getName());
+            }
+            else
+            {
+                user.sendTranslated("&cThis is not your protection!");
             }
         case FLAGS_SET:
             if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))

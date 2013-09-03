@@ -31,13 +31,13 @@ import org.jooq.Row10;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_LOCK;
 
 public class LockModel extends UpdatableRecordImpl<LockModel> implements Record10<UInteger, UInteger, Short, Byte, Byte, byte[], Long, Long, Timestamp, Timestamp>
 {
     public LockModel()
     {
-        super(TABLE_GUARD);
+        super(TABLE_LOCK);
     }
 
     public LockModel newLock(User user, LockType lockType, ProtectedType type)
@@ -227,54 +227,54 @@ public class LockModel extends UpdatableRecordImpl<LockModel> implements Record1
 
     @Override
     public Field<UInteger> field1() {
-        return TABLE_GUARD.ID;
+        return TABLE_LOCK.ID;
     }
 
     @Override
     public Field<UInteger> field2() {
-        return TABLE_GUARD.OWNER_ID;
+        return TABLE_LOCK.OWNER_ID;
     }
 
     @Override
     public Field<Short> field3() {
-        return TABLE_GUARD.FLAGS;
+        return TABLE_LOCK.FLAGS;
     }
 
     @Override
     public Field<Byte> field4() {
-        return TABLE_GUARD.PROTECTED_TYPE;
+        return TABLE_LOCK.PROTECTED_TYPE;
     }
 
     @Override
     public Field<Byte> field5() {
-        return TABLE_GUARD.LOCK_TYPE;
+        return TABLE_LOCK.LOCK_TYPE;
     }
 
     @Override
     public Field<byte[]> field6() {
-        return TABLE_GUARD.PASSWORD;
+        return TABLE_LOCK.PASSWORD;
     }
 
     @Override
     public Field<Long> field7() {
-        return TABLE_GUARD.ENTITY_UID_LEAST;
+        return TABLE_LOCK.ENTITY_UID_LEAST;
     }
 
     @Override
     public Field<Long> field8() {
-        return TABLE_GUARD.ENTITY_UID_MOST;
+        return TABLE_LOCK.ENTITY_UID_MOST;
     }
 
     @Override
     public Field<Timestamp> field9()
     {
-        return TABLE_GUARD.LAST_ACCESS;
+        return TABLE_LOCK.LAST_ACCESS;
     }
 
     @Override
     public Field<Timestamp> field10()
     {
-        return TABLE_GUARD.CREATED;
+        return TABLE_LOCK.CREATED;
     }
 
     @Override
