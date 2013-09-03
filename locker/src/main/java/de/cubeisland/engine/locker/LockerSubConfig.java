@@ -57,4 +57,15 @@ public abstract class LockerSubConfig<This extends LockerSubConfig,T>
     }
 
     public abstract String getTitle();
+
+    public short getFlags()
+    {
+        short result = 0;
+        if (defaultFlags == null) return result;
+        for (ProtectionFlag defaultFlag : defaultFlags)
+        {
+            result |= defaultFlag.flagValue;
+        }
+        return result;
+    }
 }

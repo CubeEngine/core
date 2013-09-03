@@ -61,7 +61,7 @@ public class KeyBook
 
     public boolean check(Lock lock, Location effectLocation)
     {
-        if (lock.getId().equals(lock)) // Id matches ?
+        if (lock.getId().equals(lockID)) // Id matches ?
         {
             // Validate book
             if (this.isValidFor(lock))
