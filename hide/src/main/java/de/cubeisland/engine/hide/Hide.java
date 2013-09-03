@@ -18,43 +18,30 @@
 package de.cubeisland.engine.hide;
 
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
-public class HidemeListener implements Listener
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.basics.command.general.DisplayOnlinePlayerListEvent;
+
+public class Hide extends Module
 {
-    private final Hideme module;
+    private HideConfig config;
 
-    public HidemeListener(Hideme module)
+    @Override
+    public void onEnable()
     {
-        this.module = module;
-    }
+        this.getCore().getCommandManager().registerCommands(this, new HideCommands(this));
+        this.getCore().getEventManager().registerListener(this, new HideListener(this));
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent event)
-    {
+        if (this.getCore().getModuleManager().getModule("basics") != null)
+        {
+            this.getCore().getEventManager().registerListener(this, new Listener() {
+                @EventHandler
+                public void onListPlayers(DisplayOnlinePlayerListEvent event)
+                {
 
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onQuit(PlayerQuitEvent event)
-    {
-
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onInteract(PlayerInteractEvent event)
-    {
-
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onChat(AsyncPlayerChatEvent event)
-    {
-
+                }
+            });
+        }
     }
 }

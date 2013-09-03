@@ -25,9 +25,9 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 
 public class HideCommands implements CommandHolder
 {
-    private final Hideme module;
+    private final Hide module;
 
-    public HideCommands(Hideme module)
+    public HideCommands(Hide module)
     {
         this.module = module;
     }

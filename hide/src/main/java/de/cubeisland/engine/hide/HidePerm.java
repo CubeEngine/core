@@ -17,11 +17,17 @@
  */
 package de.cubeisland.engine.hide;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
+import de.cubeisland.engine.core.permission.PermDefault;
+import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.PermissionContainer;
 
-@Codec("yml")
-@DefaultConfig
-public class HidemeConfig extends Configuration
-{}
+public class HidePerm extends PermissionContainer<Hide>
+{
+    public HidePerm(Hide module)
+    {
+        super(module);
+    }
+
+    public static final Permission AUTO = Permission.createAbstractPermission("auto", PermDefault.FALSE);
+    public static final Permission INTERACT = Permission.createAbstractPermission("auto", PermDefault.FALSE);
+}
