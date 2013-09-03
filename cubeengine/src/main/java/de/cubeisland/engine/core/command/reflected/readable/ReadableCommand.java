@@ -109,6 +109,6 @@ public class ReadableCommand extends CubeCommand
             }
         }
         context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/commands/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 }
