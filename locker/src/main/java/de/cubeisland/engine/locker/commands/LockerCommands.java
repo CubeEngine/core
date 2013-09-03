@@ -20,6 +20,9 @@ package de.cubeisland.engine.locker.commands;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Completer;
@@ -29,6 +32,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
@@ -55,6 +59,7 @@ public class LockerCommands extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
+            User user = (User)context.getSender();
             KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender());
             if (keyBook != null)
             {
@@ -62,7 +67,26 @@ public class LockerCommands extends ContainerCommand
                 if (lock != null && keyBook.isValidFor(lock))
                 {
                     context.sendTranslated("&aThe strong magic surrounding this KeyBook allows you to access the designated protection");
-                    // TODO more info /w perms
+                    if (lock.isBlockLock())
+                    {
+                        Location loc = lock.getLocation();
+                        context.sendTranslated("&aThe protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s",
+                                               loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                    }
+                    else
+                    {
+                        for (Entity entity : user.getWorld().getEntities())
+                        {
+                            if (entity.getUniqueId().equals(lock.getEntityUID()))
+                            {
+                                Location loc = entity.getLocation();
+                                context.sendTranslated("&aThe entity-protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s",
+                                                       loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                                return;
+                            }
+                        }
+                        context.sendTranslated("&aYour magic is not strong enough to locate the corresponding entity-protection!");
+                    }
                 }
                 else
                 {
@@ -154,6 +178,7 @@ public class LockerCommands extends ContainerCommand
         }
     }
 
+    @Alias(names = "cgive")
     @Command(desc = "gives a protection to someone else",
     usage = "<player>", min = 1, max = 1)
     public void give(ParameterizedContext context)
@@ -191,8 +216,9 @@ public class LockerCommands extends ContainerCommand
         }
     }
 
+    @Alias(names = "cflag")
     @Command(desc = "Sets or unsets flags",
-             usage = "flag <flags...>",
+             usage = "set|unset <flags...>",
              params = {
                  @Param(names = "set", completer = FlagCompleter.class),
                  @Param(names = "unset", completer = FlagCompleter.class),
@@ -201,7 +227,14 @@ public class LockerCommands extends ContainerCommand
     {
         if (context.getParams().isEmpty())
         {
-            context.sendTranslated("&eYou need to define which flags to &6set&a or &6unSet&a!");
+            context.sendTranslated("&eYou need to define which flags to &6set&e or &6unSet&a!");
+            context.sendTranslated("&eThe following flags are available:");
+            String format = ChatFormat.parseFormats(" &7- &6%s");
+            for (String flag : ProtectionFlag.getNames())
+            {
+                context.sendMessage(String.format(format, flag));
+            }
+            context.sendTranslated("&eYou can also unset \"&6all&e\"");
             return;
         }
         if (context.hasParam("set") && context.hasParam("unSet"))
@@ -233,8 +266,6 @@ public class LockerCommands extends ContainerCommand
             return ProtectionFlag.getTabCompleteList(token, subToken);
         }
     }
-
-    // TODO subcmd for droptransfer
 
     public static boolean isNotUser(CommandSender sender)
     {

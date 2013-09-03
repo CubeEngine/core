@@ -398,7 +398,6 @@ public class LockManager implements Listener
         {
             locations.add(location);
         }
-        System.out.print(locations.size());
         for (Location loc : locations)
         {
             this.dsl.newRecord(TABLE_LOCK_LOCATION).newLocation(model, loc).insert();
@@ -407,6 +406,19 @@ public class LockManager implements Listener
         this.addLoadedLocationLock(lock);
         lock.showCreatedMessage(user);
         lock.attemptCreatingKeyBook(user, createKeyBook);
+        for (BlockLockerConfiguration blockprotection : this.module.getConfig().blockprotections)
+        {
+            if (blockprotection.isType(material))
+            {
+                short flags = blockprotection.getFlags();
+                if (flags != 0)
+                {
+                    lock.setFlags((short)(lock.getFlags() | flags));
+                    lock.model.update();
+                }
+                break;
+            }
+        }
         return lock;
     }
 
@@ -430,6 +442,19 @@ public class LockManager implements Listener
         this.locksById.put(lock.getId(), lock);
         lock.showCreatedMessage(user);
         lock.attemptCreatingKeyBook(user, createKeyBook);
+        for (EntityLockerConfiguration entityProtection : this.module.getConfig().entityProtections)
+        {
+            if (entityProtection.isType(entity.getType()))
+            {
+                short flags = entityProtection.getFlags();
+                if (flags != 0)
+                {
+                    lock.setFlags((short)(lock.getFlags() | flags));
+                    lock.model.update();
+                }
+                break;
+            }
+        }
         return lock;
     }
 

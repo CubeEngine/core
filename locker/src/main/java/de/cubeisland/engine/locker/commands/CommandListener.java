@@ -27,7 +27,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -101,7 +100,6 @@ public class CommandListener implements Listener
     public void onRightClickBlock(PlayerInteractEvent event)
     {
         if (!map.keySet().contains(event.getPlayer().getName())) return;
-        if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         if (event.getClickedBlock() != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
@@ -109,7 +107,7 @@ public class CommandListener implements Listener
             Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
             Lock lock = this.manager.getLockAtLocation(location, user, triplet.getFirst() != INFO);
             if (this.handleInteract1(triplet, lock, user, location.getBlock().getState() instanceof InventoryHolder,
-                     !this.manager.canProtect(event.getClickedBlock().getType()), event))
+                     this.manager.canProtect(event.getClickedBlock().getType()), event))
             {
                 return;
             }
@@ -201,7 +199,8 @@ public class CommandListener implements Listener
         Location location = event.getRightClicked().getLocation();
         Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
         Lock lock = this.manager.getLockForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
-        if (this.handleInteract1(triplet, lock, user, event.getRightClicked() instanceof InventoryHolder, !this.manager.canProtect(event.getRightClicked().getType()), event))
+        if (this.handleInteract1(triplet, lock, user, event.getRightClicked() instanceof InventoryHolder,
+                                 this.manager.canProtect(event.getRightClicked().getType()), event))
         {
             return;
         }
@@ -309,6 +308,7 @@ public class CommandListener implements Listener
                     flags |= protectionFlag.flagValue;
                 }
                 lock.setFlags((short)(flags | lock.getFlags()));
+                user.sendTranslated("&eFlags set!");
             }
             else
             {
@@ -331,6 +331,7 @@ public class CommandListener implements Listener
                         flags |= protectionFlag.flagValue;
                     }
                     lock.setFlags((short)(lock.getFlags() & ~flags));
+                    user.sendTranslated("&eFlags unset!");
                 }
             }
             else

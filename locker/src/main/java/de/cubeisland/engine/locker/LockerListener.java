@@ -21,6 +21,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Dropper;
 import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -459,8 +460,8 @@ public class LockerListener implements Listener
         if (lock != null)
         {
             InventoryHolder dest = event.getDestination().getHolder();
-            if ((dest instanceof Hopper && lock.hasFlag(BLOCK_HOPPER_OUT))
-             || (dest instanceof HopperMinecart && lock.hasFlag(BLOCK_HOPPER_MINECART_OUT)))
+            if (((dest instanceof Hopper || dest instanceof Dropper) && !lock.hasFlag(HOPPER_OUT))
+             || (dest instanceof HopperMinecart && !lock.hasFlag(HOPPER_MINECART_OUT)))
             {
                 event.setCancelled(true);
             }
@@ -468,9 +469,14 @@ public class LockerListener implements Listener
         if (event.isCancelled()) return;
         inventory = event.getDestination();
         lock = this.manager.getLockOfInventory(inventory, null);
-        if (lock != null && lock.hasFlag(BLOCK_HOPPER_ANY_IN))
+        if (lock != null)
         {
-            event.setCancelled(true);
+            InventoryHolder source = event.getSource().getHolder();
+            if (((source instanceof Hopper || source instanceof Dropper) && !lock.hasFlag(HOPPER_IN))
+                || (source instanceof HopperMinecart && !lock.hasFlag(HOPPER_MINECART_IN)))
+            {
+                event.setCancelled(true);
+            }
         }
     }
 

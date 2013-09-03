@@ -41,33 +41,29 @@ public enum ProtectionFlag
      */
     BLOCK_REDSTONE("redstone", 1 << 0),
     /**
-     * Suck up items in a configured radius
-     */
-    MAGNET("magnet", 1 << 1),
-    /**
      * Autoclose doors etc. after a configured time
      */
-    AUTOCLOSE("autoclose", 1 << 2),
+    AUTOCLOSE("autoclose", 1 << 1),
     /**
-     * Block items to get moved into a chest by a hopper OR hopper-minecart
+     * Allow items to get moved into a chest by an other block
      */
-    BLOCK_HOPPER_ANY_IN("hopperIn", 1 << 3),
+    HOPPER_IN("hopperIn", 1 << 2),
     /**
-     * Block items to get moved out of a chest by a hopper-block
+     * Allow items to get moved out of a chest by a hopper-block
      */
-    BLOCK_HOPPER_OUT("hopperOut", 1 << 4),
+    HOPPER_OUT("hopperOut", 1 << 3),
     /**
-     * Block items to get moved out of a chest by a hopper-minecart
+     * Allow items to get moved out of a chest by a hopper-minecart
      */
-    BLOCK_HOPPER_MINECART_OUT("hopperMinecartOut", 1 << 5),
+    HOPPER_MINECART_OUT("minecartOut", 1 << 4),
     /**
-     * Enables drop-transfer mode
+     * Allows items to get moved into a chest by an entity
      */
-    DROPTRANSFER("droptransfer", 1 << 6),
+    HOPPER_MINECART_IN("minecartIn", 1 << 5),
     /**
      * Notify the owner when accessing
      */
-    NOTIFY_ACCESS("notify", 1 << 7)
+    NOTIFY_ACCESS("notify", 1 << 6)
     ;
     public static final short NONE = 0;
 
@@ -139,4 +135,8 @@ public enum ProtectionFlag
         return result;
     }
 
+    public static Set<String> getNames()
+    {
+        return flags.keySet();
+    }
 }

@@ -124,8 +124,8 @@ public class LockerAdminCommands extends ContainerCommand
         // cleanup remove not accessed protections / time in config
     }
 
-    public void find(ParameterizedContext context)
+    public void list(ParameterizedContext context)
     {
-        // find (show all protections)
+        // find & show all protections of a user/selection
     }
 }

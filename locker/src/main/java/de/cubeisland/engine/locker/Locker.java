@@ -63,26 +63,17 @@ public class Locker extends Module
     {
         return this.config;
     }
-    // TODO handle unloading & garbage collection e.g. when entities got removed by WE
 
     /*
     Features:
-      hopper protection / minecart/wHopper
       lock leashknot / or fence from leashing on it
-      global access list
-    MagnetContainer: collect Items around (config for min/max/default)
-    Drop Transfer: Dropped items are teleported into selected chest
-      /droptransfer select
-      /droptransfer on
-      /droptransfer off
-      /droptransfer status
     lock beacon effects?
     golden masterKey for Admin/Mod to open all chests (explode in hand if no perm)
     masterKeys to open all chests of one user
     multiKeys to open multiple chests
     buttons to door-protection to open door for x-sec = autoclose time BUT deny redstone so ONLY that button can open the door/doubledoor
-
     implement usage of separate access-level for in & out in containers
+    name a protection
      */
 
 }
