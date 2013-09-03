@@ -87,6 +87,7 @@ public class TeleportPointModel extends UpdatableRecordImpl<TeleportPointModel> 
         this.setZ(location.getZ());
         this.setYaw((double)location.getYaw());
         this.setPitch((double)location.getPitch());
+        this.setWorld(UInteger.valueOf(CubeEngine.getCore().getWorldManager().getWorldId(location.getWorld())));
     }
 
     public static final short TYPE_HOME = 0;
