@@ -18,3 +18,7 @@ IRC
 ---
 
 [#cubeengine on EsperNet](https://webchat.esper.net/?channels=cubeengine&nick=)
+
+Stable download
+---------------
+http://static.cubeisland.de/CubeEngine/CubeEngine.7z
