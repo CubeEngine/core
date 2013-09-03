@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.hideme;
+package de.cubeisland.engine.hide;
 
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
-public class HidemePerm extends PermissionContainer<Hideme>
+public class HidePerm extends PermissionContainer<Hide>
 {
-    public HidemePerm(Hideme module)
+    public HidePerm(Hide module)
     {
         super(module);
     }

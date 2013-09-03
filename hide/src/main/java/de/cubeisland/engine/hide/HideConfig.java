@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.hideme;
+package de.cubeisland.engine.hide;
 
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.annotations.Codec;
@@ -23,5 +23,5 @@ import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 
 @Codec("yml")
 @DefaultConfig
-public class HidemeConfig extends Configuration
+public class HideConfig extends Configuration
 {}

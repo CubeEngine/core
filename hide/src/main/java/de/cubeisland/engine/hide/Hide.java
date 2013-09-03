@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.hideme;
+package de.cubeisland.engine.hide;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,15 +23,15 @@ import org.bukkit.event.Listener;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.basics.command.general.DisplayOnlinePlayerListEvent;
 
-public class Hideme extends Module
+public class Hide extends Module
 {
-    private HidemeConfig config;
+    private HideConfig config;
 
     @Override
     public void onEnable()
     {
         this.getCore().getCommandManager().registerCommands(this, new HideCommands(this));
-        this.getCore().getEventManager().registerListener(this, new HidemeListener(this));
+        this.getCore().getEventManager().registerListener(this, new HideListener(this));
 
         if (this.getCore().getModuleManager().getModule("basics") != null)
         {

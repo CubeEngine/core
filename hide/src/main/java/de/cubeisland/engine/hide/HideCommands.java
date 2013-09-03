@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.hideme;
+package de.cubeisland.engine.hide;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
@@ -25,9 +25,9 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 
 public class HideCommands implements CommandHolder
 {
-    private final Hideme module;
+    private final Hide module;
 
-    public HideCommands(Hideme module)
+    public HideCommands(Hide module)
     {
         this.module = module;
     }
