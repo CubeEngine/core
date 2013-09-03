@@ -37,7 +37,6 @@
     <module>shout</module>
     <module>roles</module>
     <module>rulebook</module>
-    <module>irc</module>
     <module>chat</module>
     <module>border</module>
     <module>signmarket</module>
