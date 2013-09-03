@@ -209,12 +209,6 @@ public class LockManager implements Listener
         Lock lock = this.loadedLocks.get(location);
         if (lock != null && access)
         {
-            if ((this.module.getConfig().protectWhenOnlyOffline && lock.getOwner().isOnline())
-             || (this.module.getConfig().protectWhenOnlyOnline && !lock.getOwner().isOnline()))
-            {
-                return null;
-            }
-            lock.model.setLastAccess(new Timestamp(System.currentTimeMillis()));
             if (!lock.validateTypeAt(location))
             {
                 lock.delete(user);
@@ -223,6 +217,7 @@ public class LockManager implements Listener
                     user.sendTranslated("&eDetected invalid BlockProtection is now deleted!");
                 }
             }
+            return this.handleLockAccess(lock, access);
         }
         return lock;
     }
@@ -258,10 +253,15 @@ public class LockManager implements Listener
                 this.loadedEntityLocks.put(uniqueId, lock);
             }
         }
+        return this.handleLockAccess(lock, access);
+    }
+
+    private Lock handleLockAccess(Lock lock, boolean access)
+    {
         if (lock != null && access)
         {
             if ((this.module.getConfig().protectWhenOnlyOffline && lock.getOwner().isOnline())
-                || (this.module.getConfig().protectWhenOnlyOnline && !lock.getOwner().isOnline()))
+            || (this.module.getConfig().protectWhenOnlyOnline && !lock.getOwner().isOnline()))
             {
                 return null;
             }

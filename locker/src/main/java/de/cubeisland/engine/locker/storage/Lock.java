@@ -191,9 +191,7 @@ public class Lock
      */
     public boolean setAccess(User modifyUser, boolean add, short level)
     {
-        AccessListModel model = this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
-            where(TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId()),
-                  TABLE_ACCESS_LIST.USER_ID.eq(modifyUser.getEntity().getKey())).fetchOne();
+        AccessListModel model = this.getAccess(modifyUser);
         if (add)
         {
             if (model == null)
@@ -638,15 +636,15 @@ public class Lock
     {
         if (this.hasFlag(ProtectionFlag.NOTIFY_ACCESS))
         {
-            if (lastKeyNotify == null)
+            if (lastNotify == null)
             {
-                this.lastKeyNotify = new HashMap<>();
+                this.lastNotify = new HashMap<>();
             }
             User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
-            Long last = this.lastKeyNotify.get(owner.getName());
+            Long last = this.lastNotify.get(owner.getName());
             if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
             {
-                this.lastKeyNotify.put(owner.getName(), System.currentTimeMillis());
+                this.lastNotify.put(owner.getName(), System.currentTimeMillis());
                 owner.sendTranslated("&2%s&e accessed one of your protections!", user.getName());
             }
         }
@@ -892,50 +890,30 @@ public class Lock
     private void scheduleAutoClose(final Door door1, final BlockState state1, final Door door2, final BlockState state2)
     {
         if (!this.manager.module.getConfig().autoCloseEnable) return;
-        Runnable run;
-        if (door2 == null)
-        {
-            run = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    door1.setOpen(false);
-                    state1.setData(door1);
-                    if (state1.update())
-                    {
-                        Location location = state1.getLocation();
-                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                    }
-                }
-            };
-        }
-        else
-        {
-            run = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    door1.setOpen(false);
-                    state1.setData(door1);
-                    if (state1.update())
-                    {
-                        Location location = state1.getLocation();
-                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                    }
-                    door2.setOpen(false);
-                    state2.setData(door2);
-                    if (state2.update())
-                    {
-                        Location location = state2.getLocation();
-                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                    }
-                }
-            };
-        }
-        taskId = this.manager.module.getCore().getTaskManager()
-                            .runTaskDelayed(this.manager.module, run, this.manager.module.getConfig().autoCloseSeconds * 20);
+        taskId = this.manager.module.getCore().getTaskManager().runTaskDelayed(this.manager.module, new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    door1.setOpen(false);
+                                    state1.setData(door1);
+                                    if (state1.update())
+                                    {
+                                        Location location = state1.getLocation();
+                                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                                    }
+                                    if (door2 != null)
+                                    {
+                                        door2.setOpen(false);
+                                        state2.setData(door2);
+                                        if (state2.update())
+                                        {
+                                            Location location = state2.getLocation();
+                                            location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                                        }
+                                    }
+                                }
+                            }, this.manager.module.getConfig().autoCloseSeconds * 20);
     }
 
     /**
