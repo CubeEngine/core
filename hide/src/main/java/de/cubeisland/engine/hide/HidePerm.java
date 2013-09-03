@@ -29,5 +29,7 @@ public class HidePerm extends PermissionContainer<Hide>
     }
 
     public static final Permission AUTO = Permission.createAbstractPermission("auto", PermDefault.FALSE);
-    public static final Permission INTERACT = Permission.createAbstractPermission("auto", PermDefault.FALSE);
+    public static final Permission INTERACT = Permission.createAbstractPermission("interact", PermDefault.FALSE);
+    public static final Permission HIDE = Permission.createPermission("hide");
+    public static final Permission DROP = Permission.createPermission("drop");
 }

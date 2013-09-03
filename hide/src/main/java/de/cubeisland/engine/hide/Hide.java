@@ -17,15 +17,26 @@
  */
 package de.cubeisland.engine.hide;
 
+import java.util.Set;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.basics.command.general.DisplayOnlinePlayerListEvent;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.hide.event.FakePlayerJoinEvent;
+import de.cubeisland.engine.hide.event.FakePlayerQuitEvent;
 
 public class Hide extends Module
 {
     private HideConfig config;
+    private Set<String> hiddenPlayers;
+    private Set<String> canSeeHiddens;
 
     @Override
     public void onEnable()
@@ -43,5 +54,85 @@ public class Hide extends Module
                 }
             });
         }
+    }
+
+    public void hidePlayer(Player player, boolean message)
+    {
+        final Server server = player.getServer();
+        PlayerQuitEvent playerQuit = new FakePlayerQuitEvent(player, ChatColor.YELLOW + player.getName() + " left the game.");
+        server.getPluginManager().callEvent(playerQuit);
+        if (message)
+        {
+            server.broadcastMessage(String.valueOf(playerQuit.getQuitMessage()));
+        }
+
+        final User user = this.getCore().getUserManager().getUser(player.getName());
+
+        this.hiddenPlayers.add(player.getName());
+
+        for (Player p : server.getOnlinePlayers())
+        {
+            if (!this.canSeeHiddens.contains(p))
+            {
+                p.hidePlayer(player);
+            }
+        }
+
+        Player p;
+        for (String playerName : this.hiddenPlayers)
+        {
+            p = server.getPlayer(playerName);
+            if (p != player && !this.canSeeHiddens.contains(playerName))
+            {
+                p.hidePlayer(player);
+            }
+        }
+    }
+
+    public void showPlayer(Player player)
+    {
+        final Server server = player.getServer();
+        this.hiddenPlayers.remove(player);
+
+        FakePlayerJoinEvent playerJoin = new FakePlayerJoinEvent(player, ChatColor.YELLOW + player.getName() + " joined the game.");
+        server.getPluginManager().callEvent(playerJoin);
+        final String msg = playerJoin.getJoinMessage();
+        if (msg != null)
+        {
+            server.broadcastMessage(msg);
+        }
+
+        for (Player p : server.getOnlinePlayers())
+        {
+            if (!this.canSeeHiddens.contains(p))
+            {
+                p.showPlayer(player);
+            }
+        }
+
+        Player p;
+        for (String playerName : this.hiddenPlayers)
+        {
+            p = server.getPlayer(playerName);
+            if (p != player && !this.canSeeHiddens.contains(playerName))
+            {
+                p.showPlayer(player);
+            }
+        }
+    }
+
+    public HideConfig getConfig()
+    {
+        return config;
+    }
+
+    public Set<String> getHiddenPlayers()
+    {
+        return hiddenPlayers;
+    }
+
+    public Set<String> getCanSeeHiddens()
+    {
+        return canSeeHiddens;
     }
 }
