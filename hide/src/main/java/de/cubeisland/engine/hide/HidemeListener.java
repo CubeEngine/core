@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.hideme;
+package de.cubeisland.engine.hide;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

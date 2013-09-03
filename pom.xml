@@ -46,7 +46,7 @@
     <module>spawn</module>
     <module>powersigns</module>
     <module>itemrepair</module>
-    <module>hideme</module>
+    <module>hide</module>
     <module>horselocker</module>
     <module>locker</module>
   </modules>
