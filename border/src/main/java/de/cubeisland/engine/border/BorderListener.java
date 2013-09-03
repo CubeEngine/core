@@ -80,7 +80,7 @@ public class BorderListener implements Listener
         final Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
         BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
         boolean result = spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= this.config.radius * this.config.radius;
-        if (result)
+        if (!result)
         {
             this.module.getLog().trace("Border reached! Spawn {}/{} | To {}/{}",
                       spawnChunk.getX(), spawnChunk.getZ() , to.getX(), to.getZ());
