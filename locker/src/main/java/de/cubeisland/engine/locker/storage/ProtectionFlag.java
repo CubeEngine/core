@@ -39,7 +39,7 @@ public enum ProtectionFlag
     /**
      * Ignore Redstone changes to protected block
      */
-    BLOCK_REDSTONE("redstone", 1 << 0),
+    BLOCK_REDSTONE("blockredstone", 1 << 0),
     /**
      * Autoclose doors etc. after a configured time
      */
