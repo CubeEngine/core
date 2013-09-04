@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.i18n.Language;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -55,8 +56,6 @@ import de.cubeisland.engine.shout.announce.announcer.MessageTask;
 import de.cubeisland.engine.shout.announce.receiver.Receiver;
 import de.cubeisland.engine.shout.announce.receiver.UserReceiver;
 import org.apache.commons.lang.Validate;
-import org.slf4j.Logger;
-import sun.swing.BakedArrayList;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.TXT;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
@@ -69,7 +68,7 @@ public class AnnouncementManager
     private static final String MOTD_FOLDER_NAME = "MOTD";
     private static final String META_FILE_NAME = "meta.yml";
 
-    private final Logger logger;
+    private final Log logger;
     private final Shout module;
     private final Announcer announcer;
     private final Path announcementFolder;

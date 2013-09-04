@@ -15,18 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.logger.logback;
+package de.cubeisland.engine.core.logging.logback;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.core.spi.AppenderAttachable;
+import de.cubeisland.engine.core.logging.Log;
 
-public class LogbackLogger extends de.cubeisland.engine.core.logger.wrapper.Logger
+public class LogbackLog extends Log
 {
 
     private final Logger logger;
 
-    public LogbackLogger(Logger logger)
+    public LogbackLog(Logger logger)
     {
         this.logger = logger;
     }

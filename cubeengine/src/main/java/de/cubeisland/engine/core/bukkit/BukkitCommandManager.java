@@ -34,7 +34,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
 
@@ -47,7 +47,7 @@ public class BukkitCommandManager implements CommandManager
     private final CommandBackend commandBackend;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
     private final ConsoleCommandSender consoleSender;
-    private final Logger commandLogger;
+    private final Log commandLogger;
     private final ConfirmManager confirmManager;
 
     public BukkitCommandManager(BukkitCore core, CommandBackend commandBackend)
@@ -58,7 +58,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandBackend = commandBackend;
         this.commandFactories = new THashMap<>();
 
-        this.commandLogger = core.getLoggerFactory().createCommandLogger();
+        this.commandLogger = core.getLogFactory().createCommandLogger();
         // TODO
         this.confirmManager = new ConfirmManager(this, core);
     }

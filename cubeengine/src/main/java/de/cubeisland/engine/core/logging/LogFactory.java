@@ -15,31 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.logger.wrapper;
+package de.cubeisland.engine.core.logging;
 
 
 import java.io.File;
 
 import de.cubeisland.engine.core.module.ModuleInfo;
 
-public interface LoggerFactory
+public interface LogFactory
 {
 
     /**
-     * Get or create the logger for the core
+     * Get or create the logging for the core
      *
-     * @return The logger for the core
+     * @return The logging for the core
      */
-    public Logger createCoreLogger(java.util.logging.Logger log, File dataFolder);
+    public Log createCoreLogger(java.util.logging.Logger log, File dataFolder);
 
     /**
-     * Get or create a logger for the module
+     * Get or create a logging for the module
      * @param module The module
-     * @return The logger for the module
+     * @return The logging for the module
      */
-    public Logger createModuleLogger(ModuleInfo module);
+    public Log createModuleLogger(ModuleInfo module);
 
     long getBirthTime();
 
-    public Logger createCommandLogger();
+    public Log createCommandLogger();
+
+    public Log createPermissionLog();
+
+    public Log createLanguageLog();
+
+    public Log getWebApiLog();
 }

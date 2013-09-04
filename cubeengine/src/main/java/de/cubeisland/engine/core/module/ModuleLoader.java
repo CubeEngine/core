@@ -33,7 +33,7 @@ import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
@@ -131,7 +131,7 @@ public class ModuleLoader
             ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
-            Logger logger = core.getLoggerFactory().createModuleLogger(info);
+            Log logger = core.getLogFactory().createModuleLogger(info);
 
             module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader, logger);
             module.onLoad();

@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 
@@ -54,7 +54,7 @@ import org.apache.commons.lang.Validate;
 public class ApiServer
 {
     private final Core core;
-    private final Logger logger;
+    private final Log logger;
     private final AtomicInteger maxContentLength;
     private final AtomicBoolean compress;
     private final AtomicInteger compressionLevel;

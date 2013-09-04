@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.logger.logback;
+package de.cubeisland.engine.core.logging.logback;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -37,15 +38,14 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-import de.cubeisland.engine.core.logger.ColorConverter;
-import de.cubeisland.engine.core.logger.JULAppender;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
-import de.cubeisland.engine.core.logger.wrapper.LoggerFactory;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleInfo;
+import org.slf4j.LoggerFactory;
 
 import static java.util.logging.Level.WARNING;
 
-public class LogBackLoggerFactory implements LoggerFactory
+public class LogBackLogFactory implements LogFactory
 {
 
     private final BukkitCore core;
@@ -53,31 +53,38 @@ public class LogBackLoggerFactory implements LoggerFactory
     private LoggerContext loggerContext;
     private ch.qos.logback.classic.Logger parentLogger;
 
-    public LogBackLoggerFactory(BukkitCore core)
+    public LogBackLogFactory(BukkitCore core)
     {
         this.core = core;
+        // Create the logger context with the default settings
+        this.loggerContext = (LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory();
+        this.loggerContext.start();
     }
 
     @Override
-    public Logger createCoreLogger(java.util.logging.Logger log, File dataFolder)
+    public long getBirthTime()
     {
-        this.loggerContext = (LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory();
-        this.loggerContext.start();
+        return this.loggerContext.getBirthTime();
+    }
 
+    @Override
+    public Log createCoreLogger(java.util.logging.Logger log, File dataFolder)
+    {
+        // Change the settings of the logger context to the ones from the config.
         try
         {
             File logbackXML = new File(dataFolder, "logback.xml");
             JoranConfigurator logbackConfigurator = new JoranConfigurator();
-            logbackConfigurator.setContext((LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory());
-            ((LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory()).reset();
+            logbackConfigurator.setContext(this.loggerContext);
+            this.loggerContext.reset();
             if (logbackXML.exists())
             {
                 logbackConfigurator.doConfigure(logbackXML.getAbsolutePath());
             }
             else
             {
-                logbackConfigurator.doConfigure(new ContextInitializer((LoggerContext)org.slf4j.LoggerFactory
-                                                                                               .getILoggerFactory()).findURLOfDefaultConfigurationFile(true));
+                logbackConfigurator.doConfigure(new ContextInitializer(this.loggerContext)
+                                                    .findURLOfDefaultConfigurationFile(true));
             }
         }
         catch (JoranException e)
@@ -85,7 +92,7 @@ public class LogBackLoggerFactory implements LoggerFactory
             log.log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e
                 .getLocalizedMessage(), e);
         }
-        // Configure the logger
+        // Configure the logging
         ch.qos.logback.classic.Logger parentLogger = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory
                                                                                              .getLogger("cubeengine");
         JULAppender consoleAppender = new JULAppender();
@@ -103,13 +110,13 @@ public class LogBackLoggerFactory implements LoggerFactory
         ch.qos.logback.classic.Logger logger;
 
         logger = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger("cubeengine.core");
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
+        // TODO RemoteHandler is not yet implemented this.logging.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         logger.setLevel(Level.DEBUG);
         ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 
         this.parentLogger = parentLogger;
         this.coreLogger = logger;
-        return new LogbackLogger(logger);
+        return new LogbackLog(logger);
     }
 
     public void configureLoggers(BukkitCoreConfiguration config)
@@ -135,14 +142,14 @@ public class LogBackLoggerFactory implements LoggerFactory
     }
 
     @Override
-    public Logger createModuleLogger(ModuleInfo module)
+    public Log createModuleLogger(ModuleInfo module)
     {
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory
                                                                                        .getLogger("cubeengine." + module.getName().toLowerCase());
         logger.setLevel(Level.ALL);
-        //The module has it's own logger
+        //The module has it's own logging
         logger.setAdditive(false);
-        // Setup the module's console logger
+        // Setup the module's console logging
         JULAppender consoleAppender = new JULAppender();
         consoleAppender.setContext(logger.getLoggerContext());
         consoleAppender.setLogger(((BukkitCore)CubeEngine.getCore()).getLogger());
@@ -155,8 +162,8 @@ public class LogBackLoggerFactory implements LoggerFactory
         consoleAppender.addFilter(consoleFilter);
         consoleFilter.start();
 
-        // Setup the module's file logger
-        String logFile = System.getProperty("cubeengine.logger.default-path") + "/" +
+        // Setup the module's file logging
+        String logFile = System.getProperty("cubeengine.logging.default-path") + "/" +
             new SimpleDateFormat("yyyy-MM-dd--HHmm").format(new Date(logger.getLoggerContext().getBirthTime()))
             + "/" + module.getName().toLowerCase();
         RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<>();
@@ -170,19 +177,19 @@ public class LogBackLoggerFactory implements LoggerFactory
         rollingPolicy.setContext(logger.getLoggerContext());
         rollingPolicy.setParent(fileAppender);
         rollingPolicy.setMinIndex(0);
-        rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logger.max-file-count")));
+        rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logging.max-file-count")));
         rollingPolicy.setFileNamePattern(logFile + ".%i.log");
         fileAppender.setRollingPolicy(rollingPolicy);
         SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
         triggeringPolicy.setContext(logger.getLoggerContext());
-        triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
+        triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logging.max-size"));
         fileAppender.setTriggeringPolicy(triggeringPolicy);
         ThresholdFilter fileFilter = new ThresholdFilter();
         fileFilter.setLevel(this.core.getConfiguration().loggingFileLevel.toString());
         fileAppender.addFilter(fileFilter);
         fileFilter.start();
 
-        // Add the appenders to the logger and start everything
+        // Add the appenders to the logging and start everything
         logger.addAppender(consoleAppender);
         logger.addAppender(fileAppender);
         logger.addAppender(((ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger("cubeengine"))
@@ -194,19 +201,37 @@ public class LogBackLoggerFactory implements LoggerFactory
         consoleLayout.start();
         consoleAppender.start();
 
-        return new LogbackLogger(logger);
+        return new LogbackLog(logger);
     }
 
     @Override
-    public long getBirthTime()
+    public Log createCommandLogger()
     {
-        return this.loggerContext.getBirthTime();
+        return new LogbackLog(this.loggerContext.getLogger("cubeengine.commands"));
     }
 
     @Override
-    public Logger createCommandLogger()
+    public Log createPermissionLog()
     {
-        return new LogbackLogger(this.loggerContext.getLogger("cubeengine.commands"));
+        return new LogbackLog((Logger)LoggerFactory.getLogger("cubeengine.permissions"));
+    }
+
+    @Override
+    public Log createLanguageLog()
+    {
+        return new LogbackLog((Logger)LoggerFactory.getLogger("cubeengine.language"));
+    }
+
+    private Log webApiLog;
+
+    @Override
+    public Log getWebApiLog()
+    {
+        if (webApiLog == null)
+        {
+            webApiLog = new LogbackLog((Logger)LoggerFactory.getLogger("cubeengine.webapi"));
+        }
+        return webApiLog;
     }
 
     public void stop()

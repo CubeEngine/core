@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.logger.wrapper;
+package de.cubeisland.engine.core.logging;
 
-public abstract class Logger
+public abstract class Log
 {
     // The casts to Throwable are necessary
     public void trace(String message)

@@ -42,8 +42,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
-import de.cubeisland.engine.core.logger.logback.LogbackLogger;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logging.logback.LogbackLog;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -64,7 +64,7 @@ import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
 
 public abstract class BaseModuleManager implements ModuleManager
 {
-    private final Logger logger;
+    private final Log logger;
     protected final Core core;
     private final ModuleLoader loader;
     private final Map<String, Module> modules;
@@ -462,7 +462,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
-        ((LogbackLogger)module.getLog()).getOriginalLogger().detachAndStopAllAppenders();
+        ((LogbackLog)module.getLog()).getOriginalLogger().detachAndStopAllAppenders();
 
         this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS) + "ms - null fields");
         // null all the fields referencing this module

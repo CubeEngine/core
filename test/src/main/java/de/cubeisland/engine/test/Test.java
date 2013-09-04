@@ -68,7 +68,7 @@ public class Test extends Module
         this.registerTest("Clear chat test", new ClearChatTest(this));
         this.registerTest("Command args test", new CommandArgsTest(this));
         this.registerTest("Database test", new DatabaseTest(this));
-        this.registerTest("Logger test", new LoggerTest(this));
+        this.registerTest("Log test", new LoggerTest(this));
         this.registerTest("Match test", new MatchTest(this));
         this.registerTest("Module test", new ModuleTest(this));
         this.registerTest("Parse time test", new ParseTimeTest(this));

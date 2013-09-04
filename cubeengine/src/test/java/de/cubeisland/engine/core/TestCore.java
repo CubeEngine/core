@@ -28,8 +28,9 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logger.logback.LogbackLogger;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
+import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -52,7 +53,7 @@ public class TestCore implements Core
 {
     private final Version version = Version.ONE;
     private final String sourceVersion = "master-aaaaaaaa";
-    private final Logger logger = new LogbackLogger((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(""));
+    private final Log logger = new LogbackLog((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(""));
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
@@ -98,7 +99,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public Logger getLog()
+    public Log getLog()
     {
         return this.logger;
     }
@@ -194,5 +195,11 @@ public class TestCore implements Core
     public ServiceManager getServiceManager()
     {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public LogFactory getLogFactory()
+    {
+        return null; // TODO ?
     }
 }

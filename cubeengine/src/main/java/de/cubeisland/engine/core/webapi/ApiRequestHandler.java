@@ -25,6 +25,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -45,8 +47,6 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.webapi.RequestError.*;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
@@ -62,7 +62,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     // TODO rewrite log messages, most of them are incomplete
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
-    private final Logger logger;
+    private final Log logger;
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
@@ -71,7 +71,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     {
         this.server = server;
         this.objectMapper = mapper;
-        this.logger = LoggerFactory.getLogger("cubeengine.webapi");
+        this.logger = CubeEngine.getCore().getLogFactory().getWebApiLog();
     }
 
     @Override

@@ -23,7 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
@@ -38,7 +38,7 @@ public abstract class Module
     private boolean initialized = false;
     private Core core;
     private ModuleInfo info;
-    private Logger log;
+    private Log log;
     private ModuleLoader loader;
     private ModuleRegistry registry = null;
     private ClassLoader classLoader;
@@ -46,7 +46,7 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Logger logger)
+    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Log logger)
     {
         if (!this.initialized)
         {
@@ -106,7 +106,7 @@ public abstract class Module
      *
      * @return the module log
      */
-    public Logger getLog()
+    public Log getLog()
     {
         return this.log;
     }

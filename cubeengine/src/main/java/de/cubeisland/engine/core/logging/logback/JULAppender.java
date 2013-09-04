@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.logger;
+package de.cubeisland.engine.core.logging.logback;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +26,7 @@ import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.status.ErrorStatus;
 
 /**
- * An appender for LogBack that forwards all output to a java.util.logging.Logger
+ * An appender for LogBack that forwards all output to a java.util.logging.Log
  * It does support a layout.
  */
 public class JULAppender  extends AppenderBase<ILoggingEvent>
@@ -42,7 +42,7 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
         }
         if (this.logger == null)
         {
-            addStatus(new ErrorStatus("No logger set for the appender named \"" + name + "\"", this));
+            addStatus(new ErrorStatus("No logging set for the appender named \"" + name + "\"", this));
         }
         else
         {

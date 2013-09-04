@@ -60,9 +60,9 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logger.logback.LogBackLoggerFactory;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
-import de.cubeisland.engine.core.logger.wrapper.LoggerFactory;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
+import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -97,7 +97,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
-    private Logger logger;
+    private Log logger;
     private EventManager eventRegistration;
     private BukkitCommandManager commandManager;
     private BukkitTaskManager taskManager;
@@ -114,7 +114,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private List<Runnable> initHooks;
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
-    private LoggerFactory loggerFactory;
+    private LogFactory logFactory;
 
     @Override
     public void onLoad()
@@ -160,18 +160,18 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
-            System.setProperty("cubeengine.logger.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
-            System.setProperty("cubeengine.logger.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
+            System.setProperty("cubeengine.logging.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
+            System.setProperty("cubeengine.logging.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
+            System.setProperty("cubeengine.logging.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
         }
         catch (IOException e)
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
-        this.loggerFactory = new LogBackLoggerFactory(this);
+        this.logFactory = new LogBackLogFactory(this);
 
-        this.logger = loggerFactory.createCoreLogger(this.getLogger(), this.getDataFolder());
+        this.logger = logFactory.createCoreLogger(this.getLogger(), this.getDataFolder());
 
         this.fileManager.clearTempDir();
 
@@ -182,7 +182,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
 
 
-        ((LogBackLoggerFactory)this.loggerFactory).configureLoggers(this.config);
+        ((LogBackLogFactory)this.logFactory).configureLoggers(this.config);
 
         if (this.config.catchSystemSignals)
         {
@@ -422,9 +422,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.fileManager.clean();
         }
 
-        if (this.loggerFactory != null)
+        if (this.logFactory != null)
         {
-            ((LogBackLoggerFactory)this.loggerFactory).stop();
+            ((LogBackLogFactory)this.logFactory).stop();
         }
 
         if (this.fileManager != null)
@@ -569,7 +569,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public Logger getLog()
+    public Log getLog()
     {
         return this.logger;
     }
@@ -639,9 +639,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         return this.serviceManager;
     }
 
-    public LoggerFactory getLoggerFactory()
+    public LogFactory getLogFactory()
     {
-        return loggerFactory;
+        return logFactory;
     }
     //endregion
 }

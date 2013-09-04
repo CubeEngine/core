@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
+import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.ban.BanManager;
@@ -38,13 +39,11 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 
 
 import static java.util.Arrays.asList;
@@ -266,7 +265,7 @@ public class CoreCommands extends ContainerCommand
             Level level = Level.toLevel(context.getString(0), null);
             if (level != null)
             {
-                ((Logger)context.getCore().getLog()).setLevel(level);
+                ((LogbackLog)context.getCore().getLog()).getOriginalLogger().setLevel(level);
                 context.sendTranslated("&aNew log level successfully set!");
             }
             else
@@ -276,7 +275,7 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&eThe current log level: &a%s", ((Logger)context.getCore().getLog()).getLevel().toString());
+            context.sendTranslated("&eThe current log level: &a%s", ((LogbackLog)context.getCore().getLog()).getOriginalLogger().toString());
         }
     }
 }

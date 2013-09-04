@@ -19,7 +19,7 @@ package de.cubeisland.engine.core;
 
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logger.wrapper.Logger;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.user.UserManager;
 
 /**
@@ -114,11 +114,11 @@ public final class CubeEngine
     }
 
     /**
-     * Returns the Logger
+     * Returns the Log
      *
-     * @return the Logger
+     * @return the Log
      */
-    public static Logger getLog()
+    public static Log getLog()
     {
         return core.getLog();
     }

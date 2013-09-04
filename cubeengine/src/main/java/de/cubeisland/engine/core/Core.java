@@ -24,7 +24,8 @@ import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logger.wrapper.LoggerFactory;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.service.ServiceManager;
@@ -96,11 +97,11 @@ public interface Core
     FileManager getFileManager();
 
     /**
-     * This method returns the engine logger
+     * This method returns the engine logging
      *
-     * @return the engine logger
+     * @return the engine logging
      */
-    de.cubeisland.engine.core.logger.wrapper.Logger getLog();
+    Log getLog();
 
     /**
      * This method returns the module manager
@@ -179,5 +180,5 @@ public interface Core
      */
     ServiceManager getServiceManager();
 
-    LoggerFactory getLoggerFactory();
+    LogFactory getLogFactory();
 }
