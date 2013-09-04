@@ -131,7 +131,7 @@ public class KickBanCommands
             return;
         }
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
-        if (!player.hasPlayedBefore() && !context.hasFlag("f"))
+        if (!player.hasPlayedBefore() && !player.isOnline() && !context.hasFlag("f"))
         {
             context.sendTranslated("&2%s&6 has never played on this server before! Use the -force flag to ban him anyways.", player.getName());
             return;
@@ -304,7 +304,7 @@ public class KickBanCommands
             return;
         }
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
-        if (!player.hasPlayedBefore() && context.hasFlag("f"))
+        if (!player.hasPlayedBefore() && !player.isOnline() &&  context.hasFlag("f"))
         {
             context.sendTranslated("&2%s&6 has never played on this server before! Use the -force flag to ban him anyways.", player.getName());
             return;
