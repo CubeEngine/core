@@ -226,6 +226,20 @@ public class LockManager implements Listener
             }
             return this.handleLockAccess(lock, access);
         }
+        if (lock != null && lock.isSingleBlockLock())
+        {
+            Block block = lock.getLocation().getBlock();
+            if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)
+            {
+                for (BlockFace cardinalDirection : BlockUtil.CARDINAL_DIRECTIONS)
+                {
+                    if (block.getRelative(cardinalDirection).getType() == block.getType())
+                    {
+                        this.extendLock(lock, block.getRelative(cardinalDirection).getLocation());
+                    }
+                }
+            }
+        }
         return lock;
     }
 
