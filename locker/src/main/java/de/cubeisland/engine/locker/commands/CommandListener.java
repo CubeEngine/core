@@ -26,6 +26,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -104,7 +105,13 @@ public class CommandListener implements Listener
     @EventHandler
     public void onRightClickBlock(PlayerInteractEvent event)
     {
-        if (event.getPlayer().isSneaking()) return;
+        if (event.getAction() == Action.PHYSICAL
+            || event.getAction() == Action.LEFT_CLICK_AIR
+            || event.getAction() == Action.RIGHT_CLICK_AIR
+            || event.getPlayer().isSneaking())
+        {
+            return;
+        }
         if (!map.keySet().contains(event.getPlayer().getName())) return;
         if (event.getClickedBlock() != null)
         {

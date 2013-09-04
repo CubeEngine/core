@@ -122,6 +122,8 @@ public class LockerConfig extends YamlConfiguration
             blockprotections.add(new BlockLockerConfiguration(Material.CHEST).autoProtect(PRIVATE));
             blockprotections.add(new BlockLockerConfiguration(Material.TRAPPED_CHEST).autoProtect(PRIVATE));
             blockprotections.add(new BlockLockerConfiguration(Material.FURNACE));
+            blockprotections.add(new BlockLockerConfiguration(Material.BURNING_FURNACE));
+            blockprotections.add(new BlockLockerConfiguration(Material.BREWING_STAND));
             blockprotections.add(new BlockLockerConfiguration(Material.DISPENSER).defaultFlags(BLOCK_REDSTONE));
             blockprotections.add(new BlockLockerConfiguration(Material.DROPPER).defaultFlags(BLOCK_REDSTONE));
             blockprotections.add(new BlockLockerConfiguration(Material.SIGN_POST));
@@ -136,6 +138,8 @@ public class LockerConfig extends YamlConfiguration
         {
             entityProtections = new ArrayList<>();
             entityProtections.add(new EntityLockerConfiguration(EntityType.HORSE).autoProtect(PRIVATE));
+            entityProtections.add(new EntityLockerConfiguration(EntityType.MINECART_CHEST));
+            entityProtections.add(new EntityLockerConfiguration(EntityType.MINECART_HOPPER));
         }
 
         if (this.protectWhenOnlyOffline && this.protectWhenOnlyOnline)
