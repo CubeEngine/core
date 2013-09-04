@@ -244,9 +244,10 @@ public class LockerListener implements Listener
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlace(BlockPlaceEvent event)
     {
+        if (!event.canBuild()) return;
         Block placed = event.getBlockPlaced();
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (placed.getType() == Material.CHEST || placed.getType() == Material.TRAPPED_CHEST)
