@@ -18,9 +18,8 @@
 package de.cubeisland.engine.locker.commands;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
@@ -47,7 +46,7 @@ import static de.cubeisland.engine.locker.storage.LockType.*;
 public class CommandListener implements Listener
 {
     private Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
-    private Set<String> persist = new HashSet<>();
+    private Map<String,Long> persist = new HashMap<>();
 
     private de.cubeisland.engine.locker.Locker module;
     private LockManager manager;
@@ -72,10 +71,16 @@ public class CommandListener implements Listener
     {
         if (isNotUser(sender)) return;
         map.put(sender.getName(), new Triplet<>(commandType, s, b));
-        if (persist.contains(sender.getName()))
+        if (this.doesPersist(sender.getName()))
         {
             sender.sendTranslated("&ePersist mode is active. Your command will be repeated until reusing &6/cpersist");
         }
+    }
+
+    private boolean doesPersist(String name)
+    {
+        Long lastUsage = this.persist.get(name);
+        return lastUsage != null && (System.currentTimeMillis() - lastUsage) < TimeUnit.MINUTES.toMillis(5);
     }
 
     /**
@@ -86,13 +91,13 @@ public class CommandListener implements Listener
      */
     public boolean persist(User sender)
     {
-        if (persist.contains(sender.getName()))
+        if (doesPersist(sender.getName()))
         {
             persist.remove(sender.getName());
             this.map.remove(sender.getName());
             return false;
         }
-        persist.add(sender.getName());
+        persist.put(sender.getName(), System.currentTimeMillis());
         return true;
     }
 
@@ -140,7 +145,11 @@ public class CommandListener implements Listener
 
     private void cmdUsed(User user)
     {
-        if (!this.persist.contains(user.getName()))
+        if (doesPersist(user.getName()))
+        {
+            this.persist.put(user.getName(), System.currentTimeMillis());
+        }
+        else
         {
             this.map.remove(user.getName());
         }
@@ -196,42 +205,52 @@ public class CommandListener implements Listener
     {
         if (!map.keySet().contains(event.getPlayer().getName())) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        Location location = event.getRightClicked().getLocation();
-        Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
-        Lock lock = this.manager.getLockForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
-        if (this.handleInteract1(triplet, lock, user, event.getRightClicked() instanceof InventoryHolder,
-                                 this.manager.canProtect(event.getRightClicked().getType()), event))
+        try
         {
-            return;
+            Location location = event.getRightClicked().getLocation();
+            Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
+            Lock lock = this.manager.getLockForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
+            if (this.handleInteract1(triplet, lock, user, event.getRightClicked() instanceof InventoryHolder,
+                                     this.manager.canProtect(event.getRightClicked().getType()), event))
+            {
+                return;
+            }
+            switch (triplet.getFirst())
+            {
+            case C_PRIVATE:
+                this.manager.createLock(event.getRightClicked(), user, C_PRIVATE.lockType, triplet.getSecond(), triplet
+                    .getThird());
+                break;
+            case C_PUBLIC:
+                this.manager.createLock(event.getRightClicked(), user, C_PUBLIC.lockType, triplet.getSecond(), triplet
+                    .getThird());
+                break;
+            case C_DONATION:
+                this.manager.createLock(event.getRightClicked(), user, C_DONATION.lockType, triplet.getSecond(), triplet
+                    .getThird());
+                break;
+            case C_FREE:
+                this.manager.createLock(event.getRightClicked(), user, C_FREE.lockType, triplet.getSecond(), triplet
+                    .getThird());
+                break;
+            case C_GUARDED:
+                this.manager.createLock(event.getRightClicked(), user, C_GUARDED.lockType, triplet.getSecond(), triplet
+                    .getThird());
+                break;
+            default:
+                this.handleInteract2(triplet.getFirst(), lock, user, triplet.getSecond(), triplet.getThird(), location,
+                                     event.getRightClicked() instanceof InventoryHolder ? (InventoryHolder)event.getRightClicked() : null);
+            }
+            this.cmdUsed(user);
+            event.setCancelled(true);
         }
-        switch (triplet.getFirst())
+        catch (Exception ex)
         {
-        case C_PRIVATE:
-            this.manager.createLock(event.getRightClicked(), user, C_PRIVATE.lockType, triplet.getSecond(), triplet
-                .getThird());
-            break;
-        case C_PUBLIC:
-            this.manager.createLock(event.getRightClicked(), user, C_PUBLIC.lockType, triplet.getSecond(), triplet
-                .getThird());
-            break;
-        case C_DONATION:
-            this.manager.createLock(event.getRightClicked(), user, C_DONATION.lockType, triplet.getSecond(), triplet
-                .getThird());
-            break;
-        case C_FREE:
-            this.manager.createLock(event.getRightClicked(), user, C_FREE.lockType, triplet.getSecond(), triplet
-                .getThird());
-            break;
-        case C_GUARDED:
-            this.manager.createLock(event.getRightClicked(), user, C_GUARDED.lockType, triplet.getSecond(), triplet
-                .getThird());
-            break;
-        default:
-            this.handleInteract2(triplet.getFirst(), lock, user, triplet.getSecond(), triplet.getThird(), location,
-                event.getRightClicked() instanceof InventoryHolder ? (InventoryHolder)event.getRightClicked() : null);
+            this.module.getLog().error("Error with CommandInteract!");
+            this.module.getLog().debug(ex.getLocalizedMessage(), ex);
+            user.sendTranslated("&4An unknown error occurred!");
+            user.sendTranslated("&4Please report this error to an administrator.");
         }
-        this.cmdUsed(user);
-        event.setCancelled(true);
     }
 
     private void handleInteract2(CommandType first, Lock lock, User user, String second, Boolean third, Location location, InventoryHolder possibleHolder)

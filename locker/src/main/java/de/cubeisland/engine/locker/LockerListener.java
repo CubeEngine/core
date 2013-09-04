@@ -349,7 +349,7 @@ public class LockerListener implements Listener
         {
             if (lock.hasFlag(BLOCK_REDSTONE))
             {
-                event.setNewCurrent(0);
+                event.setNewCurrent(event.getOldCurrent());
             }
         }
     }
