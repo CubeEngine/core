@@ -256,7 +256,7 @@ public class LockerListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType()) // bindable chest
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Lock lock = this.manager.getLockAtLocation(relativeLoc, user, false);
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc, user, false, false);
                     if (lock != null)
                     {
                         if (!lock.validateTypeAt(relativeLoc))
@@ -288,7 +288,7 @@ public class LockerListener implements Listener
                 if (placed.getType() == placed.getRelative(blockFace).getType())
                 {
                     placed.getRelative(blockFace).getLocation(relativeLoc);
-                    Lock lock = this.manager.getLockAtLocation(relativeLoc, null, false);
+                    Lock lock = this.manager.getLockAtLocation(relativeLoc, null, false, false);
                     if (lock != null)
                     {
                         if (!lock.validateTypeAt(relativeLoc))
