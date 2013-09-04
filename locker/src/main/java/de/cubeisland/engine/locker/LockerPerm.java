@@ -39,6 +39,7 @@ public class LockerPerm extends PermissionContainer<Locker>
                        Permission.createPermission(mainCmd.getChild("unlock").getPermission()),
                        Permission.createPermission(mainCmd.getChild("key").getPermission()),
                        Permission.createPermission(mainCmd.getChild("flag").getPermission()),
+                       Permission.createPermission(mainCmd.getChild("give").getPermission()),
                        Permission.createPermission(createCmd.getChild("private").getPermission()),
                        Permission.createPermission(createCmd.getChild("public").getPermission()),
                        Permission.createPermission(createCmd.getChild("donation").getPermission()),
