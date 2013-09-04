@@ -211,7 +211,7 @@ public class LockManager implements Listener
      * @param access whether to access the lock or just get information from it
      * @return the lock or null if there is no lock OR the chunk is not loaded
      */
-    public Lock getLockAtLocation(Location location, User user, boolean access)
+    public Lock getLockAtLocation(Location location, User user, boolean access, boolean repairExpand)
     {
         Lock lock = this.loadedLocks.get(location);
         if (lock != null && access)
@@ -226,7 +226,7 @@ public class LockManager implements Listener
             }
             return this.handleLockAccess(lock, access);
         }
-        if (lock != null && lock.isSingleBlockLock())
+        if (repairExpand && lock != null && lock.isSingleBlockLock())
         {
             Block block = lock.getLocation().getBlock();
             if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)
@@ -236,11 +236,21 @@ public class LockManager implements Listener
                     if (block.getRelative(cardinalDirection).getType() == block.getType())
                     {
                         this.extendLock(lock, block.getRelative(cardinalDirection).getLocation());
+                        if (user != null)
+                        {
+                            user.sendTranslated("&aProtection repaired & expanded!");
+                        }
+                        break;
                     }
                 }
             }
         }
         return lock;
+    }
+
+    public Lock getLockAtLocation(Location location, User user, boolean access)
+    {
+        return this.getLockAtLocation(location, user, access, true);
     }
 
     /**

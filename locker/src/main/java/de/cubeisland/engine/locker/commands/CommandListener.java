@@ -104,6 +104,7 @@ public class CommandListener implements Listener
     @EventHandler
     public void onRightClickBlock(PlayerInteractEvent event)
     {
+        if (event.getPlayer().isSneaking()) return;
         if (!map.keySet().contains(event.getPlayer().getName())) return;
         if (event.getClickedBlock() != null)
         {
@@ -203,6 +204,7 @@ public class CommandListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onRightClickEntity(PlayerInteractEntityEvent event)
     {
+        if (event.getPlayer().isSneaking()) return;
         if (!map.keySet().contains(event.getPlayer().getName())) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         try
