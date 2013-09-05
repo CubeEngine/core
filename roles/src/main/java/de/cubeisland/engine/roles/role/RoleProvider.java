@@ -125,8 +125,7 @@ public abstract class RoleProvider
         }
         catch (IOException e)
         {
-            this.module.getLog().warn("Failed to load the configurat");
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            this.module.getLog().warn(e, "Failed to load the configuration");
         }
         this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getFileName(), i);
     }
