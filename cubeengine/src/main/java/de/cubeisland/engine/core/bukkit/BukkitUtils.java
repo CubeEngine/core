@@ -63,10 +63,9 @@ public class BukkitUtils
             entityPlayerLocaleField.setAccessible(true);
 
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            core.getLog().error("Failed to initialize the required hacks!");
-            core.getLog().debug(e.getLocalizedMessage(), e);
+            core.getLog().error(ex, "Failed to initialize the required hacks!");
             return false;
         }
         return true;
