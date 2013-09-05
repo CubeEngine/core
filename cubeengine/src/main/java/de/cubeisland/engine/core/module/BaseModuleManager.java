@@ -162,17 +162,15 @@ public abstract class BaseModuleManager implements ModuleManager
                     }
                     this.moduleInfos.put(info.getId(), info);
                 }
-                catch (InvalidModuleException e)
+                catch (InvalidModuleException ex)
                 {
-                    this.logger.error("Failed to load the module from {}!", file);
-                    this.logger.debug(e.getLocalizedMessage(), e);
+                    this.logger.error(ex, "Failed to load the module from {}!", file);
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.core.getLog().error("Failed to load modules!");
-            this.core.getLog().debug(e.getLocalizedMessage(), e);
+            this.core.getLog().error(ex, "Failed to load modules!");
             return;
         }
         Collection<String> moduleNames = new HashSet<>(this.moduleInfos.keySet());
@@ -192,17 +190,15 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 this.loadModule(moduleName, this.moduleInfos);
             }
-            catch (InvalidModuleException e)
+            catch (InvalidModuleException ex)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.debug("Failed to load the module '{}'", moduleName);
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.debug("ex, Failed to load the module '{}'", moduleName);
             }
-            catch (ModuleException e)
+            catch (ModuleException ex)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.error("Failed to load the module '{}'", moduleName);
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.error(ex, "Failed to load the module '{}'", moduleName);
             }
         }
         this.logger.info("Finished loading modules!");
@@ -313,10 +309,9 @@ public abstract class BaseModuleManager implements ModuleManager
         }
         catch (IOException ignored)
         {} // This should never happen
-        catch (JoranException e)
+        catch (JoranException ex)
         {
-            module.getLog().warn("An error occurred while loading the modules logback.xml config");
-            module.getLog().debug(e.getLocalizedMessage(), e);
+            module.getLog().warn(ex, "An error occurred while loading the modules logback.xml config");
         }
 
         module = this.loader.loadModule(info);
@@ -330,10 +325,9 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             fields = module.getClass().getDeclaredFields();
         }
-        catch (NoClassDefFoundError e)
+        catch (NoClassDefFoundError ex)
         {
-            module.getLog().warn("Failed to get the fields of the main class");
-            module.getLog().debug(e.getLocalizedMessage(), e);
+            module.getLog().warn(ex, "Failed to get the fields of the main class");
         }
         for (Field field : fields)
         {
@@ -464,7 +458,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.moduleInfos.remove(module.getId());
         ((LogbackLog)module.getLog()).getOriginalLogger().detachAndStopAllAppenders();
 
-        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS) + "ms - null fields");
+        this.logger.debug("{} ms - null fields", Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS));
         // null all the fields referencing this module
         for (Module m : this.modules.values())
         {
@@ -483,7 +477,7 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
             }
         }
-        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - classloader");
+        this.logger.debug("{} ms - classloader", Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS));
         ClassLoader classLoader = module.getClassLoader();
         if (classLoader instanceof ModuleClassLoader)
         {
@@ -495,21 +489,20 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 ((URLClassLoader)classLoader).close();
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                module.getLog().warn("Failed to close the class loader of {}!", module.getName());
-                module.getLog().debug(e.getLocalizedMessage(), e);
+                module.getLog().warn(ex, "Failed to close the class loader of {}!", module.getName());
             }
         }
         else
         {
             module.getLog().debug("Class loader cannot be closed.");
         }
-        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - Before GC ");
+        this.logger.debug("{} ms - Before GC ", Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS));
         System.gc();
         System.gc();
-        this.logger.debug("Unloading '" + module.getName() + "' took {} milliseconds!", Profiler
-            .endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
+        this.logger.debug("Unloading '{}' took {} milliseconds!", module.getName(),
+                          Profiler.endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
 
         assert !this.modules.containsKey(module.getId()): "Module not properly removed (modules)!";
         assert !this.moduleInfos.containsKey(module.getId()): "Module not properly removed (moduleInfos)!";
@@ -558,10 +551,9 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 this.reloadModule(module);
             }
-            catch (ModuleException e)
+            catch (ModuleException ex)
             {
-                this.logger.error("Failed to reload ''{}''", module.getName());
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.error(ex, "Failed to reload ''{}''", module.getName());
             }
             ++modules;
         }

@@ -33,11 +33,11 @@ public class MatchTest extends Test
     {
         module.getLog().debug(String.valueOf(Match.enchant().enchantment("infinity")));
         module.getLog().debug(String.valueOf(Match.enchant().enchantment("infini")));
-        module.getLog().debug(String.valueOf(Match.enchant().enchantment("hablablubb")) + " is null");
+        module.getLog().debug("{} is null", String.valueOf(Match.enchant().enchantment("hablablubb")));
         module.getLog().debug(String.valueOf(Match.enchant().enchantment("protect")));
         module.getLog().debug(String.valueOf(Match.material().itemStack("stone").serialize()));
         module.getLog().debug(String.valueOf(Match.material().itemStack("stoned").serialize()));
-        module.getLog().debug(String.valueOf(Match.material().itemStack("hablablubb")) + " is null");
+        module.getLog().debug("{} is null", String.valueOf(Match.material().itemStack("hablablubb")));
         module.getLog().debug(String.valueOf(Match.material().itemStack("wool:red").serialize()));
         module.getLog().debug(String.valueOf(Match.material().itemStack("35").serialize()));
         module.getLog().debug(String.valueOf(Match.material().itemStack("35:15").serialize()));
@@ -48,7 +48,7 @@ public class MatchTest extends Test
         module.getLog().debug(String.valueOf(Match.entity().any("pig")));
         module.getLog().debug(String.valueOf(Match.entity().monster("zombi")));
         module.getLog().debug(String.valueOf(Match.entity().friendlyMob("shep")));
-        module.getLog().debug(String.valueOf(Match.entity().friendlyMob("ghast")) + " is null");
+        module.getLog().debug("{} is null", String.valueOf(Match.entity().friendlyMob("ghast")));
         this.setSuccess(true);
     }
 }

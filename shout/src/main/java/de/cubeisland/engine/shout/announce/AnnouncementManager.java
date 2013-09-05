@@ -351,10 +351,9 @@ public class AnnouncementManager
                         motdLoaded = true;
                         continue;
                     }
-                    catch (ShoutException e)
+                    catch (ShoutException ex)
                     {
-                        this.logger.info("An announcement that looked like the MOTD failed to load.");
-                        this.logger.debug(e.getLocalizedMessage(), e);
+                        this.logger.info(ex, "An announcement that looked like the MOTD failed to load.");
                     }
                 }
                 this.logger.debug("Loading announcement {}", path);
@@ -362,17 +361,15 @@ public class AnnouncementManager
                 {
                     this.addAnnouncement(this.loadAnnouncement(path));
                 }
-                catch (ShoutException e)
+                catch (ShoutException ex)
                 {
-                    this.logger.warn("There was an error loading the announcement: {}", path);
-                    this.logger.debug(e.getLocalizedMessage(), e);
+                    this.logger.warn(ex, "There was an error loading the announcement: {}", path);
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.logger.warn("An error occured while loading announcements.");
-            this.logger.debug(e.getLocalizedMessage(), e);
+            this.logger.warn(ex, "An error occured while loading announcements.");
         }
     }
 
@@ -408,10 +405,9 @@ public class AnnouncementManager
                     {
                         Files.move(alternative, metaFile);
                     }
-                    catch (IOException e)
+                    catch (IOException ex)
                     {
-                        this.module.getLog().info("Failed to rename the meta file, using it anyway: {}", alternative.getFileName());
-                        this.module.getLog().debug(e.getLocalizedMessage(), e);
+                        this.module.getLog().info(ex, "Failed to rename the meta file, using it anyway: {}", alternative.getFileName());
                         metaFile = alternative;
                     }
                 }
@@ -467,17 +463,15 @@ public class AnnouncementManager
                         messages.put(language.getLocale(), StringUtils.explode("\n", content));
                     }
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    this.module.getLog().info("Failed to load an announcement file: {}", langFile);
-                    this.module.getLog().debug(e.getLocalizedMessage(), e);
+                    this.module.getLog().info(ex, "Failed to load an announcement file: {}", langFile);
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed to read an announcement folder: {}", announcementFolder);
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Failed to read an announcement folder: {}", announcementFolder);
         }
 
 

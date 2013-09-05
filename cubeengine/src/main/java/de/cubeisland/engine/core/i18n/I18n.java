@@ -132,10 +132,9 @@ public class I18n implements Cleanable
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.core.getLog().warn("Failed to load the languages!");
-            this.core.getLog().debug(e.getLocalizedMessage(), e);
+            this.core.getLog().warn(ex, "Failed to load the languages!");
         }
 
         Stack<Locale> loadStack = new Stack<>();

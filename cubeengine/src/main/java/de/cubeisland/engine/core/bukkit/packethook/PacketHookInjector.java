@@ -75,10 +75,9 @@ public final class PacketHookInjector implements Listener
                     instance.replacePlayerConnection(player);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                core.getLog().error("An error occurred while registering the packet hook injector");
-                core.getLog().debug(e.getLocalizedMessage(), e);
+                core.getLog().error(ex, "An error occurred while registering the packet hook injector");
                 return false;
             }
         }
@@ -155,11 +154,10 @@ public final class PacketHookInjector implements Listener
                 oldHandler.disconnected = true;
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             player.playerConnection = oldHandler;
-            CubeEngine.getLog().debug("Failed to swap the PlayerConnection of player {}", player.getName());
-            CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
+            CubeEngine.getLog().debug(ex, "Failed to swap the PlayerConnection of player {}", player.getName());
         }
     }
 }

@@ -88,8 +88,7 @@ public class Test extends Module
             catch (Exception ex)
             {
                 test.getValue().setSuccess(false);
-                getLog().warn("{} failed in onLoad", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onLoad", test.getKey());
             }
         }
     }
@@ -106,8 +105,7 @@ public class Test extends Module
             catch (Exception ex)
             {
                 test.getValue().setSuccess(false);
-                getLog().warn("{} failed in onEnable", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onEnable", test.getKey());
             }
         }
 
@@ -128,8 +126,7 @@ public class Test extends Module
             catch (Exception ex)
             {
                 test.getValue().setSuccess(false);
-                getLog().warn("{} failed in onStartupFinished", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onStartupFinished", test.getKey());
             }
             if (!test.getValue().isSuccessSet() || !test.getValue().wasSuccess())
             {
@@ -150,8 +147,7 @@ public class Test extends Module
             }
             catch (Exception ex)
             {
-                getLog().warn("{} failed in onDisable", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onDisable", test.getKey());
             }
         }
 

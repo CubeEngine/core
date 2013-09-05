@@ -78,8 +78,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
         this.error(context, UNKNOWN_ERROR);
-        this.logger.error("An error occurred while processing an API request!");
-        this.logger.debug(t.getLocalizedMessage(), t);
+        this.logger.error(t, "An error occurred while processing an API request!");
     }
 
     @Override
@@ -114,9 +113,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
         if (request.getDecoderResult().isFailure())
         {
             this.error(context, UNKNOWN_ERROR);
-            this.logger.info("The decoder failed on this request...");
-            Throwable cause = request.getDecoderResult().cause();
-            this.logger.debug(cause.getLocalizedMessage(), cause);
+            this.logger.info(request.getDecoderResult().cause(), "The decoder failed on this request...");
             return;
         }
 
@@ -187,10 +184,9 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             {
                 data = this.objectMapper.readTree(requestContent.array());
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                this.logger.debug("Failed to parse the request body!");
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.debug(ex, "Failed to parse the request body!");
                 this.error(context, MALFORMED_DATA);
                 return;
             }

@@ -34,7 +34,7 @@ public class ErrorResult implements CommandResult
     @Override
     public void show(CommandContext context)
     {
-        context.sendTranslated("&cAn error occurred while running this command!");
-        CubeEngine.getLog().debug(this.exception.getLocalizedMessage(), this.exception);
+        context.sendTranslated("&cAn unknown error occurred while running this command!");
+        CubeEngine.getLog().debug(this.exception, "An unknown error occurred while running a command");
     }
 }

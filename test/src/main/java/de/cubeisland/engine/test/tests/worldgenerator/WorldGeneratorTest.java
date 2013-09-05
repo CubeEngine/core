@@ -68,10 +68,9 @@ public class WorldGeneratorTest extends Test
         {
             module.getCore().getWorldManager().deleteWorld(TEST_WORLD_NAME);
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            module.getLog().warn("Failed to delete the test world!");
-            module.getLog().debug(e.getLocalizedMessage(), e);
+            module.getLog().warn(ex, "Failed to delete the test world!");
         }
     }
 }

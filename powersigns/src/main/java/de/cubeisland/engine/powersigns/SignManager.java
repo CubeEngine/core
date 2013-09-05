@@ -128,7 +128,7 @@ public class SignManager implements Listener
         {
             String idLine = event.getLine(1);
             idLine = idLine.substring(1,idLine.length()-1);
-            CubeEngine.getLog().debug("IdentifierLine: {}" + idLine);
+            this.module.getLog().debug("IdentifierLine: {}" + idLine);
             idLine = idLine.toLowerCase();
             SignType signType = registerdSignTypes.get(idLine);
             if (signType == null)

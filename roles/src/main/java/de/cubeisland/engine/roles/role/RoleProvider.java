@@ -299,10 +299,9 @@ public abstract class RoleProvider
         {
             role.saveConfigToNewFile();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed to save the the config after renaming for {}!", role.getName());
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Failed to save the the config after renaming for {}!", role.getName());
             return false;
         }
 

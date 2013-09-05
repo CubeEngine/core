@@ -80,8 +80,7 @@ public class MaterialDataMatcher
             }
             catch (IOException ex)
             {
-                CubeEngine.getLog().warn("Could not update data values");
-                CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+                CubeEngine.getLog().warn(ex, "Could not update data values");
                 return;
             }
         }
@@ -93,8 +92,7 @@ public class MaterialDataMatcher
             }
             catch (IOException ex)
             {
-                CubeEngine.getLog().warn("Could not update data values");
-                CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+                CubeEngine.getLog().warn(ex, "Could not update data values");
                 return;
             }
         }

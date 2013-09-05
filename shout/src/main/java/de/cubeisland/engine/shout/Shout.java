@@ -63,8 +63,7 @@ public class Shout extends Module
             }
             catch (Exception ex)
             {
-                this.getLog().warn("An exception occured when creating the example announcement!");
-                this.getLog().debug(ex.getLocalizedMessage(), ex);
+                this.getLog().warn(ex, "An exception occured when creating the example announcement!");
             }
         }
         this.announcementManager.loadAnnouncements(this.getFolder());
@@ -101,10 +100,9 @@ public class Shout extends Module
         {
             Files.createFile(file);
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.getLog().debug("There was an error creating a file: {}", file);
-            this.getLog().debug(e.getLocalizedMessage(), e);
+            this.getLog().debug(ex, "There was an error creating a file: {}", file);
         }
         return true;
     }

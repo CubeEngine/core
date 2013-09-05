@@ -517,11 +517,11 @@ public abstract class CubeCommand extends Command
             sender.sendTranslated("&cYou're not allowed to do this!");
             sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             sender.sendTranslated("&4An unknown error occurred while executing this command!");
             sender.sendTranslated("&4Please report this error to an administrator.");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().debug(ex, "An unknown error occurred while executing a command");
         }
 
         return true;

@@ -271,7 +271,7 @@ public class ActionTypeManager
             {
                 this.categories.put(category.name, category);
             }
-            this.module.getLog().debug("ActionType registered: " + actionType.getModel().getId() + " " + actionType.getName());
+            this.module.getLog().debug("ActionType registered: {} {}", actionType.getModel().getId(), actionType.getName());
         }
         return this;
     }
