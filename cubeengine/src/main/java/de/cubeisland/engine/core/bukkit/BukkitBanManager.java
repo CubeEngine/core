@@ -124,7 +124,7 @@ public class BukkitBanManager implements BanManager
     {
         assert address != null: "The address must not be null!";
 
-        this.ipBans.remove(address.toString());
+        this.ipBans.remove(address.getHostAddress());
         return true;
     }
 
