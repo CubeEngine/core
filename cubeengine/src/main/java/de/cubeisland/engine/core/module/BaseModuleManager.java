@@ -157,7 +157,7 @@ public abstract class BaseModuleManager implements ModuleManager
                         else
                         {
                             this.unloadModule(module);
-                            this.logger.info("A newer version of '" + info.getName() + "' will replace the currently loaded version!");
+                            this.logger.info("A newer version of '{}' will replace the currently loaded version!", info.getName());
                         }
                     }
                     this.moduleInfos.put(info.getId(), info);
