@@ -205,7 +205,7 @@ public abstract class RoleProvider
             }
             catch (CircularRoleDependencyException ex)
             {
-                this.module.getLog().warn(ex.getMessage());
+                this.module.getLog().warn(ex, "A CircularRoleDependencyException occurred");
                 return null;
             }
         }

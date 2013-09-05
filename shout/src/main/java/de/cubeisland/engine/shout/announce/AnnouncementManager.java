@@ -471,7 +471,7 @@ public class AnnouncementManager
         }
         catch (IOException ex)
         {
-            this.module.getLog().warn(ex, "Failed to read an announcement folder: {}", announcementFolder);
+            this.logger.warn(ex, "Failed to read an announcement folder: {}", announcementFolder);
         }
 
 

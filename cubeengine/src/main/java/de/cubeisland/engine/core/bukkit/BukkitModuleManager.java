@@ -59,10 +59,9 @@ public class BukkitModuleManager extends BaseModuleManager
                         {
                             module.onStartupFinished();
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
-                            module.getLog().warn("An uncaught exception occurred during onFinishLoading(): {}" , e
-                                .getMessage(), e);
+                            module.getLog().warn(ex, "An uncaught exception occurred during onFinishLoading()");
                         }
                     }
                 }
