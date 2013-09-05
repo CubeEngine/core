@@ -19,7 +19,6 @@ package de.cubeisland.engine.hide;
 
 import java.util.Set;
 
-import org.bukkit.Server;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -56,45 +55,77 @@ public class HideListener implements Listener
         final User joined = this.um.getExactUser(event.getPlayer().getName());
         if (event instanceof FakePlayerJoinEvent)
         {
-            User user;
-            for (String playerName : this.module.getCanSeeHiddens())
+            for (User canSeeHiddens : this.module.getCanSeeHiddens())
             {
-                user = um.getExactUser(playerName);
-                if (joined != user)
+                if (joined != canSeeHiddens)
                 {
-                    user.sendTranslated("&aPlayer &e%s&a is now visible", joined.getDisplayName());
+                    canSeeHiddens.sendTranslated("&aPlayer &e%s&a is now visible", joined.getDisplayName());
                 }
             }
             return;
         }
 
-        for (String playerName : this.module.getHiddenPlayers())
+        for (User hiddenUser : this.module.getHiddenUsers())
         {
-            um.getExactUser(playerName).sendMessage(event.getJoinMessage());
+            hiddenUser.sendMessage(event.getJoinMessage());
         }
 
-        if (!this.module.getCanSeeHiddens().contains(joined.getName()))
+        if (!this.module.getCanSeeHiddens().contains(joined))
         {
-            for (String playerName : this.module.getHiddenPlayers())
+            for (User hiddenUser : this.module.getHiddenUsers())
             {
-                joined.hidePlayer(um.getExactUser(playerName));
+                joined.hidePlayer(hiddenUser);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void autoHide(PlayerJoinEvent event)
+    {
+        if (event instanceof FakePlayerJoinEvent)
+        {
+            return;
+        }
+        final User user = um.getExactUser(event.getPlayer().getName());
+        if (HidePerm.AUTO_HIDE.isAuthorized(user))
+        {
+            event.setJoinMessage(null);
+            for (Player current : um.getOnlineUsers())
+            {
+                if (!module.getCanSeeHiddens().contains(user))
+                {
+                    current.hidePlayer(user);
+                }
+            }
+            this.module.getHiddenUsers().add(user);
+
+            user.sendTranslated("&aYou were automatically hidden!");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void autoSeehiddens(PlayerJoinEvent event)
+    {
+        final User user = um.getExactUser(event.getPlayer().getName());
+        if (HidePerm.AUTO_SEEHIDDENS.isAuthorized(user) && !module.getCanSeeHiddens().contains(user))
+        {
+            module.getCanSeeHiddens().add(user);
+
+            user.sendMessage("&aYou can automatically see hidden players!");
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onQuit(PlayerQuitEvent event)
     {
-        User player = um.getExactUser(event.getPlayer().toString());
+        final User user = um.getExactUser(event.getPlayer().getName());
         if (event instanceof FakePlayerQuitEvent)
         {
-            User user;
-            for (String playerName : this.module.getCanSeeHiddens())
+            for (User canSeeHiddens : this.module.getCanSeeHiddens())
             {
-                user = um.getExactUser(playerName);
-                if (player != user)
+                if (user != canSeeHiddens)
                 {
-                    user.sendTranslated("&aPlayer &e%s&a is now hidden!", player.getName());
+                    canSeeHiddens.sendTranslated("&aPlayer &e%s&a is now hidden!", user.getName());
                 }
             }
             return;
@@ -102,22 +133,22 @@ public class HideListener implements Listener
 
         if (event.getQuitMessage() != null)
         {
-            Set<String> canSeeHiddens = this.module.getCanSeeHiddens();
-            Set<String> hiddenPlayers = this.module.getHiddenPlayers();
-            if (canSeeHiddens.contains(player.getName()))
+            Set<User> canSeeHiddensSet = this.module.getCanSeeHiddens();
+            Set<User> hiddenUsers = this.module.getHiddenUsers();
+            if (canSeeHiddensSet.contains(user))
             {
-                for (String playerName : canSeeHiddens)
+                for (User canSeeHiddens : canSeeHiddensSet)
                 {
-                    um.getExactUser(playerName).sendMessage(event.getQuitMessage());
+                    canSeeHiddens.sendMessage(event.getQuitMessage());
                 }
                 event.setQuitMessage(null);
-                hiddenPlayers.remove(player.getName());
+                hiddenUsers.remove(user);
             }
             else
             {
-                for (String playerName : hiddenPlayers)
+                for (User hiddenUser : hiddenUsers)
                 {
-                    um.getExactUser(playerName).sendMessage(event.getQuitMessage());
+                    hiddenUser.sendMessage(event.getQuitMessage());
                 }
             }
         }
@@ -132,7 +163,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPickupItem(PlayerPickupItemEvent event)
     {
-        if (this.module.getCanSeeHiddens().contains(event.getPlayer().getName()))
+        if (this.module.getCanSeeHiddens().contains(um.getExactUser(event.getPlayer().getName())))
         {
             event.setCancelled(true);
         }
@@ -141,18 +172,17 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event)
     {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         Set<Player> recipients = event.getRecipients();
-        if (this.module.getCanSeeHiddens().contains(player.getName()))
+        if (this.module.getCanSeeHiddens().contains(um.getExactUser(player.getName())))
         {
             recipients.add(player);
         }
         else
         {
-            final Server server = player.getServer();
-            for (String playerName : this.module.getHiddenPlayers())
+            for (User hiddenUser : this.module.getHiddenUsers())
             {
-                recipients.add(server.getPlayer(playerName));
+                recipients.add(hiddenUser.getPlayer());
             }
         }
     }
@@ -163,7 +193,7 @@ public class HideListener implements Listener
         final Entity entity = event.getEntity();
         if (entity instanceof Player)
         {
-            if (this.module.getHiddenPlayers().contains(((Player)entity).getName()))
+            if (this.module.getHiddenUsers().contains(um.getExactUser(((Player)entity).getName())))
             {
                 event.setCancelled(true);
             }
@@ -173,7 +203,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropItem(PlayerDropItemEvent event)
     {
-        if (this.module.getHiddenPlayers().contains(event.getPlayer().getName()) && !HidePerm.DROP.isAuthorized(event.getPlayer()))
+        if (this.module.getHiddenUsers().contains(um.getExactUser(event.getPlayer().getName())) && !HidePerm.DROP.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
         }
@@ -182,7 +212,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPressurePlate(PlayerInteractEvent event)
     {
-        if (event.getAction() == Action.PHYSICAL && this.module.getHiddenPlayers().contains(event.getPlayer().getName()))
+        if (event.getAction() == Action.PHYSICAL && this.module.getHiddenUsers().contains(um.getExactUser(event.getPlayer().getName())))
         {
             event.setCancelled(true);
         }
