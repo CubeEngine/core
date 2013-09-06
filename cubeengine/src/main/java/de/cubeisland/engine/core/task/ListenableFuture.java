@@ -72,7 +72,7 @@ public class ListenableFuture<V> implements Future<V>
      *
      * @param callback
      */
-    public void addCallback(final FutureCallback<V> callback)
+    public ListenableFuture<V> addCallback(final FutureCallback<V> callback)
     {
         factory.newThread(new Runnable()
         {
@@ -89,5 +89,6 @@ public class ListenableFuture<V> implements Future<V>
                 }
             }
         }).start();
+        return this;
     }
 }
