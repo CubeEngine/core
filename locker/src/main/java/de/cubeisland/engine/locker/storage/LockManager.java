@@ -49,6 +49,7 @@ import org.bukkit.material.Door;
 
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.FutureCallback;
+import de.cubeisland.engine.core.task.ListenableFuture;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.BlockUtil;
@@ -106,12 +107,24 @@ public class LockManager implements Listener
         this.module.getCore().getEventManager().registerListener(module, this);
         this.dsl = module.getCore().getDB().getDSL();
         this.database = module.getCore().getDB();
+        ListenableFuture future = null;
         for (World world : module.getCore().getWorldManager().getWorlds())
         {
             for (Chunk chunk : world.getLoadedChunks())
             {
-                this.loadFromChunk(chunk);
+                future = this.loadFromChunk(chunk);
             }
+        }
+        if (future != null)
+        {
+            future.addCallback(new FutureCallback()
+            {
+                @Override
+                public void onSuccess(Object o)
+                {
+                    LockManager.this.module.getLog().info("Finished Loading Locks");
+                }
+            });
         }
     }
 
@@ -121,10 +134,10 @@ public class LockManager implements Listener
         this.loadFromChunk(event.getChunk());
     }
 
-    private void loadFromChunk(Chunk chunk)
+    private ListenableFuture loadFromChunk(Chunk chunk)
     {
         UInteger world_id = UInteger.valueOf(this.wm.getWorldId(chunk.getWorld()));
-        this.database.fetchLater(this.dsl.selectFrom(TABLE_LOCK).where(
+        return this.database.fetchLater(this.dsl.selectFrom(TABLE_LOCK).where(
             TABLE_LOCK.ID.in(this.dsl.select(TABLE_LOCK_LOCATION.GUARD_ID)
                                      .from(TABLE_LOCK_LOCATION)
                                      .where(TABLE_LOCK_LOCATION.WORLD_ID.eq(world_id),
@@ -136,7 +149,7 @@ public class LockManager implements Listener
                              public void onSuccess(Result<LockModel> models)
                              {
                                  Map<UInteger, Result<LockLocationModel>> locations = LockManager.
-                                     this.dsl.selectFrom(TABLE_LOCK_LOCATION)
+                                     this.database.getDSL().selectFrom(TABLE_LOCK_LOCATION)
                                       .where(TABLE_LOCK_LOCATION.GUARD_ID.in(models.getValues(TABLE_LOCK.ID)))
                                       .fetch().intoGroups(TABLE_LOCK_LOCATION.GUARD_ID);
                                  for (LockModel model : models)

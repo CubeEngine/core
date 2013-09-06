@@ -32,15 +32,12 @@ import de.cubeisland.engine.core.CubeEngine;
 public class ListenableExecutorService implements ExecutorService
 {
     private final ExecutorService executor;
-
-    public ListenableExecutorService(ExecutorService executor)
-    {
-        this.executor = executor;
-    }
+    private final ExecutorService callbackExecutor;
 
     public ListenableExecutorService()
     {
         this.executor = Executors.newSingleThreadExecutor(CubeEngine.getCore().getTaskManager().getThreadFactory());
+        this.callbackExecutor = Executors.newFixedThreadPool(5, CubeEngine.getCore().getTaskManager().getThreadFactory());
     }
 
     @Override
@@ -76,19 +73,19 @@ public class ListenableExecutorService implements ExecutorService
     @Override
     public <T> ListenableFuture<T> submit(Callable<T> task)
     {
-        return new ListenableFuture<>(this.executor.submit(task), CubeEngine.getCore().getTaskManager().getThreadFactory());
+        return new ListenableFuture<>(this.executor.submit(task), this.callbackExecutor);
     }
 
     @Override
     public <T> ListenableFuture<T> submit(Runnable task, T result)
     {
-        return new ListenableFuture<>(this.executor.submit(task, result), CubeEngine.getCore().getTaskManager().getThreadFactory());
+        return new ListenableFuture<>(this.executor.submit(task, result), this.callbackExecutor);
     }
 
     @Override
     public ListenableFuture<Void> submit(Runnable task)
     {
-        return new ListenableFuture<>((Future<Void>)this.executor.submit(task), CubeEngine.getCore().getTaskManager().getThreadFactory());
+        return new ListenableFuture<>((Future<Void>)this.executor.submit(task), this.callbackExecutor);
     }
 
     @Override

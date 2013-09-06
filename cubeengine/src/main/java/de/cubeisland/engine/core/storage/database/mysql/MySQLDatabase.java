@@ -27,6 +27,7 @@ import java.util.concurrent.Callable;
 
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.TableName;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
@@ -43,7 +44,6 @@ import org.jooq.Result;
 import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import snaq.db.DBPoolDataSource;
 
 public class MySQLDatabase extends AbstractPooledDatabase
 {
@@ -53,8 +53,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private static final char STRING_QUOTE = '\'';
     private static String tableprefix;
 
-    private final DBPoolDataSource datasource;
     private final ListenableExecutorService fetchExecutorService;
+    private final ComboPooledDataSource cpds;
 
     private DatabaseSchema schema;
 
@@ -72,15 +72,14 @@ public class MySQLDatabase extends AbstractPooledDatabase
         }
         this.config = config;
 
-        datasource = new DBPoolDataSource();
-        datasource.setDriverClassName("com.mysql.jdbc.Driver");
-        datasource.setUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
-        datasource.setUser(config.user);
-        datasource.setPassword(config.pass);
-        datasource.setMinPool(5);
-        datasource.setMaxPool(20);
-        datasource.setIdleTimeout(60*10);
-        datasource.setName("CubeEngine");
+        cpds = new ComboPooledDataSource();
+        cpds.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
+        cpds.setUser(config.user);
+        cpds.setPassword(config.pass);
+        cpds.setMinPoolSize(5);
+        cpds.setMaxPoolSize(20);
+        cpds.setAcquireIncrement(5);
+        cpds.setDataSourceName("CubeEngine");
 
         this.schema = new DatabaseSchema(config.database);
         tableprefix = this.config.tablePrefix;
@@ -173,7 +172,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public Connection getConnection() throws SQLException
     {
-        return this.datasource.getConnection();
+        return this.cpds.getConnection();
     }
 
     @Override
@@ -185,7 +184,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public DSLContext getDSL()
     {
-        return DSL.using(this.datasource, SQLDialect.MYSQL);
+        return DSL.using(this.cpds, SQLDialect.MYSQL);
     }
 
     public <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query)

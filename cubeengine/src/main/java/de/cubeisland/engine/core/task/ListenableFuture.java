@@ -18,22 +18,22 @@
 package de.cubeisland.engine.core.task;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class ListenableFuture<V> implements Future<V>
 {
     private final Future<V> future;
-    private ThreadFactory factory;
+    private ExecutorService executor;
 
-    public ListenableFuture(Future<V> future, ThreadFactory factory)
+    public ListenableFuture(Future<V> future, ExecutorService executor)
     {
         assert future != null;
-        assert factory != null;
+        assert executor != null;
         this.future = future;
-        this.factory = factory;
+        this.executor = executor;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ListenableFuture<V> implements Future<V>
      */
     public ListenableFuture<V> addCallback(final FutureCallback<V> callback)
     {
-        factory.newThread(new Runnable()
+        executor.submit(new Runnable()
         {
             @Override
             public void run()
@@ -88,7 +88,7 @@ public class ListenableFuture<V> implements Future<V>
                     callback.onFailure(e);
                 }
             }
-        }).start();
+        });
         return this;
     }
 }
