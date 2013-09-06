@@ -17,15 +17,25 @@
  */
 package de.cubeisland.engine.hide;
 
+import java.util.Set;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.basics.command.general.DisplayOnlinePlayerListEvent;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.hide.event.FakePlayerJoinEvent;
+import de.cubeisland.engine.hide.event.FakePlayerQuitEvent;
 
 public class Hide extends Module
 {
     private HideConfig config;
+    private Set<User> hiddenUsers;
+    private Set<User> canSeeHiddens;
 
     @Override
     public void onEnable()
@@ -43,5 +53,77 @@ public class Hide extends Module
                 }
             });
         }
+    }
+
+    public void hidePlayer(final User user, final boolean message)
+    {
+        this.hiddenUsers.add(user);
+
+        final PlayerQuitEvent event = new FakePlayerQuitEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " left the game.");
+        getCore().getEventManager().fireEvent(event);
+        if (message)
+        {
+            getCore().getUserManager().broadcastMessage(String.valueOf(event.getQuitMessage()));
+        }
+
+        for (User onlineUser : getCore().getUserManager().getOnlineUsers())
+        {
+            if (!this.canSeeHiddens.contains(onlineUser))
+            {
+                onlineUser.hidePlayer(user);
+            }
+        }
+
+        for (User hiddenUser : this.hiddenUsers)
+        {
+            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenUser))
+            {
+                hiddenUser.hidePlayer(user);
+            }
+        }
+    }
+
+    public void showPlayer(final User user)
+    {
+        this.hiddenUsers.remove(user);
+
+        final PlayerJoinEvent event = new FakePlayerJoinEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " joined the game.");
+        getCore().getEventManager().fireEvent(event);
+        final String msg = event.getJoinMessage();
+        if (msg != null)
+        {
+            getCore().getUserManager().broadcastMessage(msg);
+        }
+
+        for (User onlineUser : getCore().getUserManager().getOnlineUsers())
+        {
+            if (!this.canSeeHiddens.contains(onlineUser))
+            {
+                onlineUser.showPlayer(user);
+            }
+        }
+
+        for (User hiddenUsers : this.hiddenUsers)
+        {
+            if (hiddenUsers != user && !this.canSeeHiddens.contains(hiddenUsers))
+            {
+                hiddenUsers.showPlayer(user);
+            }
+        }
+    }
+
+    public HideConfig getConfig()
+    {
+        return config;
+    }
+
+    public Set<User> getHiddenUsers()
+    {
+        return hiddenUsers;
+    }
+
+    public Set<User> getCanSeeHiddens()
+    {
+        return canSeeHiddens;
     }
 }

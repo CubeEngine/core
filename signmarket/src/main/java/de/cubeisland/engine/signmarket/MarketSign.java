@@ -55,6 +55,9 @@ import static de.cubeisland.engine.core.util.InventoryUtil.*;
 import static de.cubeisland.engine.signmarket.storage.TableSignBlock.TABLE_SIGN_BLOCK;
 import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
 
+// TODO CE-420 shift-click to edit multiple signs at the same time
+// TODO CE-437 blacklist
+
 public class MarketSign
 {
     private final MarketSignFactory msFactory;
@@ -133,14 +136,15 @@ public class MarketSign
         ItemStack item = this.itemInfo.getItemStack().clone();
         item.setAmount(this.itemInfo.getStock().intValue());
         this.itemInfo.setStock(UInteger.valueOf(0)); // just to be sure no items are duped
-        if (this.module.getConfig().allowOverStackedOutOfSign)
+        if (item.getAmount() > item.getMaxStackSize() * 5400 // prevent lag from throwing huge amount of items out of the sign
+                                                             // amount of 100 DoubleChest full with given item
+            || this.module.getConfig().allowOverStackedOutOfSign)
         {
             this.getLocation().getWorld().dropItemNaturally(this.getLocation(), item);
             return;
         }
         for (ItemStack itemStack : splitIntoMaxItems(item, item.getMaxStackSize()))
         {
-            // TODO this could possibly cause lag when breaking user-signs with A LOT of items
             this.getLocation().getWorld().dropItemNaturally(this.getLocation(), itemStack);
         }
     }
@@ -300,7 +304,7 @@ public class MarketSign
             guard.submitInventory(this.module, true);
             return true;
         }
-        if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user))
+        if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user) || this.isOwner(user))
         {
             if (this.displayInventory == null)
             {
@@ -325,6 +329,7 @@ public class MarketSign
      */
     public void executeAction(User user, Action type)
     {
+        this.updateSignText();
         boolean sneaking = user.isSneaking();
         ItemStack itemInHand = user.getItemInHand();
         if (itemInHand == null)
@@ -803,6 +808,11 @@ public class MarketSign
     @SuppressWarnings("deprecation")
     private void useSign(User user)
     {
+        if (!MarketSignPerm.USE.isAuthorized(user))
+        {
+            user.sendTranslated("&cYou are not allowed to use marketsigns!");
+            return;
+        }
         this.economy.createPlayerAccount(user.getName());
         if (this.isValidSign(user))
         {

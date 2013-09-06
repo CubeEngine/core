@@ -58,6 +58,7 @@ public class EditModeListener extends ConversationCommand
                 .addFlag(new CommandFlag("admin","admin"))
                 .addFlag(new CommandFlag("user","user"))
                 .addFlag(new CommandFlag("stock", "stock"))
+                .addFlag(new CommandFlag("nodemand", "nodemand"))
                 .addParameter(new CommandParameter("demand", Integer.class))
                 .addParameter(new CommandParameter("owner", User.class))
                 .addParameter(new CommandParameter("price", String.class))
@@ -67,14 +68,13 @@ public class EditModeListener extends ConversationCommand
                 .addParameter(new CommandParameter("size",Integer.class))
         ;
     }
-//TODO itemblacklist?
+
     private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<>();
     private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<>();
 
-    // TODO CE-420 shift-click to edit multiple signs at the same time
-
     private boolean setEditingSign(User user, MarketSign marketSign)
     {
+        if (marketSign == null) return true;
         Location previous = this.currentSignLocation.put(user.getId(), marketSign.getLocation());
         if (!marketSign.getLocation().equals(previous))
         {
@@ -84,12 +84,37 @@ public class EditModeListener extends ConversationCommand
                 this.previousMarketSign.put(user.getId(), previousSign);
                 previousSign.exitEditMode(user);
             }
+            if (!checkAllowedEditing(marketSign, user)) return true;
             marketSign.enterEditMode();
             user.sendTranslated("&aChanged active sign!");
             return true;
         }
+        if (!checkAllowedEditing(marketSign, user)) return true;
         marketSign.enterEditMode();
         return false;
+    }
+
+    private boolean checkAllowedEditing(MarketSign marketSign, User user)
+    {
+        if (marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+        {
+            user.sendTranslated("&cYou are not allowed to edit Admin-Signs!");
+            this.currentSignLocation.remove(user.getId());
+            return false;
+        }
+        else if (!marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+        {
+            user.sendTranslated("&cYou are not allowed to edit User-Signs!");
+            this.currentSignLocation.remove(user.getId());
+            return false;
+        }
+        if (!marketSign.isAdminSign() && !marketSign.isOwner(user) && !MarketSignPerm.SIGN_CREATE_USER_OTHER.isAuthorized(user))
+        {
+            user.sendTranslated("&cYou are not allowed to edit Signs of other Users!");
+            this.currentSignLocation.remove(user.getId());
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -127,9 +152,20 @@ public class EditModeListener extends ConversationCommand
             if (prevMarketSign == null)
             {
                 user.sendTranslated("&cNo market-sign at previous position.");
+                return null;
             }
             else
             {
+                if (prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to copy Admin-Signs!");
+                    return null;
+                }
+                else if (!prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to copy User-Signs!");
+                    return null;
+                }
                 marketSign.copyValuesFrom(prevMarketSign);
             }
         }
@@ -144,6 +180,7 @@ public class EditModeListener extends ConversationCommand
                 else
                 {
                     context.sendTranslated("&cYou are not allowed to create admin-buy signs!");
+                    return null;
                 }
             }
             else
@@ -155,6 +192,7 @@ public class EditModeListener extends ConversationCommand
                 else
                 {
                     context.sendTranslated("&cYou are not allowed to create user-buy signs!");
+                    return null;
                 }
             }
         }
@@ -169,6 +207,7 @@ public class EditModeListener extends ConversationCommand
                 else
                 {
                     context.sendTranslated("&cYou are not allowed to create admin-sell signs!");
+                    return null;
                 }
             }
             else
@@ -180,22 +219,25 @@ public class EditModeListener extends ConversationCommand
                 else
                 {
                     context.sendTranslated("&cYou are not allowed to create user-sell signs!");
+                    return null;
                 }
             }
         }
         if (context.hasParam("demand"))
         {
-            if (marketSign.isTypeBuy() == null)
+            if (!marketSign.hasType())
             {
                 marketSign.setTypeSell();
             }
             if (marketSign.isTypeBuy())
             {
                 user.sendTranslated("&cBuy signs cannot have a demand!");
+                return null;
             }
             else if (marketSign.isAdminSign())
             {
                 user.sendTranslated("&cAdmin signs cannot have a demand!");
+                return null;
             }
             else
             {
@@ -206,23 +248,41 @@ public class EditModeListener extends ConversationCommand
                 }
                 else if (demand != null && demand > 0)
                 {
-                    marketSign.setDemand(demand);
+                    if (MarketSignPerm.SIGN_CREATE_USER_DEMAND.isAuthorized(user))
+                    {
+                        marketSign.setDemand(demand);
+                    }
+                    else
+                    {
+                        context.sendTranslated("&cYou are not allowed to set a demand!");
+                        return null;
+                    }
                 }
                 else
                 {
                     context.sendTranslated("&cInvalid demand amount!");
+                    return null;
                 }
             }
+        }
+        if (context.hasFlag("noDemand"))
+        {
+            marketSign.setNoDemand();
         }
         if (context.hasFlag("admin"))
         {
             if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
             {
                 marketSign.setAdminSign();
+                if (this.config.maxAdminStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.config.maxAdminStock))
+                {
+                    marketSign.setSize(this.config.maxAdminStock);
+                }
             }
             else
             {
                 context.sendTranslated("&cYou are not allowed to create admin-signs");
+                return null;
             }
         }
         if (context.hasFlag("user"))
@@ -230,14 +290,15 @@ public class EditModeListener extends ConversationCommand
             if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
             {
                 marketSign.setOwner(user);
-                if (marketSign.hasInfiniteSize())
+                if (this.config.maxUserStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.config.maxUserStock))
                 {
-                    marketSign.setSize(6);
+                    marketSign.setSize(this.config.maxUserStock);
                 }
             }
             else
             {
                 context.sendTranslated("&cYou are not allowed to create user-signs");
+                return null;
             }
         }
         if (context.hasParam("owner"))
@@ -247,7 +308,8 @@ public class EditModeListener extends ConversationCommand
                 User owner = context.getParam("owner",null);
                 if (owner == null)
                 {
-                    user.sendTranslated("&cUser %s not found!", context.getString("owner"));
+                    user.sendTranslated("&cUser &2%s&c not found!", context.getString("owner"));
+                    return null;
                 }
                 else
                 {
@@ -257,6 +319,7 @@ public class EditModeListener extends ConversationCommand
             else
             {
                 context.sendTranslated("&cYou are not allowed to create user-signs for other users");
+                return null;
             }
         }
         if (context.hasFlag("stock"))
@@ -274,11 +337,13 @@ public class EditModeListener extends ConversationCommand
                         else
                         {
                             context.sendTranslated("&cYou are not allowed to create admin-signs with no stock");
+                            return null;
                         }
                     }
                     else
                     {
                         context.sendTranslated("&cAdmin-signs without stock are not allowed!");
+                        return null;
                     }
                 }
                 else
@@ -292,17 +357,20 @@ public class EditModeListener extends ConversationCommand
                         else
                         {
                             context.sendTranslated("&cYou are not allowed to create admin-signs with stock");
+                            return null;
                         }
                     }
                     else
                     {
                         context.sendTranslated("&cAdmin-signs with stock are not allowed!");
+                        return null;
                     }
                 }
             }
             else
             {
                 context.sendTranslated("&cUser signs cannot have no stock!");
+                return null;
             }
         }
         if (context.hasParam("setstock"))
@@ -317,11 +385,13 @@ public class EditModeListener extends ConversationCommand
                 else
                 {
                     context.sendTranslated("&cThis sign has no stock! Use \"stock\" first to enable it!");
+                    return null;
                 }
             }
             else
             {
                 context.sendTranslated("&cYou are not allowed to set the stock!");
+                return null;
             }
         }
         if (context.hasParam("price"))
@@ -331,10 +401,12 @@ public class EditModeListener extends ConversationCommand
             {
                 user.sendTranslated("&cInvalid price!");
                 marketSign.setPrice(0);
+                return null;
             }
             else if (dPrice < 0)
             {
                 user.sendTranslated("&cA negative price!? Are you serious?");
+                return null;
             }
             else
             {
@@ -347,10 +419,12 @@ public class EditModeListener extends ConversationCommand
             if (amount == null)
             {
                 user.sendTranslated("&cInvalid amount %s!", context.getString("amount"));
+                return null;
             }
             else if (amount < 0)
             {
-                user.sendTranslated("&cNegative amounts could be unfair!");
+                user.sendTranslated("&cNegative amounts could be unfair! &eJust sayin'");
+                return null;
             }
             else
             {
@@ -364,20 +438,14 @@ public class EditModeListener extends ConversationCommand
             {
                 user.sendTranslated("&cItem not found!");
             }
-            else
+            else if (marketSign.isAdminSign())
             {
-                if (marketSign.isAdminSign())
-                {
-                    marketSign.setItemStack(item, false);
-                }
-                else
-                {
-                    if (marketSign.hasStock() && marketSign.getStock() != 0)
-                    {
-                        user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
-                        return null;
-                    }
-                }
+                marketSign.setItemStack(item, false);
+            }
+            else if (marketSign.hasStock() && marketSign.getStock() != 0)
+            {
+                user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
+                return null;
             }
         }
         if (context.hasParam("size"))
@@ -388,12 +456,14 @@ public class EditModeListener extends ConversationCommand
                 if (size == null || size == 0 || size > 6 || size < -1)
                 {
                     context.sendTranslated("&cInvalid size! Use -1 for infinite OR 1-6 inventory-lines!");
+                    return null;
                 }
                 else
                 {
                     if (size == -1 && !MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(user))
                     {
                         context.sendTranslated("&cYou are not allowed to set infinite inventories!");
+                        return null;
                     }
                     else
                     {
@@ -403,6 +473,7 @@ public class EditModeListener extends ConversationCommand
                             if (maxAdmin != -1 && (size > maxAdmin || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of admin-signs is set to &6%d&c!", maxAdmin);
+                                return null;
                             }
                             else
                             {
@@ -416,6 +487,7 @@ public class EditModeListener extends ConversationCommand
                             if (maxUser != -1 && (size > maxUser || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of user-signs is set to &6%d&c!", maxUser);
+                                return null;
                             }
                             else
                             {
@@ -429,6 +501,7 @@ public class EditModeListener extends ConversationCommand
             else
             {
                 context.sendTranslated("&cYou are not allowed to change the sign-inventory-size.");
+                return null;
             }
         }
         if (context.hasFlag("exit"))
@@ -489,11 +562,6 @@ public class EditModeListener extends ConversationCommand
                     }
                     return;
                 }
-                if (!MarketSignPerm.SIGN_EDIT.isAuthorized(user))
-                {
-                    user.sendTranslated("&cYou are not allowed to edit market-signs!");
-                    return;
-                }
                 this.setEditingSign(user, curSign);
             }
         }
@@ -545,11 +613,14 @@ public class EditModeListener extends ConversationCommand
             User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
             {
-                if (!MarketSignPerm.SIGN_CREATE.isAuthorized(user))
+                if (!MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
                 {
-                    user.sendTranslated("&cYou are not allowed to create market-signs!");
-                    event.setCancelled(true);
-                    return;
+                    if (!MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+                    {
+                        user.sendTranslated("&cYou are not allowed to create market-signs!");
+                        event.setCancelled(true);
+                        return;
+                    }
                 }
                 this.setEditingSign(user, this.signFactory.createSignAt(user, event.getBlockPlaced().getLocation()));
             }

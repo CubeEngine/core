@@ -48,10 +48,11 @@ public class Signmarket extends Module
         this.editModeListener = new EditModeListener(this);
         this.getLog().trace("{} ms - MarketSignListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
-        this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
-        new MarketSignPerm(this);
         this.getLog().trace("{} ms - Command", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
-        this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
+        SignMarketCommands smCmds = new SignMarketCommands(this);
+        this.getCore().getCommandManager().registerCommand(smCmds);
+        this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
+        new MarketSignPerm(this, smCmds);
         this.getLog().trace("{} ms - done", Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS));
     }
 

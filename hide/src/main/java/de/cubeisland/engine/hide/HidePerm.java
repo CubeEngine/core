@@ -28,6 +28,10 @@ public class HidePerm extends PermissionContainer<Hide>
         super(module);
     }
 
-    public static final Permission AUTO = Permission.createAbstractPermission("auto", PermDefault.FALSE);
-    public static final Permission INTERACT = Permission.createAbstractPermission("auto", PermDefault.FALSE);
+    private static final Permission AUTO = Permission.createAbstractPermission("auto");
+    public static final Permission AUTO_HIDE = AUTO.createChild("hide", PermDefault.FALSE);
+    public static final Permission AUTO_SEEHIDDENS = AUTO.createChild("seehiddens", PermDefault.FALSE);
+    public static final Permission INTERACT = Permission.createAbstractPermission("interact", PermDefault.FALSE);
+    public static final Permission HIDE = Permission.createPermission("hide");
+    public static final Permission DROP = Permission.createPermission("drop");
 }

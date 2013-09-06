@@ -49,6 +49,6 @@ public class IpBan extends Ban
     @Override
     public String getTarget()
     {
-        return this.address.toString();
+        return this.address.getHostAddress();
     }
 }

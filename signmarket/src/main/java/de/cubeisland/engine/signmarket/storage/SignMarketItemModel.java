@@ -28,6 +28,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.engine.core.CubeEngine;
@@ -73,9 +74,16 @@ public class SignMarketItemModel extends UpdatableRecordImpl<SignMarketItemModel
 
     private String getEnchantmentsAsString(ItemStack item)
     {
-        // TODO if item is enchanted book find enchantments ALSO set this data for enchbooks when loading from db
-        //EnchantmentStorageMeta
-        Map<Enchantment, Integer> enchs = item.getEnchantments();
+        Map<Enchantment, Integer> enchs;
+        if (item.getItemMeta() instanceof EnchantmentStorageMeta)
+        {
+            EnchantmentStorageMeta itemMeta = (EnchantmentStorageMeta)item.getItemMeta();
+            enchs = itemMeta.getStoredEnchants();
+        }
+        else
+        {
+            enchs = item.getEnchantments();
+        }
         if (!enchs.isEmpty())
         {
             List<String> enchStrings = new ArrayList<>();
@@ -114,7 +122,6 @@ public class SignMarketItemModel extends UpdatableRecordImpl<SignMarketItemModel
             {
                 meta.setLore(Arrays.asList(StringUtils.explode("\n", this.getLore())));
             }
-            itemStack.setItemMeta(meta);
             if (this.getEnchantments() != null)
             {
                 String[] enchStrings = StringUtils.explode(",", this.getEnchantments());
@@ -123,9 +130,17 @@ public class SignMarketItemModel extends UpdatableRecordImpl<SignMarketItemModel
                     String[] split = StringUtils.explode(":", enchString);
                     Enchantment ench = Enchantment.getById(Integer.parseInt(split[0]));
                     int level = Integer.parseInt(split[1]);
-                    this.itemStack.addUnsafeEnchantment(ench, level);
+                    if (meta instanceof EnchantmentStorageMeta)
+                    {
+                        ((EnchantmentStorageMeta)meta).addStoredEnchant(ench, level, true);
+                    }
+                    else
+                    {
+                        meta.addEnchant(ench, level, true);
+                    }
                 }
             }
+            itemStack.setItemMeta(meta);
         }
         return itemStack;
     }

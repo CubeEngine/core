@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RawDataStore;
@@ -98,7 +99,16 @@ public class UserInformationCommands extends UserCommandHelper
         }
         if (resolvedPermission == null)
         {
-            context.sendTranslated("&cPermission &6%s&c not set!", permission);
+
+            PermDefault defaultFor = this.module.getCore().getPermissionManager().getDefaultFor(permission);
+            if (defaultFor == null)
+            {
+                context.sendTranslated("&cPermission &6%s&c neither set nor registered!", permission);
+            }
+            else
+            {
+                context.sendTranslated("&cPermission &6%s&c not set but default is: &6%s&c!", permission, defaultFor.name());
+            }
             return;
         }
         context.sendTranslated((resolvedPermission.isSet()

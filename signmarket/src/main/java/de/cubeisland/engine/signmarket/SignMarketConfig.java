@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.signmarket;
 
+import java.nio.file.Path;
+
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
@@ -27,6 +30,17 @@ import de.cubeisland.engine.core.config.annotations.Option;
 @DefaultConfig
 public class SignMarketConfig extends Configuration
 {
+
+    @Option("sign.admin.enable")
+    public boolean enableAdmin = true;
+    @Option("sign.user.enable")
+    public boolean enableUser = true;
+
+    @Option("sign.admin.stock.allow")
+    public boolean allowAdminStock = true;
+    @Option("sign.admin.no-stock.allow")
+    public boolean allowAdminNoStock = true;
+
     @Option("sign.overstack.in-sign")
     @Comment("Allows items in signs to be overstacked up to 64.")
     public boolean allowOverStackedInSign = false;
@@ -35,17 +49,12 @@ public class SignMarketConfig extends Configuration
     @Comment("Allows items taken out of signs to be overstacked up to 64.")
     public boolean allowOverStackedOutOfSign = false;
 
-    @Option("sign.admin.stock.allow")
-    public boolean allowAdminStock = true;
-    @Option("sign.admin.no-stock.allow")
-    public boolean allowAdminNoStock = true;
-
     @Comment("The maximum amount of inventory-lines a admin-sign can have.\n" +
             "Use -1 for infinite stock-size OR values from 1-6!")
     @Option("sign.admin.stock.max")
     public int maxAdminStock = -1;
 
-    @Option("sign.admin.stock.buy-if-empty.allow")
+    @Option("sign.admin.stock.buy-if-empty.enable")
     public boolean allowBuyIfAdminSignIsEmpty = true;
 
     @Comment("Prices of admin signs will me multiplied by this factor if their stock is empty.")
@@ -56,4 +65,17 @@ public class SignMarketConfig extends Configuration
             "Use -1 for infinite stock-size OR values from 1-6!")
     @Option("sign.user.stock.max")
     public int maxUserStock = 6;
+
+    @Override
+    public void onLoaded(Path loadFrom)
+    {
+        if (!allowAdminNoStock && !allowAdminStock)
+        {
+            this.enableAdmin = false;
+        }
+        if (!enableAdmin && ! enableUser)
+        {
+            CubeEngine.getCore().getLog().warn("[MarketSign] All SignTypes are disabled in the configuration!");
+        }
+    }
 }
