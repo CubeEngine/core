@@ -118,7 +118,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onQuit(PlayerQuitEvent event)
     {
-        User player = um.getExactUser(event.getPlayer().getName());
+        User user = um.getExactUser(event.getPlayer().getName());
         if (event instanceof FakePlayerQuitEvent)
         {
             for (User canSeeHiddens : this.module.getCanSeeHiddens())
