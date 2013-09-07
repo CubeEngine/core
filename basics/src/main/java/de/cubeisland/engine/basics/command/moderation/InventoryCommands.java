@@ -62,7 +62,7 @@ public class InventoryCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
-            if (!user.isOnline())
+            if (!user.isOnline() && !context.hasFlag("e"))
             {
                 context.sendTranslated("&2%s is not online!",user.getName());
                 return;
