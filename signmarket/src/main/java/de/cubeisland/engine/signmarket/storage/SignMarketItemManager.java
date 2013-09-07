@@ -74,6 +74,7 @@ public class SignMarketItemManager
 
     public void delete(SignMarketItemModel itemInfo)
     {
+        if (itemInfo.getKey() == null || itemInfo.getKey().longValue() == 0) return; // unsaved model
         this.itemInfoModels.remove(itemInfo.getKey().longValue()).delete();
         this.module.getLog().debug("deleted item-model #{}", itemInfo.getKey());
     }

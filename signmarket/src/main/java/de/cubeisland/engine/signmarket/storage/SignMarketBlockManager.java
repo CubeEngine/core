@@ -58,7 +58,7 @@ public class SignMarketBlockManager
     public void delete(SignMarketBlockModel model)
     {
         this.blockModels.remove(model.getLocation());
-        if (model.getKey().longValue() == 0) return; // unsaved model
+        if (model.getKey() == null || model.getKey().longValue() == 0) return; // unsaved model
         model.delete();
         this.module.getLog().debug("deleted block-model #{}", model.getKey());
     }
