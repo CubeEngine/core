@@ -70,7 +70,7 @@ public class RolesEventHandler implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOW)
     public void onLogin(PlayerLoginEvent event)
     {
         if (event.getResult().equals(Result.ALLOWED)) // only if allowed to join
