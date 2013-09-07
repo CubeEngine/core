@@ -28,6 +28,7 @@ import java.util.concurrent.Callable;
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.TableName;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.impl.NewProxyConnection;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
@@ -82,6 +83,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         cpds.setDataSourceName("CubeEngine");
         cpds.setInitialPoolSize(3);
         cpds.setMaxStatements(0); // No Caching jOOQ will do this if needed
+        cpds.setMaxStatementsPerConnection(0); // No Caching jOOQ will do this if needed
         this.schema = new DatabaseSchema(config.database);
         tableprefix = this.config.tablePrefix;
     }
