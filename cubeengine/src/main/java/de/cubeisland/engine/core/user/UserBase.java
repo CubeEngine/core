@@ -82,6 +82,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -851,6 +852,11 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getInventory();
+        }
+        Player offlinePlayer = BukkitUtils.getOfflinePlayerAsPlayer(this.getOfflinePlayer());
+        if (offlinePlayer.hasPlayedBefore())
+        {
+            return offlinePlayer.getInventory();
         }
         return null;
     }
@@ -2354,6 +2360,11 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getEnderChest();
+        }
+        Player offlinePlayer = BukkitUtils.getOfflinePlayerAsPlayer(this.getOfflinePlayer());
+        if (offlinePlayer.hasPlayedBefore())
+        {
+            return offlinePlayer.getEnderChest();
         }
         return null;
     }
