@@ -334,7 +334,7 @@ public class LockManager implements Listener
      */
     public void extendLock(Lock lock, Location location)
     {
-        assert this.getLockAtLocation(location, null, false) == null : "Cannot extend Lock onto another!";
+        assert this.getLockAtLocation(location, null, false, false) == null : "Cannot extend Lock onto another!";
         lock.locations.add(location);
         LockLocationModel model = this.dsl.newRecord(TABLE_LOCK_LOCATION).newLocation(lock.model, location);
         model.insert();
