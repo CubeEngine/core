@@ -80,7 +80,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
         cpds.setMaxPoolSize(20);
         cpds.setAcquireIncrement(5);
         cpds.setDataSourceName("CubeEngine");
-
+        cpds.setInitialPoolSize(3);
+        cpds.setMaxStatements(0); // No Caching jOOQ will do this if needed
         this.schema = new DatabaseSchema(config.database);
         tableprefix = this.config.tablePrefix;
     }
