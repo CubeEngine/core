@@ -774,7 +774,7 @@ public class MarketSign
     {
         if (!this.hasStock()) throw new NoStockException();
         if (!this.hasDemand()) throw new NoDemandException();
-        return this.getStock() >= this.getDemand();
+        return this.isFull() || this.getStock() >= this.getDemand();
     }
 
     public Integer getMaxItemAmount()
@@ -968,7 +968,8 @@ public class MarketSign
                     lines[0] = "&5&l";
                 }
             }
-            else if (!isValid ||(this.isTypeBuy() && this.isSoldOut()) || (!this.isTypeBuy() && this.hasDemand() && this.isSatisfied()))
+            else if (!isValid ||(this.isTypeBuy() && this.isSoldOut())
+                || (!this.isTypeBuy() && ((this.hasDemand() && this.isSatisfied()) || isFull())))
             {
                 lines[0] = "&4&l";
             }
@@ -1088,7 +1089,8 @@ public class MarketSign
                 }
                 else if (this.hasStock())
                 {
-                    if (this.isAdminSign() || (this.canAfford(this.getOwner()) && !this.isFull() && !(this.hasDemand() && this.isSatisfied())))
+                    if (this.isAdminSign() || (this.canAfford(this.getOwner()) &&
+                        !this.isFull() && !(this.hasDemand() && this.isSatisfied())))
                     {
                         if (this.hasDemand())
                         {
@@ -1299,6 +1301,10 @@ public class MarketSign
      */
     public double getPrice()
     {
+        if (this.blockInfo.getPrice() == null)
+        {
+            return 0;
+        }
         if (this.allowBuyIfEmpty())
         {
             return this.economy.convertLongToDouble((long)(this.blockInfo.getPrice().longValue() * this.module.getConfig().factorIfAdminSignIsEmpty));
