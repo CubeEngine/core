@@ -239,18 +239,6 @@ public class LockManager implements Listener
     public Lock getLockAtLocation(Location location, User user, boolean access, boolean repairExpand)
     {
         Lock lock = this.loadedLocks.get(location);
-        if (lock != null && access)
-        {
-            if (!lock.validateTypeAt(location))
-            {
-                lock.delete(user);
-                if (user != null)
-                {
-                    user.sendTranslated("&eDetected invalid BlockProtection is now deleted!");
-                }
-            }
-            return this.handleLockAccess(lock, access);
-        }
         if (repairExpand && lock != null && lock.isSingleBlockLock())
         {
             Block block = lock.getLocation().getBlock();
@@ -269,6 +257,18 @@ public class LockManager implements Listener
                     }
                 }
             }
+        }
+        if (lock != null && access)
+        {
+            if (!lock.validateTypeAt(location))
+            {
+                lock.delete(user);
+                if (user != null)
+                {
+                    user.sendTranslated("&eDetected invalid BlockProtection is now deleted!");
+                }
+            }
+            return this.handleLockAccess(lock, access);
         }
         return lock;
     }
