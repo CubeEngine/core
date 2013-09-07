@@ -137,8 +137,8 @@ public class LockManager implements Listener
     private ListenableFuture loadFromChunk(Chunk chunk)
     {
         UInteger world_id = UInteger.valueOf(this.wm.getWorldId(chunk.getWorld()));
-        return this.database.fetchLater(this.dsl.selectFrom(TABLE_LOCK).where(
-            TABLE_LOCK.ID.in(this.dsl.select(TABLE_LOCK_LOCATION.GUARD_ID)
+        return this.database.fetchLater(this.database.getDSL().selectFrom(TABLE_LOCK).where(
+            TABLE_LOCK.ID.in(this.database.getDSL().select(TABLE_LOCK_LOCATION.GUARD_ID)
                                      .from(TABLE_LOCK_LOCATION)
                                      .where(TABLE_LOCK_LOCATION.WORLD_ID.eq(world_id),
                                             TABLE_LOCK_LOCATION.CHUNKX.eq(chunk.getX()),
