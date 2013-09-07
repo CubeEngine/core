@@ -34,7 +34,8 @@ public class BasicsPerm extends PermissionContainer<Basics>
         super(module);
         module.getLog().trace("{} ms - Basics.Permission-register", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         this.bindToModule(KITS,COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,POWERTOOL_USE,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE, BAN_RECEIVEMESSAGE,
-                          COMMAND_KILL_PREVENT, COMMAND_CLEARINVENTORY_PREVENT, COMMAND_INVSEE_MODIFY_PREVENT, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT);
+                          COMMAND_KILL_PREVENT, COMMAND_CLEARINVENTORY_PREVENT, COMMAND_INVSEE_MODIFY_PREVENT,
+                          COMMAND_INVSEE_ENDERCHEST, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT);
         this.registerAllPermissions();
 
         new TpWorldPermissions(module); // per world permissions
@@ -121,6 +122,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
      * Allows to modify the inventory of other players
      */
     public static final Permission COMMAND_INVSEE_MODIFY = COMMAND_INVSEE.createChild("modify");
+    public static final Permission COMMAND_INVSEE_ENDERCHEST = COMMAND_INVSEE.createChild("ender");
     /**
      * Prevents an inventory from being modified unless forced
      */

@@ -17,8 +17,12 @@
  */
 package de.cubeisland.engine.basics.command.moderation;
 
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -26,9 +30,6 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 /**
  * Contains commands that allow to modify an inventory.
@@ -47,7 +48,8 @@ public class InventoryCommands
 
     @Command(desc = "Allows you to see into the inventory of someone else.",
             flags = {@Flag(longName = "force", name = "f"),
-                     @Flag(longName = "quiet", name = "q")},
+                     @Flag(longName = "quiet", name = "q"),
+                     @Flag(longName = "ender", name = "e")},
             usage = "<player>", min = 1, max = 1)
     public void invsee(ParameterizedContext context)
     {
@@ -66,6 +68,23 @@ public class InventoryCommands
                 return;
             }
             boolean allowModify = false;
+            Inventory inv;
+            if (context.hasFlag("e"))
+            {
+                if (BasicsPerm.COMMAND_INVSEE_ENDERCHEST.isAuthorized(sender))
+                {
+                    inv = user.getEnderChest();
+                }
+                else
+                {
+                    context.sendTranslated("&cYou are not allowed to look into enderchests!");
+                    return;
+                }
+            }
+            else
+            {
+                inv = user.getInventory();
+            }
             if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
             {
                 allowModify = true;
@@ -79,10 +98,10 @@ public class InventoryCommands
             {
                 if (!(context.hasFlag("q") && BasicsPerm.COMMAND_INVSEE_QUIET.isAuthorized(context.getSender())))
                 {
-                    user.sendTranslated("&2%s &eis looking into your inventory.", sender.getName());
+                    user.sendTranslated("&2%s&e is looking into your inventory.", sender.getName());
                 }
             }
-            InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(user.getInventory(), sender);
+            InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(inv, sender);
             if (!allowModify)
             {
                 guard.blockPutInAll().blockTakeOutAll();
