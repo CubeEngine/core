@@ -23,8 +23,11 @@ import java.util.logging.Filter;
 import java.util.logging.Logger;
 
 import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
+import net.minecraft.server.v1_6_R2.DedicatedServer;
 import net.minecraft.server.v1_6_R2.EntityPlayer;
 import net.minecraft.server.v1_6_R2.Item;
+import net.minecraft.server.v1_6_R2.MinecraftServer;
+import net.minecraft.server.v1_6_R2.PlayerInteractManager;
 import net.minecraft.server.v1_6_R2.RecipesFurnace;
 import net.minecraft.server.v1_6_R2.TileEntityFurnace;
 import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
@@ -33,6 +36,7 @@ import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -307,5 +311,17 @@ public class BukkitUtils
     public static boolean isANSISupported()
     {
         return ((CraftServer) Bukkit.getServer()).getReader().getTerminal().isAnsiSupported();
+    }
+
+
+    public static Player getOfflinePlayerAsPlayer(OfflinePlayer player)
+    {
+        MinecraftServer minecraftServer = DedicatedServer.getServer();
+
+        //Create and load the target EntityPlayer
+        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), player.getName(),
+                             new PlayerInteractManager(minecraftServer.getWorldServer(0)));
+        entityPlayer.getBukkitEntity().loadData();
+        return entityPlayer.getBukkitEntity();
     }
 }
