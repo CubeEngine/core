@@ -30,7 +30,6 @@ import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.codec.ConfigurationCodec;
 import de.cubeisland.engine.core.config.codec.YamlCodec;
 import de.cubeisland.engine.core.module.Module;
-import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
  * This abstract class represents a configuration.
@@ -209,7 +208,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * @param <T>
      * @return the created configuration
      */
-    public static <T extends Configuration> T createInstance(Class<T> clazz) //TODO constructor with params?
+    public static <T extends Configuration> T createInstance(Class<T> clazz)
     {
         try
         {
@@ -265,10 +264,6 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         catch (Exception e)
         {
-            if (e instanceof ReaderException)
-            {//TODO abstract...
-                throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com" + (file != null ? " File: " + file : ""), e);
-            }
             throw new InvalidConfigurationException("Error while loading a configuration!" + (file != null ? " File: " + file : ""), e);
         }
     }

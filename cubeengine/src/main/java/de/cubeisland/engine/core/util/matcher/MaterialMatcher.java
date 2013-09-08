@@ -43,7 +43,6 @@ import gnu.trove.map.hash.TShortObjectHashMap;
  */
 public class MaterialMatcher
 {
-    //TODO rename item ; is it possible?
     private THashMap<String, ImmutableItemStack> items;
     private THashMap<Material, TShortObjectHashMap<String>> itemnames;
 

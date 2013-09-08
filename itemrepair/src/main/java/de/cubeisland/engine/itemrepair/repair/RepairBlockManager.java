@@ -86,16 +86,16 @@ public class RepairBlockManager
                 }
                 else
                 {
-                    this.module.getLog().warn("Deleting saved RepairBlock that is no longer a RepairBlock at {}:{}:{} in {}",
+                    this.module.getLog().info("Deleting saved RepairBlock that is no longer a RepairBlock at {}:{}:{} in {}",
                                               block.getX(), block.getY(), block.getZ(), block.getWorld().getName());
-                    // TODO delete
+                    model.delete();
                 }
             }
             else
             {
-                this.module.getLog().warn("Deleting saved RepairBlock that does not correspond to block at {}:{}:{} in {}",
+                this.module.getLog().info("Deleting saved RepairBlock that does not correspond to block at {}:{}:{} in {}",
                                           block.getX(), block.getY(), block.getZ(), block.getWorld().getName());
-                // TODO delete
+                model.delete();
             }
         }
         return this;

@@ -176,16 +176,16 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
     }
 
     @Override
-    public void help(HelpContext context) throws Exception //TODO beautify this
+    public void help(HelpContext context) throws Exception
     {
-        context.sendTranslated("Flags:");
+        context.sendTranslated("&6Flags:");
         Set<String> flags = new HashSet<>();
         for (CommandFlag flag : this.getContextFactory().getFlags())
         {
             flags.add(flag.getLongName().toLowerCase());
         }
         context.sendMessage("    "+StringUtils.implode("&7, &f",flags));
-        context.sendTranslated("Parameters:");
+        context.sendTranslated("&6Parameters:");
         Set<String> params  = new HashSet<>();
         for (CommandParameter param : this.getContextFactory().getParameters())
         {

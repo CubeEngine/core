@@ -32,7 +32,6 @@ public class BankAccessModel extends UpdatableRecordImpl<BankAccessModel> implem
     public static final byte MEMBER = 2;
     public static final byte INVITED = 4;
 
-    // TODO remove ?
     public BankAccessModel newAccess(long id, UserEntity userEntity, AccountModel accountModel, byte accessLevel, String name)
     {
         this.setId(UInteger.valueOf(id));

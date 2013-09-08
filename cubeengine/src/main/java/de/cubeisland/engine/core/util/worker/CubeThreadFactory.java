@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.util.worker;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.Core;
 
 
 
@@ -29,19 +29,22 @@ public class CubeThreadFactory implements ThreadFactory
     private final AtomicInteger counter;
     private final ThreadGroup group;
     private final String basePackage;
+    private final Core core;
 
-    public CubeThreadFactory(String name)
+    public CubeThreadFactory(String name, Core core)
     {
-        this(new ThreadGroup(name));
+        this(new ThreadGroup(name), core);
     }
 
-    public CubeThreadFactory(ThreadGroup group)
+    public CubeThreadFactory(ThreadGroup group, Core core)
     {
         this.group = group;
         this.counter = new AtomicInteger(0);
 
         String[] packageParts = this.getClass().getPackage().getName().split("\\.");
         this.basePackage = packageParts[0] + '.' + packageParts[1] + '.' + packageParts[2];
+
+        this.core = core;
     }
 
     private String getCaller()
@@ -66,7 +69,7 @@ public class CubeThreadFactory implements ThreadFactory
         {
             name += " - " + caller;
         }
-        CubeEngine.getLog().debug("Creating thread: {}", name);
+        core.getLog().debug("Creating thread: {}", name);
         return new CubeThread(this.group, r, name);
     }
 
@@ -81,7 +84,7 @@ public class CubeThreadFactory implements ThreadFactory
         public void interrupt()
         {
             super.interrupt();
-            CubeEngine.getLog().debug("Interrupted thread: {}", this.getName()); // TODO remove CubeEngine
+            core.getLog().debug("Interrupted thread: {}", this.getName());
         }
     }
 }

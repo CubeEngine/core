@@ -54,7 +54,6 @@ public abstract class PermissionContainer<T extends Module>
         }
     }
 
-    // TODO what about caching the result?
     public Set<Permission> getPermissions()
     {
         THashSet<Permission> perms = new THashSet<>();

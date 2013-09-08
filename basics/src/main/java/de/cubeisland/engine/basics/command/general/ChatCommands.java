@@ -185,7 +185,7 @@ public class ChatCommands
         }
         basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.toMillis())));
         basicsUserEntity.update();
-        String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www %ddd %hhh %mmm %sss");
+        String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www%ddd%hhh%mmm%sss");
         user.sendTranslated("&cYou are now muted for &6%s&c!", timeString);
         context.sendTranslated("&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
     }
@@ -202,7 +202,7 @@ public class ChatCommands
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         basicsUserEntity.setMuted(null);
         basicsUserEntity.update();
-        context.sendTranslated("&2%s &ais no longer muted!", user.getName());
+        context.sendTranslated("&2%s&a is no longer muted!", user.getName());
     }
 
     @Command(names = {"rand","roll"},desc = "Shows a random number from 0 to 100")
