@@ -246,12 +246,21 @@ public class LockManager implements Listener
             {
                 for (BlockFace cardinalDirection : BlockUtil.CARDINAL_DIRECTIONS)
                 {
-                    if (block.getRelative(cardinalDirection).getType() == block.getType())
+                    Block relative = block.getRelative(cardinalDirection);
+                    if (relative.getType() == block.getType())
                     {
-                        this.extendLock(lock, block.getRelative(cardinalDirection).getLocation());
-                        if (user != null)
+                        if (this.getLockAtLocation(relative.getLocation(),null, false,false)== null)
                         {
-                            user.sendTranslated("&aProtection repaired & expanded!");
+                            this.extendLock(lock, relative.getLocation());
+                            if (user != null)
+                            {
+                                user.sendTranslated("&aProtection repaired & expanded!");
+                            }
+                        }
+                        else if (user != null)
+                        {
+                            user.sendTranslated("&4Broken Protection detected! Try /cremove on nearby blocks!");
+                            user.sendTranslated("&eIf this message keeps coming please contact an administrator!");
                         }
                         break;
                     }
