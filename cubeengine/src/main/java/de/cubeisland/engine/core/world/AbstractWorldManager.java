@@ -18,6 +18,8 @@
 package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -165,5 +167,16 @@ public abstract class AbstractWorldManager implements WorldManager
         this.worlds.clear();
         this.worldIds.clear();
         this.generatorMap.clear();
+    }
+
+    @Override
+    public List<String> getWorldNames()
+    {
+        List<String> worlds = new ArrayList<>();
+        for (World world : this.getWorlds())
+        {
+            worlds.add(world.getName());
+        }
+        return worlds;
     }
 }

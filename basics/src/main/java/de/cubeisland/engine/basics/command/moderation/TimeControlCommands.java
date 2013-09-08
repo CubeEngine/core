@@ -17,28 +17,24 @@
  */
 package de.cubeisland.engine.basics.command.moderation;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
-
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
+import de.cubeisland.engine.core.util.matcher.Match;
 
 /**
  * Commands changing time. /time /ptime
@@ -57,253 +53,70 @@ public class TimeControlCommands
         this.lockTask = new LockTask();
     }
 
-    private enum Time
-    {
-        // TODO what about a matcher + alias file?
-
-        DAY(
-            6000,
-            "day",
-            "noon"),
-        NIGHT(
-            18000,
-            "night",
-            "midnight"),
-        DAWN(
-            22500,
-            "dawn"),
-        SUNRISE(
-            0,
-            "sunrise",
-            "morning"),
-        DUSK(
-            13000,
-            "dusk",
-            "moonrise"),
-        EVEN(
-            15000,
-            "even",
-            "evening",
-            "sunset"),
-        FORENOON(
-            3000,
-            "forenoon"),
-        AFTERNOON(
-            9000,
-            "afternoon");
-        public static final int TICKS_PER_HOUR = 1000;
-        public static final int TICKS_PER_DAY = 24 * TICKS_PER_HOUR;
-        public static final int HALF_DAY = TICKS_PER_DAY / 2;
-        public static final int LIGHT_SHIFT = HALF_DAY / 2;
-        public static final double TICKS_TO_MINUTES = (double)TICKS_PER_DAY / 1440D;
-        private static final Pattern PARSE_TIME_PATTERN = Pattern.compile("^([012]?\\d)(?::(\\d{2}))?(pm|am)?$", Pattern.CASE_INSENSITIVE);
-        private static final THashMap<String, Time> times = new THashMap<>(values().length);
-        private static final TLongObjectHashMap<String> timeNames = new TLongObjectHashMap<>();
-        private final String[] names;
-        private final long time;
-
-        static
-        {
-            for (Time time : values())
-            {
-                for (String name : time.names)
-                {
-                    times.put(name, time);
-                }
-                timeNames.put(time.time, time.names[0]);
-            }
-        }
-
-        private Time(long time, String... names)
-        {
-            this.names = names;
-            this.time = time;
-        }
-
-        public static String getTimeName(long time)
-        {
-            return timeNames.get(time);
-        }
-
-        public static long matchTime(String string)
-        {
-            if (string == null)
-            {
-                return -1;
-            }
-
-            // is it a named time?
-            Time time = times.get(string);
-            if (time != null)
-            {
-                return time.time;
-            }
-            try
-            {
-                Matcher matcher = PARSE_TIME_PATTERN.matcher(string);
-                // is it a formatted time?
-                if (matcher.find())
-                {
-                    // no null-check: group 1 is always available if matched
-                    String part = matcher.group(1);
-                    // remove leading zeros to prevent the number from being interpreted as an octal number
-                    if (part.charAt(0) == '0')
-                    {
-                        part = part.substring(1);
-                    }
-                    int hours = Integer.parseInt(part);
-                    int minutes = 0;
-                    // group 2: minutes; option
-                    part = matcher.group(2);
-                    if (part != null)
-                    {
-                        if (part.charAt(0) == '0')
-                        {
-                            part = part.substring(1);
-                        }
-                        minutes = Integer.parseInt(part);
-                    }
-                    // if more than 60 minutes, hours will be added instead to keep the minutes below 60
-                    hours += minutes / 60;
-                    minutes %= 60;
-                    // keep the hours within 24 hours
-                    hours = (hours * TICKS_PER_HOUR) % TICKS_PER_DAY;
-
-                    // group 3: am/pm; optional
-                    part = matcher.group(3);
-                    if (part != null)
-                    {
-                        // keep the ours within 12
-                        if (hours > HALF_DAY)
-                        {
-                            hours %= HALF_DAY;
-                        }
-                        // if pm had half a day
-                        if (part.equalsIgnoreCase("pm"))
-                        {
-                            hours += HALF_DAY;
-                        }
-                    }
-                    // shift the time for 6 hours to match MC's sun light
-                    // subtracts 6 to shift the time, add 24 and modulo24 to keep it between 0 and 24
-                    hours = (hours - LIGHT_SHIFT + TICKS_PER_DAY) % TICKS_PER_DAY;
-
-                    // calculate the ticks
-                    return hours + Math.round(TICKS_TO_MINUTES * (double)minutes);
-                }
-
-                long daytime = Long.parseLong(string);
-                if (daytime == 0)
-                {
-                    return 0;
-                }
-                // if the time is below 24 is probably meant to be interpreted as hours
-                if (daytime < 24)
-                {
-                    daytime *= 1000;
-                }
-                return daytime;
-            }
-            catch (NumberFormatException ignored)
-            {}
-            return -1;
-        }
-
-        public static String format(long time)
-        {
-            // lookup the name, I use a integer-division here to round
-            String formatted = Time.getTimeName((time / TICKS_PER_HOUR) * TICKS_PER_HOUR);
-            if (formatted == null)
-            {
-                // shift the time back to show a matching to the light
-                time = (time + LIGHT_SHIFT) % TICKS_PER_DAY;
-                int hours = (int)(time / TICKS_PER_HOUR);
-                int minutes = (int)Math.round((double)(time % TICKS_PER_HOUR) / TICKS_TO_MINUTES);
-
-                formatted = StringUtils.padLeft("" + hours, '0', 2) + ":" + StringUtils.padRight("" + minutes, '0', 2);
-            }
-            return formatted;
-        }
-    }
-
-    @Command(desc = "Changes the time of a world", flags = @Flag(longName = "lock", name = "l"), max = -1, usage = "<time> {worlds}...")
+    @Command(desc = "Changes the time of a world",
+             flags = @Flag(longName = "lock", name = "l"),
+             params = @Param(names = { "w", "worlds", "in"}),
+             max = -1, usage = "<time> [w <worlds>]")
     public void time(ParameterizedContext context)
     {
-        User sender = null;
-        if (context.getSender() instanceof User)
+        List<World> worlds;
+        if (context.hasParam("w"))
         {
-            sender = (User)context.getSender();
-        }
-
-        if (!context.hasArg(0))
-        {
-            context.sendTranslated("&aIt's currently &e%s&a in &6%s&a.",
-                                   Time.format(sender.getWorld().getTime()), sender.getWorld().getName());
+            if (context.getString("w").equals("*"))
+            {
+                worlds = Bukkit.getWorlds();
+            }
+            else
+            {
+                worlds = Match.worlds().matchWorlds(context.getString("w"));
+                for (World world : worlds)
+                {
+                    if (world == null)
+                    {
+                        context.sendTranslated("&cCould not match all worlds! %s", context.getString("w"));
+                        return;
+                    }
+                }
+            }
         }
         else
         {
-            Collection<World> worlds;
-            final long time;
-            time = Time.matchTime(context.getString(0));
-            if (time == -1)
+            if (context.getSender() instanceof User)
             {
-                World world = Bukkit.getWorld(context.getString(0));
-                if (world != null)
-                {
-                    context.sendTranslated("&aIt's currently &e%s&a in this world.", Time.format(world.getTime()));
-                }
-                else
-                {
-                    context.sendTranslated("&cThe time you entered is not valid!");
-                }
-                return;
+                worlds = Arrays.asList(((User)context.getSender()).getWorld());
             }
-            if (context.hasArg(1))
-            {
-                if (context.getString(1).equals("*"))
-                {
-                    worlds = Bukkit.getWorlds();
-                }
-                else
-                {
-                    String[] worldNames = StringUtils.explode(",", context.getString(1));
-                    worlds = new ArrayList<>();
-                    for (String worldName : worldNames)
-                    {
-                        World world = Bukkit.getWorld(worldName);
-                        if (world != null)
-                        {
-                            worlds.add(world);
-                        } //else ignore if not found
-                    }
-                }
-                if (worlds.isEmpty())
-                {
-                    context.sendTranslated("&cNone of the specified worlds were found!");
-                    return;
-                }
-            }
-            else if (sender == null)
+            else
             {
                 context.sendTranslated("&cYou have to specify a world when using this command from the console!");
                 return;
             }
-            else
+        }
+        if (context.hasArg(0))
+        {
+            final Long time = Match.time().matchTimeValue(context.getString(0));
+            if (time == null)
             {
-                worlds = new ArrayList<>();
-                worlds.add(sender.getWorld());
+                context.sendTranslated("&cThe time you entered is not valid!");
+                return;
             }
             if (worlds.size() == 1)
             {
-                context.sendTranslated("&aThe time of &e%s&a has been set to &6%s&a!", worlds.iterator().next().getName(), Time.format(time));
+                context.sendTranslated("&aThe time of &e%s&a has been set to &6%s (%s)&a!",
+                                       worlds.get(0).getName(),
+                                       Match.time().format(time),
+                                       Match.time().getNearTimeName(time));
             }
-            else if (context.getString(1).equals("*"))
+            else if ("*".equals(context.getString("w")))
             {
-                context.sendTranslated("&aThe time of all worlds have been set to &6%s&a!", Time.format(time));
+                context.sendTranslated("&aThe time of all worlds has been set to &6%s (%s)&a!",
+                                       Match.time().format(time),
+                                       Match.time().getNearTimeName(time));
             }
             else
             {
-                context.sendTranslated("&aThe time of &6%s &aworlds have been set to &6%s&a!", worlds.size(), Time.format(time));
+                context.sendTranslated("&aThe time of &6%s &aworlds have been set to &6%s (%s)&a!",
+                                       worlds.size(),Match.time().format(time),
+                                       Match.time().getNearTimeName(time));
             }
             for (World world : worlds)
             {
@@ -323,6 +136,17 @@ public class TimeControlCommands
                 }
             }
         }
+        else
+        {
+            context.sendTranslated("&aThe current time is:");
+            for (World world : worlds)
+            {
+                context.sendTranslated("&e%s (%s)&a in &6%s.",
+                                       Match.time().format(world.getTime()),
+                                       Match.time().getNearTimeName(world.getTime()),
+                                       world.getName());
+            }
+        }
     }
 
     @Command(desc = "Changes the time for a player", min = 1, max = 2, flags = {
@@ -340,7 +164,7 @@ public class TimeControlCommands
         }
         else
         {
-            time = Time.matchTime(timeString);
+            time = Match.time().matchTimeValue(timeString);
             if (time == null)
             {
                 context.sendTranslated("&cInvalid time-format!");
@@ -369,6 +193,11 @@ public class TimeControlCommands
             }
             other = true;
         }
+        else if (user == null)
+        {
+            context.sendTranslated("&cYou need to define a player!");
+            return;
+        }
         if (reset)
         {
             user.resetPlayerTime();
@@ -384,31 +213,25 @@ public class TimeControlCommands
             {
                 user.resetPlayerTime();
                 user.setPlayerTime(time, false);
+                context.sendTranslated("&aTime locked to &6%s (%s)&a for &2%s&a!",
+                                       Match.time().format(time),
+                                       Match.time().getNearTimeName(time),
+                                       user.getName());
             }
             else
             {
                 user.resetPlayerTime();
-                user.setPlayerTime(user.getWorld().getTime() - time, true);
-            }
-            String timeName = Time.getTimeName(time);
-            if (timeName == null)
-            {
-                context.sendTranslated("&aTime set to &e%d &afor &2%s&a!", time, user.getName());
-            }
-            else
-            {
-                context.sendTranslated("&aTime set to &e%s &afor &2%s&a!", timeName, user.getName());
+                user.setPlayerTime(time, true);
+                context.sendTranslated("&aTime set to &6%s (%s)&a for &2%s&a!",
+                                       Match.time().format(time),
+                                       Match.time().getNearTimeName(time),
+                                       user.getName());
             }
             if (other)
             {
-                if (timeName == null)
-                {
-                    user.sendTranslated("&aYour time was set to &e%d!", time);
-                }
-                else
-                {
-                    user.sendTranslated("&aYour time was set to &e%s!", timeName);
-                }
+                context.sendTranslated("&aYour time was set to &6%s (%s)&a!",
+                                       Match.time().format(time),
+                                       Match.time().getNearTimeName(time));
             }
         }
     }
