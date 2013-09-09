@@ -20,10 +20,12 @@ package de.cubeisland.engine.log.action.logaction.block.ignite;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Fireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockIgniteEvent;
 
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
@@ -52,8 +54,9 @@ public class IgniteActionType extends ActionTypeContainer
         switch (event.getCause())
         {
         case FIREBALL:
-            //TODO get targeted player will need reflection for that see explosion
-            this.logIgnite(this.manager.getActionType(FireballIgnite.class),blockState,null);
+
+            this.logIgnite(this.manager.getActionType(FireballIgnite.class),blockState,
+                   BukkitUtils.getTarget(((Fireball)event.getIgnitingEntity()).getShooter()));
             break;
         case LAVA:
             this.logIgnite(this.manager.getActionType(LavaIgnite.class),blockState,null);
