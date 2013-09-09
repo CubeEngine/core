@@ -261,7 +261,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml")));
 
         // depends on: core config, server
-        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
+        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());
 
         if (this.config.userWebapi)
         {

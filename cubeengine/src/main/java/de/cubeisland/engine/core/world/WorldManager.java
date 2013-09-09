@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,4 +49,6 @@ public interface WorldManager extends Cleanable
     void removeGenerators(Module module);
 
     WorldEntity getWorldEntity(World world);
+
+    List<String> getWorldNames();
 }

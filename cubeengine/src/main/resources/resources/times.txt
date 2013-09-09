@@ -12,8 +12,8 @@
   dusk
   moonrise
 15000:
-  even
   evening
+  even
   sunset
 18000:
   night

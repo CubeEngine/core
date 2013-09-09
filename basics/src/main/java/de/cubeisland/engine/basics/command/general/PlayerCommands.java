@@ -515,7 +515,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("&2%s&e was last seen &6%s &eago.", user.getName(),
-                               new Duration(System.currentTimeMillis(), lastPlayed).format("%www %ddd %hhh %mmm %sss"));
+                   new Duration(System.currentTimeMillis(), lastPlayed).format("%www%ddd%hhh%mmm%sss"));
     }
 
     @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, max = NO_MAX, flags = @Flag(longName = "chat", name = "c"))

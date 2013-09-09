@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import org.bukkit.event.Listener;
 
@@ -28,6 +29,9 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 
 public abstract class LogActionType extends ActionType implements Listener
 {
+    private static final SimpleDateFormat timeOnly = new SimpleDateFormat("hh:mm:ss");
+    private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yyyy-mm-dd");
+
     @Override
     public void enable()
     {
@@ -51,13 +55,22 @@ public abstract class LogActionType extends ActionType implements Listener
                     first = last;
                     last = logEntry.getTimestamp();
                 }
-                time = "&7" + first.toString() + " &6-&7 " + last.toString() + "\n";
+                String fDate = dateOnly.format(first);
+                if (dateOnly.format(last).equals(fDate)) // Same day
+                {
+                    time = "&7" + fDate + " " + timeOnly.format(first) + " &6-&7 " + timeOnly.format(last);
+                }
+                else
+                {
+                    time = "&7" + fDate + " " + timeOnly.format(first) +
+                        " &6-&7 " + dateOnly.format(last) + " " + timeOnly.format(last);
+                }
             }
             else
             {
-                time = "&7"+ logEntry.getTimestamp().toString() + " - ";
+                time = "&7"+ dateOnly.format(logEntry.getTimestamp()) + " " +
+                    timeOnly.format(logEntry.getTimestamp()) + " - ";
             }
-            //TODO time-frame if attached
         }
         String loc = "";
         if (show.showCoords)
