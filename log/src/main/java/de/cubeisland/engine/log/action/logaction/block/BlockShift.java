@@ -129,7 +129,7 @@ public class BlockShift extends BlockActionType
         {
             if (logEntry.getNewBlock().material == AIR)
             {
-                user.sendTranslated("%s&aA piston retracted %s%s",
+                user.sendTranslated("%s&aA piston retracted%s%s",
                                     time,times ,loc);
             }
             else
