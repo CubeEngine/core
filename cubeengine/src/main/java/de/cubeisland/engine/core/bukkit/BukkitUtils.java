@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
 import net.minecraft.server.v1_6_R2.DedicatedServer;
+import net.minecraft.server.v1_6_R2.EntityLiving;
 import net.minecraft.server.v1_6_R2.EntityPlayer;
 import net.minecraft.server.v1_6_R2.Item;
 import net.minecraft.server.v1_6_R2.MinecraftServer;
@@ -31,6 +32,7 @@ import net.minecraft.server.v1_6_R2.PlayerInteractManager;
 import net.minecraft.server.v1_6_R2.RecipesFurnace;
 import net.minecraft.server.v1_6_R2.TileEntityFurnace;
 import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 
@@ -40,9 +42,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.i18n.Language;
@@ -323,5 +329,40 @@ public class BukkitUtils
                              new PlayerInteractManager(minecraftServer.getWorldServer(0)));
         entityPlayer.getBukkitEntity().loadData();
         return entityPlayer.getBukkitEntity();
+    }
+
+    public static LivingEntity getTarget(LivingEntity hunter) {
+        EntityLiving entity = ((CraftLivingEntity) hunter).getHandle();
+        EntityLiving target;
+        try
+        {
+            if(hunter instanceof EnderDragon)
+            {
+                Field field = entity.getClass().getDeclaredField("u");
+                field.setAccessible(true);
+                target = (EntityLiving)field.get(entity);
+            }
+            else if (hunter instanceof Ghast)
+            {
+                Field field = entity.getClass().getDeclaredField("target");
+                field.setAccessible(true);
+                target = (EntityLiving)field.get(entity);
+            }
+            else
+            {
+                return null;
+            }
+            if(target == null)
+            {
+                return null;
+            }
+            return (LivingEntity) target.getBukkitEntity();
+        }
+        catch (Exception ex)
+        {
+            CubeEngine.getCore().getLog().warn("Could not get Target of Ghast or Enderdragon");
+            CubeEngine.getCore().getLog().debug(ex.getLocalizedMessage(), ex);
+            return null;
+        }
     }
 }

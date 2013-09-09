@@ -289,7 +289,7 @@ public class LookupCommands
                 }
                 else
                 {
-                    user.sendTranslated("&eUse this selection wand."); // TODO give selectionwand for CE
+                    user.sendTranslated("&eUse this selection wand.");
                     LogCommands.giveSelectionTool(user);
                 }
                 return false;

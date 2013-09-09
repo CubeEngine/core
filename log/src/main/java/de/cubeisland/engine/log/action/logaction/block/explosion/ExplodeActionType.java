@@ -32,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
@@ -80,14 +81,21 @@ public class ExplodeActionType extends ActionTypeContainer
         {
             actionType = this.manager.getActionType(FireballExplode.class);
             LivingEntity shooter = ((Fireball)event.getEntity()).getShooter();
-            // http://pastie.org/4350900#43
-            //TODO add to BukkitUtil Methods to get/set Target of Ghast & Enderdragon
-            //TODO get shooter if shooter is attacking player log player too
+            LivingEntity target = BukkitUtils.getTarget(shooter);
+            if (target != null && target instanceof Player)
+            {
+                player = (Player)target;
+            }
         }
         else if (event.getEntity() instanceof EnderDragon)
         {
-            //TODO if is attacking player log player too
             actionType = this.manager.getActionType(EnderdragonExplode.class);
+            EnderDragon dragon = (EnderDragon)event.getEntity();
+            LivingEntity target = BukkitUtils.getTarget(dragon);
+            if (target != null && target instanceof Player)
+            {
+                player = (Player)target;
+            }
         }
         else if (event.getEntity() instanceof WitherSkull)
         {
