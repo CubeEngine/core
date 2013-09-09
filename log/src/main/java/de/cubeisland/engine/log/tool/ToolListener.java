@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
@@ -36,17 +37,19 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 public class ToolListener implements Listener
 {
     private final Log module;
+    private Permission toolPerm;
 
     public ToolListener(Log module)
     {
         this.module = module;
+        toolPerm = module.getBasePermission().createChild("use-logtool");
     }
 
-    // TODO permissions for the tools
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
         if (event.getAction().equals(Action.PHYSICAL)) return;
+        if (!toolPerm.isAuthorized(event.getPlayer())) return;
         if (event.getClickedBlock() != null)
         {
             User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());

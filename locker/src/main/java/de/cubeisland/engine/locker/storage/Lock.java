@@ -303,7 +303,7 @@ public class Lock
      */
     public Boolean checkForKeyBook(User user, Location effectLocation)
     {
-        KeyBook keyBook = KeyBook.getKeyBook(user.getItemInHand(), user);
+        KeyBook keyBook = KeyBook.getKeyBook(user.getItemInHand(), user, this.manager.module);
         if (keyBook != null)
         {
             return keyBook.check(this, effectLocation);

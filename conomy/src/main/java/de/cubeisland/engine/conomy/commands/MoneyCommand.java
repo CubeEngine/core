@@ -72,6 +72,7 @@ public class MoneyCommand extends ContainerCommand
     public void balance(ParameterizedContext context)
     {
         User user;
+        // TODO show own account if hidden
         boolean showHidden = context.hasFlag("f") && ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
