@@ -58,12 +58,12 @@ public abstract class LogActionType extends ActionType implements Listener
                 String fDate = dateOnly.format(first);
                 if (dateOnly.format(last).equals(fDate)) // Same day
                 {
-                    time = "&7" + fDate + " " + timeOnly.format(first) + " &6-&7 " + timeOnly.format(last);
+                    time = "&7" + fDate + " " + timeOnly.format(first) + " &6-&7 " + timeOnly.format(last) + " - ";
                 }
                 else
                 {
                     time = "&7" + fDate + " " + timeOnly.format(first) +
-                        " &6-&7 " + dateOnly.format(last) + " " + timeOnly.format(last);
+                        " &6-&7 " + dateOnly.format(last) + " " + timeOnly.format(last) + " - ";
                 }
             }
             else
