@@ -875,6 +875,7 @@ public class MarketSign
                 user.sendTranslated("&cThe owner cannot afford the money to acquire your items!");
                 return;
             }
+            this.itemInfo.matchesItem(user.getItemInHand()); // adapt to item in hand (if it has repair-cost)
             if (getAmountOf(user.getInventory(), this.getItem()) < this.getAmount())
             {
                 user.sendTranslated("&cYou do not have enough items to sell!");
