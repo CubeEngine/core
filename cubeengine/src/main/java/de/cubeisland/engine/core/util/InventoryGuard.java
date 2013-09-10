@@ -410,7 +410,6 @@ public class InventoryGuard implements Listener
                         return amountIn + 1 <= guardedItem.amount;
                     case PLACE_SOME:
                         return amountIn + itemStack.getAmount() <= guardedItem.amount; //TODO do not assume full stack
-
                 }
             }
         }
