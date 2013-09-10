@@ -28,30 +28,33 @@ import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.locker.Locker;
 
 public class KeyBook
 {
     public static final String TITLE = ChatFormat.parseFormats("&r&6KeyBook &8#");
     public final ItemStack item;
     public final User currentHolder;
+    private Locker module;
     public final long lockID;
     private final String keyBookName;
 
-    private KeyBook(ItemStack item, User currentHolder)
+    private KeyBook(ItemStack item, User currentHolder, Locker module)
     {
         this.item = item;
         this.currentHolder = currentHolder;
+        this.module = module;
         keyBookName = item.getItemMeta().getDisplayName();
         lockID = Long.valueOf(keyBookName.substring(keyBookName.indexOf('#')+1, keyBookName.length()));
     }
 
-    public static KeyBook getKeyBook(ItemStack item, User currentHolder)
+    public static KeyBook getKeyBook(ItemStack item, User currentHolder, Locker module)
     {
         if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().contains(KeyBook.TITLE))
         {
             try
             {
-                return new KeyBook(item, currentHolder);
+                return new KeyBook(item, currentHolder, module);
             }
             catch (NumberFormatException|IndexOutOfBoundsException ignore)
             {}
@@ -110,6 +113,11 @@ public class KeyBook
 
     public boolean isValidFor(Lock lock)
     {
-        return keyBookName.startsWith(lock.getColorPass());
+        boolean b = keyBookName.startsWith(lock.getColorPass());
+        if (!b)
+        {
+            this.module.getLog().debug("Invalid KeyBook detected! {}|{}", lock.getColorPass(), keyBookName);
+        }
+        return b;
     }
 }

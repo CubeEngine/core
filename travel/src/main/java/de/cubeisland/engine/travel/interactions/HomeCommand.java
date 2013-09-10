@@ -436,6 +436,7 @@ public class HomeCommand extends ContainerCommand
         user.sendTranslated("&eHere is a list of your homes: ");
         for (Home home : homes)
         {
+            if (home == null) continue; // TODO this should not even happen!!!
             if (home.isOwner(user))
             {
                 user.sendMessage("  &6" + home.getName());

@@ -167,4 +167,21 @@ public class InventoryGuardFactory
         this.currentGuardConfig.get().addOnChange(run);
         return this;
     }
+
+    public InventoryGuardFactory doNotIgnoreRepairCost()
+    {
+        this.currentGuardConfig.get().setIgnoreRepaircost(false);
+        return this;
+    }
+
+    /**
+     * This is the default behaviour
+     *
+     * @return
+     */
+    public InventoryGuardFactory ignoreRepairCost()
+    {
+        this.currentGuardConfig.get().setIgnoreRepaircost(true);
+        return this;
+    }
 }

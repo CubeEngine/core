@@ -72,7 +72,8 @@ public abstract class ActionType
         }
         else
         {
-            causerID = -1L * causer.getType().getTypeId();
+            // TODO This is not ideal as some ids are -1 in bukkitcode
+            causerID = -1L * Math.abs(causer.getType().getTypeId());
         }
         this.queueLog(worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),causerID,block,data,newBlock,newData,additionalData);
     }

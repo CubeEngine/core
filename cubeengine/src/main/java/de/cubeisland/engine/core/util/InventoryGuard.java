@@ -52,10 +52,17 @@ public class InventoryGuard implements Listener
     private HashSet<Runnable> onClose = new HashSet<>();
     private HashSet<Runnable> onChange = new HashSet<>();
 
+    private boolean ignoreRepaircost = true;
+
     public InventoryGuard(Core core, Inventory inventory, User[] users)
     {
         this.inventory = inventory;
         this.users = new HashSet<>(Arrays.asList(users));
+    }
+
+    public void setIgnoreRepaircost(boolean set)
+    {
+        this.ignoreRepaircost = set;
     }
 
     public void submitInventory(Module module, boolean openInventory)
@@ -164,7 +171,7 @@ public class InventoryGuard implements Listener
                     {
                         for (GuardedItemStack guardedItem : this.noBlockIn)
                         {
-                            if (guardedItem.item.isSimilar(event.getOldCursor()))
+                            if (guardedItem.isSimilar(event.getOldCursor(), this.ignoreRepaircost))
                             {
                                 if (guardedItem.amount == 0)
                                 {
@@ -374,7 +381,7 @@ public class InventoryGuard implements Listener
     {
         for (GuardedItemStack guardedItem : this.blockOut)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStack, this.ignoreRepaircost))
                 return true;
         }
         return false;
@@ -384,7 +391,7 @@ public class InventoryGuard implements Listener
     {
         for (GuardedItemStack guardedItem : this.blockIn)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStack, this.ignoreRepaircost))
             {
                 return true;
             }
@@ -396,7 +403,7 @@ public class InventoryGuard implements Listener
     {
         for (GuardedItemStack guardedItem : this.noBlockIn)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStack, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
                 int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
@@ -410,7 +417,6 @@ public class InventoryGuard implements Listener
                         return amountIn + 1 <= guardedItem.amount;
                     case PLACE_SOME:
                         return amountIn + itemStack.getAmount() <= guardedItem.amount; //TODO do not assume full stack
-
                 }
             }
         }
@@ -421,7 +427,7 @@ public class InventoryGuard implements Listener
     {
         for (GuardedItemStack guardedItem : this.noBlockOut)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStack, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
                 int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);

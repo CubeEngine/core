@@ -25,7 +25,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -56,8 +55,15 @@ public class LookupCommands
         this.actionTypeManager = module.getActionTypeManager();
     }
 
-    private void params(CommandContext context)
+    private void params(ParameterizedContext context)
     {
+        if (context.hasParam("params"))
+        {
+            String param = context.getString("params");
+            context.sendMessage("NOT YET DONE");
+            // TODO show description
+            return;
+        }
         context.sendTranslated("&6Registered ActionTypes:");
         context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
         context.sendMessage("");
@@ -93,13 +99,14 @@ public class LookupCommands
     }
 
     @Command(
-        desc = "Queries a lookup in the database\n    Show availiable parameters with &6/lookup params",
-        usage = "[show] [parameters]",
+        desc = "Queries a lookup in the database\n    " +
+            "Show availiable parameters with &6/lookup params",
+        usage = "[page <page>] [parameters]",
     flags = {
         @Flag(longName = "coordinates", name = "coords"),
         @Flag(longName = "detailed", name = "det"),
         @Flag(longName = "nodate", name = "nd"),
-        @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending) //TODO implement
+        @Flag(longName = "descending", name = "desc")
     },
     params = {
         @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
@@ -113,17 +120,19 @@ public class LookupCommands
 
         @Param(names = {"limit","pagelimit"},type = Integer.class),
         @Param(names = {"page"},type = Integer.class),
+
+        @Param(names = "params", completer = ActionTypeCompleter.class)
     }, min = 0, max = 1)
     // TODO param for filter / chat / command / signtexts
     public void lookup(ParameterizedContext context)
     {
-        if (context.hasArg(0) && context.getString(0).equalsIgnoreCase("params"))
+        if ((context.hasArg(0) && context.getString(0).equalsIgnoreCase("params"))
+            || context.hasParam("params"))
         {
             this.params(context);
         }
         else if (context.getSender() instanceof User)
         {
-            // TODO /lookup show
             if (context.getParams().isEmpty())
             {
                 try

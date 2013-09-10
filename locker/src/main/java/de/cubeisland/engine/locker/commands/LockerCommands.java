@@ -62,7 +62,7 @@ public class LockerCommands extends ContainerCommand
         if (context.getSender() instanceof User)
         {
             User user = (User)context.getSender();
-            KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender());
+            KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender(), this.module);
             if (keyBook != null)
             {
                 Lock lock = this.manager.getLockById(keyBook.lockID);
