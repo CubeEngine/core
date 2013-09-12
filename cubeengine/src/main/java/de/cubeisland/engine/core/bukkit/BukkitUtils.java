@@ -204,6 +204,8 @@ public class BukkitUtils
     {
         PacketHookInjector.shutdown();
 
+        dragonTarget = null;
+        ghastTarget = null;
         resetCommandLogging();
     }
 
