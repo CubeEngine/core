@@ -20,7 +20,7 @@
     </repository>
     <snapshotRepository>
       <id>cubeisland-repo</id>
-      <name>Release</name>
+      <name>Snapshot</name>
       <url>http://nexus.cubeisland.de/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
