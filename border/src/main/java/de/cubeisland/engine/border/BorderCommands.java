@@ -18,6 +18,7 @@
 package de.cubeisland.engine.border;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -34,6 +35,7 @@ public class BorderCommands extends ContainerCommand
     private Border module;
 
 
+
     public BorderCommands(Border module)
     {
         super(module, "border", "border commands");
@@ -41,11 +43,12 @@ public class BorderCommands extends ContainerCommand
     }
 
     private LinkedList<Triplet<Long,Integer,Integer>> chunksToGenerate;
+    private LinkedList<Triplet<World,Integer,Integer>> chunksToUnload;
     private CommandSender sender = null;
     private long tickStart;
     private int total = 0;
     private int totalDone = 0;
-    private int lastPercent = 0;
+    private long lastNotify;
     private int generated;
     private boolean running = false;
 
@@ -60,7 +63,7 @@ public class BorderCommands extends ContainerCommand
         }
         String worldName = context.getString(0);
         this.chunksToGenerate = new LinkedList<>();
-
+        this.chunksToUnload = new LinkedList<>();
         if (worldName.equals("*"))
         {
             for (World world : this.module.getCore().getWorldManager().getWorlds())
@@ -81,9 +84,9 @@ public class BorderCommands extends ContainerCommand
         this.sender = context.getSender();
         this.total = this.chunksToGenerate.size();
         this.totalDone = 0;
-        this.lastPercent = 0;
+        this.lastNotify = System.currentTimeMillis();
         this.generated = 0;
-        this.scheduleGeneration();
+        this.scheduleGeneration(1);
     }
 
     private void addChunksToGenerate(World world, CommandSender sender)
@@ -115,7 +118,7 @@ public class BorderCommands extends ContainerCommand
         sender.sendTranslated("&aAdded &6%d &achunks to generate in &6%s", i, world.getName());
     }
 
-    private void scheduleGeneration()
+    private void scheduleGeneration(int inTicks)
     {
         this.running = true;
         this.module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
@@ -125,54 +128,64 @@ public class BorderCommands extends ContainerCommand
             {
                 BorderCommands.this.generate();
             }
-        }, 1);
+        }, inTicks);
     }
+    private static final int TIMELIMIT = 40;
 
     private void generate()
     {
         this.tickStart = System.currentTimeMillis();
-        this.generate0();
-    }
-
-    private void generate0()
-    {
-        if (chunksToGenerate.isEmpty())
+        Runtime rt = Runtime.getRuntime();
+        int freeMemory = (int)((rt.maxMemory() - rt.totalMemory() + rt.freeMemory()) / 1048576);// 1024*1024 = 1048576 (bytes in 1 MB)
+        if (freeMemory < 500) // less than 500 MB memory left
         {
-            sender.sendTranslated("&aChunkgeneration completed! Generated &6%d&a chunks", generated);
-            this.running = false;
+            this.scheduleGeneration(20 * 5); // Take a second break
+            sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
+            return;
         }
-        else
+        while (System.currentTimeMillis() - this.tickStart < TIMELIMIT)
         {
-            // 50 ms = 1 tick
-            if (System.currentTimeMillis() - this.tickStart > 20) // 20ms have passed (less than half a tick)
+            if (chunksToGenerate.isEmpty())
             {
-                this.scheduleGeneration();
-                return;
+                break;
             }
             Triplet<Long, Integer, Integer> poll = chunksToGenerate.poll();
             World world = this.module.getCore().getWorldManager().getWorld(poll.getFirst());
-            Chunk chunk = world.getChunkAt(poll.getSecond(), poll.getThird());
-            if (!chunk.isLoaded())
+            if (!world.isChunkLoaded(poll.getSecond(), poll.getThird()))
             {
-                if (chunk.load(false))
+                if (!world.loadChunk(poll.getSecond(), poll.getThird(), false))
                 {
-                    // chunk exists!
-                }
-                else
-                {
-                    chunk.load(true); // Load & generate chunk
+                    world.loadChunk(poll.getSecond(), poll.getThird(), true);
                     generated++;
                 }
-                chunk.getWorld().unloadChunk(chunk); // and unload
+                this.chunksToUnload.add(new Triplet<>(world, poll.getSecond(), poll.getThird()));
+            }
+            if (this.chunksToUnload.size() > 8)
+            {
+                Triplet<World, Integer, Integer> toUnload = chunksToUnload.poll();
+                toUnload.getFirst().unloadChunkRequest(toUnload.getSecond(), toUnload.getThird());
             }
             totalDone++;
-            int percentNow = totalDone * 100 / total;
-            if (percentNow > lastPercent + 3)
+
+            if (lastNotify + TimeUnit.SECONDS.toMillis(5) < System.currentTimeMillis())
             {
-                lastPercent = percentNow;
+                this.lastNotify = System.currentTimeMillis();
+                int percentNow = totalDone * 100 / total;
                 this.sender.sendTranslated("&aChunkgeneration is at &6%d%% &a(&6%d/%d&a)", percentNow, totalDone, total);
             }
-            this.generate0();
+        }
+        if (!chunksToGenerate.isEmpty())
+        {
+            this.scheduleGeneration(1);
+        }
+        else
+        {
+            for (Triplet<World, Integer, Integer> triplet : chunksToUnload)
+            {
+                triplet.getFirst().unloadChunkRequest(triplet.getSecond(), triplet.getThird());
+            }
+            sender.sendTranslated("&aChunkgeneration completed! Generated &6%d&a chunks", generated);
+            this.running = false;
         }
     }
 }
