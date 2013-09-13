@@ -40,6 +40,7 @@ import de.cubeisland.engine.powersigns.signtype.SignTypeInfo;
 import de.cubeisland.engine.powersigns.storage.PowerSignModel;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.powersigns.storage.TablePowerSign.TABLE_POWER_SIGN;
 
@@ -105,8 +106,11 @@ public class SignManager implements Listener
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event)
     {
+        long worldID = this.module.getCore().getWorldManager().getWorldId(event.getChunk().getWorld());
         Collection<PowerSignModel> powerSignModels = this.dsl.selectFrom(TABLE_POWER_SIGN).
-            where(TABLE_POWER_SIGN.CHUNKX.eq(event.getChunk().getX()), TABLE_POWER_SIGN.CHUNKX.eq(event.getChunk().getZ())).fetch();
+            where(TABLE_POWER_SIGN.CHUNKX.eq(event.getChunk().getX()),
+                  TABLE_POWER_SIGN.CHUNKX.eq(event.getChunk().getZ()),
+                  TABLE_POWER_SIGN.WORLD.eq(UInteger.valueOf(worldID))).fetch();
         for (PowerSignModel powerSignModel : powerSignModels)
         {
             SignType signType = this.registerdSignTypes.get(powerSignModel.getPSID());

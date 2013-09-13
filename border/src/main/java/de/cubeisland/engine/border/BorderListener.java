@@ -18,6 +18,7 @@
 package de.cubeisland.engine.border;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -57,13 +58,29 @@ public class BorderListener implements Listener
             if (event instanceof PlayerTeleportEvent)
             {
                 this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou cannot teleport outside the border!");
+                event.setCancelled(true);
+                return;
+            }
+            if (this.module.getConfig().torusWorld)
+            {
+                Location subtract = event.getFrom().getWorld().getSpawnLocation().subtract(event.getFrom());
+                Location torusLoc = event.getFrom().getWorld().getSpawnLocation().add(subtract);
+                torusLoc = torusLoc.subtract(subtract.multiply(23 / subtract.length())); // adjust ~1 chunk diagonal closer to spawn
+                torusLoc.setY(torusLoc.getWorld().getHighestBlockYAt(torusLoc));
+                torusLoc.setYaw(event.getFrom().getYaw());
+                torusLoc.setPitch(event.getFrom().getPitch());
+                event.setTo(torusLoc); // move to torus loc
+                this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&eAs you reach the border the world turns on itself and you appear on the other side of the world!");
             }
             else
             {
+                event.setTo(event.getFrom()); // no movement!
                 this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
             }
-            event.setCancelled(true);
-            event.setTo(event.getFrom().getWorld().getSpawnLocation());
+        }
+        else if (!(event instanceof PlayerTeleportEvent) && this.isChunkAlmostOutOfRange(event.getTo().getChunk()))
+        {
+            this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&6You are near the world-border! You might want to turn around.");
         }
     }
 
@@ -87,6 +104,13 @@ public class BorderListener implements Listener
         final Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
         BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
         return spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= this.config.radius * this.config.radius;
+    }
+
+    private boolean isChunkAlmostOutOfRange(Chunk to)
+    {
+        final Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
+        BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
+        return !(spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= (this.config.radius -2) * (this.config.radius -2));
     }
 
     // TODO prevent chunk generation behind the border

@@ -37,4 +37,8 @@ public class BorderConfig extends Configuration
     @Option("allow-bypass")
     @Comment("Whether players can bypass the restriction with a permission")
     public boolean allowBypass = false;
+
+    @Option("enable-torus")
+    @Comment("Experimental! The world acts as a torus. If you reach the border on the north side you'll get teleported to the south of the map")
+    public boolean torusWorld = false;
 }
