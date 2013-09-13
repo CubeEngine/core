@@ -97,25 +97,53 @@ public class BorderCommands extends ContainerCommand
         int radius = this.module.getConfig().radius;
         radius += sender.getServer().getViewDistance();
         int radiusSquared = radius * radius;
-        int i = 0;
+        int chunksAdded = 0;
         long worldID = this.module.getCore().getWorldManager().getWorldId(world);
-        for (int x = -radius + spawnX; x <= radius + spawnX; x++)
+        // Construct Spiral
+        int curLen = 1;
+        int curX = spawnX;
+        int curZ = spawnZ;
+        int dir = 1;
+        while (curLen <= radius * 2)
         {
-            for (int z = -radius + spawnZ; z <= radius + spawnZ; z++)
+            for (int i = 0; i < curLen; i++)
             {
-                if (this.module.getConfig().square)
+                curX += dir;
+                if (addIfInBorder(worldID, curX, curZ, spawnX, spawnZ, radius,  radiusSquared))
                 {
-                    this.chunksToGenerate.add(new Triplet<>(worldID, x,z));
-                    i++;
-                }
-                else if (Math.pow(spawnX - x, 2) + Math.pow(spawnZ - z, 2) <= radiusSquared)
-                {
-                    this.chunksToGenerate.add(new Triplet<>(worldID, x,z));
-                    i++;
+                    chunksAdded++;
                 }
             }
+            for (int i = 0; i < curLen; i++)
+            {
+                curZ += dir;
+                if (addIfInBorder(worldID, curX, curZ, spawnX, spawnZ, radius, radiusSquared))
+                {
+                    chunksAdded++;
+                }
+            }
+            curLen++;
+            dir = -dir;
         }
-        sender.sendTranslated("&aAdded &6%d &achunks to generate in &6%s", i, world.getName());
+        sender.sendTranslated("&aAdded &6%d &achunks to generate in &6%s", chunksAdded, world.getName());
+    }
+
+    private boolean addIfInBorder(long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)
+    {
+        if (this.module.getConfig().square)
+        {
+            if (Math.abs(spawnX - x) <= radius && Math.abs(spawnZ - z) <= radius)
+            {
+                this.chunksToGenerate.add(new Triplet<>(worldId, x, z));
+                return true;
+            }
+        }
+        else if (Math.pow(spawnX - x, 2) + Math.pow(spawnZ - z, 2) <= radiusSquared)
+        {
+            this.chunksToGenerate.add(new Triplet<>(worldId, x, z));
+            return true;
+        }
+        return false;
     }
 
     private void scheduleGeneration(int inTicks)
