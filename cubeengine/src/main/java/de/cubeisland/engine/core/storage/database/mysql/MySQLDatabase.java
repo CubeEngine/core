@@ -83,7 +83,18 @@ public class MySQLDatabase extends AbstractPooledDatabase
         cpds.setInitialPoolSize(3);
         cpds.setMaxStatements(0); // No Caching jOOQ will do this if needed
         cpds.setMaxStatementsPerConnection(0); // No Caching jOOQ will do this if needed
-        cpds.setMaxIdleTime(20 * 60); // 20 min
+        Connection connection = cpds.getConnection();
+        ResultSet resultSet = connection.prepareStatement("SHOW variables where Variable_name='wait_timeout'").executeQuery();
+        if (resultSet.next())
+        {
+            int second = resultSet.getInt("Value") - 5;
+            if (second <= 0)
+            {
+                second += 5;
+            }
+            cpds.setMaxIdleTime(second);
+        }
+        connection.close();
         this.schema = new DatabaseSchema(config.database);
         tableprefix = this.config.tablePrefix;
     }
