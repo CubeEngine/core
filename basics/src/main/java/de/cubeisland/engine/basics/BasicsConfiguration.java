@@ -113,4 +113,7 @@ public class BasicsConfiguration extends Configuration
     
     @Option("commands.door.max.radius")
     public int maxDoorRadius = 10;
+
+    @Option("overstacked.allow-anvil-and-brewing")
+    public boolean preventOverstackedItems = true;
 }
