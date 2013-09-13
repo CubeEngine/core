@@ -60,9 +60,9 @@
   </issueManagement>
 
   <scm>
-    <url>scm:git:https://github.com/CubeEngineDev/CubeEngine</url>
-    <connection>scm:git:https://github.com/CubeEngineDev/CubeEngine</connection>
-    <developerConnection>scm:git:https://github.com/CubeEngineDev/CubeEngine</developerConnection>
+    <url>scm:git:http://git.cubeisland.de/cubeengine/cubeengine</url>
+    <connection>scm:git:http://git.cubeisland.de/cubeengine/cubeengine.git</connection>
+    <developerConnection>scm:git:http://git.cubeisland.de/cubeengine/cubeengine.git</developerConnection>
   </scm>
 
   <repositories>

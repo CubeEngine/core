@@ -139,10 +139,6 @@ public class Basics extends Module
         cm.registerCommands(this,  new DoorCommand(this), ReflectedCommand.class );
 
         this.getLog().trace("{} ms - done", Profiler.endProfiling("basicsEnable", TimeUnit.MILLISECONDS));
-        
-        /**
-         * TODO command: nick -> move to CubeChat realname -> move to CubeChat rules
-         */
     }
 
     public BasicsConfiguration getConfiguration()

@@ -30,5 +30,11 @@ public class Border extends Module
         this.config = Configuration.load(BorderConfig.class, this);
         new BorderPerms(this);
         this.getCore().getEventManager().registerListener(this, new BorderListener(this));
+        this.getCore().getCommandManager().registerCommand(new BorderCommands(this));
+    }
+
+    public BorderConfig getConfig()
+    {
+        return config;
     }
 }

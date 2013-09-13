@@ -204,6 +204,8 @@ public class BukkitUtils
     {
         PacketHookInjector.shutdown();
 
+        dragonTarget = null;
+        ghastTarget = null;
         resetCommandLogging();
     }
 
@@ -331,6 +333,9 @@ public class BukkitUtils
         return entityPlayer.getBukkitEntity();
     }
 
+    private static Field dragonTarget;
+    private static Field ghastTarget;
+
     public static LivingEntity getTarget(LivingEntity hunter) {
         EntityLiving entity = ((CraftLivingEntity) hunter).getHandle();
         EntityLiving target;
@@ -338,15 +343,21 @@ public class BukkitUtils
         {
             if(hunter instanceof EnderDragon)
             {
-                Field field = entity.getClass().getDeclaredField("u");
-                field.setAccessible(true);
-                target = (EntityLiving)field.get(entity);
+                if (dragonTarget == null)
+                {
+                    dragonTarget = entity.getClass().getDeclaredField("u");
+                    dragonTarget.setAccessible(true);
+                }
+                target = (EntityLiving)dragonTarget.get(entity);
             }
             else if (hunter instanceof Ghast)
             {
-                Field field = entity.getClass().getDeclaredField("target");
-                field.setAccessible(true);
-                target = (EntityLiving)field.get(entity);
+                if (ghastTarget == null)
+                {
+                    ghastTarget = entity.getClass().getDeclaredField("target");
+                    ghastTarget.setAccessible(true);
+                }
+                target = (EntityLiving)ghastTarget.get(entity);
             }
             else
             {

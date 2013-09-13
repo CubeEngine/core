@@ -29,13 +29,31 @@ import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 
 public class BasicsPerm extends PermissionContainer<Basics>
 {
+
+
     public BasicsPerm(Basics module)
     {
         super(module);
         module.getLog().trace("{} ms - Basics.Permission-register", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         this.bindToModule(KITS,COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,POWERTOOL_USE,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE, BAN_RECEIVEMESSAGE,
                           COMMAND_KILL_PREVENT, COMMAND_CLEARINVENTORY_PREVENT, COMMAND_INVSEE_MODIFY_PREVENT,
-                          COMMAND_INVSEE_ENDERCHEST, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT);
+                          COMMAND_INVSEE_ENDERCHEST, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT,
+                          SIGN_COLORED_BLACK, SIGN_COLORED_DARK_BLUE, SIGN_COLORED_DARK_GREEN,
+                          SIGN_COLORED_DARK_AQUA, SIGN_COLORED_DARK_RED, SIGN_COLORED_DARK_PURPLE,
+                          SIGN_COLORED_GOLD, SIGN_COLORED_GRAY, SIGN_COLORED_DARK_GRAY,
+                          SIGN_COLORED_BLUE, SIGN_COLORED_GREEN, SIGN_COLORED_AQUA,
+                          SIGN_COLORED_RED, SIGN_COLORED_LIGHT_PURPLE, SIGN_COLORED_YELLOW,
+                          SIGN_COLORED_WHITE, SIGN_COLORED_OBFUSCATED, SIGN_COLORED_BOLD,
+                          SIGN_COLORED_STRIKE, SIGN_COLORED_UNDERLINE, SIGN_COLORED_ITALIC, SIGN_COLORED_RESET,
+                          OVERSTACKED_ANVIL_AND_BREWING
+                          );
+        SIGN_COLORED.attach(SIGN_COLORED_BLACK, SIGN_COLORED_DARK_BLUE, SIGN_COLORED_DARK_GREEN,
+                            SIGN_COLORED_DARK_AQUA, SIGN_COLORED_DARK_RED, SIGN_COLORED_DARK_PURPLE,
+                            SIGN_COLORED_GOLD, SIGN_COLORED_GRAY, SIGN_COLORED_DARK_GRAY,
+                            SIGN_COLORED_BLUE, SIGN_COLORED_GREEN, SIGN_COLORED_AQUA,
+                            SIGN_COLORED_RED, SIGN_COLORED_LIGHT_PURPLE, SIGN_COLORED_YELLOW,
+                            SIGN_COLORED_WHITE, SIGN_COLORED_OBFUSCATED, SIGN_COLORED_BOLD,
+                            SIGN_COLORED_STRIKE, SIGN_COLORED_UNDERLINE, SIGN_COLORED_ITALIC, SIGN_COLORED_RESET);
         this.registerAllPermissions();
 
         new TpWorldPermissions(module); // per world permissions
@@ -283,8 +301,34 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Allows writing colored signs
      */
-    public static final Permission SIGN_COLORED = Permission.createPermission("sign.colored"); //TODO permission for each color
+    public static final Permission SIGN_COLORED = Permission.createPermission("sign.colored");
+    public static final Permission SIGN_COLORED_BLACK = SIGN_COLORED.createNew("black");
+    public static final Permission SIGN_COLORED_DARK_BLUE = SIGN_COLORED.createNew("dark-blue");
+    public static final Permission SIGN_COLORED_DARK_GREEN = SIGN_COLORED.createNew("dark-green");
+    public static final Permission SIGN_COLORED_DARK_AQUA = SIGN_COLORED.createNew("dark-aqua");
+    public static final Permission SIGN_COLORED_DARK_RED = SIGN_COLORED.createNew("dark-red");
+    public static final Permission SIGN_COLORED_DARK_PURPLE = SIGN_COLORED.createNew("dark-purple");
+    public static final Permission SIGN_COLORED_GOLD = SIGN_COLORED.createNew("gold");
+    public static final Permission SIGN_COLORED_GRAY = SIGN_COLORED.createNew("gray");
+    public static final Permission SIGN_COLORED_DARK_GRAY = SIGN_COLORED.createNew("dark-gray");
+    public static final Permission SIGN_COLORED_BLUE = SIGN_COLORED.createNew("blue");
+    public static final Permission SIGN_COLORED_GREEN = SIGN_COLORED.createNew("green");
+    public static final Permission SIGN_COLORED_AQUA = SIGN_COLORED.createNew("aqua");
+    public static final Permission SIGN_COLORED_RED = SIGN_COLORED.createNew("red");
+    public static final Permission SIGN_COLORED_LIGHT_PURPLE = SIGN_COLORED.createNew("light-purple");
+    public static final Permission SIGN_COLORED_YELLOW = SIGN_COLORED.createNew("yellow");
+    public static final Permission SIGN_COLORED_WHITE = SIGN_COLORED.createNew("white");
+
+    public static final Permission SIGN_COLORED_OBFUSCATED = SIGN_COLORED.createNew("obfuscated");
+    public static final Permission SIGN_COLORED_BOLD = SIGN_COLORED.createNew("bold");
+    public static final Permission SIGN_COLORED_STRIKE = SIGN_COLORED.createNew("strike");
+    public static final Permission SIGN_COLORED_UNDERLINE = SIGN_COLORED.createNew("underline");
+    public static final Permission SIGN_COLORED_ITALIC = SIGN_COLORED.createNew("italic");
+    public static final Permission SIGN_COLORED_RESET = SIGN_COLORED.createNew("reset");
+
     public static final Permission CHANGEPAINTING = Permission.createPermission("changepainting");
     public static final Permission KICK_RECEIVEMESSAGE = Permission.createPermission("kick.receivemessage");
     public static final Permission BAN_RECEIVEMESSAGE = Permission.createPermission("ban.receivemessage");
+
+    public static Permission OVERSTACKED_ANVIL_AND_BREWING = Permission.createPermission("allow-overstacked-anvil-and-brewing");
 }
