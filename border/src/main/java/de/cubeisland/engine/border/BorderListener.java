@@ -18,6 +18,7 @@
 package de.cubeisland.engine.border;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -57,13 +58,27 @@ public class BorderListener implements Listener
             if (event instanceof PlayerTeleportEvent)
             {
                 this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou cannot teleport outside the border!");
+                event.setCancelled(true);
+                return;
             }
             else
             {
                 this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
             }
-            event.setCancelled(true);
-            event.setTo(event.getFrom().getWorld().getSpawnLocation());
+            if (this.module.getConfig().torusWorld)
+            {
+                Location subtract = event.getFrom().getWorld().getSpawnLocation().subtract(event.getFrom());
+                Location torusLoc = event.getFrom().getWorld().getSpawnLocation().add(subtract);
+                torusLoc = torusLoc.subtract(subtract.multiply(23 / subtract.length())); // adjust ~1 chunk diagonal closer to spawn
+                torusLoc.setY(torusLoc.getWorld().getHighestBlockYAt(torusLoc));
+                torusLoc.setYaw(event.getFrom().getYaw());
+                torusLoc.setPitch(event.getFrom().getPitch());
+                event.setTo(torusLoc); // move to torus loc
+            }
+            else
+            {
+                event.setTo(event.getFrom()); // no movement!
+            }
         }
     }
 

@@ -165,9 +165,9 @@ public class BorderCommands extends ContainerCommand
         this.tickStart = System.currentTimeMillis();
         Runtime rt = Runtime.getRuntime();
         int freeMemory = (int)((rt.maxMemory() - rt.totalMemory() + rt.freeMemory()) / 1048576);// 1024*1024 = 1048576 (bytes in 1 MB)
-        if (freeMemory < 500) // less than 500 MB memory left
+        if (freeMemory < 300) // less than 300 MB memory left
         {
-            this.scheduleGeneration(20 * 5); // Take a second break
+            this.scheduleGeneration(20 * 5); // Take a 5 second break
             sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
             return;
         }
