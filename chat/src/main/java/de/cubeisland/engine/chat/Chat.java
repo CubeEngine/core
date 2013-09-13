@@ -124,94 +124,95 @@ public class Chat extends Module implements Listener
     private String stripFormat(String message, Player player)
     {
         String toStrip = "";
-        if( COLOR_BLACK.isAuthorized(player))
+        if( !COLOR_BLACK.isAuthorized(player))
         {
             toStrip += "0";
         }
-        if( COLOR_DARK_BLUE.isAuthorized(player))
+        if( !COLOR_DARK_BLUE.isAuthorized(player))
         {
             toStrip += "1";
         }
-        if( COLOR_DARK_GREEN.isAuthorized(player))
+        if( !COLOR_DARK_GREEN.isAuthorized(player))
         {
             toStrip += "2";
         }
-        if( COLOR_DARK_AQUA.isAuthorized(player))
+        if( !COLOR_DARK_AQUA.isAuthorized(player))
         {
             toStrip += "3";
         }
-        if( COLOR_DARK_RED.isAuthorized(player))
+        if( !COLOR_DARK_RED.isAuthorized(player))
         {
             toStrip += "4";
         }
-        if( COLOR_DARK_PURPLE.isAuthorized(player))
+        if( !COLOR_DARK_PURPLE.isAuthorized(player))
         {
             toStrip += "5";
         }
-        if( COLOR_GOLD.isAuthorized(player))
+        if( !COLOR_GOLD.isAuthorized(player))
         {
             toStrip += "6";
         }
-        if( COLOR_GRAY.isAuthorized(player))
+        if( !COLOR_GRAY.isAuthorized(player))
         {
             toStrip += "7";
         }
-        if( COLOR_DARK_GRAY.isAuthorized(player))
+        if( !COLOR_DARK_GRAY.isAuthorized(player))
         {
             toStrip += "8";
         }
-        if( COLOR_BLUE.isAuthorized(player))
+        if( !COLOR_BLUE.isAuthorized(player))
         {
             toStrip += "9";
         }
-        if( COLOR_GREEN.isAuthorized(player))
+        if( !COLOR_GREEN.isAuthorized(player))
         {
             toStrip += "aA";
         }
-        if( COLOR_AQUA.isAuthorized(player))
+        if( !COLOR_AQUA.isAuthorized(player))
         {
             toStrip += "bB";
         }
-        if( COLOR_RED.isAuthorized(player))
+        if( !COLOR_RED.isAuthorized(player))
         {
             toStrip += "cC";
         }
-        if( COLOR_LIGHT_PURPLE.isAuthorized(player))
+        if( !COLOR_LIGHT_PURPLE.isAuthorized(player))
         {
             toStrip += "dD";
         }
-        if( COLOR_YELLOW.isAuthorized(player))
+        if( !COLOR_YELLOW.isAuthorized(player))
         {
             toStrip += "eE";
         }
-        if( COLOR_WHITE.isAuthorized(player))
+        if( !COLOR_WHITE.isAuthorized(player))
         {
             toStrip += "fF";
         }
-        if( COLOR_OBFUSCATED.isAuthorized(player))
+        if( !COLOR_OBFUSCATED.isAuthorized(player))
         {
             toStrip += "kK";
         }
-        if( COLOR_BOLD.isAuthorized(player))
+        if( !COLOR_BOLD.isAuthorized(player))
         {
             toStrip += "lL";
         }
-        if( COLOR_STRIKE.isAuthorized(player))
+        if( !COLOR_STRIKE.isAuthorized(player))
         {
             toStrip += "mM";
         }
-        if( COLOR_UNDERLINE.isAuthorized(player))
+        if( !COLOR_UNDERLINE.isAuthorized(player))
         {
             toStrip += "nN";
         }
-        if( COLOR_ITALIC.isAuthorized(player))
+        if( !COLOR_ITALIC.isAuthorized(player))
         {
             toStrip += "oO";
         }
-        if( COLOR_RESET.isAuthorized(player))
+        if( !COLOR_RESET.isAuthorized(player))
         {
             toStrip += "rR";
         }
+        if (toStrip.isEmpty()) return message;
         Pattern stripFormats = Pattern.compile("&[" + toStrip + "]");
         return stripFormats.matcher(message).replaceAll("");
     }
