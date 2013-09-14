@@ -169,6 +169,7 @@ public class BorderCommands extends ContainerCommand
         {
             this.scheduleGeneration(20 * 5); // Take a 5 second break
             sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
+            rt.gc();
             return;
         }
         while (System.currentTimeMillis() - this.tickStart < TIMELIMIT)
@@ -213,6 +214,7 @@ public class BorderCommands extends ContainerCommand
                 triplet.getFirst().unloadChunkRequest(triplet.getSecond(), triplet.getThird());
             }
             sender.sendTranslated("&aChunkgeneration completed! Generated &6%d&a chunks", generated);
+            rt.gc();
             this.running = false;
         }
     }
