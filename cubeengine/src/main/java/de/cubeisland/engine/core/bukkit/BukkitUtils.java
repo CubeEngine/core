@@ -337,7 +337,9 @@ public class BukkitUtils
     private static Field ghastTarget;
 
     public static LivingEntity getTarget(LivingEntity hunter) {
+        if (hunter == null) return null;
         EntityLiving entity = ((CraftLivingEntity) hunter).getHandle();
+        if (entity == null) return null;
         EntityLiving target;
         try
         {

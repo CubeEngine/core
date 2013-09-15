@@ -167,9 +167,9 @@ public class BorderCommands extends ContainerCommand
         int freeMemory = (int)((rt.maxMemory() - rt.totalMemory() + rt.freeMemory()) / 1048576);// 1024*1024 = 1048576 (bytes in 1 MB)
         if (freeMemory < 300) // less than 300 MB memory left
         {
-            this.scheduleGeneration(20 * 5); // Take a 5 second break
+            this.scheduleGeneration(20 * 10); // Take a 10 second break
             sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
-            rt.gc();
+            rt.gc(); // TODO this causes short lag
             return;
         }
         while (System.currentTimeMillis() - this.tickStart < TIMELIMIT)

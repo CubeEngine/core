@@ -68,7 +68,7 @@ public class LockerAdminCommands extends ContainerCommand
             case ENTITY_CONTAINER_LIVING:
                 if (lock.isBlockLock())
                 {
-                    ((User)context.getSender()).openInventory(((InventoryHolder)lock.getLocation().getBlock()
+                    ((User)context.getSender()).openInventory(((InventoryHolder)lock.getFirstLocation().getBlock()
                                                                                         .getState()).getInventory());
                 }
                 else
@@ -96,7 +96,7 @@ public class LockerAdminCommands extends ContainerCommand
         if (lock == null) return;
         if (lock.isBlockLock())
         {
-            ((User)context.getSender()).safeTeleport(lock.getLocation(), TeleportCause.PLUGIN, false);
+            ((User)context.getSender()).safeTeleport(lock.getFirstLocation(), TeleportCause.PLUGIN, false);
         }
         else
         {
