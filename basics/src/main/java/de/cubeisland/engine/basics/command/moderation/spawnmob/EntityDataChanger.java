@@ -30,6 +30,9 @@ import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Style;
+import org.bukkit.entity.Horse.Variant;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Ocelot.Type;
@@ -46,6 +49,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Colorable;
 
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static org.bukkit.entity.Villager.Profession;
@@ -322,6 +326,55 @@ public class EntityDataChanger<EntityInterface>
                         }
                     });
 
+    public static final EntityDataChanger<Horse> HORSE_JUMP =
+        new EntityDataChanger<>(Horse.class,
+                                new EntityChanger<Horse, Integer>() {
+                                    @Override
+                                    public void applyEntity(Horse entity, Integer input)
+                                    {
+                                        entity.setJumpStrength(input);
+                                    }
+
+                                    @Override
+                                    public Integer getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("jump"))
+                                        {
+                                            try
+                                            {
+                                                int jump = Integer.parseInt(input.substring(4, input.length()));
+                                                if (jump >= 0 && jump <= 2)
+                                                {
+                                                    return jump;
+                                                }
+                                            }
+                                            catch (NumberFormatException ignored)
+                                            {}
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> ENTITY_NAME =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, String>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, String input)
+                                    {
+                                        entity.setCustomName(ChatFormat.parseFormats(input));
+                                    }
+
+                                    @Override
+                                    public String getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("name_"))
+                                        {
+                                            return input.substring(5, input.length());
+                                        }
+                                        return null;
+                                    }
+                                });
+
     // TODO set tame_owner
 
     public static final EntityDataChanger<Tameable> TAMEABLE =
@@ -333,6 +386,69 @@ public class EntityDataChanger<EntityInterface>
                             }
                         });
 
+    public static final EntityDataChanger<Horse> HORSE_COLOR =
+        new EntityDataChanger<>(Horse.class,
+                                new MappedEntityChanger<Horse, Horse.Color>() {
+                                    @Override
+                                    void fillValues()
+                                    {
+                                        this.map.put("white", Horse.Color.WHITE);
+                                        this.map.put("creamy", Horse.Color.CREAMY);
+                                        this.map.put("chestnut", Horse.Color.CHESTNUT);
+                                        this.map.put("brown", Horse.Color.BROWN);
+                                        this.map.put("black", Horse.Color.BLACK);
+                                        this.map.put("gray", Horse.Color.GRAY);
+                                        this.map.put("darkbrown", Horse.Color.DARK_BROWN);
+                                    }
+
+                                    @Override
+                                    public void applyEntity(Horse entity, Horse.Color input)
+                                    {
+                                        entity.setColor(input);
+                                    }
+                                });
+
+    public static final EntityDataChanger<Horse> HORSE_VARIANT =
+        new EntityDataChanger<>(Horse.class,
+                                new MappedEntityChanger<Horse, Horse.Variant>() {
+                                    @Override
+                                    void fillValues()
+                                    {
+                                        this.map.put("horse", Variant.HORSE);
+                                        this.map.put("donkey", Variant.DONKEY);
+                                        this.map.put("chestnut", Variant.MULE);
+                                        this.map.put("undead", Variant.UNDEAD_HORSE);
+                                        this.map.put("skeleton", Variant.SKELETON_HORSE);
+                                    }
+
+                                    @Override
+                                    public void applyEntity(Horse entity, Horse.Variant input)
+                                    {
+                                        entity.setVariant(input);
+                                    }
+                                });
+
+    public static final EntityDataChanger<Horse> HORSE_STYLE =
+        new EntityDataChanger<>(Horse.class,
+                                new MappedEntityChanger<Horse, Horse.Style>() {
+                                    @Override
+                                    void fillValues()
+                                    {
+                                        this.map.put("stylenone", Style.NONE);
+                                        this.map.put("stylewhite", Style.WHITE);
+                                        this.map.put("whitefield", Style.WHITEFIELD);
+                                        this.map.put("whitedots", Style.WHITE_DOTS);
+                                        this.map.put("blackdots", Style.BLACK_DOTS);
+                                    }
+
+                                    @Override
+                                    public void applyEntity(Horse entity, Style input)
+                                    {
+                                        entity.setStyle(input);
+                                    }
+                                });
+
+    // TODO HORSE SPEED (Wait for bukkit ): )
 
 // TODO equipment
 /*
