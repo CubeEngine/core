@@ -337,14 +337,9 @@ public class Lock
         return this.locations.size() == 1;
     }
 
-    public Location getLocation()
+    public Location getFirstLocation()
     {
         return this.locations.get(0);
-    }
-
-    public Location getLocation2()
-    {
-        return this.locations.get(1);
     }
 
     public ArrayList<Location> getLocations()
@@ -623,7 +618,7 @@ public class Lock
                 if (this.isBlockLock())
                 {
                     owner.sendTranslated("&2%s&e accessed one your protection with the id &6%d!", user.getName(), this.getId());
-                    Location loc = this.getLocation();
+                    Location loc = this.getFirstLocation();
                     owner.sendTranslated("&ewhich is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!",
                          loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
                 }

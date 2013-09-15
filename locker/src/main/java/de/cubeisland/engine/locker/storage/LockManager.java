@@ -190,27 +190,32 @@ public class LockManager implements Listener
             this.locksById.remove(lock.getId());
             if (lock.isSingleBlockLock())
             {
-                this.loadedLocks.remove(lock.getLocation()); // remove loc
+                this.loadedLocks.remove(lock.getFirstLocation()); // remove loc
             }
             else
             {
-                if (lock.getLocation().getChunk() == lock.getLocation().getChunk()) // same chunk remove both loc
+                Chunk c1 = lock.getFirstLocation().getChunk();
+                for (Location location : lock.getLocations())
                 {
-                    this.loadedLocks.remove(lock.getLocation());
-                    this.loadedLocks.remove(lock.getLocation2());
-                }
-                else // different chunks
-                {
-                    Chunk c1 = lock.getLocation().getChunk();
-                    Chunk c2 = lock.getLocation2().getChunk();
-                    Chunk chunk = event.getChunk();
-                    if ((!c1.isLoaded() && c2 == chunk)
-                        ||(!c2.isLoaded() && c1 == chunk))
-                    {// Both chunks will be unloaded remove both loc
-                        this.loadedLocks.remove(lock.getLocation());
-                        this.loadedLocks.remove(lock.getLocation2());
+                    if (location.getChunk() != c1) // different chunks
+                    {
+                        Chunk c2 = location.getChunk();
+                        Chunk chunk = event.getChunk();
+                        if ((!c1.isLoaded() && c2 == chunk)
+                            ||(!c2.isLoaded() && c1 == chunk))
+                        {// Both chunks will be unloaded remove both loc
+                            for (Location loc : lock.getLocations())
+                            {
+                                this.loadedLocks.remove(loc);
+                            }
+                        }
+                        // else the other chunk is still loaded -> do not remove!
+                        return;
                     }
-                    // else the other chunk is still loaded -> do not remove!
+                }
+                for (Location loc : lock.getLocations())
+                {
+                    this.loadedLocks.remove(loc);
                 }
             }
             lock.model.update(); // updates if changed (last_access timestamp)
@@ -241,7 +246,7 @@ public class LockManager implements Listener
         Lock lock = this.loadedLocks.get(location);
         if (repairExpand && lock != null && lock.isSingleBlockLock())
         {
-            Block block = lock.getLocation().getBlock();
+            Block block = lock.getFirstLocation().getBlock();
             if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)
             {
                 for (BlockFace cardinalDirection : BlockUtil.CARDINAL_DIRECTIONS)
