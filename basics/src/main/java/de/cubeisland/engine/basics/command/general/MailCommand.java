@@ -208,7 +208,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Command(names = {"clear", "remove"},
-            desc = "Clears your mails.", usage = "[player]")
+            desc = "Clears your mails.", usage = "[player]", min = 0, max = 1)
     public void clear(CommandContext context)
     {
         User sender = null;
