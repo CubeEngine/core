@@ -72,7 +72,6 @@ public class MoneyCommand extends ContainerCommand
     public void balance(ParameterizedContext context)
     {
         User user;
-        // TODO show own account if hidden
         boolean showHidden = context.hasFlag("f") && ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
@@ -92,10 +91,10 @@ public class MoneyCommand extends ContainerCommand
             }
             user = (User)context.getSender();
         }
-        Account account = this.getUserAccount(user);
+        UserAccount account = this.getUserAccount(user);
         if (account != null)
         {
-            if (!account.isHidden() || showHidden)
+            if (!account.isHidden() || showHidden || account.getName().equalsIgnoreCase(user.getName()))
             {
                 context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), manager.format(account.balance()));
                 return;
@@ -110,7 +109,6 @@ public class MoneyCommand extends ContainerCommand
              flags = @Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
-        // TODO show around player +5 -5
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
