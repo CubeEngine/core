@@ -310,7 +310,7 @@ public abstract class AbstractUserManager implements UserManager
         message = ChatFormat.parseFormats(message);
         if (args != null && args.length != 0)
         {
-            message = String.format(message,args); //TODO is allowed to use color ?
+            message = String.format(message,args);
         }
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
