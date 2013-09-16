@@ -22,8 +22,10 @@ import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -32,8 +34,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.FileUtil;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 public class KitCommand extends ContainerCommand
 {
@@ -41,22 +41,17 @@ public class KitCommand extends ContainerCommand
     {
         super(module, "kit", "Manages item-kits");
         this.module = module;
+        this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
+        this.delegateChild("give", new ContextFilter() {
+            @Override
+            public CommandContext filterContext(CommandContext context)
+            {
+                ParameterizedContext pContext = (ParameterizedContext)context;
+                return new ParameterizedContext(context.getCommand(), context.getSender(), context.getLabels(), context.getArgs(), pContext.getFlags(), pContext.getParams());
+            }
+        });
     }
     private Basics module;
-
-    @Override
-    public CommandResult run(CommandContext context) throws Exception
-    {
-        if (context.hasArg(0))
-        {
-            this.give((ParameterizedContext)context);//TODO this works but not used as intended!?
-            return null;
-        }
-        else
-        {
-            return super.run(context);
-        }
-    }
 
     @Command(desc = "Creates a new kit with the items in your inventory.",
             flags = @Flag(longName = "toolbar", name = "t"),
@@ -200,9 +195,19 @@ public class KitCommand extends ContainerCommand
             {
                 user = (User)context.getSender();
             }
+            else
+            {
+                context.sendTranslated("&cYou need to specify a user!");
+                return;
+            }
             if (user == null)
             {
-                context.sendTranslated("&cUser %s &cnot found!", context.getString(0));
+                context.sendTranslated("&cUser %s &cnot found!", context.getString(1));
+                return;
+            }
+            if (!user.isOnline())
+            {
+                context.sendTranslated("&2%s&c is not online!", user.getName());
                 return;
             }
             if (kit.give(context.getSender(), user, force))
@@ -211,7 +216,7 @@ public class KitCommand extends ContainerCommand
                 {
                     if (kit.getCustomMessage().equals(""))
                     {
-                        context.sendTranslated("&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
+                        context.sendTranslated("&aReceived the &6%s&a kit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {
@@ -220,10 +225,10 @@ public class KitCommand extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated("&aYou gave &2%s &athe &6%s &akit!", user.getName(), kit.getKitName());
+                    context.sendTranslated("&aYou gave &2%s &athe &6%s&a kit!", user.getName(), kit.getKitName());
                     if (kit.getCustomMessage().equals(""))
                     {
-                        user.sendTranslated("&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
+                        user.sendTranslated("&aReceived the &6%s&a kit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {

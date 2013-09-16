@@ -130,10 +130,11 @@ public class Kit
         if (this.commands != null && !this.commands.isEmpty())
         {
             CommandManager cm = user.getCore().getCommandManager();
+            KitCommandSender kitCommandSender = new KitCommandSender(user);
             for (String cmd : commands)
             {
                 cmd = cmd.replace("{PLAYER}", user.getName());
-                cm.runCommand(new KitCommandSender(user), cmd);
+                cm.runCommand(kitCommandSender, cmd);
             }
         }
     }
@@ -184,7 +185,7 @@ public class Kit
 
     private static class KitCommandSender implements CommandSender
     {
-        private static final String NAME_PREFIX = "Kit:";
+        private static final String NAME_PREFIX = "Kit | ";
         private final User user;
 
         public KitCommandSender(User user)
