@@ -60,20 +60,34 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         super(module, "powertool", "Binding shortcuts to an item.", asList("pt"));
         this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
 
-        this.delegateChild("add", new ContextFilter() {
+        this.delegateChild(new MultiContextFilter() {
             @Override
-            public CommandContext filterContext(CommandContext context)
+            public String getChild(CommandContext context)
+            {
+                if (context.hasArg(0))
+                {
+                    return "add"; // acts as /pt add with -r flag
+                }
+                return "clear"; // /pt without params clears the tool
+            }
+
+            @Override
+            public CommandContext filterContext(CommandContext context, String child)
             {
                 ParameterizedContext pContext = (ParameterizedContext)context;
                 Set<String> flagSet = pContext.getFlags();
-                flagSet.add("r");
+                if (child.equals("add"))
+                {
+                    flagSet.add("r");
+                }
                 return new ParameterizedContext(context.getCommand(), context.getSender(), context.getLabels(), context.getArgs(), flagSet, pContext.getParams());
             }
         });
     }
 
     @Alias(names = "ptc")
-    @Command(desc = "Removes all command from your powertool", flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
+    @Command(desc = "Removes all command from your powertool",
+             flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
     public void clear(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();
@@ -96,6 +110,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
                     return;
                 }
                 this.setPowerTool(user.getItemInHand(), null);
+                context.sendTranslated("&aRemoved all commands bound to the item in your hand!");
             }
             return;
         }
