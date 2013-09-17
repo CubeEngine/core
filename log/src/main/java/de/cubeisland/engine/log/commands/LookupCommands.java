@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.log.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +28,9 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.HelpContext;
+import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -112,7 +117,7 @@ public class LookupCommands
         @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
         @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
         @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-        @Param(names = {"block","b"}),
+        @Param(names = {"block","b"}, completer = BlockCompleter.class),
         @Param(names = {"entity","e"}),
         @Param(names = {"since","time","t"}), // if not given default since 3d
         @Param(names = {"before"}),
@@ -179,7 +184,7 @@ public class LookupCommands
             @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
             @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
             @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-            @Param(names = {"block","b"}),
+            @Param(names = {"block","b"}, completer = BlockCompleter.class),
             @Param(names = {"entity","e"}),
             @Param(names = {"since","time","t"}), // if not given default since 3d
             @Param(names = {"before"}),
@@ -546,5 +551,22 @@ public class LookupCommands
         return true;
     }
 
-
+    public static class BlockCompleter implements Completer
+    {
+        @Override
+        public List<String> complete(CommandSender sender, String token)
+        {
+            List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
+            String lastToken = token.substring(token.lastIndexOf(",")+1,token.length()).toUpperCase();
+            List<String> matches = new ArrayList<>();
+            for (Material material : Material.values())
+            {
+                if (material.isBlock() && material != Material.AIR && material.name().startsWith(lastToken) && !tokens.contains(material.name()))
+                {
+                    matches.add(token.substring(0, token.lastIndexOf(",") + 1) + material.name());
+                }
+            }
+            return matches;
+        }
+    }
 }
