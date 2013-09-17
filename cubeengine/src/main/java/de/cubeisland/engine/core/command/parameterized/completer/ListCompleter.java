@@ -15,44 +15,45 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.commands;
+package de.cubeisland.engine.core.command.parameterized.completer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.bukkit.Material;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.StringUtils;
 
-public class PlayerListCompleter implements Completer
+import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
+
+public abstract class ListCompleter<T> implements Completer
 {
+    private T[] stringConvertables;
+
+    protected ListCompleter(T[] stringConvertables)
+    {
+        this.stringConvertables = stringConvertables;
+    }
+
+    protected abstract String convertToString(T convertable);
+
     @Override
     public List<String> complete(CommandSender sender, String token)
     {
-        List<String> result = new ArrayList<>();
-        String lastToken = token;
-        String firstTokens = "";
-        if (lastToken.contains(","))
+        List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
+        String lastToken = token.substring(token.lastIndexOf(",")+1,token.length()).toUpperCase();
+        List<String> matches = new ArrayList<>();
+        for (T stringConvertable : stringConvertables)
         {
-            firstTokens = lastToken.substring(0, lastToken.lastIndexOf(",")+1);
-            lastToken = lastToken.substring(lastToken.lastIndexOf(",")+1,lastToken.length());
-        }
-        if (lastToken.startsWith("!"))
-        {
-            lastToken = lastToken.substring(1, lastToken.length());
-            firstTokens += "!";
-        }
-
-        for (User user : sender.getCore().getUserManager().getLoadedUsers())
-        {
-            if (user.getName().startsWith(lastToken))
+            String converted = convertToString(stringConvertable);
+            if (startsWithIgnoreCase(lastToken, converted) && !tokens.contains(converted))
             {
-                if (!token.contains(user.getName()+","))
-                {
-                    result.add(firstTokens + user.getName());
-                }
+                matches.add(token.substring(0, token.lastIndexOf(",") + 1) + converted);
             }
         }
-        return result;
+        return matches;
     }
 }
