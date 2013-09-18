@@ -17,9 +17,12 @@
  */
 package de.cubeisland.engine.vote;
 
+import java.util.concurrent.TimeUnit;
+
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.vote.storage.VoteModel;
 
 import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
@@ -52,6 +55,11 @@ public class VoteCommands
                 {
                     context.sendTranslated("&eSadly you did not vote in the last &6%s&e so your vote-count will be reset to 1",
                                            module.getConfig().votebonustime.format("%www%ddd%hhh%mmm%sss"));
+                }
+                else if (System.currentTimeMillis() - voteModel.getLastvote().getTime() < TimeUnit.DAYS.toMillis(1))
+                {
+                    context.sendTranslated("&aYou voted &6%s&a ago so you will probably not be able to vote again already!",
+                                          new Duration(System.currentTimeMillis() - voteModel.getLastvote().getTime()).format("%www%ddd%hhh%mmm%sss"));
                 }
                 else
                 {
