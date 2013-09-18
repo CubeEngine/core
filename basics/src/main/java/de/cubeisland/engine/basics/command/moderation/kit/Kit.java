@@ -30,6 +30,9 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -38,9 +41,6 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryUtil;
 import de.cubeisland.engine.core.util.time.Duration;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 
@@ -95,12 +95,15 @@ public class Kit
                 throw new PermissionDeniedException();
             }
         }
-        Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
-            where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
-        if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
+        if (limitUsagePerPlayer > 0)
         {
-            sender.sendTranslated("&cKit-limit reached.");
-            throw new PermissionDeniedException();
+            Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
+                where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
+            if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
+            {
+                sender.sendTranslated("&cKit-limit reached.");
+                throw new PermissionDeniedException();
+            }
         }
         if (limitUsageDelay != 0)
         {
@@ -114,7 +117,8 @@ public class Kit
         List<ItemStack> list = this.getItems();
         if (InventoryUtil.giveItemsToUser(user, list.toArray(new ItemStack[list.size()])))
         {
-            // TODO save new kitamount in db!
+            this.dsl.insertInto(TABLE_KITS,TABLE_KITS.KITNAME, TABLE_KITS.USERID, TABLE_KITS.AMOUNT).values(this.getKitName(), user.getEntity().getKey(), 1)
+                    .onDuplicateKeyUpdate().set(TABLE_KITS.AMOUNT, TABLE_KITS.AMOUNT.add(1)).execute();
             this.executeCommands(user);
             if (limitUsageDelay != 0)
             {
