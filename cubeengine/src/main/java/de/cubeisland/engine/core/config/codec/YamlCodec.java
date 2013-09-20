@@ -143,7 +143,7 @@ public class YamlCodec extends MultiConfigurationCodec
             {
                 if (((ListNode)value).isEmpty())
                 {
-                    sb.append("[]").toString();
+                    sb.append("[]");
                 }
                 for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
                 {
@@ -209,7 +209,7 @@ public class YamlCodec extends MultiConfigurationCodec
             {
                 sb.append(this.offset(off)); // Map in collection first does not get offset
             }
-            sb.append(values.getOriginalKey(Node.getSubKey(path, PATH_SEPARATOR))).append(": ");
+            sb.append(values.getOriginalKey(entry.getKey())).append(": ");
             sb.append(this.convertValue(container, entry.getValue(), off, false));
 
         }
