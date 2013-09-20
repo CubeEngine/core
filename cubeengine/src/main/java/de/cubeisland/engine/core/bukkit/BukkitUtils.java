@@ -347,7 +347,7 @@ public class BukkitUtils
             {
                 if (dragonTarget == null)
                 {
-                    dragonTarget = entity.getClass().getDeclaredField("u");
+                    dragonTarget = entity.getClass().getDeclaredField("bD");
                     dragonTarget.setAccessible(true);
                 }
                 target = (EntityLiving)dragonTarget.get(entity);
