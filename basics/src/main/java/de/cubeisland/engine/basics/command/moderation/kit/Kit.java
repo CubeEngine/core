@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
@@ -158,14 +157,7 @@ public class Kit
         List<ItemStack> list = new ArrayList<>();
         for (KitItem kitItem : this.items)
         {
-            ItemStack item = new ItemStack(kitItem.mat, kitItem.amount, kitItem.dura);
-            if (kitItem.customName != null)
-            {
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(kitItem.customName);
-                item.setItemMeta(meta);
-            }
-            list.add(item);
+            list.add(kitItem.getItemStack());
         }
         return list;
     }

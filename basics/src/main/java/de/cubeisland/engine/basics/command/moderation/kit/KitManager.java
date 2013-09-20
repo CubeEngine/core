@@ -46,7 +46,8 @@ public class KitManager
 
     public Kit getKit(String name)
     {
-        Set<String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
+        if (name == null) return null;
+        Set <String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
         if (match.isEmpty())
         {
             return null;

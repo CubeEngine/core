@@ -17,7 +17,12 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
+import java.util.Map;
+
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class KitItem
 {
@@ -25,13 +30,32 @@ public class KitItem
     public short dura;
     public int amount;
     public String customName;
+    public Map<Enchantment, Integer> enchs;
+    private ItemStack item;
 
-    public KitItem(Material mat, short dura, int amount, String customName)
+    public KitItem(Material mat, short dura, int amount, String customName, Map<Enchantment, Integer> enchs)
     {
         this.mat = mat;
         this.dura = dura;
         this.amount = amount;
         this.customName = customName;
+        this.enchs = enchs;
     }
 
+    public ItemStack getItemStack()
+    {
+        if (item != null) return item;
+        item = new ItemStack(mat, amount, dura);
+        if (customName != null)
+        {
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(customName);
+            item.setItemMeta(meta);
+        }
+        if (enchs != null && !enchs.isEmpty())
+        {
+            item.addEnchantments(enchs);
+        }
+        return item;
+    }
 }

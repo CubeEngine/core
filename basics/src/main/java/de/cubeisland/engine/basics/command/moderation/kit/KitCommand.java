@@ -42,12 +42,19 @@ public class KitCommand extends ContainerCommand
         super(module, "kit", "Manages item-kits");
         this.module = module;
         this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
-        this.delegateChild("give", new ContextFilter() {
+        this.delegateChild(new MultiContextFilter() {
             @Override
-            public CommandContext filterContext(CommandContext context)
+            public CommandContext filterContext(CommandContext context, String child)
             {
                 ParameterizedContext pContext = (ParameterizedContext)context;
                 return new ParameterizedContext(context.getCommand(), context.getSender(), context.getLabels(), context.getArgs(), pContext.getFlags(), pContext.getParams());
+            }
+
+            @Override
+            public String getChild(CommandContext context)
+            {
+                if (context.hasArg(0)) return "give";
+                return null;
             }
         });
     }
@@ -82,7 +89,8 @@ public class KitCommand extends ContainerCommand
                         new KitItem(items[i].getType(),
                             items[i].getDurability(),
                             items[i].getAmount(),
-                            items[i].getItemMeta().getDisplayName()));
+                            items[i].getItemMeta().getDisplayName(),
+                            items[i].getEnchantments()));
             }
         }
         else
@@ -97,7 +105,8 @@ public class KitCommand extends ContainerCommand
                         new KitItem(item.getType(),
                             item.getDurability(),
                             item.getAmount(),
-                            item.getItemMeta().getDisplayName()));
+                            item.getItemMeta().getDisplayName(),
+                            item.getEnchantments()));
             }
         }
         Kit kit = new Kit(this.module,context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
@@ -135,7 +144,7 @@ public class KitCommand extends ContainerCommand
     public void give(ParameterizedContext context)
     {
         String kitname = context.getString(0);
-        User user = null;
+        User user;
         Kit kit = module.getKitManager().getKit(kitname);
         boolean force = false;
         if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
