@@ -396,7 +396,7 @@ public class ConomyManager
         }
         bankAccount.model.delete();
         this.bankaccounts.remove(name);
-        this.bankaccountsID.remove(bankAccount.model.getKey());
+        this.bankaccountsID.remove(bankAccount.model.getKey().longValue());
         return true;
     }
 

@@ -35,10 +35,10 @@ public abstract class ParentNode extends Node
      */
     public Node setNodeAt(String path, String pathSeparator, Node node)
     {
-        Node parentNode = this.getNodeAt(path, pathSeparator).getParentNode();
-        if (parentNode instanceof ParentNode)
+        ParentNode parentNode = this.getNodeAt(path, pathSeparator).getParentNode();
+        if (parentNode != null)
         {
-            return ((ParentNode)parentNode).setExactNode(this.getSubKey(path, pathSeparator), node);
+            return parentNode.setExactNode(getSubKey(path, pathSeparator), node);
         }
         throw new UnsupportedOperationException("Not supported!");
     }

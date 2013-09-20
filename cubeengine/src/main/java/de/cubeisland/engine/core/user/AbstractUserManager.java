@@ -63,7 +63,7 @@ public abstract class AbstractUserManager implements UserManager
     protected ConcurrentHashMap<Object, User> cachedUsers;
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
-    protected MessageDigest messageDigest;
+    protected final MessageDigest messageDigest;
 
     protected Database database;
 
@@ -494,8 +494,6 @@ public abstract class AbstractUserManager implements UserManager
         this.defaultAttachments = null;
 
         this.salt = null;
-
-        this.messageDigest = null;
     }
 
     @Override

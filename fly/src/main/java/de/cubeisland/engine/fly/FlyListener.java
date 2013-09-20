@@ -54,7 +54,7 @@ public class FlyListener implements Listener
     @EventHandler
     public void playerInteract(final PlayerInteractEvent event)
     {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
         {
             return;
@@ -97,8 +97,7 @@ public class FlyListener implements Listener
             {
                 public void run()//2 feather/min
                 {
-                    Player player = event.getPlayer();
-                    if ((player == null) || (!player.isFlying()))
+                    if (!player.isFlying())
                     {
                         player.setAllowFlight(false);
                         this.cancelTask();

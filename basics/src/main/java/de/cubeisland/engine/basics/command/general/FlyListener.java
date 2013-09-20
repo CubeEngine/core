@@ -63,7 +63,7 @@ public class FlyListener implements Listener
         {
             ((CraftPlayer)p).getHandle().abilities.flySpeed -= FLY_SPEED_MARKER;
         }
-        catch (IllegalArgumentException e)
+        catch (IllegalArgumentException ignored)
         {}
     }
 

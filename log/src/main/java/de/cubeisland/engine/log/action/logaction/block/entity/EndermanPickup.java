@@ -35,15 +35,13 @@ import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK_ENTITY;
  * Enderman picking up blocks.
  * <p>Events: {@link EntityChangeActionType}</p>
  */
-public class EndermanPickup  extends BlockActionType
+public class EndermanPickup extends BlockActionType
 {
     @Override
     protected Set<ActionTypeCategory> getCategories()
     {
         return new HashSet<>(Arrays.asList(BLOCK, BLOCK_ENTITY));
     }
-
-    private final String[] names = {"enderman"};
 
     @Override
     public String getName()

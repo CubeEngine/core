@@ -183,4 +183,10 @@ public class MapNode extends ParentNode
         sb.append("]MapEnd");
         return sb.toString();
     }
+
+    public String getFirstKey()
+    {
+        if (this.mappedNodes.isEmpty()) return null;
+        return this.mappedNodes.keySet().iterator().next();
+    }
 }

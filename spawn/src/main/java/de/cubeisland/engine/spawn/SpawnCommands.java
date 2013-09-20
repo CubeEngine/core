@@ -174,9 +174,14 @@ public class SpawnCommands
             world = context.getParam("world", null);
             if (world == null)
             {
-                context.sendTranslated("&cWorld not found!");
+                context.sendTranslated("&cWorld &6%s&c not found!", context.getString("world"));
                 return;
             }
+        }
+        if (world == null)
+        {
+            context.sendTranslated("&cYou have to specify a world!");
+            return;
         }
         if (context.hasFlag("a"))
         {
@@ -189,7 +194,7 @@ public class SpawnCommands
             for (User player : context.getCore().getUserManager().getOnlineUsers())
             {
                 final Location spawnLocation;
-                RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+                RolesAttachment rolesAttachment = player.get(RolesAttachment.class);
                 if (rolesAttachment == null)
                 {
                     this.roles.getLog().warn("Missing RolesAttachment!");
@@ -202,7 +207,7 @@ public class SpawnCommands
                     if (spawnLocation == null)
                     {
                         context.sendTranslated("&cInvalid spawn-location for the role of &2%s&c! &ePlease check your role-configurations!\n&7%s",
-                                               user.getName(),rolespawn);
+                                               player.getName(),rolespawn);
                         return;
                     }
                     spawnLocation.add(0.5, 0, 0.5);

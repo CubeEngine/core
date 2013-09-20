@@ -126,8 +126,7 @@ public class ChatCommands
             return true;
         }
         user.sendTranslated("&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
-        Boolean afk = user.get(BasicsAttachment.class).isAfk();
-        if (afk != null && afk)
+        if (user.get(BasicsAttachment.class).isAfk())
         {
             context.sendTranslated("&2%s &7is afk!", user.getName());
         }

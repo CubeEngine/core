@@ -306,11 +306,6 @@ public class PlayerCommands
             sender = (User)context.getSender();
         }
         User user = sender;
-        if (user == null && !context.hasArg(1))
-        {
-            context.sendTranslated("&cYou do not not have any gamemode!");
-            return;
-        }
         if (context.hasArg(1))
         {
             user = context.getUser(1);
@@ -320,6 +315,11 @@ public class PlayerCommands
                 return;
             }
             changeOther = true;
+        }
+        else if (user == null)
+        {
+            context.sendTranslated("&cYou do not not have any gamemode!");
+            return;
         }
         if (changeOther && !BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
@@ -587,8 +587,7 @@ public class PlayerCommands
             context.sendTranslated("&cJust go!");
             return;
         }
-        Boolean isAfk = user.get(BasicsAttachment.class).isAfk();
-        if (isAfk == null || !isAfk)
+        if (!user.get(BasicsAttachment.class).isAfk())
         {
             user.get(BasicsAttachment.class).setAfk(true);
             user.get(BasicsAttachment.class).resetLastAction();

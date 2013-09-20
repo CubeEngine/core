@@ -252,9 +252,12 @@ public class PowerToolCommand extends ContainerCommand implements Listener
 
     private void showPowerToolList(CommandContext context, List<String> powertools, boolean lastAsNew, boolean showIfEmpty)
     {
-        if ((powertools == null || powertools.isEmpty()) && showIfEmpty)
+        if ((powertools == null || powertools.isEmpty()))
         {
-            context.sendTranslated("&cNo commands saved on this item!");
+            if (showIfEmpty)
+            {
+                context.sendTranslated("&cNo commands saved on this item!");
+            }
             return;
         }
         StringBuilder sb = new StringBuilder();

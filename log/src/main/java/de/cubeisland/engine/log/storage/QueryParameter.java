@@ -237,7 +237,9 @@ public class QueryParameter implements Cloneable
                                     this.module.getCore().getWorldManager().getWorld(worldID).getName(),
                                     this.location1.x, this.location1.y, this.location1.z);
             }
-            else if (user.getLocation().equals(location1))
+            else if (user.getLocation().getBlockX() == location1.x
+                  && user.getLocation().getBlockY() == location1.y
+                  && user.getLocation().getBlockZ() == location1.z)
             {
                 user.sendTranslated("&eNo logs found in a radius of &3%d&e around you!", radius);
             }
