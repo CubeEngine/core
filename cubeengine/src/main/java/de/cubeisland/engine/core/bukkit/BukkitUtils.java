@@ -22,19 +22,19 @@ import java.util.Locale;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_6_R2.DedicatedServer;
-import net.minecraft.server.v1_6_R2.EntityLiving;
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-import net.minecraft.server.v1_6_R2.Item;
-import net.minecraft.server.v1_6_R2.MinecraftServer;
-import net.minecraft.server.v1_6_R2.PlayerInteractManager;
-import net.minecraft.server.v1_6_R2.RecipesFurnace;
-import net.minecraft.server.v1_6_R2.TileEntityFurnace;
-import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
+import net.minecraft.server.v1_6_R3.DedicatedPlayerList;
+import net.minecraft.server.v1_6_R3.DedicatedServer;
+import net.minecraft.server.v1_6_R3.EntityLiving;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.Item;
+import net.minecraft.server.v1_6_R3.MinecraftServer;
+import net.minecraft.server.v1_6_R3.PlayerInteractManager;
+import net.minecraft.server.v1_6_R3.RecipesFurnace;
+import net.minecraft.server.v1_6_R3.TileEntityFurnace;
+import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -243,14 +243,14 @@ public class BukkitUtils
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
     }
