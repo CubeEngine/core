@@ -54,7 +54,7 @@ public class KitItem
         }
         if (enchs != null && !enchs.isEmpty())
         {
-            item.addEnchantments(enchs);
+            item.addUnsafeEnchantments(enchs);
         }
         return item;
     }

@@ -606,7 +606,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("User not found!");
+            context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
             return;
         }
         if (!user.isOnline())

@@ -52,6 +52,12 @@ public class Kit
 {
     private String name;
     private List<KitItem> items;
+
+    public boolean isGiveKitOnFirstJoin()
+    {
+        return giveKitOnFirstJoin;
+    }
+
     private boolean giveKitOnFirstJoin;
     private int limitUsagePerPlayer;
     private long limitUsageDelay;
@@ -85,7 +91,6 @@ public class Kit
     public boolean give(CommandSender sender, User user, boolean force)
     {
         //TODO give kit to all players online (not here)
-        //TODO starterKit on login (not here)
         if (!force && this.getPermission() != null)
         {
             if (!this.getPermission().isAuthorized(sender))
@@ -94,23 +99,26 @@ public class Kit
                 throw new PermissionDeniedException();
             }
         }
-        if (limitUsagePerPlayer > 0)
+        if (!force)
         {
-            Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
-                where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
-            if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
+            if (limitUsagePerPlayer > 0)
             {
-                sender.sendTranslated("&cKit-limit reached.");
-                throw new PermissionDeniedException();
+                Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
+                    where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
+                if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
+                {
+                    sender.sendTranslated("&cKit-limit reached.");
+                    throw new PermissionDeniedException();
+                }
             }
-        }
-        if (limitUsageDelay != 0)
-        {
-            Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
-            if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
+            if (limitUsageDelay != 0)
             {
-                sender.sendTranslated("&eThis kit not available at the moment. &aTry again later!");
-                throw new PermissionDeniedException();
+                Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
+                if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
+                {
+                    sender.sendTranslated("&eThis kit not available at the moment. &aTry again later!");
+                    throw new PermissionDeniedException();
+                }
             }
         }
         List<ItemStack> list = this.getItems();

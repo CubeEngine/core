@@ -95,4 +95,6 @@ public class ManagementCommands extends ContainerCommand
         }
         curWorldIdOfConsole = null;
     }
+
+    // TODO lookup permissions
 }
