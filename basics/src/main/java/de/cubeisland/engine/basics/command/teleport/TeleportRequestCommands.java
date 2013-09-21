@@ -150,7 +150,7 @@ public class TeleportRequestCommands
                 User user = this.basics.getCore().getUserManager().getUser(name, false);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendTranslated("&2%s &cseems to have disappeared.", user.getName());
+                    context.sendTranslated("&2%s &cseems to have disappeared.", name);
                     return;
                 }
                 if (!TeleportCommands.teleport(sender, user.getLocation(), true, false, true))
@@ -164,7 +164,7 @@ public class TeleportRequestCommands
                 User user = this.basics.getCore().getUserManager().getUser(name, false);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendTranslated("&2%s &cseems to have disappeared.", user.getName());
+                    context.sendTranslated("&2%s &cseems to have disappeared.", name);
                     return;
                 }
                 if (!TeleportCommands.teleport(user, sender.getLocation(), true, false, true))

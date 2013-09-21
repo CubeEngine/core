@@ -155,11 +155,7 @@ public class Cuboid implements Shape
     @Override
     public boolean contains( Shape other )
     {
-        if(other instanceof Cuboid)
-        {
-            return this.contains((Cuboid) other);
-        }
-        return false; 
+        return other instanceof Cuboid && this.contains((Cuboid)other);
     }
     
     private boolean contains(Cuboid other)
@@ -178,11 +174,7 @@ public class Cuboid implements Shape
     @Override
     public boolean intersects( Shape other )
     {
-        if(other instanceof Cuboid)
-        {
-            return this.intersects((Cuboid) other);
-        }
-        return false;  
+        return other instanceof Cuboid && this.intersects((Cuboid)other);
     }
     
     private boolean intersects(Cuboid other)

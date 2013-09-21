@@ -319,7 +319,7 @@ public class EntityDataChanger<EntityInterface>
                                 {
                                     return Integer.parseInt(input.substring(0,input.length()-2));
                                 }
-                                catch (NumberFormatException ex)
+                                catch (NumberFormatException ignored)
                                 {}
                             }
                             return null;

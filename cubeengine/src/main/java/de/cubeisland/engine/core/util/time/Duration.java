@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.util.time;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -153,7 +154,7 @@ public class Duration
             }
             if (timeUnitFactor == null)
             {
-                throw new IllegalArgumentException("Could not parse time! " + timeStrings.toString());
+                throw new IllegalArgumentException("Could not parse time! " + Arrays.toString(timeStrings));
             }
             result += time * timeUnitFactor;
         }

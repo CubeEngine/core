@@ -98,7 +98,7 @@ public class LockerCommands extends ContainerCommand
                 return;
             }
             manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
-            context.sendTranslated("&aRightclock to show protection-info");
+            context.sendTranslated("&aRightclick to show protection-info");
         }
         else
         {

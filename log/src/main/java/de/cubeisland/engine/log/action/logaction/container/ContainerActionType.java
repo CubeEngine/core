@@ -403,7 +403,7 @@ public class ContainerActionType extends ActionTypeContainer
         TObjectIntHashMap<ItemData> itemDataMap = this.inventoryChanges.get(user.getId());
         if (itemDataMap == null)
         {
-            itemDataMap = new TObjectIntHashMap<ItemData>();
+            itemDataMap = new TObjectIntHashMap<>();
             this.inventoryChanges.put(user.getId(),itemDataMap);
         }
         int oldAmount = itemDataMap.get(itemData); // if not yet set this returns 0

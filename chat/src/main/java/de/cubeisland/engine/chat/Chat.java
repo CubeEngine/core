@@ -44,6 +44,8 @@ public class Chat extends Module implements Listener
 
     // TODO /nick cmd
 
+    // TODO move /me cmd from basics & check for colorPerms
+
     @Override
     public void onEnable()
     {

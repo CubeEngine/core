@@ -240,35 +240,35 @@ public class Convert
         }
         if (o instanceof Byte || o.getClass() == byte.class)
         {
-            return new ByteNode((Byte)o);
+            return new ByteNode((byte)o);
         }
         if (o instanceof Short || o.getClass() == short.class)
         {
-            return new ShortNode((Short)o);
+            return new ShortNode((short)o);
         }
         if (o instanceof Integer || o.getClass() == int.class)
         {
-            return new IntNode((Integer)o);
+            return new IntNode((int)o);
         }
         if (o instanceof Long || o.getClass() == long.class)
         {
-            return new LongNode((Long)o);
+            return new LongNode((long)o);
         }
         if (o instanceof Float || o.getClass() == float.class)
         {
-            return new FloatNode((Float)o);
+            return new FloatNode((float)o);
         }
         if (o instanceof Double || o.getClass() == double.class)
         {
-            return new DoubleNode((Double)o);
+            return new DoubleNode((double)o);
         }
         if (o instanceof Boolean || o.getClass() == boolean.class)
         {
-            return new BooleanNode((Boolean)o);
+            return new BooleanNode((boolean)o);
         }
         if (o instanceof Character || o.getClass() == char.class)
         {
-            return new CharNode((Character)o);
+            return new CharNode((char)o);
         }
         throw new IllegalArgumentException("Cannot wrap into Node: " + o.getClass());
 

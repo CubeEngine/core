@@ -57,7 +57,6 @@ import de.cubeisland.engine.core.bukkit.command.CommandBackend;
 import de.cubeisland.engine.core.bukkit.command.CubeCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.FallbackCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.SimpleCommandBackend;
-import de.cubeisland.engine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -217,7 +216,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         consoleAppender.start();
 
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         this.logger.setLevel(Level.DEBUG);
         ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 
@@ -346,12 +344,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on loaded worlds
         this.worldManager = new BukkitWorldManager(BukkitCore.this);
 
-        MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
-
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
-
-        metricsInit.start();
     }
 
     @Override

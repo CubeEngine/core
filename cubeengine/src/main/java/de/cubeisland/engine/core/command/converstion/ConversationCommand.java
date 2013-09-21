@@ -70,7 +70,6 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
             this.execute(event.getPlayer(), "", StringUtils.explode(" ", event.getMessage()));
             event.setCancelled(true);
         }
-        //TODO block chat for users in mode & save missed chatlines to print when exiting
     }
 
     @EventHandler

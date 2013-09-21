@@ -100,7 +100,7 @@ public class WorldControlCommands
             }
             duration *= 20;
         }
-        World world = null;
+        World world;
         if (context.hasParam("in"))
         {
             world = context.getParam("in", null);

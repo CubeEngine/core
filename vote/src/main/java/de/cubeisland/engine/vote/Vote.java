@@ -23,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
+import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.Economy;
@@ -38,7 +39,7 @@ import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
 public class Vote extends Module implements Listener
 {
     private VoteConfiguration config;
-    private DSLContext dsl;
+    protected DSLContext dsl;
 
     @Override
     public void onEnable()
@@ -46,6 +47,7 @@ public class Vote extends Module implements Listener
         this.getCore().getDB().registerTable(TableVote.initTable(this.getCore().getDB()));
         this.config = Configuration.load(VoteConfiguration.class, this);
         this.getCore().getEventManager().registerListener(this, this);
+        this.getCore().getCommandManager().registerCommands(this, new VoteCommands(this), ReflectedCommand.class);
         this.dsl = this.getCore().getDB().getDSL();
     }
 
@@ -84,11 +86,18 @@ public class Vote extends Module implements Listener
             this.getCore().getUserManager().broadcastMessage(this.config.votebroadcast.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
-                replace("{AMOUNT}", String.valueOf(voteamount)));
+                replace("{AMOUNT}", String.valueOf(voteamount)).
+                replace("{VOTEURL}", this.config.voteurl));
             user.sendMessage(ChatFormat.parseFormats(this.config.votemessage.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
-                replace("{AMOUNT}", String.valueOf(voteamount))));
+                replace("{AMOUNT}", String.valueOf(voteamount)).
+                replace("{VOTEURL}", this.config.voteurl)));
         }
+    }
+
+    public VoteConfiguration getConfig()
+    {
+        return config;
     }
 }

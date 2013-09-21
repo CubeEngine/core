@@ -50,7 +50,7 @@ public class ShoutCommand extends ContainerCommand
 
     public ShoutCommand(Shout module)
     {
-        super(module, "shout", "Announce a message to players on the server", Arrays.asList(new String[]{"announce"}));
+        super(module, "shout", "Announce a message to players on the server", Arrays.asList("announce"));
         this.module = module;
 
         this.setUsage("<announcement>");

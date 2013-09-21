@@ -80,7 +80,7 @@ public class MapConverter
             {
                 Type keyType = ptype.getActualTypeArguments()[0];
                 Type valType = ptype.getActualTypeArguments()[1];
-                S result = (S)getMapFor(ptype);
+                S result = getMapFor(ptype);
                 for (Map.Entry<String, Node> entry : mapNode.getMappedNodes().entrySet())
                 {
                     StringNode keyNode = new StringNode(mapNode.getOriginalKey(entry.getKey())); // preserve Casing in Key

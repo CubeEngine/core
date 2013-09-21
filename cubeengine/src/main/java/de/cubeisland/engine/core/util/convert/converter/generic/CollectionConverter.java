@@ -73,7 +73,7 @@ public class CollectionConverter
         {
             if (pType.getRawType() instanceof Class)
             {
-                S result = (S)getCollectionFor(pType);
+                S result = getCollectionFor(pType);
                 Type subType = pType.getActualTypeArguments()[0];
                 for (Node node : listNode.getListedNodes())
                 {

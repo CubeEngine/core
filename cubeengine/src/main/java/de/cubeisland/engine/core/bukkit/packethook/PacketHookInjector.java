@@ -20,10 +20,10 @@ package de.cubeisland.engine.core.bukkit.packethook;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-import net.minecraft.server.v1_6_R2.PlayerConnection;
-import net.minecraft.server.v1_6_R2.ServerConnection;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.PlayerConnection;
+import net.minecraft.server.v1_6_R3.ServerConnection;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

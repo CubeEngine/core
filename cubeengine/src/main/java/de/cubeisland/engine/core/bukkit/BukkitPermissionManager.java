@@ -223,7 +223,6 @@ public class BukkitPermissionManager implements PermissionManager
             // next parent-permission
             registeredPerm = parentPerm;
             permission = parentpermission;
-            //TODO detect circular depending permissions and throw Exception for it
         }
     }
 

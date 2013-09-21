@@ -29,6 +29,9 @@ import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.completer.MaterialListCompleter;
+import de.cubeisland.engine.core.command.parameterized.completer.PlayerListCompleter;
+import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -112,11 +115,11 @@ public class LookupCommands
         @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
         @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
         @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-        @Param(names = {"block","b"}),
+        @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
         @Param(names = {"entity","e"}),
         @Param(names = {"since","time","t"}), // if not given default since 3d
         @Param(names = {"before"}),
-        @Param(names = {"world","w","in"}, type = World.class),
+        @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
 
         @Param(names = {"limit","pagelimit"},type = Integer.class),
         @Param(names = {"page"},type = Integer.class),
@@ -179,11 +182,11 @@ public class LookupCommands
             @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
             @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
             @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-            @Param(names = {"block","b"}),
+            @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
             @Param(names = {"entity","e"}),
             @Param(names = {"since","time","t"}), // if not given default since 3d
             @Param(names = {"before"}),
-            @Param(names = {"world","w","in"}, type = World.class),
+            @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
         }, min = 0, max = 1)
     public void rollback(ParameterizedContext context)
     {
@@ -545,6 +548,5 @@ public class LookupCommands
         }
         return true;
     }
-
-
 }
+

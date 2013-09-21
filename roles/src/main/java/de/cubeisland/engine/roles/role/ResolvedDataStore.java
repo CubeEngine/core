@@ -222,7 +222,7 @@ public class ResolvedDataStore
             // remove instances in parents
             for (Role parentRole : this.assignedRoles)
             {
-                parentRole.resolvedData.dependentData.remove(this.rawDataStore);
+                parentRole.resolvedData.dependentData.remove(((Role)this.rawDataStore).resolvedData);
             }
             // remove from config in children
             for (ResolvedDataStore subData : this.dependentData)
