@@ -113,5 +113,5 @@ public class BorderListener implements Listener
         return !(spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= (this.config.radius -2) * (this.config.radius -2));
     }
 
-    // TODO prevent chunk generation behind the border
+    // TODO prevent chunk generation behind the border, not possible with Bukkit atm
 }

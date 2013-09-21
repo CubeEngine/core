@@ -50,8 +50,11 @@ public class Parameters
     {
         assert def != null: "The default value must not be null!";
 
-        T value = def;
-        value = (T)this.get(name, index, def.getClass());
+        T value = (T)this.get(name, index, def.getClass());
+        if (value == null)
+        {
+            return def;
+        }
         return value;
     }
 

@@ -216,7 +216,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         consoleAppender.start();
 
         this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         this.logger.setLevel(Level.DEBUG);
         ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 

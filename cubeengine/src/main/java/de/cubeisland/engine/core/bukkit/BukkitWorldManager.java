@@ -40,11 +40,13 @@ import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class BukkitWorldManager extends AbstractWorldManager
 {
+    private final BukkitCore core;
     private final Server server;
 
     public BukkitWorldManager(final BukkitCore core)
     {
         super(core);
+        this.core = core;
         this.server = core.getServer();
 
         core.addInitHook(new Runnable() {
@@ -109,6 +111,10 @@ public class BukkitWorldManager extends AbstractWorldManager
     public boolean unloadWorld(World world, boolean save)
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        if (!save)
+        {
+            this.core.getLog().warn("This is unstable on CraftBukkit servers");
+        }
         boolean success = this.server.unloadWorld(world, save);
         if (success && !save)
         {
@@ -128,8 +134,7 @@ public class BukkitWorldManager extends AbstractWorldManager
         {
             return false;
         }
-        // TODO this sometimes throws java.nio.file.FileSystemException when world-files are still used WHY??? should be unloaded
-        // a Stacktrace: http://pastie.org/private/2xxfktrhnr3r7dw3vc42ua
+        // This can fail with a FileSystemException due to the file somehow still being in use
         FileUtil.deleteRecursive(world.getWorldFolder().toPath());
         return true;
     }

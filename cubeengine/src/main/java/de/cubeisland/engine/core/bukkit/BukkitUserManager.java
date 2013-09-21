@@ -212,7 +212,6 @@ public class BukkitUserManager extends AbstractUserManager
             final User user = getUser(event.getPlayer().getName());
             if (user != null)
             {
-                // user.offlinePlayer = player; TODO might cause problems to not have this
                 user.refreshIP();
                 final int removalTask = scheduledForRemoval.get(user.getName());
                 if (removalTask > -1)
