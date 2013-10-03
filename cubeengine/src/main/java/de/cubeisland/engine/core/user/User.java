@@ -58,7 +58,6 @@ import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -238,7 +237,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     /**
-     * Returns the users configured language
+     * Returns the users configured locale
      *
      * @return a locale string
      */
@@ -248,18 +247,17 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             return this.entity.getLocale();
         }
-        Language language = null;
+        Locale locale = null;
         Player onlinePlayer = this.getOfflinePlayer().getPlayer();
         if (onlinePlayer != null)
         {
-            language = this.core.getI18n().getLanguage(
-                BukkitUtils.getLocaleFromSender(this.core.getI18n(), onlinePlayer));
+            locale = BukkitUtils.getLocaleFromSender(onlinePlayer);
         }
-        if (language == null)
+        if (locale == null)
         {
-            language = this.core.getI18n().getDefaultLanguage();
+            locale = this.getCore().getI18n().getDefaultLanguage().getLocale();
         }
-        return language.getLocale();
+        return locale;
     }
 
     public void setLocale(Locale locale)

@@ -131,7 +131,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
-        if (!BukkitUtils.isCompatible(this) && !BukkitUtils.init(this))
+        if (!BukkitUtils.isCompatible(this) || !BukkitUtils.init(this))
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Your Bukkit server is incompatible with this CubeEngine version.");
             pm.disablePlugin(this);
