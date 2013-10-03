@@ -556,10 +556,16 @@ public abstract class CubeCommand extends Command
         final int max = this.getModule().getCore().getConfiguration().commandTabCompleteOffers;
         if (result.size() > max)
         {
+            if (StringUtils.implode(", ", result).length() < MAX_TAB_LINE)
+            {
+                return result;
+            }
             result = result.subList(0, max);
         }
         return result;
     }
+
+    static final int MAX_TAB_LINE = 50;
 
     public List<String> tabComplete(CommandSender sender, String label, String[] args)
     {

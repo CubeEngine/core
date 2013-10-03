@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.signmarket;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -31,11 +34,15 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.converstion.ConversationCommand;
 import de.cubeisland.engine.core.command.converstion.ConversationContextFactory;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
+import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.completer.ItemCompleter;
+import de.cubeisland.engine.core.command.parameterized.completer.PlayerCompleter;
 import de.cubeisland.engine.core.user.User;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -60,12 +67,23 @@ public class EditModeListener extends ConversationCommand
                 .addFlag(new CommandFlag("stock", "stock"))
                 .addFlag(new CommandFlag("nodemand", "nodemand"))
                 .addParameter(new CommandParameter("demand", Integer.class))
-                .addParameter(new CommandParameter("owner", User.class))
+                .addParameter(new CommandParameter("owner", User.class).setCompleter(new PlayerCompleter()))
                 .addParameter(new CommandParameter("price", String.class))
                 .addParameter(new CommandParameter("amount", Integer.class))
-                .addParameter(new CommandParameter("item", ItemStack.class))
+                .addParameter(new CommandParameter("item", ItemStack.class).setCompleter(new ItemCompleter()))
                 .addParameter(new CommandParameter("setstock",Integer.class))
-                .addParameter(new CommandParameter("size",Integer.class))
+                .addParameter(new CommandParameter("size",Integer.class).setCompleter(new Completer()
+                {
+                    @Override
+                    public List<String> complete(CommandSender sender, String token)
+                    {
+                        if (MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(sender))
+                        {
+                            return Arrays.asList("6", "5", "4", "3", "2", "1", "-1");
+                        }
+                        return Arrays.asList("6", "5", "4", "3", "2", "1");
+                    }
+                }))
         ;
     }
 
