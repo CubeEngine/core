@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.conomy.account;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -411,16 +413,19 @@ public class ConomyManager
             + "f "+ this.config.symbol, balance);
     }
 
-    public Double parse(String amountString)
+    public Double parse(String amountString, Locale locale)
     {
+
         //private Pattern pattern2 = Pattern.compile("[^a-zA-Z]+");
         //private Pattern pattern1;
         //this.pattern1 = Pattern.compile("^-*[\\d,]+$");
+        NumberFormat format = NumberFormat.getInstance(locale);
         try
         {
-            return Double.parseDouble(amountString);
+            Number parsed = format.parse(amountString);
+            return parsed.doubleValue();
         }
-        catch (NumberFormatException ex)
+        catch (NumberFormatException | ParseException ex)
         {}
         // TODO filter currency Names / Symbols
         return null;

@@ -56,4 +56,5 @@ public interface Economy
     List<String> getBanks();
     boolean createPlayerAccount(String playerName);
     Double parse(String price);
+    Double parseFor(String price, Locale locale);
 }

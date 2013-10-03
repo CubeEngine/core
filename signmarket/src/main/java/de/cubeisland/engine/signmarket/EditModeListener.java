@@ -396,7 +396,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("price"))
         {
-            Double dPrice = marketSign.economy.parse(context.getString("price"));
+            Double dPrice = marketSign.economy.parseFor(context.getString("price"), context.getSender().getLocale());
             if (dPrice == null)
             {
                 user.sendTranslated("&cInvalid price!");
