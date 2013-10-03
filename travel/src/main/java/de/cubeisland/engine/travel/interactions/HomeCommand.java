@@ -118,32 +118,35 @@ public class HomeCommand extends ContainerCommand
                 if (context.getCore().getUserManager().findUser(context.getString(0)) != null)
                 {
                     User user = this.module.getCore().getUserManager().findUser(context.getString(0));
-                    Home home = this.tpManager.getHome(user, "home");
-                    if (home != null && home.canAccess(sender))
+                    if (!user.equals(context.getSender())) // user & sender are the same (home named like user)
                     {
-                        Location location = home.getLocation();
-                        if (location == null)
+                        Home home = this.tpManager.getHome(user, "home");
+                        if (home != null && home.canAccess(sender))
                         {
-                            context.sendTranslated("&cThis home is in a world that no longer exists!");
+                            Location location = home.getLocation();
+                            if (location == null)
+                            {
+                                context.sendTranslated("&cThis home is in a world that no longer exists!");
+                                return null;
+                            }
+                            sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
+                            if (home.getWelcomeMsg() != null)
+                            {
+                                context.sendMessage(home.getWelcomeMsg());
+                            }
+                            else
+                            {
+                                sender.sendTranslated("&aYou have been teleported to &6%s&a's default home",
+                                                      home.getOwnerName());
+                            }
                             return null;
                         }
-                        sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
-                        if (home.getWelcomeMsg() != null)
-                        {
-                            context.sendMessage(home.getWelcomeMsg());
-                        }
-                        else
-                        {
-                            sender.sendTranslated("&aYou have been teleported to &6%s&a's default home",
-                                                  home.getOwnerName());
-                        }
-                        return null;
                     }
                 }
                 Home home = this.tpManager.getHome(sender, context.getString(0).toLowerCase());
                 if (home == null)
                 {
-                    context.sendTranslated("&6%s &cis not a home", context.getString(0).toLowerCase());
+                    context.sendTranslated("&6%s&c is not a home", context.getString(0).toLowerCase());
                     return null;
                 }
 
