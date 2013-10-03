@@ -26,6 +26,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
@@ -34,6 +37,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import static de.cubeisland.engine.chat.ChatPerm.*;
+import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class Chat extends Module implements Listener
 {
@@ -44,19 +48,25 @@ public class Chat extends Module implements Listener
 
     // TODO /nick cmd
 
-    // TODO move /me cmd from basics & check for colorPerms
-
     @Override
     public void onEnable()
     {
         this.config = Configuration.load(ChatConfig.class, this);
         new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
+        this.getCore().getCommandManager().registerCommands(this, this, ReflectedCommand.class);
         this.format = this.config.format;
         if (this.config.parseColors)
         {
             this.format = ChatFormat.parseFormats(this.format);
         }
+    }
+
+    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
+    public void me(CommandContext context)
+    {
+        String message = context.getStrings(0);
+        this.getCore().getUserManager().broadcastStatus(message, context.getSender());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

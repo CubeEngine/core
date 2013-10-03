@@ -46,13 +46,6 @@ public class ChatCommands
         this.um = basics.getCore().getUserManager();
     }
 
-    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
-    public void me(CommandContext context)
-    {
-        String message = context.getStrings(0);
-        this.um.broadcastStatus(message, context.getSender());
-    }
-
     @Command(desc = "Sends a private message to someone", names = {
         "message", "msg", "tell", "pm", "m", "t", "whisper", "w"
     }, min = 2, max = NO_MAX, usage = "<player> <message>")

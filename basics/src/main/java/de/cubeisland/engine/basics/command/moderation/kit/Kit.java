@@ -90,7 +90,6 @@ public class Kit
 
     public boolean give(CommandSender sender, User user, boolean force)
     {
-        //TODO give kit to all players online (not here)
         if (!force && this.getPermission() != null)
         {
             if (!this.getPermission().isAuthorized(sender))
