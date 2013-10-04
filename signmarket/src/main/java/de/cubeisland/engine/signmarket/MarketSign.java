@@ -808,10 +808,24 @@ public class MarketSign
     @SuppressWarnings("deprecation")
     private void useSign(User user)
     {
-        if (!MarketSignPerm.USE.isAuthorized(user))
+        if (this.hasType())
         {
-            user.sendTranslated("&cYou are not allowed to use marketsigns!");
-            return;
+            if (this.isTypeBuy())
+            {
+                if (!MarketSignPerm.USE_BUY.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to use buy-marketsigns!");
+                    return;
+                }
+            }
+            else
+            {
+                if (!MarketSignPerm.USE_SELL.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to use sell-marketsigns!");
+                    return;
+                }
+            }
         }
         this.economy.createPlayerAccount(user.getName());
         if (this.isValidSign(user))

@@ -90,7 +90,7 @@ public class MapConverter
                 }
                 return result;
             }
-            throw new IllegalArgumentException("Unkown Map-Type: " + ptype);
+            throw new IllegalArgumentException("Unknown Map-Type: " + ptype);
         }
         catch (ConversionException ex)
         {
