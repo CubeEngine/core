@@ -26,7 +26,7 @@ import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.config.annotations.Revision;
 
-import ch.qos.logback.classic.Level;
+import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.util.time.Duration;
 
 /**
@@ -72,7 +72,7 @@ public class CoreConfiguration extends Configuration
     @Option("logging.console-Level")
     @Comment("Logging into Console \nALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF")
     public Level loggingConsoleLevel = Level.INFO;
-
+    // TODO create converter
     @Option("logging.file-Level")
     @Comment("Logging to the main log file \nALL > DEBUG > INFO > WARN > ERROR > OFF")
     public Level loggingFileLevel = Level.INFO;

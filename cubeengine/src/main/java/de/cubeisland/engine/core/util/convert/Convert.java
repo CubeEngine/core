@@ -48,6 +48,7 @@ import de.cubeisland.engine.core.config.node.Node;
 import de.cubeisland.engine.core.config.node.NullNode;
 import de.cubeisland.engine.core.config.node.ShortNode;
 import de.cubeisland.engine.core.config.node.StringNode;
+import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.convert.converter.BooleanConverter;
@@ -74,8 +75,6 @@ import de.cubeisland.engine.core.util.convert.converter.generic.ArrayConverter;
 import de.cubeisland.engine.core.util.convert.converter.generic.CollectionConverter;
 import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
 import de.cubeisland.engine.core.util.time.Duration;
-
-import ch.qos.logback.classic.Level;
 
 /**
  * This class provides the converters.

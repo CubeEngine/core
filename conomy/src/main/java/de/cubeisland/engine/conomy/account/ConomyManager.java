@@ -28,8 +28,8 @@ import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
+import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.logging.Log;
-import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -38,7 +38,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.conomy.account.storage.TableAccount.TABLE_ACCOUNT;
 import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_BANK_ACCESS;
@@ -65,13 +64,12 @@ public class ConomyManager
 
         this.dsl = this.module.getCore().getDB().getDSL();
 
-        // Conomy is a module, so it have to create it's custom loggers for itself.
-        ch.qos.logback.classic.Logger rawlogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("cubeengine.conomy.transactions");
+
+        this.logger = module.getCore().getLogFactory().getLog("cubeengine.conomy.transactions");
         if (!this.module.getConfig().enableLogging)
         {
-            rawlogger.getAppender("conomy.transactions-file").stop();
+            logger.setLevel(Level.OFF);
         }
-        this.logger = new LogbackLog(rawlogger);
 
         this.um = this.module.getCore().getUserManager();
         this.conomyInterface = new ConomyInterface(this);

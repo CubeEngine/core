@@ -37,11 +37,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
+import de.cubeisland.engine.core.logging.LoggingException;
+import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
@@ -57,7 +56,6 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
 
@@ -299,17 +297,15 @@ public abstract class BaseModuleManager implements ModuleManager
             ZipEntry entry = jarFile.getEntry("logback.xml");
             if (entry != null)
             {
-                JoranConfigurator logbackConfig = new JoranConfigurator();
-                logbackConfig.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
                 try (InputStream is = jarFile.getInputStream(entry))
                 {
-                    logbackConfig.doConfigure(is);
+                    ((LogBackLogFactory)core.getLogFactory()).configure(is);
                 }
             }
         }
         catch (IOException ignored)
         {} // This should never happen
-        catch (JoranException ex)
+        catch (LoggingException ex)
         {
             module.getLog().warn(ex, "An error occurred while loading the modules logback.xml config");
         }

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.logging.logback;
 
 import java.io.File;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -40,6 +41,7 @@ import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
+import de.cubeisland.engine.core.logging.LoggingException;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import org.slf4j.LoggerFactory;
 
@@ -234,11 +236,31 @@ public class LogBackLogFactory implements LogFactory
         return webApiLog;
     }
 
+    @Override
+    public Log getLog(String name)
+    {
+        return new LogbackLog(this.loggerContext.getLogger(name));
+    }
+
     public void stop()
     {
         if (this.loggerContext != null)
         {
             this.loggerContext.stop();
+        }
+    }
+
+    public void configure(InputStream is) throws LoggingException
+    {
+        JoranConfigurator logbackConfig = new JoranConfigurator();
+        logbackConfig.setContext(this.loggerContext);
+        try
+        {
+            logbackConfig.doConfigure(is);
+        }
+        catch (JoranException ex)
+        {
+            throw new LoggingException("Could not load the config into LogBack's LoggerContext", ex);
         }
     }
 }

@@ -1,7 +1,7 @@
 <configuration>
   <timestamp key="byMinute" datePattern="yyyy'-'MM'-'dd'--'HHmm" timeReference="contextBirth"/>
   <appender name="conomy.transactions-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${cubeengine.logger.default-path}/${byMinute}/conomy-transactions.log</file>
+    <file>${cubeengine.logging.default-path}/${byMinute}/conomy-transactions.log</file>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
         <pattern>%date{yyyy-MM-dd HH:mm:ss} %msg%n</pattern>
@@ -9,12 +9,12 @@
       </layout>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/conomy-transactions.%i.log</fileNamePattern>
+      <fileNamePattern>${cubeengine.logging.default-path}/${byMinute}/conomy-transactions.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
-      <maxIndex>${cubeengine.logger.max-file-count}</maxIndex>
+      <maxIndex>${cubeengine.logging.max-file-count}</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>${cubeengine.logger.max-size}</maxFileSize>
+      <maxFileSize>${cubeengine.logging.max-size}</maxFileSize>
     </triggeringPolicy>
   </appender>
   <logger name="cubeengine.conomy.transactions" level="debug" additivity="false">

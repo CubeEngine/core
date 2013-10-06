@@ -17,37 +17,20 @@
  */
 package de.cubeisland.engine.core.logging;
 
-
-import java.io.File;
-
-import de.cubeisland.engine.core.module.ModuleInfo;
-
-public interface LogFactory
+public class LoggingException extends Exception
 {
+    public LoggingException(Throwable t)
+    {
+        super(t);
+    }
 
-    /**
-     * Get or create the logging for the core
-     *
-     * @return The logging for the core
-     */
-    public Log createCoreLogger(java.util.logging.Logger log, File dataFolder);
+    public LoggingException(String m, Throwable t)
+    {
+        super(m, t);
+    }
 
-    /**
-     * Get or create a logging for the module
-     * @param module The module
-     * @return The logging for the module
-     */
-    public Log createModuleLogger(ModuleInfo module);
-
-    long getBirthTime();
-
-    public Log createCommandLogger();
-
-    public Log createPermissionLog();
-
-    public Log createLanguageLog();
-
-    public Log getWebApiLog();
-
-    public Log getLog(String name);
+    public LoggingException(String m)
+    {
+        super(m);
+    }
 }

@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
-import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.ban.BanManager;
@@ -39,6 +38,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
@@ -265,7 +265,7 @@ public class CoreCommands extends ContainerCommand
             Level level = Level.toLevel(context.getString(0), null);
             if (level != null)
             {
-                ((LogbackLog)context.getCore().getLog()).getOriginalLogger().setLevel(level);
+                context.getCore().getLog().setLevel(level);
                 context.sendTranslated("&aNew log level successfully set!");
             }
             else

@@ -205,4 +205,5 @@ public abstract class Log
 
     public abstract void error(Throwable throwable, String message, Object... args);
 
+    public abstract void setLevel(Level level);
 }

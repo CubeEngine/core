@@ -20,11 +20,10 @@ package de.cubeisland.engine.core.util.convert.converter;
 import de.cubeisland.engine.core.config.node.BooleanNode;
 import de.cubeisland.engine.core.config.node.Node;
 import de.cubeisland.engine.core.config.node.StringNode;
+import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.util.convert.ConversionException;
 import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.core.util.convert.Converter;
-
-import ch.qos.logback.classic.Level;
 
 public class LevelConverter implements Converter<Level>
 {
@@ -50,6 +49,6 @@ public class LevelConverter implements Converter<Level>
         { // OFF is interpreted as a boolean false
             return fromNode(new StringNode("OFF"));
         }
-        throw new ConversionException("Invalid Node!" + node.getClass());
+        throw new ConversionException("Invalid Node! " + node.getClass());
     }
 }
