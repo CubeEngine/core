@@ -34,7 +34,6 @@ public abstract class PermissionContainer<T extends Module>
     {
         this.permissionManager = module.getCore().getPermissionManager();
         this.module = module;
-        this.bindToModule();
     }
 
     protected final void bindToModule(Permission... perms)
@@ -55,7 +54,6 @@ public abstract class PermissionContainer<T extends Module>
         }
     }
 
-    // TODO what about caching the result?
     public Set<Permission> getPermissions()
     {
         THashSet<Permission> perms = new THashSet<>();

@@ -25,17 +25,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-import net.minecraft.server.v1_6_R2.NBTTagCompound;
-import net.minecraft.server.v1_6_R2.NBTTagDouble;
-import net.minecraft.server.v1_6_R2.NBTTagFloat;
-import net.minecraft.server.v1_6_R2.NBTTagInt;
-import net.minecraft.server.v1_6_R2.NBTTagList;
-import net.minecraft.server.v1_6_R2.PlayerInteractManager;
-import net.minecraft.server.v1_6_R2.WorldNBTStorage;
-import net.minecraft.server.v1_6_R2.WorldServer;
-import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.NBTTagCompound;
+import net.minecraft.server.v1_6_R3.NBTTagDouble;
+import net.minecraft.server.v1_6_R3.NBTTagFloat;
+import net.minecraft.server.v1_6_R3.NBTTagInt;
+import net.minecraft.server.v1_6_R3.NBTTagList;
+import net.minecraft.server.v1_6_R3.PlayerInteractManager;
+import net.minecraft.server.v1_6_R3.WorldNBTStorage;
+import net.minecraft.server.v1_6_R3.WorldServer;
+import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -82,6 +82,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -851,6 +852,11 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getInventory();
+        }
+        Player offlinePlayer = BukkitUtils.getOfflinePlayerAsPlayer(this.getOfflinePlayer());
+        if (offlinePlayer.hasPlayedBefore())
+        {
+            return offlinePlayer.getInventory();
         }
         return null;
     }
@@ -1662,8 +1668,6 @@ public class UserBase implements Player
     {
         assert CubeEngine.isMainThread(): "Must be called from the main thread!";
 
-        CubeEngine.getLog().trace("teleport to: [{},{},{}] in chunk [{},{}]", lctn.getBlockX(), lctn.getBlockY(), lctn.getBlockZ(), lctn.getChunk().getX(), lctn.getChunk().getZ());
-
         if (lctn == null)
         {
             return false;
@@ -1675,8 +1679,6 @@ public class UserBase implements Player
     public boolean teleport(Location lctn, TeleportCause tc)
     {
         assert CubeEngine.isMainThread(): "Must be called from the main thread!";
-
-        CubeEngine.getLog().trace("teleport to: [{},{},{}] in chunk [{},{}]", lctn.getBlockX(), lctn.getBlockY(), lctn.getBlockZ(), lctn.getChunk().getX(), lctn.getChunk().getZ());
 
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
@@ -2358,6 +2360,11 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.getEnderChest();
+        }
+        Player offlinePlayer = BukkitUtils.getOfflinePlayerAsPlayer(this.getOfflinePlayer());
+        if (offlinePlayer.hasPlayedBefore())
+        {
+            return offlinePlayer.getEnderChest();
         }
         return null;
     }

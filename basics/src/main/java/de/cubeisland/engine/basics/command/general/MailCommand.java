@@ -193,7 +193,7 @@ public class MailCommand extends ContainerCommand
             public void run() // Async sending to all Users ever
             {
                 DSLContext dsl = module.getCore().getDB().getDSL();
-                Collection<Query> queries = new ArrayList<Query>();
+                Collection<Query> queries = new ArrayList<>();
                 for (Long userId : module.getCore().getUserManager().getAllIds())
                 {
                     if (!alreadySend.contains(userId))
@@ -208,7 +208,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Command(names = {"clear", "remove"},
-            desc = "Clears your mails.", usage = "[player]")
+            desc = "Clears your mails.", usage = "[player]", min = 0, max = 1)
     public void clear(CommandContext context)
     {
         User sender = null;
@@ -234,7 +234,7 @@ public class MailCommand extends ContainerCommand
             return;
         }
         sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMailFrom(from);
-        context.sendTranslated("&eCleared all mails from &2%s&e!", from.getName());
+        context.sendTranslated("&eCleared all mails from &2%s&e!", from == null ? "console" : from.getName());
     }
 
     private void mail(String message, CommandSender from, User... users)

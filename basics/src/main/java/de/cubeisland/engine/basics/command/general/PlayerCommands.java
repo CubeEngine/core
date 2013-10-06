@@ -306,11 +306,6 @@ public class PlayerCommands
             sender = (User)context.getSender();
         }
         User user = sender;
-        if (user == null && !context.hasArg(1))
-        {
-            context.sendTranslated("&cYou do not not have any gamemode!");
-            return;
-        }
         if (context.hasArg(1))
         {
             user = context.getUser(1);
@@ -320,6 +315,11 @@ public class PlayerCommands
                 return;
             }
             changeOther = true;
+        }
+        else if (user == null)
+        {
+            context.sendTranslated("&cYou do not not have any gamemode!");
+            return;
         }
         if (changeOther && !BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
@@ -515,7 +515,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("&2%s&e was last seen &6%s &eago.", user.getName(),
-                               new Duration(System.currentTimeMillis(), lastPlayed).format("%www %ddd %hhh %mmm %sss"));
+                   new Duration(System.currentTimeMillis(), lastPlayed).format("%www%ddd%hhh%mmm%sss"));
     }
 
     @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, max = NO_MAX, flags = @Flag(longName = "chat", name = "c"))
@@ -587,8 +587,7 @@ public class PlayerCommands
             context.sendTranslated("&cJust go!");
             return;
         }
-        Boolean isAfk = user.get(BasicsAttachment.class).isAfk();
-        if (isAfk == null || !isAfk)
+        if (!user.get(BasicsAttachment.class).isAfk())
         {
             user.get(BasicsAttachment.class).setAfk(true);
             user.get(BasicsAttachment.class).resetLastAction();
@@ -607,7 +606,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("User not found!");
+            context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
             return;
         }
         if (!user.isOnline())

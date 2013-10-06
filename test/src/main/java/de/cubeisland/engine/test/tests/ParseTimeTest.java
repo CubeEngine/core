@@ -51,7 +51,7 @@ public class ParseTimeTest extends Test
             list.add(context.getString(i));
             i++;
         }
-        Duration dura = new Duration(list.toArray(new String[0]));
+        Duration dura = new Duration(list.toArray(new String[list.size()]));
         context.sendMessage("ms: " + dura.toTimeUnit(TimeUnit.MILLISECONDS));
         context.sendMessage(dura.format());
     }

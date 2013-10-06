@@ -532,6 +532,8 @@ public abstract class CubeCommand extends Command
         return super.tabComplete(bukkitSender, alias, args);
     }
 
+    private static final int TAB_LIMIT_THRESHOLD = 50;
+    
     @Override
     public final List<String> tabComplete(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
     {
@@ -556,6 +558,10 @@ public abstract class CubeCommand extends Command
         final int max = this.getModule().getCore().getConfiguration().commandTabCompleteOffers;
         if (result.size() > max)
         {
+            if (StringUtils.implode(", ", result).length() < TAB_LIMIT_THRESHOLD)
+            {
+                return result;
+            }
             result = result.subList(0, max);
         }
         return result;

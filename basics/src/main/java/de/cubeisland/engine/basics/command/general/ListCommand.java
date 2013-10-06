@@ -63,7 +63,7 @@ public class ListCommand
         ArrayList<User> afkList = new ArrayList<>();
         for (User user : users)
         {
-            if ((sender instanceof User) && !((User)sender).canSee(user)) // TODO add a permission and a marker for hiddens
+            if ((sender instanceof User) && !((User)sender).canSee(user))
             {
                 continue;
             }

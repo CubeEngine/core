@@ -46,13 +46,6 @@ public class ChatCommands
         this.um = basics.getCore().getUserManager();
     }
 
-    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
-    public void me(CommandContext context)
-    {
-        String message = context.getStrings(0);
-        this.um.broadcastStatus(message, context.getSender());
-    }
-
     @Command(desc = "Sends a private message to someone", names = {
         "message", "msg", "tell", "pm", "m", "t", "whisper", "w"
     }, min = 2, max = NO_MAX, usage = "<player> <message>")
@@ -126,8 +119,7 @@ public class ChatCommands
             return true;
         }
         user.sendTranslated("&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
-        Boolean afk = user.get(BasicsAttachment.class).isAfk();
-        if (afk != null && afk)
+        if (user.get(BasicsAttachment.class).isAfk())
         {
             context.sendTranslated("&2%s &7is afk!", user.getName());
         }
@@ -185,7 +177,7 @@ public class ChatCommands
         }
         basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.toMillis())));
         basicsUserEntity.update();
-        String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www %ddd %hhh %mmm %sss");
+        String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www%ddd%hhh%mmm%sss");
         user.sendTranslated("&cYou are now muted for &6%s&c!", timeString);
         context.sendTranslated("&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
     }
@@ -202,7 +194,7 @@ public class ChatCommands
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         basicsUserEntity.setMuted(null);
         basicsUserEntity.update();
-        context.sendTranslated("&2%s &ais no longer muted!", user.getName());
+        context.sendTranslated("&2%s&a is no longer muted!", user.getName());
     }
 
     @Command(names = {"rand","roll"},desc = "Shows a random number from 0 to 100")

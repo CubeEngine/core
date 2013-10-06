@@ -48,7 +48,6 @@ import de.cubeisland.engine.core.bukkit.command.CommandBackend;
 import de.cubeisland.engine.core.bukkit.command.CubeCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.FallbackCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.SimpleCommandBackend;
-import de.cubeisland.engine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -122,7 +121,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
-        if (!BukkitUtils.isCompatible(this) && !BukkitUtils.init(this))
+        if (!BukkitUtils.isCompatible(this) || !BukkitUtils.init(this))
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Your Bukkit server is incompatible with this CubeEngine version.");
             pm.disablePlugin(this);
@@ -196,7 +195,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml")));
 
         // depends on: core config, server
-        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
+        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());
 
         if (this.config.userWebapi)
         {
@@ -280,12 +279,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on loaded worlds
         this.worldManager = new BukkitWorldManager(BukkitCore.this);
 
-        MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
-
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
-
-        metricsInit.start();
     }
 
     @Override

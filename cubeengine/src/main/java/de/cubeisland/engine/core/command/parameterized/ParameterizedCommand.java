@@ -59,12 +59,15 @@ public abstract class ParameterizedCommand extends CubeCommand
     @Override
     public List<String> tabComplete(CommandSender sender, String label, String[] args)
     {
+        List<String> result = super.tabComplete(sender, label, args);
+        if (result != null)
+        {
+            return result;
+        }
         if (args.length == 0)
         {
             return null;
         }
-
-        List<String> result = null;
         String token = args[args.length - 1];
         final ParameterizedContextFactory contextFactory = this.getContextFactory();
         if (args.length >= 2)

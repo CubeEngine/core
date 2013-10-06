@@ -243,7 +243,13 @@ public class ConomyInterface implements Economy
     @Override
     public Double parse(String price)
     {
-        return this.manager.parse(price);
+        return this.manager.parse(price, Locale.getDefault());
+    }
+
+    @Override
+    public Double parseFor(String price, Locale locale)
+    {
+        return this.manager.parse(price, locale);
     }
 
     @Override

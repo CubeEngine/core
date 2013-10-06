@@ -27,24 +27,24 @@ import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.TByteObjectMap;
 import gnu.trove.map.hash.TByteObjectHashMap;
 
-import static de.cubeisland.engine.locker.storage.ProtectionFlags.*;
+import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 
 public enum ProtectedType
 {
-    CONTAINER(1, BLOCK_HOPPER_ANY_IN, BLOCK_HOPPER_MINECART_OUT, BLOCK_HOPPER_OUT, MAGNET),
+    CONTAINER(1, HOPPER_IN, HOPPER_MINECART_IN, HOPPER_MINECART_OUT, HOPPER_OUT),
     DOOR(2, BLOCK_REDSTONE, AUTOCLOSE),
     BLOCK(3, BLOCK_REDSTONE),
-    ENTITY_CONTAINER(4, BLOCK_HOPPER_ANY_IN, BLOCK_HOPPER_MINECART_OUT, BLOCK_HOPPER_OUT, MAGNET),
+    ENTITY_CONTAINER(4, HOPPER_IN, HOPPER_MINECART_IN, HOPPER_MINECART_OUT, HOPPER_OUT),
     ENTITY_LIVING(5),
     ENTITY_VEHICLE(6),
     ENTITY(7),
-    ENTITY_CONTAINER_LIVING(8, MAGNET),
+    ENTITY_CONTAINER_LIVING(8),
     ;
 
     private static TByteObjectMap<ProtectedType> protectedTypes = new TByteObjectHashMap<>();
 
     public final byte id;
-    public final Collection<ProtectionFlags> supportedFlags;
+    public final Collection<ProtectionFlag> supportedFlags;
 
     static
     {
@@ -54,7 +54,7 @@ public enum ProtectedType
         }
     }
 
-    private ProtectedType(int id, ProtectionFlags... supportedFlags)
+    private ProtectedType(int id, ProtectionFlag... supportedFlags)
     {
         this.supportedFlags = Arrays.asList(supportedFlags);
         this.id = (byte)id;

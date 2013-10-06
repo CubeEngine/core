@@ -49,31 +49,6 @@ public class InviteManager
         this.invites = this.dsl.selectFrom(TABLE_INVITE).fetch();
     }
 
-    public void initialize()
-    {/*
-        try
-        {
-            super.initialize();
-            //TODO DATABASE
-
-            QueryBuilder builder = database.getQueryBuilder();
-            this.database.storeStatement(this.modelClass, "getInvitedTo", builder.select().cols("teleportpoint")
-                                                                                 .from(this.tableName).where()
-                                                                                 .field("userkey").is(EQUAL).value()
-                                                                                 .end().end());
-            this.database
-                .storeStatement(this.modelClass, "getInvited", builder.select().cols("userkey").from(this.tableName)
-                                                                      .where().field("teleportpoint").is(EQUAL).value()
-                                                                      .end().end());
-        }
-        catch (SQLException ex)
-        {
-            module.getLog().error("An error occurred while preparing the database statements for table " +
-                                  this.tableName + ": " + ex.getMessage(), ex);
-        }
-        */
-    }
-
     public void invite(TeleportPointModel tPP, User user)
     {
         TeleportInvite invite = this.dsl.newRecord(TABLE_INVITE).newInvite(tPP.getKey(), user.getEntity().getKey());

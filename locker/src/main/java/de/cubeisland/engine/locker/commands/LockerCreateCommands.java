@@ -52,6 +52,7 @@ public class LockerCreateCommands extends ContainerCommand
         }
     }
 
+    // TODO add admin rights /w creation
     @Alias(names = "cprivate")
     @Command(names = "private",
     desc = "creates a private protection", max = 1, usage = "[password]",

@@ -48,7 +48,7 @@ public class ConfirmResult implements CommandResult
     public void show(CommandContext context)
     {
         context.getCore().getCommandManager().getConfirmManager().registerConfirmation(this, this.module, sender);
-        if (message != "")
+        if (!message.isEmpty())
         {
             context.sendTranslated(message, context.getCommand().getName());
         }

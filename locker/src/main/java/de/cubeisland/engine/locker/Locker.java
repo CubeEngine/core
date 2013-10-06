@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.locker;
 
+import de.cubeisland.engine.core.module.Reloadable;
 import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
 import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityLockerConfigConverter;
+import de.cubeisland.engine.locker.commands.LockerAdminCommands;
 import de.cubeisland.engine.locker.commands.LockerCommands;
 import de.cubeisland.engine.locker.commands.LockerCreateCommands;
 import de.cubeisland.engine.locker.storage.LockManager;
@@ -29,7 +31,7 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.convert.Convert;
 
-public class Locker extends Module
+public class Locker extends Module implements Reloadable
 {
     private LockerConfig config;
     private LockManager manager;
@@ -40,15 +42,15 @@ public class Locker extends Module
         Convert.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
         Convert.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
         this.config = Configuration.load(LockerConfig.class, this);
-        new LockerPerm(this);
         this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
         manager = new LockManager(this);
         LockerCommands mainCmd = new LockerCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
-        LockerCreateCommands createCmds = new LockerCreateCommands(this, manager);
-        this.getCore().getCommandManager().registerCommand(createCmds, "locker");
+        this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
+        this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
+        new LockerPerm(this, mainCmd);
         new LockerListener(this, manager);
     }
 
@@ -58,6 +60,22 @@ public class Locker extends Module
         this.manager.saveAll();
     }
 
+    @Override
+    public void reload()
+    {
+        this.onDisable();
+        this.config = Configuration.load(LockerConfig.class, this);
+        this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
+        manager = new LockManager(this);
+        LockerCommands mainCmd = new LockerCommands(this, manager);
+        this.getCore().getCommandManager().registerCommand(mainCmd);
+        this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
+        this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
+        new LockerListener(this, manager);
+    }
+
     public LockerConfig getConfig()
     {
         return this.config;
@@ -65,44 +83,15 @@ public class Locker extends Module
 
     /*
     Features:
-    /cpersist -> so you dont have to repeat the commands (try suggesting when using a cmd alot)
-    Protection:
-        BlockProtection
-            cprivate
-            cpublic
-            cremove
-            cpassword
-            cunlock
-        ContainerProtection
-            cprotect // allows looking inside the chest
-      /cinfo: Owner, Type, flags, accessors, last access, creationtime
-      /cmodify: Grant or take away full access to container (later support setting roles that can access)
-      //"admin-access" allowing /cmodify prepend @ tp playername
-      /cgive transfer ownership of a protection (you will loose acess if you are not in access-list)
-      hopper protection / minecart/wHopper
-      using a book as a password(key)
-      locking entities: horse in particular
       lock leashknot / or fence from leashing on it
-      donation chest (only allow input) + filter? /cdonation
-      free chest (only allow output) + filter?
-      global access list
-    show notice if someone accessed your protected chest (flag)
-    show if chest is protected by who (perm)
-    MagnetContainer: collect Items around (config for min/max/default)
-    Redstone: Block Redstone interaction (doors only?)
-    AutoClose Doors/Fencegate etc.
-    allow Explosion to destroy protection?
-    Drop Transfer: Dropped items are teleported into selected chest
-      /droptransfer select
-      /droptransfer on
-      /droptransfer off
-      /droptransfer status
     lock beacon effects?
-    purge protections:
-     per user
-     not accessed for a long time
-     in selection
-mass protect e.g. railtracks
+    golden masterKey for Admin/Mod to open all chests (explode in hand if no perm)
+    masterKeys to open all chests of one user
+    multiKeys to open multiple chests
+    buttons to door-protection to open door for x-sec = autoclose time BUT deny redstone so ONLY that button can open the door/doubledoor
+    implement usage of separate access-level for in & out in containers
+    name a protection
      */
+
 }
 

@@ -717,6 +717,11 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&6%s&c is not a valid amount!", context.getString(1));
             return;
         }
+        if (amount < 0)
+        {
+            context.sendTranslated("&cSorry but robbing a bank is not allowed!");
+            return;
+        }
         boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_PAY_FORCE.isAuthorized(context.getSender());
         if (account.transactionTo(target, amount, force))
         {

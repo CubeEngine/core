@@ -91,10 +91,10 @@ public class MoneyCommand extends ContainerCommand
             }
             user = (User)context.getSender();
         }
-        Account account = this.getUserAccount(user);
+        UserAccount account = this.getUserAccount(user);
         if (account != null)
         {
-            if (!account.isHidden() || showHidden)
+            if (!account.isHidden() || showHidden || account.getName().equalsIgnoreCase(user.getName()))
             {
                 context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), manager.format(account.balance()));
                 return;
@@ -109,7 +109,6 @@ public class MoneyCommand extends ContainerCommand
              flags = @Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
-        // TODO show around player +5 -5
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
@@ -164,10 +163,15 @@ public class MoneyCommand extends ContainerCommand
     public void pay(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = manager.parse(amountString);
+        Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
+            return;
+        }
+        if (amount < 0)
+        {
+            context.sendTranslated("&cWhat are you trying there?");
             return;
         }
         String format = manager.format(amount);

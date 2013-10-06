@@ -51,14 +51,14 @@ public class AsyncCommandTest extends Test
                 {
                     Thread.sleep(1000 * 5L);
                 }
-                catch (InterruptedException e)
+                catch (InterruptedException ignored)
                 {}
                 sender.sendMessage("Delayed!");
                 try
                 {
                     Thread.sleep(1000 * 5L);
                 }
-                catch (InterruptedException e)
+                catch (InterruptedException ignored)
                 {}
             }
 

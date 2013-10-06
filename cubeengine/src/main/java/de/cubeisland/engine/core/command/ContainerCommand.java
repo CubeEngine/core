@@ -70,6 +70,11 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         this.delegation = new ChildDelegation(name, filter);
     }
 
+    public void delegateChild(MultiContextFilter filter)
+    {
+        this.delegation = new ChildDelegation(filter);
+    }
+
     public Class<? extends CubeCommand> getCommandType()
     {
         return this.subCommandType;
@@ -80,15 +85,27 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     {
         if (this.delegation != null)
         {
-            CubeCommand command = this.getChild(this.delegation.getChildName());
-            if (command != null)
+            if (this.delegation.isMultiDelegation())
             {
-                CommandContext childContext = command.getContextFactory().parse(command, context);
-                childContext = this.delegation.getContextFilter().filterContext(childContext);
-                return command.run(childContext);
+                CubeCommand command = this.getChild(this.delegation.getMultiContextFilter().getChild(context));
+                if (command != null)
+                {
+                    CommandContext childContext = command.getContextFactory().parse(command, context);
+                    childContext = this.delegation.getMultiContextFilter().filterContext(childContext, command.getName());
+                    return command.run(childContext);
+                }
             }
-
-            this.getModule().getLog().warn("Child delegation failed: child '{}' not found!", this.delegation.getChildName());
+            else
+            {
+                CubeCommand command = this.getChild(this.delegation.getChildName());
+                if (command != null)
+                {
+                    CommandContext childContext = command.getContextFactory().parse(command, context);
+                    childContext = this.delegation.getContextFilter().filterContext(childContext);
+                    return command.run(childContext);
+                }
+                this.getModule().getLog().warn("Child delegation failed: child '{}' not found!", this.delegation.getChildName());
+            }
         }
 
         this.help(new HelpContext(context));
@@ -113,13 +130,14 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         }
 
         context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/commands/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 
     private class ChildDelegation
     {
         private final String childName;
         private final ContextFilter contextFilter;
+        private final MultiContextFilter multiContextFilter;
 
         private ChildDelegation(String childName)
         {
@@ -136,6 +154,14 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         {
             this.childName = childName;
             this.contextFilter = contextFilter;
+            this.multiContextFilter = null;
+        }
+
+        private ChildDelegation(MultiContextFilter multiContextFilter)
+        {
+            this.childName = null;
+            this.contextFilter = null;
+            this.multiContextFilter = multiContextFilter;
         }
 
         public String getChildName()
@@ -147,10 +173,26 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         {
             return contextFilter;
         }
+
+        public MultiContextFilter getMultiContextFilter()
+        {
+            return multiContextFilter;
+        }
+
+        public boolean isMultiDelegation()
+        {
+            return this.multiContextFilter != null;
+        }
     }
 
     protected static interface ContextFilter
     {
         CommandContext filterContext(CommandContext context);
+    }
+
+    protected static interface MultiContextFilter
+    {
+        String getChild(CommandContext context);
+        CommandContext filterContext(CommandContext context, String child);
     }
 }

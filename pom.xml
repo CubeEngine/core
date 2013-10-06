@@ -20,7 +20,7 @@
     </repository>
     <snapshotRepository>
       <id>cubeisland-repo</id>
-      <name>Release</name>
+      <name>Snapshot</name>
       <url>http://nexus.cubeisland.de/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
@@ -37,7 +37,6 @@
     <module>shout</module>
     <module>roles</module>
     <module>rulebook</module>
-    <module>irc</module>
     <module>chat</module>
     <module>border</module>
     <module>signmarket</module>
@@ -47,7 +46,7 @@
     <module>spawn</module>
     <module>powersigns</module>
     <module>itemrepair</module>
-    <module>hideme</module>
+    <module>hide</module>
     <module>horselocker</module>
     <module>locker</module>
   </modules>

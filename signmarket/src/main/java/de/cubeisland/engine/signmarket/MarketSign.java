@@ -55,6 +55,9 @@ import static de.cubeisland.engine.core.util.InventoryUtil.*;
 import static de.cubeisland.engine.signmarket.storage.TableSignBlock.TABLE_SIGN_BLOCK;
 import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
 
+// TODO CE-420 shift-click to edit multiple signs at the same time
+// TODO CE-437 blacklist
+
 public class MarketSign
 {
     private final MarketSignFactory msFactory;
@@ -133,14 +136,15 @@ public class MarketSign
         ItemStack item = this.itemInfo.getItemStack().clone();
         item.setAmount(this.itemInfo.getStock().intValue());
         this.itemInfo.setStock(UInteger.valueOf(0)); // just to be sure no items are duped
-        if (this.module.getConfig().allowOverStackedOutOfSign)
+        if (item.getAmount() > item.getMaxStackSize() * 5400 // prevent lag from throwing huge amount of items out of the sign
+                                                             // amount of 100 DoubleChest full with given item
+            || this.module.getConfig().allowOverStackedOutOfSign)
         {
             this.getLocation().getWorld().dropItemNaturally(this.getLocation(), item);
             return;
         }
         for (ItemStack itemStack : splitIntoMaxItems(item, item.getMaxStackSize()))
         {
-            // TODO this could possibly cause lag when breaking user-signs with A LOT of items
             this.getLocation().getWorld().dropItemNaturally(this.getLocation(), itemStack);
         }
     }
@@ -300,7 +304,7 @@ public class MarketSign
             guard.submitInventory(this.module, true);
             return true;
         }
-        if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user))
+        if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user) || this.isOwner(user))
         {
             if (this.displayInventory == null)
             {
@@ -325,6 +329,7 @@ public class MarketSign
      */
     public void executeAction(User user, Action type)
     {
+        this.updateSignText();
         boolean sneaking = user.isSneaking();
         ItemStack itemInHand = user.getItemInHand();
         if (itemInHand == null)
@@ -769,7 +774,7 @@ public class MarketSign
     {
         if (!this.hasStock()) throw new NoStockException();
         if (!this.hasDemand()) throw new NoDemandException();
-        return this.getStock() >= this.getDemand();
+        return this.isFull() || this.getStock() >= this.getDemand();
     }
 
     public Integer getMaxItemAmount()
@@ -803,6 +808,25 @@ public class MarketSign
     @SuppressWarnings("deprecation")
     private void useSign(User user)
     {
+        if (this.hasType())
+        {
+            if (this.isTypeBuy())
+            {
+                if (!MarketSignPerm.USE_BUY.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to use buy-marketsigns!");
+                    return;
+                }
+            }
+            else
+            {
+                if (!MarketSignPerm.USE_SELL.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to use sell-marketsigns!");
+                    return;
+                }
+            }
+        }
         this.economy.createPlayerAccount(user.getName());
         if (this.isValidSign(user))
         {
@@ -865,6 +889,7 @@ public class MarketSign
                 user.sendTranslated("&cThe owner cannot afford the money to acquire your items!");
                 return;
             }
+            this.itemInfo.matchesItem(user.getItemInHand()); // adapt to item in hand (if it has repair-cost)
             if (getAmountOf(user.getInventory(), this.getItem()) < this.getAmount())
             {
                 user.sendTranslated("&cYou do not have enough items to sell!");
@@ -958,7 +983,8 @@ public class MarketSign
                     lines[0] = "&5&l";
                 }
             }
-            else if (!isValid ||(this.isTypeBuy() && this.isSoldOut()) || (!this.isTypeBuy() && this.hasDemand() && this.isSatisfied()))
+            else if (!isValid ||(this.isTypeBuy() && this.isSoldOut())
+                || (!this.isTypeBuy() && ((this.hasDemand() && this.isSatisfied()) || isFull())))
             {
                 lines[0] = "&4&l";
             }
@@ -1078,7 +1104,8 @@ public class MarketSign
                 }
                 else if (this.hasStock())
                 {
-                    if (this.isAdminSign() || (this.canAfford(this.getOwner()) && !this.isFull() && !(this.hasDemand() && this.isSatisfied())))
+                    if (this.isAdminSign() || (this.canAfford(this.getOwner()) &&
+                        !this.isFull() && !(this.hasDemand() && this.isSatisfied())))
                     {
                         if (this.hasDemand())
                         {
@@ -1289,6 +1316,10 @@ public class MarketSign
      */
     public double getPrice()
     {
+        if (this.blockInfo.getPrice() == null)
+        {
+            return 0;
+        }
         if (this.allowBuyIfEmpty())
         {
             return this.economy.convertLongToDouble((long)(this.blockInfo.getPrice().longValue() * this.module.getConfig().factorIfAdminSignIsEmpty));

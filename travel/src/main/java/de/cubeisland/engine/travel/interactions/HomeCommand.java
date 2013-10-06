@@ -118,32 +118,35 @@ public class HomeCommand extends ContainerCommand
                 if (context.getCore().getUserManager().findUser(context.getString(0)) != null)
                 {
                     User user = this.module.getCore().getUserManager().findUser(context.getString(0));
-                    Home home = this.tpManager.getHome(user, "home");
-                    if (home != null && home.canAccess(sender))
+                    if (!user.equals(context.getSender())) // user & sender are the same (home named like user)
                     {
-                        Location location = home.getLocation();
-                        if (location == null)
+                        Home home = this.tpManager.getHome(user, "home");
+                        if (home != null && home.canAccess(sender))
                         {
-                            context.sendTranslated("&cThis home is in a world that no longer exists!");
+                            Location location = home.getLocation();
+                            if (location == null)
+                            {
+                                context.sendTranslated("&cThis home is in a world that no longer exists!");
+                                return null;
+                            }
+                            sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
+                            if (home.getWelcomeMsg() != null)
+                            {
+                                context.sendMessage(home.getWelcomeMsg());
+                            }
+                            else
+                            {
+                                sender.sendTranslated("&aYou have been teleported to &6%s&a's default home",
+                                                      home.getOwnerName());
+                            }
                             return null;
                         }
-                        sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
-                        if (home.getWelcomeMsg() != null)
-                        {
-                            context.sendMessage(home.getWelcomeMsg());
-                        }
-                        else
-                        {
-                            sender.sendTranslated("&aYou have been teleported to &6%s&a's default home",
-                                                  home.getOwnerName());
-                        }
-                        return null;
                     }
                 }
                 Home home = this.tpManager.getHome(sender, context.getString(0).toLowerCase());
                 if (home == null)
                 {
-                    context.sendTranslated("&6%s &cis not a home", context.getString(0).toLowerCase());
+                    context.sendTranslated("&6%s&c is not a home", context.getString(0).toLowerCase());
                     return null;
                 }
 
@@ -252,7 +255,8 @@ public class HomeCommand extends ContainerCommand
              names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
              min = 1, max = -1, permDefault = PermDefault.TRUE,
              params = {@Param(names = {"home", "h"})},
-             usage = "[Welcome message goes here] <home [home name]>")
+             usage = "[Welcome message goes here] <home [home name] [-append]>",
+            flags = @Flag(longName = "append", name = "a"))
     public void setWelcomeMessage(ParameterizedContext context)
     {
         // TODO append the greeting message
@@ -265,7 +269,7 @@ public class HomeCommand extends ContainerCommand
                 home = this.tpManager.getHome(sender, context.getString("home"));
                 if (home == null || !home.isOwner(sender))
                 {
-                    sender.sendTranslated("&6%s&c is not a home you're owning!");
+                    sender.sendTranslated("&6%s&c is not a home you're owning!", context.getString("home"));
                     return;
                 }
             }
@@ -278,7 +282,14 @@ public class HomeCommand extends ContainerCommand
                     return;
                 }
             }
-            home.setWelcomeMsg(context.getStrings(0));
+            if (context.hasFlag("a"))
+            {
+                home.setWelcomeMsg(home.getWelcomeMsg() + context.getStrings(0));
+            }
+            else
+            {
+                home.setWelcomeMsg(context.getStrings(0));
+            }
             home.update();
             sender.sendTranslated("&aThe welcome message for the home is now set to: ");
             sender.sendMessage(home.getWelcomeMsg());
@@ -428,6 +439,7 @@ public class HomeCommand extends ContainerCommand
         user.sendTranslated("&eHere is a list of your homes: ");
         for (Home home : homes)
         {
+            if (home == null) continue; // TODO this should not even happen!!!
             if (home.isOwner(user))
             {
                 user.sendMessage("  &6" + home.getName());
@@ -677,13 +689,23 @@ public class HomeCommand extends ContainerCommand
             else if (this.module.getConfig().multipleHomes)
             {
                 home = this.tpManager.getHome(sender, context.getString(0));
-                //TODO can change this home? you could get a from another person with this!!!
             }
             else
             {
+                context.sendTranslated("&cMultiHomes is not enabled!");
                 return;
             }
-
+            if (home == null)
+            {
+                sender.sendTranslated("&cYou do not have a home named &6%s&c!",
+                                      context.getString(0) == null ? "home" : context.getString(0));
+                return;
+            }
+            if (!home.isOwner(sender))
+            {
+                context.sendTranslated("&cYou cannot make homes of other players public!");
+                return;
+            }
             if (!home.isPublic())
             {
                 context.sendTranslated("&cYour home is already private!");
@@ -714,13 +736,23 @@ public class HomeCommand extends ContainerCommand
             else if (this.module.getConfig().multipleHomes)
             {
                 home = this.tpManager.getHome(sender, context.getString(0));
-                //TODO can change this home? you could get a from another person with this!!!
             }
             else
             {
+                context.sendTranslated("&cMultiHomes is not enabled!");
                 return;
             }
-
+            if (home == null)
+            {
+                sender.sendTranslated("&cYou do not have a home named &6%s&c!",
+                                      context.getString(0) == null ? "home" : context.getString(0));
+                return;
+            }
+            if (!home.isOwner(sender))
+            {
+                context.sendTranslated("&cYou cannot make homes of other players public!");
+                return;
+            }
             if (home.isPublic())
             {
                 context.sendTranslated("&cYour home is already public!");

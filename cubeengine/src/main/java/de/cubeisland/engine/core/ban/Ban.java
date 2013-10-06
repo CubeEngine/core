@@ -143,11 +143,7 @@ public abstract class Ban
     public boolean isExpired()
     {
         Date expires = this.getExpires();
-        if (expires != null)
-        {
-            return expires.getTime() <= System.currentTimeMillis();
-        }
-        return false;
+        return expires != null && expires.getTime() <= System.currentTimeMillis();
     }
 
     /**

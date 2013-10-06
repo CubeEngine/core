@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,7 +44,6 @@ import gnu.trove.map.hash.TShortObjectHashMap;
  */
 public class MaterialMatcher
 {
-    //TODO rename item ; is it possible?
     private THashMap<String, ImmutableItemStack> items;
     private THashMap<Material, TShortObjectHashMap<String>> itemnames;
 

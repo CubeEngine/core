@@ -108,11 +108,7 @@ public class AsyncTaskQueue implements TaskQueue
     public boolean isRunning()
     {
         Future<?> future = this.exectorFuture.get();
-        if (future != null)
-        {
-            return !future.isDone();
-        }
-        return false;
+        return future != null && !future.isDone();
     }
 
     @Override

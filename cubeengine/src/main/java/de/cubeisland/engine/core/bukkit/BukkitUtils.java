@@ -22,26 +22,35 @@ import java.util.Locale;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-import net.minecraft.server.v1_6_R2.Item;
-import net.minecraft.server.v1_6_R2.RecipesFurnace;
-import net.minecraft.server.v1_6_R2.TileEntityFurnace;
-import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
+import net.minecraft.server.v1_6_R3.DedicatedPlayerList;
+import net.minecraft.server.v1_6_R3.DedicatedServer;
+import net.minecraft.server.v1_6_R3.EntityLiving;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.Item;
+import net.minecraft.server.v1_6_R3.MinecraftServer;
+import net.minecraft.server.v1_6_R3.PlayerInteractManager;
+import net.minecraft.server.v1_6_R3.RecipesFurnace;
+import net.minecraft.server.v1_6_R3.TileEntityFurnace;
+import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.user.User;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -61,7 +70,6 @@ public class BukkitUtils
         {
             entityPlayerLocaleField = EntityPlayer.class.getDeclaredField("locale");
             entityPlayerLocaleField.setAccessible(true);
-
         }
         catch (Exception ex)
         {
@@ -80,7 +88,7 @@ public class BukkitUtils
         return (serverClassName.startsWith("org.bukkit.craftbukkit.") && serverClassName.endsWith(".CraftServer"));
     }
 
-    public static Locale getLocaleFromSender(I18n i18n, CommandSender sender)
+    public static Locale getLocaleFromSender(CommandSender sender)
     {
         if (sender instanceof de.cubeisland.engine.core.command.CommandSender)
         {
@@ -89,7 +97,7 @@ public class BukkitUtils
         Locale locale = null;
         if (sender instanceof Player)
         {
-            locale = getLocaleFromUser(i18n, (Player)sender);
+            locale = getLocaleFromUser((Player)sender);
         }
         if (locale == null)
         {
@@ -104,18 +112,14 @@ public class BukkitUtils
      * @param player the Player instance
      * @return the locale string of the player
      */
-    private static Locale getLocaleFromUser(I18n i18n, Player player)
+    private static Locale getLocaleFromUser(Player player)
     {
         if (player.getClass() == CraftPlayer.class)
         {
             try
             {
                 final String localeString = (String)entityPlayerLocaleField.get(((CraftPlayer)player).getHandle());
-                final Language lang = i18n.getLanguage(I18n.stringToLocale(localeString));
-                if (lang != null)
-                {
-                    return lang.getLocale();
-                }
+                return I18n.stringToLocale(localeString);
             }
             catch (Exception ignored)
             {}
@@ -193,6 +197,8 @@ public class BukkitUtils
     {
         PacketHookInjector.shutdown();
 
+        dragonTarget = null;
+        ghastTarget = null;
         resetCommandLogging();
     }
 
@@ -230,14 +236,14 @@ public class BukkitUtils
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_6_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_6_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
     }
@@ -306,5 +312,63 @@ public class BukkitUtils
     public static boolean isANSISupported()
     {
         return ((CraftServer) Bukkit.getServer()).getReader().getTerminal().isAnsiSupported();
+    }
+
+
+    public static Player getOfflinePlayerAsPlayer(OfflinePlayer player)
+    {
+        MinecraftServer minecraftServer = DedicatedServer.getServer();
+
+        //Create and load the target EntityPlayer
+        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), player.getName(),
+                             new PlayerInteractManager(minecraftServer.getWorldServer(0)));
+        entityPlayer.getBukkitEntity().loadData();
+        return entityPlayer.getBukkitEntity();
+    }
+
+    private static Field dragonTarget;
+    private static Field ghastTarget;
+
+    public static LivingEntity getTarget(LivingEntity hunter) {
+        if (hunter == null) return null;
+        EntityLiving entity = ((CraftLivingEntity) hunter).getHandle();
+        if (entity == null) return null;
+        EntityLiving target;
+        try
+        {
+            if(hunter instanceof EnderDragon)
+            {
+                if (dragonTarget == null)
+                {
+                    dragonTarget = entity.getClass().getDeclaredField("bD");
+                    dragonTarget.setAccessible(true);
+                }
+                target = (EntityLiving)dragonTarget.get(entity);
+            }
+            else if (hunter instanceof Ghast)
+            {
+                if (ghastTarget == null)
+                {
+                    ghastTarget = entity.getClass().getDeclaredField("target");
+                    ghastTarget.setAccessible(true);
+                }
+                target = (EntityLiving)ghastTarget.get(entity);
+            }
+            else
+            {
+                return null;
+            }
+            if(target == null)
+            {
+                return null;
+            }
+            return (LivingEntity) target.getBukkitEntity();
+        }
+        catch (Exception ex)
+        {
+            CubeEngine.getCore().getLog().warn("Could not get Target of Ghast or Enderdragon");
+            CubeEngine.getCore().getLog().debug(ex.getLocalizedMessage(), ex);
+            return null;
+        }
     }
 }

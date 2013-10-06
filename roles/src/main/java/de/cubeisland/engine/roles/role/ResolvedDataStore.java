@@ -81,16 +81,13 @@ public class ResolvedDataStore
         this.permissions = new THashMap<>();
         for (Entry<String, Boolean> entry : perms.entrySet())
         {
-            if (entry.getKey().endsWith("*"))
+            Map<String, Boolean> subperms = new HashMap<>();
+            this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
+            for (Entry<String, Boolean> subEntry : subperms.entrySet())
             {
-                Map<String, Boolean> subperms = new HashMap<>();
-                this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
-                for (Entry<String, Boolean> subEntry : subperms.entrySet())
-                {
-                    this.permissions.put(subEntry.getKey(), new ResolvedPermission(rawDataStore,subEntry.getKey(),subEntry.getValue()));
-                }
+                this.permissions.put(subEntry.getKey(), new ResolvedPermission(rawDataStore,subEntry.getKey(),subEntry.getValue(), entry.getKey()));
             }
-            this.permissions.put(entry.getKey(), new ResolvedPermission(rawDataStore,entry.getKey(),entry.getValue()));
+            this.permissions.put(entry.getKey(), new ResolvedPermission(rawDataStore,entry.getKey(),entry.getValue(), null));
         }
         this.metadata = new THashMap<>();
         for (Entry<String, String> entry : metadata.entrySet())
@@ -147,16 +144,13 @@ public class ResolvedDataStore
         this.calculate(assignedRoles);
         for (Entry<String, Boolean> entry : temporary.getRawPermissions().entrySet())
         {
-            if (entry.getKey().endsWith("*"))
+            Map<String, Boolean> subperms = new HashMap<>();
+            this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
+            for (Entry<String, Boolean> subEntry : subperms.entrySet())
             {
-                Map<String, Boolean> subperms = new HashMap<>();
-                this.resolveBukkitPermission(entry.getKey(), entry.getValue(), subperms);
-                for (Entry<String, Boolean> subEntry : subperms.entrySet())
-                {
-                    this.permissions.put(subEntry.getKey(), new ResolvedPermission(temporary,subEntry.getKey(),subEntry.getValue()));
-                }
+                this.permissions.put(subEntry.getKey(), new ResolvedPermission(temporary,subEntry.getKey(),subEntry.getValue(), entry.getKey()));
             }
-            this.permissions.put(entry.getKey(), new ResolvedPermission(temporary,entry.getKey(),entry.getValue()));
+            this.permissions.put(entry.getKey(), new ResolvedPermission(temporary,entry.getKey(),entry.getValue(), null));
         }
         for (Entry<String, String> entry : temporary.getRawMetadata().entrySet())
         {
@@ -172,7 +166,7 @@ public class ResolvedDataStore
     private void resolveBukkitPermission(String name, boolean set, Map<String, Boolean> resolvedPermissions)
     {
         Permission bukkitPerm = Bukkit.getPluginManager().getPermission(name);
-        if (bukkitPerm == null)
+        if (bukkitPerm == null) // not registered permission (probably a cubeengine * perm)
         {
             if (name.endsWith(".*"))
             {
@@ -228,7 +222,7 @@ public class ResolvedDataStore
             // remove instances in parents
             for (Role parentRole : this.assignedRoles)
             {
-                parentRole.resolvedData.dependentData.remove(this.rawDataStore);
+                parentRole.resolvedData.dependentData.remove(((Role)this.rawDataStore).resolvedData);
             }
             // remove from config in children
             for (ResolvedDataStore subData : this.dependentData)

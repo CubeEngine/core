@@ -36,12 +36,12 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_LOCK;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class TableLockLocations extends TableImpl<LockLocationModel>implements TableCreator<LockLocationModel>
 {
-        public static TableLockLocations TABLE_GUARD_LOCATION;
+        public static TableLockLocations TABLE_LOCK_LOCATION;
 
         private TableLockLocations(String prefix)
         {
@@ -50,14 +50,14 @@ public class TableLockLocations extends TableImpl<LockLocationModel>implements T
             PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
             UNIQUE_LOCATION = Keys.uniqueKey(this, this.WORLD_ID, this.X, this.Y, this.Z);
             FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD_ID);
-            FOREIGN_GUARD = Keys.foreignKey(TABLE_GUARD.PRIMARY_KEY, this, this.GUARD_ID);
+            FOREIGN_GUARD = Keys.foreignKey(TABLE_LOCK.PRIMARY_KEY, this, this.GUARD_ID);
         }
 
     public static TableLockLocations initTable(Database database)
     {
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_GUARD_LOCATION = new TableLockLocations(config.tablePrefix);
-        return TABLE_GUARD_LOCATION;
+        TABLE_LOCK_LOCATION = new TableLockLocations(config.tablePrefix);
+        return TABLE_LOCK_LOCATION;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class TableLockLocations extends TableImpl<LockLocationModel>implements T
                                         "KEY `i_chunk` (`chunkX`, `chunkZ`),\n" +
                                         "UNIQUE KEY (`world_id`, `x`, `y`, `z`),\n" +
                                         "FOREIGN KEY f_world (`world_id`) REFERENCES " + TABLE_WORLD.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY f_guard (`lock_id`) REFERENCES " + TABLE_GUARD.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
+                                        "FOREIGN KEY f_guard (`lock_id`) REFERENCES " + TABLE_LOCK.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
     }

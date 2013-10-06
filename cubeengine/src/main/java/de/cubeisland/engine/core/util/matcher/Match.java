@@ -28,6 +28,8 @@ public class Match
     private ProfessionMatcher professionMatcher;
     private EntityMatcher entityMatcher;
     private StringMatcher stringMatcher;
+    private TimeMatcher timeMatcher;
+    private WorldMatcher worldMatcher;
 
     public Match()
     {
@@ -37,7 +39,8 @@ public class Match
         this.professionMatcher = new ProfessionMatcher();
         this.entityMatcher = new EntityMatcher();
         this.stringMatcher = new StringMatcher();
-
+        this.timeMatcher = new TimeMatcher();
+        this.worldMatcher = new WorldMatcher();
     }
 
     public static MaterialMatcher material()
@@ -68,5 +71,15 @@ public class Match
     public static StringMatcher string()
     {
         return CubeEngine.getCore().getMatcherManager().stringMatcher;
+    }
+
+    public static TimeMatcher time()
+    {
+        return CubeEngine.getCore().getMatcherManager().timeMatcher;
+    }
+
+    public static WorldMatcher worlds()
+    {
+        return CubeEngine.getCore().getMatcherManager().worldMatcher;
     }
 }

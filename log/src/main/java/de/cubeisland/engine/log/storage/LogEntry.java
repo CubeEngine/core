@@ -105,11 +105,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     public User getCauserUser()
     {
-        if (this.hasCauserUser())
-        {
-            return this.um.getUser(this.getCauser());
-        }
-        return null;
+        return this.um.getUser(this.getCauser());
     }
 
     public World getWorld()
@@ -199,7 +195,16 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     public boolean hasCauserUser()
     {
-        return getCauser() > 0;
+        if (getCauser() > 0)
+        {
+            if (this.getCauserUser() == null)
+            {
+                this.module.getLog().warn("LogEntry with invalid user!\n{}", this);
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public boolean hasReplacedBlock()

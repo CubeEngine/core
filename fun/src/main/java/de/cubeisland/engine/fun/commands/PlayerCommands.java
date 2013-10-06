@@ -275,7 +275,7 @@ public class PlayerCommands
                 context.sendTranslated("&cThe damage value has to be a number from 1 to 20");
                 return;
             }
-            user.setFireTicks(20 * context.getParam("fireticks", Integer.valueOf(0)));
+            user.setFireTicks(20 * context.getParam("fireticks", 0));
         }
         else
         {

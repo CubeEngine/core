@@ -142,7 +142,7 @@ public class BukkitPermissionManager implements PermissionManager
     }
 
     @Override
-    public org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles)
+    public org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundle)
     {
         assert CubeEngine.isMainThread(): "Permissions may only be registered from the main thread!";
         assert module != null: "The module must not be null!";
@@ -175,18 +175,18 @@ public class BukkitPermissionManager implements PermissionManager
             org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parent);
             permission.addParent(parentPerm, true);
         }
-        if (bundles != null) // register the known bundles
+        if (bundle != null) // register the known bundles
         {
-            for (String bundle : bundles)
+            for (String bundled : bundle)
             {
-                org.bukkit.permissions.Permission bundlePerm = this.pm.getPermission(bundle);
-                if (bundlePerm == null)
+                org.bukkit.permissions.Permission bundledPerm = this.pm.getPermission(bundled);
+                if (bundledPerm == null)
                 {
-                    bundlePerm = new org.bukkit.permissions.Permission(bundle, PermissionDefault.FALSE);
-                    this.registerBukkitPermission(bundlePerm);
+                    bundledPerm = new org.bukkit.permissions.Permission(bundled, PermissionDefault.FALSE);
+                    this.registerBukkitPermission(bundledPerm);
                 }
-                modulePermissions.add(bundle);
-                permission.addParent(bundlePerm, true);
+                modulePermissions.add(bundled);
+                bundledPerm.addParent(permission, true);
             }
         }
         return permission;
@@ -209,8 +209,7 @@ public class BukkitPermissionManager implements PermissionManager
             }
         }
         org.bukkit.permissions.Permission registeredPerm =
-            this.registerPermission(module, permission.getName(), permission.getDefault(),
-                                    parent, bundles);
+            this.registerPermission(module, permission.getName(), permission.getDefault(), parent, bundles);
         // register all known abstract parents...
         Permission parentpermission;
         while (permission.hasParent())
@@ -223,7 +222,6 @@ public class BukkitPermissionManager implements PermissionManager
             // next parent-permission
             registeredPerm = parentPerm;
             permission = parentpermission;
-            //TODO detect circular depending permissions and throw Exception for it
         }
     }
 

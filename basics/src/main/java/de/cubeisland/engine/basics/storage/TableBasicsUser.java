@@ -63,7 +63,7 @@ public class TableBasicsUser extends TableImpl<BasicsUserEntity> implements Tabl
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                         "`key` int(10) unsigned NOT NULL,\n" +
-                                        "`muted` timestamp NULL DEFAULT NULL,\n" +
+                                        "`muted` datetime NULL DEFAULT NULL,\n" +
                                         "`godMode` tinyint(1) NOT NULL,\n" +
                                         "PRIMARY KEY (`key`)," +
                                         "FOREIGN KEY f_user (`key`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +

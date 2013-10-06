@@ -17,22 +17,21 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.config.InvalidConfigurationException;
 import de.cubeisland.engine.core.config.node.IntNode;
 import de.cubeisland.engine.core.config.node.ListNode;
 import de.cubeisland.engine.core.config.node.MapNode;
 import de.cubeisland.engine.core.config.node.Node;
 import de.cubeisland.engine.core.config.node.NullNode;
 import de.cubeisland.engine.core.config.node.StringNode;
-
 import de.cubeisland.engine.core.util.convert.Convert;
-
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
  * This class acts as a codec for yaml-configurations.
@@ -56,31 +55,38 @@ public class YamlCodec extends MultiConfigurationCodec
     @SuppressWarnings("unchecked")
     public void loadFromReader(CodecContainer container, Reader reader)
     {
-        if (reader == null)
+        try
         {
-            container.values = MapNode.emptyMap(); // InputStream null -> config was not existent
-            return;
-        }
-        Map<Object, Object> map = (Map<Object, Object>)yaml.load(reader);
-        if (map == null)
-        {
-            container.values = MapNode.emptyMap(); // loadValues null -> config exists but was empty
-        }
-        else
-        {
-            container.values = (MapNode)Convert.wrapIntoNode(map);
-            Node revisionNode = container.values.getNodeAt("revision", PATH_SEPARATOR);
-            if (!(revisionNode instanceof NullNode))
+            if (reader == null)
             {
-                if (revisionNode instanceof IntNode)
+                container.values = MapNode.emptyMap(); // InputStream null -> config was not existent
+                return;
+            }
+            Map<Object, Object> map = (Map<Object, Object>)yaml.load(reader);
+            if (map == null)
+            {
+                container.values = MapNode.emptyMap(); // loadValues null -> config exists but was empty
+            }
+            else
+            {
+                container.values = (MapNode)Convert.wrapIntoNode(map);
+                Node revisionNode = container.values.getNodeAt("revision", PATH_SEPARATOR);
+                if (!(revisionNode instanceof NullNode))
                 {
-                    container.revision = ((IntNode)revisionNode).getValue();
-                }
-                else
-                {
-                    CubeEngine.getLog().warn("Invalid revision in a configuration! Value: {}", String.valueOf(revisionNode));
+                    if (revisionNode instanceof IntNode)
+                    {
+                        container.revision = ((IntNode)revisionNode).getValue();
+                    }
+                    else
+                    {
+                        CubeEngine.getLog().warn("Invalid revision in a configuration! Value: {}", String.valueOf(revisionNode));
+                    }
                 }
             }
+        }
+        catch (ReaderException ex)
+        {
+            throw new InvalidConfigurationException("Failed to parse the YAML configuration. Try encoding it as UTF-8 or validate on yamllint.com", ex);
         }
     }
 
@@ -137,7 +143,7 @@ public class YamlCodec extends MultiConfigurationCodec
             {
                 if (((ListNode)value).isEmpty())
                 {
-                    sb.append("[]").toString();
+                    sb.append("[]");
                 }
                 for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
                 {
@@ -203,7 +209,7 @@ public class YamlCodec extends MultiConfigurationCodec
             {
                 sb.append(this.offset(off)); // Map in collection first does not get offset
             }
-            sb.append(values.getOriginalKey(Node.getSubKey(path, PATH_SEPARATOR))).append(": ");
+            sb.append(values.getOriginalKey(entry.getKey())).append(": ");
             sb.append(this.convertValue(container, entry.getValue(), off, false));
 
         }

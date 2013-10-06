@@ -23,7 +23,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import de.cubeisland.engine.core.task.ListenableFuture;
 import org.jooq.DSLContext;
+import org.jooq.Query;
+import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.ResultQuery;
 
 /**
  * The Database interface.
@@ -127,4 +132,8 @@ public interface Database
     public DatabaseConfiguration getDatabaseConfig();
 
     DSLContext getDSL();
+
+    ListenableFuture<Integer> executeLater(Query query);
+
+    <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query);
 }

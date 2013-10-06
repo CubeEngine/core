@@ -114,7 +114,6 @@ public class PotionSplash extends SimpleLogActionType
                 }
             }
         }
-        this.logModule.getLog().debug(json.toString());
         return json.toString();
     }
 
@@ -136,17 +135,34 @@ public class PotionSplash extends SimpleLogActionType
         {
             amountAffected = logEntry.getAdditional().get("amount").asInt();
         }
-        user.sendTranslated("%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
-            .getCauserUser().getName(), effects, amountAffected, loc);
+        if (logEntry.hasAttached())
+        {
+            for (LogEntry entry : logEntry.getAttached())
+            {
+                if (entry.getAdditional().get("amount") != null)
+                {
+                    amountAffected += entry.getAdditional().get("amount").asInt();
+                }
+            }
+            user.sendTranslated("%s&2%s&a used &6%d splash potions &a&f(%s&f)&a onto &6%d&a entities in total%s",
+                            time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1 ,
+                            effects, amountAffected, loc);
+        }
+        else
+        {
+            user.sendTranslated("%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
+                .getCauserUser().getName(), effects, amountAffected, loc);
+        }
     }
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        //TODO
-        return false;
+        if (!super.isSimilar(logEntry, other) || logEntry.getAdditional() == null || other.getAdditional() == null) return false;
+        JsonNode effects = logEntry.getAdditional().get("effects");
+        JsonNode effectsOther = other.getAdditional().get("effects");
+        return effects != null && effectsOther != null && effects.equals(effectsOther);
     }
-
 
     @Override
     public boolean isActive(World world)

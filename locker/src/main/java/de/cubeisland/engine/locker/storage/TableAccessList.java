@@ -36,7 +36,7 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_GUARD;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_LOCK;
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 public class TableAccessList extends TableImpl<AccessListModel> implements TableCreator<AccessListModel>
@@ -49,8 +49,10 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
         IDENTITY = Keys.identity(this, this.ID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
         UNIQUE_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.LOCK_ID);
+        UNIQUE_G_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.OWNER_ID);
         FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USER_ID);
-        FOREIGN_GUARD = Keys.foreignKey(TABLE_GUARD.PRIMARY_KEY, this, this.LOCK_ID);
+        FOREIGN_GUARD = Keys.foreignKey(TABLE_LOCK.PRIMARY_KEY, this, this.LOCK_ID);
+        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.OWNER_ID);
     }
 
     public static TableAccessList initTable(Database database)
@@ -68,10 +70,13 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
                                         "`user_id` int(10) unsigned NOT NULL,\n" +
                                         "`lock_id` int(10) unsigned DEFAULT NULL,\n" +
                                         "`level` smallint NOT NULL,\n" +
+                                        "`owner_id` int(10) unsigned DEFAULT NULL,\n" +
                                         "PRIMARY KEY (`id`),\n" +
                                         "UNIQUE KEY (`user_id`, `lock_id`),\n" +
+                                        "UNIQUE KEY (`user_id`, `owner_id`),\n" +
                                         "FOREIGN KEY f_user (`user_id`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY f_guard (`lock_id`) REFERENCES " + TABLE_GUARD.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
+                                        "FOREIGN KEY f_guard (`lock_id`) REFERENCES " + TABLE_LOCK.getName() + " (`id`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                        "FOREIGN KEY f_global_user (`owner_id`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
     }
@@ -87,14 +92,18 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
     public final Identity<AccessListModel, UInteger> IDENTITY;
     public final UniqueKey<AccessListModel> PRIMARY_KEY;
     public final UniqueKey<AccessListModel> UNIQUE_ACCESS;
+    public final UniqueKey<AccessListModel> UNIQUE_G_ACCESS;
     public final ForeignKey<AccessListModel, UserEntity> FOREIGN_USER;
     public final ForeignKey<AccessListModel, LockModel> FOREIGN_GUARD;
+    public final ForeignKey<AccessListModel, UserEntity> FOREIGN_OWNER;
 
     public final TableField<AccessListModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AccessListModel, UInteger> USER_ID = createField("user_id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AccessListModel, UInteger> LOCK_ID = createField("lock_id", SQLDataType.INTEGERUNSIGNED, this);
     // BitMask granting the user access to a protection (this is NOT restricting) (if ACCESS_PUT is not set on a donation chest it does not matter)
     public final TableField<AccessListModel, Short> LEVEL = createField("level", SQLDataType.SMALLINT, this);
+
+    public final TableField<AccessListModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
 
 
     @Override
@@ -112,12 +121,12 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
     @Override
     public List<UniqueKey<AccessListModel>> getKeys()
     {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_ACCESS);
+        return Arrays.asList(PRIMARY_KEY, UNIQUE_ACCESS, UNIQUE_G_ACCESS);
     }
 
     @Override
     public List<ForeignKey<AccessListModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccessListModel, ?>>asList(FOREIGN_USER, FOREIGN_GUARD);
+        return Arrays.<ForeignKey<AccessListModel, ?>>asList(FOREIGN_USER, FOREIGN_GUARD, FOREIGN_OWNER);
     }
 
     @Override

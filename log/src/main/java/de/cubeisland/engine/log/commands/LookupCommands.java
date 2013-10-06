@@ -25,11 +25,13 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.completer.MaterialListCompleter;
+import de.cubeisland.engine.core.command.parameterized.completer.PlayerListCompleter;
+import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -56,8 +58,15 @@ public class LookupCommands
         this.actionTypeManager = module.getActionTypeManager();
     }
 
-    private void params(CommandContext context)
+    private void params(ParameterizedContext context)
     {
+        if (context.hasParam("params"))
+        {
+            String param = context.getString("params");
+            context.sendMessage("NOT YET DONE");
+            // TODO show description
+            return;
+        }
         context.sendTranslated("&6Registered ActionTypes:");
         context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
         context.sendMessage("");
@@ -93,37 +102,40 @@ public class LookupCommands
     }
 
     @Command(
-        desc = "Queries a lookup in the database\n    Show availiable parameters with &6/lookup params",
-        usage = "[show] [parameters]",
+        desc = "Queries a lookup in the database\n    " +
+            "Show availiable parameters with &6/lookup params",
+        usage = "[page <page>] [parameters]",
     flags = {
         @Flag(longName = "coordinates", name = "coords"),
         @Flag(longName = "detailed", name = "det"),
         @Flag(longName = "nodate", name = "nd"),
-        @Flag(longName = "descending", name = "desc") //sort in descending order (default ascending) //TODO implement
+        @Flag(longName = "descending", name = "desc")
     },
     params = {
         @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
         @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
         @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-        @Param(names = {"block","b"}),
+        @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
         @Param(names = {"entity","e"}),
         @Param(names = {"since","time","t"}), // if not given default since 3d
         @Param(names = {"before"}),
-        @Param(names = {"world","w","in"}, type = World.class),
+        @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
 
         @Param(names = {"limit","pagelimit"},type = Integer.class),
         @Param(names = {"page"},type = Integer.class),
+
+        @Param(names = "params", completer = ActionTypeCompleter.class)
     }, min = 0, max = 1)
     // TODO param for filter / chat / command / signtexts
     public void lookup(ParameterizedContext context)
     {
-        if (context.hasArg(0) && context.getString(0).equalsIgnoreCase("params"))
+        if ((context.hasArg(0) && context.getString(0).equalsIgnoreCase("params"))
+            || context.hasParam("params"))
         {
             this.params(context);
         }
         else if (context.getSender() instanceof User)
         {
-            // TODO /lookup show
             if (context.getParams().isEmpty())
             {
                 try
@@ -170,11 +182,11 @@ public class LookupCommands
             @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
             @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
             @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-            @Param(names = {"block","b"}),
+            @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
             @Param(names = {"entity","e"}),
             @Param(names = {"since","time","t"}), // if not given default since 3d
             @Param(names = {"before"}),
-            @Param(names = {"world","w","in"}, type = World.class),
+            @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
         }, min = 0, max = 1)
     public void rollback(ParameterizedContext context)
     {
@@ -289,7 +301,7 @@ public class LookupCommands
                 }
                 else
                 {
-                    user.sendTranslated("&eUse this selection wand."); // TODO give selectionwand for CE
+                    user.sendTranslated("&eUse this selection wand.");
                     LogCommands.giveSelectionTool(user);
                 }
                 return false;
@@ -536,6 +548,5 @@ public class LookupCommands
         }
         return true;
     }
-
-
 }
+

@@ -20,7 +20,6 @@ package de.cubeisland.engine.basics.command.moderation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -29,6 +28,9 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -36,9 +38,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -167,7 +166,7 @@ public class ItemCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            boolean unlimited = false;
+            boolean unlimited;
             if (context.hasArg(0))
             {
                 if (context.getString(0).equalsIgnoreCase("on"))

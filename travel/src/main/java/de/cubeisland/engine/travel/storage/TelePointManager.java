@@ -53,8 +53,8 @@ public class TelePointManager
     {
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.homes = new HashMap<String, Home>();
-        this.warps = new HashMap<String, Warp>();
+        this.homes = new HashMap<>();
+        this.warps = new HashMap<>();
     }
 
     /**

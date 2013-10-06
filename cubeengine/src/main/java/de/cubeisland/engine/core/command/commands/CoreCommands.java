@@ -91,7 +91,7 @@ public class CoreCommands extends ContainerCommand
     public void setPassword(CommandContext context)
     {
         CommandSender sender = context.getSender();
-        User target = null;
+        User target;
         if (context.hasArg(1))
         {
             target = context.getUser(1);

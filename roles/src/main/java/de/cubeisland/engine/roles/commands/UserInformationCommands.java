@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RawDataStore;
@@ -98,7 +99,16 @@ public class UserInformationCommands extends UserCommandHelper
         }
         if (resolvedPermission == null)
         {
-            context.sendTranslated("&cPermission not declared!");
+
+            PermDefault defaultFor = this.module.getCore().getPermissionManager().getDefaultFor(permission);
+            if (defaultFor == null)
+            {
+                context.sendTranslated("&cPermission &6%s&c neither set nor registered!", permission);
+            }
+            else
+            {
+                context.sendTranslated("&cPermission &6%s&c not set but default is: &6%s&c!", permission, defaultFor.name());
+            }
             return;
         }
         context.sendTranslated((resolvedPermission.isSet()
@@ -108,24 +118,9 @@ public class UserInformationCommands extends UserCommandHelper
 
         // Display origin
         RawDataStore store = resolvedPermission.getOrigin();
-        if (!store.getRawPermissions().containsKey(permission))
+        if (resolvedPermission.getOriginPermission() != null) // indirect permission
         {
-            while (!permission.equals("*"))
-            {
-                if (permission.endsWith("*"))
-                {
-                    permission = permission.substring(0, permission.lastIndexOf("."));
-                }
-                permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
-
-                if (store.getRawPermissions().containsKey(permission))
-                {
-                    if (store.getRawPermissions().get(permission) == resolvedPermission.isSet())
-                    {
-                        break;
-                    }
-                }
-            }
+            permission = resolvedPermission.getOriginPermission();
         }
         context.sendTranslated("&ePermission inherited from:");
         if (user.getName().equals(store.getName()))

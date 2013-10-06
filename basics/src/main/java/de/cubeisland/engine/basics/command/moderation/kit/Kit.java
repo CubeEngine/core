@@ -25,11 +25,13 @@ import java.util.Set;
 
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -38,9 +40,6 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryUtil;
 import de.cubeisland.engine.core.util.time.Duration;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 
@@ -53,6 +52,12 @@ public class Kit
 {
     private String name;
     private List<KitItem> items;
+
+    public boolean isGiveKitOnFirstJoin()
+    {
+        return giveKitOnFirstJoin;
+    }
+
     private boolean giveKitOnFirstJoin;
     private int limitUsagePerPlayer;
     private long limitUsageDelay;
@@ -85,8 +90,6 @@ public class Kit
 
     public boolean give(CommandSender sender, User user, boolean force)
     {
-        //TODO give kit to all players online (not here)
-        //TODO starterKit on login (not here)
         if (!force && this.getPermission() != null)
         {
             if (!this.getPermission().isAuthorized(sender))
@@ -95,26 +98,33 @@ public class Kit
                 throw new PermissionDeniedException();
             }
         }
-        Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
-            where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
-        if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
+        if (!force)
         {
-            sender.sendTranslated("&cKit-limit reached.");
-            throw new PermissionDeniedException();
-        }
-        if (limitUsageDelay != 0)
-        {
-            Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
-            if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
+            if (limitUsagePerPlayer > 0)
             {
-                sender.sendTranslated("&eThis kit not available at the moment. &aTry again later!");
-                throw new PermissionDeniedException();
+                Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
+                    where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
+                if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
+                {
+                    sender.sendTranslated("&cKit-limit reached.");
+                    throw new PermissionDeniedException();
+                }
+            }
+            if (limitUsageDelay != 0)
+            {
+                Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
+                if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
+                {
+                    sender.sendTranslated("&eThis kit not available at the moment. &aTry again later!");
+                    throw new PermissionDeniedException();
+                }
             }
         }
         List<ItemStack> list = this.getItems();
         if (InventoryUtil.giveItemsToUser(user, list.toArray(new ItemStack[list.size()])))
         {
-            // TODO save new kitamount in db!
+            this.dsl.insertInto(TABLE_KITS,TABLE_KITS.KITNAME, TABLE_KITS.USERID, TABLE_KITS.AMOUNT).values(this.getKitName(), user.getEntity().getKey(), 1)
+                    .onDuplicateKeyUpdate().set(TABLE_KITS.AMOUNT, TABLE_KITS.AMOUNT.add(1)).execute();
             this.executeCommands(user);
             if (limitUsageDelay != 0)
             {
@@ -130,10 +140,11 @@ public class Kit
         if (this.commands != null && !this.commands.isEmpty())
         {
             CommandManager cm = user.getCore().getCommandManager();
+            KitCommandSender kitCommandSender = new KitCommandSender(user);
             for (String cmd : commands)
             {
                 cmd = cmd.replace("{PLAYER}", user.getName());
-                cm.runCommand(new KitCommandSender(user), cmd);
+                cm.runCommand(kitCommandSender, cmd);
             }
         }
     }
@@ -153,14 +164,7 @@ public class Kit
         List<ItemStack> list = new ArrayList<>();
         for (KitItem kitItem : this.items)
         {
-            ItemStack item = new ItemStack(kitItem.mat, kitItem.amount, kitItem.dura);
-            if (kitItem.customName != null)
-            {
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(kitItem.customName);
-                item.setItemMeta(meta);
-            }
-            list.add(item);
+            list.add(kitItem.getItemStack());
         }
         return list;
     }
@@ -184,7 +188,7 @@ public class Kit
 
     private static class KitCommandSender implements CommandSender
     {
-        private static final String NAME_PREFIX = "Kit:";
+        private static final String NAME_PREFIX = "Kit | ";
         private final User user;
 
         public KitCommandSender(User user)

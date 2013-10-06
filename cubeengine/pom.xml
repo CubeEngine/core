@@ -90,19 +90,6 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.mcstats.bukkit</groupId>
-      <artifactId>metrics</artifactId>
-      <version>R6</version>
-      <type>jar</type>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.bukkit</groupId>
-          <artifactId>bukkit</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <!-- Logback dependencies-->
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -139,9 +126,9 @@
       <version>3.1.0</version>
     </dependency>
     <dependency>
-      <groupId>net.snaq</groupId>
-      <artifactId>dbpool</artifactId>
-      <version>5.1</version>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.9.1.2</version>
     </dependency>
   </dependencies>
 

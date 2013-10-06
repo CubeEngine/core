@@ -205,7 +205,6 @@ public class FileUtil
     public static void copy(ReadableByteChannel in, WritableByteChannel out) throws IOException
     {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 4);
-        // TODO test if this works
         while (in.read(buffer) != -1)
         {
             out.write(buffer);

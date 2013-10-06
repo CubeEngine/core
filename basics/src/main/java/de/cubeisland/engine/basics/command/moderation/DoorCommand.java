@@ -60,7 +60,7 @@ public class DoorCommand
     )
     public void doors(ParameterizedContext context)
     {
-        boolean open = false;
+        boolean open;
         int radius = context.getArg(1, Integer.class, 0);
         Vector3 vector;
         World world;

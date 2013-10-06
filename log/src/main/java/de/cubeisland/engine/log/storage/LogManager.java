@@ -80,36 +80,6 @@ public class LogManager
         this.worldConfigs.put(world, config);
         return config;
     }
-// TODO DATABASE
-    /*
-    private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
-    {
-        if (world != null)
-        {
-            builder.field("world_id").isEqual().value(this.module.getCore().getWorldManager().getWorldId(world));
-            if (loc1 != null)
-            {
-                if (loc2 == null) // single location
-                {
-                    builder.and().field("x").isEqual().value(loc1.getBlockX()).and().field("y").isEqual()
-                           .value(loc1.getBlockY()).and().field("z").isEqual().value(loc1.getBlockZ());
-                }
-                else
-                // range of locations
-                {
-                    builder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX()).and().field("y")
-                           .between(loc1.getBlockY(), loc2.getBlockY()).and().field("z")
-                           .between(loc1.getBlockZ(), loc2.getBlockZ());
-                }
-            }
-            builder.and();
-        }
-    }
-    private void buildDates(SelectBuilder builder, Timestamp fromDate, Timestamp toDate)
-    {
-        builder.beginSub().field("date").between(fromDate, toDate).endSub();
-    }
-    */
 
     public void disable()
     {

@@ -44,6 +44,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LogAttachment;
@@ -52,10 +53,6 @@ import de.cubeisland.engine.log.action.logaction.ItemDrop;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.ItemData;
 import de.cubeisland.engine.log.storage.LogEntry;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import static org.bukkit.event.entity.EntityDamageEvent.DamageCause.PROJECTILE;
 
 /**
  * Container-ActionType for kills
@@ -140,7 +137,7 @@ public class KillActionType extends ActionTypeContainer
         if (dmgEvent instanceof EntityDamageByEntityEvent)
         {
             Entity damager = ((EntityDamageByEntityEvent)dmgEvent).getDamager();
-            if (dmgEvent.getCause().equals(PROJECTILE) && damager instanceof Projectile)
+            if (damager instanceof Projectile)
             {
                 causer = ((Projectile) damager).getShooter();
                 if (causer instanceof Player)
@@ -169,9 +166,12 @@ public class KillActionType extends ActionTypeContainer
                 }
                 else // Projectile shot by Dispenser
                 {
-                    this.logModule.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
-                    this.logDeathDrops(event);
-                    return;
+                    if (false)
+                    {
+                        this.logModule.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
+                        this.logDeathDrops(event);
+                        return;
+                    }
                 }
             }
             else
@@ -215,8 +215,6 @@ public class KillActionType extends ActionTypeContainer
         actionType.logSimple(location,causer,killed,additionalData);
         this.logDeathDrops(event);
     }
-
-
 
     static void showSubActionLogEntry(User user, LogEntry logEntry, String time, String loc)
     {

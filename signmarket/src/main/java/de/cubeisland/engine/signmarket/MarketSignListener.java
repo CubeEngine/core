@@ -21,11 +21,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Sign;
 import org.bukkit.util.BlockIterator;
@@ -55,21 +58,43 @@ public class MarketSignListener implements Listener
             event.setCancelled(true);
             return;
         }
+        this.handleBlock(event.getBlock(), event);
+    }
+
+    private boolean handleBlock(Block block, Cancellable event)
+    {
         for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
         {
-            Block relative = event.getBlock().getRelative(blockFace);
+            Block relative = block.getRelative(blockFace);
             if (relative.getState().getData() instanceof Sign)
             {
                 if (this.module.getMarketSignFactory().getSignAt(relative.getLocation()) != null)
                 {
                     Block originalBlock = relative.getRelative(((Sign)relative.getState().getData()).getAttachedFace());
-                    if (originalBlock.equals(event.getBlock()))
+                    if (originalBlock.equals(block))
                     {
                         event.setCancelled(true);
+                        return true;
                     }
                 }
             }
         }
+        return false;
+    }
+
+    @EventHandler
+    public void onPistonExtend(BlockPistonExtendEvent event)
+    {
+        for (Block block : event.getBlocks())
+        {
+            if (this.handleBlock(block, event)) return;
+        }
+    }
+
+    @EventHandler
+    public void onPistonRetract(BlockPistonRetractEvent event)
+    {
+        this.handleBlock(event.getRetractLocation().getBlock(), event);
     }
 
     @EventHandler
@@ -91,6 +116,7 @@ public class MarketSignListener implements Listener
             event.setUseInteractedBlock(Event.Result.DENY);
             event.setUseItemInHand(Event.Result.DENY);
             event.setCancelled(true);
+            event.getPlayer().updateInventory();
         }
         else if (event.getAction().equals(Action.RIGHT_CLICK_AIR)) // when placing a block is not possible -> RIGHT_CLICK_AIR instead of RIGHT_CLICK_BLOCK
         {
@@ -112,6 +138,7 @@ public class MarketSignListener implements Listener
                 event.setUseItemInHand(Event.Result.DENY);
                 event.setCancelled(true);
                 marketSign.updateSignText();
+                event.getPlayer().updateInventory();
             }
         }
     }

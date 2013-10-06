@@ -306,6 +306,7 @@ public class QueryManager
 
     private void doEmptyLogs(int amount)
     {
+        final Queue<QueuedLog> logs = new LinkedList<>();
         try
         {
             this.latch.await(); // Wait if still doing inserts
@@ -314,7 +315,6 @@ public class QueryManager
             {
                 return;
             }
-            final Queue<QueuedLog> logs = new LinkedList<>();
             for (int i = 0; i < amount; i++) // log <amount> next logs...
             {
                 QueuedLog toLog = this.queuedLogs.poll();
@@ -378,7 +378,18 @@ public class QueryManager
             Profiler.endProfiling("logging"); // end profiling so we can start again later
             latch = new CountDownLatch(0); // and reset latch
             module.getLog().error("Error while logging!");
-            throw new IllegalStateException("Error while logging", ex);
+            module.getLog().debug(ex.getLocalizedMessage(), ex);
+            this.queuedLogs.addAll(logs);
+            try
+            {
+                insertConnection.close();
+            }
+            catch (Exception ignored)
+            {}
+            finally
+            {
+                insertConnection = null;
+            }
         }
     }
 

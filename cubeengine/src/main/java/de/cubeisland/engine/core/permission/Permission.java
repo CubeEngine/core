@@ -118,7 +118,7 @@ public class Permission
      */
     public Permission attachTo(Permission bundlePermission)
     {
-        this.addBundle(bundlePermission);
+        bundlePermission.addBundle(this);
         return this;
     }
 

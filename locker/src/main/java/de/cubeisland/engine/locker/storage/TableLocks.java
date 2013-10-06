@@ -41,7 +41,7 @@ import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 public class TableLocks extends TableImpl<LockModel> implements TableCreator<LockModel>
 {
-    public static TableLocks TABLE_GUARD;
+    public static TableLocks TABLE_LOCK;
 
     private TableLocks(String prefix)
     {
@@ -55,8 +55,8 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
     public static TableLocks initTable(Database database)
     {
         MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_GUARD = new TableLocks(config.tablePrefix);
-        return TABLE_GUARD;
+        TABLE_LOCK = new TableLocks(config.tablePrefix);
+        return TABLE_LOCK;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
     public final TableField<LockModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
 
     /**
-     * Flags see {@link ProtectionFlags}
+     * Flags see {@link ProtectionFlag}
      */
     public final TableField<LockModel, Short> FLAGS = createField("flags", SQLDataType.SMALLINT, this);
 
@@ -114,9 +114,6 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
 
     // eg. /cguarded [pass <password>] (flag to create pw book/key?)
     public final TableField<LockModel, byte[]> PASSWORD = createField("password", SQLDataType.VARBINARY.length(128), this);
-
-    // 0 false 1 true
-    public final TableField<LockModel, Byte> DROPTRANSFER = createField("droptransfer", SQLDataType.TINYINT, this);
 
     // optional for entity protection:
     public final TableField<LockModel, Long> ENTITY_UID_LEAST = createField("entity_uid_least", SQLDataType.BIGINT, this);

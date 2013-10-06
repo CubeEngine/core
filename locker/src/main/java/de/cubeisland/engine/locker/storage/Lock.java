@@ -18,9 +18,11 @@
 package de.cubeisland.engine.locker.storage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
@@ -33,16 +35,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Door;
 
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.InventoryGuardFactory;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.locker.LockerAttachment;
 import de.cubeisland.engine.locker.LockerPerm;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.InventoryGuardFactory;
-import org.jooq.Record1;
 import org.jooq.Result;
 
-import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ADMIN;
+import static de.cubeisland.engine.locker.storage.AccessListModel.*;
 import static de.cubeisland.engine.locker.storage.LockType.PUBLIC;
 import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_LIST;
 
@@ -91,6 +96,232 @@ public class Lock
         this.isValidType = false;
     }
 
+    public void invalidateKeyBooks()
+    {
+        this.model.createPassword(this.manager, null);
+        this.model.update();
+    }
+
+
+    public void showCreatedMessage(User user)
+    {
+        switch (this.getLockType())
+        {
+        case PRIVATE:
+            user.sendTranslated("&aPrivate Lock created!");
+            break;
+        case PUBLIC:
+            user.sendTranslated("&aPublic Lock created!");
+            break;
+        case GUARDED:
+            user.sendTranslated("&aGuarded Lock created!");
+            break;
+        case DONATION:
+            user.sendTranslated("&aDonation Lock created!");
+            break;
+        case FREE:
+            user.sendTranslated("&aFree Lock created!");
+            break;
+        }
+    }
+
+    public boolean handleAccess(User user, Location soundLocation, Cancellable event)
+    {
+        if (this.isOwner(user)) return true;
+        Boolean keyBookUsed = this.checkForKeyBook(user, soundLocation);
+        if (keyBookUsed != null && !keyBookUsed)
+        {
+            event.setCancelled(true);
+            return false;
+        }
+        return keyBookUsed != null || this.checkForUnlocked(user) || LockerPerm.ACCESS_OTHER.isAuthorized(user);
+    }
+
+    public boolean checkForUnlocked(User user)
+    {
+        LockerAttachment lockerAttachment = user.get(LockerAttachment.class);
+        return lockerAttachment != null && lockerAttachment.hasUnlocked(this);
+    }
+
+    public void attemptCreatingKeyBook(User user, Boolean third)
+    {
+        if (this.getLockType() == PUBLIC) return; // ignore
+        if (!this.manager.module.getConfig().allowKeyBooks)
+        {
+            user.sendTranslated("&aKeyBooks are not enabled!");
+            return;
+        }
+        if (third)
+        {
+            if (user.getItemInHand().getType() == Material.BOOK)
+            {
+                int amount = user.getItemInHand().getAmount() -1;
+                ItemStack itemStack = new ItemStack(Material.ENCHANTED_BOOK, 1);
+                ItemMeta itemMeta = itemStack.getItemMeta();
+                itemMeta.setDisplayName(this.getColorPass() + KeyBook.TITLE + this.getId());
+                itemMeta.setLore(Arrays.asList(user.translate(ChatFormat.parseFormats("&eThis book can")), user
+                    .translate(ChatFormat.parseFormats("&eunlock a magically")), user
+                                                   .translate(ChatFormat.parseFormats("&elocked protection"))));
+                itemStack.setItemMeta(itemMeta);
+                user.setItemInHand(itemStack);
+                HashMap<Integer, ItemStack> full = user.getInventory().addItem(new ItemStack(Material.BOOK, amount));
+                for (ItemStack stack : full.values())
+                {
+                    Location location = user.getLocation();
+                    location.getWorld().dropItem(location, stack);
+                }
+                user.updateInventory();
+            }
+            else
+            {
+                user.sendTranslated("&cCould not create KeyBook! You need to hold a book in your hand in order to do this!");
+            }
+        }
+    }
+
+    /**
+     * Sets the AccessLevel for given user
+     *
+     * @param modifyUser the user set set the accesslevel for
+     * @param add whether to add to remove the access
+     * @param level the accesslevel
+     * @return false when updating or not deleting <p>true when inserting or deleting
+     */
+    public boolean setAccess(User modifyUser, boolean add, short level)
+    {
+        AccessListModel model = this.getAccess(modifyUser);
+        if (add)
+        {
+            if (model == null)
+            {
+                model = this.manager.dsl.newRecord(TABLE_ACCESS_LIST).newAccess(this.model, modifyUser);
+                model.setLevel(level);
+                model.insert();
+            }
+            else
+            {
+                model.setLevel(level);
+                model.update();
+                return false;
+            }
+        }
+        else // remove lock
+        {
+            if (model == null) return false;
+            model.delete();
+        }
+        return true;
+    }
+
+    /**
+     * Sets multiple acceslevels
+     *
+     * @param user the user modifying
+     * @param usersString
+     */
+    public void modifyLock(User user, String usersString)
+    {
+        if (this.isOwner(user) || this.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
+        {
+            if (!this.isPublic())
+            {
+                String[] explode = StringUtils.explode(",", usersString);
+                for (String name : explode)
+                {
+                    boolean add = true;
+                    boolean admin = false;
+                    if (name.startsWith("@"))
+                    {
+                        name = name.substring(1);
+                        admin = true;
+                    }
+                    if (name.startsWith("-"))
+                    {
+                        name = name.substring(1);
+                        add = false;
+                    }
+                    User modifyUser = this.manager.um.getUser(name, false);
+                    if (modifyUser == null) throw new IllegalArgumentException(); // This is prevented by checking first in the cmd execution
+                    short accessType = ACCESS_FULL;
+                    if (add && admin)
+                    {
+                        accessType = ACCESS_ALL; // with AdminAccess
+                    }
+                    if (this.setAccess(modifyUser, add, accessType))
+                    {
+                        if (add)
+                        {
+                            if (admin)
+                            {
+                                user.sendTranslated("&aGranted &2%s&a admin access to this protection!", modifyUser.getName());
+                            }
+                            else
+                            {
+                                user.sendTranslated("&aGranted &2%s&a access to this protection!", modifyUser.getName());
+                            }
+                        }
+                        else
+                        {
+                            user.sendTranslated("&aRemoved &2%s's&a access to this protection!", modifyUser.getName());
+                        }
+                    }
+                    else
+                    {
+                        if (add)
+                        {
+                            if (admin)
+                            {
+                                user.sendTranslated("&aUdated &2%s's&a access to admin access!", modifyUser.getName());
+                            }
+                            else
+                            {
+                                user.sendTranslated("&aUdated &2%s's&a access to normal access!", modifyUser.getName());
+                            }
+                        }
+                        else
+                        {
+                            user.sendTranslated("&2%s&a had no access to this protection!", modifyUser.getName());
+                        }
+                    }
+                }
+                return;
+            }
+            user.sendTranslated("&eThis protection is public and so accessible to everyone");
+            return;
+        }
+        user.sendTranslated("&cYou are not allowed to modify the access-list of this protection!");
+    }
+
+    /**
+     * Returns true if the chest could open
+     * <p>false if the chest cannot be opened with the KeyBook
+     * <p>null if the user has no KeyBook in hand
+     *
+     * @param user
+     * @param effectLocation
+     * @return
+     */
+    public Boolean checkForKeyBook(User user, Location effectLocation)
+    {
+        KeyBook keyBook = KeyBook.getKeyBook(user.getItemInHand(), user, this.manager.module);
+        if (keyBook != null)
+        {
+            return keyBook.check(this, effectLocation);
+        }
+        return null;
+    }
+
+    public boolean checkPass(String pass)
+    {
+        if (!this.hasPass()) return false;
+
+        synchronized (this.manager.messageDigest)
+        {
+            this.manager.messageDigest.reset();
+            return Arrays.equals(this.manager.messageDigest.digest(pass.getBytes()), this.model.getPassword());
+        }
+    }
+
     private Location getLocation(LockLocationModel model)
     {
         return new Location(this.manager.wm.getWorld(model.getWorldId().longValue()), model.getX(), model.getY(), model.getZ());
@@ -106,14 +337,9 @@ public class Lock
         return this.locations.size() == 1;
     }
 
-    public Location getLocation()
+    public Location getFirstLocation()
     {
         return this.locations.get(0);
-    }
-
-    public Location getLocation2()
-    {
-        return this.locations.get(1);
     }
 
     public ArrayList<Location> getLocations()
@@ -123,12 +349,20 @@ public class Lock
 
     public void handleBlockDoorUse(Cancellable event, User user, Location clickedDoor)
     {
+        if (this.getLockType() == PUBLIC)
+        {
+            this.doorUse(user, clickedDoor);
+            return; // Allow everything
+        }
+        if (this.handleAccess(user, clickedDoor, event))
+        {
+            this.doorUse(user, clickedDoor);
+            return;
+        }
+        if (event.isCancelled()) return;
         if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
         switch (this.getLockType())
         {
-            case PUBLIC:
-                this.doorUse(user, clickedDoor);
-                return; // Allow everything
             case PRIVATE: // block changes
                 break;
             case GUARDED:
@@ -138,26 +372,43 @@ public class Lock
                 throw new IllegalStateException();
         }
         AccessListModel access = this.getAccess(user);
-        if (access == null || !(access.canIn() && access.canOut())) // No access Or not full access
+        if (access == null || !(access.canIn() && access.canOut()) || LockerPerm.ACCESS_OTHER.isAuthorized(user)) // No access Or not full access
         {
             event.setCancelled(true);
-            user.sendTranslated("&cA magical lock prevents you from using this door!");
+            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&cA magical lock from &2%s&c prevents you from using this door!", this.getOwner().getName());
+            }
+            else
+            {
+                user.sendTranslated("&cA magical lock prevents you from using this door!");
+            }
             return;
         } // else has access
-        user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName()); // TODO better
         this.doorUse(user, clickedDoor);
     }
 
     private AccessListModel getAccess(User user)
     {
-        return this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
+        AccessListModel model = this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
             where(TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId()),
                   TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey())).fetchOne();
+        if (model == null)
+        {
+            model = this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
+                where(TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey()),
+                      TABLE_ACCESS_LIST.OWNER_ID.eq(this.getOwner().getEntity().getKey())).fetchOne();
+        }
+        return model;
     }
 
-    public void handleInventoryOpen(Cancellable event, Inventory protectedInventory, User user)
+    public void handleInventoryOpen(Cancellable event, Inventory protectedInventory, Location soundLocation, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
+        if (soundLocation != null && LockerPerm.SHOW_OWNER.isAuthorized(user))
+        {
+            user.sendTranslated("&eThis inventory is protected by &2%s", this.getOwner().getName());
+        }
+        if (this.handleAccess(user, soundLocation, event) || event.isCancelled()) return;
         boolean in;
         boolean out;
         switch (this.getLockType())
@@ -178,10 +429,17 @@ public class Lock
                 out = true;
         }
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.getLockType() == LockType.PRIVATE)
+        if (access == null && this.getLockType() == LockType.PRIVATE && !LockerPerm.ACCESS_OTHER.isAuthorized(user))
         {
             event.setCancelled(true); // private & no access
-            user.sendTranslated("&cA magical lock prevents you from accessing this inventory!"); // TODO better
+            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&cA magical lock from &2%s&c prevents you from accessing this inventory!", this.getOwner().getName());
+            }
+            else
+            {
+                user.sendTranslated("&cA magical lock prevents you from accessing this inventory!");
+            }
         }
         else // Has access access -> new InventoryGuard
         {
@@ -190,7 +448,8 @@ public class Lock
                 in = in || access.canIn();
                 out = out || access.canOut();
             }
-            if (in && out) return; // Has full access
+            this.notifyUsage(user);
+            if ((in && out) || LockerPerm.ACCESS_OTHER.isAuthorized(user)) return; // Has full access
             if (protectedInventory == null) return; // Just checking else do lock
             InventoryGuardFactory inventoryGuardFactory = InventoryGuardFactory.prepareInventory(protectedInventory, user);
             if (!in)
@@ -202,24 +461,41 @@ public class Lock
                 inventoryGuardFactory.blockTakeOutAll();
             }
             inventoryGuardFactory.submitInventory(this.manager.module, false);
-            user.sendTranslated("&eThis %s is protected by &2%s", "container", this.getOwner().getName()); // TODO better
+
+            this.notifyUsage(user);
         }
     }
 
-    public void handleEntityInteract(Cancellable event, Entity entity, User user)
+    public void handleEntityInteract(Cancellable event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey())) return; // Its the owner
+        if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+        {
+            user.sendTranslated("&eThis entity is protected by &2%s", this.getOwner().getName());
+        }
         if (this.getLockType() == PUBLIC) return;
+        if (this.handleAccess(user, null, event))
+        {
+            this.notifyUsage(user);
+            return;
+        }
+        if (event.isCancelled())
+        {
+            return;
+        }
         AccessListModel access = this.getAccess(user);
         if (access == null && this.getLockType() == LockType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
-            user.sendTranslated("&cMagic repelled your attempts to reach this entity!"); // TODO better
+            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&cMagic from &2%s&c repelled your attempts to reach this entity!", this.getOwner().getName());
+            }
+            else
+            {
+                user.sendTranslated("&cMagic repelled your attempts to reach this entity!");
+            }
         }
-        else // has access
-        {
-            // TODO messages
-        }
+        this.notifyUsage(user);
     }
 
     private void checkLockType()
@@ -240,7 +516,7 @@ public class Lock
 
     public void handleBlockBreak(BlockBreakEvent event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user))
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.BREAK_OTHER.isAuthorized(user))
         {
             this.delete(user);
             return;
@@ -249,17 +525,16 @@ public class Lock
         user.sendTranslated("&cMagic prevents you from breaking this protection!");
     }
 
-    public void handleEntityDamage(Cancellable event, User user)
+    public boolean handleEntityDamage(Cancellable event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey()))
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.BREAK_OTHER.isAuthorized(user))
         {
             user.sendTranslated("&eThe magic surrounding this entity quivers as you hit it!");
+            return true;
         }
-        else
-        {
-            event.setCancelled(true); // private & no access
-            user.sendTranslated("&cMagic repelled your attempts to hurt this entity!");
-        }
+        event.setCancelled(true); // private & no access
+        user.sendTranslated("&cMagic repelled your attempts to hit this entity!");
+        return false;
     }
 
     public void handleEntityDeletion(User user)
@@ -284,10 +559,8 @@ public class Lock
 
     public boolean hasAdmin(User user)
     {
-        Record1<Short> record1 = this.manager.dsl.select(TABLE_ACCESS_LIST.LEVEL).from(TABLE_ACCESS_LIST)
-                                                  .where(TABLE_ACCESS_LIST.USER_ID.eq(user.getEntity().getKey()),
-                                                         TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId())).fetchOne();
-        return record1 != null && (record1.value1() & ACCESS_ADMIN) == ACCESS_ADMIN;
+        AccessListModel access = this.getAccess(user);
+        return access != null && (access.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN;
     }
 
     public String getColorPass()
@@ -322,6 +595,52 @@ public class Lock
         }
     }
 
+    private Map<String, Long> lastNotify;
+
+    public void notifyUsage(User user)
+    {
+        if (LockerPerm.PREVENT_NOTIFY.isAuthorized(user)) return;
+        if (this.hasFlag(ProtectionFlag.NOTIFY_ACCESS))
+        {
+            if (user.equals(this.getOwner()))
+            {
+                return;
+            }
+            if (lastNotify == null)
+            {
+                this.lastNotify = new HashMap<>();
+            }
+            User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
+            Long last = this.lastNotify.get(owner.getName());
+            if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
+            {
+                this.lastNotify.put(owner.getName(), System.currentTimeMillis());
+                if (this.isBlockLock())
+                {
+                    owner.sendTranslated("&2%s&e accessed one your protection with the id &6%d!", user.getName(), this.getId());
+                    Location loc = this.getFirstLocation();
+                    owner.sendTranslated("&ewhich is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!",
+                         loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                }
+                else
+                {
+                    for (Entity entity : user.getWorld().getEntities())
+                    {
+                        if (entity.getUniqueId().equals(this.getEntityUID()))
+                        {
+                            owner.sendTranslated("&2%s&e accessed one of your protected entities!", user.getName());
+                            Location loc = entity.getLocation();
+                            owner.sendTranslated("&ewhich is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!",
+                                                 loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                            return;
+                        }
+                    }
+                    owner.sendTranslated("&2%s&e accessed one of your protected entities somewhere!", user.getName());
+                }
+            }
+        }
+    }
+
     public User getOwner()
     {
         return this.manager.module.getCore().getUserManager().getUser(this.model.getOwnerId().longValue());
@@ -332,7 +651,7 @@ public class Lock
         return this.getLockType() == PUBLIC;
     }
 
-    public boolean hasFlag(ProtectionFlags flag)
+    public boolean hasFlag(ProtectionFlag flag)
     {
         return flag.flagValue == (this.model.getFlags() & flag.flagValue);
     }
@@ -349,25 +668,64 @@ public class Lock
             {
                 if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
-                    user.sendTranslated("&aHas a password and is currently unlocked");
+                    user.sendTranslated("&aHas a password and is currently &eunlocked");
                 }
                 else
                 {
-                    user.sendTranslated("&aHas a password and is currently locked");
+                    user.sendTranslated("&aHas a password and is currently &clocked");
                 }
             }
 
+
+            List<String> flags = new ArrayList<>();
+            for (ProtectionFlag flag : ProtectionFlag.values())
+            {
+                if (this.hasFlag(flag))
+                {
+                    flags.add(flag.flagname);
+                }
+            }
+            if (!flags.isEmpty())
+            {
+                user.sendTranslated("&aThe following flags are set:");
+                String format = ChatFormat.parseFormats("  &7- &e%s");
+                for (String flag : flags)
+                {
+                    user.sendMessage(String.format(format, flag));
+                }
+            }
+            List<AccessListModel> accessors = this.getAccessors();
+            if (!accessors.isEmpty())
+            {
+                user.sendTranslated("&aThe following users do have direct access to this protection");
+                for (AccessListModel listModel : accessors)
+                {
+                    User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId().longValue());
+                    if ((listModel.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN)
+                    {
+                        user.sendMessage(String.format(ChatFormat.parseFormats("  &7- &2%s&6 [Admin]"), accessor.getName()));
+                    }
+                    else
+                    {
+                        user.sendMessage(String.format(ChatFormat.parseFormats("  &7- &2%s"), accessor.getName()));
+                    }
+                }
+            }
             if (!this.locations.isEmpty())
             {
                 user.sendTranslated("&aThis protections covers &6%d&a blocks!", this.locations.size());
             }
-            // TODO active flags
-            // TODO droptransfer status
-            // TODO all accessors /w accesslevel
         }
         else
         {
-            user.sendTranslated("&aProtectionType: &6%s", this.getId(), this.getLockType().name());
+            if (LockerPerm.CMD_INFO_SHOW_OWNER.isAuthorized(user))
+            {
+                user.sendTranslated("&aProtectionType: &6%s&a Owner: &2%s", this.getLockType().name(), this.getOwner().getName());
+            }
+            else
+            {
+                user.sendTranslated("&aProtectionType: &6%s", this.getLockType().name());
+            }
             AccessListModel access = this.getAccess(user);
             if (this.hasPass())
             {
@@ -400,16 +758,29 @@ public class Lock
                         user.sendTranslated("&abut it lets you interact as if you were not there");
                     }
                 }
-                // TODO other access-level combinations
             }
         }
+        if (this.manager.module.getConfig().protectWhenOnlyOffline && this.getOwner().isOnline())
+        {
+            user.sendTranslated("&eThe protection is currently not active because its owner is online!");
+        }
+        if (this.manager.module.getConfig().protectWhenOnlyOnline && !this.getOwner().isOnline())
+        {
+            user.sendTranslated("&eThe protection is currently not active because its owner is offline!");
+        }
+    }
+
+    public List<AccessListModel> getAccessors()
+    {
+        return this.manager.dsl.selectFrom(TABLE_ACCESS_LIST).
+            where(TABLE_ACCESS_LIST.LOCK_ID.eq(this.model.getId())).fetch();
     }
 
     public void unlock(User user, Location soundLoc, String pass)
     {
         if (this.hasPass())
         {
-            if (this.manager.checkPass(this, pass))
+            if (this.checkPass(pass))
             {
                 user.sendTranslated("&aUpon hearing the right pass-phrase the magic surrounding the container gets thinner and lets you pass!");
                 user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, 2);
@@ -433,14 +804,19 @@ public class Lock
      * Also this will schedule auto-closing the door according to the configuration
      *
      * @param user
+     * @param doorClicked
      */
-    public void doorUse(User user, Location doorClicked)
+    private void doorUse(User user, Location doorClicked)
     {
         Block block = doorClicked.getBlock();
         if (block.getType() == Material.IRON_DOOR_BLOCK && !this.manager.module.getConfig().openIronDoorWithClick)
         {
             user.sendTranslated("&eYou cannot open the heavy door!");
             return;
+        }
+        if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+        {
+            user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
         }
         if (block.getState().getData() instanceof Door)
         {
@@ -484,34 +860,36 @@ public class Lock
                 }
                 if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
                 if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), null, null);
-                return;
             }
-            boolean old = door.isOpen();
-            door2.setOpen(!door.isOpen()); // Flip
-            if (old != door2.isOpen())
+            else
             {
-
-                doorClicked.getWorld().playSound(loc2, sound, 1, 1);
-                loc2.getBlock().setData(door2.getData());
-                if (door.getItemType() == Material.IRON_DOOR_BLOCK)
+                boolean old = door.isOpen();
+                door2.setOpen(!door.isOpen()); // Flip
+                if (old != door2.isOpen())
                 {
-                    doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
-                    door.setOpen(door2.isOpen());
-                    block.setData(door.getData());
+
+                    doorClicked.getWorld().playSound(loc2, sound, 1, 1);
+                    loc2.getBlock().setData(door2.getData());
+                    if (door.getItemType() == Material.IRON_DOOR_BLOCK)
+                    {
+                        doorClicked.getWorld().playSound(doorClicked, sound, 1, 1);
+                        door.setOpen(door2.isOpen());
+                        block.setData(door.getData());
+                    }
                 }
+                if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
+                if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), door2, loc2.getBlock().getState());
             }
-            if (taskId != null) this.manager.module.getCore().getTaskManager().cancelTask(this.manager.module, taskId);
-            if (sound == Sound.DOOR_OPEN) this.scheduleAutoClose(door, block.getState(), door2, loc2.getBlock().getState());
+            this.notifyUsage(user);
         }
     }
 
     private void scheduleAutoClose(final Door door1, final BlockState state1, final Door door2, final BlockState state2)
     {
-        if (!this.manager.module.getConfig().autoCloseEnable) return;
-        Runnable run;
-        if (door2 == null)
+        if (this.hasFlag(ProtectionFlag.AUTOCLOSE))
         {
-            run = new Runnable()
+            if (!this.manager.module.getConfig().autoCloseEnable) return;
+            taskId = this.manager.module.getCore().getTaskManager().runTaskDelayed(this.manager.module, new Runnable()
             {
                 @Override
                 public void run()
@@ -523,35 +901,19 @@ public class Lock
                         Location location = state1.getLocation();
                         location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
                     }
-                }
-            };
-        }
-        else
-        {
-            run = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    door1.setOpen(false);
-                    state1.setData(door1);
-                    if (state1.update())
+                    if (door2 != null)
                     {
-                        Location location = state1.getLocation();
-                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                    }
-                    door2.setOpen(false);
-                    state2.setData(door2);
-                    if (state2.update())
-                    {
-                        Location location = state2.getLocation();
-                        location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                        door2.setOpen(false);
+                        state2.setData(door2);
+                        if (state2.update())
+                        {
+                            Location location = state2.getLocation();
+                            location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
+                        }
                     }
                 }
-            };
+            }, this.manager.module.getConfig().autoCloseSeconds * 20);
         }
-        taskId = this.manager.module.getCore().getTaskManager()
-                            .runTaskDelayed(this.manager.module, run, this.manager.module.getConfig().autoCloseSeconds * 20);
     }
 
     /**
@@ -559,7 +921,7 @@ public class Lock
      */
     private boolean isValidType = true;
 
-    public void validateTypeAt(Location location)
+    public boolean validateTypeAt(Location location)
     {
         if (ProtectedType.getProtectedType(location.getBlock().getType()) == this.getProtectedType())
         {
@@ -569,10 +931,28 @@ public class Lock
         {
             this.manager.module.getLog().warn("ProtectedTypes do not match for Guard at {}" ,location.toString());
         }
+        return this.isValidType;
     }
 
-    public boolean isValidType()
+    public void setOwner(User owner)
     {
-        return isValidType;
+        this.model.setOwnerId(owner.getEntity().getKey());
+        this.model.update();
+    }
+
+    public void setFlags(short flags)
+    {
+        this.model.setFlags(flags);
+        this.model.update();
+    }
+
+    public short getFlags()
+    {
+        return this.model.getFlags();
+    }
+
+    public UUID getEntityUID()
+    {
+        return this.model.getUUID();
     }
 }

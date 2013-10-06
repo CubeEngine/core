@@ -17,29 +17,135 @@
  */
 package de.cubeisland.engine.basics.command.general;
 
+import java.util.regex.Pattern;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.basics.BasicsPerm;
+
+import static de.cubeisland.engine.basics.BasicsPerm.*;
 
 public class ColoredSigns implements Listener
 {
     @EventHandler
     public void onSignChange(SignChangeEvent event)
     {
-        if (BasicsPerm.SIGN_COLORED.isAuthorized(event.getPlayer()))
+        if (SIGN_COLORED.isAuthorized(event.getPlayer())) // ALL colors
         {
+            this.formatColors(event, event.getLines());
+        }
+        else
+        {
+            String toStrip = "";
+            if( SIGN_COLORED_BLACK.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "0";
+            }
+            if( SIGN_COLORED_DARK_BLUE.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "1";
+            }
+            if( SIGN_COLORED_DARK_GREEN.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "2";
+            }
+            if( SIGN_COLORED_DARK_AQUA.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "3";
+            }
+            if( SIGN_COLORED_DARK_RED.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "4";
+            }
+            if( SIGN_COLORED_DARK_PURPLE.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "5";
+            }
+            if( SIGN_COLORED_GOLD.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "6";
+            }
+            if( SIGN_COLORED_GRAY.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "7";
+            }
+            if( SIGN_COLORED_DARK_GRAY.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "8";
+            }
+            if( SIGN_COLORED_BLUE.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "9";
+            }
+            if( SIGN_COLORED_GREEN.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "aA";
+            }
+            if( SIGN_COLORED_AQUA.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "bB";
+            }
+            if( SIGN_COLORED_RED.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "cC";
+            }
+            if( SIGN_COLORED_LIGHT_PURPLE.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "dD";
+            }
+            if( SIGN_COLORED_YELLOW.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "eE";
+            }
+            if( SIGN_COLORED_WHITE.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "fF";
+            }
+            if( SIGN_COLORED_OBFUSCATED.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "kK";
+            }
+            if( SIGN_COLORED_BOLD.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "lL";
+            }
+            if( SIGN_COLORED_STRIKE.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "mM";
+            }
+            if( SIGN_COLORED_UNDERLINE.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "nN";
+            }
+            if( SIGN_COLORED_ITALIC.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "oO";
+            }
+            if( SIGN_COLORED_RESET.isAuthorized(event.getPlayer()))
+            {
+                toStrip += "rR";
+            }
+            Pattern stripFormats = Pattern.compile("&[" + toStrip + "]");
             String[] lines = event.getLines();
             for (int i = 0; i < 4; ++i)
             {
-                lines[i] = ChatFormat.parseFormats(lines[i]);
+                lines[i] = stripFormats.matcher(lines[i]).replaceAll("");
             }
-            for (int i = 0; i < 4; ++i)
-            {
-                event.setLine(i, lines[i]);
-            }
+            this.formatColors(event, lines);
+        }
+    }
+
+    private void formatColors(SignChangeEvent event, String[] lines)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            lines[i] = ChatFormat.parseFormats(lines[i]);
+        }
+        for (int i = 0; i < 4; ++i)
+        {
+            event.setLine(i, lines[i]);
         }
     }
 }

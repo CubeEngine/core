@@ -82,24 +82,26 @@ public class MarketSignFactory
             return marketSign;
         }
         marketSign = new MarketSign(this.module, location);
-        //TODO PERMISSIONS!!!
-        if (this.module.getConfig().allowAdminNoStock)
+        if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user) && module.getConfig().enableAdmin)
         {
             marketSign.setAdminSign();
-            marketSign.setNoStock();
         }
-        else if (this.module.getConfig().allowAdminStock)
-        {
-            marketSign.setAdminSign();
-            marketSign.setNoStock();
-        }
-        else
+        else if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user) && module.getConfig().enableUser)
         {
             marketSign.setOwner(user);
-            marketSign.setStock(0);
         }
         if (marketSign.isAdminSign())
         {
+            if (this.module.getConfig().allowAdminNoStock)
+            {
+                marketSign.setAdminSign();
+                marketSign.setNoStock();
+            }
+            else if (this.module.getConfig().allowAdminStock)
+            {
+                marketSign.setAdminSign();
+                marketSign.setNoStock();
+            }
             marketSign.setSize(this.module.getConfig().maxAdminStock);
         }
         else

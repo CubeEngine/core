@@ -17,62 +17,29 @@
  */
 package de.cubeisland.engine.locker;
 
-import java.util.Map.Entry;
-
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.locker.storage.ProtectedType;
-import de.cubeisland.engine.core.config.node.BooleanNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Converter;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.locker.storage.LockType;
+import de.cubeisland.engine.locker.storage.ProtectedType;
 
-public class EntityLockerConfiguration
+public class EntityLockerConfiguration extends LockerSubConfig<EntityLockerConfiguration, EntityType>
 {
-    protected final ProtectedType protectedType;
-    private final EntityType entityType;
-    private boolean enable = true;
-
     public EntityLockerConfiguration(EntityType entityType)
     {
-        this.protectedType = ProtectedType.getProtectedType(entityType);
-        this.entityType = entityType;
+        super(ProtectedType.getProtectedType(entityType));
+        this.type = entityType;
     }
 
     public String getTitle()
     {
-        return entityType.name();
+        return type.name();
     }
 
-    public boolean isType(EntityType type)
+    public static class EntityLockerConfigConverter extends LockerSubConfigConverter<EntityLockerConfiguration>
     {
-        return this.entityType.equals(type);
-    }
-
-    public static class EntityLockerConfigConverter implements Converter<EntityLockerConfiguration>
-    {
-        @Override
-        public Node toNode(EntityLockerConfiguration object) throws ConversionException
-        {
-            MapNode root = MapNode.emptyMap();
-            MapNode config = MapNode.emptyMap();
-            if (!object.enable)
-            {
-                config.setNode(StringNode.of("enable"), BooleanNode.falseNode());
-            }
-            if (config.isEmpty())
-            {
-                return StringNode.of(object.getTitle());
-            }
-            root.setNode(StringNode.of(object.getTitle()), config);
-            return root;
-        }
-
-        private EntityLockerConfiguration fromString(String s) throws ConversionException
+        protected EntityLockerConfiguration fromString(String s) throws ConversionException
         {
             EntityType entityType;
             try
@@ -95,33 +62,6 @@ public class EntityLockerConfiguration
                 throw new ConversionException(s + " is not a valid EntityType!");
             }
             return new EntityLockerConfiguration(entityType);
-        }
-
-        @Override
-        public EntityLockerConfiguration fromNode(Node node) throws ConversionException
-        {
-            if (node instanceof NullNode) return null;
-            EntityLockerConfiguration configuration;
-            if (node instanceof StringNode)
-            {
-                configuration = fromString(node.unwrap());
-            }
-            else
-            {
-                MapNode root = (MapNode)node;
-                if (root.isEmpty()) return null;
-                String next = root.getOriginalKey(root.getMappedNodes().keySet().iterator().next());
-                MapNode config = (MapNode)root.getExactNode(next);
-                configuration = fromString(next);
-                for (Entry<String, Node> entry : config.getMappedNodes().entrySet())
-                {
-                    if (entry.getKey().equals("enable"))
-                    {
-                        configuration.enable = ((BooleanNode)entry.getValue()).getValue();
-                    }
-                }
-            }
-            return configuration;
         }
     }
 }

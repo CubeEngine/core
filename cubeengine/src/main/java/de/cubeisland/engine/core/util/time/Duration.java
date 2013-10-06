@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.util.time;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -153,7 +154,7 @@ public class Duration
             }
             if (timeUnitFactor == null)
             {
-                throw new IllegalArgumentException("Could not parse time! " + timeStrings.toString());
+                throw new IllegalArgumentException("Could not parse time! " + Arrays.toString(timeStrings));
             }
             result += time * timeUnitFactor;
         }
@@ -246,14 +247,14 @@ public class Duration
         convertTime -= convertTime / MS * MS;
     }
 
-    //TODO format method for chat output! DO IT BETTER.
+    //TODO Formatting not that good! DO IT BETTER.
     public String format(String pattern)
     {
         this.update();
         String result = pattern;
         if (result.contains("%www") || result.contains("%ww") || result.contains("%w"))
         {
-            result = result.replaceAll("%www", week == 0 ? "" : week + (week == 1 ? " week" : " weeks"));
+            result = result.replaceAll("%www", week == 0 ? "" : week + (week == 1 ? " week " : " weeks "));
             result = result.replaceAll("%ww", week == 0 ? "" : week + "w");
             result = result.replaceAll("%w", week == 0 ? "" : week + "");
         }
@@ -263,7 +264,7 @@ public class Duration
         }
         if (result.contains("%ddd") || result.contains("%dd") || result.contains("%d"))
         {
-            result = result.replaceAll("%ddd", day == 0 ? "" : day + (day == 1 ? " day" : " days"));
+            result = result.replaceAll("%ddd", day == 0 ? "" : day + (day == 1 ? " day " : " days "));
             result = result.replaceAll("%dd", day == 0 ? "" : day + "d");
             result = result.replaceAll("%d", day == 0 ? "" : day + "");
         }
@@ -273,7 +274,7 @@ public class Duration
         }
         if (result.contains("%hhh") || result.contains("%hh") || result.contains("%h"))
         {
-            result = result.replaceAll("%hhh", hour == 0 ? "" : hour + (hour == 1 ? " hour" : " hours"));
+            result = result.replaceAll("%hhh", hour == 0 ? "" : hour + (hour == 1 ? " hour " : " hours "));
             result = result.replaceAll("%hh", hour == 0 ? "" : hour + "h");
             result = result.replaceAll("%h", hour == 0 ? "" : hour + "");
         }
@@ -283,7 +284,7 @@ public class Duration
         }
         if (result.contains("%mmm") || result.contains("%mm") || result.contains("%m"))
         {
-            result = result.replaceAll("%mmm", minute == 0 ? "" : minute + (minute == 1 ? " minute" : " minutes"));
+            result = result.replaceAll("%mmm", minute == 0 ? "" : minute + (minute == 1 ? " minute " : " minutes "));
             result = result.replaceAll("%mm", minute == 0 ? "" : minute + "min");
             result = result.replaceAll("%m", minute == 0 ? "" : minute + "");
         }
@@ -293,7 +294,7 @@ public class Duration
         }
         if (result.contains("%sss") || result.contains("%ss") || result.contains("%s"))
         {
-            result = result.replaceAll("%sss", second == 0 ? "" : second + (second == 1 ? " second" : " seconds"));
+            result = result.replaceAll("%sss", second == 0 ? "" : second + (second == 1 ? " second " : " seconds "));
             result = result.replaceAll("%ss", second == 0 ? "" : second + "sec");
             result = result.replaceAll("%s", second == 0 ? "" : second + "");
         }
@@ -303,10 +304,10 @@ public class Duration
         }
         if (result.contains("%SSS") || result.contains("%SSS") || result.contains("%SSS"))
         {
-            result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + (milsec == 1 ? " millisecond" : " milliseconds"));
+            result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + (milsec == 1 ? " millisecond " : " milliseconds "));
             result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + "ms");
             result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + "");
         }
-        return result;
+        return result.trim();
     }
 }

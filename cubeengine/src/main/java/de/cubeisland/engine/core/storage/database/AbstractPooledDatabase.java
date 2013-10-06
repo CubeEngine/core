@@ -25,9 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.worker.AsyncTaskQueue;
-
 
 /**
  * Abstract Database implementing most of the database methods.
@@ -43,7 +41,7 @@ public abstract class AbstractPooledDatabase implements Database
     protected AbstractPooledDatabase(Core core)
     {
         this.core = core;
-        this.executorService = Executors.newSingleThreadExecutor(CubeEngine.getCore().getTaskManager().getThreadFactory());
+        this.executorService = Executors.newSingleThreadExecutor(core.getTaskManager().getThreadFactory());
         this.taskQueue = new AsyncTaskQueue(this.executorService);
     }
 

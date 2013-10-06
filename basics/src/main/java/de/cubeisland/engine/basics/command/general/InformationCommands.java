@@ -371,7 +371,7 @@ public class InformationCommands
         Date start = new Date(ManagementFactory.getRuntimeMXBean().getStartTime());
         Duration dura = new Duration(start.getTime(), System.currentTimeMillis());
         context.sendTranslated("&aServer is running since &6%s", df.format(start));
-        context.sendTranslated("&aUptime: &6%s", dura.format("%www %ddd %hhh %mmm %sss"));
+        context.sendTranslated("&aUptime: &6%s", dura.format("%www%ddd%hhh%mmm%sss"));
         //TPS:
         float tps = this.basics.getLagTimer().getAverageTPS();
         String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";

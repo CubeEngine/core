@@ -28,6 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.material.PistonExtensionMaterial;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
@@ -35,6 +36,7 @@ import de.cubeisland.engine.log.storage.LogEntry;
 
 import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 import static org.bukkit.Material.AIR;
+import static org.bukkit.Material.PISTON_EXTENSION;
 
 /**
  * Blocks moved by piston
@@ -57,24 +59,35 @@ public class BlockShift extends BlockActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPistonExtend(final BlockPistonExtendEvent event)
     {
-        //TODO check if this is working correctly
         if (this.isActive(event.getBlock().getWorld()))
         {
             boolean first = true;
+            if (event.getBlocks().isEmpty())
+            {
+                PistonExtensionMaterial pistonHead = new PistonExtensionMaterial(PISTON_EXTENSION);
+                pistonHead.setSticky(event.isSticky());
+                pistonHead.setFacingDirection(event.getDirection());
+                this.logBlockChange(event.getBlock().getRelative(event.getDirection()).getLocation(),null,AIR,
+                                    BlockData.of(pistonHead.getItemType(), pistonHead.getData()), null);
+                return;
+            }
             for (Block block : event.getBlocks())
             {
-                if (block.getType().equals(AIR)) continue;
                 BlockState oldState = block.getState();
-                BlockState movedTo = block.getRelative(event.getDirection()).getState();
-                movedTo.setType(oldState.getType());
-                movedTo.setRawData(oldState.getRawData());
                 if (first)
                 {
                     first = false;
-                    //TODO perhaps newState not Air but orientated pistonextension
-                    this.logBlockChange(oldState.getLocation(),null,BlockData.of(oldState), AIR, null); // pushing
+                    PistonExtensionMaterial pistonHead = new PistonExtensionMaterial(PISTON_EXTENSION);
+                    pistonHead.setSticky(event.isSticky());
+                    pistonHead.setFacingDirection(event.getDirection());
+                    this.logBlockChange(oldState.getLocation(),null,BlockData.of(oldState),
+                        BlockData.of(pistonHead.getItemType(), pistonHead.getData()), null);
                 }
-                this.logBlockChange(null,movedTo.getBlock().getState(),movedTo, null); // pushed
+                if (block.getType().equals(AIR)) continue;
+                BlockState movedTo = block.getRelative(event.getDirection()).getState();
+                movedTo.setType(oldState.getType());
+                movedTo.setRawData(oldState.getRawData());
+                this.logBlockChange(null,movedTo.getBlock().getState(),movedTo, null);
             }
         }
     }
@@ -82,15 +95,18 @@ public class BlockShift extends BlockActionType
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPistonRetract(final BlockPistonRetractEvent event)
     {
-        //TODO check if this is working correctly
-        if (event.isSticky() && this.isActive(event.getBlock().getWorld()))
+        if (this.isActive(event.getBlock().getWorld()))
         {
             BlockState retractingBlock = event.getRetractLocation().getBlock().getState();
-            if (retractingBlock.getType().equals(AIR)) return;
             BlockState retractedBlock = event.getBlock().getRelative(event.getDirection()).getState();
+            if (retractingBlock.getType().equals(AIR))
+            {
+                this.logBlockChange(retractedBlock.getBlock().getLocation(), null,
+                                BlockData.of(retractedBlock), AIR, null); // pulled
+                return;
+            }
             retractedBlock.setType(retractingBlock.getType());
             retractedBlock.setRawData(retractingBlock.getRawData());
-            //TODO perhaps newState not Air but orientated pistonextension
             this.logBlockChange(retractingBlock.getLocation(), null, BlockData.of(retractingBlock), AIR, null); // pulling
             this.logBlockChange(null,retractedBlock.getBlock().getState(),retractedBlock, null); // pulled
         }
@@ -99,15 +115,43 @@ public class BlockShift extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
+        String times = "";
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&6%s&a got moved away by a Piston &6%d times%s",
-                    time,logEntry.getOldBlock(),logEntry.getAttached().size(),loc);
+            times = String.format(user.translate(" &6%d times"), logEntry.getAttached().size() + 1);
+        }
+        if (logEntry.getOldBlock().material == AIR )
+        {
+            user.sendTranslated("%s&aA piston moved &6%s&a in place%s%s",
+                                time,logEntry.getNewblock(), times ,loc);
+        }
+        else if (logEntry.getOldBlock().material == PISTON_EXTENSION)
+        {
+            if (logEntry.getNewBlock().material == AIR)
+            {
+                user.sendTranslated("%s&aA piston retracted%s%s",
+                                    time,times ,loc);
+            }
+            else
+            {
+                user.sendTranslated("%s&aA piston retracted a moving &6%s&a in place%s%s",
+                                    time, logEntry.getNewBlock(), times ,loc);
+            }
+        }
+        else if (logEntry.getNewBlock().material == PISTON_EXTENSION)
+        {
+            user.sendTranslated("%s&6%s&a got moved away by a Piston%s%s",
+                                time,logEntry.getOldBlock(),times,loc);
+        }
+        else if (logEntry.getNewBlock().material == AIR)
+        {
+            user.sendTranslated("%s&6%s&a got retracted by a Piston%s%s",
+                                time,logEntry.getOldBlock(),times,loc);
         }
         else
         {
-            user.sendTranslated("%s&6%s&a got moved away by a Piston%s",
-                                time,logEntry.getOldBlock(),loc);
+            user.sendTranslated("%s&aA piston moved &6%s&a in to replace &6%s%s%s",
+                                time,logEntry.getOldBlock(), logEntry.getNewblock(), times ,loc);
         }
     }
 

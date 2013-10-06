@@ -108,11 +108,12 @@ public class BasicsConfiguration extends Configuration
     public int jumpToMaxRange = 300;
     @Option("commands.ban.disallow-if-offline-mode")
     public boolean disallowBanIfOfflineMode;
-    @Option("commands.kick.default-message")
-    public String defaultKickMessage = "&4Kicked!";
     @Option("changepainting.max.distance")
     public int maxChangePaintingDistance = 10;
     
     @Option("commands.door.max.radius")
     public int maxDoorRadius = 10;
+
+    @Option("overstacked.prevent-anvil-and-brewing")
+    public boolean preventOverstackedItems = true;
 }
