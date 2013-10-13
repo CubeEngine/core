@@ -55,8 +55,8 @@ import static de.cubeisland.engine.core.util.InventoryUtil.*;
 import static de.cubeisland.engine.signmarket.storage.TableSignBlock.TABLE_SIGN_BLOCK;
 import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
 
-// TODO CE-420 shift-click to edit multiple signs at the same time
-// TODO CE-437 blacklist
+// TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/414 shift-click to edit multiple signs at the same time
+// TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/431 blacklist
 
 public class MarketSign
 {
