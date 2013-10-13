@@ -26,7 +26,9 @@ import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Ageable;
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
@@ -46,9 +48,12 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Colorable;
 
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
 
@@ -70,6 +75,17 @@ public class EntityDataChanger<EntityInterface>
                         entity.setSaddle(input);
                     }
                 });
+
+    public static final EntityDataChanger<Horse> HORSE_SADDLE =
+        new EntityDataChanger<>(Horse.class,
+                                new BoolEntityChanger<Horse>("saddled")
+                                {
+                                    @Override
+                                    public void applyEntity(Horse entity, Boolean input)
+                                    {
+                                        entity.getInventory().setSaddle(new ItemStack(Material.SADDLE));
+                                    }
+                                });
 
     public static final EntityDataChanger<Ageable> AGEABLE_BABY =
             new EntityDataChanger<>(Ageable.class,
@@ -375,8 +391,6 @@ public class EntityDataChanger<EntityInterface>
                                     }
                                 });
 
-    // TODO set tame_owner
-
     public static final EntityDataChanger<Tameable> TAMEABLE =
         new EntityDataChanger<>(Tameable.class,
                         new BoolEntityChanger<Tameable>("tamed") {
@@ -385,6 +399,156 @@ public class EntityDataChanger<EntityInterface>
                                 entity.setTamed(value);
                             }
                         });
+
+    public static final EntityDataChanger<Tameable> TAMER =
+        new EntityDataChanger<>(Tameable.class,
+                                new EntityChanger<Tameable, AnimalTamer>() {
+                                    @Override
+                                    public void applyEntity(Tameable entity, AnimalTamer value) {
+                                        entity.setOwner(value);
+                                    }
+
+                                    @Override
+                                    public AnimalTamer getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("tamer_"))
+                                        {
+                                            String userName = input.substring(6, input.length());
+                                            User user = CubeEngine.getUserManager().findUser(userName);
+                                            return user;
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> ARMOR_CHESTPLATE =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, ItemStack>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, ItemStack value) {
+                                        entity.getEquipment().setChestplate(value);
+                                    }
+
+                                    @Override
+                                    public ItemStack getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("armor_") || input.startsWith("chest_"))
+                                        {
+                                            return Match.material().itemStack(input.substring(6, input.length()));
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> ARMOR_LEG =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, ItemStack>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, ItemStack value) {
+                                        entity.getEquipment().setLeggings(value);
+                                    }
+
+                                    @Override
+                                    public ItemStack getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("leg_"))
+                                        {
+                                            return Match.material().itemStack(input.substring(4, input.length()));
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> ARMOR_BOOT =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, ItemStack>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, ItemStack value) {
+                                        entity.getEquipment().setBoots(value);
+                                    }
+
+                                    @Override
+                                    public ItemStack getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("boot_"))
+                                        {
+                                            return Match.material().itemStack(input.substring(5, input.length()));
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> ARMOR_HELMET =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, ItemStack>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, ItemStack value) {
+                                        entity.getEquipment().setHelmet(value);
+                                    }
+
+                                    @Override
+                                    public ItemStack getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("helmet_"))
+                                        {
+                                            return Match.material().itemStack(input.substring(7, input.length()));
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> EQUIP_HAND =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, ItemStack>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, ItemStack value) {
+                                        entity.getEquipment().setItemInHand(value);
+                                    }
+
+                                    @Override
+                                    public ItemStack getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("inhand_"))
+                                        {
+                                            return Match.material().itemStack(input.substring(7, input.length()));
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> DO_DROP_EQUIP =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new BoolEntityChanger<LivingEntity>("dropEquip") {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, Boolean value) {
+                                        if (value)
+                                        {
+                                            EntityEquipment equipment = entity.getEquipment();
+                                            equipment.setBootsDropChance(1.1F);
+                                            equipment.setLeggingsDropChance(1F);
+                                            equipment.setChestplateDropChance(1.1F);
+                                            equipment.setHelmetDropChance(1F);
+                                            equipment.setItemInHandDropChance(1F);
+                                        }
+                                    }
+                                });
+
+    public static final EntityDataChanger<LivingEntity> DO_NOT_DROP_EQUIP =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new BoolEntityChanger<LivingEntity>("dropNoEquip") {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, Boolean value) {
+                                        if (value)
+                                        {
+                                            EntityEquipment equipment = entity.getEquipment();
+                                            equipment.setBootsDropChance(0F);
+                                            equipment.setLeggingsDropChance(0F);
+                                            equipment.setChestplateDropChance(0F);
+                                            equipment.setHelmetDropChance(0F);
+                                            equipment.setItemInHandDropChance(0F);
+                                        }
+                                    }
+                                });
 
     public static final EntityDataChanger<Horse> HORSE_COLOR =
         new EntityDataChanger<>(Horse.class,
@@ -449,55 +613,6 @@ public class EntityDataChanger<EntityInterface>
                                 });
 
     // TODO HORSE SPEED (Wait for bukkit ): )
-
-// TODO equipment
-/*
-
-    public static final EntityDataChanger<LivingEntity,ItemStack> EQUIP_ITEMINHAND =
-            new EntityDataChanger<LivingEntity,ItemStack>(LivingEntity.class,
-                    new EntityChanger<LivingEntity,ItemStack>() {
-                        @Override
-                        public void applyEntity(LivingEntity entity, ItemStack value) {
-                            entity.getEquipment().setItemInHand(value);
-                        }
-                    });
-
-    public static final EntityDataChanger<LivingEntity,ItemStack> EQUIP_HELMET =
-            new EntityDataChanger<LivingEntity,ItemStack>(LivingEntity.class,
-                    new EntityChanger<LivingEntity,ItemStack>() {
-                        @Override
-                        public void applyEntity(LivingEntity entity, ItemStack value) {
-                            entity.getEquipment().setHelmet(value);
-                        }
-                    });
-
-    public static final EntityDataChanger<LivingEntity,ItemStack> EQUIP_CHESTPLATE =
-            new EntityDataChanger<LivingEntity,ItemStack>(LivingEntity.class,
-                    new EntityChanger<LivingEntity,ItemStack>() {
-                        @Override
-                        public void applyEntity(LivingEntity entity, ItemStack value) {
-                            entity.getEquipment().setChestplate(value);
-                        }
-                    });
-
-    public static final EntityDataChanger<LivingEntity,ItemStack> EQUIP_LEGGINGS =
-            new EntityDataChanger<LivingEntity,ItemStack>(LivingEntity.class,
-                    new EntityChanger<LivingEntity,ItemStack>() {
-                        @Override
-                        public void applyEntity(LivingEntity entity, ItemStack value) {
-                            entity.getEquipment().setLeggings(value);
-                        }
-                    });
-    public static final EntityDataChanger<LivingEntity,ItemStack> EQUIP_BOOTS =
-            new EntityDataChanger<LivingEntity,ItemStack>(LivingEntity.class,
-                    new EntityChanger<LivingEntity,ItemStack>() {
-                        @Override
-                        public void applyEntity(LivingEntity entity, ItemStack value) {
-                            entity.getEquipment().setBoots(value);
-                        }
-                    });
-//*/
-
 
     private EntityDataChanger(Class<EntityInterface> clazz, EntityChanger<EntityInterface, ?> changer)
     {

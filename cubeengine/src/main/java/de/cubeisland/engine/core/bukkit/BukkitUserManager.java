@@ -82,11 +82,11 @@ public class BukkitUserManager extends AbstractUserManager
 
     public User findUser(String name)
     {
-        //Looking up loaded users
         if (name == null)
         {
             return null;
         }
+        //Looking up loaded users
         User user = this.cachedUsers.get(name.toLowerCase());
         if (user == null)
         {
