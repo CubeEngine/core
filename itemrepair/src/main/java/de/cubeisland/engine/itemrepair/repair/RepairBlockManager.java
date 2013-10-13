@@ -27,12 +27,12 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.itemrepair.Itemrepair;
 import de.cubeisland.engine.itemrepair.material.RepairItemContainer;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock;
+import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock.RepairBlockInventory;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 import de.cubeisland.engine.itemrepair.repair.storage.RepairBlockModel;
 import de.cubeisland.engine.itemrepair.repair.storage.RepairBlockPersister;
@@ -197,7 +197,7 @@ public class RepairBlockManager
         {
             return;
         }
-        Inventory inventory;
+        RepairBlockInventory inventory;
         for (RepairBlock repairBlock : this.repairBlocks.values())
         {
             inventory = repairBlock.removeInventory(player);
@@ -205,7 +205,7 @@ public class RepairBlockManager
             {
                 final World world = player.getWorld();
                 final Location loc = player.getLocation();
-                for (ItemStack stack : inventory)
+                for (ItemStack stack : inventory.inventory)
                 {
                     if (stack != null && stack.getType() != Material.AIR)
                     {
