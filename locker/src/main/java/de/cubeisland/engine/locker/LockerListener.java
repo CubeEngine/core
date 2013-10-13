@@ -17,6 +17,10 @@
  */
 package de.cubeisland.engine.locker;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -25,6 +29,7 @@ import org.bukkit.block.Dropper;
 import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -71,9 +76,9 @@ import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 public class LockerListener implements Listener
 {
     private LockManager manager;
-    private de.cubeisland.engine.locker.Locker module;
+    private Locker module;
 
-    public LockerListener(de.cubeisland.engine.locker.Locker module, LockManager manager)
+    public LockerListener(Locker module, LockManager manager)
     {
         this.module = module;
         this.manager = manager;
@@ -393,7 +398,6 @@ public class LockerListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)
     {
-        // TODO hanging Entities that could be protected
         if (!this.module.getConfig().protectFromBlockBreak) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         Lock lock = this.manager.getLockAtLocation(event.getBlock().getLocation(), user);
@@ -403,6 +407,7 @@ public class LockerListener implements Listener
         }
         else
         {
+            // Search for Detachable Blocks
             Location location = new Location(null,0,0,0);
             for (Block block : BlockUtil.getDetachableBlocks(event.getBlock()))
             {
@@ -411,6 +416,39 @@ public class LockerListener implements Listener
                 {
                     lock.handleBlockBreak(event, user);
                     return;
+                }
+            }
+            // Search for Detachable Entities
+            if (module.getConfig().protectsDetachableEntities())
+            {
+                Set<Chunk> chunks = new HashSet<>();
+                chunks.add(event.getBlock().getChunk());
+                chunks.add(event.getBlock().getRelative(BlockFace.NORTH).getChunk());
+                chunks.add(event.getBlock().getRelative(BlockFace.EAST).getChunk());
+                chunks.add(event.getBlock().getRelative(BlockFace.SOUTH).getChunk());
+                chunks.add(event.getBlock().getRelative(BlockFace.WEST).getChunk());
+                Set<Hanging> hangings = new HashSet<>();
+                for (Chunk chunk : chunks)
+                {
+                    for (Entity entity : chunk.getEntities())
+                    {
+                        if (entity instanceof Hanging)
+                        {
+                            hangings.add((Hanging)entity);
+                        }
+                    }
+                }
+                Location entityLoc = new Location(null,0,0,0);
+                for (Hanging hanging : hangings)
+                {
+                    if (hanging.getLocation(entityLoc).getBlock().getRelative(hanging.getAttachedFace()).equals(event.getBlock()))
+                    {
+                        lock = this.manager.getLockForEntityUID(hanging.getUniqueId());
+                        if (lock != null)
+                        {
+                            lock.handleBlockBreak(event, user);
+                        }
+                    }
                 }
             }
         }

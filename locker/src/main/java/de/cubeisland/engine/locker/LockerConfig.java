@@ -146,7 +146,27 @@ public class LockerConfig extends YamlConfiguration
         {
             CubeEngine.getCore().getLog().warn("[Locker] Invalid Configuration! Cannot protect only when offline AND only when online");
         }
+        detachableEntityCount = -1;
+    }
+
+    private int detachableEntityCount = -1;
+
+    public boolean protectsDetachableEntities()
+    {
+        if (detachableEntityCount == -1)
+        {
+            for (EntityLockerConfiguration entityProtection : entityProtections)
+            {
+                switch (entityProtection.type)
+                {
+                    case LEASH_HITCH:
+                    case PAINTING:
+                    case ITEM_FRAME:
+                        detachableEntityCount++;
+                }
+            }
+        }
+        return detachableEntityCount != 0;
     }
 }
-
 
