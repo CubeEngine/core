@@ -82,7 +82,7 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                     }
                     catch (InvalidArgumentException ex)
                     {
-                        sender.sendTranslated("&cInvalid argument for &6%s&c: &6%s\n&c%s", param.getName(), paramValue, ex.getMessage());
+                        sender.sendTranslated("&cInvalid argument for &6%s&c: %s", param.getName(), sender.translate(ex.getMessage(), ex.getMessageArgs()));
                     }
                     continue;
                 }

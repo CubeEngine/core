@@ -40,7 +40,10 @@ public class UserReader extends ArgumentReader
     public User read(String arg, Locale locale) throws InvalidArgumentException
     {
         User user = this.core.getUserManager().findUser(arg);
-        if (user != null) return user;
-        throw new InvalidArgumentException("User " + arg + " not found!");
+        if (user != null)
+        {
+            return user;
+        }
+        throw new InvalidArgumentException("&cUser &2%s&c not found!", arg);
     }
 }
