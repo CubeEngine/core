@@ -39,6 +39,8 @@ public class UserReader extends ArgumentReader
     @Override
     public User read(String arg, Locale locale) throws InvalidArgumentException
     {
-        return this.core.getUserManager().findUser(arg);
+        User user = this.core.getUserManager().findUser(arg);
+        if (user != null) return user;
+        throw new InvalidArgumentException("User " + arg + " not found!");
     }
 }

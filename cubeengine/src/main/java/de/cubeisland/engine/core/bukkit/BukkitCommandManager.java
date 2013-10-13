@@ -60,7 +60,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandFactories = new THashMap<>();
 
         this.commandLogger = LoggerFactory.getLogger("cubeengine.commands");
-        // TODO
+        // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
     }
 
