@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.converstion;
+package de.cubeisland.engine.core.command.conversation;
 
 import java.util.LinkedList;
 import java.util.Locale;
@@ -27,13 +27,11 @@ import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
-
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -75,16 +73,16 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                 CommandParameter param = this.getParameter(paramName);
                 if (param != null && offset + 1 < commandLine.length)
                 {
+                    StringBuilder paramValue = new StringBuilder();
                     try
                     {
                         offset++;
-                        StringBuilder paramValue = new StringBuilder();
                         offset += readString(paramValue, commandLine, offset);
                         params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString(), sender));
                     }
                     catch (InvalidArgumentException ex)
                     {
-                        throw new IncorrectUsageException(); // TODO message.
+                        sender.sendTranslated("&cInvalid argument for &6%s&c: &6%s\n&c%s", param.getName(), paramValue, ex.getMessage());
                     }
                     continue;
                 }

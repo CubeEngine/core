@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.converstion;
+package de.cubeisland.engine.core.command.conversation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
