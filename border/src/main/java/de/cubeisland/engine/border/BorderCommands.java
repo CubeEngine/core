@@ -169,7 +169,7 @@ public class BorderCommands extends ContainerCommand
         {
             this.scheduleGeneration(20 * 10); // Take a 10 second break
             sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
-            rt.gc(); // TODO this causes short lag
+            rt.gc();
             return;
         }
         while (System.currentTimeMillis() - this.tickStart < TIMELIMIT)

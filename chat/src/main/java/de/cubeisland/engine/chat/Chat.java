@@ -46,8 +46,6 @@ public class Chat extends Module implements Listener
     @Inject private Roles roles;
     private String format;
 
-    // TODO /nick cmd
-
     @Override
     public void onEnable()
     {
