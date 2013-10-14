@@ -28,7 +28,7 @@ import de.cubeisland.engine.core.util.convert.Convert;
 
 import gnu.trove.map.hash.THashMap;
 
-public class MapNode extends ParentNode
+public class MapNode extends ParentNode<Map<String,Node>>
 {
     private LinkedHashMap<String, Node> mappedNodes = new LinkedHashMap<>();
     private THashMap<String, String> keys = new THashMap<>(); // LowerCase trimmed -> Original
@@ -57,6 +57,12 @@ public class MapNode extends ParentNode
     private MapNode()
     {}
 
+    @Override
+    public Map<String, Node> getValue()
+    {
+        return this.getMappedNodes();
+    }
+
     /**
      * Returns an empty MapNode
      * <p>This is equivalueent to {@link #MapNode(Map)} with null parameter
@@ -80,7 +86,7 @@ public class MapNode extends ParentNode
     }
 
     @Override
-    protected Node setExactNode(String key, Node node)
+    public Node setExactNode(String key, Node node)
     {
         String loweredKey = key.trim().toLowerCase();
         if (loweredKey.isEmpty())

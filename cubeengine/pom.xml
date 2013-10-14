@@ -16,6 +16,13 @@
     <projectBase>${project.basedir}</projectBase>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>spout-repo</id>
+      <url>http://repo.spout.org/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>com.ibm.icu</groupId>

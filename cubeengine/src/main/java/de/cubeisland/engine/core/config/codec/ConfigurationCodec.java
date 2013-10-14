@@ -31,14 +31,9 @@ import de.cubeisland.engine.core.config.node.Node;
 /**
  * This abstract Codec can be implemented to read and write configurations.
  */
-public abstract class ConfigurationCodec<Config extends Configuration>
+public abstract class ConfigurationCodec<Container extends CodecContainer,Config extends Configuration>
 {
-    protected String COMMENT_PREFIX;
-    protected String OFFSET;
-    protected String LINE_BREAK;
-    protected String QUOTE;
     protected final String PATH_SEPARATOR = ":";
-    protected boolean first;
 
     /**
      * Loads in the given configuration using the InputStream
@@ -63,20 +58,11 @@ public abstract class ConfigurationCodec<Config extends Configuration>
     }
 
     /**
-     * Returns the offset as String
+     * Creates a new CodecContainer for this Codec
      *
-     * @param offset the offset
-     * @return the offset
+     * @return
      */
-    protected String offset(int offset)
-    {
-        StringBuilder off = new StringBuilder("");
-        for (int i = 0; i < offset; ++i)
-        {
-            off.append(OFFSET);
-        }
-        return off.toString();
-    }
+    protected abstract Container createCodecContainer();
 
     /**
      * Saves the configuration into given file
@@ -92,7 +78,7 @@ public abstract class ConfigurationCodec<Config extends Configuration>
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            CodecContainer container = new CodecContainer<ConfigurationCodec>(this);
+            CodecContainer container = this.createCodecContainer();
             container.values = MapNode.emptyMap();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
@@ -107,38 +93,6 @@ public abstract class ConfigurationCodec<Config extends Configuration>
             throw new InvalidConfigurationException("Error while saving Configuration!", ex);
         }
     }
-
-    /**
-     * Serializes the values in the map
-     *
-     * @param container the codec-container
-     * @param values the values at given path
-     * @param off the current offset
-     * @param inCollection
-     * @return  the serialized value
-     */
-    public abstract String convertMap(CodecContainer container, MapNode values, int off, boolean inCollection);
-
-    /**
-     * Serializes a single value
-     *
-     * @param container the codec-container
-     * @param value the value at given path
-     * @param off the current offset
-     * @param inCollection
-     * @return
-     */
-    public abstract String convertValue(CodecContainer container, Node value, int off, boolean inCollection);
-
-    /**
-     * Builds a the comment for given path
-     *
-     * @param path the path
-     * @param off the current offset
-     * @return the comment
-     */
-    public abstract String buildComment(CodecContainer container, String path, int off);
-
     /**
      * Returns the FileExtension as String
      *

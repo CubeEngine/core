@@ -22,7 +22,7 @@ import de.cubeisland.engine.core.CubeEngine;
 /**
  * A Node that can be a parent of another Node
  */
-public abstract class ParentNode extends Node
+public abstract class ParentNode<V> extends Node<V>
 {
 
     /**

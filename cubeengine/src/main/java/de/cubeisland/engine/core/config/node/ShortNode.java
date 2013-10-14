@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.node;
 
-public class ShortNode extends Node
+public class ShortNode extends Node<Short>
 {
     private short value;
 
@@ -26,7 +26,8 @@ public class ShortNode extends Node
         this.value = value;
     }
 
-    public short getValue()
+    @Override
+    public Short getValue()
     {
         return value;
     }

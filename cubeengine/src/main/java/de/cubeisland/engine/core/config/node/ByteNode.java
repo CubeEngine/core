@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.node;
 
-public class ByteNode extends Node
+public class ByteNode extends Node<Byte>
 {
     private byte value;
 
@@ -26,9 +26,9 @@ public class ByteNode extends Node
         this.value = value;
     }
 
-    public byte getValue()
+    @Override
+    public Byte getValue()
     {
-
         return this.value;
     }
 

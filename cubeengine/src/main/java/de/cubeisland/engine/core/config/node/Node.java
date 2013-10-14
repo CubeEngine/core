@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.config.node;
 /**
  * A config Node
  */
-public abstract class Node
+public abstract class Node<V>
 {
     private ParentNode parentNode;
 
@@ -61,6 +61,8 @@ public abstract class Node
         else
             return path;
     }
+
+    public abstract V getValue();
 
     /**
      * Returns the subPath of this path

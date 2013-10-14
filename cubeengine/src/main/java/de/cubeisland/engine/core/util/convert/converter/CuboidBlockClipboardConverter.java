@@ -15,32 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.config.node;
+package de.cubeisland.engine.core.util.convert.converter;
 
-public class CharNode extends Node<Character>
+import de.cubeisland.cubeengine.core.config.node.Node;
+import de.cubeisland.cubeengine.core.util.clipboard.CuboidBlockClipboard;
+import de.cubeisland.cubeengine.core.util.convert.ConversionException;
+import de.cubeisland.cubeengine.core.util.convert.Converter;
+
+public class CuboidBlockClipboardConverter implements Converter<CuboidBlockClipboard>
 {
-    private char value;
-
-    public CharNode(Character value)
+    @Override
+    public Node toNode(CuboidBlockClipboard object) throws ConversionException
     {
-        this.value = value;
+        return object.toNode();
     }
 
     @Override
-    public Character getValue()
+    public CuboidBlockClipboard fromNode(Node node) throws ConversionException
     {
-        return value;
-    }
-
-    @Override
-    public String unwrap()
-    {
-        return String.valueOf(value);
-    }
-
-    @Override
-    public String toString()
-    {
-        return "CharNode=["+value+"]";
+        return CuboidBlockClipboard.fromNode(node);
     }
 }

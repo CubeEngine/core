@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.config.node;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import de.cubeisland.engine.core.util.convert.Convert;
@@ -60,6 +61,12 @@ public class ListNode extends ParentNode
     public ArrayList<Node> getListedNodes()
     {
         return listedNodes;
+    }
+
+    @Override
+    public List<Node> getValue()
+    {
+        return this.getListedNodes();
     }
 
     public static ListNode emptyList()

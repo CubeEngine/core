@@ -54,7 +54,7 @@ public class MapConverter
             }
             else
             {
-                throw new ConversionException("Map-Key did not serialize into a StringNode!");
+                result.setNode(StringNode.of(keyNode.unwrap()),Convert.toNode(map.get(key)));
             }
         }
         return result;

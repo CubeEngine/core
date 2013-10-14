@@ -28,6 +28,12 @@ public class NullNode extends Node
     }
 
     @Override
+    public Object getValue()
+    {
+        return null;
+    }
+
+    @Override
     public String unwrap()
     {
         return "";

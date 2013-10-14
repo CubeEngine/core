@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -52,22 +53,28 @@ import gnu.trove.map.hash.THashMap;
  * This class temporarily holds the values/comments of the configuration to
  * save or load them.
  */
-public class CodecContainer<ConfigCodec extends ConfigurationCodec>
+public abstract class CodecContainer<Container extends CodecContainer, ConfigCodec extends ConfigurationCodec>
 {
     public MapNode values;
-    public Map<String, String> comments;
     public Integer revision = null;
-    public CodecContainer superContainer = null; // used if given config is a SubConfig
-    private String parentPath;
+    public Container superContainer = null; // used if given config is a SubConfig
+    protected String parentPath;
 
     protected ConfigCodec codec;
+
+    private Class<Container> clazz;
+
+    private CodecContainer()
+    {
+        this.clazz = (Class<Container>)this.getClass();
+    }
 
     /**
      * Container for normal Configuration
      */
     public CodecContainer(ConfigCodec codec)
     {
-        this.comments = new THashMap<>();
+        this();
         this.codec = codec;
     }
 
@@ -76,11 +83,62 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
      *
      * @param superContainer
      */
-    public CodecContainer(CodecContainer<ConfigCodec> superContainer, String parentPath)
+    protected CodecContainer(Container superContainer, String parentPath)
     {
-        this.codec = superContainer.codec;
+        this();
+        this.codec = (ConfigCodec)superContainer.codec;
         this.superContainer = superContainer;
         this.parentPath = parentPath;
+    }
+
+    public Container createContainer()
+    {
+        try
+        {
+            Container codecContainer = clazz.getConstructor(this.codec.getClass()).newInstance(this.codec);
+            return codecContainer;
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InstantiationException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+    }
+
+    public Container createSubContainer(String parentPath)
+    {
+        try
+        {
+            Container codecContainer = clazz.getConstructor(this.getClass(),String.class).newInstance(this,parentPath);
+            return codecContainer;
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (InstantiationException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new IllegalStateException("Invalid CodecContainer!");
+        }
     }
 
     /**
@@ -191,7 +249,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                                         "\nConfig:" + config.getClass() +
                                         "\nSubConfig:" + singleSubConfig.getClass());
                             }
-                            new CodecContainer(codec).dumpIntoFields(singleSubConfig, loadFrom_singleConfig);
+                            this.createContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig);
                             continue;
                         case COLLECTION_CONFIG_FIELD:
                             ListNode loadFrom_List;
@@ -231,7 +289,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                                 }
                                 if (loadFrom_listElem instanceof MapNode)
                                 {
-                                    new CodecContainer(codec).dumpIntoFields(subConfig, (MapNode)loadFrom_listElem);
+                                    this.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem);
                                 }
                                 else
                                 {
@@ -272,7 +330,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                                 }
                                 else if (valueNode instanceof MapNode)
                                 {
-                                    new CodecContainer(codec).dumpIntoFields(value = clazz.newInstance(), (MapNode)valueNode);
+                                    this.createContainer().dumpIntoFields(value = clazz.newInstance(), (MapNode)valueNode);
                                 }
                                 else
                                 {
@@ -313,54 +371,13 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
     }
 
     /**
-     * Converts the values into a String to save
+     * Fills the outputstream with data to save
      *
      * @return the converted map
      */
-    private String dumpIntoString(Configuration config)
-    {
-        StringBuilder sb = new StringBuilder();
-        if (config.head() != null)
-        {
-            sb.append("# ").append(StringUtils.implode("\n# ", config.head())).append(codec.LINE_BREAK).append(codec.LINE_BREAK);
-        }
-        codec.first = true;
-        sb.append(codec.convertMap(this, values, 0, false).trim()).append("\n");
-        if (config.tail() != null)
-        {
-            sb.append("# ").append(StringUtils.implode("\n# ", config.tail()));
-        }
-        return sb.toString();
-    }
+    protected abstract void writeConfigToStream(OutputStream stream, Configuration config) throws IOException;
 
-    /**
-     * Adds a comment to be saved
-     *
-     * @param commentPath the commentPath
-     * @param comment the comment
-     */
-    protected void addComment(String commentPath, String comment)
-    {
-        if (superContainer == null)
-        {
-            this.comments.put(commentPath.toLowerCase(), comment);
-        }
-        else
-        {
-            superContainer.addComment(this.parentPath + codec.PATH_SEPARATOR + commentPath, comment);
-        }
-    }
 
-    /**
-     * gets the comment for given path
-     *
-     * @param path the path of the comment
-     * @return the comment
-     */
-    public String getComment(String path)
-    {
-        return this.comments.get(path);
-    }
 
     /**
      * Fills the map with values from the Fields to save
@@ -371,14 +388,7 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
     public <C extends Configuration> void fillFromFields(C config, MapNode baseNode)
     {
         Class<C> configClass = (Class<C>) config.getClass();
-        if (configClass.isAnnotationPresent(MapComments.class))
-        {
-            MapComment[] mapComments = configClass.getAnnotation(MapComments.class).value();
-            for (MapComment comment : mapComments)
-            {
-                this.addComment(comment.path().replace(".", codec.PATH_SEPARATOR), comment.text());
-            }
-        }
+
         boolean advanced = true;
         try
         // to get a boolean advanced field (if not found ignore)
@@ -397,57 +407,60 @@ public class CodecContainer<ConfigCodec extends ConfigurationCodec>
                     continue;
                 }
                 String path = field.getAnnotation(Option.class).value().replace(".", codec.PATH_SEPARATOR);
-                try
+                this.fillFromField(field,config,baseNode,path);
+            }
+
+        }
+    }
+
+    protected void fillFromField(Field field, Configuration config, MapNode baseNode, String path)
+    {
+        try
+        {
+            Object fieldValue = field.get(config);
+            int fieldType = this.getFieldType(field);
+            switch (fieldType)
+            {
+            case NORMAL_FIELD:
+                Node fieldValueNode = Convert.toNode(fieldValue);
+                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
+                return;
+            case CONFIG_FIELD:
+                CodecContainer subContainer = this.createSubContainer(path); // Create new container
+                subContainer.fillFromFields((Configuration)fieldValue,
+                                            (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
+                return;
+            case COLLECTION_CONFIG_FIELD:
+                ListNode listNode = ListNode.emptyList();
+                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, listNode);
+                int pos = 0;
+                for (Configuration subConfig : (Collection<Configuration>)fieldValue)
                 {
-                    Object fieldValue = field.get(config);
-                    if (field.isAnnotationPresent(Comment.class))
+                    MapNode configNode = MapNode.emptyMap();
+                    listNode.addNode(configNode);
+                    this.createSubContainer(path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
+                }
+                return;
+            case MAP_CONFIG_FIELD:
+                MapNode mapNode = MapNode.emptyMap();
+                baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
+                Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
+                for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
+                {
+                    Node keyNode = Convert.toNode(entry.getKey());
+                    if (keyNode instanceof StringNode)
                     {
-                        Comment comment = field.getAnnotation(Comment.class);
-                        this.addComment(path, comment.value());
+                        MapNode configNode = MapNode.emptyMap();
+                        mapNode.setNode((StringNode)keyNode, configNode);
+                        this.createSubContainer(path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                            .fillFromFields(entry.getValue(), configNode);
                     }
-                    int fieldType = this.getFieldType(field);
-                    switch (fieldType)
+                    else
                     {
-                    case NORMAL_FIELD:
-                        Node fieldValueNode = Convert.toNode(fieldValue);
-                        baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
-                        continue;
-                    case CONFIG_FIELD:
-                        CodecContainer subContainer = new CodecContainer(this, path); // Create new container
-                        subContainer.fillFromFields((Configuration)fieldValue,
-                                                    (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
-                        continue;
-                    case COLLECTION_CONFIG_FIELD:
-                        ListNode listNode = ListNode.emptyList();
-                        baseNode.setNodeAt(path, codec.PATH_SEPARATOR, listNode);
-                        int pos = 0;
-                        for (Configuration subConfig : (Collection<Configuration>)fieldValue)
-                        {
-                            MapNode configNode = MapNode.emptyMap();
-                            listNode.addNode(configNode);
-                            new CodecContainer(this, path + codec.PATH_SEPARATOR + "[" + pos++).fillFromFields(subConfig, configNode);
-                        }
-                        continue;
-                    case MAP_CONFIG_FIELD:
-                        MapNode mapNode = MapNode.emptyMap();
-                        baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
-                        Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
-                        for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
-                        {
-                            Node keyNode = Convert.toNode(entry.getKey());
-                            if (keyNode instanceof StringNode)
-                            {
-                                MapNode configNode = MapNode.emptyMap();
-                                mapNode.setNode((StringNode)keyNode, configNode);
-                                new CodecContainer(this, path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
-                                    .fillFromFields(entry.getValue(), configNode);
-                            }
-                            else
-                            {
-                                throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                                                            "\nConfig:" + config.getClass());
-                            }
-                        }
+                        throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
+                                                                    "\nConfig:" + config.getClass());
+                    }
+                }
                         continue;
                     }
                 }

@@ -44,6 +44,7 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
     static
     {
         registerCodec(new YamlCodec(), "yml", "yaml");
+        registerCodec(new NBTCodec(), "dat", "nbt");
     }
 
     public Configuration()

@@ -15,32 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.config.node;
+package de.cubeisland.engine.core.config.codec;
 
-public class CharNode extends Node<Character>
+public interface CommentableCodec<Container extends CodecContainer>
 {
-    private char value;
-
-    public CharNode(Character value)
-    {
-        this.value = value;
-    }
-
-    @Override
-    public Character getValue()
-    {
-        return value;
-    }
-
-    @Override
-    public String unwrap()
-    {
-        return String.valueOf(value);
-    }
-
-    @Override
-    public String toString()
-    {
-        return "CharNode=["+value+"]";
-    }
+    /**
+     * Builds a the comment for given path
+     *
+     * @param path the path
+     * @param off the current offset
+     * @return the comment
+     */
+    public String buildComment(Container container, String path, int off);
 }

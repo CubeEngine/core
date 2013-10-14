@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.node;
 
-public class IntNode extends Node
+public class IntNode extends Node<Integer>
 {
 
     private int value;
@@ -27,7 +27,8 @@ public class IntNode extends Node
         this.value = value;
     }
 
-    public int getValue()
+    @Override
+    public Integer getValue()
     {
         return value;
     }

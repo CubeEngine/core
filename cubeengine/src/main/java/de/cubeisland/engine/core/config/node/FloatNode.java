@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.node;
 
-public class FloatNode extends Node
+public class FloatNode extends Node<Float>
 {
     private float value;
 
@@ -26,7 +26,8 @@ public class FloatNode extends Node
         this.value = value;
     }
 
-    public float getValue()
+    @Override
+    public Float getValue()
     {
         return value;
     }

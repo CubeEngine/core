@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.node;
 
-public class DoubleNode extends Node
+public class DoubleNode extends Node<Double>
 {
     private double value;
 
@@ -26,7 +26,8 @@ public class DoubleNode extends Node
         this.value = value;
     }
 
-    public double getValue()
+    @Override
+    public Double getValue()
     {
         return value;
     }
