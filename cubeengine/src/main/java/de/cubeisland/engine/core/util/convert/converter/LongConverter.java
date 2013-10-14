@@ -31,7 +31,7 @@ public class LongConverter extends BasicConverter<Long>
         {
             return ((LongNode)node).getValue();
         }
-        String s = node.unwrap();
+        String s = node.asText();
         try
         {
             return Long.parseLong(s);

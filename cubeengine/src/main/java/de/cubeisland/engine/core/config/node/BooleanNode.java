@@ -19,9 +19,12 @@ package de.cubeisland.engine.core.config.node;
 
 public class BooleanNode extends Node<Boolean>
 {
-    private boolean bool;
+    private final boolean bool;
 
-    public BooleanNode(Boolean bool)
+    private static final BooleanNode TRUE = new BooleanNode(true);
+    private static final BooleanNode FALSE = new BooleanNode(false);
+
+    private BooleanNode(boolean bool)
     {
         this.bool = bool;
     }
@@ -33,19 +36,28 @@ public class BooleanNode extends Node<Boolean>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(bool);
     }
 
     public static BooleanNode falseNode()
     {
-        return new BooleanNode(false);
+        return FALSE;
     }
 
     public static BooleanNode trueNode()
     {
-        return new BooleanNode(true);
+        return TRUE;
+    }
+
+    public static BooleanNode of(boolean bool)
+    {
+        if (bool)
+        {
+            return TRUE;
+        }
+        return FALSE;
     }
 
     @Override

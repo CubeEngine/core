@@ -72,7 +72,7 @@ public class KitItemConverter implements Converter<KitItem>
         }
         else
         {
-            itemString = node.unwrap();
+            itemString = node.asText();
         }
         if (itemString.matches(pat.pattern()))
         {

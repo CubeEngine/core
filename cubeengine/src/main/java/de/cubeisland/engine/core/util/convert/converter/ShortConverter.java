@@ -31,7 +31,7 @@ public class ShortConverter extends BasicConverter<Short>
         {
             return ((ShortNode)node).getValue();
         }
-        String s = node.unwrap();
+        String s = node.asText();
         try
         {
             return Short.parseShort(s);

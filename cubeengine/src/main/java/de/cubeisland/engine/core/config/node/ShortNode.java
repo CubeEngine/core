@@ -21,7 +21,7 @@ public class ShortNode extends Node<Short>
 {
     private short value;
 
-    public ShortNode(Short value)
+    public ShortNode(short value)
     {
         this.value = value;
     }
@@ -33,7 +33,7 @@ public class ShortNode extends Node<Short>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(value);
     }

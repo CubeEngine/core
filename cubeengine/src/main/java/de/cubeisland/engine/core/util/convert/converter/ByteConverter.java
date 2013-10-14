@@ -31,7 +31,7 @@ public class ByteConverter extends BasicConverter<Byte>
         {
             return ((ByteNode)node).getValue();
         }
-        String s = node.unwrap();
+        String s = node.asText();
         try
         {
             return Byte.parseByte(s);

@@ -22,7 +22,7 @@ public class IntNode extends Node<Integer>
 
     private int value;
 
-    public IntNode(Integer value)
+    public IntNode(int value)
     {
         this.value = value;
     }
@@ -34,7 +34,7 @@ public class IntNode extends Node<Integer>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(value);
     }

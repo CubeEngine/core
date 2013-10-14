@@ -31,7 +31,7 @@ public class IntegerConverter extends BasicConverter<Integer>
         {
             return ((IntNode)node).getValue();
         }
-        String s = node.unwrap();
+        String s = node.asText();
         try
         {
             return Integer.parseInt(s);

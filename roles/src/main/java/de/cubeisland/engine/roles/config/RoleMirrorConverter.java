@@ -95,15 +95,15 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             boolean assigned = false;
             for (Node inList : world.getListedNodes())
             {
-                if (inList.unwrap().equals("roles"))
+                if (inList.asText().equals("roles"))
                 {
                     roles = true;
                 }
-                else if (inList.unwrap().equals("users"))
+                else if (inList.asText().equals("users"))
                 {
                     users = true;
                 }
-                else if (inList.unwrap().equals("assigned"))
+                else if (inList.asText().equals("assigned"))
                 {
                     assigned = true;
                 }

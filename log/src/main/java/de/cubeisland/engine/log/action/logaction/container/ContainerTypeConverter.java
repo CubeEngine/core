@@ -33,6 +33,6 @@ public class ContainerTypeConverter implements Converter<ContainerType>
     @Override
     public ContainerType fromNode(Node node) throws ConversionException
     {
-        return ContainerType.ofName(node.unwrap());
+        return ContainerType.ofName(node.asText());
     }
 }

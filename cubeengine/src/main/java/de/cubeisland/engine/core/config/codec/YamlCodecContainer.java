@@ -249,7 +249,7 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodecContainer,Y
             }
             else
             {
-                writer.append(value.unwrap());
+                writer.append(value.asText());
             }
         }
         this.first = false;

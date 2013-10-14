@@ -31,7 +31,7 @@ public class FloatConverter extends BasicConverter<Float>
         {
             return ((FloatNode)node).getValue();
         }
-        String s = node.unwrap();
+        String s = node.asText();
         try
         {
             return Float.parseFloat(s);

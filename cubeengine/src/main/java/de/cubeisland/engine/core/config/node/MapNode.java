@@ -134,7 +134,7 @@ public class MapNode extends ParentNode<Map<String,Node>>
     }
 
     @Override
-    protected String getPath(Node node, String path, String pathSeparator)
+    protected String getPathOfSubNode(Node node, String path, String pathSeparator)
     {
         String key = this.reverseMappedNodes.get(node);
         if (key == null)
@@ -151,11 +151,16 @@ public class MapNode extends ParentNode<Map<String,Node>>
         }
         if (this.getParentNode() != null)
         {
-            return this.getParentNode().getPath(this, path, pathSeparator);
+            return this.getParentNode().getPathOfSubNode(this, path, pathSeparator);
         }
         return path;
     }
 
+    @Override
+    public String getPathOfSubNode(Node node, String pathSeparator)
+    {
+        return this.getPathOfSubNode(node, "", pathSeparator);
+    }
 
     @Override
     public void cleanUpEmptyNodes()

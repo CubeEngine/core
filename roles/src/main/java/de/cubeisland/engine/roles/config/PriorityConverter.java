@@ -33,10 +33,10 @@ public class PriorityConverter implements Converter<Priority>
     @Override
     public Priority fromNode(Node node) throws ConversionException
     {
-        Priority prio = Priority.getByName(node.unwrap());
+        Priority prio = Priority.getByName(node.asText());
         if (prio == null)
         {
-            prio = Priority.getByValue(Integer.valueOf(node.unwrap()));
+            prio = Priority.getByValue(Integer.valueOf(node.asText()));
         }
         return prio;
     }

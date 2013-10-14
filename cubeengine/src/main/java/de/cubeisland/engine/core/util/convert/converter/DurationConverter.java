@@ -35,6 +35,6 @@ public class DurationConverter implements Converter<Duration>
     @Override
     public Duration fromNode(Node node) throws ConversionException
     {
-        return new Duration(node.unwrap());
+        return new Duration(node.asText());
     }
 }

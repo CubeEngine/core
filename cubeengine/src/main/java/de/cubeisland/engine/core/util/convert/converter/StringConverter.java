@@ -31,6 +31,6 @@ public class StringConverter extends BasicConverter<String>
         {
             return ((StringNode)node).getValue();
         }
-        return node.unwrap();
+        return node.asText();
     }
 }

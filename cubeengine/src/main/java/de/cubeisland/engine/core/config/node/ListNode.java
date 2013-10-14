@@ -186,7 +186,7 @@ public class ListNode extends ParentNode
     }
 
     @Override
-    protected String getPath(Node node, String path, String pathSeparator)
+    protected String getPathOfSubNode(Node node, String path, String pathSeparator)
     {
         int pos = this.listedNodes.indexOf(node);
         if (pos == -1)
@@ -203,9 +203,15 @@ public class ListNode extends ParentNode
         }
         if (this.getParentNode() != null)
         {
-            return this.getParentNode().getPath(this, path, pathSeparator);
+            return this.getParentNode().getPathOfSubNode(this, path, pathSeparator);
         }
         return path;
+    }
+
+    @Override
+    public String getPathOfSubNode(Node node, String pathSeparator)
+    {
+        return this.getPathOfSubNode(node, "", pathSeparator);
     }
 
     @Override

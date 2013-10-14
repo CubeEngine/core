@@ -21,7 +21,7 @@ public class DoubleNode extends Node<Double>
 {
     private double value;
 
-    public DoubleNode(Double value)
+    public DoubleNode(double value)
     {
         this.value = value;
     }
@@ -33,7 +33,7 @@ public class DoubleNode extends Node<Double>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(value);
     }

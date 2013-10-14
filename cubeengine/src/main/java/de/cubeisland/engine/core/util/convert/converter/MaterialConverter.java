@@ -39,7 +39,7 @@ public class MaterialConverter implements Converter<Material>
     {
         if (node instanceof StringNode)
         {
-            return Match.material().material(node.unwrap());
+            return Match.material().material(node.asText());
         }
         throw new ConversionException("Invalid Node!" + node.getClass());
     }

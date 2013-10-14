@@ -39,7 +39,7 @@ public class StringNode extends Node<String>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return value;
     }

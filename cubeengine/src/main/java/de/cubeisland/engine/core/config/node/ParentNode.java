@@ -66,8 +66,8 @@ public abstract class ParentNode<V> extends Node<V>
     {
         if (path.contains(pathSeparator))
         {
-            String basePath = this.getBasePath(path, pathSeparator);
-            String subPath = this.getSubPath(path, pathSeparator);
+            String basePath = getBasePath(path, pathSeparator);
+            String subPath = getSubPath(path, pathSeparator);
             Node baseNode = this.getNodeAt(basePath, pathSeparator);
             if (baseNode instanceof NullNode) // node not found -> create new node
             {
@@ -108,7 +108,26 @@ public abstract class ParentNode<V> extends Node<V>
         }
     }
 
-    protected abstract String getPath(Node node, String path, String pathSeparator);
+    /**
+     * Generates the path for a Node having this node as ParentNode
+     *
+     * @param node the node to get the path for
+     * @param path the current path
+     * @param pathSeparator the pathSeparator
+     * @return the path to given node OR if path is not empty to the node pointed in that path
+     * @throws IllegalArgumentException when the Node is not managed by this ParentNode
+     */
+    protected abstract String getPathOfSubNode(Node node, String path, String pathSeparator);
+
+    /**
+     * Generates the path for a Node having this node as ParentNode
+     *
+     * @param node the node to get the path for
+     * @param pathSeparator the pathSeparator
+     * @return the path to given node
+     * @throws IllegalArgumentException when the Node is not managed by this ParentNode
+     */
+    public abstract String getPathOfSubNode(Node node, String pathSeparator);
 
     /**
      * Returns the Node for given direct key (without pathseparators).
@@ -120,6 +139,27 @@ public abstract class ParentNode<V> extends Node<V>
     public abstract Node getExactNode(String key);
 
     /**
+     * Removes the node for given direct key (without pathseparators).
+     * <p>The key will be lowercased!
+     *
+     * @param key the key
+     * @return the previously mapped Node or null if not set
+     */
+    protected abstract Node removeExactNode(String key);
+
+    /**
+     * Searches for ParentNodes that do not contain data and deletes them
+     */
+    public abstract void cleanUpEmptyNodes();
+
+    /**
+     * Returns whether this node contains data
+     *
+     * @return true if this node contains no data
+     */
+    public abstract boolean isEmpty();
+
+    /**
      * Removes the Node for given path
      *
      * @param path the path
@@ -129,26 +169,14 @@ public abstract class ParentNode<V> extends Node<V>
     public Node removeNode(String path, String pathSeparator)
     {
         Node nodeToRemove = this.getNodeAt(path, pathSeparator);
-        return nodeToRemove.getParentNode().removeExactNode(this.getSubKey(path, pathSeparator));
+        return nodeToRemove.getParentNode().removeExactNode(getSubKey(path, pathSeparator));
     }
 
-    /**
-     * Removes the node for given direct key (without pathseparators).
-     * <p>The key will be lowercased!
-     *
-     * @param key the key
-     * @return the previously mapped Node or null if not set
-     */
-    protected abstract Node removeExactNode(String key);
-
-    public abstract boolean isEmpty();
-
     @Override
-    public String unwrap()
+    public String asText()
     {
         CubeEngine.getLog().warn("Unexpected parent-node data! Is the config up to date?");
         return null;
     }
 
-    public abstract void cleanUpEmptyNodes();
 }

@@ -21,7 +21,7 @@ public class LongNode extends Node<Long>
 {
     private long value;
 
-    public LongNode(Long value)
+    public LongNode(long value)
     {
         this.value = value;
     }
@@ -33,7 +33,7 @@ public class LongNode extends Node<Long>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(value);
     }

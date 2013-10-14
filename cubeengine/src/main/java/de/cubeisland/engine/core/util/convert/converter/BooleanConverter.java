@@ -31,7 +31,7 @@ public class BooleanConverter extends BasicConverter<Boolean>
         {
             return ((BooleanNode)node).getValue();
         }
-        String s = node.unwrap();
+        String s = node.asText();
         try
         {
             if (s == null)

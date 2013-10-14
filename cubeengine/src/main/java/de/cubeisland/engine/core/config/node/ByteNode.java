@@ -21,7 +21,7 @@ public class ByteNode extends Node<Byte>
 {
     private byte value;
 
-    public ByteNode(Byte value)
+    public ByteNode(byte value)
     {
         this.value = value;
     }
@@ -33,7 +33,7 @@ public class ByteNode extends Node<Byte>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(value);
     }

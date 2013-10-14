@@ -71,7 +71,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
         C configuration;
         if (node instanceof StringNode)
         {
-            configuration = fromString(node.unwrap());
+            configuration = fromString(node.asText());
         }
         else
         {
@@ -89,7 +89,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
                 if (entry.getKey().equals("auto-protect"))
                 {
                     configuration.autoProtect = true;
-                    configuration.autoProtectType = LockType.valueOf(entry.getValue().unwrap());
+                    configuration.autoProtectType = LockType.valueOf(entry.getValue().asText());
                 }
                 if (entry.getKey().equals("default-flags"))
                 {
@@ -97,7 +97,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
                     configuration.defaultFlags = new ArrayList<>();
                     for (Node listedNode : list.getListedNodes())
                     {
-                        ProtectionFlag flag = ProtectionFlag.valueOf(listedNode.unwrap());
+                        ProtectionFlag flag = ProtectionFlag.valueOf(listedNode.asText());
                         if (configuration.protectedType.supportedFlags.contains(flag))
                         {
                             configuration.defaultFlags.add(flag);

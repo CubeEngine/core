@@ -31,7 +31,7 @@ public class DoubleConverter extends BasicConverter<Double>
         {
             return ((DoubleNode)node).getValue();
         }
-        String s = node.unwrap();
+        String s = node.asText();
         try
         {
             return Double.parseDouble(s);

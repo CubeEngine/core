@@ -24,26 +24,54 @@ public abstract class Node<V>
 {
     private ParentNode parentNode;
 
+    /**
+     * Gets the ParentNode
+     *
+     * @return the ParentNode OR null if not set
+     */
     public ParentNode getParentNode()
     {
         return parentNode;
     }
 
+    /**
+     * Sets a ParentNode for this Node
+     *
+     * @param parentNode the ParentNode
+     */
     public void setParentNode(ParentNode parentNode)
     {
         this.parentNode = parentNode;
     }
 
+    /**
+     * Constructs a path down too the root node for this node
+     *
+     * @param pathSeparator the path-separator to use
+     * @return the path or null if this node is a root-node
+     */
     public String getPath(String pathSeparator)
     {
         if (this.getParentNode() == null)
         {
             return null;
         }
-        return this.getParentNode().getPath(this, "", pathSeparator);
+        return this.getParentNode().getPathOfSubNode(this, pathSeparator);
     }
 
-    public abstract String unwrap();
+    /**
+     * Tries to convert the value of the node into a string
+     *
+     * @return the converted node value
+     */
+    public abstract String asText();
+
+    /**
+     * Gets the Value contained in this Node
+     *
+     * @return the NodeValue
+     */
+    public abstract V getValue();
 
     /**
      * Returns the last subKey of this path
@@ -57,12 +85,14 @@ public abstract class Node<V>
     public static String getSubKey(String path, String pathSeparator)
     {
         if (path.contains(pathSeparator))
+        {
             return path.substring(path.lastIndexOf(pathSeparator) + 1);
+        }
         else
+        {
             return path;
+        }
     }
-
-    public abstract V getValue();
 
     /**
      * Returns the subPath of this path
@@ -76,9 +106,13 @@ public abstract class Node<V>
     public static String getSubPath(String path, String pathSeparator)
     {
         if (path.contains(pathSeparator))
+        {
             return path.substring(path.indexOf(pathSeparator) + 1);
+        }
         else
+        {
             return path;
+        }
     }
 
     /**
@@ -92,9 +126,13 @@ public abstract class Node<V>
     public static String getBasePath(String path, String pathSeparator)
     {
         if (path.contains(pathSeparator))
+        {
             return path.substring(0, path.indexOf(pathSeparator));
+        }
         else
+        {
             return path;
+        }
     }
 
     public abstract String toString();

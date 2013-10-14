@@ -34,7 +34,7 @@ public class NullNode extends Node
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return "";
     }

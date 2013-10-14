@@ -21,7 +21,7 @@ public class FloatNode extends Node<Float>
 {
     private float value;
 
-    public FloatNode(Float value)
+    public FloatNode(float value)
     {
         this.value = value;
     }
@@ -33,7 +33,7 @@ public class FloatNode extends Node<Float>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(value);
     }

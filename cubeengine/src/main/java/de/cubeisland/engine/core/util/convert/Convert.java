@@ -264,7 +264,7 @@ public class Convert
         }
         if (o instanceof Boolean || o.getClass() == boolean.class)
         {
-            return new BooleanNode((boolean)o);
+            return BooleanNode.of((boolean)o);
         }
         if (o instanceof Character || o.getClass() == char.class)
         {

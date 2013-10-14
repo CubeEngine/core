@@ -72,13 +72,13 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
                         {
                             if (subValue instanceof StringNode)
                             {
-                                if (subValue.unwrap().startsWith("-"))
+                                if (subValue.asText().startsWith("-"))
                                 {
-                                    result.addNode(StringNode.of("-" + entry.getKey() + "." + subValue.unwrap().substring(1)));
+                                    result.addNode(StringNode.of("-" + entry.getKey() + "." + subValue.asText().substring(1)));
                                 }
                                 else
                                 {
-                                    result.addNode(StringNode.of(entry.getKey() + "." + subValue.unwrap()));
+                                    result.addNode(StringNode.of(entry.getKey() + "." + subValue.asText()));
                                 }
                             }
                             else
@@ -155,7 +155,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
         {
             if (value instanceof StringNode)
             {
-                String permissionString = value.unwrap();
+                String permissionString = value.asText();
                 boolean isSet = true;
                 if (permissionString.startsWith("!") || permissionString.startsWith("^") || permissionString.startsWith("-"))
                 {

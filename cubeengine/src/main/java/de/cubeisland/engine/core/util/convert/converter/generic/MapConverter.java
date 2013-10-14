@@ -54,7 +54,7 @@ public class MapConverter
             }
             else
             {
-                result.setNode(StringNode.of(keyNode.unwrap()),Convert.toNode(map.get(key)));
+                result.setNode(StringNode.of(keyNode.asText()),Convert.toNode(map.get(key)));
             }
         }
         return result;

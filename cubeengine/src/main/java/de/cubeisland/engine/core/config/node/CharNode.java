@@ -21,7 +21,7 @@ public class CharNode extends Node<Character>
 {
     private char value;
 
-    public CharNode(Character value)
+    public CharNode(char value)
     {
         this.value = value;
     }
@@ -33,7 +33,7 @@ public class CharNode extends Node<Character>
     }
 
     @Override
-    public String unwrap()
+    public String asText()
     {
         return String.valueOf(value);
     }
