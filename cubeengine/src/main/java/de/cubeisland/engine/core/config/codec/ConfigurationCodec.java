@@ -22,9 +22,6 @@ import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
-import de.cubeisland.engine.core.config.annotations.Revision;
-import de.cubeisland.engine.core.config.annotations.Updater;
-import de.cubeisland.engine.core.config.node.IntNode;
 import de.cubeisland.engine.core.config.node.MapNode;
 
 /**
@@ -44,15 +41,6 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
     {
         CodecContainer container = this.createContainer();
         container.loadFromInputStream(is);
-        Revision revisionAnnotation = config.getClass().getAnnotation(Revision.class);
-        if (revisionAnnotation != null && revisionAnnotation.value() > container.revision)
-        {
-            if (config.getClass().isAnnotationPresent(Updater.class))
-            {
-                Updater updater = config.getClass().getAnnotation(Updater.class);
-                updater.value().newInstance().update(container.values, container.revision);
-            }
-        }
         container.dumpIntoFields(config, container.values);
     }
 
@@ -74,11 +62,6 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
             }
             CodecContainer container = this.createContainer();
             container.values = MapNode.emptyMap();
-            Revision a_revision = config.getClass().getAnnotation(Revision.class);
-            if (a_revision != null)
-            {
-                container.values.setNodeAt("revision", PATH_SEPARATOR, new IntNode(a_revision.value()));
-            }
             container.fillFromFields(config, container.values);
             container.saveIntoFile(config, file);
         }

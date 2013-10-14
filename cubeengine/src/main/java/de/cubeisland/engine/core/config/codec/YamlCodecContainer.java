@@ -27,14 +27,12 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
 import de.cubeisland.engine.core.config.MultiConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.MapComment;
 import de.cubeisland.engine.core.config.annotations.MapComments;
-import de.cubeisland.engine.core.config.node.IntNode;
 import de.cubeisland.engine.core.config.node.ListNode;
 import de.cubeisland.engine.core.config.node.MapNode;
 import de.cubeisland.engine.core.config.node.Node;
@@ -323,18 +321,6 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodecContainer,Y
             else
             {
                 this.values = (MapNode)Convert.wrapIntoNode(map);
-                Node revisionNode = this.values.getNodeAt("revision", this.codec.PATH_SEPARATOR);
-                if (!(revisionNode instanceof NullNode))
-                {
-                    if (revisionNode instanceof IntNode)
-                    {
-                        this.revision = ((IntNode)revisionNode).getValue();
-                    }
-                    else
-                    {
-                        CubeEngine.getLog().warn("Invalid revision in a configuration! Value: {}", String.valueOf(revisionNode));
-                    }
-                }
             }
         }
         catch (ReaderException ex)

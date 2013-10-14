@@ -22,10 +22,8 @@ import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.config.annotations.Revision;
 
 @Codec("yml")
-@Revision(1)
 @DefaultConfig
 public class ShoutConfiguration extends Configuration
 {

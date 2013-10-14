@@ -24,7 +24,6 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.config.annotations.Revision;
 
 import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.core.util.time.Duration;
@@ -34,7 +33,6 @@ import de.cubeisland.engine.core.util.time.Duration;
  * Changes in this configuration can/will affect all modules.
  */
 @Codec("yml")
-@Revision(1)
 public class CoreConfiguration extends Configuration
 {
     @Option("default-locale")

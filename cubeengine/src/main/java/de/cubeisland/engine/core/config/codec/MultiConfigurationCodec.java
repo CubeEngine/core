@@ -22,9 +22,6 @@ import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
 import de.cubeisland.engine.core.config.MultiConfiguration;
-import de.cubeisland.engine.core.config.annotations.Revision;
-import de.cubeisland.engine.core.config.annotations.Updater;
-import de.cubeisland.engine.core.config.node.IntNode;
 import de.cubeisland.engine.core.config.node.MapNode;
 
 /**
@@ -43,12 +40,7 @@ public abstract class MultiConfigurationCodec<Container extends MultiCodecContai
                 throw new IllegalStateException("Tried to save config without File.");
             }
             MultiCodecContainer container = this.createContainer();
-            Revision a_revision = config.getClass().getAnnotation(Revision.class);
             container.values = MapNode.emptyMap();
-            if (a_revision != null)
-            {
-                container.values.setNodeAt("revision", PATH_SEPARATOR, new IntNode(a_revision.value()));
-            }
             container.fillFromFields(parentConfig, config, container.values);
             container.saveIntoFile(config, file);
         }
@@ -68,18 +60,6 @@ public abstract class MultiConfigurationCodec<Container extends MultiCodecContai
     {
         MultiCodecContainer container = this.createContainer();
         container.loadFromInputStream(is);
-        Revision a_revision = config.getClass().getAnnotation(Revision.class);
-        if (a_revision != null)
-        {
-            if (config.getClass().isAnnotationPresent(Updater.class))
-            {
-                if (a_revision.value() > container.revision)
-                {
-                    Updater updater = config.getClass().getAnnotation(Updater.class);
-                    updater.value().newInstance().update(container.values, container.revision);
-                }
-            }
-        }
         container.dumpIntoFields(config, container.values, config.getParent());
     }
 }

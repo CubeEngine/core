@@ -48,7 +48,6 @@ public abstract class CodecContainer<Container extends CodecContainer<Container,
     ConfigCodec extends ConfigurationCodec<Container, ? extends Configuration>>
 {
     public MapNode values;
-    public Integer revision = null;
     public Container superContainer = null; // used if given config is a SubConfig
     protected String parentPath;
 
@@ -73,35 +72,6 @@ public abstract class CodecContainer<Container extends CodecContainer<Container,
         this.superContainer = superContainer;
         this.parentPath = parentPath;
     }
-
-
-    /*
-    {
-        try
-        {
-            Container codecContainer = clazz.getConstructor(this.codec.getClass()).newInstance(this.codec);
-            return codecContainer;
-        }
-        catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-    }*/
-
-
-    /*
-    {
-        try
-        {
-            Container codecContainer = clazz.getConstructor(this.getClass(),String.class).newInstance(this,parentPath);
-            return codecContainer;
-        }
-        catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-
-    }*/
 
     protected static final int NORMAL_FIELD = 0;
     protected static final int CONFIG_FIELD = 1;

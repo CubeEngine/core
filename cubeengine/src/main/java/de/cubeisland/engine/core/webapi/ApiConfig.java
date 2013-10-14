@@ -24,10 +24,8 @@ import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.config.annotations.Revision;
 
 @Codec("yml")
-@Revision(1)
 public class ApiConfig extends Configuration
 {
     @Option("network.address")
