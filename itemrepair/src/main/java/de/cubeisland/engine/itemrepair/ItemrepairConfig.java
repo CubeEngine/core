@@ -20,9 +20,7 @@ package de.cubeisland.engine.itemrepair;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.MapComment;
 import de.cubeisland.engine.core.config.annotations.MapComments;
 import de.cubeisland.engine.core.config.annotations.Option;
@@ -32,10 +30,8 @@ import de.cubeisland.engine.itemrepair.material.BaseMaterialContainerConverter;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 
 
-@Codec("yml")
-@DefaultConfig
 @MapComments(value = @MapComment(path = "price.enchant-multiplier", text = "factor x base^EnchantmentLevel"))
-public class ItemrepairConfig extends Configuration
+public class ItemrepairConfig extends YamlConfiguration
 {
     static
     {

@@ -17,11 +17,7 @@
  */
 package de.cubeisland.engine.mystcube;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 
-@Codec("yml")
-@DefaultConfig
-public class MystcubeConfig extends Configuration
+public class MystcubeConfig extends YamlConfiguration
 {}

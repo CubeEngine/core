@@ -17,15 +17,12 @@
  */
 package de.cubeisland.engine.border;
 
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-@DefaultConfig
-public class BorderConfig extends Configuration
+public class BorderConfig extends YamlConfiguration
 {
     @Option("chunk-radius")
     public int radius = 30;

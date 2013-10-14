@@ -17,15 +17,11 @@
  */
 package de.cubeisland.engine.chat;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-@DefaultConfig
-public class ChatConfig extends Configuration
+public class ChatConfig extends YamlConfiguration
 {
     @Option("format")
     @Comment("There at least the following variables available:\n- {NAME} -> player name\n- {DISPLAY_NAME} -> display name\n- {WORLD} -> the world the player is in\n- {MESSAGE} -> the message\n\nUsual color/format codes are also supported: &1, ... &f, ... &r")

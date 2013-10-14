@@ -17,11 +17,7 @@
  */
 package de.cubeisland.engine.hide;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 
-@Codec("yml")
-@DefaultConfig
-public class HideConfig extends Configuration
+public class HideConfig extends YamlConfiguration
 {}

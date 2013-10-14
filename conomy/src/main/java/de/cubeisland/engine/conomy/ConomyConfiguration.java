@@ -19,15 +19,11 @@ package de.cubeisland.engine.conomy;
 
 import java.nio.file.Path;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-@DefaultConfig
-public class ConomyConfiguration extends Configuration
+public class ConomyConfiguration extends YamlConfiguration
 {
     @Option("currency.symbol")
     public String symbol = "€";
@@ -62,7 +58,6 @@ public class ConomyConfiguration extends Configuration
     public boolean enableLogging = true;
 
     private int fractionalDigitsFactor;
-
 
     @Override
     public void onLoaded(Path loadFrom)

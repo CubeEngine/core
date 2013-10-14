@@ -21,12 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.util.time.Duration;
 
-@DefaultConfig()
-public class LogConfiguration  extends YamlConfiguration
+public class LogConfiguration extends YamlConfiguration
 {
     @Comment("The maximum of logs that may be logged at once.")
     @Option("logging.batch-size")

@@ -17,11 +17,7 @@
  */
 package de.cubeisland.engine.powersigns;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 
-@Codec("yml")
-@DefaultConfig
-public class PowersignsConfig extends Configuration
+public class PowersignsConfig extends YamlConfiguration
 {}

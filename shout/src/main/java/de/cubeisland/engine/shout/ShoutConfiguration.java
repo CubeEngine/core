@@ -17,15 +17,11 @@
  */
 package de.cubeisland.engine.shout;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-@DefaultConfig
-public class ShoutConfiguration extends Configuration
+public class ShoutConfiguration extends YamlConfiguration
 {
     @Option("initial-delay")
     @Comment("The delay after a player joins before he receives his first message")

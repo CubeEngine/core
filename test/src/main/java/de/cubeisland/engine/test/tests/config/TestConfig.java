@@ -30,7 +30,6 @@ import org.bukkit.plugin.Plugin;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.MapComment;
 import de.cubeisland.engine.core.config.annotations.MapComments;
 import de.cubeisland.engine.core.config.annotations.Option;
@@ -44,7 +43,6 @@ import de.cubeisland.engine.core.config.annotations.Option;
     @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
     @MapComment(path = "list.stringlist", text = "comment for my list :)")
 })
-@DefaultConfig()
 public class TestConfig extends YamlConfiguration
 {
     private final Server server = ((Plugin)CubeEngine.getCore()).getServer();

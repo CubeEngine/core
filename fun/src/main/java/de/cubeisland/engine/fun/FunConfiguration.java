@@ -17,15 +17,11 @@
  */
 package de.cubeisland.engine.fun;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-@DefaultConfig
-public class FunConfiguration extends Configuration
+public class FunConfiguration extends YamlConfiguration
 {
     @Comment("Sets the maximum distance of the lightning")
     @Option("lightning.distance")

@@ -23,15 +23,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-@DefaultConfig
-public class RoleConfig extends Configuration
+public class RoleConfig extends YamlConfiguration
 {
     @Option("role-name")
     @Comment("The name of this role")

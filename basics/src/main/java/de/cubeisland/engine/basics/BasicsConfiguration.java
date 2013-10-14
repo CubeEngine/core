@@ -28,12 +28,10 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
 import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.util.time.Duration;
 
 @Codec("yml")
-@DefaultConfig
 public class BasicsConfiguration extends Configuration
 {
     @Option("commands.spawnmob-limit")
