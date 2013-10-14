@@ -24,11 +24,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
 import de.cubeisland.engine.core.config.MultiConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.MapComment;
-import de.cubeisland.engine.core.config.annotations.MapComments;
 import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.config.node.ListNode;
 import de.cubeisland.engine.core.config.node.MapNode;
@@ -39,7 +37,9 @@ import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.core.util.convert.converter.generic.CollectionConverter;
 import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
 
-public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> extends CodecContainer<ConfigCodec>
+public abstract class MultiCodecContainer<Container extends MultiCodecContainer<Container, ConfigCodec>,
+    ConfigCodec extends MultiConfigurationCodec<Container, ? extends MultiConfiguration>>
+    extends CodecContainer<Container, ConfigCodec>
 {
     public MultiCodecContainer(ConfigCodec codec) {
         super(codec);
@@ -117,7 +117,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                                         "\nConfig:" + config.getClass() +
                                         "\nSubConfig:" + singleSubConfig.getClass());
                             }
-                            createContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig,(MultiConfiguration)field.get(parentConfig));
+                            this.codec.createContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig,(MultiConfiguration)field.get(parentConfig));
                             continue;
                         case COLLECTION_CONFIG_FIELD:
                             ListNode loadFrom_List;
@@ -165,8 +165,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                                 }
                                 if (loadFrom_listElem instanceof MapNode)
                                 {
-                                    this.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, parentConfig_Iterator
-                                        .next());
+                                    this.codec.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem, parentConfig_Iterator.next());
                                 }
                                 else
                                 {
@@ -212,7 +211,7 @@ public class MultiCodecContainer<ConfigCodec extends MultiConfigurationCodec> ex
                                     }
                                     if (valueNode instanceof MapNode)
                                     {
-                                        this.createContainer().dumpIntoFields(entry
+                                        this.codec.createContainer().dumpIntoFields(entry
                                                                                   .getValue(), (MapNode)valueNode, parentMapConfigs
                                                                                   .get(entry.getKey()));
                                     }

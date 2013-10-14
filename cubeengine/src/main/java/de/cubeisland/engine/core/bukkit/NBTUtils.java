@@ -21,35 +21,35 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_5_R3.NBTBase;
-import net.minecraft.server.v1_5_R3.NBTTagByte;
-import net.minecraft.server.v1_5_R3.NBTTagByteArray;
-import net.minecraft.server.v1_5_R3.NBTTagCompound;
-import net.minecraft.server.v1_5_R3.NBTTagDouble;
-import net.minecraft.server.v1_5_R3.NBTTagEnd;
-import net.minecraft.server.v1_5_R3.NBTTagFloat;
-import net.minecraft.server.v1_5_R3.NBTTagInt;
-import net.minecraft.server.v1_5_R3.NBTTagIntArray;
-import net.minecraft.server.v1_5_R3.NBTTagList;
-import net.minecraft.server.v1_5_R3.NBTTagLong;
-import net.minecraft.server.v1_5_R3.NBTTagShort;
-import net.minecraft.server.v1_5_R3.NBTTagString;
-import net.minecraft.server.v1_5_R3.TileEntity;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
+import net.minecraft.server.v1_6_R3.NBTBase;
+import net.minecraft.server.v1_6_R3.NBTTagByte;
+import net.minecraft.server.v1_6_R3.NBTTagByteArray;
+import net.minecraft.server.v1_6_R3.NBTTagDouble;
+import net.minecraft.server.v1_6_R3.NBTTagEnd;
+import net.minecraft.server.v1_6_R3.NBTTagFloat;
+import net.minecraft.server.v1_6_R3.NBTTagInt;
+import net.minecraft.server.v1_6_R3.NBTTagIntArray;
+import net.minecraft.server.v1_6_R3.NBTTagList;
+import net.minecraft.server.v1_6_R3.NBTTagLong;
+import net.minecraft.server.v1_6_R3.NBTTagShort;
+import net.minecraft.server.v1_6_R3.NBTTagString;
+import net.minecraft.server.v1_6_R3.NBTTagCompound;
+import net.minecraft.server.v1_6_R3.TileEntity;
+import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 
 import org.bukkit.Location;
 
-import de.cubeisland.cubeengine.core.config.node.ByteNode;
-import de.cubeisland.cubeengine.core.config.node.DoubleNode;
-import de.cubeisland.cubeengine.core.config.node.FloatNode;
-import de.cubeisland.cubeengine.core.config.node.IntNode;
-import de.cubeisland.cubeengine.core.config.node.ListNode;
-import de.cubeisland.cubeengine.core.config.node.LongNode;
-import de.cubeisland.cubeengine.core.config.node.MapNode;
-import de.cubeisland.cubeengine.core.config.node.Node;
-import de.cubeisland.cubeengine.core.config.node.NullNode;
-import de.cubeisland.cubeengine.core.config.node.ShortNode;
-import de.cubeisland.cubeengine.core.config.node.StringNode;
+import de.cubeisland.engine.core.config.node.ByteNode;
+import de.cubeisland.engine.core.config.node.DoubleNode;
+import de.cubeisland.engine.core.config.node.FloatNode;
+import de.cubeisland.engine.core.config.node.IntNode;
+import de.cubeisland.engine.core.config.node.ListNode;
+import de.cubeisland.engine.core.config.node.LongNode;
+import de.cubeisland.engine.core.config.node.MapNode;
+import de.cubeisland.engine.core.config.node.Node;
+import de.cubeisland.engine.core.config.node.NullNode;
+import de.cubeisland.engine.core.config.node.ShortNode;
+import de.cubeisland.engine.core.config.node.StringNode;
 
 public class NBTUtils
 {

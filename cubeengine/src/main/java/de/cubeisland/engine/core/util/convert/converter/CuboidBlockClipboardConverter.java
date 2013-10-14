@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.core.util.convert.converter;
 
-import de.cubeisland.cubeengine.core.config.node.Node;
-import de.cubeisland.cubeengine.core.util.clipboard.CuboidBlockClipboard;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Converter;
+import de.cubeisland.engine.core.config.node.Node;
+import de.cubeisland.engine.core.util.CuboidBlockClipboard;
+import de.cubeisland.engine.core.util.convert.ConversionException;
+import de.cubeisland.engine.core.util.convert.Converter;
 
 public class CuboidBlockClipboardConverter implements Converter<CuboidBlockClipboard>
 {

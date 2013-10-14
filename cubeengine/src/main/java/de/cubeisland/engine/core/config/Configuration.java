@@ -17,17 +17,17 @@
  */
 package de.cubeisland.engine.core.config;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.codec.ConfigurationCodec;
+import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.config.codec.YamlCodec;
 import de.cubeisland.engine.core.module.Module;
 
@@ -96,9 +96,9 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         }
         try
         {
-            try (Reader reader = Files.newBufferedReader(this.file, Core.CHARSET))
+            try (InputStream is = new FileInputStream(this.file.toFile()))
             {
-                this.codec.load(this, reader);
+                this.codec.load(this, is);
             }
         }
         catch (Exception e)
@@ -243,22 +243,22 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * Returns the loaded Configuration
      *
      * @param clazz the configurations class
-     * @param reader the input-stream to load from
+     * @param is the input-stream to load from
      * @param file the corresponding file
      * @param <T>
      * @return the loaded Configuration
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Configuration> T load(Class<T> clazz, Reader reader, Path file)
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is, Path file)
     {
         T config = createInstance(clazz);
 
         config.file = file;
         try
         {
-            if (reader != null)
+            if (is != null)
             {
-                config.codec.load(config, reader); //load config in maps -> updates -> sets fields
+                config.codec.load(config, is); //load config in maps -> updates -> sets fields
             }
             config.onLoaded(file);
             return config;
@@ -273,13 +273,13 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
      * Returns the loaded Configuration
      *
      * @param clazz the configurations class
-     * @param reader the input-stream to load from
+     * @param is the input-stream to load from
      * @param <T>
      * @return the loaded Configuration
      */
-    public static <T extends Configuration> T load(Class<T> clazz, Reader reader)
+    public static <T extends Configuration> T load(Class<T> clazz, InputStream is)
     {
-        return load(clazz, reader, null);
+        return load(clazz, is, null);
     }
 
     /**
@@ -297,21 +297,21 @@ public abstract class Configuration<ConfigCodec extends ConfigurationCodec>
         {
             return null;
         }
-        Reader reader = null;
+        InputStream is = null;
         try
         {
-            reader = Files.newBufferedReader(file, Core.CHARSET);
+            is = new FileInputStream(file.toFile());
         }
         catch (IOException ignored)
         {}
 
-        T config = load(clazz, reader, file); //loading config from InputSream or Default
+        T config = load(clazz, is, file); //loading config from InputSream or Default
 
-        if (reader != null)
+        if (is != null)
         {
             try
             {
-                reader.close();
+                is.close();
             }
             catch (IOException ignored)
             {}

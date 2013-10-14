@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.Configuration;
@@ -26,7 +26,6 @@ import de.cubeisland.engine.core.config.annotations.Revision;
 import de.cubeisland.engine.core.config.annotations.Updater;
 import de.cubeisland.engine.core.config.node.IntNode;
 import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
 
 /**
  * This abstract Codec can be implemented to read and write configurations.
@@ -39,12 +38,12 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
      * Loads in the given configuration using the InputStream
      *
      * @param config the config to load
-     * @param reader the InputStream to load from
+     * @param is the InputStream to load from
      */
-    public void load(Config config, Reader reader) throws InstantiationException, IllegalAccessException
+    public void load(Config config, InputStream is) throws InstantiationException, IllegalAccessException
     {
-        CodecContainer container = new CodecContainer<ConfigurationCodec>(this);
-        container.fillFromReader(reader);
+        CodecContainer container = this.createContainer();
+        container.loadFromInputStream(is);
         Revision revisionAnnotation = config.getClass().getAnnotation(Revision.class);
         if (revisionAnnotation != null && revisionAnnotation.value() > container.revision)
         {
@@ -57,12 +56,7 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
         container.dumpIntoFields(config, container.values);
     }
 
-    /**
-     * Creates a new CodecContainer for this Codec
-     *
-     * @return
-     */
-    protected abstract Container createCodecContainer();
+    public abstract Container createContainer();
 
     /**
      * Saves the configuration into given file
@@ -78,7 +72,7 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            CodecContainer container = this.createCodecContainer();
+            CodecContainer container = this.createContainer();
             container.values = MapNode.emptyMap();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             if (a_revision != null)
@@ -99,11 +93,4 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
      * @return the fileExtension
      */
     public abstract String getExtension();
-
-    /**
-     * Converts the inputStream into a readable Object
-     * @param container the container to fill with values
-     * @param is the InputStream
-     */
-    public abstract void loadFromReader(CodecContainer container, Reader is);
 }

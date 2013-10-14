@@ -17,43 +17,35 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.MapComment;
-import de.cubeisland.engine.core.config.annotations.MapComments;
 import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.config.node.ListNode;
 import de.cubeisland.engine.core.config.node.MapNode;
 import de.cubeisland.engine.core.config.node.Node;
 import de.cubeisland.engine.core.config.node.NullNode;
 import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
-import gnu.trove.map.hash.THashMap;
 
 /**
  * This class temporarily holds the values/comments of the configuration to
  * save or load them.
  */
-public abstract class CodecContainer<Container extends CodecContainer, ConfigCodec extends ConfigurationCodec>
+public abstract class CodecContainer<Container extends CodecContainer<Container, ConfigCodec>,
+    ConfigCodec extends ConfigurationCodec<Container, ? extends Configuration>>
 {
     public MapNode values;
     public Integer revision = null;
@@ -62,19 +54,11 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
 
     protected ConfigCodec codec;
 
-    private Class<Container> clazz;
-
-    private CodecContainer()
-    {
-        this.clazz = (Class<Container>)this.getClass();
-    }
-
     /**
      * Container for normal Configuration
      */
     public CodecContainer(ConfigCodec codec)
     {
-        this();
         this.codec = codec;
     }
 
@@ -85,71 +69,39 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
      */
     protected CodecContainer(Container superContainer, String parentPath)
     {
-        this();
-        this.codec = (ConfigCodec)superContainer.codec;
+        this.codec = superContainer.codec;
         this.superContainer = superContainer;
         this.parentPath = parentPath;
     }
 
-    public Container createContainer()
+
+    /*
     {
         try
         {
             Container codecContainer = clazz.getConstructor(this.codec.getClass()).newInstance(this.codec);
             return codecContainer;
         }
-        catch (NoSuchMethodException e)
+        catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
         {
             throw new IllegalStateException("Invalid CodecContainer!");
         }
-        catch (InvocationTargetException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-        catch (InstantiationException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-    }
+    }*/
 
-    public Container createSubContainer(String parentPath)
+
+    /*
     {
         try
         {
             Container codecContainer = clazz.getConstructor(this.getClass(),String.class).newInstance(this,parentPath);
             return codecContainer;
         }
-        catch (NoSuchMethodException e)
+        catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
         {
             throw new IllegalStateException("Invalid CodecContainer!");
         }
-        catch (InvocationTargetException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-        catch (InstantiationException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalStateException("Invalid CodecContainer!");
-        }
-    }
 
-    /**
-     * Fills the map with values form the inputStream
-     *
-     * @param reader an InputStream
-     */
-    public void fillFromReader(Reader reader)
-    {
-        codec.loadFromReader(this, reader);
-    }
+    }*/
 
     protected static final int NORMAL_FIELD = 0;
     protected static final int CONFIG_FIELD = 1;
@@ -249,7 +201,7 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
                                         "\nConfig:" + config.getClass() +
                                         "\nSubConfig:" + singleSubConfig.getClass());
                             }
-                            this.createContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig);
+                            this.codec.createContainer().dumpIntoFields(singleSubConfig, loadFrom_singleConfig);
                             continue;
                         case COLLECTION_CONFIG_FIELD:
                             ListNode loadFrom_List;
@@ -289,7 +241,7 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
                                 }
                                 if (loadFrom_listElem instanceof MapNode)
                                 {
-                                    this.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem);
+                                    this.codec.createContainer().dumpIntoFields(subConfig, (MapNode)loadFrom_listElem);
                                 }
                                 else
                                 {
@@ -330,7 +282,7 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
                                 }
                                 else if (valueNode instanceof MapNode)
                                 {
-                                    this.createContainer().dumpIntoFields(value = clazz.newInstance(), (MapNode)valueNode);
+                                    this.codec.createContainer().dumpIntoFields(value = clazz.newInstance(), (MapNode)valueNode);
                                 }
                                 else
                                 {
@@ -362,22 +314,7 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
      * @param file the file to save to
      * @throws java.io.IOException
      */
-    protected void saveIntoFile(Configuration config, Path file) throws IOException
-    {
-        try (BufferedWriter writer = Files.newBufferedWriter(file, Core.CHARSET))
-        {
-            writer.append(this.dumpIntoString(config));
-        }
-    }
-
-    /**
-     * Fills the outputstream with data to save
-     *
-     * @return the converted map
-     */
-    protected abstract void writeConfigToStream(OutputStream stream, Configuration config) throws IOException;
-
-
+    protected abstract void saveIntoFile(Configuration config, Path file) throws IOException;
 
     /**
      * Fills the map with values from the Fields to save
@@ -452,7 +389,8 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
                     {
                         MapNode configNode = MapNode.emptyMap();
                         mapNode.setNode((StringNode)keyNode, configNode);
-                        this.createSubContainer(path + codec.PATH_SEPARATOR + ((StringNode)keyNode).getValue())
+                        this.createSubContainer(path + codec.PATH_SEPARATOR + ((StringNode)keyNode)
+                            .getValue())
                             .fillFromFields(entry.getValue(), configNode);
                     }
                     else
@@ -461,17 +399,21 @@ public abstract class CodecContainer<Container extends CodecContainer, ConfigCod
                                                                     "\nConfig:" + config.getClass());
                     }
                 }
-                        continue;
-                    }
-                }
-                catch (Exception e)
-                {
-                    throw InvalidConfigurationException.of(
-                        "Error while dumping loaded config into fields!" ,
-                        config.getPath(), path, config.getClass(), field, e);
-                }
-            }
 
+            }
+        }
+        catch (Exception e)
+        {
+            throw InvalidConfigurationException.of(
+                "Error while dumping loaded config into fields!" ,
+                config.getPath(), path, config.getClass(), field, e);
         }
     }
+    /**
+     * Converts the inputStream into a readable Object
+     * @param is the InputStream
+     */
+    public abstract Container loadFromInputStream(InputStream is);
+
+    public abstract Container createSubContainer(String parentPath);
 }

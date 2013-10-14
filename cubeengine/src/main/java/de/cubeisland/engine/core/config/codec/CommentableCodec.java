@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-public interface CommentableCodec<Container extends CodecContainer>
+public interface CommentableCodec
 {
     /**
      * Builds a the comment for given path
@@ -26,5 +26,5 @@ public interface CommentableCodec<Container extends CodecContainer>
      * @param off the current offset
      * @return the comment
      */
-    public String buildComment(Container container, String path, int off);
+    public String buildComment(String path, int off);
 }

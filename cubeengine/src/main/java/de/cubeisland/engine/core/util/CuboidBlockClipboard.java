@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_5_R3.NBTTagCompound;
-import net.minecraft.server.v1_5_R3.NBTTagInt;
+import net.minecraft.server.v1_6_R3.NBTTagCompound;
+import net.minecraft.server.v1_6_R3.NBTTagInt;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -32,15 +32,15 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
 import de.cubeisland.engine.core.bukkit.NBTUtils;
-import de.cubeisland.cubeengine.core.config.node.IntNode;
-import de.cubeisland.cubeengine.core.config.node.ListNode;
-import de.cubeisland.cubeengine.core.config.node.MapNode;
-import de.cubeisland.cubeengine.core.config.node.Node;
-import de.cubeisland.cubeengine.core.config.node.NullNode;
-import de.cubeisland.cubeengine.core.util.convert.ConversionException;
-import de.cubeisland.cubeengine.core.util.convert.Convert;
+import de.cubeisland.engine.core.config.node.IntNode;
+import de.cubeisland.engine.core.config.node.ListNode;
+import de.cubeisland.engine.core.config.node.MapNode;
+import de.cubeisland.engine.core.config.node.Node;
+import de.cubeisland.engine.core.config.node.NullNode;
+import de.cubeisland.engine.core.util.convert.ConversionException;
+import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.core.util.convert.converter.CuboidBlockClipboardConverter;
-import de.cubeisland.cubeengine.core.util.math.BlockVector3;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 
 /**
  * A simple clipboard for blocks and TileEntity-Data

@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
@@ -30,7 +30,9 @@ import de.cubeisland.engine.core.config.node.MapNode;
 /**
  * This abstract Codec can be implemented to read and write configurations that allow child-configs
  */
-public abstract class MultiConfigurationCodec<Container extends MultiCodecContainer, Config extends MultiConfiguration> extends ConfigurationCodec<Container, Config>
+public abstract class MultiConfigurationCodec<Container extends MultiCodecContainer,
+    Config extends MultiConfiguration>
+    extends ConfigurationCodec<Container, Config>
 {
     public void saveChildConfig(Config parentConfig, Config config, Path file)
     {
@@ -40,7 +42,7 @@ public abstract class MultiConfigurationCodec<Container extends MultiCodecContai
             {
                 throw new IllegalStateException("Tried to save config without File.");
             }
-            MultiCodecContainer container = this.createCodecContainer();
+            MultiCodecContainer container = this.createContainer();
             Revision a_revision = config.getClass().getAnnotation(Revision.class);
             container.values = MapNode.emptyMap();
             if (a_revision != null)
@@ -60,12 +62,12 @@ public abstract class MultiConfigurationCodec<Container extends MultiCodecContai
      * Loads in the given configuration using the InputStream
      *
      * @param config the config to load
-     * @param reader the InputStream to load from
+     * @param is the InputStream to load from
      */
-    public void loadChildConfig(MultiConfiguration config, Reader reader) throws InstantiationException, IllegalAccessException
+    public void loadChildConfig(MultiConfiguration config, InputStream is) throws InstantiationException, IllegalAccessException
     {
-        MultiCodecContainer container = new MultiCodecContainer(this);
-        container.fillFromReader(reader);
+        MultiCodecContainer container = this.createContainer();
+        container.loadFromInputStream(is);
         Revision a_revision = config.getClass().getAnnotation(Revision.class);
         if (a_revision != null)
         {
