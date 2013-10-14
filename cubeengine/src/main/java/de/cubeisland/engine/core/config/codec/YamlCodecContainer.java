@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,9 +29,6 @@ import java.util.Map.Entry;
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.config.InvalidConfigurationException;
 import de.cubeisland.engine.core.config.MultiConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.MapComment;
-import de.cubeisland.engine.core.config.annotations.MapComments;
 import de.cubeisland.engine.core.config.node.ListNode;
 import de.cubeisland.engine.core.config.node.MapNode;
 import de.cubeisland.engine.core.config.node.Node;
@@ -40,20 +36,17 @@ import de.cubeisland.engine.core.config.node.NullNode;
 import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.convert.Convert;
-import gnu.trove.map.hash.THashMap;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 public class YamlCodecContainer extends MultiCodecContainer<YamlCodec> implements CommentableCodec
 {
-    public Map<String, String> comments;
     private Yaml yaml;
 
     public YamlCodecContainer(YamlCodec codec)
     {
         super(codec);
         this.yaml = new Yaml();
-        this.comments = new THashMap<>();
     }
 
     public YamlCodecContainer(YamlCodecContainer superContainer, String parentPath)
@@ -63,81 +56,6 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodec> implement
 
     private volatile boolean mapEnd;
     private volatile boolean first;
-
-    public void addComment(String commentPath, String comment)
-    {
-        if (superContainer == null)
-        {
-            this.comments.put(commentPath.toLowerCase(), comment);
-        }
-        else
-        {
-            assert superContainer instanceof YamlCodecContainer : "SuperContainer must always be of the same type";
-            ((CommentableCodec)superContainer).addComment(this.parentPath + codec.PATH_SEPARATOR + commentPath, comment);
-        }
-    }
-
-    /**
-     * gets the comment for given path
-     *
-     * @param path the path of the comment
-     * @return the comment
-     */
-    public String getComment(String path)
-    {
-        return this.comments.get(path);
-    }
-
-    @Override
-    public <C extends MultiConfiguration> void fillFromFields(C parentConfig, C config, MapNode baseNode)
-    {
-        Class<C> configClass = (Class<C>) config.getClass();
-        this.doMapComments(configClass);
-        super.fillFromFields(parentConfig, config, baseNode);
-    }
-
-    @Override
-    protected void fillFromField(Field field, Configuration config, MapNode baseNode, String path)
-    {
-        this.doFieldComment(field,path);
-        super.fillFromField(field, config, baseNode, path);
-    }
-
-    @Override
-    public <C extends Configuration> void fillFromFields(C config, MapNode baseNode)
-    {
-        Class<C> configClass = (Class<C>) config.getClass();
-        this.doMapComments(configClass);
-        super.fillFromFields(config, baseNode);
-    }
-
-    @Override
-    protected void fillFromField(Field field, Configuration parentConfig, Configuration config, MapNode baseNode, String path)
-    {
-        this.doFieldComment(field,path);
-        super.fillFromField(field, parentConfig, config, baseNode, path);
-    }
-
-    private void doMapComments(Class<? extends Configuration> configClass)
-    {
-        if (configClass.isAnnotationPresent(MapComments.class))
-        {
-            MapComment[] mapComments = configClass.getAnnotation(MapComments.class).value();
-            for (MapComment comment : mapComments)
-            {
-                this.addComment(comment.path().replace(".", codec.PATH_SEPARATOR), comment.text());
-            }
-        }
-    }
-
-    private void doFieldComment(Field field, String path)
-    {
-        if (field.isAnnotationPresent(Comment.class))
-        {
-            Comment comment = field.getAnnotation(Comment.class);
-            this.addComment(path, comment.value());
-        }
-    }
 
     @Override
     protected void saveIntoFile(Configuration config, Path file) throws IOException
@@ -274,7 +192,11 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodec> implement
             }
             StringBuilder sb = new StringBuilder();
             String path = entry.getValue().getPath(this.codec.PATH_SEPARATOR);
-            String comment = this.buildComment(path, off);
+            String comment = this.buildComment(entry.getValue().getComment(), off);
+
+
+
+
             if (!comment.isEmpty())
             {
                 if (!first) // if not already one line free
@@ -294,6 +216,19 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodec> implement
         }
         mapEnd = true;
         first = true;
+    }
+
+    @Override
+    public String buildComment(String comment, int offset)
+    {
+        if (comment == null || comment.isEmpty())
+        {
+            return ""; //No Comment
+        }
+        String off = this.offset(offset);
+        comment = comment.replace(LINE_BREAK, LINE_BREAK + off + COMMENT_PREFIX); // multi line
+        comment = off + COMMENT_PREFIX + comment + LINE_BREAK;
+        return comment;
     }
 
     @Override
@@ -340,19 +275,7 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodec> implement
     protected String LINE_BREAK = "\n";
     protected String QUOTE = "'";
 
-    @Override
-    public String buildComment(String path, int off)
-    {
-        String comment = this.getComment(path);
-        if (comment == null)
-        {
-            return ""; //No Comment
-        }
-        String offset = this.offset(off);
-        comment = comment.replace(LINE_BREAK, LINE_BREAK + offset + COMMENT_PREFIX); // multi line
-        comment = offset + COMMENT_PREFIX + comment + LINE_BREAK;
-        return comment;
-    }
+
     /**
      * Returns the offset as String
      *

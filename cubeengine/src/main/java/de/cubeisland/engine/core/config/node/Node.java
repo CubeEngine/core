@@ -24,6 +24,8 @@ public abstract class Node<V>
 {
     private ParentNode parentNode;
 
+    private String comment;
+
     /**
      * Gets the ParentNode
      *
@@ -133,6 +135,16 @@ public abstract class Node<V>
         {
             return path;
         }
+    }
+
+    public String getComment()
+    {
+        return this.comment;
+    }
+
+    public void setComment(String comment)
+    {
+        this.comment = comment;
     }
 
     public abstract String toString();

@@ -134,6 +134,12 @@ public class MapNode extends ParentNode<Map<String,Node>>
     }
 
     @Override
+    public boolean removeNode(Node node)
+    {
+        return this.mappedNodes.values().remove(node);
+    }
+
+    @Override
     protected String getPathOfSubNode(Node node, String path, String pathSeparator)
     {
         String key = this.reverseMappedNodes.get(node);

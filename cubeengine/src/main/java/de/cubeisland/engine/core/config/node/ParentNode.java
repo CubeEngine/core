@@ -96,10 +96,8 @@ public abstract class ParentNode<V> extends Node<V>
             if (node == null)
             {
                 node = NullNode.emptyNode();
-                node.setParentNode(this);
-                this.setExactNode(path, node);
             }
-            else if (node instanceof NullNode)
+            if (node instanceof NullNode)
             {
                 node.setParentNode(this);
                 this.setExactNode(path, node);
@@ -171,6 +169,8 @@ public abstract class ParentNode<V> extends Node<V>
         Node nodeToRemove = this.getNodeAt(path, pathSeparator);
         return nodeToRemove.getParentNode().removeExactNode(getSubKey(path, pathSeparator));
     }
+
+    public abstract boolean removeNode(Node node);
 
     @Override
     public String asText()

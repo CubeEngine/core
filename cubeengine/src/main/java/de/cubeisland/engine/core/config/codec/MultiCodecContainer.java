@@ -286,6 +286,7 @@ public abstract class MultiCodecContainer<Codec extends MultiConfigurationCodec>
                 this.fillFromField(field,parentConfig,config,baseNode,path);
             }
         }
+        this.doMapComments(baseNode, config.getClass());
         baseNode.cleanUpEmptyNodes();
     }
 
@@ -299,19 +300,22 @@ public abstract class MultiCodecContainer<Codec extends MultiConfigurationCodec>
             {
             case NORMAL_FIELD:
                 Node fieldValueNode = Convert.toNode(fieldValue);
+                this.doFieldComment(fieldValueNode, field);
                 baseNode.setNodeAt(path, codec.PATH_SEPARATOR, fieldValueNode);
                 return;
             case CONFIG_FIELD:
                 MultiCodecContainer subContainer = this.createSubContainer(path); // Create new container
+                MapNode singleConfigNode = (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR);
+                this.doFieldComment(singleConfigNode, field);
                 subContainer.fillFromFields((MultiConfiguration)field.get(parentConfig),
-                                            (MultiConfiguration)fieldValue,
-                                            (MapNode)baseNode.getNodeAt(path, codec.PATH_SEPARATOR));
+                                            (MultiConfiguration)fieldValue,singleConfigNode);
                 return;
             case COLLECTION_CONFIG_FIELD:
                 throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections" +
                                                             "\nConfig:" + config.getClass());
             case MAP_CONFIG_FIELD:
                 MapNode mapNode = MapNode.emptyMap();
+                this.doFieldComment(mapNode, field);
                 baseNode.setNodeAt(path, codec.PATH_SEPARATOR, mapNode);
                 Map<Object, MultiConfiguration> parentFieldMap = (Map<Object, MultiConfiguration>)field.get(parentConfig);
                 Map<Object, MultiConfiguration> childFieldMap = MapConverter.getMapFor((ParameterizedType)field.getGenericType());

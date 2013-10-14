@@ -168,6 +168,12 @@ public class ListNode extends ParentNode
     }
 
     @Override
+    public boolean removeNode(Node node)
+    {
+        return this.listedNodes.remove(node);
+    }
+
+    @Override
     public void cleanUpEmptyNodes()
     {
         Set<Node> nodesToRemove = new HashSet<>();

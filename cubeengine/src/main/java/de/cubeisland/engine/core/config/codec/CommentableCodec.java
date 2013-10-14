@@ -27,12 +27,4 @@ public interface CommentableCodec
      * @return the comment
      */
     String buildComment(String path, int off);
-
-    /**
-     * Adds a comment to be saved
-     *
-     * @param commentPath the commentPath
-     * @param comment the comment
-     */
-    void addComment(String commentPath, String comment);
 }

@@ -21,10 +21,7 @@ public class BooleanNode extends Node<Boolean>
 {
     private final boolean bool;
 
-    private static final BooleanNode TRUE = new BooleanNode(true);
-    private static final BooleanNode FALSE = new BooleanNode(false);
-
-    private BooleanNode(boolean bool)
+    public BooleanNode(boolean bool)
     {
         this.bool = bool;
     }
@@ -43,21 +40,17 @@ public class BooleanNode extends Node<Boolean>
 
     public static BooleanNode falseNode()
     {
-        return FALSE;
+        return new BooleanNode(false);
     }
 
     public static BooleanNode trueNode()
     {
-        return TRUE;
+        return new BooleanNode(true);
     }
 
     public static BooleanNode of(boolean bool)
     {
-        if (bool)
-        {
-            return TRUE;
-        }
-        return FALSE;
+        return bool ? trueNode() : falseNode();
     }
 
     @Override
