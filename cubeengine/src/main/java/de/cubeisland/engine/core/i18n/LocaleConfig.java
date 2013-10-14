@@ -19,15 +19,13 @@ package de.cubeisland.engine.core.i18n;
 
 import java.util.Locale;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Option;
 
 /**
  * This cofniguration is used to parse the language configurations.
  */
-@Codec("yaml")
-public class LocaleConfig extends Configuration
+public class LocaleConfig extends YamlConfiguration
 {
     @Option("code")
     public Locale locale;

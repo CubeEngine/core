@@ -17,13 +17,11 @@
  */
 package de.cubeisland.engine.core.config;
 
-import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.codec.YamlCodec;
 
 /**
  * An Configuration using YAML
  */
-@Codec("yml")
 public abstract class YamlConfiguration extends MultiConfiguration<YamlCodec>
 {
 }

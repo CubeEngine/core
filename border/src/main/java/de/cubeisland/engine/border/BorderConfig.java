@@ -18,7 +18,6 @@
 package de.cubeisland.engine.border;
 
 import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 

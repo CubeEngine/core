@@ -18,7 +18,6 @@
 package de.cubeisland.engine.shout.announce;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.DirectoryStream;
@@ -559,7 +558,7 @@ public class AnnouncementManager
 
         Files.createDirectories(folder);
 
-        AnnouncementConfig config = Configuration.createInstance(AnnouncementConfig.class);
+        AnnouncementConfig config = Configuration.create(AnnouncementConfig.class);
         config.setPath(folder.resolve(META_FILE_NAME));
         config.delay = delay;
         config.worlds = Arrays.asList(world);

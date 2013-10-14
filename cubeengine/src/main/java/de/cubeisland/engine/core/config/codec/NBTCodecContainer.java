@@ -59,7 +59,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-public class NBTCodecContainer extends CodecContainer<NBTCodecContainer,NBTCodec>
+public class NBTCodecContainer extends CodecContainer<NBTCodec>
 {
     public NBTCodecContainer(NBTCodec codec)
     {

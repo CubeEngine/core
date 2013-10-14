@@ -27,11 +27,9 @@ import de.cubeisland.engine.core.config.node.MapNode;
 /**
  * This abstract Codec can be implemented to read and write configurations that allow child-configs
  */
-public abstract class MultiConfigurationCodec<Container extends MultiCodecContainer,
-    Config extends MultiConfiguration>
-    extends ConfigurationCodec<Container, Config>
+public abstract class MultiConfigurationCodec<Container extends MultiCodecContainer> extends ConfigurationCodec<Container>
 {
-    public void saveChildConfig(Config parentConfig, Config config, Path file)
+    public void saveChildConfig(MultiConfiguration parentConfig, MultiConfiguration config, Path file)
     {
         try
         {
@@ -62,4 +60,7 @@ public abstract class MultiConfigurationCodec<Container extends MultiCodecContai
         container.loadFromInputStream(is);
         container.dumpIntoFields(config, container.values, config.getParent());
     }
+
+    @Override
+    public abstract Container createContainer();
 }

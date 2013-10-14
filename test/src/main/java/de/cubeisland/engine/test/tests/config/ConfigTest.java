@@ -45,7 +45,6 @@ public class ConfigTest extends Test
         {
             module.getLog().info("{} does not exist.", childConfig);
         }
-        Configuration.load(TestConfig2.class, module.getFolder().resolve("updateConfig.yml"));
         setSuccess(true);
     }
 }

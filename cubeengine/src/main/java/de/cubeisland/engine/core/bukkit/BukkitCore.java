@@ -149,7 +149,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         catch (IOException e)
         {
-            pluginConfig = Configuration.createInstance(PluginConfig.class);
+            this.pluginConfig = Configuration.create(PluginConfig.class);
         }
 
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
@@ -224,8 +224,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.serviceManager = new ServiceManager(this);
 
         // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
-
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
+                                                                                        .resolve("core.yml"));
 
         parentLogger.setLevel(Level.ALL);
         this.logger.setLevel(parentLogger.getLevel());
@@ -255,7 +255,8 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml")));
+        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath()
+                                                                                     .resolve("webapi.yml")));
 
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());

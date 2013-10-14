@@ -17,9 +17,7 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import de.cubeisland.engine.core.config.Configuration;
-
-public class NBTCodec extends ConfigurationCodec<NBTCodecContainer, Configuration>
+public class NBTCodec extends ConfigurationCodec<NBTCodecContainer>
 {
     @Override
     public String getExtension()

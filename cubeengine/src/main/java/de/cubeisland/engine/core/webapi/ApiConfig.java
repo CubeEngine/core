@@ -20,13 +20,11 @@ package de.cubeisland.engine.core.webapi;
 import java.util.Collections;
 import java.util.Set;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-public class ApiConfig extends Configuration
+public class ApiConfig extends YamlConfiguration
 {
     @Option("network.address")
     @Comment("This specifies the address to bind the server to")

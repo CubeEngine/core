@@ -67,6 +67,4 @@ public class KitConfiguration extends YamlConfiguration
     {
         return new Kit(module, this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
     }
-
-
 }

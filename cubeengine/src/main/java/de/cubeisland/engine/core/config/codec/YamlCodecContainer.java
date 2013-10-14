@@ -44,8 +44,7 @@ import gnu.trove.map.hash.THashMap;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.reader.ReaderException;
 
-public class YamlCodecContainer extends MultiCodecContainer<YamlCodecContainer,YamlCodec>
-    implements CommentableCodec
+public class YamlCodecContainer extends MultiCodecContainer<YamlCodec> implements CommentableCodec
 {
     public Map<String, String> comments;
     private Yaml yaml;
@@ -65,13 +64,7 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodecContainer,Y
     private volatile boolean mapEnd;
     private volatile boolean first;
 
-    /**
-     * Adds a comment to be saved
-     *
-     * @param commentPath the commentPath
-     * @param comment the comment
-     */
-    protected void addComment(String commentPath, String comment)
+    public void addComment(String commentPath, String comment)
     {
         if (superContainer == null)
         {
@@ -79,7 +72,8 @@ public class YamlCodecContainer extends MultiCodecContainer<YamlCodecContainer,Y
         }
         else
         {
-            superContainer.addComment(this.parentPath + codec.PATH_SEPARATOR + commentPath, comment);
+            assert superContainer instanceof YamlCodecContainer : "SuperContainer must always be of the same type";
+            ((CommentableCodec)superContainer).addComment(this.parentPath + codec.PATH_SEPARATOR + commentPath, comment);
         }
     }
 

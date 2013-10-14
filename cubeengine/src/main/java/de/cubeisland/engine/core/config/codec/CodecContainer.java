@@ -44,19 +44,18 @@ import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
  * This class temporarily holds the values/comments of the configuration to
  * save or load them.
  */
-public abstract class CodecContainer<Container extends CodecContainer<Container, ConfigCodec>,
-    ConfigCodec extends ConfigurationCodec<Container, ? extends Configuration>>
+public abstract class CodecContainer<Codec extends ConfigurationCodec>
 {
     public MapNode values;
-    public Container superContainer = null; // used if given config is a SubConfig
+    public CodecContainer superContainer = null; // used if given config is a SubConfig
     protected String parentPath;
 
-    protected ConfigCodec codec;
+    protected Codec codec;
 
     /**
      * Container for normal Configuration
      */
-    public CodecContainer(ConfigCodec codec)
+    public CodecContainer(Codec codec)
     {
         this.codec = codec;
     }
@@ -66,7 +65,7 @@ public abstract class CodecContainer<Container extends CodecContainer<Container,
      *
      * @param superContainer
      */
-    protected CodecContainer(Container superContainer, String parentPath)
+    protected CodecContainer(CodecContainer<Codec> superContainer, String parentPath)
     {
         this.codec = superContainer.codec;
         this.superContainer = superContainer;
@@ -383,7 +382,7 @@ public abstract class CodecContainer<Container extends CodecContainer<Container,
      * Converts the inputStream into a readable Object
      * @param is the InputStream
      */
-    public abstract Container loadFromInputStream(InputStream is);
+    public abstract CodecContainer loadFromInputStream(InputStream is);
 
-    public abstract Container createSubContainer(String parentPath);
+    public abstract CodecContainer createSubContainer(String parentPath);
 }

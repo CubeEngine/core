@@ -18,9 +18,9 @@
 package de.cubeisland.engine.core.config;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.HashSet;
 
@@ -55,7 +55,7 @@ public class MultiConfiguration<ConfigCodec extends MultiConfigurationCodec> ext
         MultiConfiguration<ConfigCodec> childConfig;
         try
         {
-            childConfig = (MultiConfiguration) this.configurationClass.newInstance();
+            childConfig = this.getClass().newInstance();
             childConfig.inheritedFields = new HashSet<>();
             childConfig.setPath(sourcePath);
             childConfig.parent = this;
@@ -63,7 +63,7 @@ public class MultiConfiguration<ConfigCodec extends MultiConfigurationCodec> ext
             {
                 childConfig.getCodec().loadChildConfig(childConfig, is);
             }
-            catch (NoSuchFileException ignored) // not found load from parent / save child
+            catch (IOException ignored) // not found load from parent / save child
             {
                 childConfig.getCodec().loadChildConfig(childConfig, null);
             }

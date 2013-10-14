@@ -20,13 +20,11 @@ package de.cubeisland.engine.shout.announce;
 import java.util.Arrays;
 import java.util.List;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 
-@Codec("yml")
-public class AnnouncementConfig extends Configuration
+public class AnnouncementConfig extends YamlConfiguration
 {
     @Option("delay")
     public String delay = "10 minutes";

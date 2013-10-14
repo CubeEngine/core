@@ -37,15 +37,13 @@ import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.core.util.convert.converter.generic.CollectionConverter;
 import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
 
-public abstract class MultiCodecContainer<Container extends MultiCodecContainer<Container, ConfigCodec>,
-    ConfigCodec extends MultiConfigurationCodec<Container, ? extends MultiConfiguration>>
-    extends CodecContainer<Container, ConfigCodec>
+public abstract class MultiCodecContainer<Codec extends MultiConfigurationCodec> extends CodecContainer<Codec>
 {
-    public MultiCodecContainer(ConfigCodec codec) {
+    public MultiCodecContainer(Codec codec) {
         super(codec);
     }
 
-    public MultiCodecContainer(Container superContainer, String parentPath) {
+    public MultiCodecContainer(MultiCodecContainer superContainer, String parentPath) {
         super(superContainer, parentPath);
     }
 
@@ -344,4 +342,7 @@ public abstract class MultiCodecContainer<Container extends MultiCodecContainer<
                     "\ncurent field:" + field.getName(), e);
         }
     }
+
+    @Override
+    public abstract MultiCodecContainer createSubContainer(String parentPath);
 }

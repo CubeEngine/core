@@ -20,20 +20,17 @@ package de.cubeisland.engine.core;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import ch.qos.logback.classic.Level;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
-
-import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.core.util.time.Duration;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
  * Changes in this configuration can/will affect all modules.
  */
-@Codec("yml")
-public class CoreConfiguration extends Configuration
+public class CoreConfiguration extends YamlConfiguration
 {
     @Option("default-locale")
     @Comment("Sets the locale to choose by default.")

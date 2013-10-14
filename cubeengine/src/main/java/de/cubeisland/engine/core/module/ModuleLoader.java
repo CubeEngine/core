@@ -194,7 +194,7 @@ public class ModuleLoader
 
             try (InputStream is = jarFile.getInputStream(entry))
             {
-                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, is, null));
+                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, is));
             }
         }
         catch (IOException e)

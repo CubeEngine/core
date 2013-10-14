@@ -20,16 +20,14 @@ package de.cubeisland.engine.core.module;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
+import de.cubeisland.engine.core.config.YamlConfiguration;
 import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.util.Version;
 
 /**
  * This configuration is used to parse the module.yml file.
  */
-@Codec("yml")
-public class ModuleConfig extends Configuration
+public class ModuleConfig extends YamlConfiguration
 {
     @Option("main")
     public String main;

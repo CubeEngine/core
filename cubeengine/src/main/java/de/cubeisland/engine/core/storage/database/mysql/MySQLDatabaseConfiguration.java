@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
-import de.cubeisland.engine.core.config.annotations.Codec;
 import de.cubeisland.engine.core.config.annotations.Comment;
 import de.cubeisland.engine.core.config.annotations.Option;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -26,7 +25,6 @@ import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 /**
  * MySQLDatabaseConfig containing all needed information to connect to a MySQLDatabase
  */
-@Codec("yml")
 public class MySQLDatabaseConfiguration extends DatabaseConfiguration
 {
     @Option("host")

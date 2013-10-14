@@ -17,12 +17,10 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
-
 /**
  * This class acts as a codec for yaml-configurations.
  */
-public class YamlCodec extends MultiConfigurationCodec<YamlCodecContainer, YamlConfiguration>
+public class YamlCodec extends MultiConfigurationCodec<YamlCodecContainer>
 {
     @Override
     public String getExtension()

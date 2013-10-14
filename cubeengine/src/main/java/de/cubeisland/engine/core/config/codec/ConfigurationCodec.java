@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.config.node.MapNode;
 /**
  * This abstract Codec can be implemented to read and write configurations.
  */
-public abstract class ConfigurationCodec<Container extends CodecContainer,Config extends Configuration>
+public abstract class ConfigurationCodec<Container extends CodecContainer>
 {
     protected final String PATH_SEPARATOR = ":";
 
@@ -37,7 +37,7 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
      * @param config the config to load
      * @param is the InputStream to load from
      */
-    public void load(Config config, InputStream is) throws InstantiationException, IllegalAccessException
+    public void load(Configuration config, InputStream is)
     {
         CodecContainer container = this.createContainer();
         container.loadFromInputStream(is);
@@ -52,7 +52,7 @@ public abstract class ConfigurationCodec<Container extends CodecContainer,Config
      * @param config the configuration to save
      * @param file the file to save into
      */
-    public void save(Config config, Path file)
+    public void save(Configuration config, Path file)
     {
         try
         {
