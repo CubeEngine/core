@@ -44,6 +44,13 @@ import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
  */
 public abstract class MultiConfigurationCodec extends ConfigurationCodec
 {
+    /**
+     * Saves a configuration with another configuration s parent
+     *
+     * @param parentConfig the parent configuration
+     * @param config the configuration to save
+     * @param file the file to save into
+     */
     public void saveChildConfig(MultiConfiguration parentConfig, MultiConfiguration config, Path file)
     {
         try
@@ -78,6 +85,7 @@ public abstract class MultiConfigurationCodec extends ConfigurationCodec
      * @param currentNode the node to load from
      * @param parentConfig the optional parentConfig
      */
+    @SuppressWarnings("unchecked cast")
     protected void dumpIntoFields(MultiConfiguration config, MapNode currentNode, MultiConfiguration parentConfig)
     {
         if (parentConfig == null)
@@ -88,12 +96,12 @@ public abstract class MultiConfigurationCodec extends ConfigurationCodec
         {
             try
             {
-                if (this.isConfigField(field))
+                if (isConfigField(field))
                 {
                     String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
                     Node fieldNode = currentNode.getNodeAt(path, PATH_SEPARATOR);
                     Type type = field.getGenericType();
-                    int fieldType = this.getFieldType(field);
+                    FieldType fieldType = getFieldType(field);
                     switch (fieldType)
                     {
                     case NORMAL_FIELD:
@@ -249,7 +257,6 @@ public abstract class MultiConfigurationCodec extends ConfigurationCodec
                                                                             "\nSubConfig:" + entry.getValue().getClass());
                             }
                         }
-                        continue;
                     }
                 }
             }
@@ -269,6 +276,7 @@ public abstract class MultiConfigurationCodec extends ConfigurationCodec
      * @param parentConfig the parent config
      * @param config the config
      */
+    @SuppressWarnings("unchecked cast")
     public <C extends MultiConfiguration> MapNode fillFromFields(C parentConfig, C config)
     {
         MapNode baseNode = MapNode.emptyMap();
@@ -296,7 +304,9 @@ public abstract class MultiConfigurationCodec extends ConfigurationCodec
         for (Field field : configClass.getFields())
         {
             if (config.isInheritedField(field))
+            {
                 continue;
+            }
             if (isConfigField(field))
             {
                 if (!advanced && field.getAnnotation(Option.class).advanced())
@@ -307,53 +317,51 @@ public abstract class MultiConfigurationCodec extends ConfigurationCodec
                 this.fillFromField(field,parentConfig,config,baseNode,path);
             }
         }
-        this.doMapComments(baseNode, config.getClass());
+        this.addMapComments(baseNode, config.getClass());
         baseNode.cleanUpEmptyNodes();
         return baseNode;
     }
 
+    @SuppressWarnings("unchecked cast")
     protected void fillFromField(Field field, Configuration parentConfig, Configuration config, MapNode baseNode, String path)
     {
         try
         {
             Object fieldValue = field.get(config);
-            int fieldType = getFieldType(field);
+            FieldType fieldType = getFieldType(field);
+            Node node = null;
             switch (fieldType)
             {
-            case NORMAL_FIELD:
-                Node fieldValueNode = Convert.toNode(fieldValue);
-                this.doFieldComment(fieldValueNode, field);
-                baseNode.setNodeAt(path, PATH_SEPARATOR, fieldValueNode);
-                return;
-            case CONFIG_FIELD:
-                MapNode singleConfigNode = this.fillFromFields((MultiConfiguration)field.get(parentConfig), (MultiConfiguration)fieldValue);
-                this.doFieldComment(singleConfigNode, field);
-                baseNode.setNodeAt(path, PATH_SEPARATOR, singleConfigNode);
-                return;
-            case COLLECTION_CONFIG_FIELD:
-                throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections" +
-                                                            "\nConfig:" + config.getClass());
-            case MAP_CONFIG_FIELD:
-                MapNode mapNode = MapNode.emptyMap();
-                this.doFieldComment(mapNode, field);
-                baseNode.setNodeAt(path, PATH_SEPARATOR, mapNode);
-                Map<Object, MultiConfiguration> parentFieldMap = (Map<Object, MultiConfiguration>)field.get(parentConfig);
-                Map<Object, MultiConfiguration> childFieldMap = MapConverter.getMapFor((ParameterizedType)field.getGenericType());
-                for (Map.Entry<Object, MultiConfiguration> parentEntry : parentFieldMap.entrySet())
-                {
-                    Node keyNode = Convert.toNode(parentEntry.getKey());
-                    if (keyNode instanceof StringNode)
+                case NORMAL_FIELD:
+                    node = Convert.toNode(fieldValue);
+                    break;
+                case CONFIG_FIELD:
+                    node = this.fillFromFields((MultiConfiguration)field.get(parentConfig), (MultiConfiguration)fieldValue);
+                    break;
+                case COLLECTION_CONFIG_FIELD:
+                    throw new InvalidConfigurationException("ChildConfigs are not allowed for Configurations in Collections" +
+                                                                "\nConfig:" + config.getClass());
+                case MAP_CONFIG_FIELD:
+                    node = MapNode.emptyMap();
+                    Map<Object, MultiConfiguration> parentFieldMap = (Map<Object, MultiConfiguration>)field.get(parentConfig);
+                    Map<Object, MultiConfiguration> childFieldMap = MapConverter.getMapFor((ParameterizedType)field.getGenericType());
+                    for (Map.Entry<Object, MultiConfiguration> parentEntry : parentFieldMap.entrySet())
                     {
-                        MapNode configNode = this.fillFromFields(parentEntry.getValue(), childFieldMap.get(parentEntry.getKey()));
-                        mapNode.setNode((StringNode)keyNode, configNode);
-                    }
-                    else
-                    {
-                        throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                                                    "\nConfig:" + config.getClass());
+                        Node keyNode = Convert.toNode(parentEntry.getKey());
+                        if (keyNode instanceof StringNode)
+                        {
+                            MapNode configNode = this.fillFromFields(parentEntry.getValue(), childFieldMap.get(parentEntry.getKey()));
+                            ((MapNode)node).setNode((StringNode)keyNode, configNode);
+                        }
+                        else
+                        {
+                            throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
+                                                                        "\nConfig:" + config.getClass());
+                        }
                     }
                 }
-            }
+                this.addComment(node, field);
+                baseNode.setNodeAt(path, PATH_SEPARATOR, node);
         }
         catch (Exception e)
         {

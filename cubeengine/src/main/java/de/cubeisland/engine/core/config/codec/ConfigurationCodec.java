@@ -43,6 +43,8 @@ import de.cubeisland.engine.core.config.node.StringNode;
 import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.core.util.convert.converter.generic.MapConverter;
 
+import static de.cubeisland.engine.core.config.codec.ConfigurationCodec.FieldType.*;
+
 /**
  * This abstract Codec can be implemented to read and write configurations.
  */
@@ -83,10 +85,19 @@ public abstract class ConfigurationCodec
         }
     }
 
+    /**
+     * Saves the configuration with the values contained in the node into a file for given path
+     *
+     * @param config the configuration to save
+     * @param node the node containing all data to save
+     * @param file the file to save into
+     * @throws IOException
+     */
     protected abstract void saveIntoFile(Configuration config, MapNode node, Path file) throws IOException;
 
     /**
      * Converts the inputStream into a readable Object
+     *
      * @param is the InputStream
      */
     public abstract MapNode loadFromInputStream(InputStream is);
@@ -98,7 +109,13 @@ public abstract class ConfigurationCodec
      */
     public abstract String getExtension();
 
-    protected void doFieldComment(Node node, Field field)
+    /**
+     * Adds a comment to the given node
+     *
+     * @param node the node to add the comment to
+     * @param field the field possibly having a {@link Comment} annotation
+     */
+    protected void addComment(Node node, Field field)
     {
         if (field.isAnnotationPresent(Comment.class))
         {
@@ -107,14 +124,20 @@ public abstract class ConfigurationCodec
         }
     }
 
-    protected void doMapComments(MapNode baseNode, Class<? extends Configuration> configClass)
+    /**
+     * Adds declared map-comments of the configuration
+     *
+     * @param baseNode the baseNode containing all nodes
+     * @param configClass the class of the configuration
+     */
+    protected void addMapComments(MapNode baseNode, Class<? extends Configuration> configClass)
     {
         if (configClass.isAnnotationPresent(MapComments.class))
         {
             MapComment[] mapComments = configClass.getAnnotation(MapComments.class).value();
             for (MapComment comment : mapComments)
             {
-                Node nodeAt = baseNode.getNodeAt(comment.path(), ".");
+                Node nodeAt = baseNode.getNodeAt(comment.path(), "."); // TODO option to not create the node
                 if (nodeAt != null) // if null ignore comment
                 {
                     if (nodeAt instanceof NullNode)
@@ -130,14 +153,20 @@ public abstract class ConfigurationCodec
         }
     }
 
-    protected static final int NORMAL_FIELD = 0;
-    protected static final int CONFIG_FIELD = 1;
-    protected static final int COLLECTION_CONFIG_FIELD = 2;
-    protected static final int MAP_CONFIG_FIELD = 3;
-
-    protected static int getFieldType(Field field)
+    protected enum FieldType
     {
-        int fieldType = NORMAL_FIELD;
+        NORMAL_FIELD, CONFIG_FIELD, COLLECTION_CONFIG_FIELD, MAP_CONFIG_FIELD;
+    }
+
+    /**
+     * Detects the Type of a field
+     *
+     * @param field the field
+     * @return the Type of the field
+     */
+    protected static FieldType getFieldType(Field field)
+    {
+        FieldType fieldType = NORMAL_FIELD;
         if (Configuration.class.isAssignableFrom(field.getType()))
         {
             return CONFIG_FIELD;
@@ -167,6 +196,12 @@ public abstract class ConfigurationCodec
         return fieldType;
     }
 
+    /**
+     * Detects if given field needs to be serialized
+     *
+     * @param field the field to check
+     * @return whether the field is a field of the configuration that needs to be serialized
+     */
     protected static boolean isConfigField(Field field)
     {
         int mask = field.getModifiers();
@@ -174,13 +209,16 @@ public abstract class ConfigurationCodec
         {
             return false;
         }
-        if (field.isAnnotationPresent(Option.class))
-        {
-            return true;
-        }
-        return false;
+        return field.isAnnotationPresent(Option.class);
     }
 
+    /**
+     * Dumps the contents of the MapNode into the fields odf the configuration
+     *
+     * @param config the configuration
+     * @param currentNode the current MapNode
+     */
+    @SuppressWarnings("unchecked cast")
     protected void dumpIntoFields(Configuration config, MapNode currentNode)
     {
         for (Field field : config.getClass().getFields()) // ONLY public fields are allowed
@@ -192,7 +230,7 @@ public abstract class ConfigurationCodec
                     String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
                     Node fieldNode = currentNode.getNodeAt(path, PATH_SEPARATOR);
                     Type type = field.getGenericType();
-                    int fieldType = getFieldType(field);
+                    FieldType fieldType = getFieldType(field);
                     switch (fieldType)
                     {
                     case NORMAL_FIELD:
@@ -299,7 +337,7 @@ public abstract class ConfigurationCodec
                         for (Entry<String, Node> entry : loadFrom_Map.getMappedNodes().entrySet())
                         {
                             Node keyNode = Convert.toNode(entry.getKey());
-                            Node valueNode = loadFrom_Map.getNodeAt(entry.getKey(), this.PATH_SEPARATOR);
+                            Node valueNode = loadFrom_Map.getNodeAt(entry.getKey(), PATH_SEPARATOR);
                             Object key = Convert.fromNode(keyNode,((ParameterizedType)type).getActualTypeArguments()[0]);
                             Configuration value;
                             if (valueNode instanceof NullNode)
@@ -320,7 +358,6 @@ public abstract class ConfigurationCodec
                             configs.put(key,value);
                             field.set(config,configs);
                         }
-                        continue;
                     }
                 }
             }
@@ -338,10 +375,11 @@ public abstract class ConfigurationCodec
 
 
     /**
-     * Fills the map with values from the Fields to save
+     * Fills a MapNode with values from the fields to later save
      *
-     * @param config the config
+     * @param config the configuration
      */
+    @SuppressWarnings("unchecked cast")
     public <C extends Configuration> MapNode fillFromFields(C config)
     {
         MapNode baseNode = MapNode.emptyMap();
@@ -364,64 +402,65 @@ public abstract class ConfigurationCodec
                 {
                     continue;
                 }
-                String path = field.getAnnotation(Option.class).value().replace(".", this.PATH_SEPARATOR);
-                this.fillFromField(field,config,baseNode,path);
+                this.fillFromField(field, config, baseNode);
             }
         }
-        this.doMapComments(baseNode, config.getClass());
+        this.addMapComments(baseNode, config.getClass());
         return baseNode;
     }
 
-    protected void fillFromField(Field field, Configuration config, MapNode baseNode, String path)
+    /**
+     * Fills the values of the given field into the MapNode
+     *
+     * @param field the field to get the values from
+     * @param config the configuration containing the values
+     * @param baseNode the MapNode to insert the values into
+     */
+    @SuppressWarnings("unchecked cast")
+    protected void fillFromField(Field field, Configuration config, MapNode baseNode)
     {
+        String path = field.getAnnotation(Option.class).value().replace(".", PATH_SEPARATOR);
         try
         {
             Object fieldValue = field.get(config);
-            int fieldType = getFieldType(field);
+            FieldType fieldType = getFieldType(field);
+            Node node = null;
             switch (fieldType)
             {
-            case NORMAL_FIELD:
-                Node fieldValueNode = Convert.toNode(fieldValue);
-                this.doFieldComment(fieldValueNode, field);
-                baseNode.setNodeAt(path, PATH_SEPARATOR, fieldValueNode);
-                return;
-            case CONFIG_FIELD:
-
-                MapNode singleConfigNode = this.fillFromFields((Configuration)fieldValue);
-                baseNode.setNodeAt(path, PATH_SEPARATOR, singleConfigNode);
-                this.doFieldComment(singleConfigNode, field);
-                return;
-            case COLLECTION_CONFIG_FIELD:
-                ListNode listNode = ListNode.emptyList();
-                baseNode.setNodeAt(path, PATH_SEPARATOR, listNode);
-                int pos = 0;
-                for (Configuration subConfig : (Collection<Configuration>)fieldValue)
-                {
-                    MapNode collectionConfigNode = this.fillFromFields(subConfig);
-                    this.doFieldComment(collectionConfigNode, field);
-                    listNode.addNode(collectionConfigNode);
-                }
-                return;
-            case MAP_CONFIG_FIELD:
-                MapNode mapNode = MapNode.emptyMap();
-                this.doFieldComment(mapNode, field);
-                baseNode.setNodeAt(path, PATH_SEPARATOR, mapNode);
-                Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
-                for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
-                {
-                    Node keyNode = Convert.toNode(entry.getKey());
-                    if (keyNode instanceof StringNode)
+                case NORMAL_FIELD:
+                    node = Convert.toNode(fieldValue);
+                    break;
+                case CONFIG_FIELD:
+                    node = this.fillFromFields((Configuration)fieldValue);
+                    break;
+                case COLLECTION_CONFIG_FIELD:
+                    node = ListNode.emptyList();
+                    for (Configuration subConfig : (Collection<Configuration>)fieldValue)
                     {
-                        MapNode mapConfigNode = this.fillFromFields(entry.getValue());
-                        mapNode.setNode((StringNode)keyNode, mapConfigNode);
+                        MapNode collectionConfigNode = this.fillFromFields(subConfig);
+                        ((ListNode)node).addNode(collectionConfigNode);
                     }
-                    else
+                    break;
+                case MAP_CONFIG_FIELD:
+                    node = MapNode.emptyMap();
+                    Map<Object, Configuration> fieldMap = (Map<Object, Configuration>)fieldValue;
+                    for (Map.Entry<Object, Configuration> entry : fieldMap.entrySet())
                     {
-                        throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
-                                                                    "\nConfig:" + config.getClass());
+                        Node keyNode = Convert.toNode(entry.getKey());
+                        if (keyNode instanceof StringNode)
+                        {
+                            MapNode mapConfigNode = this.fillFromFields(entry.getValue());
+                            ((MapNode)node).setNode((StringNode)keyNode, mapConfigNode);
+                        }
+                        else
+                        {
+                            throw new InvalidConfigurationException("Invalid Key-Node for Map of Configuration at " + path +
+                                                                        "\nConfig:" + config.getClass());
+                        }
                     }
-                }
             }
+            this.addComment(node, field);
+            baseNode.setNodeAt(path, PATH_SEPARATOR, node);
         }
         catch (Exception e)
         {

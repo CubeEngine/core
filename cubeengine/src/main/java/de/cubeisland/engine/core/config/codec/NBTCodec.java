@@ -181,7 +181,7 @@ public class NBTCodec extends ConfigurationCodec
         }
         else if (value instanceof ListNode)
         {
-            List<Tag> tagList = new ArrayList<Tag>();
+            List<Tag> tagList = new ArrayList<>();
             Integer i = 0;
             for (Node node : ((ListNode)value).getListedNodes())
             {

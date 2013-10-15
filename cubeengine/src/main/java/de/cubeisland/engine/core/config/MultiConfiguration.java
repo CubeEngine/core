@@ -35,6 +35,9 @@ public class MultiConfiguration<ConfigCodec extends MultiConfigurationCodec> ext
 {
     protected MultiConfiguration parent = null;
 
+    /**
+     * Saves this configuration as a child-configuration of the set parent-configuration
+     */
     public final void saveChild()
     {
         if (this.codec == null)
@@ -49,6 +52,13 @@ public class MultiConfiguration<ConfigCodec extends MultiConfigurationCodec> ext
         this.onSaved(this.file);
     }
 
+    /**
+     * Loads and saves a child-configuration from given path
+     *
+     * @param sourcePath the path to the file
+     * @param <T> the ConfigurationType
+     * @return the loaded child-configuration
+     */
     @SuppressWarnings("unchecked")
     public <T extends Configuration> T loadChild(Path sourcePath) //and save
     {
@@ -77,17 +87,36 @@ public class MultiConfiguration<ConfigCodec extends MultiConfigurationCodec> ext
         }
     }
 
-    public MultiConfiguration getParent() {
+    /**
+     * Gets the parent-configuration if given
+     *
+     * @return the parent-configuration or null
+     */
+    public MultiConfiguration getParent()
+    {
         return parent;
     }
 
     private HashSet<Field> inheritedFields;
+
+    /**
+     * Marks a field as being inherited from the parent configuration and thus not being saved
+     *
+     * @param field the inherited field
+     */
     public void addinheritedField(Field field)
     {
         this.inheritedFields.add(field);
     }
 
-    public boolean isInheritedField(Field field) {
+    /**
+     * Returns whether the given field-value was inherited from a parent-configuration
+     *
+     * @param field the field to check
+     * @return true if the field got inherited
+     */
+    public boolean isInheritedField(Field field)
+    {
         return inheritedFields.contains(field);
     }
 }

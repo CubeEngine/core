@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.config;
 import de.cubeisland.engine.core.config.codec.YamlCodec;
 
 /**
- * An Configuration using YAML
+ * A Configuration using YAML
  */
 public abstract class YamlConfiguration extends MultiConfiguration<YamlCodec>
 {

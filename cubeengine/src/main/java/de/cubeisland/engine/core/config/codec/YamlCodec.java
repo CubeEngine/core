@@ -39,22 +39,14 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.reader.ReaderException;
 
 /**
- * This class acts as a codec for yaml-configurations.
+ * A Codec for YAML-Configurations allowing child-configurations
  */
 public class YamlCodec extends MultiConfigurationCodec implements CommentableCodec
 {
-
-    private final Yaml yaml;
-
     private static final String COMMENT_PREFIX = "# ";
     private static final String OFFSET = "  ";
     private static final String LINE_BREAK = "\n";
     private static final String QUOTE = "'";
-
-    public YamlCodec()
-    {
-        this.yaml = new Yaml();
-    }
 
     @Override
     public String getExtension()
@@ -83,6 +75,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
     }
 
     @Override
+    @SuppressWarnings("unchecked cast")
     public MapNode loadFromInputStream(InputStream is)
     {
         MapNode values;
@@ -93,7 +86,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
                 values = MapNode.emptyMap(); // InputStream null -> config was not existent
                 return values;
             }
-            Map<Object, Object> map = (Map<Object, Object>)this.yaml.load(is);
+            Map<Object, Object> map = (Map<Object, Object>)new Yaml().load(is);
             if (map == null)
             {
                 values = MapNode.emptyMap(); // loadValues null -> config exists but was empty
@@ -137,7 +130,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
     {
         mapEnd = false;
         StringBuilder sb = new StringBuilder();
-        String offset = this.offset(off);
+        String offset = offset(off);
         if (!(value instanceof NullNode)) // null-Node ?
         {
             if (value instanceof StringNode) // String-Node ?
@@ -148,7 +141,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
                     sb.append("|").append(LINE_BREAK).append(offset).append(OFFSET);
                     sb.append(string.trim().replace(LINE_BREAK, LINE_BREAK + offset + OFFSET));
                 }
-                else if (this.needsQuote(string))
+                else if (needsQuote(string))
                 {
                     sb.append(QUOTE).append(string).append(QUOTE);
                 }
@@ -210,14 +203,14 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
      * @param values the values at given path
      * @param off the current offset
      * @param inCollection
-     * @return  the serialized value
+     * @return the serialized value
      */
     private void convertMap(OutputStreamWriter writer, MapNode values, int off, boolean inCollection) throws IOException
     {
         Map<String, Node> map = values.getMappedNodes();
         if (map.isEmpty())
         {
-            writer.append(this.offset(off)).append("{}").append(LINE_BREAK);
+            writer.append(offset(off)).append("{}").append(LINE_BREAK);
             return;
         }
         for (Entry<String, Node> entry : map.entrySet())
@@ -272,7 +265,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
         {
             return ""; //No Comment
         }
-        String off = this.offset(offset);
+        String off = offset(offset);
         comment = comment.replace(LINE_BREAK, LINE_BREAK + off + COMMENT_PREFIX); // multi line
         comment = off + COMMENT_PREFIX + comment + LINE_BREAK;
         return comment;

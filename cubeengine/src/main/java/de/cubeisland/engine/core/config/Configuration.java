@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -43,9 +42,52 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
     }
 
     /**
-     * Saves this configuration into given File
+     * Tries to get the codec of a configuration implementation.
      *
-     * @param target the File to save to
+     * @param clazz the clazz of the configuration
+     * @param <C> the CodecType
+     * @param <Config> the ConfigType
+     * @return the codec
+     *
+     * @throws InvalidConfigurationException if no codec was defined through the GenericType
+     */
+    @SuppressWarnings("unchecked cast")
+    private static <C extends ConfigurationCodec, Config extends Configuration> C getCodec(Class<Config> clazz)
+    {
+        Type genericSuperclass = clazz.getGenericSuperclass(); // Get genegeric superclass
+        Class<C> codecClass = null;
+        try
+        {
+            if (genericSuperclass.equals(Configuration.class))
+            {
+                // superclass is this class -> No Codec set as GenericType
+                throw new InvalidConfigurationException("Configuration has no codec set! A configuration needs to have a coded defined in its GenericType");
+            }
+            else if (genericSuperclass instanceof ParameterizedType) // check if genericsuperclass is ParamereizedType
+            {
+                codecClass = (Class<C>)((ParameterizedType)genericSuperclass).getActualTypeArguments()[0]; // Get Type
+                return codecClass.newInstance(); // Create Instance
+            }
+            // else lookup next superclass
+        }
+        catch (ClassCastException e) // Somehow the configuration has a GenericType that is not a Codec
+        {
+            if (!(genericSuperclass instanceof Class))
+            {
+                throw new IllegalStateException("Something went wrong!", e);
+            }
+        }
+        catch (ReflectiveOperationException ex)
+        {
+            throw new InvalidConfigurationException("Could not instantiate the codec! " + codecClass, ex);
+        }
+        return getCodec((Class<? extends Configuration>)genericSuperclass); // Lookup next superclass
+    }
+
+    /**
+     * Saves this configuration in a file for given Path
+     *
+     * @param target the Path to the file to save into
      */
     public final void save(Path target)
     {
@@ -59,6 +101,7 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
 
     /**
      * Reloads the configuration from file
+     * <p>This will only work if the file of the configuration got set previously (usually through loading from file)
      */
     public void reload()
     {
@@ -66,12 +109,9 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
         {
             throw new IllegalArgumentException("The file must not be null in order to load the configuration!");
         }
-        try
+        try (InputStream is = new FileInputStream(this.file.toFile()))
         {
-            try (InputStream is = new FileInputStream(this.file.toFile()))
-            {
-                this.loadFrom(is);
-            }
+            this.loadFrom(is);
         }
         catch (Exception e)
         {
@@ -87,13 +127,10 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
      */
     public void loadFrom(InputStream is)
     {
-        if (is != null)
-        {
-            this.codec.load(this, is); //load config in maps -> updates -> sets fields
-        }
+        assert is != null : "You hae to provide a InputStream to load from";
+        this.codec.load(this, is); //load config in maps -> updates -> sets fields
         this.onLoaded(file);
     }
-
 
     /**
      * Saves the configuration to the set file.
@@ -104,9 +141,9 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
     }
 
     /**
-     * Returns the current Codec
+     * Returns the Codec
      *
-     * @return the ConfigurationCodec
+     * @return the ConfigurationCodec defined in the GenericType of the Configuration
      */
     public final Codec getCodec()
     {
@@ -114,20 +151,20 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
     }
 
     /**
-     * Sets the file to load from
+     * Sets the path to load from
      *
-     * @param file the file
+     * @param path the path the configuration will load from
      */
-    public final void setPath(Path file)
+    public final void setPath(Path path)
     {
-        assert file != null: "The file must not be null!";
-        this.file = file;
+        assert path != null: "The file must not be null!";
+        this.file = path;
     }
 
     /**
-     * Returns the file this config will be saved to and loaded from by default
+     * Returns the path this config will be saved to and loaded from by default
      *
-     * @return the file of this config
+     * @return the path of this config
      */
     public final Path getPath()
     {
@@ -135,9 +172,9 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
     }
 
     /**
-     * This method is called right after the configuration got loaded.
+     * This method gets called right after the configuration got loaded.
      */
-    public void onLoaded(Path loadFrom)
+    public void onLoaded(Path loadedFrom)
     {}
 
     /**
@@ -148,6 +185,7 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
 
     /**
      * Returns the lines to be added in front of the Configuration.
+     * <p>not every codec may use this
      *
      * @return the head
      */
@@ -158,6 +196,7 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
 
     /**
      * Returns the lines to be added at the end of the Configuration.
+     * <p>not every codec may use this
      *
      * @return the head
      */
@@ -171,7 +210,7 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
      * <p>The configuration has to have the default Constructor for this to work!
      *
      * @param clazz the configurations class
-     * @param <T>
+     * @param <T> The Type of the returned configuration
      * @return the created configuration
      */
     public static <T extends Configuration> T create(Class<T> clazz)
@@ -221,23 +260,14 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
      */
     public static <T extends Configuration> T load(Class<T> clazz, File file, boolean save)
     {
-        try (FileInputStream fis = new FileInputStream(file))
+        T config = create(clazz); // loading
+        config.file = file.toPath(); // IMPORTANT TO SET BEFORE LOADING!
+        config.reload();
+        if (save)
         {
-            T config = create(clazz); // loading
-            config.file = file.toPath(); // IMPORTANT TO SET BEFORE LOADING!
-            config.reload();
-            if (save)
-            {
-                config.save(); // saving
-            }
-            return config;
+            config.save(); // saving
         }
-        catch (IOException ex)
-        {
-            CubeEngine.getLog().warn("Could not load configuration from file! " + clazz);
-            CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
-        }
-        return null;
+        return config;
     }
 
     /**
@@ -279,41 +309,5 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
         T config = create(clazz);
         config.loadFrom(is);
         return config;
-    }
-
-    private static <C extends ConfigurationCodec, Config> C getCodec(Class<Config> clazz)
-    {
-        Type genericSuperclass = clazz.getGenericSuperclass();
-        try
-        {
-            if (genericSuperclass instanceof ParameterizedType)
-            {
-                Class<C> codecClass = (Class<C>)((ParameterizedType)genericSuperclass).getActualTypeArguments()[0];
-                return codecClass.newInstance();
-            }
-            else if (genericSuperclass.equals(Configuration.class))
-            {
-                throw new InvalidConfigurationException("Configuration has no codec set!");
-            }
-            else
-            {
-                return getCodec((Class<?>)genericSuperclass);
-            }
-        }
-        catch (ClassCastException e)
-        {
-            if (clazz.getSuperclass().equals(Configuration.class))
-            {
-                throw new InvalidConfigurationException("Configuration has no codec set!", e);
-            }
-            else
-            {
-                return getCodec((Class<?>)genericSuperclass);
-            }
-        }
-        catch (ReflectiveOperationException ex)
-        {
-            throw new InvalidConfigurationException("Could not instantiate the codec!", ex);
-        }
     }
 }
