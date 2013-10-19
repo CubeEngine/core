@@ -15,33 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.config.node;
+package de.cubeisland.engine.configuration.converter;
 
-public class IntNode extends Node<Integer>
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.core.util.Version;
+
+public class VersionConverter implements Converter<Version>
 {
-
-    private int value;
-
-    public IntNode(int value)
+    @Override
+    public Node toNode(Version version) throws ConversionException
     {
-        this.value = value;
+        return new StringNode(version.toString());
     }
 
     @Override
-    public Integer getValue()
+    public Version fromNode(Node node) throws ConversionException
     {
-        return value;
-    }
-
-    @Override
-    public String asText()
-    {
-        return String.valueOf(value);
-    }
-
-    @Override
-    public String toString()
-    {
-        return "IntNode=["+value+"]";
+        if (node instanceof StringNode)
+        {
+            return Version.fromString(((StringNode)node).getValue());
+        }
+        throw new ConversionException("Versions can only be read from strings!");
     }
 }

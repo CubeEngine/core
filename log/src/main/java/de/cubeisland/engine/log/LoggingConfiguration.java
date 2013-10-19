@@ -26,11 +26,11 @@ import java.util.Set;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.MapComment;
-import de.cubeisland.engine.core.config.annotations.MapComments;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.MapComment;
+import de.cubeisland.engine.configuration.annotations.MapComments;
+import de.cubeisland.engine.configuration.annotations.Option;
 import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 
 @MapComments(

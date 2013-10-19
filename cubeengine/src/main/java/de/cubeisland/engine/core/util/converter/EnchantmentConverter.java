@@ -15,31 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.convert.converter;
+package de.cubeisland.engine.configuration.converter;
 
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-public class ItemStackConverter implements Converter<ItemStack>
+public class EnchantmentConverter implements Converter<Enchantment>
 {
     @Override
-    public Node toNode(ItemStack object) throws ConversionException
+    public Node toNode(Enchantment object) throws ConversionException
     {
-        return Convert.wrapIntoNode(object.getType().getId() + ":" + object.getDurability());
+        return Convert.wrapIntoNode(Match.enchant().nameFor(object));
     }
 
     @Override
-    public ItemStack fromNode(Node node) throws ConversionException
+    public Enchantment fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            return Match.material().itemStack(((StringNode)node).getValue());
+            return Match.enchant().enchantment(((StringNode)node).getValue());
         }
         throw new ConversionException("Invalid Node!" + node.getClass());
     }

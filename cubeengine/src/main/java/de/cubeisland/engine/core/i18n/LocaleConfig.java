@@ -19,8 +19,8 @@ package de.cubeisland.engine.core.i18n;
 
 import java.util.Locale;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Option;
 
 /**
  * This cofniguration is used to parse the language configurations.

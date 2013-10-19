@@ -27,22 +27,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.node.BooleanNode;
-import de.cubeisland.engine.core.config.node.ByteNode;
-import de.cubeisland.engine.core.config.node.CharNode;
-import de.cubeisland.engine.core.config.node.DoubleNode;
-import de.cubeisland.engine.core.config.node.FloatNode;
-import de.cubeisland.engine.core.config.node.IntNode;
-import de.cubeisland.engine.core.config.node.ListNode;
-import de.cubeisland.engine.core.config.node.LongNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.config.node.ShortNode;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
+import de.cubeisland.engine.configuration.Configuration;
+import de.cubeisland.engine.configuration.codec.ConfigurationCodec;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.node.BooleanNode;
+import de.cubeisland.engine.configuration.node.ByteNode;
+import de.cubeisland.engine.configuration.node.CharNode;
+import de.cubeisland.engine.configuration.node.DoubleNode;
+import de.cubeisland.engine.configuration.node.FloatNode;
+import de.cubeisland.engine.configuration.node.IntNode;
+import de.cubeisland.engine.configuration.node.ListNode;
+import de.cubeisland.engine.configuration.node.LongNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.NullNode;
+import de.cubeisland.engine.configuration.node.ShortNode;
+import de.cubeisland.engine.configuration.node.StringNode;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
@@ -182,7 +183,7 @@ public class NBTCodec extends ConfigurationCodec
         else if (value instanceof ListNode)
         {
             List<Tag> tagList = new ArrayList<>();
-            Integer i = 0;
+            java.lang.Integer i = 0;
             for (Node node : ((ListNode)value).getListedNodes())
             {
                 i++;

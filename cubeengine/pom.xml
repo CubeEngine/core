@@ -25,6 +25,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>de.cubeisland.engine</groupId>
+      <artifactId>configuration</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
       <version>51.1</version>
@@ -40,13 +45,6 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-codec-http</artifactId>
       <version>4.0.4.Final</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>1.12</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>

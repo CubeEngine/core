@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.roles;
 
+import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.command.CommandManager;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.roles.commands.ManagementCommands;
 import de.cubeisland.engine.roles.commands.RoleCommands;
 import de.cubeisland.engine.roles.commands.RoleInformationCommands;
@@ -77,7 +76,7 @@ public class Roles extends Module
     @Override
     public void onStartupFinished()
     {
-        this.config = Configuration.load(RolesConfig.class, this);
+        this.config = this.loadConfig(RolesConfig.class);
         this.rolesManager.initRoleProviders();
         this.rolesManager.recalculateAllRoles();
     }

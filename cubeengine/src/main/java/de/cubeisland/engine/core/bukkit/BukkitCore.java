@@ -33,10 +33,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,6 +54,8 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
+import de.cubeisland.engine.configuration.Configuration;
+import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -65,7 +73,6 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logger.ColorConverter;
 import de.cubeisland.engine.core.logger.JULAppender;
@@ -74,12 +81,24 @@ import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.util.convert.Convert;
+import de.cubeisland.engine.configuration.converter.DurationConverter;
+import de.cubeisland.engine.configuration.converter.EnchantmentConverter;
+import de.cubeisland.engine.configuration.converter.ItemStackConverter;
+import de.cubeisland.engine.configuration.converter.LevelConverter;
+import de.cubeisland.engine.configuration.converter.LocaleConverter;
+import de.cubeisland.engine.configuration.converter.LocationConverter;
+import de.cubeisland.engine.configuration.converter.MaterialConverter;
+import de.cubeisland.engine.configuration.converter.PlayerConverter;
+import de.cubeisland.engine.configuration.converter.UserConverter;
+import de.cubeisland.engine.configuration.converter.VersionConverter;
+import de.cubeisland.engine.configuration.converter.WorldConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
@@ -141,7 +160,18 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.version = Version.fromString(this.getDescription().getVersion());
 
         CubeEngine.initialize(this);
-        Convert.init(this);
+
+        Convert.registerConverter(Level.class, new LevelConverter());
+        Convert.registerConverter(ItemStack.class, new ItemStackConverter());
+        Convert.registerConverter(Material.class, new MaterialConverter());
+        Convert.registerConverter(Enchantment.class, new EnchantmentConverter());
+        Convert.registerConverter(User.class, new UserConverter());
+        Convert.registerConverter(World.class, new WorldConverter());
+        Convert.registerConverter(Duration.class, new DurationConverter());
+        Convert.registerConverter(Version.class, new VersionConverter());
+        Convert.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        Convert.registerConverter(Location.class, new LocationConverter(this));
+        Convert.registerConverter(Locale.class, new LocaleConverter());
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
@@ -224,8 +254,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.serviceManager = new ServiceManager(this);
 
         // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
-                                                                                        .resolve("core.yml"));
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
 
         parentLogger.setLevel(Level.ALL);
         this.logger.setLevel(parentLogger.getLevel());

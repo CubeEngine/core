@@ -17,10 +17,11 @@
  */
 package de.cubeisland.engine.roles.config;
 
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
+
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
 
 public class PriorityConverter implements Converter<Priority>
 {

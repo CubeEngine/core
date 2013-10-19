@@ -22,7 +22,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import de.cubeisland.engine.configuration.Configuration;
+import de.cubeisland.engine.configuration.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
@@ -298,5 +301,30 @@ public abstract class Module
             modulePermission = Permission.BASE.createAbstractChild(this.getId());
         }
         return modulePermission;
+    }
+
+    /**
+     * Loads and saves from config.{@link de.cubeisland.engine.configuration.codec.ConfigurationCodec#getExtension()} in the module folder // TODO
+     *
+     * @param clazz the configurations class
+     * @return the loaded configuration
+     */
+    public <T extends Configuration> T loadConfig(Class<T> clazz)
+    {
+        T config = Configuration.create(clazz);
+        config.setPath(this.getFolder().resolve("config." + config.codec.getExtension()));
+        try
+        {
+            if (config.reload(true))
+            {
+                this.getLog().info("Saved new configuration file! config.{}" , config.codec.getExtension());
+            }
+        }
+        catch (InvalidConfigurationException ex)
+        {
+            CubeEngine.getLog().error("Failed to load the configuration for {}", config.getPath());
+            CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+        }
+        return config;
     }
 }

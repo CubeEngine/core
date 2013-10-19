@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import net.minecraft.server.v1_6_R3.NBTBase;
 import net.minecraft.server.v1_6_R3.NBTTagByte;
 import net.minecraft.server.v1_6_R3.NBTTagByteArray;
+import net.minecraft.server.v1_6_R3.NBTTagCompound;
 import net.minecraft.server.v1_6_R3.NBTTagDouble;
 import net.minecraft.server.v1_6_R3.NBTTagEnd;
 import net.minecraft.server.v1_6_R3.NBTTagFloat;
@@ -33,23 +34,22 @@ import net.minecraft.server.v1_6_R3.NBTTagList;
 import net.minecraft.server.v1_6_R3.NBTTagLong;
 import net.minecraft.server.v1_6_R3.NBTTagShort;
 import net.minecraft.server.v1_6_R3.NBTTagString;
-import net.minecraft.server.v1_6_R3.NBTTagCompound;
 import net.minecraft.server.v1_6_R3.TileEntity;
 import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.core.config.node.ByteNode;
-import de.cubeisland.engine.core.config.node.DoubleNode;
-import de.cubeisland.engine.core.config.node.FloatNode;
-import de.cubeisland.engine.core.config.node.IntNode;
-import de.cubeisland.engine.core.config.node.ListNode;
-import de.cubeisland.engine.core.config.node.LongNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.config.node.ShortNode;
-import de.cubeisland.engine.core.config.node.StringNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.ByteNode;
+import de.cubeisland.engine.configuration.node.DoubleNode;
+import de.cubeisland.engine.configuration.node.FloatNode;
+import de.cubeisland.engine.configuration.node.IntNode;
+import de.cubeisland.engine.configuration.node.ListNode;
+import de.cubeisland.engine.configuration.node.LongNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.NullNode;
+import de.cubeisland.engine.configuration.node.ShortNode;
+import de.cubeisland.engine.configuration.node.StringNode;
 
 public class NBTUtils
 {

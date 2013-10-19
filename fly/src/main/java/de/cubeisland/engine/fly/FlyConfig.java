@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.fly;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Option;
 
 public class FlyConfig extends YamlConfiguration
 {

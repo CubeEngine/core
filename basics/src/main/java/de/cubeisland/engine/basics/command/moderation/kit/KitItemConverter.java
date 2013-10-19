@@ -26,13 +26,13 @@ import java.util.regex.Pattern;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.core.config.node.IntNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.IntNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class KitItemConverter implements Converter<KitItem>
@@ -44,9 +44,7 @@ public class KitItemConverter implements Converter<KitItem>
     {
         if (object.enchs == null || object.enchs.isEmpty())
         {
-            return Convert.wrapIntoNode(object.amount
-                                            + "*" + object.mat.name()
-                                            + ":" + object.dura +
+            return Convert.wrapIntoNode(object.amount + "*" + object.mat.name() + ":" + object.dura +
                                             (object.customName == null ? "" : " " + object.customName));
         }
         else

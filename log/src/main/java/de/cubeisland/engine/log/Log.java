@@ -21,11 +21,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.log.action.ActionTypeManager;
 import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 import de.cubeisland.engine.log.action.logaction.container.ContainerTypeConverter;
@@ -36,9 +37,6 @@ import de.cubeisland.engine.log.storage.LogManager;
 import de.cubeisland.engine.log.storage.TableActionTypes;
 import de.cubeisland.engine.log.storage.TableLogEntry;
 import de.cubeisland.engine.log.tool.ToolListener;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class Log extends Module implements Listener
 {
@@ -54,7 +52,7 @@ public class Log extends Module implements Listener
         this.getCore().getDB().registerTable(TableActionTypes.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableLogEntry.initTable(this.getCore().getDB()));
 
-        this.config = Configuration.load(LogConfiguration.class, this);
+        this.config = this.loadConfig(LogConfiguration.class);
         Convert.registerConverter(ContainerType.class, new ContainerTypeConverter());
         this.logManager = new LogManager(this);
         this.actionTypeManager = new ActionTypeManager(this);

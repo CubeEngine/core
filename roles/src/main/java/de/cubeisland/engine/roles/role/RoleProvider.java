@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;

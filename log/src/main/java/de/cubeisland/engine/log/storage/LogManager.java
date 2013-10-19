@@ -27,7 +27,7 @@ import org.bukkit.World;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;

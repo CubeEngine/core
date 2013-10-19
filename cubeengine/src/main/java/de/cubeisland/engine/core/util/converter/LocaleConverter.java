@@ -15,29 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.convert.converter;
+package de.cubeisland.engine.configuration.converter;
 
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.core.i18n.I18n;
 
-public class VersionConverter implements Converter<Version>
+import java.lang.Override;import java.util.Locale;
+
+public class LocaleConverter implements Converter<Locale>
 {
     @Override
-    public Node toNode(Version version) throws ConversionException
+    public Node toNode(Locale locale) throws ConversionException
     {
-        return new StringNode(version.toString());
+        return new StringNode(I18n.localeToString(locale));
     }
 
     @Override
-    public Version fromNode(Node node) throws ConversionException
+    public Locale fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            return Version.fromString(((StringNode)node).getValue());
+            return I18n.stringToLocale(((StringNode)node).getValue());
         }
-        throw new ConversionException("Versions can only be read from strings!");
+        throw new ConversionException("Locales can only be loaded from a string node!");
     }
 }

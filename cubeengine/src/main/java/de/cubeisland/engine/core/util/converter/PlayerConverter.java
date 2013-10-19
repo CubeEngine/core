@@ -15,31 +15,40 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.convert.converter;
+package de.cubeisland.engine.configuration.converter;
 
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
-import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.core.Core;
 
-public class EnchantmentConverter implements Converter<Enchantment>
+public class PlayerConverter implements Converter<OfflinePlayer>
 {
-    @Override
-    public Node toNode(Enchantment object) throws ConversionException
+    private Server server;
+
+    public PlayerConverter(Core core)
     {
-        return Convert.wrapIntoNode(Match.enchant().nameFor(object));
+        this.server = ((Plugin)core).getServer();
     }
 
     @Override
-    public Enchantment fromNode(Node node) throws ConversionException
+    public Node toNode(OfflinePlayer object)
+    {
+        return Convert.wrapIntoNode(object.getName());
+    }
+
+    @Override
+    public OfflinePlayer fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            return Match.enchant().enchantment(((StringNode)node).getValue());
+            return this.server.getOfflinePlayer(((StringNode)node).getValue());
         }
         throw new ConversionException("Invalid Node!" + node.getClass());
     }

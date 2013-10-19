@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.powersigns;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
+import de.cubeisland.engine.configuration.YamlConfiguration;
 
 public class PowersignsConfig extends YamlConfiguration
 {}

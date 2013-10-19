@@ -29,7 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;

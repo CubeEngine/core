@@ -15,40 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.convert.converter;
+package de.cubeisland.engine.configuration.converter;
 
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.core.util.matcher.Match;
 
-public class PlayerConverter implements Converter<OfflinePlayer>
+public class ItemStackConverter implements Converter<ItemStack>
 {
-    private Server server;
-
-    public PlayerConverter(Core core)
+    @Override
+    public Node toNode(ItemStack object) throws ConversionException
     {
-        this.server = ((Plugin)core).getServer();
+        return Convert.wrapIntoNode(object.getType().getId() + ":" + object.getDurability());
     }
 
     @Override
-    public Node toNode(OfflinePlayer object)
-    {
-        return Convert.wrapIntoNode(object.getName());
-    }
-
-    @Override
-    public OfflinePlayer fromNode(Node node) throws ConversionException
+    public ItemStack fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            return this.server.getOfflinePlayer(((StringNode)node).getValue());
+            return Match.material().itemStack(((StringNode)node).getValue());
         }
         throw new ConversionException("Invalid Node!" + node.getClass());
     }

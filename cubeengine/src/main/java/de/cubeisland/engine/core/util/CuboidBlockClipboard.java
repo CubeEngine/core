@@ -31,16 +31,18 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.node.IntNode;
+import de.cubeisland.engine.configuration.node.ListNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
-import de.cubeisland.engine.core.config.node.IntNode;
-import de.cubeisland.engine.core.config.node.ListNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.converter.CuboidBlockClipboardConverter;
+import de.cubeisland.engine.configuration.converter.CuboidBlockClipboardConverter;
 import de.cubeisland.engine.core.util.math.BlockVector3;
+
+import static de.cubeisland.engine.core.bukkit.NBTUtils.convertNBTToNode;
 
 /**
  * A simple clipboard for blocks and TileEntity-Data
@@ -49,7 +51,7 @@ public class CuboidBlockClipboard
 {
     static
     {
-        Convert.registerConverter(CuboidBlockClipboard.class,new CuboidBlockClipboardConverter()); // register converter for configs
+        Convert.registerConverter(CuboidBlockClipboard.class, new CuboidBlockClipboardConverter()); // register converter for configs
     }
 
     private final BlockData[][][] data;
@@ -136,7 +138,7 @@ public class CuboidBlockClipboard
                     bData[i] = curData.data;
                     if (curData.nbt != null)
                     {
-                        tileEntities.addNode(NBTUtils.convertNBTToNode(curData.nbt));
+                        tileEntities.addNode(convertNBTToNode(curData.nbt));
                     }
                     i++;
                 }

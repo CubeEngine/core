@@ -19,7 +19,6 @@ package de.cubeisland.engine.test.tests.config;
 
 import java.nio.file.Path;
 
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.test.tests.Test;
 
 public class ConfigTest extends Test
@@ -35,7 +34,7 @@ public class ConfigTest extends Test
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(TestConfig.class, module);
+        this.config = this.module.loadConfig(TestConfig.class);
         Path childConfig = module.getFolder().resolve("childConfig.yml");
         try
         {

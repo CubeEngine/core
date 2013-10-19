@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.hide;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
+import de.cubeisland.engine.configuration.YamlConfiguration;
 
 public class HideConfig extends YamlConfiguration
 {}

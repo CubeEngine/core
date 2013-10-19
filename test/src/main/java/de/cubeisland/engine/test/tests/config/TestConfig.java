@@ -30,11 +30,11 @@ import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.MapComment;
-import de.cubeisland.engine.core.config.annotations.MapComments;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.MapComment;
+import de.cubeisland.engine.configuration.annotations.MapComments;
+import de.cubeisland.engine.configuration.annotations.Option;
 
 /**
  * This configuration is used to test a lot of configstuff.

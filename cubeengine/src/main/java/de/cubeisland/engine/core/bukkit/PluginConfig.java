@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Option;
 
 /**
  * Configuration class to parse the custom CubeEngine values of plugin.yml

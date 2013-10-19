@@ -54,15 +54,14 @@ import de.cubeisland.engine.basics.command.teleport.TeleportRequestCommands;
 import de.cubeisland.engine.basics.storage.TableBasicsUser;
 import de.cubeisland.engine.basics.storage.TableIgnorelist;
 import de.cubeisland.engine.basics.storage.TableMail;
+import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.core.util.convert.Convert;
 import de.cubeisland.engine.roles.Roles;
 
 public class Basics extends Module
@@ -78,7 +77,7 @@ public class Basics extends Module
     public void onEnable()
     {
         Profiler.startProfiling("basicsEnable");
-        this.config = Configuration.load(BasicsConfiguration.class, this);
+        this.config = this.loadConfig(BasicsConfiguration.class);
 		final Database db = this.getCore().getDB();
         db.registerTable(TableBasicsUser.initTable(db));
         db.registerTable(TableIgnorelist.initTable(db));

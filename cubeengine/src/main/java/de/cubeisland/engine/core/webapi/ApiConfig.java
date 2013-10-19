@@ -20,9 +20,9 @@ package de.cubeisland.engine.core.webapi;
 import java.util.Collections;
 import java.util.Set;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Option;
 
 public class ApiConfig extends YamlConfiguration
 {

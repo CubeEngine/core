@@ -15,22 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.convert.converter;
+package de.cubeisland.engine.configuration.converter;
 
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.BasicConverter;
-import de.cubeisland.engine.core.util.convert.ConversionException;
+import org.bukkit.Material;
 
-public class StringConverter extends BasicConverter<String>
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Convert;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.core.util.matcher.Match;
+
+public class MaterialConverter implements Converter<Material>
 {
     @Override
-    public String fromNode(Node node) throws ConversionException
+    public Node toNode(Material object) throws ConversionException
+    {
+        return Convert.wrapIntoNode(object.name());
+    }
+
+    @Override
+    public Material fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            return ((StringNode)node).getValue();
+            return Match.material().material(node.asText());
         }
-        return node.asText();
+        throw new ConversionException("Invalid Node!" + node.getClass());
     }
 }

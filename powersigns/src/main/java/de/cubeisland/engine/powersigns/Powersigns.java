@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.powersigns;
 
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.powersigns.storage.TablePowerSign;
 
@@ -30,7 +29,7 @@ public class Powersigns extends Module
     public void onEnable()
     {
         this.getCore().getDB().registerTable(TablePowerSign.initTable(this.getCore().getDB()));
-        this.config = Configuration.load(PowersignsConfig.class, this);
+        this.config = this.loadConfig(PowersignsConfig.class);
         this.signManager = new SignManager(this);
         this.signManager.init();
     }

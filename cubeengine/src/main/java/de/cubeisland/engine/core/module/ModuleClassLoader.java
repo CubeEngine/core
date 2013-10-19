@@ -25,9 +25,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.util.convert.Convert;
 
 /**
  * This is the ClassLoader used by modules

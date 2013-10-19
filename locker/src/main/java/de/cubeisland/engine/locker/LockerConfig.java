@@ -25,9 +25,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Option;
 
 import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
 import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;

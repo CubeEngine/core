@@ -21,9 +21,9 @@ import java.nio.file.Path;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.core.config.InvalidConfigurationException;
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.InvalidConfigurationException;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Option;
 
 public class RepairBlockConfig extends YamlConfiguration
 {

@@ -20,11 +20,11 @@ package de.cubeisland.engine.itemrepair;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.MapComment;
-import de.cubeisland.engine.core.config.annotations.MapComments;
-import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.util.convert.Convert;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.MapComment;
+import de.cubeisland.engine.configuration.annotations.MapComments;
+import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainerConverter;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
