@@ -86,17 +86,17 @@ import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.configuration.converter.DurationConverter;
-import de.cubeisland.engine.configuration.converter.EnchantmentConverter;
-import de.cubeisland.engine.configuration.converter.ItemStackConverter;
-import de.cubeisland.engine.configuration.converter.LevelConverter;
-import de.cubeisland.engine.configuration.converter.LocaleConverter;
-import de.cubeisland.engine.configuration.converter.LocationConverter;
-import de.cubeisland.engine.configuration.converter.MaterialConverter;
-import de.cubeisland.engine.configuration.converter.PlayerConverter;
-import de.cubeisland.engine.configuration.converter.UserConverter;
-import de.cubeisland.engine.configuration.converter.VersionConverter;
-import de.cubeisland.engine.configuration.converter.WorldConverter;
+import de.cubeisland.engine.core.util.converter.DurationConverter;
+import de.cubeisland.engine.core.util.converter.EnchantmentConverter;
+import de.cubeisland.engine.core.util.converter.ItemStackConverter;
+import de.cubeisland.engine.core.util.converter.LevelConverter;
+import de.cubeisland.engine.core.util.converter.LocaleConverter;
+import de.cubeisland.engine.core.util.converter.LocationConverter;
+import de.cubeisland.engine.core.util.converter.MaterialConverter;
+import de.cubeisland.engine.core.util.converter.PlayerConverter;
+import de.cubeisland.engine.core.util.converter.UserConverter;
+import de.cubeisland.engine.core.util.converter.VersionConverter;
+import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
@@ -161,6 +161,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
 
+        Convert.init();
         Convert.registerConverter(Level.class, new LevelConverter());
         Convert.registerConverter(ItemStack.class, new ItemStackConverter());
         Convert.registerConverter(Material.class, new MaterialConverter());

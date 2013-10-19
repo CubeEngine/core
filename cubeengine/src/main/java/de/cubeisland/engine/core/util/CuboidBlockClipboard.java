@@ -39,7 +39,7 @@ import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
-import de.cubeisland.engine.configuration.converter.CuboidBlockClipboardConverter;
+import de.cubeisland.engine.core.util.converter.CuboidBlockClipboardConverter;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 
 import static de.cubeisland.engine.core.bukkit.NBTUtils.convertNBTToNode;
