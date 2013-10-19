@@ -338,6 +338,7 @@ public class QueryManager
                             CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z, CURRENT_TABLE.CAUSER,
                             CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA, CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA)
                 .values((Timestamp)null, null, null, null, null, null, null, null, null, null, null, null).getSQL();
+
             if (this.insertConnection == null || this.insertConnection.isClosed())
             {
                 this.insertConnection = this.database.getConnection();

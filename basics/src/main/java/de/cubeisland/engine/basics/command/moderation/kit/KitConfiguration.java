@@ -38,7 +38,7 @@ public class KitConfiguration extends YamlConfiguration
     @Option("custom-receive-message")
     public String customReceiveMsg = "";
     @Comment("amount*itemName/Id:Data customName\n"
-        + "example: 64*1:0 MyFirstStoneBlocks")
+        + "example: 64*STONE:0 MyFirstStoneBlocks")
     @Option("items")
     public List<KitItem> kitItems = new LinkedList<>();
     @Option("commands")

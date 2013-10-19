@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -105,6 +106,17 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
      */
     public void reload()
     {
+        this.reload(false);
+    }
+
+    /**
+     * Reloads the configuration from file
+     * <p>This will only work if the file of the configuration got set previously (usually through loading from file)
+     *
+     * @param save true if the configuration should be saved after loading
+     */
+    public void reload(boolean save)
+    {
         if (this.file == null)
         {
             throw new IllegalArgumentException("The file must not be null in order to load the configuration!");
@@ -113,10 +125,25 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
         {
             this.loadFrom(is);
         }
+        catch (FileNotFoundException e)
+        {
+            if (save)
+            {
+                CubeEngine.getLog().info("Could not find {} creating new file...", file.toString());
+            }
+            else
+            {
+                CubeEngine.getLog().warn("Could not find {} to load from!", file.toString());
+            }
+        }
         catch (Exception e)
         {
             CubeEngine.getLog().error("Failed to load the configuration for {}", this.file);
             CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
+        }
+        if (save)
+        {
+            this.save();
         }
     }
 
@@ -262,11 +289,7 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
     {
         T config = create(clazz); // loading
         config.file = file.toPath(); // IMPORTANT TO SET BEFORE LOADING!
-        config.reload();
-        if (save)
-        {
-            config.save(); // saving
-        }
+        config.reload(save);
         return config;
     }
 
@@ -283,7 +306,7 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
     }
 
     /**
-     * Loads from config.{@link ConfigurationCodec#getExtension()} in the module folder
+     * Loads and saves from config.{@link ConfigurationCodec#getExtension()} in the module folder
      *
      * @param clazz the configurations class
      * @param module the module
@@ -293,7 +316,7 @@ public abstract class Configuration<Codec extends ConfigurationCodec>
     {
         T config = create(clazz);
         config.file = module.getFolder().resolve("config." + config.codec.getExtension());
-        config.reload();
+        config.reload(true);
         return config;
     }
 

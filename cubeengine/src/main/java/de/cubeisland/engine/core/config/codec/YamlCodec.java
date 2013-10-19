@@ -41,7 +41,7 @@ import org.yaml.snakeyaml.reader.ReaderException;
 /**
  * A Codec for YAML-Configurations allowing child-configurations
  */
-public class YamlCodec extends MultiConfigurationCodec implements CommentableCodec
+public class YamlCodec extends MultiConfigurationCodec
 {
     private static final String COMMENT_PREFIX = "# ";
     private static final String OFFSET = "  ";
@@ -64,7 +64,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
             {
                 writer.append("# ").append(StringUtils.implode("\n# ", config.head())).append(LINE_BREAK).append(LINE_BREAK);
             }
-            this.convertMap(writer, node);
+            convertNode(writer, node);
             if (config.tail() != null)
             {
                 writer.append("# ").append(StringUtils.implode("\n# ", config.tail()));
@@ -103,34 +103,26 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
         return values;
     }
 
-    private volatile boolean mapEnd;
-    private volatile boolean first;
-
     /**
      * Serializes the values in the map
      *
      * @param writer the Output to write into
      */
-    private void convertMap(OutputStreamWriter writer, MapNode baseNode) throws IOException
+    private static void convertNode(OutputStreamWriter writer, MapNode baseNode) throws IOException
     {
-        first = true;
-        mapEnd = false;
-        this.convertMap(writer, baseNode, 0, false);
+        convertMapNode(writer, baseNode, 0, false);
     }
 
     /**
      * Serializes a single value
      *
      * @param value the value at given path
-     * @param off the current offset
+     * @param offset the current offset
      * @param inCollection
-     * @return
      */
-    private void convertValue(OutputStreamWriter writer, Node value, int off, boolean inCollection) throws IOException
+    private static void convertValue(OutputStreamWriter writer, Node value, int offset, boolean inCollection) throws IOException
     {
-        mapEnd = false;
         StringBuilder sb = new StringBuilder();
-        String offset = offset(off);
         if (!(value instanceof NullNode)) // null-Node ?
         {
             if (value instanceof StringNode) // String-Node ?
@@ -138,8 +130,9 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
                 String string = ((StringNode)value).getValue();
                 if (string.contains(LINE_BREAK)) // MultiLine String
                 {
-                    sb.append("|").append(LINE_BREAK).append(offset).append(OFFSET);
-                    sb.append(string.trim().replace(LINE_BREAK, LINE_BREAK + offset + OFFSET));
+                    String offsetString = getOffset(offset);
+                    sb.append("|").append(LINE_BREAK).append(offsetString).append(OFFSET);
+                    sb.append(string.trim().replace(LINE_BREAK, LINE_BREAK + offsetString + OFFSET));
                 }
                 else if (needsQuote(string))
                 {
@@ -151,49 +144,11 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
                 }
                 writer.append(sb.toString());
             }
-            else if (value instanceof MapNode) // Map-Node ? -> redirect
-            {
-                first = true;
-                sb.append(LINE_BREAK);
-                writer.append(sb.toString());
-                this.convertMap(writer, ((MapNode)value), off + 1, inCollection);
-                return;
-            }
-            else if (value instanceof ListNode) // List-Node? -> list the nodes
-            {
-                if (((ListNode)value).isEmpty())
-                {
-                    sb.append("[]");
-                }
-                writer.append(sb.toString());
-                writer.append(LINE_BREAK);
-                for (Node listedNode : ((ListNode)value).getListedNodes()) //Convert Collection
-                {
-                    if (mapEnd)
-                    {
-                        writer.append(LINE_BREAK);
-                    }
-                    writer.append(offset).append(OFFSET).append("- ");
-                    if (listedNode instanceof MapNode)
-                    {
-                        first = true;
-                        this.convertMap(writer, (MapNode)listedNode, off + 2, true);
-                    }
-                    else
-                    {
-                        this.convertValue(writer, listedNode, off + 1, true);
-                    }
-                }
-                mapEnd = true;
-                first = false;
-                return;
-            }
             else
             {
                 writer.append(value.asText());
             }
         }
-        this.first = false;
         writer.append(LINE_BREAK);
     }
 
@@ -201,45 +156,103 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
      * Serializes the values in the map
      *
      * @param values the values at given path
-     * @param off the current offset
+     * @param offset the current offset
      * @param inCollection
-     * @return the serialized value
      */
-    private void convertMap(OutputStreamWriter writer, MapNode values, int off, boolean inCollection) throws IOException
+    private static void convertMapNode(OutputStreamWriter writer, MapNode values, int offset, boolean inCollection) throws IOException
     {
         Map<String, Node> map = values.getMappedNodes();
         if (map.isEmpty())
         {
-            writer.append(offset(off)).append("{}").append(LINE_BREAK);
+            if (!inCollection)
+            {
+                writer.append(getOffset(offset));
+            }
+            writer.append("{}").append(LINE_BREAK);
             return;
         }
+        boolean endOfMapOrList = false;
+        boolean first = true;
         for (Entry<String, Node> entry : map.entrySet())
         {
-            if (mapEnd && !inCollection)
+            boolean hasLine = false;
+            if (endOfMapOrList && !inCollection)
             {
                 writer.append(LINE_BREAK);
+                hasLine = true;
             }
             StringBuilder sb = new StringBuilder();
-            String comment = this.buildComment(entry.getValue().getComment(), off);
+            String comment = buildComment(entry.getValue().getComment(), offset);
             if (!comment.isEmpty())
             {
-                if (!first) // if not already one line free
+                if (!hasLine && !first) // if not already one line free
                 {
                     sb.append(LINE_BREAK); // add free line before comment
                 }
                 sb.append(comment);
-                first = false;
             }
+
             if (!(first && inCollection))
             {
-                sb.append(offset(off)); // Map in collection first does not get offset
+                sb.append(getOffset(offset)); // Map in collection first does not get offset
             }
             sb.append(values.getOriginalKey(entry.getKey())).append(": ");
             writer.append(sb.toString());
-            this.convertValue(writer, entry.getValue(), off, false);
+            // Now convert the value
+            if (entry.getValue() instanceof MapNode) // Map-Node?
+            {
+                writer.append(LINE_BREAK);
+                convertMapNode(writer, ((MapNode)entry.getValue()), offset + 1, inCollection);
+                endOfMapOrList = true;
+            }
+            else if (entry.getValue() instanceof ListNode) // List-Node? -> list the nodes
+            {
+                if (((ListNode)entry.getValue()).isEmpty())
+                {
+                    writer.append("[]").append(LINE_BREAK);
+                }
+                else
+                {
+                    convertListNode(writer, (ListNode)entry.getValue(), offset);
+                }
+                endOfMapOrList = true;
+            }
+            else // Other Node (list / normal)
+            {
+                convertValue(writer, entry.getValue(), offset, false);
+                endOfMapOrList = false;
+            }
+            first = false;
         }
-        mapEnd = true;
-        first = true;
+    }
+
+    private static void convertListNode(OutputStreamWriter writer, ListNode value, int offset) throws IOException
+    {
+        writer.append(LINE_BREAK);
+        boolean endOfMap = false;
+        for (Node listedNode : value.getListedNodes()) //Convert Collection
+        {
+            if (endOfMap)
+            {
+                writer.append(LINE_BREAK);
+            }
+            writer.append(getOffset(offset)).append(OFFSET).append("- ");
+            if (listedNode instanceof MapNode)
+            {
+                convertMapNode(writer, (MapNode)listedNode, offset + 2, true);
+                endOfMap = true;
+            }
+            else if (listedNode instanceof ListNode)
+            {
+                convertListNode(writer, (ListNode)listedNode, offset);
+                endOfMap = true;
+            }
+            else
+            {
+                convertValue(writer, listedNode, offset + 1, true);
+                endOfMap = false;
+            }
+        }
     }
 
     /**
@@ -248,7 +261,7 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
      * @param offset the offset
      * @return the offset
      */
-    private static String offset(int offset)
+    private static String getOffset(int offset)
     {
         StringBuilder off = new StringBuilder("");
         for (int i = 0; i < offset; ++i)
@@ -258,14 +271,13 @@ public class YamlCodec extends MultiConfigurationCodec implements CommentableCod
         return off.toString();
     }
 
-    @Override
-    public String buildComment(String comment, int offset)
+    private static String buildComment(String comment, int offset)
     {
         if (comment == null || comment.isEmpty())
         {
             return ""; //No Comment
         }
-        String off = offset(offset);
+        String off = getOffset(offset);
         comment = comment.replace(LINE_BREAK, LINE_BREAK + off + COMMENT_PREFIX); // multi line
         comment = off + COMMENT_PREFIX + comment + LINE_BREAK;
         return comment;

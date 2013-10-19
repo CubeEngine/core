@@ -17,10 +17,12 @@
  */
 package de.cubeisland.engine.test.tests.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -118,7 +120,6 @@ public class TestConfig extends YamlConfiguration
     @Option("locationinmap")
     @Comment("multi location")
     public LinkedHashMap<String, Location> locs;
-
     {
         {
             locs = new LinkedHashMap<>();
@@ -127,7 +128,24 @@ public class TestConfig extends YamlConfiguration
             locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
             locs.put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
         }
-    };
+    }
+
+    @Option("mapincollection")
+    @Comment("map in collection")
+    public Collection<Map<String,String>> mapinloc;
+    {
+        {
+            Map<String,String> map = new HashMap<>();
+            map.put("abc", "123");
+            map.put("def", "456");
+            mapinloc = new ArrayList<>();
+            mapinloc.add(map);
+            map = new HashMap<>();
+            map.put("ghi", "789");
+            map.put("jkl", "012");
+            mapinloc.add(map);
+        }
+    }
 
     @Option("mapinmapinmap")
     @Comment("multimapinmap")
