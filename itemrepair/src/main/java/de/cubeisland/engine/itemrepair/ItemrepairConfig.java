@@ -49,7 +49,7 @@ public class ItemrepairConfig extends YamlConfiguration
         }
     };
 
-    public static class Price implements Section
+    public class Price implements Section
     {
         @Comment("factor x base^EnchantmentLevel")
         @Name("enchant-multiplier")
@@ -57,7 +57,7 @@ public class ItemrepairConfig extends YamlConfiguration
         @Name("materials")
         public BaseMaterialContainer baseMaterials = new BaseMaterialContainer();
 
-        public static class EnchantMultiplier implements Section
+        public class EnchantMultiplier implements Section
         {
             public float base = 1.75f;
             public float factor = 2.2f;

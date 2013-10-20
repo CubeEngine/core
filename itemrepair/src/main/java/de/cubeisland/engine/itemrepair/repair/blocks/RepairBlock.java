@@ -92,7 +92,7 @@ public class RepairBlock
 
     public final Material getMaterial()
     {
-        return this.config.blockType;
+        return this.config.block;
     }
 
     public double calculatePrice(Iterable<ItemStack> items)
@@ -201,9 +201,9 @@ public class RepairBlock
             {
                 user.sendTranslated("&cItems will not repair with a chance of &6%.2f%%",this.config.failPercentage);
             }
-            if (this.config.looseEnchPercentage > 0)
+            if (this.config.looseEnchantmentsPercentage > 0)
             {
-                user.sendTranslated("&cItems will loose all enchantments with a chance of &6%.2f%%",this.config.looseEnchPercentage);
+                user.sendTranslated("&cItems will loose all enchantments with a chance of &6%.2f%%",this.config.looseEnchantmentsPercentage);
             }
             if (this.config.costPercentage > 100)
             {
@@ -257,7 +257,7 @@ public class RepairBlock
                     }
                     if (!entry.getValue().getEnchantments().isEmpty())
                     {
-                        if (this.rand.nextInt(100) < this.config.looseEnchPercentage)
+                        if (this.rand.nextInt(100) < this.config.looseEnchantmentsPercentage)
                         {
                             looseEnch = true;
                             for (Enchantment enchantment : entry.getValue().getEnchantments().keySet())

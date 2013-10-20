@@ -28,10 +28,10 @@ public class VoteConfiguration extends YamlConfiguration
 {
     @Name("vote-reward")
     public double votereward = 100.0;
-    @Comment("{PLAYER} will be replaced with the player-name\n" +
-             "{MONEY} will be replaced with the money the player receives\n" +
-             "{AMOUNT} will be replaced with the amount of times that player voted" +
-             "{VOTEURL} will be replaced with the configured vote-url")
+    @Comment({"{PLAYER} will be replaced with the player-name",
+             "{MONEY} will be replaced with the money the player receives",
+             "{AMOUNT} will be replaced with the amount of times that player voted",
+             "{VOTEURL} will be replaced with the configured vote-url"})
     @Name("vote-broadcast")
     public String votebroadcast = "&6{PLAYER} voted!";
     @Name("vote-message")

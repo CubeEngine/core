@@ -501,7 +501,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         CubeEngine.clean();
-        Configuration.cleanup();
         Profiler.clean();
 
         if (this.fileManager != null)

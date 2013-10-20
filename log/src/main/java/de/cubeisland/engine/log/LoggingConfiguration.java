@@ -41,7 +41,7 @@ public class LoggingConfiguration extends YamlConfiguration
     @Name("logging.block")
     public Block block = new Block();
 
-    public static class Block implements Section
+    public class Block implements Section
     {
         @Comment("Blocks destroyed by a player")
         @Name("break.player")
@@ -54,7 +54,7 @@ public class LoggingConfiguration extends YamlConfiguration
         @Comment("Ice and snow fading away")
         public Fade fade = new Fade();
 
-        public static class Fade implements Section
+        public class Fade implements Section
         {
             public boolean enable = false;
             @Comment("The blocks not to log when fading away (ICE, SNOW, GRASS)")
@@ -69,7 +69,7 @@ public class LoggingConfiguration extends YamlConfiguration
         @Comment("Lava or water destroying blocks")
         public BreakFlow breakFlow = new BreakFlow();
 
-        public static class BreakFlow implements Section
+        public class BreakFlow implements Section
         {
             @Name("water")
             public boolean WATER_BREAK_enable = true;
@@ -84,7 +84,7 @@ public class LoggingConfiguration extends YamlConfiguration
         @Comment("Enderman breaking or placing blocks")
         public EnderMan enderman = new EnderMan();
 
-        public static class EnderMan implements Section
+        public class EnderMan implements Section
         {
             @Name("pickup")
             public boolean ENDERMAN_PICKUP_enable = true;
@@ -95,7 +95,7 @@ public class LoggingConfiguration extends YamlConfiguration
         @Comment("Blocks placed or removed by using a bucket")
         public Bucket bucket = new Bucket();
 
-        public static class Bucket implements Section
+        public class Bucket implements Section
         {
             @Name("fill")
             public boolean BUCKET_FILL_enable = true;
@@ -119,7 +119,7 @@ public class LoggingConfiguration extends YamlConfiguration
         @Comment("Blocks destroyed by various explosions")
         public Explode explode = new Explode();
 
-        public static class Explode implements Section
+        public class Explode implements Section
         {
             @Name("creeper")
             public boolean CREEPER_EXPLODE_enable = true;
@@ -141,7 +141,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
         @Comment("Trees or mushrooms growing")
         public Grow grow = new Grow();
-        public static class Grow implements Section
+        public class Grow implements Section
         {
             @Name("natural")
             public boolean NATURAL_GROW_enable = false;
@@ -151,7 +151,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
         @Comment("Ice or Snow forming OR blocks formed by water and lava")
         public Form form = new Form();
-        public static class Form implements Section
+        public class Form implements Section
         {
             @Name("enable")
             public boolean BLOCK_FORM_enable = true;
@@ -169,7 +169,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
         @Comment("Fire ,Mushrooms or other Blocks spreading")
         public Spread spread = new Spread();
-        public static class Spread implements Section
+        public class Spread implements Section
         {
             @Name("fire")
             public boolean FIRE_SPREAD_enable = true;
@@ -179,7 +179,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
         @Comment("Fire-Ignition by fireballs, lighter, lava or lightning")
         public Ignite ignite = new Ignite();
-        public static class Ignite implements Section
+        public class Ignite implements Section
         {
             @Name("fireball")
             public boolean FIREBALL_IGNITE_enable = false;
@@ -195,7 +195,7 @@ public class LoggingConfiguration extends YamlConfiguration
 
         @Comment("Unhindered Lava or Water-flow. These can produce a lot of logs!")
         public Flow flow = new Flow();
-        public static class Flow implements Section
+        public class Flow implements Section
         {
             @Name("lava")
             public boolean LAVA_FLOW_enable = false;
@@ -251,7 +251,7 @@ public class LoggingConfiguration extends YamlConfiguration
     @Comment("Container-types to log")
     @Name("logging.container")
     public Container container = new Container();
-    public static class Container implements Section
+    public class Container implements Section
     {
         @Comment("Player looking into a container")
         @Name("access")
@@ -319,11 +319,11 @@ public class LoggingConfiguration extends YamlConfiguration
 
     @Name("logging.death")
     public Death death = new Death();
-    public static class Death implements Section
+    public class Death implements Section
     {
         @Comment("Only log when the killer is")
         public Killer killer = new Killer();
-        public static class Killer implements Section
+        public class Killer implements Section
         {
             @Name("player")
             public boolean PLAYER_KILL_enable = true;

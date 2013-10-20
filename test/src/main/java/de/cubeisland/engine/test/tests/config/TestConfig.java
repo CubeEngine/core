@@ -58,7 +58,7 @@ public class TestConfig extends YamlConfiguration
     @Name("subsection.using.section")
     public SubSection subsection = new SubSection();
 
-    public static class SubSection implements Section
+    public class SubSection implements Section
     {
         @Comment("Comment on Field in Section")
         public boolean bool = true;
@@ -75,7 +75,7 @@ public class TestConfig extends YamlConfiguration
     @Comment("Testing Collections & Arrays")
     public CollectionsStuff collections = new CollectionsStuff();
 
-    public static class CollectionsStuff implements Section
+    public class CollectionsStuff implements Section
     {
         @Transient
         private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
@@ -137,7 +137,7 @@ public class TestConfig extends YamlConfiguration
     @Comment("Testing Maps")
     public MapStuffs maps = new MapStuffs();
 
-    public static class MapStuffs implements Section
+    public class MapStuffs implements Section
     {
         @Transient
         private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
