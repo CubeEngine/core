@@ -40,7 +40,7 @@ public class ModuleConfig extends Configuration
     @Option("version")
     public Version version = Version.ONE;
     @Option("source-version")
-    public String sourceVersion;
+    public String sourceVersion = "unknown-unknown";
     @Option("core-version")
     public Version minCoreRevision = Version.ZERO;
     @Option("dependencies")
