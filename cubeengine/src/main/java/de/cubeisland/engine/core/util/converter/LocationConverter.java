@@ -26,12 +26,14 @@ import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
+
+import static de.cubeisland.engine.configuration.Configuration.convertFromNode;
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class LocationConverter implements Converter<Location>
 {
@@ -52,7 +54,7 @@ public class LocationConverter implements Converter<Location>
         loc.put("z", location.getZ());
         loc.put("yaw", location.getYaw());
         loc.put("pitch", location.getPitch());
-        return Convert.wrapIntoNode(loc);
+        return wrapIntoNode(loc);
     }
 
     @Override
@@ -63,11 +65,11 @@ public class LocationConverter implements Converter<Location>
         {
             Map<String, Node> input = ((MapNode)node).getMappedNodes();
             World world = server.getWorld(((StringNode)input.get("world")).getValue());
-            double x = Convert.fromNode(input.get("x"), double.class);
-            double y = Convert.fromNode(input.get("y"), double.class);
-            double z = Convert.fromNode(input.get("z"), double.class);
-            double yaw = Convert.fromNode(input.get("yaw"), double.class);
-            double pitch = Convert.fromNode(input.get("pitch"), double.class);
+            double x = convertFromNode(input.get("x"), double.class);
+            double y = convertFromNode(input.get("y"), double.class);
+            double z = convertFromNode(input.get("z"), double.class);
+            double yaw = convertFromNode(input.get("yaw"), double.class);
+            double pitch = convertFromNode(input.get("pitch"), double.class);
 
             return new Location(world, x, y, z, (float)yaw, (float)pitch);
         }

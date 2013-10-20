@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.roles;
 
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.roles.commands.ManagementCommands;
@@ -39,6 +38,8 @@ import de.cubeisland.engine.roles.storage.TableData;
 import de.cubeisland.engine.roles.storage.TablePerm;
 import de.cubeisland.engine.roles.storage.TableRole;
 
+import static de.cubeisland.engine.configuration.Configuration.registerConverter;
+
 public class Roles extends Module
 {
     private RolesConfig config;
@@ -46,9 +47,9 @@ public class Roles extends Module
 
     public Roles()
     {
-        Convert.registerConverter(PermissionTree.class, new PermissionTreeConverter(this));
-        Convert.registerConverter(Priority.class, new PriorityConverter());
-        Convert.registerConverter(RoleMirror.class, new RoleMirrorConverter(this));
+        registerConverter(PermissionTree.class, new PermissionTreeConverter(this));
+        registerConverter(Priority.class, new PriorityConverter());
+        registerConverter(RoleMirror.class, new RoleMirrorConverter(this));
     }
 
     @Override

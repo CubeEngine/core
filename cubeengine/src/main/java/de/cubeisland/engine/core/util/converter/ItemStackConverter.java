@@ -20,18 +20,19 @@ package de.cubeisland.engine.core.util.converter;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
+
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class ItemStackConverter implements Converter<ItemStack>
 {
     @Override
     public Node toNode(ItemStack object) throws ConversionException
     {
-        return Convert.wrapIntoNode(object.getType().getId() + ":" + object.getDurability());
+        return wrapIntoNode(object.getType().getId() + ":" + object.getDurability());
     }
 
     @Override

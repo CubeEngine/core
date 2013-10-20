@@ -25,9 +25,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
+
+import static de.cubeisland.engine.configuration.Configuration.removeConverter;
 
 /**
  * This is the ClassLoader used by modules
@@ -106,7 +107,7 @@ public class ModuleClassLoader extends URLClassLoader
         while (it.hasNext())
         {
             clazz = it.next().getValue();
-            Convert.removeConverter(clazz);
+            removeConverter(clazz);
             ArgumentReader.removeReader(clazz);
             this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
             it.remove();

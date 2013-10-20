@@ -30,7 +30,6 @@ import java.util.Map.Entry;
 import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.configuration.codec.ConfigurationCodec;
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.ByteNode;
 import de.cubeisland.engine.configuration.node.CharNode;
@@ -59,6 +58,8 @@ import org.spout.nbt.Tag;
 import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
+
+import static de.cubeisland.engine.configuration.Configuration.*;
 
 public class NBTCodec extends ConfigurationCodec
 {
@@ -140,7 +141,7 @@ public class NBTCodec extends ConfigurationCodec
             {
                 try
                 {
-                    return Convert.toNode(((Tag)value).getValue());
+                    return convertToNode(((Tag)value).getValue());
                 }
                 catch (ConversionException e)
                 {

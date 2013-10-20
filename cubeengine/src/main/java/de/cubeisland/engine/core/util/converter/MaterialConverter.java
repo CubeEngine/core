@@ -20,18 +20,19 @@ package de.cubeisland.engine.core.util.converter;
 import org.bukkit.Material;
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
+
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class MaterialConverter implements Converter<Material>
 {
     @Override
     public Node toNode(Material object) throws ConversionException
     {
-        return Convert.wrapIntoNode(object.name());
+        return wrapIntoNode(object.name());
     }
 
     @Override

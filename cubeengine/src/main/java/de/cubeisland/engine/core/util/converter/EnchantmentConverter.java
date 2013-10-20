@@ -20,18 +20,19 @@ package de.cubeisland.engine.core.util.converter;
 import org.bukkit.enchantments.Enchantment;
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
+
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class EnchantmentConverter implements Converter<Enchantment>
 {
     @Override
     public Node toNode(Enchantment object) throws ConversionException
     {
-        return Convert.wrapIntoNode(Match.enchant().nameFor(object));
+        return wrapIntoNode(Match.enchant().nameFor(object));
     }
 
     @Override

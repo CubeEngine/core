@@ -54,7 +54,6 @@ import de.cubeisland.engine.basics.command.teleport.TeleportRequestCommands;
 import de.cubeisland.engine.basics.storage.TableBasicsUser;
 import de.cubeisland.engine.basics.storage.TableIgnorelist;
 import de.cubeisland.engine.basics.storage.TableMail;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
@@ -63,6 +62,8 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.roles.Roles;
+
+import static de.cubeisland.engine.configuration.Configuration.registerConverter;
 
 public class Basics extends Module
 {
@@ -119,7 +120,7 @@ public class Basics extends Module
         em.registerListener(this, new PaintingListener(this));
 
         this.getLog().trace("{} ms - Kits", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        Convert.registerConverter(KitItem.class, new KitItemConverter());
+        registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
         this.kitManager.loadKits();

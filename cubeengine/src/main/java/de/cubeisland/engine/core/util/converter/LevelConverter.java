@@ -19,18 +19,19 @@ package de.cubeisland.engine.core.util.converter;
 
 import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
+
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class LevelConverter implements Converter<Level>
 {
     @Override
     public Node toNode(Level object) throws ConversionException
     {
-        return Convert.wrapIntoNode(object.toString());
+        return wrapIntoNode(object.toString());
     }
 
     @Override

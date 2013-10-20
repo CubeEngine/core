@@ -24,7 +24,6 @@ import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.MapComment;
 import de.cubeisland.engine.configuration.annotations.MapComments;
 import de.cubeisland.engine.configuration.annotations.Option;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainerConverter;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
@@ -35,7 +34,7 @@ public class ItemrepairConfig extends YamlConfiguration
 {
     static
     {
-        Convert.registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
+        registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
     }
 
     @Option("server.bank")

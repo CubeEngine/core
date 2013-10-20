@@ -19,16 +19,17 @@ package de.cubeisland.engine.roles.config;
 
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.Node;
+
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class PriorityConverter implements Converter<Priority>
 {
     @Override
     public Node toNode(Priority object) throws ConversionException
     {
-        return Convert.wrapIntoNode(object.toString());
+        return wrapIntoNode(object.toString());
     }
 
     @Override

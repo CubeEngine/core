@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.locker;
 
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.Reloadable;
 import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
@@ -30,6 +29,8 @@ import de.cubeisland.engine.locker.storage.TableAccessList;
 import de.cubeisland.engine.locker.storage.TableLockLocations;
 import de.cubeisland.engine.locker.storage.TableLocks;
 
+import static de.cubeisland.engine.configuration.Configuration.registerConverter;
+
 public class Locker extends Module implements Reloadable
 {
     private LockerConfig config;
@@ -38,8 +39,8 @@ public class Locker extends Module implements Reloadable
     @Override
     public void onEnable()
     {
-        Convert.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
-        Convert.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
+        registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
+        registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
         this.config = this.loadConfig(LockerConfig.class);
         this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));

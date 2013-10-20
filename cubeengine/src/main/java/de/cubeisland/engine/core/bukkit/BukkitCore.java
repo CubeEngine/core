@@ -55,7 +55,6 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.configuration.Configuration;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -106,6 +105,7 @@ import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
 import org.slf4j.LoggerFactory;
 
+import static de.cubeisland.engine.configuration.Configuration.registerConverter;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 import static java.util.logging.Level.WARNING;
@@ -161,18 +161,17 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
 
-        Convert.init();
-        Convert.registerConverter(Level.class, new LevelConverter());
-        Convert.registerConverter(ItemStack.class, new ItemStackConverter());
-        Convert.registerConverter(Material.class, new MaterialConverter());
-        Convert.registerConverter(Enchantment.class, new EnchantmentConverter());
-        Convert.registerConverter(User.class, new UserConverter());
-        Convert.registerConverter(World.class, new WorldConverter());
-        Convert.registerConverter(Duration.class, new DurationConverter());
-        Convert.registerConverter(Version.class, new VersionConverter());
-        Convert.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
-        Convert.registerConverter(Location.class, new LocationConverter(this));
-        Convert.registerConverter(Locale.class, new LocaleConverter());
+        registerConverter(Level.class, new LevelConverter());
+        registerConverter(ItemStack.class, new ItemStackConverter());
+        registerConverter(Material.class, new MaterialConverter());
+        registerConverter(Enchantment.class, new EnchantmentConverter());
+        registerConverter(User.class, new UserConverter());
+        registerConverter(World.class, new WorldConverter());
+        registerConverter(Duration.class, new DurationConverter());
+        registerConverter(Version.class, new VersionConverter());
+        registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        registerConverter(Location.class, new LocationConverter(this));
+        registerConverter(Locale.class, new LocaleConverter());
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
@@ -502,7 +501,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         CubeEngine.clean();
-        Convert.cleanup();
+        Configuration.cleanup();
         Profiler.clean();
 
         if (this.fileManager != null)

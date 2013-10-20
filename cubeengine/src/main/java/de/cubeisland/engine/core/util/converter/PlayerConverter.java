@@ -22,11 +22,12 @@ import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
+
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class PlayerConverter implements Converter<OfflinePlayer>
 {
@@ -40,7 +41,7 @@ public class PlayerConverter implements Converter<OfflinePlayer>
     @Override
     public Node toNode(OfflinePlayer object)
     {
-        return Convert.wrapIntoNode(object.getName());
+        return wrapIntoNode(object.getName());
     }
 
     @Override

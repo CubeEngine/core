@@ -23,17 +23,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
+
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
 
 public class WorldConverter implements Converter<World>
 {
     @Override
     public Node toNode(World object) throws ConversionException
     {
-        return Convert.wrapIntoNode(object.getName() + "(" + object.getUID().toString() + ")");
+        return wrapIntoNode(object.getName() + "(" + object.getUID().toString() + ")");
     }
 
     @Override

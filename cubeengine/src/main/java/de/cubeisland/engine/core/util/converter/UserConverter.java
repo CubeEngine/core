@@ -18,19 +18,20 @@
 package de.cubeisland.engine.core.util.converter;
 
 import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Convert;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 
+import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
+
 public class UserConverter implements Converter<User>
 {
     @Override
     public Node toNode(User user) throws ConversionException
     {
-        return Convert.wrapIntoNode(user.getName());
+        return wrapIntoNode(user.getName());
     }
 
     @Override
