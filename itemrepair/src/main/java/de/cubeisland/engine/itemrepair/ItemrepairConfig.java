@@ -20,16 +20,14 @@ package de.cubeisland.engine.itemrepair;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.MapComment;
-import de.cubeisland.engine.configuration.annotations.MapComments;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainerConverter;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 
-
-@MapComments(value = @MapComment(path = "price.enchant-multiplier", text = "factor x base^EnchantmentLevel"))
 public class ItemrepairConfig extends YamlConfiguration
 {
     static
@@ -37,15 +35,12 @@ public class ItemrepairConfig extends YamlConfiguration
         registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
     }
 
-    @Option("server.bank")
+    @Name("server.bank")
     public String serverBank = "server";
-    @Option("server.player")
+    @Name("server.player")
     public String serverPlayer = "";
-    @Option("price.enchant-multiplier.base")
-    public float enchMultiplierBase = 1.75f;
-    @Option("price.enchant-multiplier.factor")
-    public float enchMultiplierFactor = 2.2f;
-    @Option("repair-blocks")
+    public Price price = new Price();
+    @Name("repair-blocks")
     public Map<String,RepairBlockConfig> repairBlockConfigs = new HashMap<String, RepairBlockConfig>()
     {
         {
@@ -54,6 +49,18 @@ public class ItemrepairConfig extends YamlConfiguration
         }
     };
 
-    @Option("price.materials")
-    public BaseMaterialContainer baseMaterials = new BaseMaterialContainer();
+    public static class Price implements Section
+    {
+        @Comment("factor x base^EnchantmentLevel")
+        @Name("enchant-multiplier")
+        public EnchantMultiplier enchantMultiplier = new EnchantMultiplier();
+        @Name("materials")
+        public BaseMaterialContainer baseMaterials = new BaseMaterialContainer();
+
+        public static class EnchantMultiplier implements Section
+        {
+            public float base = 1.75f;
+            public float factor = 2.2f;
+        }
+    }
 }

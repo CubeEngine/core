@@ -20,21 +20,21 @@ package de.cubeisland.engine.core.i18n;
 import java.util.Locale;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 /**
  * This cofniguration is used to parse the language configurations.
  */
 public class LocaleConfig extends YamlConfiguration
 {
-    @Option("code")
+    @Name("code")
     public Locale locale;
-    @Option("name")
+    @Name("name")
     public String name;
-    @Option("localname")
+    @Name("localname")
     public String localName;
-    @Option("parent")
+    @Name("parent")
     public Locale parent = null;
-    @Option("clones")
+    @Name("clones")
     public Locale[] clones = null;
 }

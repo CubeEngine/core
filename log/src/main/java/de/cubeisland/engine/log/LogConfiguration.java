@@ -21,25 +21,25 @@ import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.time.Duration;
 
 public class LogConfiguration extends YamlConfiguration
 {
     @Comment("The maximum of logs that may be logged at once.")
-    @Option("logging.batch-size")
+    @Name("logging.batch-size")
     public int loggingBatchSize = 2000;
     @Comment("Shows log info in the console when logging at least that amount of logs at once")
-    @Option("info.show-log-info")
+    @Name("info.show-log-info")
     public int showLogInfoInConsole = 200;
     @Comment("Logs from worlds that do no longer exist are removed")
-    @Option("cleanup.deleted-worlds")
+    @Name("cleanup.deleted-worlds")
     public boolean cleanUpDeletedWorlds = false;
     @Comment("Delete logs that are older than specified under old-logs.time")
-    @Option("cleanup.old-logs.enable")
+    @Name("cleanup.old-logs.enable")
     public boolean cleanUpOldLogs = true;
-    @Option("cleanup.old-logs.time")
+    @Name("cleanup.old-logs.time")
     public Duration cleanUpOldLogsTime = new Duration(TimeUnit.DAYS.toMillis(70));
-    @Option("cleanup.delay")
+    @Name("cleanup.delay")
     public Duration cleanUpDelay = new Duration(TimeUnit.DAYS.toMillis(1));
 }

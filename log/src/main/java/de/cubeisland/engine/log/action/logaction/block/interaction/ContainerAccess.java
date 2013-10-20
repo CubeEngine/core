@@ -68,6 +68,6 @@ public class ContainerAccess extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).CONTAINER_ACCESS_enable;
+        return this.lm.getConfig(world).container.CONTAINER_ACCESS_enable;
     }
 }

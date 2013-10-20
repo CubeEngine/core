@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.storage.database.mysql;
 
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 
@@ -27,27 +27,27 @@ import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
  */
 public class MySQLDatabaseConfiguration extends DatabaseConfiguration
 {
-    @Option("host")
+    @Name("host")
     @Comment("The host to connect with. Default: localhost")
     public String host = "localhost";
 
-    @Option("port")
+    @Name("port")
     @Comment("The port to connect with. Default 3306")
     public short port = 3306;
 
-    @Option("user")
+    @Name("user")
     @Comment("The user using the database")
     public String user = "minecraft";
 
-    @Option("password")
+    @Name("password")
     @Comment("The password for the specified user")
     public String pass = "12345678";
 
-    @Option("database")
+    @Name("database")
     @Comment("The name of the database")
     public String database = "minecraft";
 
-    @Option("table-prefix")
+    @Name("table-prefix")
     @Comment("The table prefix to use for all CubeEngine tables")
     public String tablePrefix = "cube_";
 

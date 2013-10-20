@@ -97,8 +97,8 @@ public class RepairBlock
 
     public double calculatePrice(Iterable<ItemStack> items)
     {
-        return this.calculatePrice(items, this.module.getConfig().enchMultiplierFactor,
-           this.module.getConfig().enchMultiplierBase, this.config.costPercentage);
+        return this.calculatePrice(items, this.module.getConfig().price.enchantMultiplier.factor,
+           this.module.getConfig().price.enchantMultiplier.base, this.config.costPercentage);
     }
 
     private double calculatePrice(Iterable<ItemStack> items, double enchantmentFactor, double enchantmentBase, float percentage)

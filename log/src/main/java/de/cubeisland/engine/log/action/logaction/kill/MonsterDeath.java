@@ -64,7 +64,7 @@ public class MonsterDeath extends SimpleLogActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).MONSTER_DEATH_enable;
+        return this.lm.getConfig(world).death.MONSTER_DEATH_enable;
     }
 
     @Override

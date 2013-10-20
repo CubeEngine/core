@@ -254,6 +254,6 @@ public class BlockBreak extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_BREAK_enable;
+        return this.lm.getConfig(world).block.BLOCK_BREAK_enable;
     }
 }

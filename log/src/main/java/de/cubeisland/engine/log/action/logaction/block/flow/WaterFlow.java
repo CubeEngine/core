@@ -147,6 +147,6 @@ public class WaterFlow extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).WATER_FLOW_enable;
+        return this.lm.getConfig(world).block.flow.WATER_FLOW_enable;
     }
 }

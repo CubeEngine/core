@@ -25,18 +25,18 @@ import java.util.Set;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 public class RoleConfig extends YamlConfiguration
 {
-    @Option("role-name")
+    @Name("role-name")
     @Comment("The name of this role")
     public String roleName = "defaultName";
-    @Option("priority")
+    @Name("priority")
     @Comment("Use these as priority or just numbers\n"
         + "ABSULTEZERO(-273) < MINIMUM(0) < LOWEST(125) < LOWER(250) < LOW(375) < NORMAL(500) < HIGH(675) < HIGHER(750) < HIGHEST(1000) < OVER9000(9001)")
     public Priority priority = Priority.ABSULTEZERO;
-    @Option("permissions")
+    @Name("permissions")
     @Comment("The permission\n" +
                  "permissions nodes can be assigned individually e.g.:\n" +
                  " - cubeengine.roles.command.assign\n" +
@@ -49,11 +49,11 @@ public class RoleConfig extends YamlConfiguration
                  "Use - directly in front of a permission to revoke that permission e.g.:\n" +
                  " - -cubeengine.roles.command.assign")
     public PermissionTree perms = new PermissionTree();
-    @Option("parents")
+    @Name("parents")
     @Comment("The roles this role will inherit from.\n"
         + "Any priority of parents will be ignored!")
     public Set<String> parents = new HashSet<>();
-    @Option("metadata")
+    @Name("metadata")
     @Comment("The metadata such as prefix or suffix e.g.:\n" +
                  "metadata: \n" +
                  "  prefix: '&7Guest'")

@@ -19,44 +19,47 @@ package de.cubeisland.engine.conomy;
 
 import java.nio.file.Path;
 
+import javax.persistence.Transient;
+
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 public class ConomyConfiguration extends YamlConfiguration
 {
-    @Option("currency.symbol")
+    @Name("currency.symbol")
     public String symbol = "€";
-    @Option("currency.symbol-plural")
+    @Name("currency.symbol-plural")
     public String symbolPlural = "€";
-    @Option("currency.name")
+    @Name("currency.name")
     public String name = "Euro";
-    @Option("currency.name-plural")
+    @Name("currency.name-plural")
     public String namePlural = "Euros";
 
-    @Option("default.user.balance")
+    @Name("default.user.balance")
     public double defaultBalance = 1000;
-    @Option("default.user.minimum-balance")
+    @Name("default.user.minimum-balance")
     public double minimumBalance = 0;
     @Comment("Automatically creates the UserAccount when trying to access it")
-    @Option("default.user.auto-create-account")
+    @Name("default.user.auto-create-account")
     public boolean autocreateUserAcc = true;
 
-    @Option("default.bank.balance")
+    @Name("default.bank.balance")
     public double defaultBankBalance = 0;
-    @Option("default.bank.minimum-balance")
+    @Name("default.bank.minimum-balance")
     public double minimumBankBalance = 0;
-    @Option("default.bank.need-invite")
+    @Name("default.bank.need-invite")
     public boolean bankNeedInvite = false;
 
     @Comment("The Number of fractional-digits.\n" +
                  "e.g.: 1.00€ -> 2")
-    @Option("currency.fractional-digits")
+    @Name("currency.fractional-digits")
     public int fractionalDigits = 2;
 
-    @Option("enable-logging")
+    @Name("enable-logging")
     public boolean enableLogging = true;
 
+    @Transient
     private int fractionalDigitsFactor;
 
     @Override

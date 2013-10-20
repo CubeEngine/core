@@ -69,6 +69,6 @@ public class EntityExplode extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ENTITY_EXPLODE_enable;
+        return this.lm.getConfig(world).block.explode.ENTITY_EXPLODE_enable;
     }
 }

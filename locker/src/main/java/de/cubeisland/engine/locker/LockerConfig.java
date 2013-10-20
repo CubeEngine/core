@@ -21,94 +21,96 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.core.CubeEngine;
 
 import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
 import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 
 public class LockerConfig extends YamlConfiguration
 {
-    @Option("settings.open-iron-door-with-click")
+    @Name("settings.open-iron-door-with-click")
     public boolean openIronDoorWithClick = false;
 
-    @Option("settings.protect.entity.living-from-damage")
+    @Name("settings.protect.entity.living-from-damage")
     public boolean protectEntityFromDamage = true;
 
     @Comment("If set to true protected living entities will receive no damage from environment in addition to damage done by players")
-    @Option("settings.protect.entity.living-from-damage-by-environment")
+    @Name("settings.protect.entity.living-from-damage-by-environment")
     public boolean protectEntityFromEnvironementalDamage = true;
 
-    @Option("settings.protect.entity.vehicle.from-break")
+    @Name("settings.protect.entity.vehicle.from-break")
     public boolean protectVehicleFromBreak = true;
 
     @Comment("If set to true protected vehicles will not break when receiving damage from environment in addition to the player-protection")
-    @Option("settings.protect.entity.vehicle.from-break-by-environment")
+    @Name("settings.protect.entity.vehicle.from-break-by-environment")
     public boolean protectVehicleFromEnvironmental = true;
 
-    @Option("settings.protect.blocks.from-water-and-lava")
+    @Name("settings.protect.blocks.from-water-and-lava")
     public boolean protectBlocksFromWaterLava = true;
 
-    @Option("settings.protect.blocks.from-explosion")
+    @Name("settings.protect.blocks.from-explosion")
     public boolean protectBlockFromExplosion = true;
 
-    @Option("settings.protect.blocks.from-fire")
+    @Name("settings.protect.blocks.from-fire")
     public boolean protectBlockFromFire = true;
 
-    @Option("settings.protect.blocks.from-rightclick")
+    @Name("settings.protect.blocks.from-rightclick")
     public boolean protectBlockFromRClick = true;
 
-    @Option("settings.protect.entity.from-rightclick")
+    @Name("settings.protect.entity.from-rightclick")
     public boolean protectEntityFromRClick = true;
 
-    @Option("settings.protect.blocks.from-break")
+    @Name("settings.protect.blocks.from-break")
     public boolean protectFromBlockBreak = true;
 
-    @Option("settings.protect.blocks.from-pistonmove")
+    @Name("settings.protect.blocks.from-pistonmove")
     public boolean protectFromPistonMove = true;
 
-    @Option("settings.protect.blocks.from-redstone")
+    @Name("settings.protect.blocks.from-redstone")
     public boolean protectFromRedstone = true;
 
     @Comment("Protection from Hoppers can potentially cause lag.\n" +
                  "Set to true if you are experiencing lag because of protection from hoppers")
-    @Option("settings.disable-hopper-protection")
+    @Name("settings.disable-hopper-protection")
     public boolean noProtectFromHopper = false;
 
-    @Option("settings.protect.only-when-online")
+    @Name("settings.protect.only-when-online")
     public boolean protectWhenOnlyOnline = false;
-    @Option("settings.protect.only-when-offline")
+    @Name("settings.protect.only-when-offline")
     public boolean protectWhenOnlyOffline = false;
 
     @Comment("If set to true protected doors will auto-close after the configured time")
-    @Option("settings.auto-close.enable")
+    @Name("settings.auto-close.enable")
     public boolean autoCloseEnable = true;
 
     @Comment("Doors will auto-close after this set amount of seconds.")
-    @Option("settings.auto-close.time")
+    @Name("settings.auto-close.time")
     public int autoCloseSeconds = 3;
 
-    @Option("settings.key-books.allow-single")
+    @Name("settings.key-books.allow-single")
     public boolean allowKeyBooks = true;
 
     @Comment("A List of all blocks that can be protected with Locker\n" +
                  "use the auto-protect option to automatically create a protection when placing the block\n" +
                  "additionally you can set default flags which will also be automatically applied")
-    @Option("protections.blocks")
+    @Name("protections.blocks")
     public List<BlockLockerConfiguration> blockprotections;
 
     @Comment("Set this to false if you wish to disable EntityProtection completely")
-    @Option("protections.entities-enable")
+    @Name("protections.entities-enable")
     public boolean protEntityEnable = true;
 
     @Comment("A list of all entities that can be protected with Locker\n" +
                  "auto-protect only applies onto entities that can be tamed")
-    @Option("protections.entities")
+    @Name("protections.entities")
     public List<EntityLockerConfiguration> entityProtections;
 
     // limit protection count#
@@ -149,6 +151,7 @@ public class LockerConfig extends YamlConfiguration
         detachableEntityCount = -1;
     }
 
+    @Transient
     private int detachableEntityCount = -1;
 
     public boolean protectsDetachableEntities()

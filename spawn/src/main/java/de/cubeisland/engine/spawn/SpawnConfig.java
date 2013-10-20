@@ -21,10 +21,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 public class SpawnConfig extends YamlConfiguration
 {
-    @Option("mainworld")
+    @Name("mainworld")
     public World mainWorld = Bukkit.getServer().getWorld("world");
 }

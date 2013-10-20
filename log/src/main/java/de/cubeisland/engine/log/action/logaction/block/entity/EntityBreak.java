@@ -80,6 +80,6 @@ public class EntityBreak extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ENTITY_BREAK_enable;
+        return this.lm.getConfig(world).block.ENTITY_BREAK_enable;
     }
 }

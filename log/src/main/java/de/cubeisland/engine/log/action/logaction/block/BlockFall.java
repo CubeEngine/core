@@ -125,7 +125,7 @@ public class BlockFall extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_FALL_enable;
+        return this.lm.getConfig(world).block.BLOCK_FALL_enable;
     }
 
     @Override

@@ -19,11 +19,11 @@ package de.cubeisland.engine.shout;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 public class ShoutConfiguration extends YamlConfiguration
 {
-    @Option("initial-delay")
+    @Name("initial-delay")
     @Comment("The delay after a player joins before he receives his first message")
     public int initDelay = 20;
 

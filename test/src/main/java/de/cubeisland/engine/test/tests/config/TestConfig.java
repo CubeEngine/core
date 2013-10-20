@@ -23,151 +23,164 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import javax.persistence.Transient;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.MapComment;
-import de.cubeisland.engine.configuration.annotations.MapComments;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.core.CubeEngine;
 
 /**
  * This configuration is used to test a lot of configstuff.
  */
-@MapComments( {
-    @MapComment(path = "regions", text = "more RandomTests:"),
-    @MapComment(path = "list", text = "ListTests:"),
-    @MapComment(path = "list.listinmaps.list2", text = "comment in submap"),
-    @MapComment(path = "list.stringlist", text = "comment for my list :)")
-})
 public class TestConfig extends YamlConfiguration
 {
+    @Transient
     private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
-    @Option("location")
+
+    @Comment("First Comment! [report here]")
+    @Name("subsection.using.annotation.bool")
+    public boolean subsec1 = true;
+    @Comment("Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
+    @Name("subsection.using.annotation.int")
+    public int subsec2 = 123456;
+    @Name("subsection.using.annotation.string")
+    public String subsec3 = "abcdefg";
+
+    @Comment("Comment on Section")
+    @Name("subsection.using.section")
+    public SubSection subsection = new SubSection();
+
+    public static class SubSection implements Section
+    {
+        @Comment("Comment on Field in Section")
+        public boolean bool = true;
+        public int integer = 123456;
+        public String string = "abcdefg";
+    }
+
     @Comment("LocationTest")
     public Location location = new Location(server.getWorld("world"), 1, 2, 3, 0, 0);
-    @Option("offlineplayer")
+
     @Comment("PlayerTest")
-    public OfflinePlayer player = server.getOfflinePlayer("Anselm Brehme");
-    @Option("regions.use-scheduler")
-    public boolean use_scheduler = true;
-    @Option("regions.sql.use")
-    public boolean sql_use = false;
-    @Option("regions.sql.dsn")
-    public String sql_dsn = "jdbc:mysql://localhost/worldguard";
-    @Comment("RandomComment")
-    @Option("regions.sql.username")
-    public String sql_username = "worldguard";
-    @Option("regions.sql.password")
-    public String sql_password = "worldguard";
-    @Option("regions.max-region-count-per-player")
-    @Comment("This is a random Comment with more than one line\n2nd line incoming\n3rd line has more nuts than snickers")
-    public HashMap<String, Integer> max_region_count_per_player = new HashMap<String, Integer>()
-    {
-        {
-            put("default", 7);
-        }
-    };
-    @Option("regions.the42")
-    public Integer the42 = 42;
-    @Option("regions.the21")
-    public int the21 = 21;
-    @Option("arrays.stringtest")
-    public String[] stringarray =
-    {
-        "text1", "text2"
-    };
-    @Option("arrays.playertest")
-    public OfflinePlayer[] playerarray =
-    {
-        server.getOfflinePlayer("Anselm Brehme"),
-        server.getOfflinePlayer("Niemand")
-    };
-    @Option("list.stringlist")
-    public Collection<String> stringlist = new LinkedList<String>()
-    {
+    public OfflinePlayer offlinePlayer = server.getOfflinePlayer("TestPlayer123");
 
-        {
-            add("quark");
-            add("kekse");
-        }
-    };
-    @Option("list.playerlist")
-    public Collection<OfflinePlayer> playerlist = new LinkedList<OfflinePlayer>()
-    {
+    @Comment("Testing Collections & Arrays")
+    public CollectionsStuff collections = new CollectionsStuff();
 
-        {
-            add(server.getOfflinePlayer("Anselm Brehme"));
-            add(server.getOfflinePlayer("KekseSpieler"));
-        }
-    };
-    @Option("list.shortlist")
-    public Collection<Short> shortlist = new LinkedList<Short>()
+    public static class CollectionsStuff implements Section
     {
+        @Transient
+        private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
 
-        {
-            short s = 123;
-            add(s);
-            s = 124;
-            add(s);
-        }
-    };
-    @Option("locationinmap")
-    @Comment("multi location")
-    public LinkedHashMap<String, Location> locs;
-    {
-        {
-            locs = new LinkedHashMap<>();
-            locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-            locs.put("loc4", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
-        }
-    }
-
-    @Option("mapincollection")
-    @Comment("map in collection")
-    public Collection<Map<String,String>> mapinloc;
-    {
-        {
-            Map<String,String> map = new HashMap<>();
-            map.put("abc", "123");
-            map.put("def", "456");
-            mapinloc = new ArrayList<>();
-            mapinloc.add(map);
-            map = new HashMap<>();
-            map.put("ghi", "789");
-            map.put("jkl", "012");
-            mapinloc.add(map);
-        }
-    }
-
-    @Option("mapinmapinmap")
-    @Comment("multimapinmap")
-    public LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>> thingy = new LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>>()
-    {
-
-        {
-            LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>> intmap = new LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>()
+        public String[] stringarray =
             {
-
-                {
-                    LinkedHashMap<String, OfflinePlayer> pmap = new LinkedHashMap<String, OfflinePlayer>()
-                    {
-
-                        {
-                            this.put("theplayer", player);
-                        }
-                    };
-                    this.put("iOncewasAnInt", pmap);
-                }
+                "text1", "text2", "text3"
             };
-            this.put("keks", intmap);
+
+        public OfflinePlayer[] playerarray =
+            {
+                server.getOfflinePlayer("TestPlayer"),
+                server.getOfflinePlayer("OPHacker")
+            };
+        public Collection<String> stringlist = new LinkedList<String>()
+        {
+
+            {
+                add("quark");
+                add("kekse");
+            }
+        };
+        public Collection<OfflinePlayer> playerlist = new LinkedList<OfflinePlayer>()
+        {
+
+            {
+                add(server.getOfflinePlayer("TestPlayer"));
+                add(server.getOfflinePlayer("Cookies"));
+            }
+        };
+        public Collection<Short> shortlist = new LinkedList<Short>()
+        {
+
+            {
+                short s = 123;
+                add(s);
+                s = 124;
+                add(s);
+            }
+        };
+
+        @Comment("map in collection")
+        public Collection<Map<String,String>> mapincol;
+        {
+            {
+                Map<String,String> map = new HashMap<>();
+                map.put("abc", "123");
+                map.put("def", "456");
+                mapincol = new ArrayList<>();
+                mapincol.add(map);
+                map = new HashMap<>();
+                map.put("ghi", "789");
+                map.put("jkl", "012");
+                mapincol.add(map);
+            }
         }
-    };
+    }
+
+    @Comment("Testing Maps")
+    public MapStuffs maps = new MapStuffs();
+
+    public static class MapStuffs implements Section
+    {
+        @Transient
+        private final Server server = ((Plugin)CubeEngine.getCore()).getServer();
+
+        public HashMap<String, Integer> hmsi = new HashMap<String, Integer>()
+        {
+            {
+                put("default", 7);
+            }
+        };
+
+        @Comment("Locations in Maps")
+        public LinkedHashMap<String, Location> locs;
+        {
+            {
+                locs = new LinkedHashMap<>();
+                locs.put("loc1", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+                locs.put("loc2", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+                locs.put("loc3", new Location(server.getWorld("world"), 1, 2, 3, 0, 0));
+            }
+        }
+
+        @Comment("multimapinmap")
+        public LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>> mapinmapinmap = new LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>>()
+        {
+
+            {
+                LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>> mapofmap = new LinkedHashMap<String, LinkedHashMap<String, OfflinePlayer>>()
+                {
+
+                    {
+                        LinkedHashMap<String, OfflinePlayer> pmap = new LinkedHashMap<String, OfflinePlayer>()
+                        {
+
+                            {
+                                this.put("inmap", Bukkit.getOfflinePlayer("String in a lot of maps"));
+                            }
+                        };
+                        this.put("inmap", pmap);
+                    }
+                };
+                this.put("map", mapofmap);
+            }
+        };
+    }
 }

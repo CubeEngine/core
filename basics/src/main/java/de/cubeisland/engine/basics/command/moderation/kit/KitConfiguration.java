@@ -21,37 +21,41 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.time.Duration;
 
 public class KitConfiguration extends YamlConfiguration
 {
-    public String kitName;
     @Comment("Players that join your server the first time will receive this kit if set on true.")
-    @Option("give-on-first-join")
+    @Name("give-on-first-join")
     public boolean giveOnFirstJoin = false;
     @Comment("If not empty this message will be displayed when receiving this kit.")
-    @Option("custom-receive-message")
+    @Name("custom-receive-message")
     public String customReceiveMsg = "";
     @Comment("amount*itemName/Id:Data customName\n"
         + "example: 64*STONE:0 MyFirstStoneBlocks")
-    @Option("items")
+    @Name("items")
     public List<KitItem> kitItems = new LinkedList<>();
-    @Option("commands")
+    @Name("commands")
     public List<String> kitCommands = new LinkedList<>();
     @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
-    @Option("generate-permission")
+    @Name("generate-permission")
     public boolean usePerm = false;
     @Comment("The delay between each usage of this kit.")
-    @Option("limit-usage-delay")
+    @Name("limit-usage-delay")
     public Duration limitUsageDelay = new Duration("-1");
     @Comment("Limits the usage to x amount. Use 0 for infinite.")
-    @Option("limit-usage")
+    @Name("limit-usage")
     public int limitUsage = 0;
+
+    @Transient
+    public String kitName;
 
     @Override
     public void onLoaded(Path loadFrom)

@@ -23,21 +23,21 @@ import org.bukkit.Material;
 
 import de.cubeisland.engine.configuration.InvalidConfigurationException;
 import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 public class RepairBlockConfig extends YamlConfiguration
 {
-    @Option("title")
+    @Name("title")
     public String title;
-    @Option("block")
+    @Name("block")
     public Material blockType;
-    @Option("break-percentage")
+    @Name("break-percentage")
     public float breakPercentage;
-    @Option("fail-percentage")
+    @Name("fail-percentage")
     public float failPercentage;
-    @Option("cost-percentage")
+    @Name("cost-percentage")
     public float costPercentage;
-    @Option("loose-enchantments-percentage")
+    @Name("loose-enchantments-percentage")
     public float looseEnchPercentage;
 
     public static RepairBlockConfig defaultNormal()

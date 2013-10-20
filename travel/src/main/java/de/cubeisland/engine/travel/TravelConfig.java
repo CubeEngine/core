@@ -19,20 +19,20 @@ package de.cubeisland.engine.travel;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Option;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 public class TravelConfig extends YamlConfiguration
 {
 
     @Comment("If users should be able to have multiple homes")
-    @Option("homes.multiple-homes")
+    @Name("homes.multiple-homes")
     public boolean multipleHomes = true;
 
     @Comment("How many homes each user can have")
-    @Option("homes.max")
+    @Name("homes.max")
     public int maxhomes = 10;
 
     @Comment("How many warps the whole server can have")
-    @Option("warps.max")
+    @Name("warps.max")
     public int maxwarps = 100;
 }

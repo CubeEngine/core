@@ -312,12 +312,12 @@ public abstract class Module
     public <T extends Configuration> T loadConfig(Class<T> clazz)
     {
         T config = Configuration.create(clazz);
-        config.setPath(this.getFolder().resolve("config." + config.codec.getExtension()));
+        config.setPath(this.getFolder().resolve("config." + config.getCodec().getExtension()));
         try
         {
             if (config.reload(true))
             {
-                this.getLog().info("Saved new configuration file! config.{}" , config.codec.getExtension());
+                this.getLog().info("Saved new configuration file! config.{}" , config.getCodec().getExtension());
             }
         }
         catch (InvalidConfigurationException ex)
