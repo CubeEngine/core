@@ -726,14 +726,15 @@ public class LockManager implements Listener
 
     public static long getLocationKey(Location loc)
     {
-        int x = loc.getBlockX() & 0x1FFFFF;
-        int y = loc.getBlockY() & 0x1FFFFF;
-        int z = loc.getBlockZ() & 0x1FFFFF;
-        return ((((long)x << 21) | y) << 21) | z;
+        int x = loc.getBlockX() & 0x3FFFFFF;
+        int y = loc.getBlockY() & 0x1FF;
+        int z = loc.getBlockZ() & 0x3FFFFFF;
+        return ((((long)x << 26) | z) << 26) | y;
     }
 
     public static long getChunkKey(int chunkX, int chunkZ)
     {
         return ((long)chunkX << 32) | (long)chunkZ;
     }
+
 }
