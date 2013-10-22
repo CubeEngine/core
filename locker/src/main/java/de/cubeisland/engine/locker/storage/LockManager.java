@@ -83,7 +83,7 @@ public class LockManager implements Listener
 
     public final CommandListener commandListener;
 
-    private final HashMap<Location,Lock> loadedLocks = new HashMap<>();
+    private final TLongObjectHashMap<TLongObjectHashMap<Lock>> loadedLocks = new TLongObjectHashMap<>();
     private final TLongObjectHashMap<TLongObjectHashMap<Set<Lock>>> loadedLocksInChunk = new TLongObjectHashMap<>();
     private final Map<UUID, Lock> loadedEntityLocks = new HashMap<>();
     private final Map<Long, Lock> locksById = new HashMap<>();
@@ -181,7 +181,7 @@ public class LockManager implements Listener
                 locksInChunkMap.put(chunkKey, locks);
             }
             locks.add(lock);
-            this.loadedLocks.put(loc, lock);
+            this.getLocLockMap(worldId).put(getLocationKey(loc), lock);
         }
     }
 
@@ -196,7 +196,6 @@ public class LockManager implements Listener
         return locksInChunkMap;
     }
 
-    /*
     private TLongObjectHashMap<Lock> getLocLockMap(long worldId)
     {
         TLongObjectHashMap<Lock> locksAtLocMap = this.loadedLocks.get(worldId);
@@ -207,7 +206,6 @@ public class LockManager implements Listener
         }
         return locksAtLocMap;
     }
-    //*/
 
     @EventHandler
     private void onChunkUnload(ChunkUnloadEvent event)
@@ -215,6 +213,7 @@ public class LockManager implements Listener
         long worldId = module.getCore().getWorldManager().getWorldId(event.getWorld());
         Set<Lock> remove = this.getChunkLocksMap(worldId).remove(getChunkKey(event.getChunk().getX(), event.getChunk().getZ()));
         if (remove == null) return; // nothing to remove
+        TLongObjectHashMap<Lock> locLockMap = this.getLocLockMap(worldId);
         for (Lock lock : remove) // remove from chunks
         {
             Location firstLoc = lock.getFirstLocation();
@@ -232,7 +231,7 @@ public class LockManager implements Listener
                     {// Both chunks will be unloaded remove both loc
                         for (Location loc : lock.getLocations())
                         {
-                            this.loadedLocks.remove(loc);
+                            locLockMap.remove(getLocationKey(loc));
                         }
                         lock.model.update();
                     }
@@ -242,7 +241,7 @@ public class LockManager implements Listener
             }
             for (Location loc : lock.getLocations())
             {
-                this.loadedLocks.remove(loc);
+                locLockMap.remove(getLocationKey(loc));
             }
             lock.model.update(); // updates if changed (last_access timestamp)
         }
@@ -269,7 +268,8 @@ public class LockManager implements Listener
      */
     public Lock getLockAtLocation(Location location, User user, boolean access, boolean repairExpand)
     {
-        Lock lock = this.loadedLocks.get(location);
+        long worldId = module.getCore().getWorldManager().getWorldId(location.getWorld());
+        Lock lock = this.getLocLockMap(worldId).get(getLocationKey(location));
         if (repairExpand && lock != null && lock.isSingleBlockLock())
         {
             Block block = lock.getFirstLocation().getBlock();
@@ -378,11 +378,13 @@ public class LockManager implements Listener
         lock.locations.add(location);
         LockLocationModel model = this.dsl.newRecord(TABLE_LOCK_LOCATION).newLocation(lock.model, location);
         model.insert();
-        this.loadedLocks.put(location, lock);
+        long worldId = module.getCore().getWorldManager().getWorldId(location.getWorld());
+        this.getLocLockMap(worldId).put(getLocationKey(location), lock);
     }
 
     /**
-     * Removes a Lock if the user is authorized or the lock destroyed
+     * Removes a Lock if th
+     * e user is authorized or the lock destroyed
      *
      * @param lock the lock to remove
      * @param user the user removing the lock (can be null)
@@ -400,7 +402,7 @@ public class LockManager implements Listener
                 {
                     long chunkKey = getChunkKey(location);
                     long worldId = module.getCore().getWorldManager().getWorldId(location.getWorld());
-                    this.loadedLocks.remove(location);
+                    this.getLocLockMap(worldId).remove(getLocationKey(location));
                     Set<Lock> locks = this.getChunkLocksMap(worldId).get(chunkKey);
                     if (locks != null)
                     {
@@ -579,9 +581,12 @@ public class LockManager implements Listener
         {
             lock.model.update();
         }
-        for (Lock lock : this.loadedLocks.values())
+        for (TLongObjectHashMap<Lock> lockMap : this.loadedLocks.valueCollection())
         {
-            lock.model.update();
+            for (Lock lock :lockMap.valueCollection())
+            {
+                lock.model.update();
+            }
         }
     }
 
@@ -719,27 +724,13 @@ public class LockManager implements Listener
         return getChunkKey(chunkX, chunkZ);
     }
 
-    /*
     public static long getLocationKey(Location loc)
     {
-        //(((((0L & z) << 21) & y) << 21) & x)
-       /* (((((0L | (z & 0b111111111111111111111)) << 21) |
-            (y & 0b111111111111111111111)) << 21) |
-            (x & 0b111111111111111111111))
-
-        System.out.print((((((
-              (loc.getBlockX() & 0b111111111111111111111)) << 21)
-            | (loc.getBlockY() & 0b111111111111111111111)) << 21)
-            | (loc.getBlockZ() & 0b111111111111111111111)));
-        // ong v = 1 << 21;
-        long vb = 0b111111111111111111111;
-        long p1 = (loc.getBlockX() & (1L << 21));
-        long p2 = (loc.getBlockY() & (1L << 21));
-        long p3 = (loc.getBlockZ() & (vb));
-        return p1 | p2 | p3;
-
-    }// 2097151
-    //*/
+        int x = loc.getBlockX() & 0x1FFFFF;
+        int y = loc.getBlockY() & 0x1FFFFF;
+        int z = loc.getBlockZ() & 0x1FFFFF;
+        return ((((long)x << 21) | y) << 21) | z;
+    }
 
     public static long getChunkKey(int chunkX, int chunkZ)
     {
