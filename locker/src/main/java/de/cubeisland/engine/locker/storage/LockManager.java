@@ -152,10 +152,17 @@ public class LockManager implements Listener
                                      this.database.getDSL().selectFrom(TABLE_LOCK_LOCATION)
                                       .where(TABLE_LOCK_LOCATION.GUARD_ID.in(models.getValues(TABLE_LOCK.ID)))
                                       .fetch().intoGroups(TABLE_LOCK_LOCATION.GUARD_ID);
-                                 for (LockModel model : models)
+                                 for (final LockModel model : models)
                                  {
-                                     Result<LockLocationModel> lockLoc = locations.get(model.getId());
-                                     addLoadedLocationLock(new Lock(LockManager.this, model, lockLoc));
+                                     final Result<LockLocationModel> lockLoc = locations.get(model.getId());
+                                     module.getCore().getTaskManager().runTask(module, new Runnable()
+                                     {
+                                         @Override
+                                         public void run()
+                                         {
+                                             addLoadedLocationLock(new Lock(LockManager.this, model, lockLoc));
+                                         }
+                                     });
                                  }
                              }
                          });
