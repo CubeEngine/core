@@ -122,7 +122,7 @@ public class I18n implements Cleanable
         {
             for (Path file : directory)
             {
-                config = Configuration.load(LocaleConfig.class, file, false);
+                config = Configuration.load(LocaleConfig.class, file.toFile(), false);
                 if (config.locale != null)
                 {
                     languages.put(config.locale, config);

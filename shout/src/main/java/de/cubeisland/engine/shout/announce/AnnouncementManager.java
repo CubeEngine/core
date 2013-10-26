@@ -425,7 +425,7 @@ public class AnnouncementManager
             }
         }
 
-        AnnouncementConfig config = Configuration.load(AnnouncementConfig.class, metaFile);
+        AnnouncementConfig config = Configuration.load(AnnouncementConfig.class, metaFile.toFile());
 
         long delay;
         try
@@ -559,7 +559,7 @@ public class AnnouncementManager
         Files.createDirectories(folder);
 
         AnnouncementConfig config = Configuration.create(AnnouncementConfig.class);
-        config.setPath(folder.resolve(META_FILE_NAME));
+        config.setFile(folder.resolve(META_FILE_NAME).toFile());
         config.delay = delay;
         config.worlds = Arrays.asList(world);
         config.permName = permName;

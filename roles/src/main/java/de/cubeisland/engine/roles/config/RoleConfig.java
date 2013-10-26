@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.roles.config;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class RoleConfig extends YamlConfiguration
     public Map<String, String> metadata = new LinkedHashMap<>();
 
     @Override
-    public void onLoaded(Path loadFrom) {
+    public void onLoaded(File loadFrom) {
         if (this.priority == null)
         {
             this.priority = Priority.ABSULTEZERO;

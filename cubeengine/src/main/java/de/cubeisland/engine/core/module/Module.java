@@ -312,7 +312,7 @@ public abstract class Module
     public <T extends Configuration> T loadConfig(Class<T> clazz)
     {
         T config = Configuration.create(clazz);
-        config.setPath(this.getFolder().resolve("config." + config.getCodec().getExtension()));
+        config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
         try
         {
             if (config.reload(true))
@@ -322,7 +322,7 @@ public abstract class Module
         }
         catch (InvalidConfigurationException ex)
         {
-            CubeEngine.getLog().error("Failed to load the configuration for {}", config.getPath());
+            CubeEngine.getLog().error("Failed to load the configuration for {}", config.getFile().getAbsolutePath());
             CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
         }
         return config;

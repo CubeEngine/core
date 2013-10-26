@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.roles.role;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -81,8 +81,8 @@ public class Role implements RawDataStore,Comparable<Role>
 
     protected void saveConfigToNewFile() throws IOException
     {
-        Files.delete(this.config.getPath());
-        this.config.setPath(this.config.getPath().getParent().resolve(this.config.roleName + ".yml"));
+        this.config.getFile().delete();
+        this.config.setFile(new File(this.config.getFile().getParent(),this.config.roleName + ".yml"));
         this.saveToConfig();
     }
 
@@ -260,7 +260,7 @@ public class Role implements RawDataStore,Comparable<Role>
     {
         this.makeDirty();
         this.resolvedData.performDeleteRole();
-        Files.delete(this.config.getPath());
+        this.config.getFile().delete();
     }
 
     public boolean isDefaultRole()

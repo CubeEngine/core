@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.locker;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.persistence.Transient;
 
 import org.bukkit.Material;
@@ -116,7 +115,7 @@ public class LockerConfig extends YamlConfiguration
     // limit protection count#
 
     @Override
-    public void onLoaded(Path loadFrom)
+    public void onLoaded(File loadFrom)
     {
         if (blockprotections == null || blockprotections.isEmpty())
         {

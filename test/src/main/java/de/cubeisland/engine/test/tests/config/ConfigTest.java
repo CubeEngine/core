@@ -38,7 +38,7 @@ public class ConfigTest extends Test
         Path childConfig = module.getFolder().resolve("childConfig.yml");
         try
         {
-            this.config.loadChild(childConfig);
+            this.config.loadChild(childConfig.toFile());
         }
         catch (IllegalStateException ex)
         {

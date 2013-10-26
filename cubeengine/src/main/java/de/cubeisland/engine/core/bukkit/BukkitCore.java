@@ -254,7 +254,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.serviceManager = new ServiceManager(this);
 
         // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
 
         parentLogger.setLevel(Level.ALL);
         this.logger.setLevel(parentLogger.getLevel());
@@ -284,8 +284,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath()
-                                                                                     .resolve("webapi.yml")));
+        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
 
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());

@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,7 +59,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-import static de.cubeisland.engine.configuration.Configuration.*;
+import static de.cubeisland.engine.configuration.Configuration.convertToNode;
 
 public class NBTCodec extends ConfigurationCodec
 {
@@ -70,9 +70,9 @@ public class NBTCodec extends ConfigurationCodec
     }
 
     @Override
-    protected void saveIntoFile(Configuration config, MapNode node, Path file) throws IOException
+    protected void saveIntoFile(Configuration config, MapNode node, File file) throws IOException
     {
-        NBTOutputStream nbtOutputStream = new NBTOutputStream(new FileOutputStream(file.toFile()), false);
+        NBTOutputStream nbtOutputStream = new NBTOutputStream(new FileOutputStream(file), false);
         nbtOutputStream.writeTag(this.convertMap(node));
         nbtOutputStream.flush();
         nbtOutputStream.close();

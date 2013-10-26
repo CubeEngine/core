@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.signmarket;
 
-import java.nio.file.Path;
+import java.io.File;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
@@ -63,7 +63,7 @@ public class SignMarketConfig extends YamlConfiguration
     public int maxUserStock = 6;
 
     @Override
-    public void onLoaded(Path loadFrom)
+    public void onLoaded(File loadFrom)
     {
         if (!allowAdminNoStock && !allowAdminStock)
         {

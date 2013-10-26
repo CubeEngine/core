@@ -17,8 +17,7 @@
  */
 package de.cubeisland.engine.conomy;
 
-import java.nio.file.Path;
-
+import java.io.File;
 import javax.persistence.Transient;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
@@ -63,7 +62,7 @@ public class ConomyConfiguration extends YamlConfiguration
     private int fractionalDigitsFactor;
 
     @Override
-    public void onLoaded(Path loadFrom)
+    public void onLoaded(File loadFrom)
     {
         this.fractionalDigitsFactor = (int)Math.pow(10, this.fractionalDigits);
     }

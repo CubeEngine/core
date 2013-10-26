@@ -91,7 +91,7 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = Configuration.load(CoreConfiguration.class, this.getFileManager().getDataPath().resolve("core.yml"));
+            this.config = Configuration.load(CoreConfiguration.class, this.getFileManager().getDataPath().resolve("core.yml").toFile());
         }
         return this.config;
     }

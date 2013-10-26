@@ -57,7 +57,7 @@ public class LogManager
         {
             throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder.toAbsolutePath(), e);
         }
-        this.globalConfig = Configuration.load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml"));
+        this.globalConfig = Configuration.load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml").toFile());
         for (World world : ((BukkitCore)module.getCore()).getServer().getWorlds())
         {
             this.initWorldConfig(world);
@@ -76,7 +76,7 @@ public class LogManager
         {
             throw new FolderNotFoundException("Failed to create the world folder for " + world.getName(), e);
         }
-        LoggingConfiguration config = this.globalConfig.loadChild(worldFolder.resolve("config.yml"));
+        LoggingConfiguration config = this.globalConfig.loadChild(worldFolder.resolve("config.yml").toFile());
         this.worldConfigs.put(world, config);
         return config;
     }

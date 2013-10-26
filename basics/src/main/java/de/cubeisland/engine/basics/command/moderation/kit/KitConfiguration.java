@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.persistence.Transient;
 
 import de.cubeisland.engine.basics.Basics;
@@ -58,9 +57,9 @@ public class KitConfiguration extends YamlConfiguration
     public String kitName;
 
     @Override
-    public void onLoaded(Path loadFrom)
+    public void onLoaded(File loadFrom)
     {
-        this.kitName = StringUtils.stripFileExtension(this.getPath().getFileName().toString());
+        this.kitName = StringUtils.stripFileExtension(this.getFile().getName());
         if (this.kitName.length() > 50)
         {
             this.kitName = this.kitName.substring(0, 50); // limit for db
