@@ -35,6 +35,7 @@ public class Locker extends Module implements Reloadable
 {
     private LockerConfig config;
     private LockManager manager;
+    private LockerListener listener;
 
     @Override
     public void onEnable()
@@ -51,13 +52,14 @@ public class Locker extends Module implements Reloadable
         this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
         this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
         new LockerPerm(this, mainCmd);
-        new LockerListener(this, manager);
+        listener = new LockerListener(this, manager);
     }
 
     @Override
     public void onDisable()
     {
         this.manager.saveAll();
+        this.getCore().getEventManager().removeListeners(this);
     }
 
     @Override
@@ -73,7 +75,7 @@ public class Locker extends Module implements Reloadable
         this.getCore().getCommandManager().registerCommand(mainCmd);
         this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
         this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
-        new LockerListener(this, manager);
+        listener = new LockerListener(this, manager);
     }
 
     public LockerConfig getConfig()
