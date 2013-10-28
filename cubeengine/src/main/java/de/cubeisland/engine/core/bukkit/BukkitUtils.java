@@ -309,11 +309,6 @@ public class BukkitUtils
         {}
     }
 
-    public static boolean isANSISupported()
-    {
-        return ((CraftServer) Bukkit.getServer()).getReader().getTerminal().isAnsiSupported();
-    }
-
 
     public static Player getOfflinePlayerAsPlayer(OfflinePlayer player)
     {
@@ -370,5 +365,10 @@ public class BukkitUtils
             CubeEngine.getCore().getLog().debug(ex.getLocalizedMessage(), ex);
             return null;
         }
+    }
+
+    static boolean isAnsiSupported(Server server)
+    {
+        return ((CraftServer)server).getReader().getTerminal().isAnsiSupported();
     }
 }

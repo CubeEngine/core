@@ -35,10 +35,8 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
-import de.cubeisland.engine.core.bukkit.BukkitUtils;
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CoreConfiguration;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingException;
@@ -50,19 +48,21 @@ import static java.util.logging.Level.WARNING;
 public class LogBackLogFactory implements LogFactory
 {
 
-    private final BukkitCore core;
+    private final Core core;
     private ch.qos.logback.classic.Logger coreLogger;
     private LoggerContext loggerContext;
     private ch.qos.logback.classic.Logger parentLogger;
+    private final java.util.logging.Logger julLogger;
 
-    public LogBackLogFactory(BukkitCore core)
+    public LogBackLogFactory(Core core, java.util.logging.Logger julLogger, boolean ansiSupport)
     {
         this.core = core;
+        this.julLogger = julLogger;
         // Create the logger context with the default settings
         this.loggerContext = (LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory();
         this.loggerContext.start();
+        ColorConverter.setANSISupport(ansiSupport);
     }
-
     @Override
     public long getBirthTime()
     {
@@ -112,16 +112,14 @@ public class LogBackLogFactory implements LogFactory
         ch.qos.logback.classic.Logger logger;
 
         logger = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger("cubeengine.core");
-        // TODO RemoteHandler is not yet implemented this.logging.addHandler(new RemoteHandler(LogLevel.ERROR, this));
         logger.setLevel(Level.DEBUG);
-        ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
 
         this.parentLogger = parentLogger;
         this.coreLogger = logger;
         return new LogbackLog(logger);
     }
 
-    public void configureLoggers(BukkitCoreConfiguration config)
+    public void configureLoggers(CoreConfiguration config)
     {
         parentLogger.setLevel(Level.ALL);
         this.coreLogger.setLevel(parentLogger.getLevel());
@@ -138,7 +136,6 @@ public class LogBackLogFactory implements LogFactory
 
         if (!config.logCommands)
         {
-            BukkitUtils.disableCommandLogging();
             ((ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger("cubeengine.commands")).setAdditive(false);
         }
     }
@@ -154,7 +151,7 @@ public class LogBackLogFactory implements LogFactory
         // Setup the module's console logging
         JULAppender consoleAppender = new JULAppender();
         consoleAppender.setContext(logger.getLoggerContext());
-        consoleAppender.setLogger(((BukkitCore)CubeEngine.getCore()).getLogger());
+        consoleAppender.setLogger(this.julLogger);
         PatternLayout consoleLayout = new PatternLayout();
         consoleLayout.setContext(logger.getLoggerContext());
         consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)\n"); // The trailing \n is kind of a workaround, have a look in JULAppender.java:83
@@ -242,7 +239,8 @@ public class LogBackLogFactory implements LogFactory
         return new LogbackLog(this.loggerContext.getLogger(name));
     }
 
-    public void stop()
+    @Override
+    public void shutdown()
     {
         if (this.loggerContext != null)
         {

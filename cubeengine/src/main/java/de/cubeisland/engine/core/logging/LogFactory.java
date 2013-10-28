@@ -24,30 +24,31 @@ import de.cubeisland.engine.core.module.ModuleInfo;
 
 public interface LogFactory
 {
-
     /**
      * Get or create the logging for the core
      *
      * @return The logging for the core
      */
-    public Log createCoreLogger(java.util.logging.Logger log, File dataFolder);
+    Log createCoreLogger(java.util.logging.Logger log, File dataFolder);
 
     /**
      * Get or create a logging for the module
      * @param module The module
      * @return The logging for the module
      */
-    public Log createModuleLogger(ModuleInfo module);
+    Log createModuleLogger(ModuleInfo module);
 
     long getBirthTime();
 
-    public Log createCommandLogger();
+    Log createCommandLogger();
 
-    public Log createPermissionLog();
+    Log createPermissionLog();
 
-    public Log createLanguageLog();
+    Log createLanguageLog();
 
-    public Log getWebApiLog();
+    Log getWebApiLog();
 
-    public Log getLog(String name);
+    Log getLog(String name);
+
+    void shutdown();
 }

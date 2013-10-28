@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -199,7 +198,12 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
-        this.logFactory = new LogBackLogFactory(this);
+        if (this.config.logCommands)
+        {
+            BukkitUtils.disableCommandLogging();
+        }
+
+        this.logFactory = new LogBackLogFactory(this, this.getLogger(), BukkitUtils.isAnsiSupported(server));
 
         this.logger = logFactory.createCoreLogger(this.getLogger(), this.getDataFolder());
 
@@ -446,7 +450,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.logFactory != null)
         {
-            ((LogBackLogFactory)this.logFactory).stop();
+            this.logFactory.shutdown();
         }
 
         if (this.fileManager != null)
