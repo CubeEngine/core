@@ -55,10 +55,6 @@ import de.cubeisland.engine.shout.announce.announcer.MessageTask;
 import de.cubeisland.engine.shout.announce.receiver.Receiver;
 import de.cubeisland.engine.shout.announce.receiver.UserReceiver;
 import org.apache.commons.lang.Validate;
-<<<<<<< HEAD
-=======
-import org.slf4j.Logger;
->>>>>>> refs/remotes/origin/master
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.TXT;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;

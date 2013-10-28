@@ -20,11 +20,7 @@ package de.cubeisland.engine.travel;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.command.CommandManager;
-<<<<<<< HEAD
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.logging.Log;
-=======
->>>>>>> refs/remotes/origin/master
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.travel.interactions.HomeAdminCommand;
