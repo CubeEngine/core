@@ -34,8 +34,4 @@ public class BukkitCoreConfiguration extends CoreConfiguration
     @Name("catch-system-signals")
     @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
     public boolean catchSystemSignals = true;
-
-    @Name("metrics-enable")
-    @Comment("Whether to send anonymous plugin metrics to http://mcstats.org")
-    public boolean sendMetrics = true;
 }
