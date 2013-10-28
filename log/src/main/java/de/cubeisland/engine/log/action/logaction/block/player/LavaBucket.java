@@ -67,6 +67,6 @@ public class LavaBucket  extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LAVA_BUCKET_enable;
+        return this.lm.getConfig(world).block.bucket.LAVA_BUCKET_enable;
     }
 }

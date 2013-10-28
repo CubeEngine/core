@@ -17,12 +17,12 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.configuration.YamlConfiguration;
 
 /**
  * DatabaseConfiguration have to return their corresponding DatabaseClass.
  */
-public abstract class DatabaseConfiguration extends Configuration
+public abstract class DatabaseConfiguration extends YamlConfiguration
 {
     public abstract Class<? extends Database> getDatabaseClass();
 }

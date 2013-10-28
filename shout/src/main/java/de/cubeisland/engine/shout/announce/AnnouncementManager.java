@@ -18,7 +18,6 @@
 package de.cubeisland.engine.shout.announce;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.DirectoryStream;
@@ -40,7 +39,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.i18n.Language;
@@ -56,7 +55,6 @@ import de.cubeisland.engine.shout.announce.receiver.Receiver;
 import de.cubeisland.engine.shout.announce.receiver.UserReceiver;
 import org.apache.commons.lang.Validate;
 import org.slf4j.Logger;
-import sun.swing.BakedArrayList;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.TXT;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
@@ -427,7 +425,7 @@ public class AnnouncementManager
             }
         }
 
-        AnnouncementConfig config = Configuration.load(AnnouncementConfig.class, metaFile);
+        AnnouncementConfig config = Configuration.load(AnnouncementConfig.class, metaFile.toFile());
 
         long delay;
         try
@@ -560,8 +558,8 @@ public class AnnouncementManager
 
         Files.createDirectories(folder);
 
-        AnnouncementConfig config = Configuration.createInstance(AnnouncementConfig.class);
-        config.setPath(folder.resolve(META_FILE_NAME));
+        AnnouncementConfig config = Configuration.create(AnnouncementConfig.class);
+        config.setFile(folder.resolve(META_FILE_NAME).toFile());
         config.delay = delay;
         config.worlds = Arrays.asList(world);
         config.permName = permName;

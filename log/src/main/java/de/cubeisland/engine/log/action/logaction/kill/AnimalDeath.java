@@ -65,7 +65,7 @@ public class AnimalDeath extends SimpleLogActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ANIMAL_DEATH_enable;
+        return this.lm.getConfig(world).death.ANIMAL_DEATH_enable;
     }
 
     @Override

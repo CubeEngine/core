@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.log.action.logaction.container;
 
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Converter;
 
 public class ContainerTypeConverter implements Converter<ContainerType>
 {
@@ -33,6 +33,6 @@ public class ContainerTypeConverter implements Converter<ContainerType>
     @Override
     public ContainerType fromNode(Node node) throws ConversionException
     {
-        return ContainerType.ofName(node.unwrap());
+        return ContainerType.ofName(node.asText());
     }
 }

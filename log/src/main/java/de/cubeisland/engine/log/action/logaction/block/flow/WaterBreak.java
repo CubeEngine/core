@@ -58,6 +58,6 @@ public class WaterBreak extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).WATER_BREAK_enable;
+        return this.lm.getConfig(world).block.breakFlow.WATER_BREAK_enable;
     }
 }

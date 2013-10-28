@@ -28,8 +28,8 @@ import java.util.concurrent.Callable;
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.TableName;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.engine.core.storage.database.TableCreator;
@@ -101,7 +101,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
     {
-        MySQLDatabaseConfiguration config = Configuration.load(MySQLDatabaseConfiguration.class, file);
+        MySQLDatabaseConfiguration config = Configuration.load(MySQLDatabaseConfiguration.class, file.toFile());
         try
         {
             return new MySQLDatabase(core, config);

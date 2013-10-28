@@ -67,6 +67,6 @@ public class EndermanPickup extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ENDERMAN_PICKUP_enable;
+        return this.lm.getConfig(world).block.enderman.ENDERMAN_PICKUP_enable;
     }
 }

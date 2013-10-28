@@ -76,7 +76,7 @@ public interface ModuleManager extends Cleanable
     boolean enableModule(Module module);
 
     /**
-     * This method enables all modules or at least all that don't provide world generators
+     * This method enables all modules or at least all that don't provide world chunkgenerator
      */
     void enableModules();
 

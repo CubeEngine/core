@@ -66,6 +66,6 @@ public class SheepEat extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).SHEEP_EAT_enable;
+        return this.lm.getConfig(world).block.SHEEP_EAT_enable;
     }
 }

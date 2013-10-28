@@ -16,7 +16,19 @@
     <projectBase>${project.basedir}</projectBase>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>spout-repo</id>
+      <url>http://repo.spout.org/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
+    <dependency>
+      <groupId>de.cubeisland.engine</groupId>
+      <artifactId>configuration</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
@@ -33,13 +45,6 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-codec-http</artifactId>
       <version>4.0.4.Final</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>1.12</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -129,6 +134,11 @@
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
       <version>0.9.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.spout</groupId>
+      <artifactId>simplenbt</artifactId>
+      <version>1.0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

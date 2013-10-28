@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.config.node.BooleanNode;
-import de.cubeisland.engine.core.config.node.ListNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.node.BooleanNode;
+import de.cubeisland.engine.configuration.node.ListNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.NullNode;
+import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
@@ -71,7 +71,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
         C configuration;
         if (node instanceof StringNode)
         {
-            configuration = fromString(node.unwrap());
+            configuration = fromString(node.asText());
         }
         else
         {
@@ -89,7 +89,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
                 if (entry.getKey().equals("auto-protect"))
                 {
                     configuration.autoProtect = true;
-                    configuration.autoProtectType = LockType.valueOf(entry.getValue().unwrap());
+                    configuration.autoProtectType = LockType.valueOf(entry.getValue().asText());
                 }
                 if (entry.getKey().equals("default-flags"))
                 {
@@ -97,7 +97,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
                     configuration.defaultFlags = new ArrayList<>();
                     for (Node listedNode : list.getListedNodes())
                     {
-                        ProtectionFlag flag = ProtectionFlag.valueOf(listedNode.unwrap());
+                        ProtectionFlag flag = ProtectionFlag.valueOf(listedNode.asText());
                         if (configuration.protectedType.supportedFlags.contains(flag))
                         {
                             configuration.defaultFlags.add(flag);

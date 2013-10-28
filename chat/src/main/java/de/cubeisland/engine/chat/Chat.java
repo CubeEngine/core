@@ -29,13 +29,13 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RolesAttachment;
+
 import static de.cubeisland.engine.chat.ChatPerm.*;
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -49,7 +49,7 @@ public class Chat extends Module implements Listener
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(ChatConfig.class, this);
+        this.config = this.loadConfig(ChatConfig.class);
         new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
         this.getCore().getCommandManager().registerCommands(this, this, ReflectedCommand.class);

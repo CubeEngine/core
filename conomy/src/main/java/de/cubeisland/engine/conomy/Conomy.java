@@ -25,7 +25,6 @@ import de.cubeisland.engine.conomy.commands.EcoBankCommands;
 import de.cubeisland.engine.conomy.commands.EcoCommands;
 import de.cubeisland.engine.conomy.commands.MoneyCommand;
 import de.cubeisland.engine.core.command.CommandManager;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.Economy;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -42,7 +41,7 @@ public class Conomy extends Module
         db.registerTable(TableAccount.initTable(db));
         db.registerTable(TableBankAccess.initTable(db));
 
-        this.config = Configuration.load(ConomyConfiguration.class, this);
+        this.config = this.loadConfig(ConomyConfiguration.class);
         this.manager = new ConomyManager(this);
         new ConomyPermissions(this);
         final CommandManager cm = this.getCore().getCommandManager();

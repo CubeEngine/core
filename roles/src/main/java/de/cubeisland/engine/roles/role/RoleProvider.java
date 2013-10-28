@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -118,7 +118,7 @@ public abstract class RoleProvider
                 for (Path configFile : directory)
                 {
                     ++i;
-                    RoleConfig config = Configuration.load(RoleConfig.class, configFile);
+                    RoleConfig config = Configuration.load(RoleConfig.class, configFile.toFile());
                     this.configs.put(config.roleName.toLowerCase(), config);
                 }
             }
@@ -244,7 +244,7 @@ public abstract class RoleProvider
         config.roleName = roleName;
         this.configs.put(roleName,config);
         config.onLoaded(null);
-        config.setPath(this.folder.resolve(roleName + ".yml")); // TODO it's not guaranteed implementations set the folder
+        config.setFile(this.folder.resolve(roleName + ".yml").toFile()); // TODO it's not guaranteed implementations set the folder
         config.save();
         Role role = new Role(this, config);
         this.roles.put(roleName,role);

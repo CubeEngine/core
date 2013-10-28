@@ -56,7 +56,7 @@ public class RepairBlockManager
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
         this.repairBlocks = new EnumMap<>(Material.class);
-        this.itemProvider = new RepairItemContainer(module.getConfig().baseMaterials);
+        this.itemProvider = new RepairItemContainer(module.getConfig().price.baseMaterials);
 
         for (Entry<String, RepairBlockConfig> entry : module.getConfig().repairBlockConfigs.entrySet())
         {

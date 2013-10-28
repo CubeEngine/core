@@ -19,7 +19,6 @@ package de.cubeisland.engine.spawn;
 
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.roles.Roles;
@@ -32,7 +31,7 @@ public class Spawn extends Module
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(SpawnConfig.class, this);
+        this.config = this.loadConfig(SpawnConfig.class);
         this.getCore().getEventManager().registerListener(this,new SpawnListener(roles));
         CommandManager cm = this.getCore().getCommandManager();
         cm.removeCommand("setSpawn", false); // unregister basics commands

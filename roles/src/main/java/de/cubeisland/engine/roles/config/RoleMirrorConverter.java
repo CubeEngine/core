@@ -19,13 +19,13 @@ package de.cubeisland.engine.roles.config;
 
 import java.util.Map;
 
-import de.cubeisland.engine.core.config.node.ListNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.ListNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.NullNode;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.roles.Roles;
 
 public class RoleMirrorConverter implements Converter<RoleMirror>
@@ -95,15 +95,15 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             boolean assigned = false;
             for (Node inList : world.getListedNodes())
             {
-                if (inList.unwrap().equals("roles"))
+                if (inList.asText().equals("roles"))
                 {
                     roles = true;
                 }
-                else if (inList.unwrap().equals("users"))
+                else if (inList.asText().equals("users"))
                 {
                     users = true;
                 }
-                else if (inList.unwrap().equals("assigned"))
+                else if (inList.asText().equals("assigned"))
                 {
                     assigned = true;
                 }

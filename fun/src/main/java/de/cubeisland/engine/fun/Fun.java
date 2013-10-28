@@ -19,7 +19,6 @@ package de.cubeisland.engine.fun;
 
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.fun.commands.DiscoCommand;
 import de.cubeisland.engine.fun.commands.InvasionCommand;
@@ -35,7 +34,7 @@ public class Fun extends Module
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(FunConfiguration.class, this);
+        this.config = this.loadConfig(FunConfiguration.class);
         // this.getCore().getFileManager().dropResources(FunResource.values());
         new FunPerm(this);
 

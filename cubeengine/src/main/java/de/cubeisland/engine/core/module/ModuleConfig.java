@@ -20,39 +20,37 @@ package de.cubeisland.engine.core.module;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.Version;
 
 /**
  * This configuration is used to parse the module.yml file.
  */
-@Codec("yml")
-public class ModuleConfig extends Configuration
+public class ModuleConfig extends YamlConfiguration
 {
-    @Option("main")
+    @Name("main")
     public String main;
-    @Option("name")
+    @Name("name")
     public String name;
-    @Option("description")
+    @Name("description")
     public String description;
-    @Option("version")
+    @Name("version")
     public Version version = Version.ONE;
-    @Option("source-version")
+    @Name("source-version")
     public String sourceVersion = "unknown-unknown";
-    @Option("core-version")
+    @Name("core-version")
     public Version minCoreRevision = Version.ZERO;
-    @Option("dependencies")
+    @Name("dependencies")
     public Set<String> dependencies = new HashSet<>(0);
-    @Option("soft-dependencies")
+    @Name("soft-dependencies")
     public Set<String> softDependencies = new HashSet<>(0);
-    @Option("plugin-dependencies")
+    @Name("plugin-dependencies")
     public Set<String> pluginDependencies = new HashSet<>(0);
-    @Option("load-after")
+    @Name("load-after")
     public Set<String> loadAfter = new HashSet<>(0);
-    @Option("services")
+    @Name("services")
     public Set<String> services = new HashSet<>(0);
-    @Option("service-providers")
+    @Name("service-providers")
     public Set<String> serviceProviders = new HashSet<>(0);
 }
