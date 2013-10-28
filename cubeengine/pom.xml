@@ -18,8 +18,15 @@
 
   <repositories>
     <repository>
-      <id>spout-repo</id>
-      <url>http://repo.spout.org/</url>
+      <id>sonatype-nexus</id>
+      <url>https://oss.sonatype.org/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
     </repository>
   </repositories>
 
