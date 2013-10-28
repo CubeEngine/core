@@ -84,7 +84,7 @@ public class LockManager implements Listener
     public final CommandListener commandListener;
 
     private final TLongObjectHashMap<TLongObjectHashMap<Lock>> loadedLocks = new TLongObjectHashMap<>();
-    private final TLongObjectHashMap<TLongObjectHashMap<Set<Lock>>> loadedLocksInChunk = new TLongObjectHashMap<>();
+    private final TLongObjectHashMap<HashMap<Long, Set<Lock>>> loadedLocksInChunk = new TLongObjectHashMap<>();
     private final Map<UUID, Lock> loadedEntityLocks = new HashMap<>();
     private final Map<Long, Lock> locksById = new HashMap<>();
 
@@ -159,6 +159,12 @@ public class LockManager implements Listener
                                      addLoadedLocationLock(new Lock(LockManager.this, model, lockLoc));
                                  }
                              }
+
+                             @Override
+                             public void onFailure(Throwable t)
+                             {
+                                 module.getLog().error("Error while getting locks from database", t);
+                             }
                          });
     }
 
@@ -172,7 +178,7 @@ public class LockManager implements Listener
             {
                 worldId = module.getCore().getWorldManager().getWorldId(loc.getWorld());
             }
-            TLongObjectHashMap<Set<Lock>> locksInChunkMap = this.getChunkLocksMap(worldId);
+            HashMap<Long, Set<Lock>> locksInChunkMap = this.getChunkLocksMap(worldId);
             long chunkKey = getChunkKey(loc);
             Set<Lock> locks = locksInChunkMap.get(chunkKey);
             if (locks == null)
@@ -185,12 +191,12 @@ public class LockManager implements Listener
         }
     }
 
-    private TLongObjectHashMap<Set<Lock>> getChunkLocksMap(long worldId)
+    private HashMap<Long, Set<Lock>> getChunkLocksMap(long worldId)
     {
-        TLongObjectHashMap<Set<Lock>> locksInChunkMap = this.loadedLocksInChunk.get(worldId);
+        HashMap<Long, Set<Lock>> locksInChunkMap = this.loadedLocksInChunk.get(worldId);
         if (locksInChunkMap == null)
         {
-            locksInChunkMap = new TLongObjectHashMap<>();
+            locksInChunkMap = new HashMap<>();
             this.loadedLocksInChunk.put(worldId, locksInChunkMap);
         }
         return locksInChunkMap;
