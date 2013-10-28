@@ -38,7 +38,7 @@ public class ModuleConfig extends YamlConfiguration
     @Name("version")
     public Version version = Version.ONE;
     @Name("source-version")
-    public String sourceVersion;
+    public String sourceVersion = "unknown-unknown";
     @Name("core-version")
     public Version minCoreRevision = Version.ZERO;
     @Name("dependencies")
