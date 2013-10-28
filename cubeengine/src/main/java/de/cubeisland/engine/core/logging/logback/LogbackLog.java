@@ -17,24 +17,22 @@
  */
 package de.cubeisland.engine.core.logging.logback;
 
-import java.io.InputStream;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.logging.Log;
-import de.cubeisland.engine.core.logging.LoggingException;
-import org.slf4j.LoggerFactory;
 
 public class LogbackLog extends Log
 {
-
     private final Logger logger;
 
     public LogbackLog(Logger logger)
     {
         this.logger = logger;
+    }
+
+    final Logger getHandle()
+    {
+        return this.logger;
     }
 
     public void log(Level level, Throwable throwable, String message, Object... args)
@@ -103,12 +101,12 @@ public class LogbackLog extends Log
     @Override
     public void setLevel(de.cubeisland.engine.core.logging.Level level)
     {
-        this.logger.setLevel(level.getLevel());
+        this.logger.setLevel(Level.toLevel(level.name()));
     }
 
-    public Logger getOriginalLogger()
+    @Override
+    public de.cubeisland.engine.core.logging.Level getLevel()
     {
-        return this.logger;
+        return de.cubeisland.engine.core.logging.Level.toLevel(this.logger.getLevel().toString());
     }
-
 }

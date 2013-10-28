@@ -67,7 +67,7 @@ public class ConomyManager
         this.dsl = this.module.getCore().getDB().getDSL();
 
 
-        this.logger = module.getCore().getLogFactory().getLog("cubeengine.conomy.transactions");
+        this.logger = module.getCore().getLogFactory().getLog("conomy.transactions");
         if (!this.module.getConfig().enableLogging)
         {
             logger.setLevel(Level.OFF);

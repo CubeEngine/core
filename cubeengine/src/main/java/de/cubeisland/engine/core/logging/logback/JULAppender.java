@@ -29,7 +29,7 @@ import ch.qos.logback.core.status.ErrorStatus;
  * An appender for LogBack that forwards all output to a java.util.logging.Log
  * It does support a layout.
  */
-public class JULAppender  extends AppenderBase<ILoggingEvent>
+public class JULAppender extends AppenderBase<ILoggingEvent>
 {
 
     private Logger logger;
@@ -37,8 +37,9 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
 
     public void start()
     {
-        if (this.layout == null) {
-            addStatus(new ErrorStatus("No layout set for the appender named \""  + name + "\".", this));
+        if (this.layout == null)
+        {
+            addStatus(new ErrorStatus("No layout set for the appender named \"" + name + "\".", this));
         }
         if (this.logger == null)
         {
@@ -84,7 +85,7 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
         String message = layout.doLayout(event);
         if (message.endsWith("\n"))
         {
-            message = message.substring(0,message.length()-1);
+            message = message.substring(0, message.length() - 1);
         }
         this.logger.log(level, message, event.getArgumentArray());
     }
@@ -112,6 +113,5 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
         {
             super(name, level);
         }
-
     }
 }

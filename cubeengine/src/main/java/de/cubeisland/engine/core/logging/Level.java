@@ -21,35 +21,16 @@ import java.util.Locale;
 
 public enum Level
 {
-    ALL   ("all", ch.qos.logback.classic.Level.ALL),
-    TRACE ("trace", ch.qos.logback.classic.Level.TRACE),
-    DEBUG ("debug", ch.qos.logback.classic.Level.DEBUG),
-    INFO  ("info", ch.qos.logback.classic.Level.INFO),
-    WARN  ("warn", ch.qos.logback.classic.Level.WARN),
-    ERROR ("error", ch.qos.logback.classic.Level.ERROR),
-    OFF   ("off", ch.qos.logback.classic.Level.OFF);
+    ALL,
+    TRACE,
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+    OFF;
 
-    private final String name;
-    private final ch.qos.logback.classic.Level level;
-
-    private Level(String name, ch.qos.logback.classic.Level level)
+    public static Level toLevel(String level)
     {
-        this.name = name;
-        this.level = level;
-    }
-
-    public static Level toLevel(String level, Level fallback)
-    {
-        Level lvl = Level.valueOf(level.toUpperCase(Locale.ENGLISH));
-        if (lvl == null)
-        {
-            lvl = fallback;
-        }
-        return lvl;
-    }
-
-    public ch.qos.logback.classic.Level getLevel()
-    {
-        return level;
+        return Level.valueOf(level.toUpperCase(Locale.ENGLISH));
     }
 }

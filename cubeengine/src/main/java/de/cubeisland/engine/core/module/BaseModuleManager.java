@@ -291,25 +291,6 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        // Load the modules logback.xml, if it exists
-        try (JarFile jarFile = new JarFile(info.getPath().toFile()))
-        {
-            ZipEntry entry = jarFile.getEntry("logback.xml");
-            if (entry != null)
-            {
-                try (InputStream is = jarFile.getInputStream(entry))
-                {
-                    ((LogBackLogFactory)core.getLogFactory()).configure(is);
-                }
-            }
-        }
-        catch (IOException ignored)
-        {} // This should never happen
-        catch (LoggingException ex)
-        {
-            module.getLog().warn(ex, "An error occurred while loading the modules logback.xml config");
-        }
-
         module = this.loader.loadModule(info);
         loadStack.pop();
 
@@ -452,7 +433,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
-        ((LogbackLog)module.getLog()).getOriginalLogger().detachAndStopAllAppenders();
+        this.core.getLogFactory().shutdown(module.getLog());
 
         this.logger.debug("{} ms - null fields", Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS));
         // null all the fields referencing this module

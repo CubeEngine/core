@@ -262,7 +262,7 @@ public class CoreCommands extends ContainerCommand
     {
         if (context.hasArgs())
         {
-            Level level = Level.toLevel(context.getString(0), null);
+            Level level = Level.toLevel(context.getString(0));
             if (level != null)
             {
                 context.getCore().getLog().setLevel(level);
@@ -275,7 +275,7 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&eThe current log level: &a%s", ((LogbackLog)context.getCore().getLog()).getOriginalLogger().toString());
+            context.sendTranslated("&eThe current log level: &a%s", context.getCore().getLog().getLevel());
         }
     }
 }

@@ -18,9 +18,12 @@
 package de.cubeisland.engine.core.logging.logback;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -36,22 +39,21 @@ import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CoreConfiguration;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingException;
 import de.cubeisland.engine.core.module.ModuleInfo;
-import org.slf4j.LoggerFactory;
 
 import static java.util.logging.Level.WARNING;
 
 public class LogBackLogFactory implements LogFactory
 {
+    private static final String BASE_NAME = "cubeengine";
 
     private final Core core;
-    private ch.qos.logback.classic.Logger coreLogger;
+    private LogbackLog coreLog;
     private LoggerContext loggerContext;
-    private ch.qos.logback.classic.Logger parentLogger;
+    private final Logger parentLogger;
     private final java.util.logging.Logger julLogger;
 
     public LogBackLogFactory(Core core, java.util.logging.Logger julLogger, boolean ansiSupport)
@@ -61,8 +63,46 @@ public class LogBackLogFactory implements LogFactory
         // Create the logger context with the default settings
         this.loggerContext = (LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory();
         this.loggerContext.start();
+
+        this.parentLogger = this.createParentLogger(julLogger);
+
         ColorConverter.setANSISupport(ansiSupport);
+        if (!core.getConfiguration().logCommands)
+        {
+            this.getLog("commands").getHandle().setAdditive(false);
+        }
     }
+
+    private Logger createParentLogger(java.util.logging.Logger julLogger)
+    {
+        Logger logger = (Logger)org.slf4j.LoggerFactory.getLogger(BASE_NAME);
+
+        // Configure the logging
+        JULAppender consoleAppender = new JULAppender();
+        consoleAppender.setContext(logger.getLoggerContext());
+        consoleAppender.setName("cubeengine-console");
+        consoleAppender.setLogger(julLogger);
+        PatternLayout consoleLayout = new PatternLayout();
+        consoleLayout.setContext(logger.getLoggerContext());
+        consoleLayout.setPattern("%color(%msg)\n");// The trailing \n is kind of a workaround, have a look in JULAppender.java:83
+        consoleAppender.setLayout(consoleLayout);
+
+        // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
+        ThresholdFilter consoleFilter = new ThresholdFilter();
+        consoleFilter.setLevel(core.getConfiguration().loggingConsoleLevel.toString());
+        consoleAppender.addFilter(consoleFilter);
+        consoleFilter.start();
+
+        logger.addAppender(consoleAppender);
+        consoleLayout.start();
+        consoleAppender.start();
+
+        logger.setLevel(Level.ALL);
+
+        return logger;
+    }
+
+
     @Override
     public long getBirthTime()
     {
@@ -70,81 +110,80 @@ public class LogBackLogFactory implements LogFactory
     }
 
     @Override
-    public Log createCoreLogger(java.util.logging.Logger log, File dataFolder)
+    public synchronized Log getCoreLog()
     {
+        if (this.coreLog != null)
+        {
+            return this.coreLog;
+        }
         // Change the settings of the logger context to the ones from the config.
         try
         {
-            File logbackXML = new File(dataFolder, "logback.xml");
-            JoranConfigurator logbackConfigurator = new JoranConfigurator();
-            logbackConfigurator.setContext(this.loggerContext);
+            File xmlConfig = new File(this.core.getFileManager().getDataPath().toFile(), "logback.xml");
+            JoranConfigurator configurator = new JoranConfigurator();
+            configurator.setContext(this.loggerContext);
             this.loggerContext.reset();
-            if (logbackXML.exists())
+            if (xmlConfig.exists())
             {
-                logbackConfigurator.doConfigure(logbackXML.getAbsolutePath());
+                configurator.doConfigure(xmlConfig.getAbsolutePath());
             }
             else
             {
-                logbackConfigurator.doConfigure(new ContextInitializer(this.loggerContext)
-                                                    .findURLOfDefaultConfigurationFile(true));
+                configurator.doConfigure(new ContextInitializer(this.loggerContext).findURLOfDefaultConfigurationFile(true));
             }
         }
         catch (JoranException e)
         {
-            log.log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e
-                .getLocalizedMessage(), e);
+            julLogger.log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e.getLocalizedMessage(), e);
         }
-        // Configure the logging
-        ch.qos.logback.classic.Logger parentLogger = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory
-                                                                                             .getLogger("cubeengine");
-        JULAppender consoleAppender = new JULAppender();
-        consoleAppender.setContext(parentLogger.getLoggerContext());
-        consoleAppender.setName("cubeengine-console");
-        consoleAppender.setLogger(log);
-        PatternLayout consoleLayout = new PatternLayout();
-        consoleLayout.setContext(parentLogger.getLoggerContext());
-        consoleLayout.setPattern("%color(%msg)\n");// The trailing \n is kind of a workaround, have a look in JULAppender.java:83
-        consoleAppender.setLayout(consoleLayout);
-        parentLogger.addAppender(consoleAppender);
-        consoleLayout.start();
-        consoleAppender.start();
 
-        ch.qos.logback.classic.Logger logger;
+        this.coreLog = this.getLog("core");
 
-        logger = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger("cubeengine.core");
-        logger.setLevel(Level.DEBUG);
+        Logger logger = coreLog.getHandle();
+        logger.setLevel(parentLogger.getLevel());
 
-        this.parentLogger = parentLogger;
-        this.coreLogger = logger;
-        return new LogbackLog(logger);
-    }
-
-    public void configureLoggers(CoreConfiguration config)
-    {
-        parentLogger.setLevel(Level.ALL);
-        this.coreLogger.setLevel(parentLogger.getLevel());
-        // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
-        ThresholdFilter consoleFilter = new ThresholdFilter();
-        consoleFilter.setLevel(config.loggingConsoleLevel.toString());
-        parentLogger.getAppender("cubeengine-console").addFilter(consoleFilter);
-        consoleFilter.start();
         // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter fileFilter = new ThresholdFilter();
-        fileFilter.setLevel(config.loggingFileLevel.toString());
-        this.coreLogger.getAppender("core-file").addFilter(fileFilter);
+        fileFilter.setLevel(core.getConfiguration().loggingFileLevel.toString());
+        logger.getAppender("core-file").addFilter(fileFilter);
         fileFilter.start();
 
-        if (!config.logCommands)
-        {
-            ((ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger("cubeengine.commands")).setAdditive(false);
-        }
+        return this.coreLog;
     }
 
     @Override
-    public Log createModuleLogger(ModuleInfo module)
+    public Log createModuleLog(ModuleInfo info)
     {
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory
-                                                                                       .getLogger("cubeengine." + module.getName().toLowerCase());
+        // Load the modules logback.xml, if it exists
+        try (JarFile jarFile = new JarFile(info.getPath().toFile()))
+        {
+            ZipEntry entry = jarFile.getEntry("logback.xml");
+            if (entry != null)
+            {
+                try (InputStream is = jarFile.getInputStream(entry))
+                {
+                    JoranConfigurator logbackConfig = new JoranConfigurator();
+                    logbackConfig.setContext(this.loggerContext);
+                    try
+                    {
+                        logbackConfig.doConfigure(is);
+                    }
+                    catch (JoranException ex)
+                    {
+                        throw new LoggingException("Could not load the config into LogBack's LoggerContext", ex);
+                    }
+                }
+            }
+        }
+        catch (IOException ignored)
+        {
+        } // This should never happen
+        catch (LoggingException ex)
+        {
+            this.getCoreLog().warn(ex, "An error occurred while loading the modules logback.xml config");
+        }
+
+        Logger logger = (Logger)org.slf4j.LoggerFactory.getLogger(BASE_NAME + "." + info.getId());
         logger.setLevel(Level.ALL);
         //The module has it's own logging
         logger.setAdditive(false);
@@ -154,7 +193,7 @@ public class LogBackLogFactory implements LogFactory
         consoleAppender.setLogger(this.julLogger);
         PatternLayout consoleLayout = new PatternLayout();
         consoleLayout.setContext(logger.getLoggerContext());
-        consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)\n"); // The trailing \n is kind of a workaround, have a look in JULAppender.java:83
+        consoleLayout.setPattern("[" + info.getName() + "] %color(%msg)\n"); // The trailing \n is kind of a workaround, have a look in JULAppender.java:83
         consoleAppender.setLayout(consoleLayout);
         ThresholdFilter consoleFilter = new ThresholdFilter();
         consoleFilter.setLevel(this.core.getConfiguration().loggingConsoleLevel.toString());
@@ -162,9 +201,9 @@ public class LogBackLogFactory implements LogFactory
         consoleFilter.start();
 
         // Setup the module's file logging
-        String logFile = System.getProperty("cubeengine.logging.default-path") + "/" +
+        String logFile = System.getProperty(BASE_NAME + ".logging.default-path") + "/" +
             new SimpleDateFormat("yyyy-MM-dd--HHmm").format(new Date(logger.getLoggerContext().getBirthTime()))
-            + "/" + module.getName().toLowerCase();
+            + "/" + info.getName().toLowerCase();
         RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<>();
         fileAppender.setContext(logger.getLoggerContext());
         fileAppender.setFile(logFile + ".log");
@@ -176,12 +215,12 @@ public class LogBackLogFactory implements LogFactory
         rollingPolicy.setContext(logger.getLoggerContext());
         rollingPolicy.setParent(fileAppender);
         rollingPolicy.setMinIndex(0);
-        rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty("cubeengine.logging.max-file-count")));
+        rollingPolicy.setMaxIndex(Integer.valueOf(System.getProperty(BASE_NAME + ".logging.max-file-count")));
         rollingPolicy.setFileNamePattern(logFile + ".%i.log");
         fileAppender.setRollingPolicy(rollingPolicy);
         SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<>();
         triggeringPolicy.setContext(logger.getLoggerContext());
-        triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logging.max-size"));
+        triggeringPolicy.setMaxFileSize(System.getProperty(BASE_NAME + ".logging.max-size"));
         fileAppender.setTriggeringPolicy(triggeringPolicy);
         ThresholdFilter fileFilter = new ThresholdFilter();
         fileFilter.setLevel(this.core.getConfiguration().loggingFileLevel.toString());
@@ -191,8 +230,7 @@ public class LogBackLogFactory implements LogFactory
         // Add the appenders to the logging and start everything
         logger.addAppender(consoleAppender);
         logger.addAppender(fileAppender);
-        logger.addAppender(((ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger("cubeengine"))
-                               .getAppender("exceptions-file"));
+        logger.addAppender(this.parentLogger.getAppender("exceptions-file"));
         rollingPolicy.start();
         triggeringPolicy.start();
         fileAppender.start();
@@ -203,40 +241,9 @@ public class LogBackLogFactory implements LogFactory
         return new LogbackLog(logger);
     }
 
-    @Override
-    public Log createCommandLogger()
+    public LogbackLog getLog(String id)
     {
-        return new LogbackLog(this.loggerContext.getLogger("cubeengine.commands"));
-    }
-
-    @Override
-    public Log createPermissionLog()
-    {
-        return new LogbackLog((Logger)LoggerFactory.getLogger("cubeengine.permissions"));
-    }
-
-    @Override
-    public Log createLanguageLog()
-    {
-        return new LogbackLog((Logger)LoggerFactory.getLogger("cubeengine.language"));
-    }
-
-    private Log webApiLog;
-
-    @Override
-    public Log getWebApiLog()
-    {
-        if (webApiLog == null)
-        {
-            webApiLog = new LogbackLog((Logger)LoggerFactory.getLogger("cubeengine.webapi"));
-        }
-        return webApiLog;
-    }
-
-    @Override
-    public Log getLog(String name)
-    {
-        return new LogbackLog(this.loggerContext.getLogger(name));
+        return new LogbackLog(this.loggerContext.getLogger(BASE_NAME + "." + id));
     }
 
     @Override
@@ -248,17 +255,15 @@ public class LogBackLogFactory implements LogFactory
         }
     }
 
-    public void configure(InputStream is) throws LoggingException
+    public void shutdown(Log log)
     {
-        JoranConfigurator logbackConfig = new JoranConfigurator();
-        logbackConfig.setContext(this.loggerContext);
-        try
+        if (log instanceof LogbackLog)
         {
-            logbackConfig.doConfigure(is);
+            ((LogbackLog)log).getHandle().detachAndStopAllAppenders();
         }
-        catch (JoranException ex)
+        else
         {
-            throw new LoggingException("Could not load the config into LogBack's LoggerContext", ex);
+            this.getCoreLog().warn(new IllegalArgumentException(), "Only logback logs can be shutdown by the LogbackLogFactory!");
         }
     }
 }

@@ -41,7 +41,7 @@ public class LevelConverter implements Converter<Level>
     {
         if (node instanceof StringNode)
         {
-            Level lv = Level.toLevel(((StringNode)node).getValue(), null);
+            Level lv = Level.toLevel(((StringNode)node).getValue());
             if (lv == null)
             {
                 throw new ConversionException("Unknown LogLevel: " + ((StringNode)node).getValue());

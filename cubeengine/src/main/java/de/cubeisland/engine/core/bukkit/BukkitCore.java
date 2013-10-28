@@ -204,7 +204,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.logFactory = new LogBackLogFactory(this, this.getLogger(), BukkitUtils.isAnsiSupported(server));
 
-        this.logger = logFactory.createCoreLogger(this.getLogger(), this.getDataFolder());
+        this.logger = logFactory.getCoreLog();
 
         this.fileManager.clearTempDir();
 
@@ -213,8 +213,6 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: file manager
         this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
-
-        ((LogBackLogFactory)this.logFactory).configureLoggers(this.config);
 
         if (this.config.catchSystemSignals)
         {

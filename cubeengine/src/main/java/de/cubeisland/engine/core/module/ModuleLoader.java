@@ -130,7 +130,7 @@ public class ModuleLoader
             ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
-            Log logger = core.getLogFactory().createModuleLogger(info);
+            Log logger = core.getLogFactory().createModuleLog(info);
 
             module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader, logger);
             module.onLoad();

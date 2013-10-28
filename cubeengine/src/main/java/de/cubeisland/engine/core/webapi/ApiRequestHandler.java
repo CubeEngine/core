@@ -25,7 +25,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
 import io.netty.buffer.ByteBuf;
@@ -62,7 +61,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     // TODO rewrite log messages, most of them are incomplete
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
-    private final Log logger;
+    private final Log log;
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
@@ -71,39 +70,40 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     {
         this.server = server;
         this.objectMapper = mapper;
-        this.logger = CubeEngine.getCore().getLogFactory().getWebApiLog();
+        this.log = server.getLog();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext context, Throwable t)
     {
         this.error(context, UNKNOWN_ERROR);
-        this.logger.error(t, "An error occurred while processing an API request!");
+        this.log.error(t, "An error occurred while processing an API request!");
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext context, Object message) throws Exception
     {
-        this.logger.info("{} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress().getHostAddress());
+        this.log.info("{} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress()
+                                                                                                  .getHostAddress());
         if (!this.server.isAddressAccepted((InetSocketAddress)context.channel().remoteAddress()))
         {
-            this.logger.info("Access denied!");
+            this.log.info("Access denied!");
             context.channel().close();
         }
 
         if (message instanceof FullHttpRequest)
         {
-            this.logger.info("this is a HTTP request...");
+            this.log.info("this is a HTTP request...");
             this.handleHttpRequest(context, (FullHttpRequest)message);
         }
         else if (message instanceof WebSocketFrame)
         {
-            this.logger.info("oh a websocket frame!");
+            this.log.info("oh a websocket frame!");
             this.handleWebSocketFrame(context, (WebSocketFrame)message);
         }
         else
         {
-            this.logger.info("dafuq!?");
+            this.log.info("dafuq!?");
             context.close();
         }
     }
@@ -113,7 +113,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
         if (request.getDecoderResult().isFailure())
         {
             this.error(context, UNKNOWN_ERROR);
-            this.logger.info(request.getDecoderResult().cause(), "The decoder failed on this request...");
+            this.log.info(request.getDecoderResult().cause(), "The decoder failed on this request...");
             return;
         }
 
@@ -139,17 +139,17 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
         // is this request intended to initialize a websockets connection?
         if ("websocket".equals(path))
         {
-            this.logger.info("received a websocket request...");
+            this.log.info("received a websocket request...");
             WebSocketServerHandshakerFactory handshakerFactory = new WebSocketServerHandshakerFactory("ws://" + request.headers().get(HOST) + "/" + this.WEBSOCKET_ROUTE, null, false);
             this.handshaker = handshakerFactory.newHandshaker(request);
             if (this.handshaker == null)
             {
-                this.logger.info("client is incompatible!");
+                this.log.info("client is incompatible!");
                 WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(context.channel());
             }
             else
             {
-                this.logger.debug("handshaking now...");
+                this.log.debug("handshaking now...");
                 this.handshaker.handshake(context.channel(), request).addListener(new ChannelFutureListener()
                 {
                     @Override
@@ -157,11 +157,11 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
                     {
                         if (future.isSuccess())
                         {
-                            logger.debug("Success!");
+                            log.debug("Success!");
                         }
                         else
                         {
-                            logger.debug("Failed!");
+                            log.debug("Failed!");
                         }
                     }
                 });
@@ -186,7 +186,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             }
             catch (Exception ex)
             {
-                this.logger.debug(ex, "Failed to parse the request body!");
+                this.log.debug(ex, "Failed to parse the request body!");
                 this.error(context, MALFORMED_DATA);
                 return;
             }
@@ -216,23 +216,23 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     {
         if (frame instanceof CloseWebSocketFrame)
         {
-            this.logger.debug("recevied close frame");
+            this.log.debug("recevied close frame");
             this.server.unsubscribe(this);
             this.handshaker.close(context.channel(), (CloseWebSocketFrame)frame);
         }
         else if (frame instanceof PingWebSocketFrame)
         {
-            this.logger.debug("recevied ping frame");
+            this.log.debug("recevied ping frame");
             context.write(new PongWebSocketFrame(frame.content()));
         }
         else if (frame instanceof TextWebSocketFrame)
         {
-            this.logger.debug("recevied text frame");
+            this.log.debug("recevied text frame");
             this.handleTextWebSocketFrame(context, (TextWebSocketFrame)frame);
         }
         else
         {
-            this.logger.info("recevied unknown incompatible frame");
+            this.log.info("recevied unknown incompatible frame");
             context.close();
         }
     }
@@ -244,7 +244,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
         int newLinePos = content.indexOf('\n');
         if (newLinePos == -1)
         {
-            this.logger.info("the frame data didn't contain a newline !");
+            this.log.info("the frame data didn't contain a newline !");
             // TODO error response
             return;
         }
@@ -374,8 +374,8 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             }
             catch (JsonProcessingException e)
             {
-                this.logger.error("Failed to generate the JSON code for a response!");
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.log.error("Failed to generate the JSON code for a response!");
+                this.log.debug(e.getLocalizedMessage(), e);
                 return "null";
             }
         }

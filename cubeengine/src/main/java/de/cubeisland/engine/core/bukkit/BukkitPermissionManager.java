@@ -80,7 +80,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
         this.wildcards = new THashMap<>(0);
         this.modulePermissionMap = new THashMap<>(0);
-        this.logger = core.getLogFactory().createPermissionLog();
+        this.logger = core.getLogFactory().getLog("permissions");
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }
