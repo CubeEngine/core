@@ -69,6 +69,6 @@ public class LeverUse extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LEVER_USE_enable;
+        return this.lm.getConfig(world).block.LEVER_USE_enable;
     }
 }

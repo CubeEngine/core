@@ -428,7 +428,7 @@ public class ConomyManager
         }
         catch (NumberFormatException | ParseException ex)
         {}
-        // TODO filter currency Names / Symbols
+        // TODO filter currency Names / Symbols http://git.cubeisland.de/cubeengine/cubeengine/issues/250
         return null;
     }
 

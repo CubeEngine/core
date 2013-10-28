@@ -20,8 +20,11 @@ package de.cubeisland.engine.travel;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.command.CommandManager;
+<<<<<<< HEAD
 import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.logging.Log;
+=======
+>>>>>>> refs/remotes/origin/master
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.travel.interactions.HomeAdminCommand;
@@ -45,7 +48,7 @@ public class Travel extends Module
     public void onEnable()
     {
         Profiler.startProfiling("travelEnable");
-        this.config = Configuration.load(TravelConfig.class, this);
+        this.config = this.loadConfig(TravelConfig.class);
         this.getCore().getDB().registerTable(TableTeleportPoint.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableInvite.initTable(this.getCore().getDB()));
         Log log = this.getLog();

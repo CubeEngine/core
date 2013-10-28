@@ -18,8 +18,7 @@
 package de.cubeisland.engine.core.module;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -31,8 +30,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
@@ -191,9 +190,9 @@ public class ModuleLoader
                 throw new InvalidModuleException("The file '" + file + "' does not contain a module.yml!");
             }
 
-            try (Reader reader = new InputStreamReader(jarFile.getInputStream(entry), Core.CHARSET))
+            try (InputStream is = jarFile.getInputStream(entry))
             {
-                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, reader, null));
+                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, is));
             }
         }
         catch (IOException e)

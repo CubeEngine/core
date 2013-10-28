@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.itemrepair;
 
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.itemrepair.repair.RepairBlockManager;
 import de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock;
@@ -31,7 +30,7 @@ public class Itemrepair extends Module
     public void onEnable()
     {
         this.getCore().getDB().registerTable(TableRepairBlock.initTable(this.getCore().getDB()));
-        this.config = Configuration.load(ItemrepairConfig.class, this);
+        this.config = this.loadConfig(ItemrepairConfig.class);
         this.repairBlockManager = new RepairBlockManager(this);
         this.getCore().getEventManager().registerListener(this, new ItemRepairListener(this));
         this.getCore().getCommandManager().registerCommand(new ItemRepairCommands(this));

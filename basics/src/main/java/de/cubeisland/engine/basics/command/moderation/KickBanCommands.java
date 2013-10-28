@@ -40,7 +40,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.ConversionException;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 

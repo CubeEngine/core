@@ -21,21 +21,22 @@ import java.io.IOException;
 
 import org.bukkit.World;
 
+import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
+
+import static de.cubeisland.engine.configuration.Configuration.matchConverter;
 
 public class RoleManagementCommands extends RoleCommandHelper
 {
@@ -356,7 +357,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Converter<Priority> converter = Convert.matchConverter(Priority.class);
+        Converter<Priority> converter = matchConverter(Priority.class);
         Priority priority;
         try
         {

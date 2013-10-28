@@ -17,21 +17,17 @@
  */
 package de.cubeisland.engine.chat;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 
-@Codec("yml")
-@DefaultConfig
-public class ChatConfig extends Configuration
+public class ChatConfig extends YamlConfiguration
 {
-    @Option("format")
+    @Name("format")
     @Comment("There at least the following variables available:\n- {NAME} -> player name\n- {DISPLAY_NAME} -> display name\n- {WORLD} -> the world the player is in\n- {MESSAGE} -> the message\n\nUsual color/format codes are also supported: &1, ... &f, ... &r")
     public String format = "{NAME}: {MESSAGE}";
 
-    @Option("allow-colors")
+    @Name("allow-colors")
     @Comment("This also counts for the format string!")
     public boolean parseColors = true;
 }

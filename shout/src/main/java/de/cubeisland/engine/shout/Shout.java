@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.shout.announce.AnnouncementManager;
@@ -49,7 +48,7 @@ public class Shout extends Module
     {
         this.announcePerm = this.getBasePermission().createAbstract("announcement");
 
-        this.config = Configuration.load(ShoutConfiguration.class, this);
+        this.config = this.loadConfig(ShoutConfiguration.class);
 
         this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
         this.announcementManager = new AnnouncementManager(this, this.getFolder());

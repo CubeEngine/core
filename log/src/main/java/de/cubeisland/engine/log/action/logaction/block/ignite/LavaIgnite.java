@@ -58,6 +58,6 @@ public class LavaIgnite extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LAVA_IGNITE_enable;
+        return this.lm.getConfig(world).block.ignite.LAVA_IGNITE_enable;
     }
 }

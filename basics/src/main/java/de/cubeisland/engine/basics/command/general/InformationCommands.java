@@ -64,7 +64,7 @@ public class InformationCommands
         this.basics = basics;
     }
 
-    @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z]", max = 3)
+    @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z}", max = 3)
     public void biome(CommandContext context)
     {
         World world;
@@ -75,7 +75,7 @@ public class InformationCommands
             world = context.getArg(0,World.class,null);
             if (world == null)
             {
-                context.sendTranslated("&cUnkown world %s!", context.getString(0));
+                context.sendTranslated("&cUnknown world %s!", context.getString(0));
                 return;
             }
             x = context.getArg(1,Integer.class,null);
@@ -428,7 +428,7 @@ public class InformationCommands
     }
 
 
-    @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist"})
+    @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist","worlds"})
     public void listWorlds(CommandContext context)
     {
         context.sendTranslated("&aLoaded worlds:");

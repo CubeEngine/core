@@ -30,7 +30,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.cubeisland.engine.core.util.convert.ConversionException;
+import de.cubeisland.engine.configuration.convert.ConversionException;
 
 /**
  * This class contains some utillities to work with Strings.

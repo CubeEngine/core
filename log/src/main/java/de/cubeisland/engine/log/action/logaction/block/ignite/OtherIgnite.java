@@ -58,6 +58,6 @@ public class OtherIgnite extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).OTHER_IGNITE_enable;
+        return this.lm.getConfig(world).block.ignite.OTHER_IGNITE_enable;
     }
 }

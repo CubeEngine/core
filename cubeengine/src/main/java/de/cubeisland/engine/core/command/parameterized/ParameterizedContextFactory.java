@@ -228,17 +228,17 @@ public class ParameterizedContextFactory implements ContextFactory
                     // is named Param?
                     if (param != null && offset + 1 < commandLine.length)
                     {
+                        StringBuilder paramValue = new StringBuilder();
                         try
                         {
                             offset++;
-                            StringBuilder paramValue = new StringBuilder();
                             offset += readString(paramValue, commandLine, offset);
                             //added named param
                             params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString(), sender));
                         }
                         catch (InvalidArgumentException ex)
                         {
-                            throw new IncorrectUsageException(); // TODO message.
+                            throw new IncorrectUsageException(sender.translate("&cInvalid argument for &6%s&c: %s", param.getName(), sender.translate(ex.getMessage(), ex.getMessageArgs())));
                         }
                     }
                     else // else is indexed param

@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import javax.persistence.Transient;
 
+import org.jooq.DSLContext;
 import org.jooq.Record7;
 import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;

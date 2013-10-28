@@ -59,7 +59,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandFactories = new THashMap<>();
 
         this.commandLogger = core.getLogFactory().createCommandLogger();
-        // TODO
+        // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
     }
 

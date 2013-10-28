@@ -247,7 +247,6 @@ public class Duration
         convertTime -= convertTime / MS * MS;
     }
 
-    //TODO Formatting not that good! DO IT BETTER.
     public String format(String pattern)
     {
         this.update();

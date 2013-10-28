@@ -86,6 +86,6 @@ public class TntExplode extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).TNT_EXPLODE_enable;
+        return this.lm.getConfig(world).block.explode.TNT_EXPLODE_enable;
     }
 }

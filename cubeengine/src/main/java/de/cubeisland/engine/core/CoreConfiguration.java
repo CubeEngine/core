@@ -20,84 +20,79 @@ package de.cubeisland.engine.core;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.config.annotations.Revision;
-
 import de.cubeisland.engine.core.logging.Level;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.time.Duration;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
  * Changes in this configuration can/will affect all modules.
  */
-@Codec("yml")
-@Revision(1)
-public class CoreConfiguration extends Configuration
+public class CoreConfiguration extends YamlConfiguration
 {
-    @Option("default-locale")
+    @Name("default-locale")
     @Comment("Sets the locale to choose by default.")
     public Locale defaultLocale = Locale.US;
 
-    @Option("commands.max-correction-offers")
+    @Name("commands.max-correction-offers")
     @Comment("The maximum number of similar commands to offer when more than one command matched a mistyped command.")
     public int commandOffers = 5;
 
-    @Option("commands.max-tab-completion-offers")
+    @Name("commands.max-tab-completion-offers")
     @Comment("The maximum number of offers given for a tab completion request (pressing tab).")
     public int commandTabCompleteOffers = 5;
 
-    @Option("executor.threads")
+    @Name("executor.threads")
     @Comment("The maximum amount of threads used by the executor at one time")
     public Integer executorThreads = 2;
 
-    @Option("executor.terminate")
+    @Name("executor.terminate")
     @Comment("The time in seconds until timeout after shutdown")
     public Integer executorTermination = 10;
 
-    @Option("usermanager.cleanup")
+    @Name("usermanager.cleanup")
     @Comment("How often the UserManager should unload offline Players")
     public Integer userManagerCleanup = 10;
 
-    @Option("usermanager.garbage-collection")
+    @Name("usermanager.garbage-collection")
     @Comment("After which time should CubeEngine delete all of a users data from database")
     public Duration userManagerCleanupDatabase = new Duration(TimeUnit.DAYS.toMillis(90));
 
-    @Option("usermanager.keep-in-memory")
+    @Name("usermanager.keep-in-memory")
     @Comment("How many Ticks after disconnecting a user should stay in the user manager")
     public Integer userManagerKeepUserLoaded = 300;
 
-    @Option("logging.console-Level")
+    @Name("logging.console-Level")
     @Comment("Logging into Console \nALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF")
     public Level loggingConsoleLevel = Level.INFO;
-    // TODO create converter
-    @Option("logging.file-Level")
+
+    @Name("logging.file-Level")
     @Comment("Logging to the main log file \nALL > DEBUG > INFO > WARN > ERROR > OFF")
     public Level loggingFileLevel = Level.INFO;
 
-    @Option("logging.archive-logs")
+    @Name("logging.archive-logs")
     @Comment("Zip all old logs to zip archives")
     public boolean loggingArchiveLogs = true;
 
-    @Option("logging.log-commands")
+    @Name("logging.log-commands")
     @Comment("Whether to log commands executed by players.")
     public boolean logCommands = false;
 
-    @Option("after-join-event-delay")
+    @Name("after-join-event-delay")
     @Comment("How many ticks after PlayerJoinEvent the AfterJoinEvent is fired")
     public long afterJoinEventDelay = 1;
 
-    @Option("use-webapi")
+    @Name("use-webapi")
     @Comment("Whether to enable the Web API server")
     public boolean userWebapi = false;
 
-    @Option("security.fail2ban")
+    @Name("security.fail2ban")
     @Comment("Enable fail2ban on login")
     public boolean fail2ban = true;
 
-    @Option("security.ban-duration")
+    @Name("security.ban-duration")
     @Comment("Ban duration on fail2ban")
     public int banDuration = 10;
 

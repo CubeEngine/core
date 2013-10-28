@@ -140,6 +140,6 @@ public class LavaFlow extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LAVA_FLOW_enable;
+        return this.lm.getConfig(world).block.flow.LAVA_FLOW_enable;
     }
 }

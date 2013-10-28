@@ -73,7 +73,7 @@ public class LeafDecay extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LEAF_DECAY_enable;
+        return this.lm.getConfig(world).block.LEAF_DECAY_enable;
     }
 
 }

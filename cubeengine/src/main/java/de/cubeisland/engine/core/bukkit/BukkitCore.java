@@ -18,9 +18,9 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,13 +33,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import ch.qos.logback.classic.Level;
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -57,28 +65,40 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.Log;
-import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.logging.LogFactory;
+import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.util.convert.Convert;
+import de.cubeisland.engine.core.util.converter.DurationConverter;
+import de.cubeisland.engine.core.util.converter.EnchantmentConverter;
+import de.cubeisland.engine.core.util.converter.ItemStackConverter;
+import de.cubeisland.engine.core.util.converter.LevelConverter;
+import de.cubeisland.engine.core.util.converter.LocaleConverter;
+import de.cubeisland.engine.core.util.converter.LocationConverter;
+import de.cubeisland.engine.core.util.converter.MaterialConverter;
+import de.cubeisland.engine.core.util.converter.PlayerConverter;
+import de.cubeisland.engine.core.util.converter.UserConverter;
+import de.cubeisland.engine.core.util.converter.VersionConverter;
+import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
 
+import static de.cubeisland.engine.configuration.Configuration.registerConverter;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
@@ -132,15 +152,26 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.version = Version.fromString(this.getDescription().getVersion());
 
         CubeEngine.initialize(this);
-        Convert.init(this);
 
-        try (Reader reader = new InputStreamReader(this.getResource("plugin.yml")))
+        registerConverter(Level.class, new LevelConverter());
+        registerConverter(ItemStack.class, new ItemStackConverter());
+        registerConverter(Material.class, new MaterialConverter());
+        registerConverter(Enchantment.class, new EnchantmentConverter());
+        registerConverter(User.class, new UserConverter());
+        registerConverter(World.class, new WorldConverter());
+        registerConverter(Duration.class, new DurationConverter());
+        registerConverter(Version.class, new VersionConverter());
+        registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        registerConverter(Location.class, new LocationConverter(this));
+        registerConverter(Locale.class, new LocaleConverter());
+
+        try (InputStream is = this.getResource("plugin.yml"))
         {
-            this.pluginConfig = Configuration.load(PluginConfig.class, reader);
+            this.pluginConfig = Configuration.load(PluginConfig.class, is);
         }
         catch (IOException e)
         {
-            pluginConfig = Configuration.createInstance(PluginConfig.class);
+            this.pluginConfig = Configuration.create(PluginConfig.class);
         }
 
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
@@ -178,8 +209,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.serviceManager = new ServiceManager(this);
 
         // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
-
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
 
         ((LogBackLogFactory)this.logFactory).configureLoggers(this.config);
 
@@ -192,7 +222,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml")));
+        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
 
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());
@@ -406,7 +436,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         CubeEngine.clean();
-        Convert.cleanup();
         Profiler.clean();
 
         if (this.fileManager != null)

@@ -81,6 +81,6 @@ public class PlayerGrow extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).PLAYER_GROW_enable;
+        return this.lm.getConfig(world).block.grow.PLAYER_GROW_enable;
     }
 }

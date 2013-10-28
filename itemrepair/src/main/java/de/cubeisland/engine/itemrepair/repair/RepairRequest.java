@@ -19,19 +19,19 @@ package de.cubeisland.engine.itemrepair.repair;
 
 import java.util.Map;
 
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock;
+import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock.RepairBlockInventory;
 
 public class RepairRequest
 {
     private final RepairBlock repairBlock;
-    private final Inventory inventory;
+    private final RepairBlockInventory inventory;
     private final Map<Integer, ItemStack> items;
     private final double price;
 
-    public RepairRequest(RepairBlock repairBlock, Inventory inventory, Map<Integer, ItemStack> items, double price)
+    public RepairRequest(RepairBlock repairBlock, RepairBlockInventory inventory, Map<Integer, ItemStack> items, double price)
     {
         if (repairBlock == null)
         {
@@ -48,7 +48,7 @@ public class RepairRequest
         return this.repairBlock;
     }
 
-    public Inventory getInventory()
+    public RepairBlockInventory getInventory()
     {
         return this.inventory;
     }

@@ -127,7 +127,7 @@ public class BucketFill extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BUCKET_FILL_enable;
+        return this.lm.getConfig(world).block.bucket.BUCKET_FILL_enable;
     }
 
     @Override

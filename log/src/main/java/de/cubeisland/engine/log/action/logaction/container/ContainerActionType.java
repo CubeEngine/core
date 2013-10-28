@@ -132,10 +132,10 @@ public class ContainerActionType extends ActionTypeContainer
         if (event.getPlayer() instanceof Player)
         {
             LoggingConfiguration config = this.lm.getConfig(event.getPlayer().getWorld());
-            if (config.ITEM_INSERT_enable || config.ITEM_PICKUP_enable)
+            if (config.container.ITEM_INSERT_enable || config.ITEM_PICKUP_enable)
             {
                 ContainerType type = new ContainerType(event.getInventory().getHolder());
-                if (!config.CONTAINER_ignore.contains(type))
+                if (!config.container.CONTAINER_ignore.contains(type))
                 {
                     User user = this.um.getExactUser(event.getPlayer().getName());
                     this.inventoryChanges.put(user.getId(),new TObjectIntHashMap<ItemData>());
@@ -435,7 +435,7 @@ public class ContainerActionType extends ActionTypeContainer
         ItemTransfer itemTransfer = this.manager.getActionType(ItemTransfer.class);
         if (itemTransfer.isActive(targetLocation.getWorld()))
         {
-            if (this.lm.getConfig(targetLocation.getWorld()).ITEM_TRANSFER_ignore.contains(event.getItem().getType()))
+            if (this.lm.getConfig(targetLocation.getWorld()).container.ITEM_TRANSFER_ignore.contains(event.getItem().getType()))
             {
                 return;
             }

@@ -71,6 +71,6 @@ public class DoorUse extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).DOOR_USE_enable;
+        return this.lm.getConfig(world).block.DOOR_USE_enable;
     }
 }

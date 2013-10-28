@@ -366,7 +366,6 @@ public class VanillaCommands implements CommandHolder
             if (plugin == null)
             {
                 context.sendTranslated("&cThe given plugin doesn't seem to be loaded, have you type it correctly (casing does matter)?");
-                return;
             }
             else
             {
@@ -401,7 +400,7 @@ public class VanillaCommands implements CommandHolder
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
     protected static void showSourceVersion(ParameterizedContext context, String sourceVersion)
     {
-        if (context.hasFlag("s"))
+        if (context.hasFlag("s") && sourceVersion != null)
         {
             final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
             context.sendTranslated("Source Version: %s", sourceVersion);

@@ -158,6 +158,6 @@ public class BlockShift extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_SHIFT_enable;
+        return this.lm.getConfig(world).block.BLOCK_SHIFT_enable;
     }
 }

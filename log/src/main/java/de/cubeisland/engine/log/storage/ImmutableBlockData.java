@@ -49,6 +49,6 @@ public class ImmutableBlockData
             return material.name();
         }
         return material + ":" + data;
-        //Match.material() //TODO pretty name CE-294 http://bugs.engine.cubeisland.de/browse/CE-294
+        //Match.material() //TODO pretty name TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/289
     }
 }

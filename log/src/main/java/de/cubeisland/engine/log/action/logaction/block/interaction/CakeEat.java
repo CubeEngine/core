@@ -68,6 +68,6 @@ public class CakeEat extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).CAKE_EAT_enable;
+        return this.lm.getConfig(world).block.CAKE_EAT_enable;
     }
 }

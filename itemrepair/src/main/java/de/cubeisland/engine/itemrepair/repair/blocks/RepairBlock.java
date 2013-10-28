@@ -52,7 +52,7 @@ public class RepairBlock
 
     private Itemrepair module;
 
-    private final Map<String, Inventory> inventoryMap;
+    private final Map<String, RepairBlockInventory> inventoryMap;
 
     private RepairBlockConfig config;
 
@@ -92,13 +92,13 @@ public class RepairBlock
 
     public final Material getMaterial()
     {
-        return this.config.blockType;
+        return this.config.block;
     }
 
     public double calculatePrice(Iterable<ItemStack> items)
     {
-        return this.calculatePrice(items, this.module.getConfig().enchMultiplierFactor,
-           this.module.getConfig().enchMultiplierBase, this.config.costPercentage);
+        return this.calculatePrice(items, this.module.getConfig().price.enchantMultiplier.factor,
+           this.module.getConfig().price.enchantMultiplier.base, this.config.costPercentage);
     }
 
     private double calculatePrice(Iterable<ItemStack> items, double enchantmentFactor, double enchantmentBase, float percentage)
@@ -126,32 +126,44 @@ public class RepairBlock
         return price;
     }
 
-    public Inventory removeInventory(final Player player)
+    public RepairBlockInventory removeInventory(final Player player)
     {
         return this.inventoryMap.remove(player.getName());
     }
 
-    public Inventory getInventory(final Player player)
+    public RepairBlockInventory getInventory(final Player player)
     {
         if (player == null)
         {
             return null;
         }
-        Inventory inventory = this.inventoryMap.get(player.getName());
+        RepairBlockInventory inventory = this.inventoryMap.get(player.getName());
         if (inventory == null)
         {
-            inventory = Bukkit.createInventory(player, 9 * 4, this.config.title);
+            inventory = new RepairBlockInventory(Bukkit.createInventory(player, 9 * 4, this.config.title), player);
             this.inventoryMap.put(player.getName(), inventory);
         }
         return inventory;
     }
 
-    public void withdrawPlayer(User user, long amount)
+    public class RepairBlockInventory
+    {
+        public final Inventory inventory;
+        public final Player player;
+
+        public RepairBlockInventory(Inventory inventory, Player player)
+        {
+            this.inventory = inventory;
+            this.player = player;
+        }
+    }
+
+    public boolean withdrawPlayer(User user, double price)
     {
         economy.createPlayerAccount(user.getName()); // Make sure account exists
-        economy.withdraw(user.getName(), amount / economy.fractionalDigitsFactor());
-        // TODO what if this returns false
-        // TODO bankAccounts
+        if (economy.has(user.getName(), price) && economy.withdraw(user.getName(), price))
+        {
+            // TODO bankAccounts
             /*
             String account = this.plugin.getServerBank();
             if (eco.hasBankSupport() && !("".equals(account)))
@@ -167,18 +179,16 @@ public class RepairBlock
                 }
             }
             */
+            return true;
+        }
+        return false;
+
     }
 
-    public boolean checkBalance(User user, double price)
+    public RepairRequest requestRepair(RepairBlockInventory inventory)
     {
-        return economy.has(user.getName(), price / economy.fractionalDigitsFactor());
-    }
-
-    public RepairRequest requestRepair(Inventory inventory)
-    {
-        // TODO it's unsafe to assume it's a player here
-        User user = this.module.getCore().getUserManager().getUser(((Player)inventory.getHolder()).getName());
-        Map<Integer, ItemStack> items = this.itemProvider.getRepairableItems(inventory);
+        User user = this.module.getCore().getUserManager().getUser(inventory.player.getName());
+        Map<Integer, ItemStack> items = this.itemProvider.getRepairableItems(inventory.inventory);
         if (items.size() > 0)
         {
             Double price = calculatePrice(items.values());
@@ -191,9 +201,9 @@ public class RepairBlock
             {
                 user.sendTranslated("&cItems will not repair with a chance of &6%.2f%%",this.config.failPercentage);
             }
-            if (this.config.looseEnchPercentage > 0)
+            if (this.config.looseEnchantmentsPercentage > 0)
             {
-                user.sendTranslated("&cItems will loose all enchantments with a chance of &6%.2f%%",this.config.looseEnchPercentage);
+                user.sendTranslated("&cItems will loose all enchantments with a chance of &6%.2f%%",this.config.looseEnchantmentsPercentage);
             }
             if (this.config.costPercentage > 100)
             {
@@ -223,11 +233,10 @@ public class RepairBlock
     public void repair(RepairRequest request)
     {
         double price = request.getPrice();
-        Inventory inventory = request.getInventory();
-        User user = this.module.getCore().getUserManager().getExactUser(((Player)inventory.getHolder()).getName());
-        if (checkBalance(user, price))
+        RepairBlockInventory inventory = request.getInventory();
+        User user = this.module.getCore().getUserManager().getExactUser(inventory.player.getName());
+        if (withdrawPlayer(user, price))
         {
-            withdrawPlayer(user, (long)price);
             boolean itemsBroken = false;
             boolean repairFail = false;
             boolean looseEnch = false;
@@ -248,7 +257,7 @@ public class RepairBlock
                     }
                     if (!entry.getValue().getEnchantments().isEmpty())
                     {
-                        if (this.rand.nextInt(100) < this.config.looseEnchPercentage)
+                        if (this.rand.nextInt(100) < this.config.looseEnchantmentsPercentage)
                         {
                             looseEnch = true;
                             for (Enchantment enchantment : entry.getValue().getEnchantments().keySet())
@@ -264,7 +273,7 @@ public class RepairBlock
                     amount = item.getAmount();
                     if (amount == 1)
                     {
-                        inventory.clear(entry.getKey());
+                        inventory.inventory.clear(entry.getKey());
                     }
                     else
                     {

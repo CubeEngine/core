@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.locker;
 
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.Reloadable;
 import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
 import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityLockerConfigConverter;
@@ -27,21 +28,21 @@ import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.TableAccessList;
 import de.cubeisland.engine.locker.storage.TableLockLocations;
 import de.cubeisland.engine.locker.storage.TableLocks;
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.convert.Convert;
+
+import static de.cubeisland.engine.configuration.Configuration.registerConverter;
 
 public class Locker extends Module implements Reloadable
 {
     private LockerConfig config;
     private LockManager manager;
+    private LockerListener listener;
 
     @Override
     public void onEnable()
     {
-        Convert.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
-        Convert.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
-        this.config = Configuration.load(LockerConfig.class, this);
+        registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
+        registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
+        this.config = this.loadConfig(LockerConfig.class);
         this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
@@ -51,20 +52,22 @@ public class Locker extends Module implements Reloadable
         this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
         this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
         new LockerPerm(this, mainCmd);
-        new LockerListener(this, manager);
+        listener = new LockerListener(this, manager);
     }
 
     @Override
     public void onDisable()
     {
         this.manager.saveAll();
+        this.getCore().getEventManager().removeListeners(this);
+        this.getCore().getCommandManager().removeCommands(this);
     }
 
     @Override
     public void reload()
     {
         this.onDisable();
-        this.config = Configuration.load(LockerConfig.class, this);
+        this.config = this.loadConfig(LockerConfig.class);
         this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
@@ -73,7 +76,7 @@ public class Locker extends Module implements Reloadable
         this.getCore().getCommandManager().registerCommand(mainCmd);
         this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
         this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
-        new LockerListener(this, manager);
+        listener = new LockerListener(this, manager);
     }
 
     public LockerConfig getConfig()

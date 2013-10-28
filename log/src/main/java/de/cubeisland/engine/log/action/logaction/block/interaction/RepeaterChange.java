@@ -75,7 +75,7 @@ public class RepeaterChange extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).REPEATER_CHANGE_enable;
+        return this.lm.getConfig(world).block.REPEATER_CHANGE_enable;
     }
 
     @Override

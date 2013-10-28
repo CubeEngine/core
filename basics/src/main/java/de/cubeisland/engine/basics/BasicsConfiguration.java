@@ -25,40 +25,36 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.time.Duration;
 
-@Codec("yml")
-@DefaultConfig
-public class BasicsConfiguration extends Configuration
+public class BasicsConfiguration extends YamlConfiguration
 {
-    @Option("commands.spawnmob-limit")
+    @Name("commands.spawnmob-limit")
     public int spawnmobLimit = 20;
-    @Option("commands.remove-defaultradius")
+    @Name("commands.remove-defaultradius")
     public int removeCmdDefaultRadius = 20;
-    @Option("commands.butcher-defaultradius")
+    @Name("commands.butcher-defaultradius")
     public int butcherCmdDefaultRadius = 20;
     @Comment("The world to teleport to when using /spawn"
         + "\nUse {} if you want to use the spawn of the world the player is in.")
-    @Option("mainworld")
+    @Name("mainworld")
     public World mainWorld = Bukkit.getServer().getWorld("world");
     @Comment("The seconds until a teleportrequest is automaticly denied."
         + "\nUse -1 to never automaticly deny. (Will loose information after some time when disconecting)")
-    @Option("commands.teleport-request-wait")
+    @Name("commands.teleport-request-wait")
     public int tpRequestWait = -1;
-    @Option("commands.near-defaultradius")
+    @Name("commands.near-defaultradius")
     public int nearDefaultRadius = 20;
-    @Option("afk.automatic-afk")
+    @Name("afk.automatic-afk")
     public String autoAfk = "5m";
-    @Option("afk.afk-check-delay")
+    @Name("afk.afk-check-delay")
     public String afkCheck = "1s";
-    @Option("command.mute.default-mute-time")
+    @Name("command.mute.default-mute-time")
     public Duration defaultMuteTime = new Duration(-1);
-    @Option("commands.item-blacklist")
+    @Name("commands.item-blacklist")
     public Collection<ItemStack> blacklist = new LinkedList<ItemStack>()
     {
 
@@ -100,20 +96,20 @@ public class BasicsConfiguration extends Configuration
         }
     };
 
-    @Option("navigation.thru.max-range")
+    @Name("navigation.thru.max-range")
     public int jumpThruMaxRange = 15;
-    @Option("navigation.thru.max-wall-thickness")
+    @Name("navigation.thru.max-wall-thickness")
     public int jumpThruMaxWallThickness = 15;
-    @Option("navigation.jumpto.max-range")
+    @Name("navigation.jumpto.max-range")
     public int jumpToMaxRange = 300;
-    @Option("commands.ban.disallow-if-offline-mode")
+    @Name("commands.ban.disallow-if-offline-mode")
     public boolean disallowBanIfOfflineMode;
-    @Option("changepainting.max.distance")
+    @Name("changepainting.max.distance")
     public int maxChangePaintingDistance = 10;
     
-    @Option("commands.door.max.radius")
+    @Name("commands.door.max.radius")
     public int maxDoorRadius = 10;
 
-    @Option("overstacked.prevent-anvil-and-brewing")
+    @Name("overstacked.prevent-anvil-and-brewing")
     public boolean preventOverstackedItems = true;
 }

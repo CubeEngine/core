@@ -29,13 +29,13 @@ public class BaseMaterialContainer
 
     public BaseMaterialContainer()
     {
-        this.registerBaseMaterial(new BaseMaterial(Material.WOOD, 30));
-        this.registerBaseMaterial(new BaseMaterial(Material.STONE, 100));
-        this.registerBaseMaterial(new BaseMaterial(Material.IRON_INGOT, 210));
-        this.registerBaseMaterial(new BaseMaterial(Material.GOLD_INGOT, 410));
-        this.registerBaseMaterial(new BaseMaterial(Material.DIAMOND, 30000));
-        this.registerBaseMaterial(new BaseMaterial(Material.LEATHER, 80));
-        this.registerBaseMaterial(new BaseMaterial(Material.FIRE, 300));
+        this.registerBaseMaterial(new BaseMaterial(Material.WOOD, 0.30));
+        this.registerBaseMaterial(new BaseMaterial(Material.STONE, 1.00));
+        this.registerBaseMaterial(new BaseMaterial(Material.IRON_INGOT, 2.10));
+        this.registerBaseMaterial(new BaseMaterial(Material.GOLD_INGOT, 4.10));
+        this.registerBaseMaterial(new BaseMaterial(Material.DIAMOND, 300.00));
+        this.registerBaseMaterial(new BaseMaterial(Material.LEATHER, 0.80));
+        this.registerBaseMaterial(new BaseMaterial(Material.FIRE, 3.00));
     }
 
     public BaseMaterialContainer(Map<Material, Double> map)

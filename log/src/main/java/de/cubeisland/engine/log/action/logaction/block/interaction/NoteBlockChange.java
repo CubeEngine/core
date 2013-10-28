@@ -76,7 +76,7 @@ public class NoteBlockChange extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).NOTEBLOCK_CHANGE_enable;
+        return this.lm.getConfig(world).block.NOTEBLOCK_CHANGE_enable;
     }
 
     @Override

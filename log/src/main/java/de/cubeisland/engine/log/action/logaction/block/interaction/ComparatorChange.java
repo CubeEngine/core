@@ -69,6 +69,6 @@ public class ComparatorChange extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).COMPARATPR_CHANGE_enable;
+        return this.lm.getConfig(world).block.COMPARATPR_CHANGE_enable;
     }
 }
