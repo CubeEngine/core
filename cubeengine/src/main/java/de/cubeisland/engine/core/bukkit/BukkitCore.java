@@ -142,20 +142,20 @@ public final class BukkitCore extends JavaPlugin implements Core
     private LoggerContext loggerContext;
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
+    private boolean loadSucceeded;
 
     @Override
     public void onLoad()
     {
+        this.loadSucceeded = false;
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
         if (!BukkitUtils.isCompatible(this) || !BukkitUtils.init(this))
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Your Bukkit server is incompatible with this CubeEngine version.");
-            pm.disablePlugin(this);
             return;
         }
-
 
         this.version = Version.fromString(this.getDescription().getVersion());
 
@@ -191,7 +191,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         catch (IOException e)
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to initialize the FileManager", e);
-            pm.disablePlugin(this);
             return;
         }
         this.fileManager.dropResources(CoreResource.values());
@@ -374,12 +373,14 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
+
+        this.loadSucceeded = true;
     }
 
     @Override
     public void onEnable()
     {
-        if (this.database == null)
+        if (!this.loadSucceeded)
         {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
