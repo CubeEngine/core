@@ -43,6 +43,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
 public class MySQLDatabase extends AbstractPooledDatabase
@@ -208,7 +209,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
             @Override
             public Result<R> call() throws Exception
             {
-                return query.fetch();
+                try
+                {
+                    return query.fetch();
+                }
+                catch (DataAccessException e)
+                {
+                    core.getLog().error("An error occurred while fetching later", e);
+                    throw e;
+                }
             }
         });
     }
@@ -221,7 +230,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
             @Override
             public Integer call() throws Exception
             {
-                return query.execute();
+                try
+                {
+                    return query.execute();
+                }
+                catch (DataAccessException e)
+                {
+                    core.getLog().error("An error occurred while executing later", e);
+                    throw e;
+                }
             }
         });
     }
