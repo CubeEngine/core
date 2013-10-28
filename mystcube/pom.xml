@@ -4,12 +4,12 @@
   <parent>
     <groupId>de.cubeisland.engine</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>mystcube</artifactId>
-  <name>mystcube</name>
+  <name>MystCube</name>
   <version>1.0.0-SNAPSHOT</version>
   <description>Create Ages an visit them</description>
 
