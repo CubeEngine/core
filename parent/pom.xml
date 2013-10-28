@@ -205,7 +205,14 @@
         <filtering>true</filtering>
         <includes>
           <include>module.yml</include>
-          <include>logback.xml</include>
+        </includes>
+      </resource>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}/src/main/resources/</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>logback*.xml</include>
         </includes>
       </resource>
       <resource>
