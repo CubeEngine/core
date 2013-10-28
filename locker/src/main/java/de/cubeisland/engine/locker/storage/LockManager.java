@@ -84,7 +84,7 @@ public class LockManager implements Listener
     public final CommandListener commandListener;
 
     private final TLongObjectHashMap<TLongObjectHashMap<Lock>> loadedLocks = new TLongObjectHashMap<>();
-    private final TLongObjectHashMap<HashMap<Long, Set<Lock>>> loadedLocksInChunk = new TLongObjectHashMap<>();
+    private final Map<Long, Map<Long, Set<Lock>>> loadedLocksInChunk = new HashMap<>();
     private final Map<UUID, Lock> loadedEntityLocks = new HashMap<>();
     private final Map<Long, Lock> locksById = new HashMap<>();
 
@@ -178,7 +178,7 @@ public class LockManager implements Listener
             {
                 worldId = module.getCore().getWorldManager().getWorldId(loc.getWorld());
             }
-            HashMap<Long, Set<Lock>> locksInChunkMap = this.getChunkLocksMap(worldId);
+            Map<Long, Set<Lock>> locksInChunkMap = this.getChunkLocksMap(worldId);
             long chunkKey = getChunkKey(loc);
             Set<Lock> locks = locksInChunkMap.get(chunkKey);
             if (locks == null)
@@ -191,9 +191,9 @@ public class LockManager implements Listener
         }
     }
 
-    private HashMap<Long, Set<Lock>> getChunkLocksMap(long worldId)
+    private Map<Long, Set<Lock>> getChunkLocksMap(long worldId)
     {
-        HashMap<Long, Set<Lock>> locksInChunkMap = this.loadedLocksInChunk.get(worldId);
+        Map<Long, Set<Lock>> locksInChunkMap = this.loadedLocksInChunk.get(worldId);
         if (locksInChunkMap == null)
         {
             locksInChunkMap = new HashMap<>();
