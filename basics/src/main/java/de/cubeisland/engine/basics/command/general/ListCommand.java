@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
 
@@ -90,48 +92,52 @@ public class ListCommand
         Collections.sort(defaultList,comparator);
         Collections.sort(afkList,comparator);
         defaultList.addAll(afkList);
-        Map<String, List<User>> grouped = new HashMap<>();
-        grouped.put("&6Players", defaultList);
+        Map<String, List<User>> grouped;
         sender.sendTranslated("&9Players online: &a%d&f/&e%d", userStrings.size(), Bukkit.getMaxPlayers());
         if (this.module.getRolesModule() != null)
         {
-            String noRole = ChatFormat.parseFormats("&7No Role");
-            grouped.clear();
+            List<User> noRoleList = new ArrayList<>();
+            grouped = new LinkedHashMap<>();
+            Map<Role, List<User>> groupedRoles = new TreeMap<>();
             for (User user : defaultList)
             {
                 RolesAttachment attachment = user.get(RolesAttachment.class);
                 if (attachment == null)
                 {
-                    List<User> list = grouped.get(noRole);
-                    if (list == null)
-                    {
-                        list = new ArrayList<>();
-                        grouped.put(noRole,list);
-                    }
-                    list.add(user);
+                    noRoleList.add(user);
                 }
                 else
                 {
                     Role role = attachment.getDominantRole();
-                    String display;
-                    if (role.getRawMetadata().get("prefix") == null)
-                    {
-                        display = "&7"+role.getName();
-                    }
-                    else
-                    {
-                        display = role.getRawMetadata().get("prefix");
-                    }
-                    display = ChatFormat.parseFormats(display);
-                    List<User> list = grouped.get(display);
+                    List<User> list = groupedRoles.get(role);
                     if (list == null)
                     {
                         list = new ArrayList<>();
-                        grouped.put(display,list);
+                        groupedRoles.put(role,list);
                     }
                     list.add(user);
                 }
             }
+            for (Entry<Role, List<User>> entry : groupedRoles.entrySet())
+            {
+                String display;
+                if (entry.getKey().getRawMetadata().get("prefix") == null)
+                {
+                    display = "&7"+entry.getKey().getName();
+                }
+                else
+                {
+                    display = entry.getKey().getRawMetadata().get("prefix");
+                }
+                display = ChatFormat.parseFormats(display);
+                grouped.put(display, entry.getValue());
+            }
+            grouped.put(ChatFormat.parseFormats("&7No Role"), noRoleList);
+        }
+        else
+        {
+            grouped = new HashMap<>();
+            grouped.put("&6Players", defaultList);
         }
         for (Entry<String,List<User>> entry : grouped.entrySet())
         {
