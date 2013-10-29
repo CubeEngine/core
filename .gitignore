@@ -23,3 +23,6 @@ maven-eclipse.xml
 
 # Unit Tests
 test-data/
+
+# Nope, utility scripts are not supposed to be here!
+/*.py
