@@ -52,7 +52,7 @@ public class BorderListener implements Listener
         {
             return;
         }
-        if (!this.isChunkInRange(event.getTo().getChunk(), config))
+        if (!isChunkInRange(event.getTo().getChunk(), config))
         {
             if (event instanceof PlayerTeleportEvent)
             {
@@ -77,7 +77,7 @@ public class BorderListener implements Listener
                 this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
             }
         }
-        else if (!(event instanceof PlayerTeleportEvent) && this.isChunkAlmostOutOfRange(event.getTo().getChunk(), config))
+        else if (!(event instanceof PlayerTeleportEvent) && isChunkAlmostOutOfRange(event.getTo().getChunk(), config))
         {
             this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&6You are near the world-border! You might want to turn around.");
         }
@@ -93,23 +93,23 @@ public class BorderListener implements Listener
     public void onPlayerRespawn(PlayerRespawnEvent event)
     {
         final Chunk respawnChunk = event.getRespawnLocation().getChunk();
-        if (!this.isChunkInRange(respawnChunk, this.module.getConfig(respawnChunk.getWorld())))
+        if (!isChunkInRange(respawnChunk, this.module.getConfig(respawnChunk.getWorld())))
         {
             event.setRespawnLocation(respawnChunk.getWorld().getSpawnLocation());
         }
     }
 
-    private boolean isChunkInRange(Chunk to, BorderConfig config)
+    public static boolean isChunkInRange(Chunk to, BorderConfig config)
     {
-        final Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
-        BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
+        final Chunk centerChunk = to.getWorld().getChunkAt(config.center.chunkX, config.center.chunkZ);
+        BlockVector2 spawnPos = new BlockVector2(centerChunk.getX(), centerChunk.getZ());
         return spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= config.radius * config.radius;
     }
 
-    private boolean isChunkAlmostOutOfRange(Chunk to, BorderConfig config)
+    public static boolean isChunkAlmostOutOfRange(Chunk to, BorderConfig config)
     {
-        final Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
-        BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
+        final Chunk centerChunk = to.getWorld().getChunkAt(config.center.chunkX, config.center.chunkZ);
+        BlockVector2 spawnPos = new BlockVector2(centerChunk.getX(), centerChunk.getZ());
         return !(spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= (config.radius -2) * (config.radius -2));
     }
 
