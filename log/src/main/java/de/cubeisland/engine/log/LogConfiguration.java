@@ -19,6 +19,7 @@ package de.cubeisland.engine.log;
 
 import java.util.concurrent.TimeUnit;
 
+import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
@@ -32,14 +33,25 @@ public class LogConfiguration extends YamlConfiguration
     @Comment("Shows log info in the console when logging at least that amount of logs at once")
     @Name("info.show-log-info")
     public int showLogInfoInConsole = 200;
-    @Comment("Logs from worlds that do no longer exist are removed")
-    @Name("cleanup.deleted-worlds")
-    public boolean cleanUpDeletedWorlds = false;
-    @Comment("Delete logs that are older than specified under old-logs.time")
-    @Name("cleanup.old-logs.enable")
-    public boolean cleanUpOldLogs = true;
-    @Name("cleanup.old-logs.time")
-    public Duration cleanUpOldLogsTime = new Duration(TimeUnit.DAYS.toMillis(70));
-    @Name("cleanup.delay")
-    public Duration cleanUpDelay = new Duration(TimeUnit.DAYS.toMillis(1));
+
+    public Cleanup cleanup;
+    public class Cleanup implements Section
+    {
+        @Comment("Logs from worlds that do no longer exist are removed")
+        @Name("deleted-worlds")
+        public boolean deletedWorlds = false;
+
+        @Comment("Delete logs that are older than specified under old-logs.time")
+        public OldLogs oldLogs;
+        public class OldLogs implements Section
+        {
+            public boolean enable = true;
+            public Duration time = new Duration(TimeUnit.DAYS.toMillis(70));
+            @Comment("How many logs may be deleted in a single query")
+            public int steps = 10000;
+        }
+
+        @Name("cleanup.delay")
+        public Duration delay = new Duration(TimeUnit.DAYS.toMillis(1));
+    }
 }

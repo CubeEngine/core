@@ -28,7 +28,7 @@ import de.cubeisland.engine.log.action.ActionTypeCategory;
 
 public class Lookup implements Cloneable
 {
-    private final Log module;
+    protected final Log module;
 
     private QueryParameter queryParameter;
     private QueryResults queryResults;

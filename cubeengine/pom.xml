@@ -34,7 +34,7 @@
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>configuration</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
@@ -135,7 +135,7 @@
     <dependency>
       <groupId>org.jooq</groupId>
       <artifactId>jooq</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>c3p0</groupId>
