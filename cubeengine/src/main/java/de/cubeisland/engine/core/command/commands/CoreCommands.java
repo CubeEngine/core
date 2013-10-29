@@ -88,7 +88,7 @@ public class CoreCommands extends ContainerCommand
 
     @Command(names = {
         "setpassword", "setpw"
-    }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
+    }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]", loggable = false)
     public void setPassword(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -172,7 +172,7 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Logs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    @Command(desc = "Logs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE, loggable = false)
     public void login(CommandContext context)
     {
         CommandSender sender = context.getSender();
