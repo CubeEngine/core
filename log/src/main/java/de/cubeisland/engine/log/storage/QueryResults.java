@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
@@ -36,11 +37,13 @@ import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
 public class QueryResults
 {
     private Lookup lookup;
+    private Module module;
     private TreeSet<LogEntry> logEntries = new TreeSet<>();
 
-    public QueryResults(Lookup lookup)
+    public QueryResults(Lookup lookup, Module module)
     {
         this.lookup = lookup;
+        this.module = module;
     }
 
     @SuppressWarnings("deprecation")
@@ -204,6 +207,11 @@ public class QueryResults
         Set <LogEntry> rollbackRound2 = new LinkedHashSet<>();
         for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
         {
+            if (logEntry.getWorld() == null)
+            {
+                this.module.getLog().warn("LogEntry #{} belongs to a deleted world!", logEntry.getId().longValue());
+                continue;
+            }
             if (!logEntry.rollback(attachment, false, preview)) // Rollback failed (cannot set yet (torches etc)) try again later
             {
                 rollbackRound2.add(logEntry);
