@@ -255,7 +255,22 @@ public class QueryManager
                 int count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).fetchCount();
                 if (count == 0) continue;
                 this.module.getLog().debug("        - Step 4/7: Marked {} logs in world #{} for removal", count, dbWorld.longValue());
-                cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).execute();
+                UInteger lastId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
+                            .where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).orderBy(TABLE_LOG_ENTRY.ID.desc()).limit(1).fetchOne().value1();
+                UInteger firstId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
+                                            .where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).orderBy(TABLE_LOG_ENTRY.ID.asc()).limit(1).fetchOne().value1();
+                while (firstId.longValue() < lastId.longValue())
+                {
+                    UInteger nextId = UInteger.valueOf(firstId.longValue() + this.module.getConfiguration().cleanup.steps);
+                    int del = cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld).and(TABLE_LOG_ENTRY.ID.between(firstId, nextId))).execute();
+                    count -= del;
+                    if (del != 0)
+                    {
+                        this.module.getLog().debug("        - Step 4/7: Deleted {} logs in world #{} ; Remaining: {}", del, dbWorld.longValue(), count);
+                    }
+                    firstId = nextId;
+                }
+
             }
         }
         else
@@ -324,7 +339,7 @@ public class QueryManager
     {
         int count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.ID.between(from, to)).fetchCount();
         if (count == 0) return 0;
-        if (count <= this.module.getConfiguration().cleanup.oldLogs.steps)
+        if (count <= this.module.getConfiguration().cleanup.steps)
         {
             totalCount.value -= count;
             return cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.ID.between(from, to)).execute();

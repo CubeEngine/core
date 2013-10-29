@@ -47,9 +47,10 @@ public class LogConfiguration extends YamlConfiguration
         {
             public boolean enable = true;
             public Duration time = new Duration(TimeUnit.DAYS.toMillis(70));
-            @Comment("How many logs may be deleted in a single query")
-            public int steps = 10000;
         }
+
+        @Comment("How many logs may be deleted in a single query")
+        public int steps = 10000;
 
         @Name("cleanup.delay")
         public Duration delay = new Duration(TimeUnit.DAYS.toMillis(1));
