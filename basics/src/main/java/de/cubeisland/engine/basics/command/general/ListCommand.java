@@ -98,7 +98,14 @@ public class ListCommand
         {
             List<User> noRoleList = new ArrayList<>();
             grouped = new LinkedHashMap<>();
-            Map<Role, List<User>> groupedRoles = new TreeMap<>();
+            TreeMap<Role, List<User>> groupedRoles = new TreeMap<>(new Comparator<Role>()
+            {
+                @Override
+                public int compare(Role o1, Role o2)
+                {
+                    return o1.getPriorityValue() - o2.getPriorityValue();
+                }
+            });
             for (User user : defaultList)
             {
                 RolesAttachment attachment = user.get(RolesAttachment.class);
@@ -141,6 +148,7 @@ public class ListCommand
         }
         for (Entry<String,List<User>> entry : grouped.entrySet())
         {
+            if (entry.getValue().isEmpty()) continue;
             String group = entry.getKey()+ChatFormat.parseFormats("&f: ");
             List<String> displayNames = new ArrayList<>();
             for (User user : entry.getValue())
