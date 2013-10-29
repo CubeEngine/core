@@ -103,7 +103,7 @@ public class ListCommand
                 @Override
                 public int compare(Role o1, Role o2)
                 {
-                    return o1.getPriorityValue() - o2.getPriorityValue();
+                    return o2.getPriorityValue() - o1.getPriorityValue();
                 }
             });
             for (User user : defaultList)
