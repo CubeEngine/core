@@ -25,16 +25,18 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
 
 public class BorderCommands extends ContainerCommand
 {
     private Border module;
-
-
 
     public BorderCommands(Border module)
     {
@@ -51,6 +53,55 @@ public class BorderCommands extends ContainerCommand
     private long lastNotify;
     private int generated;
     private boolean running = false;
+
+    @Command(desc = "Sets the center of the border", usage = "[<chunkX> <chunkZ>]|[-spawn] [in <world>]",
+    flags = @Flag(longName = "spawn", name = "s"),
+    params = @Param(names = {"in", "world", "w"}, type = World.class, completer = WorldCompleter.class))
+    public void setCenter(ParameterizedContext context)
+    {
+        World world;
+        if (context.hasParam("in"))
+        {
+            world = context.getParam("in");
+        }
+        else if (!(context.getSender() instanceof User))
+        {
+            context.sendTranslated("&cYou need to specify a world!");
+            return;
+        }
+        else
+        {
+            world = ((User)context.getSender()).getWorld();
+        }
+        Chunk center;
+        if (context.hasFlag("s"))
+        {
+            this.module.getConfig(world).center.setCenter(world.getSpawnLocation().getChunk(), true);
+            return;
+        }
+        else if (context.hasArg(1))
+        {
+            Integer x = context.getArg(0, Integer.class, null);
+            Integer z = context.getArg(0, Integer.class, null);
+            if (x == null || z == null)
+            {
+                context.sendTranslated("&cInvalid Chunk-coordinates!");
+                return;
+            }
+            center = world.getChunkAt(x, z);
+        }
+        else if (context.getSender() instanceof User)
+        {
+            center = ((User)context.getSender()).getLocation().getChunk();
+        }
+        else
+        {
+            context.sendTranslated("&cYou need to specify the chunk-coordinates or use the -spawn flag");
+            return;
+        }
+        this.module.getConfig(world).center.setCenter(center, true);
+        context.sendTranslated("&aCenter for Border in &6%s&a set!", world.getName());
+    }
 
     @Alias(names = "generateBorder")
     @Command(desc = "Generates the chunks located in the border", min = 1, max = 1)

@@ -51,16 +51,21 @@ public class BorderConfig extends YamlConfiguration
         public Integer chunkX = null;
         public Integer chunkZ = null;
 
-        public boolean checkCenter(World world, Border module)
+        public boolean checkCenter(World world)
         {
             if (useSpawn)
             {
-                Chunk chunk = world.getSpawnLocation().getChunk();
-                chunkX = chunk.getX();
-                chunkZ = chunk.getZ();
+                this.setCenter(world.getSpawnLocation().getChunk(), true);
                 return true;
             }
             return !BorderListener.isChunkInRange(world.getSpawnLocation().getChunk(), BorderConfig.this);
+        }
+
+        public void setCenter(Chunk center, boolean isSpawn)
+        {
+            this.chunkX = center.getX();
+            this.chunkZ = center.getZ();
+            this.useSpawn = isSpawn;
         }
     }
 }
