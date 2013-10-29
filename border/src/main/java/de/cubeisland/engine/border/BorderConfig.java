@@ -66,6 +66,14 @@ public class BorderConfig extends YamlConfiguration
             this.chunkX = center.getX();
             this.chunkZ = center.getZ();
             this.useSpawn = isSpawn;
+
+            try
+            {
+                BorderConfig.this.removeInheritedField(BorderConfig.this.getClass().getField("center"));
+            }
+            catch (NoSuchFieldException ignored)
+            {}
+            BorderConfig.this.save();
         }
     }
 }

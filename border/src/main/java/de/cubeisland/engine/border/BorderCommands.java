@@ -77,6 +77,7 @@ public class BorderCommands extends ContainerCommand
         if (context.hasFlag("s"))
         {
             this.module.getConfig(world).center.setCenter(world.getSpawnLocation().getChunk(), true);
+            context.sendTranslated("&aCenter for Border in &6%s&a set to world-spawn!", world.getName());
             return;
         }
         else if (context.hasArg(1))
@@ -99,7 +100,7 @@ public class BorderCommands extends ContainerCommand
             context.sendTranslated("&cYou need to specify the chunk-coordinates or use the -spawn flag");
             return;
         }
-        this.module.getConfig(world).center.setCenter(center, true);
+        this.module.getConfig(world).center.setCenter(center, false);
         context.sendTranslated("&aCenter for Border in &6%s&a set!", world.getName());
     }
 
