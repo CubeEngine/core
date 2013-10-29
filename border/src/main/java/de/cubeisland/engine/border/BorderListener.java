@@ -31,14 +31,12 @@ import de.cubeisland.engine.core.util.math.BlockVector2;
 
 public class BorderListener implements Listener
 {
-    private final BorderConfig config;
     private final UserManager um;
     private Border module;
 
     public BorderListener(Border module)
     {
         this.module = module;
-        this.config = module.config;
         this.um = module.getCore().getUserManager();
     }
 
@@ -49,11 +47,12 @@ public class BorderListener implements Listener
         {
             return;
         }
-        if (this.config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
+        BorderConfig config = this.module.getConfig(event.getTo().getWorld());
+        if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
         {
             return;
         }
-        if (!this.isChunkInRange(event.getTo().getChunk()))
+        if (!this.isChunkInRange(event.getTo().getChunk(), config))
         {
             if (event instanceof PlayerTeleportEvent)
             {
@@ -61,7 +60,7 @@ public class BorderListener implements Listener
                 event.setCancelled(true);
                 return;
             }
-            if (this.module.getConfig().torusWorld)
+            if (config.torusWorld)
             {
                 Location subtract = event.getFrom().getWorld().getSpawnLocation().subtract(event.getFrom());
                 Location torusLoc = event.getFrom().getWorld().getSpawnLocation().add(subtract);
@@ -78,7 +77,7 @@ public class BorderListener implements Listener
                 this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
             }
         }
-        else if (!(event instanceof PlayerTeleportEvent) && this.isChunkAlmostOutOfRange(event.getTo().getChunk()))
+        else if (!(event instanceof PlayerTeleportEvent) && this.isChunkAlmostOutOfRange(event.getTo().getChunk(), config))
         {
             this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&6You are near the world-border! You might want to turn around.");
         }
@@ -90,27 +89,28 @@ public class BorderListener implements Listener
         this.onPlayerMove(event);
     }
 
+    @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event)
     {
         final Chunk respawnChunk = event.getRespawnLocation().getChunk();
-        if (!this.isChunkInRange(respawnChunk))
+        if (!this.isChunkInRange(respawnChunk, this.module.getConfig(respawnChunk.getWorld())))
         {
             event.setRespawnLocation(respawnChunk.getWorld().getSpawnLocation());
         }
     }
 
-    private boolean isChunkInRange(Chunk to)
+    private boolean isChunkInRange(Chunk to, BorderConfig config)
     {
         final Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
         BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
-        return spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= this.config.radius * this.config.radius;
+        return spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= config.radius * config.radius;
     }
 
-    private boolean isChunkAlmostOutOfRange(Chunk to)
+    private boolean isChunkAlmostOutOfRange(Chunk to, BorderConfig config)
     {
         final Chunk spawnChunk = to.getWorld().getSpawnLocation().getChunk();
         BlockVector2 spawnPos = new BlockVector2(spawnChunk.getX(), spawnChunk.getZ());
-        return !(spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= (this.config.radius -2) * (this.config.radius -2));
+        return !(spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= (config.radius -2) * (config.radius -2));
     }
 
     // TODO prevent chunk generation behind the border, not possible with Bukkit atm

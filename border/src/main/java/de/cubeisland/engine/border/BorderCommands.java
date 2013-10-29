@@ -91,10 +91,11 @@ public class BorderCommands extends ContainerCommand
 
     private void addChunksToGenerate(World world, CommandSender sender)
     {
+        BorderConfig config = this.module.getConfig(world);
         Chunk spawnChunk = world.getSpawnLocation().getChunk();
         final int spawnX = spawnChunk.getX();
         final int spawnZ = spawnChunk.getZ();
-        int radius = this.module.getConfig().radius;
+        int radius = config.radius;
         radius += sender.getServer().getViewDistance();
         int radiusSquared = radius * radius;
         int chunksAdded = 0;
@@ -109,7 +110,7 @@ public class BorderCommands extends ContainerCommand
             for (int i = 0; i < curLen; i++)
             {
                 curX += dir;
-                if (addIfInBorder(worldID, curX, curZ, spawnX, spawnZ, radius,  radiusSquared))
+                if (addIfInBorder(config, worldID, curX, curZ, spawnX, spawnZ, radius,  radiusSquared))
                 {
                     chunksAdded++;
                 }
@@ -117,7 +118,7 @@ public class BorderCommands extends ContainerCommand
             for (int i = 0; i < curLen; i++)
             {
                 curZ += dir;
-                if (addIfInBorder(worldID, curX, curZ, spawnX, spawnZ, radius, radiusSquared))
+                if (addIfInBorder(config, worldID, curX, curZ, spawnX, spawnZ, radius, radiusSquared))
                 {
                     chunksAdded++;
                 }
@@ -128,9 +129,9 @@ public class BorderCommands extends ContainerCommand
         sender.sendTranslated("&aAdded &6%d &achunks to generate in &6%s", chunksAdded, world.getName());
     }
 
-    private boolean addIfInBorder(long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)
+    private boolean addIfInBorder(BorderConfig config, long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)
     {
-        if (this.module.getConfig().square)
+        if (config.square)
         {
             if (Math.abs(spawnX - x) <= radius && Math.abs(spawnZ - z) <= radius)
             {
