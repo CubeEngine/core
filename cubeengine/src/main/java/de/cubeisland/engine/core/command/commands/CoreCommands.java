@@ -32,11 +32,13 @@ import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.result.AsyncResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
@@ -281,24 +283,40 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Searches for a user in the database", usage = "<name>", min = 1, max = 1)
-    public void searchUser(CommandContext context)
+    public CommandResult searchUser(CommandContext context)
     {
-        User user = this.core.getUserManager().getUser(context.getString(0));
-        if (user == null)
+        return new AsyncResult()
         {
-            user = this.core.getUserManager().findUser(context.getString(0), true);
-            if (user == null)
+            private User user = null;
+            private boolean exact = true;
+
+            @Override
+            public void asyncMain(CommandContext context)
             {
-                context.sendTranslated("&eNo match found for &6%s&e!", context.getString(0));
+                user = core.getUserManager().getUser(context.getString(0));
+                if (user == null)
+                {
+                    user = core.getUserManager().findUser(context.getString(0), true);
+                    exact = false;
+                }
             }
-            else
+
+            @Override
+            public void onFinish(CommandContext context)
             {
-                context.sendTranslated("&aMatched not exactly! User: &2%s", user.getName());
+                if (user == null)
+                {
+                    context.sendTranslated("&eNo match found for &6%s&e!", context.getString(0));
+                }
+                else if (exact)
+                {
+                    context.sendTranslated("&aMatched exactly! User: &2%s", user.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&aMatched not exactly! User: &2%s", user.getName());
+                }
             }
-        }
-        else
-        {
-            context.sendTranslated("&aMatched exactly! User: &2%s", user.getName());
-        }
+        };
     }
 }
