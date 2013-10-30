@@ -279,4 +279,26 @@ public class CoreCommands extends ContainerCommand
             context.sendTranslated("&eThe current log level: &a%s", ((Logger)context.getCore().getLog()).getLevel().toString());
         }
     }
+
+    @Command(desc = "Searches for a user in the database", usage = "<name>", min = 1, max = 1)
+    public void searchUser(CommandContext context)
+    {
+        User user = this.core.getUserManager().getUser(context.getString(0));
+        if (user == null)
+        {
+            user = this.core.getUserManager().findUser(context.getString(0), true);
+            if (user == null)
+            {
+                context.sendTranslated("&eNo match found for &6%s&e!", context.getString(0));
+            }
+            else
+            {
+                context.sendTranslated("&aMatched not exactly! User: &2%s", user.getName());
+            }
+        }
+        else
+        {
+            context.sendTranslated("&aMatched exactly! User: &2%s", user.getName());
+        }
+    }
 }

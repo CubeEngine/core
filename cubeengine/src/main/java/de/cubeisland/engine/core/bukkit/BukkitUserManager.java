@@ -82,6 +82,11 @@ public class BukkitUserManager extends AbstractUserManager
 
     public User findUser(String name)
     {
+        return this.findUser(name, false);
+    }
+
+    public User findUser(String name, boolean database)
+    {
         if (name == null)
         {
             return null;
@@ -99,8 +104,12 @@ public class BukkitUserManager extends AbstractUserManager
             String foundUser = Match.string().matchString(name, onlinePlayerList);
             if (foundUser == null)
             {
-                UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
                 //Looking up saved users
+                UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
+                if (entity == null) // Not found try matching
+                {
+                    entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.like("%"+ name + "%")).limit(1).fetchOne();
+                }
                 if (entity != null)
                 {
                     user = new User(entity);
