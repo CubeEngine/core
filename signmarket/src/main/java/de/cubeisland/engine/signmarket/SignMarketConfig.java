@@ -18,6 +18,9 @@
 package de.cubeisland.engine.signmarket;
 
 import java.io.File;
+import java.util.List;
+
+import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
@@ -61,6 +64,8 @@ public class SignMarketConfig extends YamlConfiguration
             "Use -1 for infinite stock-size OR values from 1-6!")
     @Name("sign.user.stock.max")
     public int maxUserStock = 6;
+
+    public List<World> disableInWorlds;
 
     @Override
     public void onLoaded(File loadFrom)

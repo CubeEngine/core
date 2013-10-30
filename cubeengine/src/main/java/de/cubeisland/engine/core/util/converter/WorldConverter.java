@@ -58,7 +58,7 @@ public class WorldConverter implements Converter<World>
             {
                 return world;
             }
-            throw new ConversionException("Could not convert to a world: World not found!");
+            throw new ConversionException("Could not convert to a world: World not found! " + string);
         }
         throw new ConversionException("Could not convert to a world: The given node is not a string");
     }
