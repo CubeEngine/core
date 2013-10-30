@@ -122,7 +122,7 @@ public class VanillaCommands implements CommandHolder
         desc = "Changes the difficulty level of the server",
         usage = "[difficulty] {world <world>}",
         max = 1,
-        params = @Param(names = {"world", "w"}, type = World.class, completer = WorldCompleter.class)
+        params = @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)
     )
     public void difficulty(ParameterizedContext context)
     {

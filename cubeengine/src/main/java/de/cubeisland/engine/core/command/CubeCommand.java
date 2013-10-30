@@ -503,28 +503,36 @@ public abstract class CubeCommand extends Command
                 result.show(ctx);
             }
         }
-        catch (MissingParameterException e)
+        catch (Exception ex)
+        {
+            this.handleCommandException(sender, ex);
+        }
+
+        return true;
+    }
+
+    protected void handleCommandException(CommandSender sender, Throwable e)
+    {
+        if (e instanceof MissingParameterException)
         {
             sender.sendTranslated("&cThe parameter &6%s&c is missing!", e.getMessage());
         }
-        catch (IncorrectUsageException e)
+        else if (e instanceof IncorrectUsageException)
         {
             sender.sendMessage(e.getMessage());
             sender.sendTranslated("&eProper usage: &f%s", this.getUsage(sender));
         }
-        catch (PermissionDeniedException e)
+        else if (e instanceof PermissionDeniedException)
         {
             sender.sendTranslated("&cYou're not allowed to do this!");
             sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
         }
-        catch (Exception e)
+        else
         {
             sender.sendTranslated("&4An unknown error occurred while executing this command!");
             sender.sendTranslated("&4Please report this error to an administrator.");
             this.module.getLog().debug(e.getLocalizedMessage(), e);
         }
-
-        return true;
     }
 
     private List<String> tabCompleteFallback(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
