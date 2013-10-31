@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.command.result;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 
@@ -35,6 +34,6 @@ public class ErrorResult implements CommandResult
     public void show(CommandContext context)
     {
         context.sendTranslated("&cAn error occurred while running this command!");
-        CubeEngine.getLog().debug(this.exception.getLocalizedMessage(), this.exception);
+        context.getCommand().getModule().getLog().debug(this.exception.getLocalizedMessage(), this.exception);
     }
 }
