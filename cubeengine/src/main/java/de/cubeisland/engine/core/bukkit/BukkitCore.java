@@ -71,7 +71,6 @@ import de.cubeisland.engine.core.command.commands.ModuleCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
-import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logger.ColorConverter;
 import de.cubeisland.engine.core.logger.JULAppender;
@@ -348,7 +347,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.getLog().debug("Chosen command backend: {}", commandBackend.getClass().getName());
         this.commandManager = new BukkitCommandManager(this, commandBackend);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
-        this.commandManager.registerCommandFactory(new ReadableCommandFactory());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
