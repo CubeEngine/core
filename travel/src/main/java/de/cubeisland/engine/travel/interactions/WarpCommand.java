@@ -120,7 +120,7 @@ public class WarpCommand extends ContainerCommand
             }
             Location loc = sender.getLocation();
             Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("priv") ? VISIBILITY_PRIVATE : VISIBILITY_PUBLIC));
-            context.sendTranslated("&aYour warp have been created");
+            context.sendTranslated("&aYour warp &6%s&a has been created!", warp.getName());
             return;
         }
         context.sendTranslated("&4This command can only be used by users!");
