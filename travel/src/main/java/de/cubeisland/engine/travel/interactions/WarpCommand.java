@@ -233,7 +233,7 @@ public class WarpCommand extends ContainerCommand
             TreeMap<String, Integer> results;
 
             @Override
-            public void asyncMain(CommandContext context)
+            public void main(CommandContext context)
             {
                 results = telePointManager.searchWarp(context.getString(0), context.getSender());
             }

@@ -27,7 +27,6 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
-import de.cubeisland.engine.core.command.result.ErrorResult;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.ChatFormat;
 
@@ -36,8 +35,6 @@ public class ReflectedCommand extends ParameterizedCommand
     private final Object holder;
     private final Method method;
     private final Class<? extends CommandContext> contextType;
-
-    private boolean async = false;
 
     @SuppressWarnings("unchecked")
     public ReflectedCommand(Module module, Object holder, Method method, String name, String description, String usage, List<String> aliases, ParameterizedContextFactory factory)
@@ -61,75 +58,10 @@ public class ReflectedCommand extends ParameterizedCommand
     {
         if (this.contextType.isInstance(context))
         {
-            try
+            Object result = this.method.invoke(this.holder, context);
+            if (result instanceof CommandResult)
             {
-                if (this.isAsyncCommand())
-                {
-                    context.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            try
-                            {
-                                final Object result = method.invoke(holder, context);
-                                if (result instanceof CommandResult)
-                                {
-                                    context.getCore().getTaskManager().runTask(context.getCommand().getModule(), new Runnable()
-                                    {
-                                        @Override
-                                        public void run()
-                                        {
-                                            ((CommandResult)result).show(context);
-                                        }
-                                    });
-                                }
-                            }
-                            catch (final ReflectiveOperationException e)
-                            {
-                                if (e.getCause() instanceof Exception)
-                                {
-                                    handleCommandException(context.getSender(), e.getCause());
-                                }
-                                context.getCore().getTaskManager().runTask(context.getCommand().getModule(), new Runnable()
-                                {
-                                    @Override
-                                    public void run()
-                                    {
-                                        new ErrorResult(e).show(context);
-                                    }
-                                });
-                            }
-                            catch (final Exception e)
-                            {
-                                context.getCore().getTaskManager().runTask(context.getCommand().getModule(), new Runnable()
-                                {
-                                    @Override
-                                    public void run()
-                                    {
-                                        handleCommandException(context.getSender(), e);
-                                    }
-                                });
-                            }
-                        }
-                    }).start();
-                }
-                else
-                {
-                    Object result = this.method.invoke(this.holder, context);
-                    if (result instanceof CommandResult)
-                    {
-                        return (CommandResult)result;
-                    }
-                }
-            }
-            catch (ReflectiveOperationException e)
-            {
-                if (e.getCause() instanceof Exception)
-                {
-                    throw (Exception)e.getCause();
-                }
-                return new ErrorResult(e);
+                return (CommandResult)result;
             }
         }
         return null;
@@ -158,15 +90,5 @@ public class ReflectedCommand extends ParameterizedCommand
         }
         context.sendMessage(" ");
         context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
-    }
-
-    public boolean isAsyncCommand()
-    {
-        return async;
-    }
-
-    public void setAsyncCommand(boolean async)
-    {
-        this.async = async;
     }
 }

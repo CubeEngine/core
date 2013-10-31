@@ -163,7 +163,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 cmd.setPermission(perm.getName());
             }
         }
-        cmd.setAsyncCommand(annotation.async());
+        cmd.setAsynchronous(annotation.async());
         return (T)cmd;
     }
 

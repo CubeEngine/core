@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.command;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,11 +28,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
@@ -63,6 +68,7 @@ public abstract class CubeCommand extends Command
     protected final List<String> childrenAliases;
     private final ContextFactory contextFactory;
     private boolean loggable;
+    private boolean asynchronous = false;
     private boolean generatePermission;
     private PermDefault generatedPermissionDefault;
 
@@ -88,6 +94,17 @@ public abstract class CubeCommand extends Command
         this.generatePermission = false;
         this.generatedPermissionDefault = PermDefault.DEFAULT;
     }
+
+    public boolean isAsynchronous()
+    {
+        return this.asynchronous;
+    }
+
+    public void setAsynchronous(boolean asynchronous)
+    {
+        this.asynchronous = asynchronous;
+    }
+
 
     public void setLoggable(boolean state)
     {
@@ -474,55 +491,107 @@ public abstract class CubeCommand extends Command
      * @param labels the label stack
      * @return true on success
      */
-    protected boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
+    protected boolean execute(final CommandSender sender, String[] args, String label, Stack<String> labels)
+    {
+        if (!this.testPermissionSilent(sender))
+        {
+            throw new PermissionDeniedException();
+        }
+        labels.push(label);
+        if (args.length > 0)
+        {
+            if ("?".equals(args[0]))
+            {
+                HelpContext ctx = new HelpContext(this, sender, labels, args);
+                try
+                {
+                    this.help(ctx);
+                }
+                catch (Exception e)
+                {
+                    this.handleCommandException(ctx.getSender(), e);
+                }
+                return true;
+            }
+            CubeCommand child = this.getChild(args[0]);
+            if (child != null)
+            {
+                return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
+            }
+        }
+        try
+        {
+            final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
+            if (this.isAsynchronous())
+            {
+                ctx.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        run0(ctx);
+                    }
+                }).start();
+            }
+            else
+            {
+                this.run0(ctx);
+            }
+        }
+        catch (CommandException e)
+        {
+            this.handleCommandException(sender, e);
+        }
+
+        return true;
+    }
+
+    private void run0(CommandContext ctx)
     {
         try
         {
-            if (!this.testPermissionSilent(sender))
-            {
-                throw new PermissionDeniedException();
-            }
-            labels.push(label);
-            if (args.length > 0)
-            {
-                if ("?".equals(args[0]))
-                {
-                    this.help(new HelpContext(this, sender, labels, args));
-                    return true;
-                }
-                CubeCommand child = this.getChild(args[0]);
-                if (child != null)
-                {
-                    return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
-                }
-            }
-            final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
             CommandResult result = this.run(ctx);
             if (result != null)
             {
                 result.show(ctx);
             }
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            this.handleCommandException(sender, ex);
+            handleCommandException(ctx.getSender(), e);
         }
-
-        return true;
     }
 
-    protected void handleCommandException(CommandSender sender, Throwable e)
+    private void handleCommandException(final CommandSender sender, Throwable t)
     {
-        if (e instanceof MissingParameterException)
+        if (!CubeEngine.isMainThread())
         {
-            sender.sendTranslated("&cThe parameter &6%s&c is missing!", e.getMessage());
+            final Throwable tmp = t;
+            sender.getCore().getTaskManager().callSync(new Callable<Void>()
+            {
+                @Override
+                public Void call() throws Exception
+                {
+                    handleCommandException(sender, tmp);
+                    return null;
+                }
+            });
+            return;
         }
-        else if (e instanceof IncorrectUsageException)
+        if (t instanceof InvocationTargetException || t instanceof ExecutionException)
         {
-            sender.sendMessage(e.getMessage());
+            t = t.getCause();
+        }
+        if (t instanceof MissingParameterException)
+        {
+            sender.sendTranslated("&cThe parameter &6%s&c is missing!", t.getMessage());
+        }
+        else if (t instanceof IncorrectUsageException)
+        {
+            sender.sendMessage(t.getMessage());
             sender.sendTranslated("&eProper usage: &f%s", this.getUsage(sender));
         }
-        else if (e instanceof PermissionDeniedException)
+        else if (t instanceof PermissionDeniedException)
         {
             sender.sendTranslated("&cYou're not allowed to do this!");
             sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
@@ -531,7 +600,7 @@ public abstract class CubeCommand extends Command
         {
             sender.sendTranslated("&4An unknown error occurred while executing this command!");
             sender.sendTranslated("&4Please report this error to an administrator.");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().debug(t.getLocalizedMessage(), t);
         }
     }
 
