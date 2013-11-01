@@ -77,7 +77,7 @@ public class CubeCommandMap extends SimpleCommandMap
         {
             final Locale language = BukkitUtils.getLocaleFromSender(sender);
             List<String> matches = new LinkedList<>(Match.string().getBestMatches(label, this.knownCommands.keySet(), 1));
-            if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commandOffers)
+            if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commands.maxCorrectionOffers)
             {
                 if (matches.size() == 1)
                 {

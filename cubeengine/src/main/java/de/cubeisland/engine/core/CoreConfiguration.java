@@ -36,9 +36,6 @@ public class CoreConfiguration extends YamlConfiguration
     @Comment("Sets the locale to choose by default.")
     public Locale defaultLocale = Locale.US;
 
-    @Name("commands.max-correction-offers")
-    public int commandOffers = 5;
-
     public CommandSection commands;
 
     public class CommandSection implements Section
