@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
@@ -61,6 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
+import static java.util.Map.Entry;
 
 
 public abstract class BaseModuleManager implements ModuleManager
@@ -273,7 +275,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
         Module depModule;
         String depName;
-        for (Map.Entry<String, Version> dep : info.getSoftDependencies().entrySet())
+        for (Entry<String, Version> dep : info.getSoftDependencies().entrySet())
         {
             depName = dep.getKey();
             depModule = this.loadModule(depName, moduleInfos, loadStack);
@@ -282,7 +284,7 @@ public abstract class BaseModuleManager implements ModuleManager
                 this.logger.warn("The module " + name + " requested a newer version of " + depName + "!");
             }
         }
-        for (Map.Entry<String, Version> dep : info.getDependencies().entrySet())
+        for (Entry<String, Version> dep : info.getDependencies().entrySet())
         {
             depName = dep.getKey();
             depModule = this.loadModule(depName, moduleInfos, loadStack);
@@ -438,35 +440,61 @@ public abstract class BaseModuleManager implements ModuleManager
     {
         if (this.modules.remove(module.getId()) == null)
         {
-            return;
+            return; // the module wasn't loaded
         }
 
-        Map.Entry<String, Module> entry;
-        Iterator<Map.Entry<String, Module>> it = this.modules.entrySet().iterator();
-        while (it.hasNext())
+        // search depending modules and unload them as well
         {
-            entry = it.next();
-            if (this.modules.containsKey(entry.getKey()))
+            final Set<String> deps = module.getInfo().getDependencies().keySet();
+            final Set<String> softDeps = module.getInfo().getSoftDependencies().keySet();
+
+            final Map<String, ModuleInfo> reload = new THashMap<>();
+
+            Entry<String, Module> entry;
+            final Iterator<Entry<String, Module>> it = this.modules.entrySet().iterator();
+            while (it.hasNext())
             {
-                Module m = entry.getValue();
-                if (m.getId().equals(module.getId()))
+                entry = it.next();
+                if (this.modules.containsKey(entry.getKey()))
                 {
-                    continue;
+                    Module m = entry.getValue();
+                    if (m.getId().equals(module.getId()))
+                    {
+                        continue;
+                    }
+                    final boolean isSoftDep = softDeps.contains(entry.getKey());
+                    final boolean isDep = isSoftDep || deps.contains(entry.getKey());
+                    if (isDep)
+                    {
+                        this.unloadModule(m);
+                        if (isSoftDep)
+                        {
+                            reload.put(m.getId(), m.getInfo());
+                        }
+                    }
                 }
-                if (m.getInfo().getDependencies().containsKey(entry.getKey()) || m.getInfo().getSoftDependencies().containsKey(entry.getKey()))
+            }
+
+            // load the modules that only specified soft dependencies
+            for (String r : reload.keySet())
+            {
+                try
                 {
-                    this.unloadModule(m);
+                    this.loadModule(r, reload);
+                }
+                catch (ModuleException e)
+                {
+                    this.core.getLog().error("Failed to reload the module {}", r);
                 }
             }
         }
 
-        Profiler.startProfiling("unload-" + module.getId());
+        // disable and cleanup the framework
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
         ((ch.qos.logback.classic.Logger)module.getLog()).detachAndStopAllAppenders();
 
-        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS) + "ms - null fields");
         // null all the fields referencing this module
         for (Module m : this.modules.values())
         {
@@ -480,12 +508,13 @@ public abstract class BaseModuleManager implements ModuleManager
                         field.setAccessible(true);
                         field.set(m, null);
                     }
-                    catch (Exception ignored)
+                    catch (ReflectiveOperationException ignored)
                     {}
                 }
             }
         }
-        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - classloader");
+
+        // try closing the ClassLoader
         ClassLoader classLoader = module.getClassLoader();
         if (classLoader instanceof ModuleClassLoader)
         {
@@ -507,11 +536,10 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             module.getLog().debug("Class loader cannot be closed.");
         }
-        this.logger.debug(Profiler.getCurrentDelta("unload-" + module.getId(), TimeUnit.MILLISECONDS)+ "ms - Before GC ");
+
+        // try to get rid of the classes
         System.gc();
         System.gc();
-        this.logger.debug("Unloading '" + module.getName() + "' took {} milliseconds!", Profiler
-            .endProfiling("unload-" + module.getId(), TimeUnit.MILLISECONDS));
 
         assert !this.modules.containsKey(module.getId()): "Module not properly removed (modules)!";
         assert !this.moduleInfos.containsKey(module.getId()): "Module not properly removed (moduleInfos)!";
@@ -562,7 +590,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             catch (ModuleException e)
             {
-                this.logger.error("Failed to reload ''{}''", module.getName());
+                this.logger.error("Failed to reload '{}'", module.getName());
                 this.logger.debug(e.getLocalizedMessage(), e);
             }
             ++modules;
