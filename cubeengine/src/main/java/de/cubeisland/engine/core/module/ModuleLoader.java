@@ -142,7 +142,7 @@ public class ModuleLoader
             this.classLoaders.put(info.getId(), classLoader);
             return module;
         }
-        catch (Exception e)
+        catch (IOException | ReflectiveOperationException e)
         {
             throw new InvalidModuleException("Module: " + info.getName(), e);
         }
