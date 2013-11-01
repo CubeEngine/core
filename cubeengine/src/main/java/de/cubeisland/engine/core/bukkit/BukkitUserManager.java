@@ -60,7 +60,7 @@ public class BukkitUserManager extends AbstractUserManager
         super(core);
         this.core = core;
 
-        final long delay = (long)core.getConfiguration().userManagerCleanup;
+        final long delay = (long)core.getConfiguration().usermanager.cleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         this.scheduledForRemoval = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
@@ -193,7 +193,7 @@ public class BukkitUserManager extends AbstractUserManager
                     }
                     removeCachedUser(user);
                 }
-            }, core.getConfiguration().userManagerKeepUserLoaded);
+            }, core.getConfiguration().usermanager.keepInMemory);
 
             if (task == null || task.getTaskId() == -1)
             {

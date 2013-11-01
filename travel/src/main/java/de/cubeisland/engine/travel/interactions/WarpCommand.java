@@ -96,7 +96,7 @@ public class WarpCommand extends ContainerCommand
     }, permDefault = PermDefault.OP, desc = "Create a warp", min = 1, max = 1)
     public void createWarp(ParameterizedContext context)
     {
-        if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().maxwarps)
+        if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().warps.max)
         {
             context.sendTranslated("&4The server have reached it's maximum number of warps!");
             context.sendTranslated("&cSome warps have to be delete for new ones to be made");

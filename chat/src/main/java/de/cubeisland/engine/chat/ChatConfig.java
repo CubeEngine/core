@@ -23,11 +23,9 @@ import de.cubeisland.engine.configuration.annotations.Name;
 
 public class ChatConfig extends YamlConfiguration
 {
-    @Name("format")
     @Comment("There at least the following variables available:\n- {NAME} -> player name\n- {DISPLAY_NAME} -> display name\n- {WORLD} -> the world the player is in\n- {MESSAGE} -> the message\n\nUsual color/format codes are also supported: &1, ... &f, ... &r")
     public String format = "{NAME}: {MESSAGE}";
 
-    @Name("allow-colors")
     @Comment("This also counts for the format string!")
-    public boolean parseColors = true;
+    public boolean allowColors = true;
 }

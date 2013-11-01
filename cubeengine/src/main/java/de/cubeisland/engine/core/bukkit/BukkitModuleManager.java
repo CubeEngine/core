@@ -191,7 +191,7 @@ public class BukkitModuleManager extends BaseModuleManager
             consoleLayout.setPattern("[" + module.getName() + "] %color(%msg)");
             consoleAppender.setLayout(consoleLayout);
             ThresholdFilter consoleFilter = new ThresholdFilter();
-            consoleFilter.setLevel(this.core.getConfiguration().loggingConsoleLevel.toString());
+            consoleFilter.setLevel(this.core.getConfiguration().logging.consoleLevel.toString());
             consoleAppender.addFilter(consoleFilter);
             consoleFilter.start();
 
@@ -218,7 +218,7 @@ public class BukkitModuleManager extends BaseModuleManager
             triggeringPolicy.setMaxFileSize(System.getProperty("cubeengine.logger.max-size"));
             fileAppender.setTriggeringPolicy(triggeringPolicy);
             ThresholdFilter fileFilter = new ThresholdFilter();
-            fileFilter.setLevel(this.core.getConfiguration().loggingFileLevel.toString());
+            fileFilter.setLevel(this.core.getConfiguration().logging.fileLevel.toString());
             fileAppender.addFilter(fileFilter);
             fileFilter.start();
 

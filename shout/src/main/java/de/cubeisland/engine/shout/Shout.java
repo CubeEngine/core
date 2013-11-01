@@ -50,7 +50,7 @@ public class Shout extends Module
 
         this.config = this.loadConfig(ShoutConfiguration.class);
 
-        this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
+        this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initialDelay);
         this.announcementManager = new AnnouncementManager(this, this.getFolder());
 
         if (isFirstRun())

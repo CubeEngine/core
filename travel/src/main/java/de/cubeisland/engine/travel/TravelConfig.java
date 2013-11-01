@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.travel;
 
+import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
@@ -24,15 +25,22 @@ import de.cubeisland.engine.configuration.annotations.Name;
 public class TravelConfig extends YamlConfiguration
 {
 
-    @Comment("If users should be able to have multiple homes")
-    @Name("homes.multiple-homes")
-    public boolean multipleHomes = true;
+    public HomesSection homes;
 
-    @Comment("How many homes each user can have")
-    @Name("homes.max")
-    public int maxhomes = 10;
+    public class HomesSection implements Section
+    {
+        @Comment("If users should be able to have multiple homes")
+        public boolean multipleHomes = true;
 
-    @Comment("How many warps the whole server can have")
-    @Name("warps.max")
-    public int maxwarps = 100;
+        @Comment("How many homes each user can have")
+        public int max = 10;
+    }
+
+    public WarpsSection warps;
+
+    public class WarpsSection implements Section
+    {
+        @Comment("How many warps the whole server can have")
+        public int max = 100;
+    }
 }

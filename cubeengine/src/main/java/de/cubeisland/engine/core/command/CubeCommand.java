@@ -632,7 +632,7 @@ public abstract class CubeCommand extends Command
         {
             result = completer.tabCompleteFallback(bukkitSender, alias, args);
         }
-        final int max = this.getModule().getCore().getConfiguration().commandTabCompleteOffers;
+        final int max = this.getModule().getCore().getConfiguration().commands.maxTabCompleteOffers;
         if (result.size() > max)
         {
             if (StringUtils.implode(", ", result).length() < TAB_LIMIT_THRESHOLD)

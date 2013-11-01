@@ -258,16 +258,16 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logger.setLevel(parentLogger.getLevel());
         // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter consoleFilter = new ThresholdFilter();
-        consoleFilter.setLevel(this.config.loggingConsoleLevel.toString());
+        consoleFilter.setLevel(this.config.logging.consoleLevel.toString());
         parentLogger.getAppender("cubeengine-console").addFilter(consoleFilter);
         consoleFilter.start();
         // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter fileFilter = new ThresholdFilter();
-        fileFilter.setLevel(this.config.loggingFileLevel.toString());
+        fileFilter.setLevel(this.config.logging.fileLevel.toString());
         this.logger.getAppender("core-file").addFilter(fileFilter);
         fileFilter.start();
 
-        if (!this.config.logCommands)
+        if (!this.config.logging.logCommands)
         {
             BukkitUtils.disableCommandLogging();
             ((Logger)LoggerFactory.getLogger("cubeengine.commands")).setAdditive(false);
@@ -287,7 +287,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());
 
-        if (this.config.userWebapi)
+        if (this.config.useWebapi)
         {
             try
             {

@@ -76,7 +76,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         cpds = new ComboPooledDataSource();
         cpds.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
         cpds.setUser(config.user);
-        cpds.setPassword(config.pass);
+        cpds.setPassword(config.password);
         cpds.setMinPoolSize(5);
         cpds.setMaxPoolSize(20);
         cpds.setAcquireIncrement(5);

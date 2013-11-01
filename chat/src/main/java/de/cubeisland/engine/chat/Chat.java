@@ -54,7 +54,7 @@ public class Chat extends Module implements Listener
         this.getCore().getEventManager().registerListener(this, this);
         this.getCore().getCommandManager().registerCommands(this, this, ReflectedCommand.class);
         this.format = this.config.format;
-        if (this.config.parseColors)
+        if (this.config.allowColors)
         {
             this.format = ChatFormat.parseFormats(this.format);
         }
@@ -79,7 +79,7 @@ public class Chat extends Module implements Listener
         Player player = event.getPlayer();
         String format = this.format;
 
-        if (config.parseColors)
+        if (config.allowColors)
         {
             if (ChatPerm.COLOR.isAuthorized(player))
             {

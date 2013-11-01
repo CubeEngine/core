@@ -193,7 +193,7 @@ public class CoreCommands extends ContainerCommand
             else
             {
                 user.sendTranslated("&cWrong password!");
-                if (this.core.getConfiguration().fail2ban)
+                if (this.core.getConfiguration().security.fail2ban)
                 {
                     if (fails.get(user.getName()) != null)
                     {
@@ -201,11 +201,11 @@ public class CoreCommands extends ContainerCommand
                         {
                             String msg = user.translate("&cToo many wrong passwords! \nFor your security you were banned 10 seconds.");
                             this.banManager.addBan(new UserBan(user.getName(),user.getName(),msg,
-                                 new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().banDuration))));
+                                 new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                             if (!Bukkit.getServer().getOnlineMode())
                             {
                                 this.banManager.addBan(new IpBan(user.getAddress().getAddress(),user.getName(),msg,
-                                       new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().banDuration))));
+                                       new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                             }
                             user.kickPlayer(msg);
                         }
