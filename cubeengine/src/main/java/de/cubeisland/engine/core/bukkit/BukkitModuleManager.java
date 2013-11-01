@@ -112,16 +112,11 @@ public class BukkitModuleManager extends BaseModuleManager
                         try
                         {
                             field.set(module, plugin);
-                            continue;
                         }
                         catch (Exception e)
                         {
                             module.getLog().warn("Failed to inject a plugin dependency: {}", String.valueOf(plugin));
                         }
-                    }
-                    if (injectAnnotation.require())
-                    {
-                        throw new MissingPluginDependencyException(fieldType.getName());
                     }
                 }
             }

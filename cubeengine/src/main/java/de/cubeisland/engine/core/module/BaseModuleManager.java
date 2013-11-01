@@ -86,7 +86,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.moduleInfos = new THashMap<>();
         this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
-                this.serviceProviders = new HashMap<>();
+        this.serviceProviders = new HashMap<>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null, logger);
     }
 
@@ -349,19 +349,11 @@ public abstract class BaseModuleManager implements ModuleManager
                 injectedModule = this.classMap.get((Class<? extends Module>)fieldType);
                 if (injectedModule == null || fieldType == module.getClass())
                 {
-                    if (injectAnnotation.require())
-                    {
-                        throw new MissingDependencyException(fieldType.getName());
-                    }
                     continue;
                 }
                 requiredVersion = module.getInfo().getSoftDependencies().get(injectedModule.getId());
                 if (requiredVersion != null && requiredVersion.isNewerThan(Version.ZERO) && injectedModule.getInfo().getVersion().isOlderThan(requiredVersion))
                 {
-                    if (injectAnnotation.require())
-                    {
-                        throw new MissingDependencyException(injectedModule.getName());
-                    }
                     continue;
                 }
                 field.setAccessible(true);
@@ -372,12 +364,8 @@ public abstract class BaseModuleManager implements ModuleManager
                         field.set(module, injectedModule);
                     }
                 }
-                catch (Exception e)
+                catch (ReflectiveOperationException e)
                 {
-                    if (injectAnnotation.require())
-                    {
-                        throw new MissingDependencyException(injectedModule.getName());
-                    }
                     module.getLog().warn("Failed to inject a dependency: {}", injectedModule.getName());
                 }
             }
