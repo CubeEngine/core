@@ -35,7 +35,7 @@ public class MySQLDatabaseConfiguration extends DatabaseConfiguration
     public String user = "minecraft";
 
     @Comment("The password for the specified user")
-    public String password = "''";
+    public String password = "";
 
     @Comment("The name of the database")
     public String database = "minecraft";
