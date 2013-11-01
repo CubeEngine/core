@@ -24,7 +24,6 @@ import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.time.Duration;
 
 /**
@@ -36,9 +35,9 @@ public class CoreConfiguration extends YamlConfiguration
     @Comment("Sets the locale to choose by default.")
     public Locale defaultLocale = Locale.US;
 
-    public CommandSection commands;
+    public CommandsSection commands;
 
-    public class CommandSection implements Section
+    public class CommandsSection implements Section
     {
         @Comment("The maximum number of similar commands to offer when more than one command matched a mistyped command.")
         public int maxCorrectionOffers = 5;

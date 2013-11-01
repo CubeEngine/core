@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -220,7 +221,11 @@ public final class BukkitCore extends JavaPlugin implements Core
             }
             else
             {
-                logbackConfigurator.doConfigure(new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true));
+                URL url = new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true);
+                if (url != null)
+                {
+                    logbackConfigurator.doConfigure(url);
+                }
             }
         }
         catch (JoranException e)
@@ -357,7 +362,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
-        if (this.config.improveVanillaCommands)
+        if (this.config.commands.improveVanilla)
         {
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
