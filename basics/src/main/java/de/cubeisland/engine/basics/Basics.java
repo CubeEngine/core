@@ -57,7 +57,6 @@ import de.cubeisland.engine.basics.storage.TableMail;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
@@ -71,13 +70,19 @@ public class Basics extends Module
     private KitManager kitManager;
     private LagTimer lagTimer;
 
-    @Inject
-    private Roles rolesModule;
+    private Module rolesModule;
 
     @Override
     public void onEnable()
     {
         Profiler.startProfiling("basicsEnable");
+
+        rolesModule = this.getCore().getModuleManager().getModule("roles");
+        if (rolesModule == null)
+        {
+            this.getLog().info("No Roles-Module found!");
+        }
+
         this.config = this.loadConfig(BasicsConfiguration.class);
 		final Database db = this.getCore().getDB();
         db.registerTable(TableBasicsUser.initTable(db));
@@ -161,6 +166,6 @@ public class Basics extends Module
 
     public Roles getRolesModule()
     {
-        return rolesModule;
+        return (Roles)rolesModule;
     }
 }
