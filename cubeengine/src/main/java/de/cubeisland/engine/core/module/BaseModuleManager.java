@@ -438,11 +438,8 @@ public abstract class BaseModuleManager implements ModuleManager
 
             final Map<String, ModuleInfo> reload = new THashMap<>();
 
-            Entry<String, Module> entry;
-            final Iterator<Entry<String, Module>> it = this.modules.entrySet().iterator();
-            while (it.hasNext())
+            for (Entry<String, Module> entry : new THashSet<>(this.modules.entrySet()))
             {
-                entry = it.next();
                 if (this.modules.containsKey(entry.getKey()))
                 {
                     Module m = entry.getValue();
