@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import javax.annotation.Nullable;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -216,6 +218,7 @@ public abstract class BaseModuleManager implements ModuleManager
     {}
 
     @SuppressWarnings("unchecked")
+    @Nullable
     protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
     {
         name = name.toLowerCase(Locale.ENGLISH);

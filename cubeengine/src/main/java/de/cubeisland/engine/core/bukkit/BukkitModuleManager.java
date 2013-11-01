@@ -89,6 +89,10 @@ public class BukkitModuleManager extends BaseModuleManager
     protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
     {
         Module module = super.loadModule(name, moduleInfos, loadStack);
+        if (module == null)
+        {
+            return null;
+        }
         try
         {
             Field[] fields = module.getClass().getDeclaredFields();
