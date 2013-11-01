@@ -143,6 +143,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
     private boolean loadSucceeded;
+    private boolean loaded = false;
 
     @Override
     public void onLoad()
@@ -378,12 +379,17 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
         this.loadSucceeded = true;
+        this.loaded = true;
     }
 
     @Override
     public void onEnable()
     {
-        if (!this.loadSucceeded)
+        if (!this.loaded)
+        {
+            this.onLoad();
+        }
+        if (!this.loadSucceeded || !this.loaded)
         {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
@@ -432,6 +438,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
+        this.loaded = false;
         this.logger.debug("utils cleanup");
         BukkitUtils.cleanup();
 
