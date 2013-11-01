@@ -18,8 +18,6 @@
 package de.cubeisland.engine.core.storage.database.mysql;
 
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
-import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 
 /**
@@ -37,17 +35,11 @@ public class MySQLDatabaseConfiguration extends DatabaseConfiguration
     public String user = "minecraft";
 
     @Comment("The password for the specified user")
-    public String password = "12345678";
+    public String password = "''";
 
     @Comment("The name of the database")
     public String database = "minecraft";
 
     @Comment("The table prefix to use for all CubeEngine tables")
     public String tablePrefix = "cube_";
-
-    @Override
-    public Class<? extends Database> getDatabaseClass()
-    {
-        return MySQLDatabase.class;
-    }
 }

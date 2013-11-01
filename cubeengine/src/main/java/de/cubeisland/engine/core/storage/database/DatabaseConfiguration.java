@@ -24,5 +24,5 @@ import de.cubeisland.engine.configuration.YamlConfiguration;
  */
 public abstract class DatabaseConfiguration extends YamlConfiguration
 {
-    public abstract Class<? extends Database> getDatabaseClass();
+
 }
