@@ -90,9 +90,9 @@ public class SpawnMobCommand
                 return;
             }
         }
-        if (amount > config.spawnmobLimit)
+        if (amount > config.commands.spawnmobLimit)
         {
-            context.sendTranslated("&cThe serverlimit is set to &e%d&c, you cannot spawn more mobs at once!", config.spawnmobLimit);
+            context.sendTranslated("&cThe serverlimit is set to &e%d&c, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
             return;
         }
         loc.add(0.5, 0, 0.5);

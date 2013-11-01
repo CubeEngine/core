@@ -326,7 +326,7 @@ public class KickBanCommands
     {
         if (!Bukkit.getOnlineMode())
         {
-            if (this.module.getConfiguration().disallowBanIfOfflineMode)
+            if (this.module.getConfiguration().commands.disallowBanIfOfflineMode)
             {
                 context.sendTranslated("&cBanning players by name is not allowed in offline-mode!\n"
                                      + "&eYou can change this in your Basics-Configuration.");
