@@ -18,7 +18,10 @@
 package de.cubeisland.engine.basics.command.moderation;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.bukkit.Art;
 import org.bukkit.entity.EntityType;
@@ -26,81 +29,111 @@ import org.bukkit.entity.Painting;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.user.User;
 
 public class PaintingListener implements Listener
 {
     private final Basics module;
     private Map<String, Painting> paintingChange;
-    
+
     public PaintingListener(Basics module)
     {
         this.module = module;
         this.paintingChange = new HashMap<>();
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event)
     {
-        if(event.getRightClicked().getType() == EntityType.PAINTING)
+        if (event.getRightClicked().getType() == EntityType.PAINTING)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
-            if(!BasicsPerm.CHANGEPAINTING.isAuthorized( user ))
+            if (!BasicsPerm.CHANGEPAINTING.isAuthorized(user))
             {
                 user.sendTranslated("&cYou are not allowed to change the painting.");
                 return;
             }
-            Painting painting = ( Painting ) event.getRightClicked();
-            
-            Painting playerPainting = this.paintingChange.get( user.getName() );
-            if(playerPainting == null)
+            Painting painting = (Painting)event.getRightClicked();
+
+            Painting playerPainting = this.paintingChange.get(user.getName());
+            if (playerPainting == null)
             {
-                this.paintingChange.put( user.getName(), painting );
+                this.paintingChange.put(user.getName(), painting);
                 user.sendTranslated("&aYou can now cycle through the paintings using your mousewheel.");
             }
             else
             {
-                this.paintingChange.remove( user.getName() );
+                this.paintingChange.remove(user.getName());
                 user.sendTranslated("&aPainting is locked now");
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemHeldChange(PlayerItemHeldEvent event)
     {
-        if(!this.paintingChange.isEmpty())
+        if (!this.paintingChange.isEmpty())
         {
-            Painting painting = this.paintingChange.get( event.getPlayer().getName() );
-            
-            if(painting != null)
+            Painting painting = this.paintingChange.get(event.getPlayer().getName());
+
+            if (painting != null)
             {
                 User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                final int maxDistanceSquared = this.module.getConfiguration().maxChangePaintingDistance * this.module.getConfiguration().maxChangePaintingDistance;
-                
-                if( painting.getLocation().toVector().distanceSquared( user.getLocation().toVector()) >  maxDistanceSquared)
+                final int maxDistanceSquared = this.module.getConfiguration().maxChangePaintingDistance * this.module
+                    .getConfiguration().maxChangePaintingDistance;
+
+                if (painting.getLocation().toVector()
+                            .distanceSquared(user.getLocation().toVector()) > maxDistanceSquared)
                 {
-                    this.paintingChange.remove( user.getName() );
+                    this.paintingChange.remove(user.getName());
                     user.sendTranslated("&aPainting is locked now");
                     return;
                 }
-                
+
                 int artNumber = painting.getArt().ordinal();
                 do
                 {
                     artNumber++;
-                    if(artNumber >= Art.values().length )
+                    if (artNumber >= Art.values().length)
                     {
                         artNumber = 0;
                     }
-                }while(!painting.setArt( Art.values()[artNumber] ));
+                }
+                while (!painting.setArt(Art.values()[artNumber]));
             }
-        }       
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPaintingBreakEvent(HangingBreakEvent event)
+    {
+        if (!(event.getEntity() instanceof Painting))
+        {
+            return;
+        }
+
+        Painting painting = (Painting)event.getEntity();
+        Set<User> brokePaintings = new HashSet<>(1);
+
+        for (Entry<String, Painting> entry : this.paintingChange.entrySet())
+        {
+            if (entry.getValue().equals(painting))
+            {
+                brokePaintings.add(this.module.getCore().getUserManager().getExactUser(entry.getKey()));
+            }
+        }
+
+        for (User user : brokePaintings)
+        {
+            user.sendTranslated("&cThe painting broke!");
+            this.paintingChange.remove(user.getName());
+        }
     }
 }
