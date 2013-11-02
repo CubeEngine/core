@@ -34,7 +34,7 @@ import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
 import gnu.trove.map.hash.THashMap;
 
-public class Role implements RawDataStore,Comparable<Role>
+public class Role implements RawDataStore, Comparable<Role>
 {
     protected RoleConfig config;
     protected ResolvedDataStore resolvedData;

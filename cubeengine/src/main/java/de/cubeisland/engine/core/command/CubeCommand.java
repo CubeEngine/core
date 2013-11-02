@@ -47,6 +47,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
@@ -701,7 +702,29 @@ public abstract class CubeCommand extends Command
      * @param context The CommandContext containing all the necessary information
      * @throws Exception if an error occurs
      */
-    public abstract void help(HelpContext context) throws Exception;
+    public void help(HelpContext context) throws Exception
+    {
+        context.sendTranslated("&7Description: &f%s", this.getDescription());
+        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
+
+        if (this.hasChildren())
+        {
+            context.sendMessage(" ");
+            context.sendTranslated("The following sub commands are available:");
+            context.sendMessage(" ");
+
+            final CommandSender sender = context.getSender();
+            for (CubeCommand command : context.getCommand().getChildren())
+            {
+                if (command.testPermissionSilent(sender))
+                {
+                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.translate(command.getDescription()));
+                }
+            }
+        }
+        context.sendMessage(" ");
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
+    }
 
     public void onRegister()
     {}

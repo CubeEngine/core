@@ -66,29 +66,4 @@ public class ReflectedCommand extends ParameterizedCommand
         }
         return null;
     }
-
-    @Override
-    public void help(HelpContext context) throws Exception
-    {
-        context.sendTranslated("&7Description: &f%s", this.getDescription());
-        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
-
-        if (this.hasChildren())
-        {
-            context.sendMessage(" ");
-            context.sendTranslated("The following sub commands are available:");
-            context.sendMessage(" ");
-
-            final CommandSender sender = context.getSender();
-            for (CubeCommand command : context.getCommand().getChildren())
-            {
-                if (command.testPermissionSilent(sender))
-                {
-                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.translate(command.getDescription()));
-                }
-            }
-        }
-        context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
-    }
 }
