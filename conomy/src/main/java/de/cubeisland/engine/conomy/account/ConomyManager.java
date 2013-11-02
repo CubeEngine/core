@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadFactory;
 
 import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
@@ -47,6 +48,7 @@ import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_
 public class ConomyManager
 {
     protected final Conomy module;
+    private final ThreadFactory threadFactory;
 
     private Map<String,BankAccount> bankaccounts = new THashMap<>();
     private Map<Long,BankAccount> bankaccountsID = new THashMap<>();
@@ -62,6 +64,7 @@ public class ConomyManager
     public ConomyManager(Conomy module)
     {
         this.module = module;
+        this.threadFactory = module.getCore().getTaskManager().getThreadFactory(module);
         this.config = module.getConfig();
 
         this.dsl = this.module.getCore().getDB().getDSL();
@@ -147,7 +150,7 @@ public class ConomyManager
     {
         if (this.thread == null || !this.thread.isAlive())
         {
-            thread = this.module.getCore().getTaskManager().getThreadFactory().newThread(r);
+            thread = this.threadFactory.newThread(r);
             thread.start();
             return true;
         }

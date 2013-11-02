@@ -98,7 +98,6 @@ import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.time.Duration;
-import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
@@ -291,7 +290,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
 
         // depends on: core config, server
-        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());
+        this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
 
         if (this.config.useWebapi)
         {

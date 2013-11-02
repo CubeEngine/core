@@ -15,71 +15,61 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.worker;
+package de.cubeisland.engine.core.task.worker;
 
-import java.util.LinkedList;
 import java.util.Queue;
-
-import org.bukkit.scheduler.BukkitScheduler;
-
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * This TaskQueue will execute one task every serverTick.
+ * This TaskQueue will execute all tasks in an async thread.
  */
-public class SyncTaskQueue implements TaskQueue
+public class AsyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
-    private final BukkitCore corePlugin;
-    private final BukkitScheduler scheduler;
+    private final ExecutorService executorService;
     private final Queue<Runnable> taskQueue;
-    private int taskID;
+    private final AtomicReference<Future<?>> exectorFuture;
     private boolean isShutdown;
 
-    public SyncTaskQueue(Core core)
+    public AsyncTaskQueue(ExecutorService executorService)
     {
-        this(core, new LinkedList<Runnable>());
+        this(executorService, new ConcurrentLinkedQueue<Runnable>());
     }
 
-    public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
+    public AsyncTaskQueue(ExecutorService executorService, Queue<Runnable> taskQueue)
     {
-        this.corePlugin = (BukkitCore)core;
-        this.scheduler = this.corePlugin.getServer().getScheduler();
+        this.executorService = executorService;
         this.taskQueue = taskQueue;
-        this.taskID = -1;
+        this.exectorFuture = new AtomicReference<>();
         this.isShutdown = false;
     }
 
-    public synchronized void run()
-    {
-        if (this.taskQueue.isEmpty())
-        {
-            this.scheduler.cancelTask(this.taskID);
-            return;
-        }
-        this.taskQueue.poll().run();
-    }
-
     @Override
-    public synchronized void addTask(Runnable runnable)
+    public void addTask(Runnable runnable)
     {
-        if (!this.isShutdown)
+        if (this.isShutdown)
         {
             return;
         }
-        assert runnable != null: "The runnable must not be null!";
+        assert runnable != null: "The task must not be null!";
 
         this.taskQueue.offer(runnable);
         this.start();
     }
 
     @Override
-    public synchronized void start()
+    public void start()
     {
+        if (this.isShutdown)
+        {
+            throw new IllegalArgumentException("This task queue has been shut down!");
+        }
         if (!this.isRunning())
         {
-            this.taskID = this.scheduler.scheduleSyncRepeatingTask(this.corePlugin, this.workerTask, 0, 1);
+            this.exectorFuture.set(this.executorService.submit(this.workerTask));
         }
     }
 
@@ -98,29 +88,31 @@ public class SyncTaskQueue implements TaskQueue
     }
 
     @Override
-    public synchronized void stop()
+    public void stop()
     {
         this.stop(false);
     }
 
     @Override
-    public synchronized void stop(boolean interupt)
+    public void stop(boolean interupt)
     {
-        if (this.isRunning())
+        Future<?> future = this.exectorFuture.get();
+        if (future != null)
         {
-            this.scheduler.cancelTask(this.taskID);
-            this.taskID = -1;
+            future.cancel(interupt);
+            this.exectorFuture.set(null);
         }
     }
 
     @Override
-    public synchronized boolean isRunning()
+    public boolean isRunning()
     {
-        return this.taskID > -1;
+        Future<?> future = this.exectorFuture.get();
+        return future != null && !future.isDone();
     }
 
     @Override
-    public synchronized int size()
+    public int size()
     {
         return this.taskQueue.size();
     }
@@ -130,11 +122,12 @@ public class SyncTaskQueue implements TaskQueue
         @Override
         public void run()
         {
-            taskQueue.poll().run();
-            if (taskQueue.isEmpty())
+            Runnable task;
+            while ((task = AsyncTaskQueue.this.taskQueue.poll()) != null)
             {
-                stop();
+                task.run();
             }
+            AsyncTaskQueue.this.exectorFuture.set(null);
         }
     }
 }

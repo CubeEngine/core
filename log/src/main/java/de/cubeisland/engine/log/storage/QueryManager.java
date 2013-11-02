@@ -31,6 +31,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.CubeEngine;
@@ -109,7 +110,9 @@ public class QueryManager
                 }
             }
         };
-        this.storeExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
+
+        final ThreadFactory factory = this.module.getCore().getTaskManager().getThreadFactory(this.module);
+        this.storeExecutor = Executors.newSingleThreadExecutor(factory);
         this.lookupRunner = new Runnable()
         {
             @Override
@@ -123,7 +126,7 @@ public class QueryManager
                 }
             }
         };
-        this.lookupExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
+        this.lookupExecutor = Executors.newSingleThreadExecutor(factory);
 
         this.cleanUpTaskId = this.module.getCore().getTaskManager().runAsynchronousTimer(this.module, new Runnable()
         {
@@ -193,7 +196,7 @@ public class QueryManager
     public void analyze()
     {
         if (optimizeRunning) return;
-        this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+        this.module.getCore().getTaskManager().getThreadFactory(this.module).newThread(new Runnable()
         {
             @Override
             public void run()
