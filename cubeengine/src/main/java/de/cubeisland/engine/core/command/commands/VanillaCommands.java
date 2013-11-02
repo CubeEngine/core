@@ -365,7 +365,7 @@ public class VanillaCommands implements CommandHolder
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)
             {
-                context.sendTranslated("&cThe given plugin doesn't seem to be loaded, have you type it correctly (casing does matter)?");
+                context.sendTranslated("&cThe given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
             }
             else
             {
@@ -390,9 +390,9 @@ public class VanillaCommands implements CommandHolder
         else
         {
             context.sendTranslated("This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
-            context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
+            context.sendTranslated("&eBukkit API&r version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", context.getCore().getVersion());
+            context.sendTranslated("Expanded and improved by &aCubeEngine&r version &9%s", context.getCore().getVersion());
             showSourceVersion(context, core.getSourceVersion());
         }
     }
