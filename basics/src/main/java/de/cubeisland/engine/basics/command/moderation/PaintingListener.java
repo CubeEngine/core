@@ -19,6 +19,7 @@ package de.cubeisland.engine.basics.command.moderation;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -120,20 +121,16 @@ public class PaintingListener implements Listener
         }
 
         Painting painting = (Painting)event.getEntity();
-        Set<User> brokePaintings = new HashSet<>(1);
 
-        for (Entry<String, Painting> entry : this.paintingChange.entrySet())
+        Iterator<Entry<String, Painting>> paintingIterator = this.paintingChange.entrySet().iterator();
+        while(paintingIterator.hasNext())
         {
-            if (entry.getValue().equals(painting))
+            Entry<String, Painting> entry = paintingIterator.next();
+            if(entry.getValue().equals(painting))
             {
-                brokePaintings.add(this.module.getCore().getUserManager().getExactUser(entry.getKey()));
+                this.module.getCore().getUserManager().getExactUser(entry.getKey()).sendTranslated("&cThe painting broke");
+                paintingIterator.remove();
             }
-        }
-
-        for (User user : brokePaintings)
-        {
-            user.sendTranslated("&cThe painting broke!");
-            this.paintingChange.remove(user.getName());
         }
     }
 }
