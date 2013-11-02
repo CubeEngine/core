@@ -449,19 +449,6 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        // load the modules that only specified soft dependencies
-        for (String r : reload.keySet())
-        {
-            try
-            {
-                this.loadModule(r, reload);
-            }
-            catch (ModuleException e)
-            {
-                this.core.getLog().error("Failed to reload the module {}", r);
-            }
-        }
-
         // disable and cleanup the framework
         this.disableModule(module);
         this.loader.unloadModule(module);
@@ -516,6 +503,19 @@ public abstract class BaseModuleManager implements ModuleManager
 
         assert !this.modules.containsKey(module.getId()): "Module not properly removed (modules)!";
         assert !this.moduleInfos.containsKey(module.getId()): "Module not properly removed (moduleInfos)!";
+
+        // reload the modules that only specified soft dependencies
+        for (String r : reload.keySet())
+        {
+            try
+            {
+                this.loadModule(r, reload);
+            }
+            catch (ModuleException e)
+            {
+                this.core.getLog().error("Failed to reload the module {}", r);
+            }
+        }
     }
 
     @Override
