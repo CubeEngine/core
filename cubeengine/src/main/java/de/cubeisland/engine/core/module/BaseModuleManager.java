@@ -432,45 +432,33 @@ public abstract class BaseModuleManager implements ModuleManager
         }
 
         // search depending modules and unload them as well
+        final Map<String, ModuleInfo> reload = new THashMap<>();
+
+        for (Entry<String, Module> entry : new THashSet<>(this.modules.entrySet()))
         {
-            final Set<String> deps = module.getInfo().getDependencies().keySet();
-            final Set<String> softDeps = module.getInfo().getSoftDependencies().keySet();
-
-            final Map<String, ModuleInfo> reload = new THashMap<>();
-
-            for (Entry<String, Module> entry : new THashSet<>(this.modules.entrySet()))
+            Module m = entry.getValue();
+            final boolean isSoftDep = m.getInfo().getSoftDependencies().containsKey(module.getId());
+            final boolean isDep = isSoftDep || m.getInfo().getDependencies().containsKey(module.getId());
+            if (isDep)
             {
-                if (this.modules.containsKey(entry.getKey()))
+                this.unloadModule(m);
+                if (isSoftDep)
                 {
-                    Module m = entry.getValue();
-                    if (m.getId().equals(module.getId()))
-                    {
-                        continue;
-                    }
-                    final boolean isSoftDep = softDeps.contains(entry.getKey());
-                    final boolean isDep = isSoftDep || deps.contains(entry.getKey());
-                    if (isDep)
-                    {
-                        this.unloadModule(m);
-                        if (isSoftDep)
-                        {
-                            reload.put(m.getId(), m.getInfo());
-                        }
-                    }
+                    reload.put(m.getId(), m.getInfo());
                 }
             }
+        }
 
-            // load the modules that only specified soft dependencies
-            for (String r : reload.keySet())
+        // load the modules that only specified soft dependencies
+        for (String r : reload.keySet())
+        {
+            try
             {
-                try
-                {
-                    this.loadModule(r, reload);
-                }
-                catch (ModuleException e)
-                {
-                    this.core.getLog().error("Failed to reload the module {}", r);
-                }
+                this.loadModule(r, reload);
+            }
+            catch (ModuleException e)
+            {
+                this.core.getLog().error("Failed to reload the module {}", r);
             }
         }
 
