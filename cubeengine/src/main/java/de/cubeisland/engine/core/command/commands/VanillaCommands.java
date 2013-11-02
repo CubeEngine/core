@@ -301,11 +301,11 @@ public class VanillaCommands implements CommandHolder
 
         context.sendTranslated("There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
         context.sendMessage(" ");
-        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (r" + context.getCore().getVersion() + ")");
+        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + context.getCore().getVersion() + ")");
 
         for (Module m : modules)
         {
-            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (r" + m.getVersion() + ")");
+            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (" + m.getVersion() + ")");
         }
 
         for (Plugin p : plugins)
