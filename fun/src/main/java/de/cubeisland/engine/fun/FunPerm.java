@@ -36,7 +36,7 @@ public class FunPerm extends PermissionContainer<Fun>
         this.bindToModule(COMMAND);
         this.registerAllPermissions();
 
-        if(!ARE_THROW_ITEMS_REGISTERED)
+        if (!ARE_THROW_ITEMS_REGISTERED)
         {
             PermissionManager perm = module.getCore().getPermissionManager();
             for (EntityType type : EntityType.values())
@@ -50,8 +50,6 @@ public class FunPerm extends PermissionContainer<Fun>
         }
     }
 
-
-
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
 
     private static final Permission COMMAND_EXPLOSION = COMMAND.createAbstractChild("explosion");
@@ -64,7 +62,7 @@ public class FunPerm extends PermissionContainer<Fun>
     public static final Permission COMMAND_HAT_OTHER = COMMAND_HAT.createChild("other");
     public static final Permission COMMAND_HAT_ITEM = COMMAND_HAT.createChild("item");
     public static final Permission COMMAND_HAT_QUIET = COMMAND_HAT.createChild("quit");
-    public static final Permission COMMAND_HAT_NOTIFY = COMMAND_HAT.createChild("notify",PermDefault.TRUE);
+    public static final Permission COMMAND_HAT_NOTIFY = COMMAND_HAT.createChild("notify", PermDefault.TRUE);
 
     private static final Permission COMMAND_LIGHTNING = COMMAND.createAbstractChild("lightning");
     public static final Permission COMMAND_LIGHTNING_PLAYER_DAMAGE = COMMAND_LIGHTNING.createChild("player.damage");
@@ -72,9 +70,4 @@ public class FunPerm extends PermissionContainer<Fun>
 
     public static final Permission COMMAND_THROW = COMMAND.createAbstractChild("throw");
     public static final Permission COMMAND_THROW_UNSAFE = COMMAND_THROW.createChild("unsafe");
-
-    static
-    {
-
-    }
 }
