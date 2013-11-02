@@ -67,8 +67,8 @@ public class PlayerCommands
         final long afkCheck;
         try
         {
-            autoAfk = StringUtils.convertTimeToMillis(basics.getConfiguration().autoAfk);
-            afkCheck = StringUtils.convertTimeToMillis(basics.getConfiguration().afkCheck);
+            autoAfk = StringUtils.convertTimeToMillis(basics.getConfiguration().afk.automaticAfk);
+            afkCheck = StringUtils.convertTimeToMillis(basics.getConfiguration().afk.afkCheckDelay);
             if (afkCheck < 0)
             {
                 throw new IllegalStateException("afk-check-time has to be greater than 0!");

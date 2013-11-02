@@ -183,7 +183,7 @@ public class ChatCommands
         {
             context.sendTranslated("&2%s &ewas already muted!", user.getName());
         }
-        Duration dura = module.getConfiguration().defaultMuteTime;
+        Duration dura = module.getConfiguration().commands.defaultMuteTime;
         if (context.hasArg(1))
         {
             try

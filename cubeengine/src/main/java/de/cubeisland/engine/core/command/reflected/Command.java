@@ -59,4 +59,11 @@ public @interface Command
     Param[] params() default {};
 
     boolean loggable() default true;
+
+    /**
+     * If set to true the annotated reflected command will be called asynchronously
+     *
+     * @return true if the command will be called asynchronously
+     */
+    boolean async() default false;
 }

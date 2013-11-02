@@ -29,8 +29,6 @@ import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 
 public class BasicsPerm extends PermissionContainer<Basics>
 {
-
-
     public BasicsPerm(Basics module)
     {
         super(module);
@@ -47,13 +45,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
                           SIGN_COLORED_STRIKE, SIGN_COLORED_UNDERLINE, SIGN_COLORED_ITALIC, SIGN_COLORED_RESET,
                           OVERSTACKED_ANVIL_AND_BREWING
                           );
-        SIGN_COLORED.attach(SIGN_COLORED_BLACK, SIGN_COLORED_DARK_BLUE, SIGN_COLORED_DARK_GREEN,
-                            SIGN_COLORED_DARK_AQUA, SIGN_COLORED_DARK_RED, SIGN_COLORED_DARK_PURPLE,
-                            SIGN_COLORED_GOLD, SIGN_COLORED_GRAY, SIGN_COLORED_DARK_GRAY,
-                            SIGN_COLORED_BLUE, SIGN_COLORED_GREEN, SIGN_COLORED_AQUA,
-                            SIGN_COLORED_RED, SIGN_COLORED_LIGHT_PURPLE, SIGN_COLORED_YELLOW,
-                            SIGN_COLORED_WHITE, SIGN_COLORED_OBFUSCATED, SIGN_COLORED_BOLD,
-                            SIGN_COLORED_STRIKE, SIGN_COLORED_UNDERLINE, SIGN_COLORED_ITALIC, SIGN_COLORED_RESET);
+
         this.registerAllPermissions();
 
         new TpWorldPermissions(module); // per world permissions
@@ -331,4 +323,15 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission BAN_RECEIVEMESSAGE = Permission.createPermission("ban.receivemessage");
 
     public static Permission OVERSTACKED_ANVIL_AND_BREWING = Permission.createPermission("allow-overstacked-anvil-and-brewing");
+
+    static
+    {
+        SIGN_COLORED.attach(SIGN_COLORED_BLACK, SIGN_COLORED_DARK_BLUE, SIGN_COLORED_DARK_GREEN,
+                            SIGN_COLORED_DARK_AQUA, SIGN_COLORED_DARK_RED, SIGN_COLORED_DARK_PURPLE,
+                            SIGN_COLORED_GOLD, SIGN_COLORED_GRAY, SIGN_COLORED_DARK_GRAY,
+                            SIGN_COLORED_BLUE, SIGN_COLORED_GREEN, SIGN_COLORED_AQUA,
+                            SIGN_COLORED_RED, SIGN_COLORED_LIGHT_PURPLE, SIGN_COLORED_YELLOW,
+                            SIGN_COLORED_WHITE, SIGN_COLORED_OBFUSCATED, SIGN_COLORED_BOLD,
+                            SIGN_COLORED_STRIKE, SIGN_COLORED_UNDERLINE, SIGN_COLORED_ITALIC, SIGN_COLORED_RESET);
+    }
 }

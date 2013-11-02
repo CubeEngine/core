@@ -49,6 +49,6 @@ public class CoreListener implements Listener
                 AfterJoinEvent afterJoinEvent = new AfterJoinEvent(event.getPlayer(), event.getJoinMessage());
                 bukkitCore.getEventManager().fireEvent(afterJoinEvent);
             }
-        }, config.afterJoinEventDelay);
+        }, config.usermanager.afterJoinEventDelay);
     }
 }

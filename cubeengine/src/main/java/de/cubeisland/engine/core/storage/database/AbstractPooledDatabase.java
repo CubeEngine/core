@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.util.worker.AsyncTaskQueue;
+import de.cubeisland.engine.core.task.worker.AsyncTaskQueue;
 
 /**
  * Abstract Database implementing most of the database methods.

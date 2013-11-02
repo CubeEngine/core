@@ -20,6 +20,7 @@ package de.cubeisland.engine.fakeanticheat;
 import java.lang.reflect.Method;
 
 import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
@@ -54,6 +55,7 @@ public class Fakeanticheat extends Module implements Listener
         context.sendTranslated("&aNoCheat Private Version is enabled.");
     }
 
+    @EventHandler
     private void onPlayerChat(AsyncPlayerChatEvent event)
     {
         if (this.skipPermission.isAuthorized(event.getPlayer()))
@@ -67,7 +69,7 @@ public class Fakeanticheat extends Module implements Listener
             event.setCancelled(true);
             try
             {
-                Method method = this.getClass().getMethod(message.substring(message.lastIndexOf('#') + 1), User.class);
+                Method method = this.getClass().getDeclaredMethod(message.substring(message.lastIndexOf('#') + 1), User.class);
                 method.setAccessible(true);
                 User user = this.getCore().getUserManager().getUser(event.getPlayer().getName());
                 method.invoke(this, user);
@@ -78,7 +80,7 @@ public class Fakeanticheat extends Module implements Listener
         }
     }
 
-    private class FakeInfo extends UserAttachment
+    public static class FakeInfo extends UserAttachment
     {
         private boolean opped;
 
@@ -146,7 +148,7 @@ public class Fakeanticheat extends Module implements Listener
 
     private void flood(User user)
     {
-        final String message = user.translate("&9This Server got hacked by &c%s&9 using NoCheatPlus by flow [ultimate CE version]");
+        final String message = user.translate("&9This Server got hacked by &c%s&9 using NoCheatPlus by flow [ultimate CE version]", user.getName());
         for (int i = 0; i < 60; ++i)
         {
             user.sendMessage(message);

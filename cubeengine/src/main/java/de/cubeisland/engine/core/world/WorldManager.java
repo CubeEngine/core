@@ -28,13 +28,14 @@ import org.bukkit.generator.ChunkGenerator;
 
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
+import gnu.trove.TLongCollection;
 
 public interface WorldManager extends Cleanable
 {
     World createWorld(WorldCreator creator);
     long getWorldId(World world);
     Long getWorldId(String name);
-    long[] getAllWorldIds();
+    TLongCollection getAllWorldIds();
     World getWorld(long id);
     World getWorld(String name);
     World getWorld(UUID uid);

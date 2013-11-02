@@ -208,7 +208,7 @@ public class InformationCommands
             context.sendTranslated("&eI am right &cbehind &eyou!");
             return;
         }
-        int radius = this.basics.getConfiguration().nearDefaultRadius;
+        int radius = this.basics.getConfiguration().commands.nearDefaultRadius;
         if (context.hasArg(0))
         {
             radius = context.getArg(0, Integer.class, radius);

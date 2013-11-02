@@ -60,7 +60,7 @@ public class BukkitUserManager extends AbstractUserManager
         super(core);
         this.core = core;
 
-        final long delay = (long)core.getConfiguration().userManagerCleanup;
+        final long delay = (long)core.getConfiguration().usermanager.cleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         this.scheduledForRemoval = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
@@ -82,6 +82,11 @@ public class BukkitUserManager extends AbstractUserManager
 
     public User findUser(String name)
     {
+        return this.findUser(name, false);
+    }
+
+    public User findUser(String name, boolean database)
+    {
         if (name == null)
         {
             return null;
@@ -99,8 +104,12 @@ public class BukkitUserManager extends AbstractUserManager
             String foundUser = Match.string().matchString(name, onlinePlayerList);
             if (foundUser == null)
             {
-                UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
                 //Looking up saved users
+                UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
+                if (entity == null) // Not found try matching
+                {
+                    entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.like("%"+ name + "%")).limit(1).fetchOne();
+                }
                 if (entity != null)
                 {
                     user = new User(entity);
@@ -184,7 +193,7 @@ public class BukkitUserManager extends AbstractUserManager
                     }
                     removeCachedUser(user);
                 }
-            }, core.getConfiguration().userManagerKeepUserLoaded);
+            }, core.getConfiguration().usermanager.keepInMemory);
 
             if (task == null || task.getTaskId() == -1)
             {

@@ -17,14 +17,12 @@
  */
 package de.cubeisland.engine.hide;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.engine.basics.command.general.DisplayOnlinePlayerListEvent;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -42,17 +40,9 @@ public class Hide extends Module
     {
         this.getCore().getCommandManager().registerCommands(this, new HideCommands(this));
         this.getCore().getEventManager().registerListener(this, new HideListener(this));
-
-        if (this.getCore().getModuleManager().getModule("basics") != null)
-        {
-            this.getCore().getEventManager().registerListener(this, new Listener() {
-                @EventHandler
-                public void onListPlayers(DisplayOnlinePlayerListEvent event)
-                {
-
-                }
-            });
-        }
+        hiddenUsers = new HashSet<>();
+        canSeeHiddens = new HashSet<>();
+        // TODO player listing in basics?
     }
 
     public void hidePlayer(final User user, final boolean message)

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.command;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,11 +28,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
@@ -42,6 +47,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 
 import gnu.trove.map.hash.THashMap;
@@ -63,6 +69,7 @@ public abstract class CubeCommand extends Command
     protected final List<String> childrenAliases;
     private final ContextFactory contextFactory;
     private boolean loggable;
+    private boolean asynchronous = false;
     private boolean generatePermission;
     private PermDefault generatedPermissionDefault;
 
@@ -88,6 +95,17 @@ public abstract class CubeCommand extends Command
         this.generatePermission = false;
         this.generatedPermissionDefault = PermDefault.DEFAULT;
     }
+
+    public boolean isAsynchronous()
+    {
+        return this.asynchronous;
+    }
+
+    public void setAsynchronous(boolean asynchronous)
+    {
+        this.asynchronous = asynchronous;
+    }
+
 
     public void setLoggable(boolean state)
     {
@@ -474,57 +492,117 @@ public abstract class CubeCommand extends Command
      * @param labels the label stack
      * @return true on success
      */
-    protected boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
+    protected boolean execute(final CommandSender sender, String[] args, String label, Stack<String> labels)
+    {
+        if (!this.testPermissionSilent(sender))
+        {
+            throw new PermissionDeniedException();
+        }
+        labels.push(label);
+        if (args.length > 0)
+        {
+            if ("?".equals(args[0]))
+            {
+                HelpContext ctx = new HelpContext(this, sender, labels, args);
+                try
+                {
+                    this.help(ctx);
+                }
+                catch (Exception e)
+                {
+                    this.handleCommandException(ctx.getSender(), e);
+                }
+                return true;
+            }
+            CubeCommand child = this.getChild(args[0]);
+            if (child != null)
+            {
+                return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
+            }
+        }
+        try
+        {
+            final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
+            if (this.isAsynchronous())
+            {
+                ctx.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        run0(ctx);
+                    }
+                }).start();
+            }
+            else
+            {
+                this.run0(ctx);
+            }
+        }
+        catch (CommandException e)
+        {
+            this.handleCommandException(sender, e);
+        }
+
+        return true;
+    }
+
+    private void run0(CommandContext ctx)
     {
         try
         {
-            if (!this.testPermissionSilent(sender))
-            {
-                throw new PermissionDeniedException();
-            }
-            labels.push(label);
-            if (args.length > 0)
-            {
-                if ("?".equals(args[0]))
-                {
-                    this.help(new HelpContext(this, sender, labels, args));
-                    return true;
-                }
-                CubeCommand child = this.getChild(args[0]);
-                if (child != null)
-                {
-                    return child.execute(sender, Arrays.copyOfRange(args, 1, args.length), args[0], labels);
-                }
-            }
-            final CommandContext ctx = this.getContextFactory().parse(this, sender, labels, args);
             CommandResult result = this.run(ctx);
             if (result != null)
             {
                 result.show(ctx);
             }
         }
-        catch (MissingParameterException e)
+        catch (Exception e)
         {
-            sender.sendTranslated("&cThe parameter &6%s&c is missing!", e.getMessage());
+            handleCommandException(ctx.getSender(), e);
         }
-        catch (IncorrectUsageException e)
+    }
+
+    private void handleCommandException(final CommandSender sender, Throwable t)
+    {
+        if (!CubeEngine.isMainThread())
         {
-            sender.sendMessage(e.getMessage());
+            final Throwable tmp = t;
+            sender.getCore().getTaskManager().callSync(new Callable<Void>()
+            {
+                @Override
+                public Void call() throws Exception
+                {
+                    handleCommandException(sender, tmp);
+                    return null;
+                }
+            });
+            return;
+        }
+        if (t instanceof InvocationTargetException || t instanceof ExecutionException)
+        {
+            t = t.getCause();
+        }
+        if (t instanceof MissingParameterException)
+        {
+            sender.sendTranslated("&cThe parameter &6%s&c is missing!", t.getMessage());
+        }
+        else if (t instanceof IncorrectUsageException)
+        {
+            sender.sendMessage(t.getMessage());
             sender.sendTranslated("&eProper usage: &f%s", this.getUsage(sender));
         }
-        catch (PermissionDeniedException e)
+        else if (t instanceof PermissionDeniedException)
         {
             sender.sendTranslated("&cYou're not allowed to do this!");
             sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
         }
-        catch (Exception ex)
+        else
         {
             sender.sendTranslated("&4An unknown error occurred while executing this command!");
             sender.sendTranslated("&4Please report this error to an administrator.");
-            this.module.getLog().debug(ex, "An unknown error occurred while executing a command");
+            this.module.getLog().debug(t.getLocalizedMessage(), t);
         }
-
-        return true;
     }
 
     private List<String> tabCompleteFallback(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
@@ -555,7 +633,7 @@ public abstract class CubeCommand extends Command
         {
             result = completer.tabCompleteFallback(bukkitSender, alias, args);
         }
-        final int max = this.getModule().getCore().getConfiguration().commandTabCompleteOffers;
+        final int max = this.getModule().getCore().getConfiguration().commands.maxTabCompleteOffers;
         if (result.size() > max)
         {
             if (StringUtils.implode(", ", result).length() < TAB_LIMIT_THRESHOLD)
@@ -624,7 +702,29 @@ public abstract class CubeCommand extends Command
      * @param context The CommandContext containing all the necessary information
      * @throws Exception if an error occurs
      */
-    public abstract void help(HelpContext context) throws Exception;
+    public void help(HelpContext context) throws Exception
+    {
+        context.sendTranslated("&7Description: &f%s", this.getDescription());
+        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
+
+        if (this.hasChildren())
+        {
+            context.sendMessage(" ");
+            context.sendTranslated("The following sub commands are available:");
+            context.sendMessage(" ");
+
+            final CommandSender sender = context.getSender();
+            for (CubeCommand command : context.getCommand().getChildren())
+            {
+                if (command.testPermissionSilent(sender))
+                {
+                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.translate(command.getDescription()));
+                }
+            }
+        }
+        context.sendMessage(" ");
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
+    }
 
     public void onRegister()
     {}

@@ -330,7 +330,7 @@ public class ItemCommands
             return;
         }
         if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(context.getSender())
-            && this.basics.getConfiguration().blacklist.contains(item))
+            && this.basics.getConfiguration().commands.itemBlacklist.contains(item))
         {
             context.sendTranslated("&cThis item is blacklisted!");
             return;
@@ -371,7 +371,7 @@ public class ItemCommands
                 return;
             }
             if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(sender)
-                    && this.basics.getConfiguration().blacklist.contains(item))
+                    && this.basics.getConfiguration().commands.itemBlacklist.contains(item))
             {
                 context.sendTranslated("&cThis item is blacklisted!");
                 return;

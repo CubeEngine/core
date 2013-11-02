@@ -72,14 +72,17 @@ public class Roles extends Module
         cm.registerCommand(new ManagementCommands(this), "roles");
 
         this.getCore().getEventManager().registerListener(this, new RolesEventHandler(this));
-    }
 
-    @Override
-    public void onStartupFinished()
-    {
-        this.config = this.loadConfig(RolesConfig.class);
-        this.rolesManager.initRoleProviders();
-        this.rolesManager.recalculateAllRoles();
+        this.getCore().getTaskManager().runTask(this, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                config = loadConfig(RolesConfig.class);
+                rolesManager.initRoleProviders();
+                rolesManager.recalculateAllRoles();
+            }
+        });
     }
 
     @Override

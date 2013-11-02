@@ -94,11 +94,11 @@ public class TeleportListener implements Listener
                             Material userIsIn = user.getEyeLocation().getBlock().getType();
                             if (userIsIn.equals(Material.WATER) || userIsIn.equals(Material.STATIONARY_WATER))
                             {
-                                block = event.getPlayer().getTargetBlock(new HashSet<Byte>(8,9), this.basics.getConfiguration().jumpToMaxRange);
+                                block = event.getPlayer().getTargetBlock(new HashSet<Byte>(8,9), this.basics.getConfiguration().navigation.jumpToMaxRange);
                             }
                             else
                             {
-                                block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange);
+                                block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().navigation.jumpToMaxRange);
                             }
 
                             if (block.getTypeId() != 0)
@@ -117,8 +117,8 @@ public class TeleportListener implements Listener
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
                         User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                        Location loc = LocationUtil.getBlockBehindWall(user, this.basics.getConfiguration().jumpThruMaxRange,
-                                this.basics.getConfiguration().jumpThruMaxWallThickness);
+                        Location loc = LocationUtil.getBlockBehindWall(user, this.basics.getConfiguration().navigation.thru.maxRange,
+                                this.basics.getConfiguration().navigation.thru.maxWallThickness);
                         if (loc == null)
                         {
                             user.sendTranslated("&cNothing to pass through!");

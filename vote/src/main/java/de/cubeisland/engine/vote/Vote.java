@@ -66,7 +66,7 @@ public class Vote extends Module implements Listener
             }
             else
             {
-                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.votebonustime.toMillis())
+                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.voteBonusTime.toMillis())
                 {
                     voteModel.setVoteamount(UShort.valueOf(1));
                 }
@@ -79,19 +79,19 @@ public class Vote extends Module implements Listener
             }
             economy.createPlayerAccount(vote.getUsername());
             int voteamount = voteModel.getVoteamount().intValue();
-            double money = this.config.votereward * (Math.pow(1+1.5/voteamount, voteamount-1));
+            double money = this.config.voteReward * (Math.pow(1+1.5/voteamount, voteamount-1));
             economy.deposit(vote.getUsername(), money);
             String moneyFormat = economy.format(money);
-            this.getCore().getUserManager().broadcastMessage(this.config.votebroadcast.
+            this.getCore().getUserManager().broadcastMessage(this.config.voteBroadcast.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).
-                replace("{VOTEURL}", this.config.voteurl));
-            user.sendMessage(ChatFormat.parseFormats(this.config.votemessage.
+                replace("{VOTEURL}", this.config.voteUrl));
+            user.sendMessage(ChatFormat.parseFormats(this.config.voteMessage.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).
-                replace("{VOTEURL}", this.config.voteurl)));
+                replace("{VOTEURL}", this.config.voteUrl)));
         }
     }
 

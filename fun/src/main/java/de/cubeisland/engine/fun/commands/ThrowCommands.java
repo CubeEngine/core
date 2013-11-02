@@ -67,15 +67,6 @@ public class ThrowCommands
         this.thrownItems = new THashMap<>();
         this.throwListener = new ThrowListener();
         fun.getCore().getEventManager().registerListener(fun, this.throwListener);
-
-        PermissionManager perm = fun.getCore().getPermissionManager();
-        for (EntityType type : EntityType.values())
-        {
-            if (type.isSpawnable())
-            {
-                perm.registerPermission(fun, FunPerm.COMMAND_THROW.createChild(type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")));
-            }
-        }
     }
 
     @Command

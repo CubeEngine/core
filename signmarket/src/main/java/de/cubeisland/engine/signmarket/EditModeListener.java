@@ -29,6 +29,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -51,11 +52,14 @@ public class EditModeListener extends ConversationCommand
 {
     private final MarketSignFactory signFactory;
     private final SignMarketConfig config;
+    private Signmarket module;
 
-    public EditModeListener(Signmarket signmarket) {
-        super(signmarket, new ConversationContextFactory());
-        this.signFactory = signmarket.getMarketSignFactory();
-        this.config = signmarket.getConfig();
+    public EditModeListener(Signmarket module)
+    {
+        super(module, new ConversationContextFactory());
+        this.module = module;
+        this.signFactory = module.getMarketSignFactory();
+        this.config = module.getConfig();
 
         this.getContextFactory()
                 .addFlag(new CommandFlag("exit", "exit"))
@@ -140,6 +144,21 @@ public class EditModeListener extends ConversationCommand
     {
         super.removeUser(user);
         user.sendTranslated("&aEdit mode quit!");
+    }
+
+    @EventHandler
+    public void changeWorld(PlayerChangedWorldEvent event)
+    {
+        if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+        {
+            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            if (this.hasUser(user))
+            {
+                user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                this.removeUser(user);
+                this.currentSignLocation.remove(user.getId());
+            }
+        }
     }
 
     public CommandResult run(CommandContext runContext) throws Exception
@@ -539,86 +558,91 @@ public class EditModeListener extends ConversationCommand
     public void onClick(PlayerInteractEvent event)
     {
         if (event.useItemInHand().equals(Event.Result.DENY)) return;
+
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        if (!this.hasUser(user))
+        if (this.hasUser(user))
         {
-            return;
-        }
-        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
-        {
-            if (event.getClickedBlock().getState() instanceof Sign)
+            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
             {
+                user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                return;
+            }
+            if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+            {
+                if (event.getClickedBlock().getState() instanceof Sign)
+                {
+                    event.setCancelled(true);
+                    event.setUseItemInHand(Event.Result.DENY);
+                    Location newLoc = event.getClickedBlock().getLocation();
+                    if (!newLoc.equals(this.currentSignLocation.get(user.getId())))
+                    {
+                        if (this.currentSignLocation.valueCollection().contains(newLoc))
+                        {
+                            user.sendTranslated("&cSomeone else is editing this sign!");
+                            return;
+                        }
+                    }
+                    MarketSign curSign = this.signFactory.getSignAt(newLoc);
+                    if (curSign == null)
+                    {
+                        if (!user.isSneaking())
+                        {
+                            user.sendTranslated("&cThis is not a market-sign!\n&eUse shift leftclick to convert the sign.");
+                            return;
+                        }
+                        curSign = this.signFactory.createSignAt(user, newLoc);
+                        this.setEditingSign(user, curSign);
+                        return;
+                    }
+                    if (curSign.isInEditMode())
+                    {
+                        if (curSign.tryBreak(user))
+                        {
+                            this.previousMarketSign.put(user.getId(), curSign);
+                            this.currentSignLocation.remove(user.getId());
+                        }
+                        return;
+                    }
+                    this.setEditingSign(user, curSign);
+                }
+            }
+            else
+            {
+                if (event.getPlayer().isSneaking()) return;
+                BlockState signFound = null;
+                if (event.getAction().equals(Action.RIGHT_CLICK_AIR))
+                {
+                    if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getTypeId() != 0)
+                    {
+                        signFound = MarketSignListener.getTargettedSign(event.getPlayer());
+                    }
+                }
+                else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock().getState() instanceof Sign)
+                {
+                    signFound = event.getClickedBlock().getState();
+                }
+                if (signFound == null) return;
                 event.setCancelled(true);
                 event.setUseItemInHand(Event.Result.DENY);
-                Location newLoc = event.getClickedBlock().getLocation();
-                if (!newLoc.equals(this.currentSignLocation.get(user.getId())))
-                {
-                    if (this.currentSignLocation.valueCollection().contains(newLoc))
-                    {
-                        user.sendTranslated("&cSomeone else is editing this sign!");
-                        return;
-                    }
-                }
-                MarketSign curSign = this.signFactory.getSignAt(newLoc);
+                Location curLoc = signFound.getLocation();
+                MarketSign curSign = this.signFactory.getSignAt(curLoc);
                 if (curSign == null)
                 {
-                    if (!user.isSneaking())
+                    user.sendTranslated("&eThis sign is not a market-sign!");
+                    return; // not a market-sign
+                }
+                if (!this.setEditingSign(user, curSign))
+                {
+                    if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0) return;
+                    if (!curSign.isAdminSign() && curSign.hasStock() && curSign.getStock() != 0)
                     {
-                        user.sendTranslated("&cThis is not a market-sign!\n&eUse shift leftclick to convert the sign.");
+                        user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
                         return;
                     }
-                    curSign = this.signFactory.createSignAt(user, newLoc);
-                    this.setEditingSign(user, curSign);
-                    return;
+                    curSign.setItemStack(user.getItemInHand(), true);
+                    curSign.updateSignText();
+                    user.sendTranslated("&aItem in sign updated!");
                 }
-                if (curSign.isInEditMode())
-                {
-                    if (curSign.tryBreak(user))
-                    {
-                        this.previousMarketSign.put(user.getId(), curSign);
-                        this.currentSignLocation.remove(user.getId());
-                    }
-                    return;
-                }
-                this.setEditingSign(user, curSign);
-            }
-        }
-        else
-        {
-            if (event.getPlayer().isSneaking()) return;
-            BlockState signFound = null;
-            if (event.getAction().equals(Action.RIGHT_CLICK_AIR))
-            {
-                if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getTypeId() != 0)
-                {
-                    signFound = MarketSignListener.getTargettedSign(event.getPlayer());
-                }
-            }
-            else if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock().getState() instanceof Sign)
-            {
-                signFound = event.getClickedBlock().getState();
-            }
-            if (signFound == null) return;
-            event.setCancelled(true);
-            event.setUseItemInHand(Event.Result.DENY);
-            Location curLoc = signFound.getLocation();
-            MarketSign curSign = this.signFactory.getSignAt(curLoc);
-            if (curSign == null)
-            {
-                user.sendTranslated("&eThis sign is not a market-sign!");
-                return; // not a market-sign
-            }
-            if (!this.setEditingSign(user, curSign))
-            {
-                if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0) return;
-                if (!curSign.isAdminSign() && curSign.hasStock() && curSign.getStock() != 0)
-                {
-                    user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
-                    return;
-                }
-                curSign.setItemStack(user.getItemInHand(), true);
-                curSign.updateSignText();
-                user.sendTranslated("&aItem in sign updated!");
             }
         }
     }
@@ -631,6 +655,11 @@ public class EditModeListener extends ConversationCommand
             User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
             {
+                if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+                {
+                    user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                    return;
+                }
                 if (!MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
                 {
                     if (!MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
@@ -651,6 +680,11 @@ public class EditModeListener extends ConversationCommand
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.hasUser(user))
         {
+            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+            {
+                user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                return;
+            }
             Location loc = event.getBlock().getLocation();
             if (loc.equals(this.currentSignLocation.get(user.getId())))
             {

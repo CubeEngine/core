@@ -198,6 +198,19 @@ public abstract class Module
     public void onStartupFinished()
     {}
 
+    /**
+     * This method gets called when a uncaught exception reached root of a thread created by this module
+     *
+     * @param t the thread
+     * @param e the exception
+     */
+    public void onUncaughtException(Thread t, Throwable e)
+    {
+        this.getLog().error("An uncaught exception occurred! This is a critical error and should be reported!");
+        this.getLog().error("The thread: {}", t.getName());
+        this.getLog().error("The error: {}", e.getLocalizedMessage(), e);
+    }
+
     @Override
     public int hashCode()
     {

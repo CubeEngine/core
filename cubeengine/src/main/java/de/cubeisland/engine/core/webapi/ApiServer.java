@@ -121,25 +121,25 @@ public class ApiServer
 
         try
         {
-            this.setBindAddress(config.address);
+            this.setBindAddress(config.network.address);
         }
         catch (UnknownHostException ignored)
         {
             this.log.warn("Failed to resolve the host {}, ignoring the value...");
         }
-        this.setPort(config.port);
-        this.setMaxThreads(config.maxThreads);
+        this.setPort(config.network.port);
+        this.setMaxThreads(config.network.maxThreads);
 
-        this.setCompressionEnabled(config.compression);
-        this.setCompressionLevel(config.compressionLevel);
-        this.setCompressionWindowBits(config.windowBits);
-        this.setCompressionMemoryLevel(config.memoryLevel);
+        this.setCompressionEnabled(config.compression.enable);
+        this.setCompressionLevel(config.compression.level);
+        this.setCompressionWindowBits(config.compression.windowBits);
+        this.setCompressionMemoryLevel(config.compression.memoryLevel);
 
-        this.setWhitelistEnabled(config.whitelistEnable);
-        this.setWhitelist(config.whitelist);
+        this.setWhitelistEnabled(config.whitelist.enable);
+        this.setWhitelist(config.whitelist.ips);
 
-        this.setBlacklistEnabled(config.blacklistEnable);
-        this.setBlacklist(config.blacklist);
+        this.setBlacklistEnabled(config.blacklist.enable);
+        this.setBlacklist(config.blacklist.ips);
     }
 
     /**

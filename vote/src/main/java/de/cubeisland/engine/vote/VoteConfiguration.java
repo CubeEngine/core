@@ -26,20 +26,18 @@ import de.cubeisland.engine.core.util.time.Duration;
 
 public class VoteConfiguration extends YamlConfiguration
 {
-    @Name("vote-reward")
-    public double votereward = 100.0;
+    public double voteReward = 100.0;
+
     @Comment({"{PLAYER} will be replaced with the player-name",
              "{MONEY} will be replaced with the money the player receives",
              "{AMOUNT} will be replaced with the amount of times that player voted",
              "{VOTEURL} will be replaced with the configured vote-url"})
-    @Name("vote-broadcast")
-    public String votebroadcast = "&6{PLAYER} voted!";
-    @Name("vote-message")
-    public String votemessage = "&aYou received {MONEY} for voting {AMOUNT} times!";
+    public String voteBroadcast = "&6{PLAYER} voted!";
+
+    public String voteMessage = "&aYou received {MONEY} for voting {AMOUNT} times!";
 
     @Comment("Players will receive a bonus if they vote multiple times in given time-frame")
-    @Name("vote-bonus-time")
-    public Duration votebonustime = new Duration(TimeUnit.HOURS.toMillis(36));
-    @Name("vote-url")
-    public String voteurl = "";
+    public Duration voteBonusTime = new Duration(TimeUnit.HOURS.toMillis(36));
+
+    public String voteUrl = "";
 }

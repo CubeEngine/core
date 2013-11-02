@@ -23,16 +23,15 @@ import de.cubeisland.engine.configuration.annotations.Name;
 
 public class ShoutConfiguration extends YamlConfiguration
 {
-    @Name("initial-delay")
     @Comment("The delay after a player joins before he receives his first message")
-    public int initDelay = 20;
+    public int initialDelay = 20;
 
     @Override
     public String[] head()
     {
         return new String[] {
                 "The global config for all announcements.",
-                "All times are in millisecounds"
+                "All times are in milliseconds"
         };
     }
 }

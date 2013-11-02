@@ -67,7 +67,7 @@ public class LogBackLogFactory implements LogFactory
         this.parentLogger = this.createParentLogger(julLogger);
 
         ColorConverter.setANSISupport(ansiSupport);
-        if (!core.getConfiguration().logCommands)
+        if (!core.getConfiguration().logging.logCommands)
         {
             this.getLog("commands").getHandle().setAdditive(false);
         }
@@ -89,7 +89,7 @@ public class LogBackLogFactory implements LogFactory
 
         // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter consoleFilter = new ThresholdFilter();
-        consoleFilter.setLevel(core.getConfiguration().loggingConsoleLevel.toString());
+        consoleFilter.setLevel(core.getConfiguration().logging.consoleLevel.toString());
         consoleAppender.addFilter(consoleFilter);
         consoleFilter.start();
 
@@ -144,7 +144,7 @@ public class LogBackLogFactory implements LogFactory
 
         // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter fileFilter = new ThresholdFilter();
-        fileFilter.setLevel(core.getConfiguration().loggingFileLevel.toString());
+        fileFilter.setLevel(core.getConfiguration().logging.fileLevel.toString());
         logger.getAppender("core-file").addFilter(fileFilter);
         fileFilter.start();
 
@@ -196,7 +196,7 @@ public class LogBackLogFactory implements LogFactory
         consoleLayout.setPattern("[" + info.getName() + "] %color(%msg)\n"); // The trailing \n is kind of a workaround, have a look in JULAppender.java:83
         consoleAppender.setLayout(consoleLayout);
         ThresholdFilter consoleFilter = new ThresholdFilter();
-        consoleFilter.setLevel(this.core.getConfiguration().loggingConsoleLevel.toString());
+        consoleFilter.setLevel(this.core.getConfiguration().logging.consoleLevel.toString());
         consoleAppender.addFilter(consoleFilter);
         consoleFilter.start();
 
@@ -223,7 +223,7 @@ public class LogBackLogFactory implements LogFactory
         triggeringPolicy.setMaxFileSize(System.getProperty(BASE_NAME + ".logging.max-size"));
         fileAppender.setTriggeringPolicy(triggeringPolicy);
         ThresholdFilter fileFilter = new ThresholdFilter();
-        fileFilter.setLevel(this.core.getConfiguration().loggingFileLevel.toString());
+        fileFilter.setLevel(this.core.getConfiguration().logging.fileLevel.toString());
         fileAppender.addFilter(fileFilter);
         fileFilter.start();
 

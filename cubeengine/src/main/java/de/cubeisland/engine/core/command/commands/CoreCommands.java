@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -87,7 +88,7 @@ public class CoreCommands extends ContainerCommand
 
     @Command(names = {
         "setpassword", "setpw"
-    }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]")
+    }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]", loggable = false)
     public void setPassword(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -171,7 +172,7 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Logs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE)
+    @Command(desc = "Logs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE, loggable = false)
     public void login(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -191,7 +192,7 @@ public class CoreCommands extends ContainerCommand
             else
             {
                 user.sendTranslated("&cWrong password!");
-                if (this.core.getConfiguration().fail2ban)
+                if (this.core.getConfiguration().security.fail2ban)
                 {
                     if (fails.get(user.getName()) != null)
                     {
@@ -199,11 +200,11 @@ public class CoreCommands extends ContainerCommand
                         {
                             String msg = user.translate("&cToo many wrong passwords! \nFor your security you were banned 10 seconds.");
                             this.banManager.addBan(new UserBan(user.getName(),user.getName(),msg,
-                                 new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().banDuration))));
+                                 new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                             if (!Bukkit.getServer().getOnlineMode())
                             {
                                 this.banManager.addBan(new IpBan(user.getAddress().getAddress(),user.getName(),msg,
-                                       new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().banDuration))));
+                                       new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                             }
                             user.kickPlayer(msg);
                         }
@@ -277,5 +278,31 @@ public class CoreCommands extends ContainerCommand
         {
             context.sendTranslated("&eThe current log level: &a%s", context.getCore().getLog().getLevel());
         }
+    }
+
+    @Command(desc = "Searches for a user in the database", usage = "<name>", min = 1, max = 1, async = true)
+    public CommandResult searchUser(CommandContext context)
+    {
+        final boolean exact = core.getUserManager().getUser(context.getString(0)) != null;
+        final User user = core.getUserManager().findUser(context.getString(0), true);
+        return new CommandResult()
+        {
+            @Override
+            public void show(CommandContext context)
+            {
+                if (user == null)
+                {
+                    context.sendTranslated("&eNo match found for &6%s&e!", context.getString(0));
+                }
+                else if (exact)
+                {
+                    context.sendTranslated("&aMatched exactly! User: &2%s", user.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&aMatched not exactly! User: &2%s", user.getName());
+                }
+            }
+        };
     }
 }

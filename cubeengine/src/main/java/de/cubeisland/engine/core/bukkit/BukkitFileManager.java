@@ -49,7 +49,7 @@ public class BukkitFileManager extends FileManager
 
     public void cycleLogs()
     {
-        if (this.core.getConfiguration().loggingArchiveLogs)
+        if (this.core.getConfiguration().logging.archiveLogs)
         {
             String dateString = LOG_DIR_DATE_FORMAT.format(new Date(core.getLogFactory().getBirthTime()));
             final Path base = Paths.get(System.getProperty("cubeengine.logging.default-path"));

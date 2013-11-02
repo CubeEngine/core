@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.worker;
+package de.cubeisland.engine.core.task.worker;
 
 /**
  * This interface is used for enqueing tasks.

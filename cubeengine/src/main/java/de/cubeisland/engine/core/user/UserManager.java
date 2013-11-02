@@ -92,9 +92,18 @@ public interface UserManager extends Cleanable
      * yet added)
      *
      * @param name the name
-     * @return a User
+     * @return the found User or null
      */
     User findUser(String name);
+
+    /**
+     * Finds an User (can also search for matches in the database)
+     *
+     * @param name the name
+     * @param database matches in the database too if true
+     * @return the found User or null
+     */
+    User findUser(String name, boolean database);
     void broadcastMessageWithPerm(String message, Permission perm, Object... params);
     void broadcastMessage(String message, Object... args);
     void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args);

@@ -17,23 +17,61 @@
  */
 package de.cubeisland.engine.border;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+
+import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.world.WorldManager;
 
 public class Border extends Module
 {
-    protected BorderConfig config;
+    private BorderConfig globalConfig;
+    private Map<Long, BorderConfig> worldConfigs;
+    private WorldManager wm;
+    private File folder;
 
     @Override
     public void onEnable()
     {
-        this.config = this.loadConfig(BorderConfig.class);
+        wm = this.getCore().getWorldManager();
+        this.globalConfig = Configuration.load(BorderConfig.class, this.getFolder().resolve("globalconfig.yml").toFile());
+        folder = this.getFolder().resolve("worlds").toFile();
+        folder.mkdir();
+        this.worldConfigs = new HashMap<>();
+        for (World world : Bukkit.getWorlds())
+        {
+            this.loadConfig(world);
+        }
         new BorderPerms(this);
         this.getCore().getEventManager().registerListener(this, new BorderListener(this));
         this.getCore().getCommandManager().registerCommand(new BorderCommands(this));
+
     }
 
-    public BorderConfig getConfig()
+    private BorderConfig loadConfig(World world)
     {
-        return config;
+        File worldFile = new File(folder, world.getName() + ".yml");
+        BorderConfig worldConfig = this.globalConfig.loadChild(worldFile);
+        this.worldConfigs.put(this.wm.getWorldId(world), worldConfig);
+        if (!worldConfig.center.checkCenter(world))
+        {
+            this.getLog().warn("The world spawn of {} is not inside the border!", world.getName());
+        }
+        return worldConfig;
+    }
+
+    public BorderConfig getConfig(World world)
+    {
+        BorderConfig worldConfig = this.worldConfigs.get(this.wm.getWorldId(world));
+        if (worldConfig == null)
+        {
+            return this.loadConfig(world);
+        }
+        return worldConfig;
     }
 }

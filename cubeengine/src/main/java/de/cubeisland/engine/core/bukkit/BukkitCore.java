@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -63,7 +64,6 @@ import de.cubeisland.engine.core.command.commands.ModuleCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
-import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
@@ -91,7 +91,6 @@ import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.time.Duration;
-import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
@@ -134,6 +133,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
     private boolean loadSucceeded;
+    private boolean loaded = false;
 
     @Override
     public void onLoad()
@@ -197,7 +197,7 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
-        if (this.config.logCommands)
+        if (this.config.logging.logCommands)
         {
             BukkitUtils.disableCommandLogging();
         }
@@ -226,9 +226,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
 
         // depends on: core config, server
-        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine", this), this.getServer().getScheduler());
+        this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
 
-        if (this.config.userWebapi)
+        if (this.config.useWebapi)
         {
             try
             {
@@ -287,7 +287,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.getLog().debug("Chosen command backend: {}", commandBackend.getClass().getName());
         this.commandManager = new BukkitCommandManager(this, commandBackend);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
-        this.commandManager.registerCommandFactory(new ReadableCommandFactory());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
@@ -298,7 +297,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
-        if (this.config.improveVanillaCommands)
+        if (this.config.commands.improveVanilla)
         {
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
@@ -314,12 +313,17 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
         this.loadSucceeded = true;
+        this.loaded = true;
     }
 
     @Override
     public void onEnable()
     {
-        if (!this.loadSucceeded)
+        if (!this.loaded)
+        {
+            this.onLoad();
+        }
+        if (!this.loadSucceeded || !this.loaded)
         {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
@@ -367,6 +371,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
+        this.loaded = false;
         this.logger.debug("utils cleanup");
         BukkitUtils.cleanup();
 

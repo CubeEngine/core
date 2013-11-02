@@ -32,6 +32,7 @@ import de.cubeisland.engine.basics.command.general.ListCommand;
 import de.cubeisland.engine.basics.command.general.MailCommand;
 import de.cubeisland.engine.basics.command.general.MuteListener;
 import de.cubeisland.engine.basics.command.general.PlayerCommands;
+import de.cubeisland.engine.basics.command.general.RolesListCommand;
 import de.cubeisland.engine.basics.command.moderation.DoorCommand;
 import de.cubeisland.engine.basics.command.moderation.InventoryCommands;
 import de.cubeisland.engine.basics.command.moderation.ItemCommands;
@@ -57,7 +58,6 @@ import de.cubeisland.engine.basics.storage.TableMail;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
@@ -71,13 +71,11 @@ public class Basics extends Module
     private KitManager kitManager;
     private LagTimer lagTimer;
 
-    @Inject
-    private Roles rolesModule;
-
     @Override
     public void onEnable()
     {
         Profiler.startProfiling("basicsEnable");
+
         this.config = this.loadConfig(BasicsConfiguration.class);
 		final Database db = this.getCore().getDB();
         db.registerTable(TableBasicsUser.initTable(db));
@@ -98,7 +96,6 @@ public class Basics extends Module
         cm.registerCommands(this, ignoreCommands , ReflectedCommand.class);
         cm.registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new InformationCommands(this), ReflectedCommand.class);
-        cm.registerCommands(this, new ListCommand(this), ReflectedCommand.class);
         cm.registerCommand(new MailCommand(this));
         cm.registerCommands(this, new PlayerCommands(this), ReflectedCommand.class);
         this.getLog().trace("{} ms - General-Listener", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
@@ -116,6 +113,17 @@ public class Basics extends Module
         cm.registerCommand(ptCommands);
         em.registerListener(this, ptCommands);
         cm.registerCommand(new KitCommand(this));
+
+        Module roles = getCore().getModuleManager().getModule("roles");
+        if (roles != null && roles instanceof Roles)
+        {
+            cm.registerCommand(new RolesListCommand(this));
+        }
+        else
+        {
+            this.getLog().info("No Roles-Module found!");
+            cm.registerCommand(new ListCommand(this));
+        }
         
         em.registerListener(this, new PaintingListener(this));
 
@@ -157,10 +165,5 @@ public class Basics extends Module
     public BasicsUser getBasicsUser(Player player)
     {
         return this.getCore().getUserManager().getExactUser(player.getName()).attachOrGet(BasicsAttachment.class, this).getBasicsUser();
-    }
-
-    public Roles getRolesModule()
-    {
-        return rolesModule;
     }
 }

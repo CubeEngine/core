@@ -17,6 +17,10 @@
  */
 package de.cubeisland.engine.border;
 
+import org.bukkit.Chunk;
+import org.bukkit.World;
+
+import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
@@ -37,4 +41,39 @@ public class BorderConfig extends YamlConfiguration
     @Name("enable-torus")
     @Comment("Experimental! The world acts as a torus. If you reach the border on the north side you'll get teleported to the south of the map")
     public boolean torusWorld = false;
+
+    public Center center;
+
+    public class Center implements Section
+    {
+        @Comment("When set to true the x y and z values will be et to the worlds spawn")
+        public boolean useSpawn = true;
+        public Integer chunkX = null;
+        public Integer chunkZ = null;
+
+        public boolean checkCenter(World world)
+        {
+            if (useSpawn)
+            {
+                this.setCenter(world.getSpawnLocation().getChunk(), true);
+                return true;
+            }
+            return !BorderListener.isChunkInRange(world.getSpawnLocation().getChunk(), BorderConfig.this);
+        }
+
+        public void setCenter(Chunk center, boolean isSpawn)
+        {
+            this.chunkX = center.getX();
+            this.chunkZ = center.getZ();
+            this.useSpawn = isSpawn;
+
+            try
+            {
+                BorderConfig.this.removeInheritedField(BorderConfig.this.getClass().getField("center"));
+            }
+            catch (NoSuchFieldException ignored)
+            {}
+            BorderConfig.this.save();
+        }
+    }
 }

@@ -60,7 +60,6 @@ import de.cubeisland.engine.locker.EntityLockerConfiguration;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.LockerPerm;
 import de.cubeisland.engine.locker.commands.CommandListener;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
@@ -83,8 +82,8 @@ public class LockManager implements Listener
 
     public final CommandListener commandListener;
 
-    private final TLongObjectHashMap<TLongObjectHashMap<Lock>> loadedLocks = new TLongObjectHashMap<>();
-    private final TLongObjectHashMap<TLongObjectHashMap<Set<Lock>>> loadedLocksInChunk = new TLongObjectHashMap<>();
+    private final Map<Long, Map<Long, Lock>> loadedLocks = new HashMap<>();
+    private final Map<Long, Map<Long, Set<Lock>>> loadedLocksInChunk = new HashMap<>();
     private final Map<UUID, Lock> loadedEntityLocks = new HashMap<>();
     private final Map<Long, Lock> locksById = new HashMap<>();
 
@@ -159,6 +158,12 @@ public class LockManager implements Listener
                                      addLoadedLocationLock(new Lock(LockManager.this, model, lockLoc));
                                  }
                              }
+
+                             @Override
+                             public void onFailure(Throwable t)
+                             {
+                                 module.getLog().error("Error while getting locks from database", t);
+                             }
                          });
     }
 
@@ -172,7 +177,7 @@ public class LockManager implements Listener
             {
                 worldId = module.getCore().getWorldManager().getWorldId(loc.getWorld());
             }
-            TLongObjectHashMap<Set<Lock>> locksInChunkMap = this.getChunkLocksMap(worldId);
+            Map<Long, Set<Lock>> locksInChunkMap = this.getChunkLocksMap(worldId);
             long chunkKey = getChunkKey(loc);
             Set<Lock> locks = locksInChunkMap.get(chunkKey);
             if (locks == null)
@@ -185,23 +190,23 @@ public class LockManager implements Listener
         }
     }
 
-    private TLongObjectHashMap<Set<Lock>> getChunkLocksMap(long worldId)
+    private Map<Long, Set<Lock>> getChunkLocksMap(long worldId)
     {
-        TLongObjectHashMap<Set<Lock>> locksInChunkMap = this.loadedLocksInChunk.get(worldId);
+        Map<Long, Set<Lock>> locksInChunkMap = this.loadedLocksInChunk.get(worldId);
         if (locksInChunkMap == null)
         {
-            locksInChunkMap = new TLongObjectHashMap<>();
+            locksInChunkMap = new HashMap<>();
             this.loadedLocksInChunk.put(worldId, locksInChunkMap);
         }
         return locksInChunkMap;
     }
 
-    private TLongObjectHashMap<Lock> getLocLockMap(long worldId)
+    private Map<Long, Lock> getLocLockMap(long worldId)
     {
-        TLongObjectHashMap<Lock> locksAtLocMap = this.loadedLocks.get(worldId);
+        Map<Long, Lock> locksAtLocMap = this.loadedLocks.get(worldId);
         if (locksAtLocMap == null)
         {
-            locksAtLocMap = new TLongObjectHashMap<>();
+            locksAtLocMap = new HashMap<>();
             this.loadedLocks.put(worldId, locksAtLocMap);
         }
         return locksAtLocMap;
@@ -213,7 +218,7 @@ public class LockManager implements Listener
         long worldId = module.getCore().getWorldManager().getWorldId(event.getWorld());
         Set<Lock> remove = this.getChunkLocksMap(worldId).remove(getChunkKey(event.getChunk().getX(), event.getChunk().getZ()));
         if (remove == null) return; // nothing to remove
-        TLongObjectHashMap<Lock> locLockMap = this.getLocLockMap(worldId);
+        Map<Long, Lock> locLockMap = this.getLocLockMap(worldId);
         for (Lock lock : remove) // remove from chunks
         {
             Location firstLoc = lock.getFirstLocation();
@@ -581,9 +586,9 @@ public class LockManager implements Listener
         {
             lock.model.update();
         }
-        for (TLongObjectHashMap<Lock> lockMap : this.loadedLocks.valueCollection())
+        for (Map<Long, Lock> lockMap : this.loadedLocks.values())
         {
-            for (Lock lock :lockMap.valueCollection())
+            for (Lock lock :lockMap.values())
             {
                 lock.model.update();
             }
