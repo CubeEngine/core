@@ -30,7 +30,7 @@ public class ModuleThreadFactory extends BaseThreadFactory
     {
         super(new ThreadGroup(
             module.getCore().getTaskManager().getThreadFactory().getThreadGroup(),
-            CubeEngine.class.getSimpleName() + " - " + module.getName())
+            CubeEngine.class.getSimpleName() + " - " + module.getName()), module.getClass().getPackage().getName()
         );
         this.module = module;
     }

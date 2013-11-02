@@ -26,7 +26,7 @@ public class CoreThreadFactory extends BaseThreadFactory
 
     public CoreThreadFactory(Core core)
     {
-        super(CubeEngine.class.getSimpleName());
+        super(CubeEngine.class.getSimpleName(), CubeEngine.class.getPackage().getName());
         this.core = core;
     }
 

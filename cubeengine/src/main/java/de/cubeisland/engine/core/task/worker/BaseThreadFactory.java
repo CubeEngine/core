@@ -20,22 +20,26 @@ package de.cubeisland.engine.core.task.worker;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.cubeisland.engine.core.CubeEngine;
+
 public abstract class BaseThreadFactory implements ThreadFactory
 {
     private final AtomicInteger threadCounter;
     private final ThreadGroup threadGroup;
     private volatile boolean enabled;
+    private final String basePackage;
 
-    protected BaseThreadFactory(String name)
+    protected BaseThreadFactory(String name, String basePackage)
     {
-        this(new ThreadGroup(name));
+        this(new ThreadGroup(name), basePackage);
     }
 
-    protected BaseThreadFactory(ThreadGroup threadGroup)
+    protected BaseThreadFactory(ThreadGroup threadGroup, String basePackage)
     {
         this.threadGroup = threadGroup;
         this.threadCounter = new AtomicInteger(0);
         this.enabled = true;
+        this.basePackage = basePackage;
     }
 
     public ThreadGroup getThreadGroup()
@@ -45,12 +49,15 @@ public abstract class BaseThreadFactory implements ThreadFactory
 
     private String getSource(int skip)
     {
-        final StackTraceElement[] st = Thread.currentThread().getStackTrace();
-        for (; skip > 0; skip--)
+        for (StackTraceElement e : Thread.currentThread().getStackTrace())
         {
-            if (skip < st.length)
+            if (skip-- > 0)
             {
-                return st[skip].getClassName() + '.' + st[skip].getMethodName() + "(" + st[skip].getFileName() + ":" + st[skip].getLineNumber() + ")";
+                continue;
+            }
+            if (e.getClassName().startsWith(this.basePackage))
+            {
+                return e.getClassName() + '.' + e.getMethodName() + "(" + e.getFileName() + ":" + e.getLineNumber() + ")";
             }
         }
         return "unknown source";
