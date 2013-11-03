@@ -109,16 +109,16 @@ public class ThrowCommands
         }
 
         int amount = context.getArg(1, Integer.class, -1);
-        if ((amount > this.fun.getConfig().maxThrowNumber || amount < 1) && amount != -1)
+        if ((amount > this.fun.getConfig().command.throwSection.maxAmount || amount < 1) && amount != -1)
         {
-            context.sendTranslated("&cThe amount has to be a number from 1 to %d", this.fun.getConfig().maxThrowNumber);
+            context.sendTranslated("&cThe amount has to be a number from 1 to %d", this.fun.getConfig().command.throwSection.maxAmount);
             return;
         }
 
         int delay = context.getParam("delay", 3);
-        if (delay > this.fun.getConfig().maxThrowDelay || delay < 0)
+        if (delay > this.fun.getConfig().command.throwSection.maxDelay || delay < 0)
         {
-            context.sendTranslated("&cThe delay has to be a number from 0 to %d", this.fun.getConfig().maxThrowDelay);
+            context.sendTranslated("&cThe delay has to be a number from 0 to %d", this.fun.getConfig().command.throwSection.maxDelay);
             return;
         }
         

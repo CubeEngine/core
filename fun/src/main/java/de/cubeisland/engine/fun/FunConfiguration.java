@@ -17,58 +17,102 @@
  */
 package de.cubeisland.engine.fun;
 
+import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
 
 public class FunConfiguration extends YamlConfiguration
 {
-    @Comment("Sets the maximum distance of the lightning")
-    @Name("lightning.distance")
-    public int lightningDistance = 200;
+    public CommandSection command;
 
-    @Comment("Sets the maximum distance of the explosion")
-    @Name("explosion.distance")
-    public int explosionDistance = 30;
-    @Comment("Sets the maximum power of the explosion")
-    @Name("explosion.power")
-    public int explosionPower = 20;
+    public class CommandSection implements Section
+    {
+        public LightningSection lightning;
+        public ExplosionSection explosion;
+        public BurnSection burn;
+        @Name("throw")
+        public ThrowSection throwSection;
+        public DiscoSection disco;
+        public InvasionSection invasion;
+        public RocketSection rocket;
+        public NukeSection nuke;
 
-    @Comment("Sets the maximum number of thrown Objects")
-    @Name("throw.number")
-    public int maxThrowNumber = 50;
-    @Comment("Sets the maximum delay of this command")
-    @Name("throw.delay")
-    public int maxThrowDelay = 30;
-    @Comment("Sets the maximum number of fireballs")
-    @Name("fireball.number")
-    public int maxFireballNumber = 10;
-    @Comment("Sets the maximum delay of this command")
-    @Name("fireball.delay")
-    public int maxFireballDelay = 30;
+        public class LightningSection implements Section
+        {
+            @Comment("Sets the maximum distance of the lightning")
+            public int distance = 200;
+        }
 
-    @Comment("Sets the maximum delay between changes of day to night and vice versa.")
-    @Name("disco.delay")
-    public int maxDiscoDelay = 100;
+        public class ExplosionSection implements Section
+        {
+            @Comment("Sets the maximum distance of the explosion")
+            public int distance = 30;
 
-    @Comment("Sets the maximum distance between the mob and the player")
-    @Name("invasion.distance")
-    public int maxInvasionSpawnDistance = 10;
+            @Comment("Sets the maximum power of the explosion")
+            public int power = 20;
+        }
 
-    @Comment("Sets the maximum height a player can jump.")
-    @Name("rocket.height")
-    public int maxRocketHeight = 100;
+        public class ThrowSection implements Section
+        {
+            @Comment("Sets the maximum number of thrown Objects")
+            @Name("max.amount")
+            public int maxAmount = 50;
 
-    @Comment("Sets the maximum distance of the tnt carpet")
-    @Name("nuke.distance")
-    public int maxNukeDistance = 50;
-    @Comment("Sets the nuke radius limit")
-    @Name("nuke.radius_limit")
-    public int nukeRadiusLimit = 10;
-    @Comment("Sets the nuke concentration limit")
-    @Name("nuke.concentration_limit")
-    public int nukeConcentrationLimit = 10;
-    @Comment("Sets the maximum range of the explosion")
-    @Name("nuke.explosion_range")
-    public int nukeMaxExplosionRange = 10;
+            @Comment("Sets the maximum delay of this command")
+            @Name("max.delay")
+            public int maxDelay = 30;
+        }
+
+        public class BurnSection implements Section
+        {
+            @Comment("Sets the maximum time in seconds of burning players!")
+            @Name("max.time")
+            public int maxTime = 30;
+        }
+
+        public class DiscoSection implements Section
+        {
+            @Comment("Sets the maximum delay between changes of day to night and vice versa.")
+            @Name("max.delay")
+            public int maxDelay = 100;
+
+            @Comment("Sets the minimum delay between changes of day to night and vice versa.")
+            @Name("min.delay")
+            public int minDelay = 1;                  // TODO it's not implemented yet!
+        }
+
+        public class InvasionSection implements Section
+        {
+            @Comment("Sets the maximum distance between the mob and the player")
+            @Name("max.distance")
+            public int maxDistance = 10;
+
+            @Comment("Sets the minimum distance between the mob and the player")
+            @Name("min.distance")
+            public int minDistance = 10;      // TODO it's not implemented yet!
+        }
+
+        public class RocketSection implements Section
+        {
+            @Comment("Sets the maximum height a player can jump.")
+            @Name("max.height")
+            public int maxHeight = 100;
+        }
+
+        public class NukeSection implements Section
+        {
+            @Comment("Sets the maximum distance of the tnt carpet")
+            @Name("max.distance")
+            public int maxDistance = 50;
+
+            @Comment("Sets the maximum tnt block amount of the tnt carpet")
+            @Name("max.tnt_amount")
+            public int maxTNTAmount = 200;
+
+            @Comment("Sets the maximum range of the explosion")
+            @Name("max.explosion_range")
+            public int maxExplosionRange = 10;
+        }
+    }
 }

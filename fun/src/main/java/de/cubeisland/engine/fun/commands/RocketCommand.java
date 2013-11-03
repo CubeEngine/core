@@ -82,7 +82,7 @@ public class RocketCommand
             user = (User)context.getSender();
         }
 
-        if (height > this.module.getConfig().maxRocketHeight)
+        if (height > this.module.getConfig().command.rocket.maxHeight)
         {
             context.sendTranslated("&cDo you never wanna see %s again?", user.getName());
             return;
