@@ -104,7 +104,7 @@ import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
 import org.slf4j.LoggerFactory;
 
-import static de.cubeisland.engine.configuration.Configuration.registerConverter;
+import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 import static java.util.logging.Level.WARNING;
@@ -161,17 +161,17 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
 
-        registerConverter(Level.class, new LevelConverter());
-        registerConverter(ItemStack.class, new ItemStackConverter());
-        registerConverter(Material.class, new MaterialConverter());
-        registerConverter(Enchantment.class, new EnchantmentConverter());
-        registerConverter(User.class, new UserConverter());
-        registerConverter(World.class, new WorldConverter());
-        registerConverter(Duration.class, new DurationConverter());
-        registerConverter(Version.class, new VersionConverter());
-        registerConverter(OfflinePlayer.class, new PlayerConverter(this));
-        registerConverter(Location.class, new LocationConverter(this));
-        registerConverter(Locale.class, new LocaleConverter());
+        CONVERTERS.registerConverter(Level.class, new LevelConverter());
+        CONVERTERS.registerConverter(ItemStack.class, new ItemStackConverter());
+        CONVERTERS.registerConverter(Material.class, new MaterialConverter());
+        CONVERTERS.registerConverter(Enchantment.class, new EnchantmentConverter());
+        CONVERTERS.registerConverter(User.class, new UserConverter());
+        CONVERTERS.registerConverter(World.class, new WorldConverter());
+        CONVERTERS.registerConverter(Duration.class, new DurationConverter());
+        CONVERTERS.registerConverter(Version.class, new VersionConverter());
+        CONVERTERS.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        CONVERTERS.registerConverter(Location.class, new LocationConverter(this));
+        CONVERTERS.registerConverter(Locale.class, new LocaleConverter());
 
         try (InputStream is = this.getResource("plugin.yml"))
         {

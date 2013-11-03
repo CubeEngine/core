@@ -27,8 +27,6 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
 
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
-
 public class PlayerConverter implements Converter<OfflinePlayer>
 {
     private Server server;
@@ -41,7 +39,7 @@ public class PlayerConverter implements Converter<OfflinePlayer>
     @Override
     public Node toNode(OfflinePlayer object)
     {
-        return wrapIntoNode(object.getName());
+        return StringNode.of(object.getName());
     }
 
     @Override

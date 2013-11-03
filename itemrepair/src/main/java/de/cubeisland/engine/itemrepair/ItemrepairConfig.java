@@ -32,7 +32,7 @@ public class ItemrepairConfig extends YamlConfiguration
 {
     static
     {
-        registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
+        CONVERTERS.registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
     }
 
     @Name("server.bank")

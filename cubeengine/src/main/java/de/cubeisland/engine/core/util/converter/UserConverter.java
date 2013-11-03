@@ -24,14 +24,12 @@ import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
-
 public class UserConverter implements Converter<User>
 {
     @Override
     public Node toNode(User user) throws ConversionException
     {
-        return wrapIntoNode(user.getName());
+        return StringNode.of(user.getName());
     }
 
     @Override
