@@ -257,7 +257,7 @@ public class NukeCommand
         }
 
         @EventHandler
-        public void onBlockDamage(final EntityExplodeEvent event)
+        public void onEntityExplode(final EntityExplodeEvent event)
         {
             try
             {
@@ -276,7 +276,6 @@ public class NukeCommand
                             }
                         }, 1);
                     }
-
                 }
             }
             catch (NullPointerException ignored)
