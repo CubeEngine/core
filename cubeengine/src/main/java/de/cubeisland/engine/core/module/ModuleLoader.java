@@ -32,6 +32,7 @@ import java.util.jar.JarFile;
 
 import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
@@ -39,7 +40,6 @@ import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.storage.Registry;
 import gnu.trove.set.hash.THashSet;
-import org.slf4j.Logger;
 
 /**
  * This class is used to load modules and provide a centralized place for class
@@ -53,10 +53,9 @@ public class ModuleLoader
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final Path tempPath;
-    private final ModuleLoggerFactory loggerFactory;
     private Registry registry;
 
-    ModuleLoader(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
+    ModuleLoader(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
         this.parentClassLoader = parentClassLoader;
@@ -65,7 +64,6 @@ public class ModuleLoader
         this.infoFileName = "module.yml";
         this.tempPath = core.getFileManager().getTempPath().resolve("modules");
         this.registry = Registry.initTable(core.getDB());
-        this.loggerFactory = loggerFactory;
         try
         {
             Files.createDirectories(this.tempPath);
@@ -132,7 +130,7 @@ public class ModuleLoader
             ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
-            Logger logger = this.loggerFactory.getLogger(info);
+            Log logger = core.getLogFactory().createModuleLog(info);
 
             module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader, logger);
             module.onLoad();

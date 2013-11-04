@@ -27,20 +27,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.util.Cleanable;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
-import org.slf4j.Logger;
 
 
 
 public class PacketEventManager implements Cleanable
 {
-    private final Logger logger;
+    private final Log logger;
     private final TIntObjectHashMap<List<PacketReceivedListener>> receivedListeners;
     private final TIntObjectHashMap<List<PacketSentListener>> sentListeners;
 
-    public PacketEventManager(Logger logger)
+    public PacketEventManager(Log logger)
     {
         this.logger = logger;
         this.receivedListeners = new TIntObjectHashMap<>();

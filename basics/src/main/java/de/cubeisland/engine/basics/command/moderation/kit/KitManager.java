@@ -106,8 +106,7 @@ public class KitManager implements Listener
         }
         catch (Exception ex)
         {
-            module.getLog().warn("Could not load the kit configuration!");
-            module.getLog().debug(ex.getLocalizedMessage(), ex);
+            module.getLog().warn(ex, "Could not load the kit configuration!");
         }
     }
 
@@ -125,10 +124,9 @@ public class KitManager implements Listener
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed load the modules!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Failed load the modules!");
         }
     }
 

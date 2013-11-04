@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 
@@ -45,7 +46,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang.Validate;
-import org.slf4j.Logger;
 
 /**
  * This class represents the API server and provides methods to configure and
@@ -54,7 +54,7 @@ import org.slf4j.Logger;
 public class ApiServer
 {
     private final Core core;
-    private final Logger logger;
+    private final Log log;
     private final AtomicInteger maxContentLength;
     private final AtomicBoolean compress;
     private final AtomicInteger compressionLevel;
@@ -77,7 +77,7 @@ public class ApiServer
     public ApiServer(Core core)
     {
         this.core = core;
-        this.logger = core.getLog();
+        this.log = core.getLogFactory().getLog("webapi");
         this.bootstrap = new AtomicReference<>(null);
         this.eventLoopGroup = new AtomicReference<>(null);
         this.channel = new AtomicReference<>(null);
@@ -89,7 +89,7 @@ public class ApiServer
         }
         catch (UnknownHostException ignored)
         {
-            this.logger.warn("Failed to get the localhost!");
+            this.log.warn("Failed to get the localhost!");
         }
         this.port = new AtomicInteger(6561);
         this.maxContentLength = new AtomicInteger(1048576);
@@ -109,6 +109,12 @@ public class ApiServer
         this.subscriptions = new ConcurrentHashMap<>();
     }
 
+    public Log getLog()
+    {
+        return this.log;
+    }
+
+
     public void configure(final ApiConfig config)
     {
         assert config != null: "The config must not be null!";
@@ -119,7 +125,7 @@ public class ApiServer
         }
         catch (UnknownHostException ignored)
         {
-            this.logger.warn("Failed to resolve the host {}, ignoring the value...");
+            this.log.warn("Failed to resolve the host {}, ignoring the value...");
         }
         this.setPort(config.network.port);
         this.setMaxThreads(config.network.maxThreads);

@@ -48,13 +48,14 @@ public class ServiceManager
         RegisteredServiceProvider<?> replaced = this.providers.put(service, new RegisteredServiceProvider<>(service, provider, module));
         if (replaced == null)
         {
-            module.getLog().info("Registered ServiceProvider " + provider.getClass().getName()
-                                     + " the Service: " + service.getName());
+            module.getLog().info("Registered ServiceProvider {} the Service: {}", provider.getClass().getName(),
+                                 service.getName());
         }
         else
         {
-            module.getLog().info("Replaced the registered ServiceProvider ("+ replaced.getProvider().getClass().getName()
-                                     +") for the Service " + service.getName() + " by " + provider.getClass().getName());
+            module.getLog().info("Replaced the registered ServiceProvider ({}) for the Service {} by {}",
+                                 replaced.getProvider().getClass().getName(),service.getName(),
+                                 provider.getClass().getName());
         }
     }
 
@@ -63,8 +64,9 @@ public class ServiceManager
         RegisteredServiceProvider removed = this.providers.remove(service);
         if (removed != null)
         {
-            this.core.getLog().info("Unregistered ServiceProvider " + removed.getProvider().getClass().getName()
-                    + " of " + removed.getModule().getName() + " for the Service " + removed.getService().getName());
+            this.core.getLog().info("Unregistered ServiceProvider {} of {} for the Service {}",
+                                    removed.getProvider().getClass().getName(), removed.getModule().getName(),
+                                    removed.getService().getName());
         }
     }
 

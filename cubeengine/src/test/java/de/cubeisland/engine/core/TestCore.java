@@ -28,6 +28,9 @@ import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;
 import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
+import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -40,7 +43,6 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -51,7 +53,7 @@ public class TestCore implements Core
 {
     private final Version version = Version.ONE;
     private final String sourceVersion = "master-aaaaaaaa";
-    private final Logger logger = LoggerFactory.getLogger("");
+    private final Log logger = new LogbackLog((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(""));
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
@@ -97,7 +99,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public org.slf4j.Logger getLog()
+    public Log getLog()
     {
         return this.logger;
     }
@@ -166,12 +168,6 @@ public class TestCore implements Core
     }
 
     @Override
-    public boolean isDebug()
-    {
-        return false;
-    }
-
-    @Override
     public WorldManager getWorldManager()
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -199,5 +195,11 @@ public class TestCore implements Core
     public ServiceManager getServiceManager()
     {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public LogFactory getLogFactory()
+    {
+        return null; // TODO ?
     }
 }

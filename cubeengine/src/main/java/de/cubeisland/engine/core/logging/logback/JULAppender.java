@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.logger;
+package de.cubeisland.engine.core.logging.logback;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,10 +26,10 @@ import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.status.ErrorStatus;
 
 /**
- * An appender for LogBack that forwards all output to a java.util.logging.Logger
+ * An appender for LogBack that forwards all output to a java.util.logging.Log
  * It does support a layout.
  */
-public class JULAppender  extends AppenderBase<ILoggingEvent>
+public class JULAppender extends AppenderBase<ILoggingEvent>
 {
 
     private Logger logger;
@@ -37,12 +37,13 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
 
     public void start()
     {
-        if (this.layout == null) {
-            addStatus(new ErrorStatus("No layout set for the appender named \""  + name + "\".", this));
+        if (this.layout == null)
+        {
+            addStatus(new ErrorStatus("No layout set for the appender named \"" + name + "\".", this));
         }
         if (this.logger == null)
         {
-            addStatus(new ErrorStatus("No logger set for the appender named \"" + name + "\"", this));
+            addStatus(new ErrorStatus("No logging set for the appender named \"" + name + "\"", this));
         }
         else
         {
@@ -79,14 +80,14 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
             level = LogBackLevel.info;
         }
 
-        if (event.getThrowableProxy() != null)
+        // The PatternFormat have to have a newline at the end to give a newline to the exceptions, but we don't want an
+        // extra newline if the exception isn't there.
+        String message = layout.doLayout(event);
+        if (message.endsWith("\n"))
         {
-            this.logger.log(level, layout.doLayout(event), event.getThrowableProxy());
+            message = message.substring(0, message.length() - 1);
         }
-        else
-        {
-            this.logger.log(level, layout.doLayout(event), event.getArgumentArray());
-        }
+        this.logger.log(level, message, event.getArgumentArray());
     }
 
     public void setLayout(Layout<ILoggingEvent> layout)
@@ -112,6 +113,5 @@ public class JULAppender  extends AppenderBase<ILoggingEvent>
         {
             super(name, level);
         }
-
     }
 }

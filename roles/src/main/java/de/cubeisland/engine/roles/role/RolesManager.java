@@ -84,10 +84,9 @@ public class RolesManager
             // AND Resolve Dependencies and Role-Data
             this.reloadAllRoles();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().error("Failed to initialize the role providers!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().error(ex, "Failed to initialize the role providers!");
         }
     }
 

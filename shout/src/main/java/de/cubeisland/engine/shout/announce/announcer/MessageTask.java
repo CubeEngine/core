@@ -42,7 +42,7 @@ public class MessageTask implements Runnable
     public void run()
     {
         long tmpTime = System.currentTimeMillis();
-        CubeEngine.getLog().trace(receiver.getName() + " time since last: " + (tmpTime - lastTime));
+        CubeEngine.getLog().trace("{} time since last: {}", receiver.getName(), (tmpTime - lastTime));
         if (this.runs == this.nextExecution)
         {
             Pair<Announcement, Integer> pair = receiver.getNextDelayAndAnnouncement();

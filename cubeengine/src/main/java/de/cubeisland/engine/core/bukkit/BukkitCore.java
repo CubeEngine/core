@@ -18,11 +18,9 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -47,14 +45,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.filter.ThresholdFilter;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
@@ -73,8 +63,10 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logger.ColorConverter;
-import de.cubeisland.engine.core.logger.JULAppender;
+import de.cubeisland.engine.core.logging.Level;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
+import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -102,12 +94,10 @@ import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
-import static java.util.logging.Level.WARNING;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -123,7 +113,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
-    private Logger logger;
+    private Log logger;
     private EventManager eventRegistration;
     private BukkitCommandManager commandManager;
     private BukkitTaskManager taskManager;
@@ -135,10 +125,10 @@ public final class BukkitCore extends JavaPlugin implements Core
     private CorePerms corePerms;
     private BukkitBanManager banManager;
     private ServiceManager serviceManager;
+    private LogFactory logFactory;
     //endregion
 
     private List<Runnable> initHooks;
-    private LoggerContext loggerContext;
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
     private boolean loadSucceeded;
@@ -197,85 +187,31 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
-            System.setProperty("cubeengine.logger.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
-            System.setProperty("cubeengine.logger.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
+            System.setProperty("cubeengine.logging.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
+            System.setProperty("cubeengine.logging.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
+            System.setProperty("cubeengine.logging.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
         }
         catch (IOException e)
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
-        this.loggerContext = (LoggerContext)LoggerFactory.getILoggerFactory();
-        this.loggerContext.start();
+        // depends on: file manager
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
+                                                                                        .resolve("core.yml").toFile());
 
-        try
-        {
-            File logbackXML = new File(this.getDataFolder(), "logback.xml");
-            JoranConfigurator logbackConfigurator = new JoranConfigurator();
-            logbackConfigurator.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
-            ((LoggerContext)LoggerFactory.getILoggerFactory()).reset();
-            if (logbackXML.exists())
-            {
-                logbackConfigurator.doConfigure(logbackXML.getAbsolutePath());
-            }
-            else
-            {
-                URL url = new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true);
-                if (url != null)
-                {
-                    logbackConfigurator.doConfigure(url);
-                }
-            }
-        }
-        catch (JoranException e)
-        {
-            this.getLogger().log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e
-                .getLocalizedMessage(), e);
-        }
-        // Configure the logger
-        Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
-        JULAppender consoleAppender = new JULAppender();
-        consoleAppender.setContext(parentLogger.getLoggerContext());
-        consoleAppender.setName("cubeengine-console");
-        consoleAppender.setLogger(this.getLogger());
-        PatternLayout consoleLayout = new PatternLayout();
-        consoleLayout.setContext(parentLogger.getLoggerContext());
-        consoleLayout.setPattern("%color(%msg)");
-        consoleAppender.setLayout(consoleLayout);
-        parentLogger.addAppender(consoleAppender);
-        consoleLayout.start();
-        consoleAppender.start();
+        this.logFactory = new LogBackLogFactory(this, this.getLogger(), BukkitUtils.isAnsiSupported(server));
 
-        this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
-        this.logger.setLevel(Level.DEBUG);
-        ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
+        this.logger = logFactory.getCoreLog();
 
         this.fileManager.clearTempDir();
 
         this.banManager = new BukkitBanManager(this);
         this.serviceManager = new ServiceManager(this);
 
-        // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
-
-        parentLogger.setLevel(Level.ALL);
-        this.logger.setLevel(parentLogger.getLevel());
-        // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
-        ThresholdFilter consoleFilter = new ThresholdFilter();
-        consoleFilter.setLevel(this.config.logging.consoleLevel.toString());
-        parentLogger.getAppender("cubeengine-console").addFilter(consoleFilter);
-        consoleFilter.start();
-        // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
-        ThresholdFilter fileFilter = new ThresholdFilter();
-        fileFilter.setLevel(this.config.logging.fileLevel.toString());
-        this.logger.getAppender("core-file").addFilter(fileFilter);
-        fileFilter.start();
-
-        if (!this.config.logging.logCommands)
+        if (this.config.logging.logCommands)
         {
             BukkitUtils.disableCommandLogging();
-            ((Logger)LoggerFactory.getLogger("cubeengine.commands")).setAdditive(false);
         }
 
         if (this.config.catchSystemSignals)
@@ -298,10 +234,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             {
                 this.apiServer.start();
             }
-            catch (ApiStartupException e)
+            catch (ApiStartupException ex)
             {
-                this.logger.error("The web API will not be available as the server failed to start properly...");
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.error(ex, "The web API will not be available as the server failed to start properly...");
             }
         }
 
@@ -404,10 +339,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             {
                 it.next().run();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                this.getLog().error("An error occurred during startup!");
-                this.getLog().debug(e.getLocalizedMessage(), e);
+                this.getLog().error(ex, "An error occurred during startup!");
             }
             it.remove();
         }
@@ -518,9 +452,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.fileManager.clean();
         }
 
-        if (this.loggerContext != null)
+        if (this.logFactory != null)
         {
-            this.loggerContext.stop();
+            this.logFactory.shutdown();
         }
 
         if (this.fileManager != null)
@@ -544,10 +478,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             Files.createDirectories(threadDumpFolder);
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.getLog().warn("Failed to create the folder for the thread dumps!");
-            this.getLog().debug(e.getLocalizedMessage(), e);
+            this.getLog().warn(ex, "Failed to create the folder for the thread dumps!");
             return;
         }
 
@@ -565,10 +498,9 @@ public final class BukkitCore extends JavaPlugin implements Core
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.getLog().warn("Failed to write a thread dump!");
-            this.getLog().debug(e.getLocalizedMessage(), e);
+            this.getLog().warn(ex, "Failed to write a thread dump!");
         }
     }
 
@@ -665,7 +597,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public Logger getLog()
+    public Log getLog()
     {
         return this.logger;
     }
@@ -692,12 +624,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     public BukkitTaskManager getTaskManager()
     {
         return this.taskManager;
-    }
-
-    @Override
-    public boolean isDebug()
-    {
-        return Level.DEBUG.isGreaterOrEqual(this.logger.getLevel());
     }
 
     @Override
@@ -739,6 +665,11 @@ public final class BukkitCore extends JavaPlugin implements Core
     public ServiceManager getServiceManager()
     {
         return this.serviceManager;
+    }
+
+    public LogFactory getLogFactory()
+    {
+        return logFactory;
     }
     //endregion
 }

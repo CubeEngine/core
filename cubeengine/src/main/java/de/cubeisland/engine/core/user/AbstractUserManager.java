@@ -254,7 +254,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void cacheUser(User user)
     {
-        this.core.getLog().debug("User "+ user.getName()+ " cached!");
+        this.core.getLog().debug("User {} cached!", user.getName());
         this.cachedUsers.put(user.getName().toLowerCase(), user);
         this.cachedUsers.put(user.getId(), user);
         this.attachDefaults(user);
@@ -262,7 +262,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void removeCachedUser(User user)
     {
-        this.core.getLog().debug("Removed cached user "+ user.getName()+ "!");
+        this.core.getLog().debug("Removed cached user {}!", user.getName());
         this.cachedUsers.remove(user.getName().toLowerCase());
         this.cachedUsers.remove(user.getId());
         user.detachAll();

@@ -68,9 +68,9 @@ public class CubeCommandBackend extends SimpleCommandBackend
                 serverField.set(server, newCommandMAp);
                 pmField.set(pm, newCommandMAp);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
+                CubeEngine.getLog().debug(ex, "Failed to swap command map");
             }
         }
         return newCommandMAp;

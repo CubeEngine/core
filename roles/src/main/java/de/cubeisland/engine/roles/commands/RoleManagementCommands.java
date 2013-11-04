@@ -474,10 +474,9 @@ public class RoleManagementCommands extends RoleCommandHelper
             }
             context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            context.getCommand().getModule().getLog().warn("Failed to delete the role configuration for {}!", role.getName());
-            context.getCommand().getModule().getLog().debug(e.getLocalizedMessage(), e);
+            context.getCommand().getModule().getLog().warn(ex, "Failed to delete the role configuration for {}!", role.getName());
             context.sendTranslated("&eDeleted the role, however its configuration file could not be removed.");
         }
     }
