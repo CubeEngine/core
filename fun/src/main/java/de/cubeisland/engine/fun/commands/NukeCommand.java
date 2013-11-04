@@ -72,7 +72,7 @@ public class NukeCommand
                 @Flag(longName = "unsafe", name = "u"),
                 @Flag(longName = "quiet", name = "q")
             },
-        usage = ""
+        usage = "[param1] [param2] [param3] [Shape <shape>] [player <player>] [height <height>] [range <range>] [-unsafe] [-quiet]"
     )
     public void nuke(ParameterizedContext context)
     {
