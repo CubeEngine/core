@@ -20,6 +20,7 @@ package de.cubeisland.engine.travel;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.command.CommandManager;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.travel.interactions.HomeAdminCommand;
@@ -46,21 +47,22 @@ public class Travel extends Module
         this.config = this.loadConfig(TravelConfig.class);
         this.getCore().getDB().registerTable(TableTeleportPoint.initTable(this.getCore().getDB()));
         this.getCore().getDB().registerTable(TableInvite.initTable(this.getCore().getDB()));
-        this.getLog().trace("{} ms - TelePointManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
+        Log log = this.getLog();
+        log.trace("{} ms - TelePointManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager = new TelePointManager(this);
-        this.getLog().trace("{} ms - InviteManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
+        log.trace("{} ms - InviteManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.inviteManager = new InviteManager(this.getCore().getDB(), this);
-        this.getLog().trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
+        log.trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager.load(this.inviteManager);
         final CommandManager cm = this.getCore().getCommandManager();
-        this.getLog().trace("{} ms - register commands", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
+        log.trace("{} ms - register commands", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         cm.registerCommand(new HomeCommand(this));
         cm.registerCommand(new HomeAdminCommand(this), "home");
         cm.registerCommand(new WarpCommand(this));
         cm.registerCommand(new WarpAdminCommand(this), "warp");
-        this.getLog().trace("{} ms - register listener", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
+        log.trace("{} ms - register listener", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new HomeListener(this));
-        this.getLog().trace("{} ms - Done", Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS));
+        log.trace("{} ms - Done", Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS));
     }
 
     public TravelConfig getConfig()

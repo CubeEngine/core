@@ -25,12 +25,12 @@ import java.nio.file.Path;
 import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.configuration.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
-import org.slf4j.Logger;
 
 
 /**
@@ -41,7 +41,7 @@ public abstract class Module
     private boolean initialized = false;
     private Core core;
     private ModuleInfo info;
-    private Logger log;
+    private Log log;
     private ModuleLoader loader;
     private ModuleRegistry registry = null;
     private ClassLoader classLoader;
@@ -49,7 +49,7 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Logger logger)
+    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Log logger)
     {
         if (!this.initialized)
         {
@@ -109,7 +109,7 @@ public abstract class Module
      *
      * @return the module log
      */
-    public Logger getLog()
+    public Log getLog()
     {
         return this.log;
     }
@@ -145,10 +145,9 @@ public abstract class Module
         {
             Files.createDirectories(this.folder);
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.log.error("Failed to create the data folder!");
-            this.log.debug(e.getLocalizedMessage(), e);
+            this.log.error(ex, "Failed to create the data folder!");
         }
         return this.folder;
     }
@@ -266,8 +265,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().error("{} while enabling!", t.getClass().getSimpleName());
-                this.getLog().debug(t.getLocalizedMessage(), t);
+                this.getLog().error(t, "{} while enabling!", t.getClass().getSimpleName());
             }
         }
         return this.enabled;
@@ -291,8 +289,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().warn("{} while disabling!", t.getClass().getSimpleName());
-                this.getLog().debug(t.getLocalizedMessage(), t);
+                this.getLog().warn(t, "{} while disabling!", t.getClass().getSimpleName());
             }
             this.enabled = false;
         }

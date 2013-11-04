@@ -40,11 +40,12 @@ import java.util.zip.ZipEntry;
 
 import javax.annotation.Nullable;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
+import de.cubeisland.engine.core.logging.LoggingException;
+import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
+import de.cubeisland.engine.core.logging.logback.LogbackLog;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -58,8 +59,6 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
 import static java.util.Map.Entry;
@@ -67,7 +66,7 @@ import static java.util.Map.Entry;
 
 public abstract class BaseModuleManager implements ModuleManager
 {
-    private final Logger logger;
+    private final Log logger;
     protected final Core core;
     private final ModuleLoader loader;
     private final Map<String, Module> modules;
@@ -77,11 +76,11 @@ public abstract class BaseModuleManager implements ModuleManager
 
     private final Map<String, String> serviceProviders;
 
-    public BaseModuleManager(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
+    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
         this.logger = core.getLog();
-        this.loader = new ModuleLoader(core, parentClassLoader, loggerFactory);
+        this.loader = new ModuleLoader(core, parentClassLoader);
         this.modules = new LinkedHashMap<>();
         this.moduleInfos = new THashMap<>();
         this.classMap = new THashMap<>();
@@ -160,22 +159,20 @@ public abstract class BaseModuleManager implements ModuleManager
                         else
                         {
                             this.unloadModule(module);
-                            this.logger.info("A newer version of '" + info.getName() + "' will replace the currently loaded version!");
+                            this.logger.info("A newer version of '{}' will replace the currently loaded version!", info.getName());
                         }
                     }
                     this.moduleInfos.put(info.getId(), info);
                 }
-                catch (InvalidModuleException e)
+                catch (InvalidModuleException ex)
                 {
-                    this.logger.error("Failed to load the module from {}!", file);
-                    this.logger.debug(e.getLocalizedMessage(), e);
+                    this.logger.error(ex, "Failed to load the module from {}!", file);
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.core.getLog().error("Failed to load modules!");
-            this.core.getLog().debug(e.getLocalizedMessage(), e);
+            this.core.getLog().error(ex, "Failed to load modules!");
             return;
         }
         Collection<String> moduleNames = new HashSet<>(this.moduleInfos.keySet());
@@ -195,17 +192,15 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 this.loadModule(moduleName, this.moduleInfos);
             }
-            catch (InvalidModuleException e)
+            catch (InvalidModuleException ex)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.debug("Failed to load the module '{}'", moduleName);
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.debug("ex, Failed to load the module '{}'", moduleName);
             }
-            catch (ModuleException e)
+            catch (ModuleException ex)
             {
                 this.moduleInfos.remove(moduleName);
-                this.logger.error("Failed to load the module '{}'", moduleName);
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.error(ex, "Failed to load the module '{}'", moduleName);
             }
         }
         this.logger.info("Finished loading modules!");
@@ -301,28 +296,6 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        // Load the modules logback.xml, if it exists
-        try (JarFile jarFile = new JarFile(info.getPath().toFile()))
-        {
-            ZipEntry entry = jarFile.getEntry("logback.xml");
-            if (entry != null)
-            {
-                JoranConfigurator logbackConfig = new JoranConfigurator();
-                logbackConfig.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
-                try (InputStream is = jarFile.getInputStream(entry))
-                {
-                    logbackConfig.doConfigure(is);
-                }
-            }
-        }
-        catch (IOException ignored)
-        {} // This should never happen
-        catch (JoranException e)
-        {
-            module.getLog().warn("An error occurred while loading the modules logback.xml config");
-            module.getLog().debug(e.getLocalizedMessage(), e);
-        }
-
         module = this.loader.loadModule(info);
         loadStack.pop();
 
@@ -334,10 +307,9 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             fields = module.getClass().getDeclaredFields();
         }
-        catch (NoClassDefFoundError e)
+        catch (NoClassDefFoundError ex)
         {
-            module.getLog().warn("Failed to get the fields of the main class");
-            module.getLog().debug(e.getLocalizedMessage(), e);
+            module.getLog().warn(ex, "Failed to get the fields of the main class");
         }
         for (Field field : fields)
         {
@@ -453,7 +425,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.disableModule(module);
         this.loader.unloadModule(module);
         this.moduleInfos.remove(module.getId());
-        ((ch.qos.logback.classic.Logger)module.getLog()).detachAndStopAllAppenders();
+        this.core.getLogFactory().shutdown(module.getLog());
 
         // null all the fields referencing this module
         for (Module m : this.modules.values())
@@ -486,10 +458,9 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 ((URLClassLoader)classLoader).close();
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                module.getLog().warn("Failed to close the class loader of {}!", module.getName());
-                module.getLog().debug(e.getLocalizedMessage(), e);
+                module.getLog().warn(ex, "Failed to close the class loader of {}!", module.getName());
             }
         }
         else
@@ -561,10 +532,9 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 this.reloadModule(module);
             }
-            catch (ModuleException e)
+            catch (ModuleException ex)
             {
-                this.logger.error("Failed to reload '{}'", module.getName());
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.error(ex, "Failed to reload ''{}''", module.getName());
             }
             ++modules;
         }

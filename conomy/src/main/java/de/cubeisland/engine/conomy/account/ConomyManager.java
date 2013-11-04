@@ -31,6 +31,8 @@ import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
+import de.cubeisland.engine.core.logging.Level;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -39,8 +41,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.conomy.account.storage.TableAccount.TABLE_ACCOUNT;
 import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_BANK_ACCESS;
@@ -53,7 +53,7 @@ public class ConomyManager
     private Map<String,BankAccount> bankaccounts = new THashMap<>();
     private Map<Long,BankAccount> bankaccountsID = new THashMap<>();
 
-    protected final Logger logger;
+    protected final Log logger;
     protected final ConomyConfiguration config;
     private Economy conomyInterface;
 
@@ -69,10 +69,11 @@ public class ConomyManager
 
         this.dsl = this.module.getCore().getDB().getDSL();
 
-        this.logger =  LoggerFactory.getLogger("cubeengine.conomy.transactions");
+
+        this.logger = module.getCore().getLogFactory().getLog("conomy.transactions");
         if (!this.module.getConfig().enableLogging)
         {
-            ((ch.qos.logback.classic.Logger)logger).getAppender("conomy.transactions-file").stop();
+            logger.setLevel(Level.OFF);
         }
 
         this.um = this.module.getCore().getUserManager();

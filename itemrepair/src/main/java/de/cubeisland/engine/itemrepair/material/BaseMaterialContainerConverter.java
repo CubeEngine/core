@@ -30,7 +30,7 @@ import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.NullNode;
 
-import static de.cubeisland.engine.configuration.Configuration.convertFromNode;
+import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 
 public class BaseMaterialContainerConverter implements Converter<BaseMaterialContainer>
 {
@@ -72,7 +72,7 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
     {
         if (node instanceof MapNode)
         {
-            map = convertFromNode(node, fieldType);
+            map = CONVERTERS.convertFromNode(node, fieldType);
             BaseMaterialContainer container = new BaseMaterialContainer(map);
             map = null;
             return container;

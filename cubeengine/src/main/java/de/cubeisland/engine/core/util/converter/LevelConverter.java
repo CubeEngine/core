@@ -15,23 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package de.cubeisland.engine.core.util.converter;
 
-import ch.qos.logback.classic.Level;
+import de.cubeisland.engine.core.logging.Level;
+
 import de.cubeisland.engine.configuration.convert.ConversionException;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
-
 public class LevelConverter implements Converter<Level>
 {
     @Override
     public Node toNode(Level object) throws ConversionException
     {
-        return wrapIntoNode(object.toString());
+        return StringNode.of(object.toString());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class LevelConverter implements Converter<Level>
     {
         if (node instanceof StringNode)
         {
-            Level lv = Level.toLevel(((StringNode)node).getValue(), null);
+            Level lv = Level.toLevel(((StringNode)node).getValue());
             if (lv == null)
             {
                 throw new ConversionException("Unknown LogLevel: " + ((StringNode)node).getValue());
@@ -50,6 +50,6 @@ public class LevelConverter implements Converter<Level>
         { // OFF is interpreted as a boolean false
             return fromNode(new StringNode("OFF"));
         }
-        throw new ConversionException("Invalid Node!" + node.getClass());
+        throw new ConversionException("Invalid Node! " + node.getClass());
     }
 }

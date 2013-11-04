@@ -25,14 +25,12 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
-
 public class ItemStackConverter implements Converter<ItemStack>
 {
     @Override
     public Node toNode(ItemStack object) throws ConversionException
     {
-        return wrapIntoNode(object.getType().getId() + ":" + object.getDurability());
+        return StringNode.of(object.getType().name() + ":" + object.getDurability());
     }
 
     @Override

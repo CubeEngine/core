@@ -71,10 +71,9 @@ public class BukkitUtils
             entityPlayerLocaleField = EntityPlayer.class.getDeclaredField("locale");
             entityPlayerLocaleField.setAccessible(true);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            core.getLog().error("Failed to initialize the required hacks!");
-            core.getLog().debug(e.getLocalizedMessage(), e);
+            core.getLog().error(ex, "Failed to initialize the required hacks!");
             return false;
         }
         return true;
@@ -136,7 +135,7 @@ public class BukkitUtils
     private static Filter filter = null;
     private static CommandLogFilter commandFilter = null;
 
-    static void disableCommandLogging()
+    public static void disableCommandLogging()
     {
         if (commandFilter == null)
         {
@@ -310,11 +309,6 @@ public class BukkitUtils
         {}
     }
 
-    public static boolean isANSISupported()
-    {
-        return ((CraftServer) Bukkit.getServer()).getReader().getTerminal().isAnsiSupported();
-    }
-
 
     public static Player getOfflinePlayerAsPlayer(OfflinePlayer player)
     {
@@ -371,5 +365,10 @@ public class BukkitUtils
             CubeEngine.getCore().getLog().debug(ex.getLocalizedMessage(), ex);
             return null;
         }
+    }
+
+    static boolean isAnsiSupported(Server server)
+    {
+        return ((CraftServer)server).getReader().getTerminal().isAnsiSupported();
     }
 }

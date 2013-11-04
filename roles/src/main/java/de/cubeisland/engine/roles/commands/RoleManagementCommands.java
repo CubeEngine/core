@@ -31,12 +31,11 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.Priority;
+import de.cubeisland.engine.roles.config.PriorityConverter;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
-
-import static de.cubeisland.engine.configuration.Configuration.matchConverter;
 
 public class RoleManagementCommands extends RoleCommandHelper
 {
@@ -357,7 +356,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Converter<Priority> converter = matchConverter(Priority.class);
+        Converter<Priority> converter = new PriorityConverter();
         Priority priority;
         try
         {
@@ -475,10 +474,9 @@ public class RoleManagementCommands extends RoleCommandHelper
             }
             context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            context.getCommand().getModule().getLog().warn("Failed to delete the role configuration for {}!", role.getName());
-            context.getCommand().getModule().getLog().debug(e.getLocalizedMessage(), e);
+            context.getCommand().getModule().getLog().warn(ex, "Failed to delete the role configuration for {}!", role.getName());
             context.sendTranslated("&eDeleted the role, however its configuration file could not be removed.");
         }
     }

@@ -15,30 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.roles.config;
+package de.cubeisland.engine.core.logging;
 
+import java.util.Locale;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.StringNode;
-
-public class PriorityConverter implements Converter<Priority>
+public enum Level
 {
-    @Override
-    public Node toNode(Priority object) throws ConversionException
-    {
-        return StringNode.of(object.toString());
-    }
+    ALL,
+    TRACE,
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+    OFF;
 
-    @Override
-    public Priority fromNode(Node node) throws ConversionException
+    public static Level toLevel(String level)
     {
-        Priority prio = Priority.getByName(node.asText());
-        if (prio == null)
-        {
-            prio = Priority.getByValue(Integer.valueOf(node.asText()));
-        }
-        return prio;
+        return Level.valueOf(level.toUpperCase(Locale.ENGLISH));
     }
 }

@@ -1,10 +1,10 @@
 <configuration>
   <timestamp key="byMinute" datePattern="yyyy'-'MM'-'dd'--'HHmm" timeReference="contextBirth"/>
-  <conversionRule conversionWord="color" converterClass="de.cubeisland.engine.core.logger.ColorConverter" />
+  <conversionRule conversionWord="color" converterClass="de.cubeisland.engine.core.logging.logback.ColorConverter" />
 
   <!-- File appenders-->
   <appender name="commands-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${cubeengine.logger.default-path}/${byMinute}/commands.log</file>
+    <file>${cubeengine.logging.default-path}/${byMinute}/commands.log</file>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
         <pattern>%date{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
@@ -13,17 +13,17 @@
     </encoder>
 
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/commands.%i.log</fileNamePattern>
+      <fileNamePattern>${cubeengine.logging.default-path}/${byMinute}/commands.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
-      <maxIndex>${cubeengine.logger.max-file-count}</maxIndex>
+      <maxIndex>${cubeengine.logging.max-file-count}</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>${cubeengine.logger.max-size}</maxFileSize>
+      <maxFileSize>${cubeengine.logging.max-size}</maxFileSize>
     </triggeringPolicy>
   </appender>
 
   <appender name="permissions-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${cubeengine.logger.default-path}/${byMinute}/permissions.log</file>
+    <file>${cubeengine.logging.default-path}/${byMinute}/permissions.log</file>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
         <pattern>%msg%n</pattern>
@@ -32,17 +32,17 @@
     </encoder>
 
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/permissions.%i.log</fileNamePattern>
+      <fileNamePattern>${cubeengine.logging.default-path}/${byMinute}/permissions.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
-      <maxIndex>${cubeengine.logger.max-file-count}</maxIndex>
+      <maxIndex>${cubeengine.logging.max-file-count}</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>${cubeengine.logger.max-size}</maxFileSize>
+      <maxFileSize>${cubeengine.logging.max-size}</maxFileSize>
     </triggeringPolicy>
   </appender>
 
   <appender name="language-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${cubeengine.logger.default-path}/${byMinute}/missing-translations.log</file>
+    <file>${cubeengine.logging.default-path}/${byMinute}/missing-translations.log</file>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
         <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
@@ -51,17 +51,17 @@
     </encoder>
 
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/missing-translations.%i.log</fileNamePattern>
+      <fileNamePattern>${cubeengine.logging.default-path}/${byMinute}/missing-translations.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
-      <maxIndex>${cubeengine.logger.max-file-count}</maxIndex>
+      <maxIndex>${cubeengine.logging.max-file-count}</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>${cubeengine.logger.max-size}</maxFileSize>
+      <maxFileSize>${cubeengine.logging.max-size}</maxFileSize>
     </triggeringPolicy>
   </appender>
 
   <appender name="webapi-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${cubeengine.logger.default-path}/${byMinute}/webapi.log</file>
+    <file>${cubeengine.logging.default-path}/${byMinute}/webapi.log</file>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
         <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
@@ -70,17 +70,17 @@
     </encoder>
 
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/webapi.%i.log</fileNamePattern>
+      <fileNamePattern>${cubeengine.logging.default-path}/${byMinute}/webapi.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
-      <maxIndex>${cubeengine.logger.max-file-count}</maxIndex>
+      <maxIndex>${cubeengine.logging.max-file-count}</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>${cubeengine.logger.max-size}</maxFileSize>
+      <maxFileSize>${cubeengine.logging.max-size}</maxFileSize>
     </triggeringPolicy>
   </appender>
 
   <appender name="core-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${cubeengine.logger.default-path}/${byMinute}/core.log</file>
+    <file>${cubeengine.logging.default-path}/${byMinute}/core.log</file>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
         <pattern>%date{yyyy-MM-dd HH:mm:ss} [%level] %msg%n</pattern>
@@ -89,24 +89,24 @@
     </encoder>
 
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${cubeengine.logger.default-path}/${byMinute}/core.%i.log</fileNamePattern>
+      <fileNamePattern>${cubeengine.logging.default-path}/${byMinute}/core.%i.log</fileNamePattern>
       <minIndex>1</minIndex>
-      <maxIndex>${cubeengine.logger.max-file-count}</maxIndex>
+      <maxIndex>${cubeengine.logging.max-file-count}</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>${cubeengine.logger.max-size}</maxFileSize>
+      <maxFileSize>${cubeengine.logging.max-size}</maxFileSize>
     </triggeringPolicy>
   </appender>
 
   <appender name="exceptions-file" class="ch.qos.logback.core.FileAppender">
-    <file>${cubeengine.logger.default-path}/${byMinute}/exceptions.log</file>
+    <file>${cubeengine.logging.default-path}/${byMinute}/exceptions.log</file>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
         <pattern>[%date{yyyy-MM-dd HH:mm:ss}] %msg%n</pattern>
         <fileHeader>CubeEngine Exceptions log-file - ${byMinute}</fileHeader>
       </layout>
     </encoder>>
-    <filter class="de.cubeisland.engine.core.logger.ExceptionFilter" />
+    <filter class="de.cubeisland.engine.core.logging.logback.ExceptionFilter" />
   </appender>
 
 
@@ -128,12 +128,12 @@
     <appender-ref ref="webapi-file" />
   </logger>
 
-  <!-- The logger for the core-->
+  <!-- The logging for the core-->
   <logger name="cubeengine.core" additivity="true">
     <appender-ref ref="core-file" />
   </logger>
 
-  <!-- The parent logger for all loggers related to CubeEngine-->
+  <!-- The parent logging for all loggers related to CubeEngine-->
   <logger name="cubeengine" level="all" additivity="false">
     <appender-ref ref="exceptions-file" />
     <!-- A JULAppender is set programmatically -->

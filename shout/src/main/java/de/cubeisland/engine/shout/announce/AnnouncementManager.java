@@ -43,6 +43,7 @@ import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.i18n.Language;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -54,7 +55,6 @@ import de.cubeisland.engine.shout.announce.announcer.MessageTask;
 import de.cubeisland.engine.shout.announce.receiver.Receiver;
 import de.cubeisland.engine.shout.announce.receiver.UserReceiver;
 import org.apache.commons.lang.Validate;
-import org.slf4j.Logger;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.TXT;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
@@ -67,7 +67,7 @@ public class AnnouncementManager
     private static final String MOTD_FOLDER_NAME = "MOTD";
     private static final String META_FILE_NAME = "meta.yml";
 
-    private final Logger logger;
+    private final Log logger;
     private final Shout module;
     private final Announcer announcer;
     private final Path announcementFolder;
@@ -350,10 +350,9 @@ public class AnnouncementManager
                         motdLoaded = true;
                         continue;
                     }
-                    catch (ShoutException e)
+                    catch (ShoutException ex)
                     {
-                        this.logger.info("An announcement that looked like the MOTD failed to load.");
-                        this.logger.debug(e.getLocalizedMessage(), e);
+                        this.logger.info(ex, "An announcement that looked like the MOTD failed to load.");
                     }
                 }
                 this.logger.debug("Loading announcement {}", path);
@@ -361,17 +360,15 @@ public class AnnouncementManager
                 {
                     this.addAnnouncement(this.loadAnnouncement(path));
                 }
-                catch (ShoutException e)
+                catch (ShoutException ex)
                 {
-                    this.logger.warn("There was an error loading the announcement: {}", path);
-                    this.logger.debug(e.getLocalizedMessage(), e);
+                    this.logger.warn(ex, "There was an error loading the announcement: {}", path);
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.logger.warn("An error occured while loading announcements.");
-            this.logger.debug(e.getLocalizedMessage(), e);
+            this.logger.warn(ex, "An error occured while loading announcements.");
         }
     }
 
@@ -407,10 +404,9 @@ public class AnnouncementManager
                     {
                         Files.move(alternative, metaFile);
                     }
-                    catch (IOException e)
+                    catch (IOException ex)
                     {
-                        this.module.getLog().info("Failed to rename the meta file, using it anyway: {}", alternative.getFileName());
-                        this.module.getLog().debug(e.getLocalizedMessage(), e);
+                        this.module.getLog().info(ex, "Failed to rename the meta file, using it anyway: {}", alternative.getFileName());
                         metaFile = alternative;
                     }
                 }
@@ -466,17 +462,15 @@ public class AnnouncementManager
                         messages.put(language.getLocale(), StringUtils.explode("\n", content));
                     }
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    this.module.getLog().info("Failed to load an announcement file: {}", langFile);
-                    this.module.getLog().debug(e.getLocalizedMessage(), e);
+                    this.module.getLog().info(ex, "Failed to load an announcement file: {}", langFile);
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed to read an announcement folder: {}", announcementFolder);
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.logger.warn(ex, "Failed to read an announcement folder: {}", announcementFolder);
         }
 
 

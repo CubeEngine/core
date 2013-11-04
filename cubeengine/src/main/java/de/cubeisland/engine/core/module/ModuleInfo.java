@@ -36,7 +36,7 @@ import org.apache.commons.lang.Validate;
 public class ModuleInfo
 {
     private static final char DEP_VERSION_DELIM = '/';
-    private final Path file;
+    private final Path path;
     private final String main;
     private final String id;
     private final String name;
@@ -54,7 +54,7 @@ public class ModuleInfo
 
     ModuleInfo(Core core)
     {
-        this.file = Paths.get("CubeEngine.jar");
+        this.path = Paths.get("CubeEngine.jar");
         this.sourceVersion = core.getSourceVersion();
         if (core instanceof BukkitCore)
         {
@@ -85,7 +85,7 @@ public class ModuleInfo
         return name;
     }
 
-    public ModuleInfo(Path file, ModuleConfig config)
+    public ModuleInfo(Path path, ModuleConfig config)
     {
         assert config != null: "The module configuration failed to loaded!";
         assert config.name != null: "The module doesn't seem to have a name.";
@@ -93,7 +93,7 @@ public class ModuleInfo
         this.name = config.name.trim();
         Validate.notEmpty(this.name, "The module name seems to be empty.");
 
-        this.file = file;
+        this.path = path;
         this.id = nameToId(config.name);
 
         if (config.main == null)
@@ -164,9 +164,9 @@ public class ModuleInfo
      *
      * @return the module file
      */
-    Path getPath()
+    public Path getPath()
     {
-        return this.file;
+        return this.path;
     }
 
     /**

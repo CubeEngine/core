@@ -37,7 +37,7 @@ import de.cubeisland.engine.log.storage.TableActionTypes;
 import de.cubeisland.engine.log.storage.TableLogEntry;
 import de.cubeisland.engine.log.tool.ToolListener;
 
-import static de.cubeisland.engine.configuration.Configuration.registerConverter;
+import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 
 public class Log extends Module implements Listener
 {
@@ -54,7 +54,7 @@ public class Log extends Module implements Listener
         this.getCore().getDB().registerTable(TableLogEntry.initTable(this.getCore().getDB()));
 
         this.config = this.loadConfig(LogConfiguration.class);
-        registerConverter(ContainerType.class, new ContainerTypeConverter());
+        CONVERTERS.registerConverter(ContainerType.class, new ContainerTypeConverter());
         this.logManager = new LogManager(this);
         this.actionTypeManager = new ActionTypeManager(this);
 

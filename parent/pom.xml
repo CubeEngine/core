@@ -162,12 +162,12 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Logback dependencies-->
+      <!-- Logback dependencies
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.7.5</version>
-      </dependency>
+      </dependency>   -->
 
       <!-- Test dependencies -->
       <dependency>
@@ -205,7 +205,14 @@
         <filtering>true</filtering>
         <includes>
           <include>module.yml</include>
-          <include>logback.xml</include>
+        </includes>
+      </resource>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}/src/main/resources/</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>logback*.xml</include>
         </includes>
       </resource>
       <resource>

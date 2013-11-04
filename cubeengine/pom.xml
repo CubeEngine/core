@@ -34,7 +34,7 @@
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>configuration</artifactId>
-      <version>0.0.3</version>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
@@ -157,7 +157,14 @@
         <filtering>true</filtering>
         <includes>
           <include>plugin.yml</include>
-          <include>logback.xml</include>
+        </includes>
+      </resource>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}/src/main/resources/</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>logback*.xml</include>
         </includes>
       </resource>
       <resource>

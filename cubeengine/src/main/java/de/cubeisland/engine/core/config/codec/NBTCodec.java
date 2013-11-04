@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.core.config.codec;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,7 +58,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-import static de.cubeisland.engine.configuration.Configuration.convertToNode;
+import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 
 public class NBTCodec extends ConfigurationCodec
 {
@@ -70,16 +69,16 @@ public class NBTCodec extends ConfigurationCodec
     }
 
     @Override
-    protected void saveIntoFile(Configuration config, MapNode node, File file) throws IOException
+    protected final void save(MapNode node, OutputStream os, Configuration config) throws IOException
     {
-        NBTOutputStream nbtOutputStream = new NBTOutputStream(new FileOutputStream(file), false);
+        NBTOutputStream nbtOutputStream = new NBTOutputStream(os, false);
         nbtOutputStream.writeTag(this.convertMap(node));
         nbtOutputStream.flush();
         nbtOutputStream.close();
     }
 
     @Override
-    public MapNode loadFromInputStream(InputStream is)
+    protected final MapNode load(InputStream is, Configuration config)
     {
         try
         {
@@ -141,7 +140,7 @@ public class NBTCodec extends ConfigurationCodec
             {
                 try
                 {
-                    return convertToNode(((Tag)value).getValue());
+                    return CONVERTERS.convertToNode(((Tag)value).getValue());
                 }
                 catch (ConversionException e)
                 {

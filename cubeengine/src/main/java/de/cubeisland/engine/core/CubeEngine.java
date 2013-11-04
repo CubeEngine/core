@@ -19,8 +19,8 @@ package de.cubeisland.engine.core;
 
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.user.UserManager;
-import org.slf4j.Logger;
 
 /**
  * The CubeEngine provides static method to access all important Manager and the Core.
@@ -114,11 +114,11 @@ public final class CubeEngine
     }
 
     /**
-     * Returns the Logger
+     * Returns the Log
      *
-     * @return the Logger
+     * @return the Log
      */
-    public static Logger getLog()
+    public static Log getLog()
     {
         return core.getLog();
     }

@@ -15,30 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.roles.config;
+package de.cubeisland.engine.core.logging;
 
-
-import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.StringNode;
-
-public class PriorityConverter implements Converter<Priority>
+public class LoggingException extends Exception
 {
-    @Override
-    public Node toNode(Priority object) throws ConversionException
+    public LoggingException(Throwable t)
     {
-        return StringNode.of(object.toString());
+        super(t);
     }
 
-    @Override
-    public Priority fromNode(Node node) throws ConversionException
+    public LoggingException(String m, Throwable t)
     {
-        Priority prio = Priority.getByName(node.asText());
-        if (prio == null)
-        {
-            prio = Priority.getByValue(Integer.valueOf(node.asText()));
-        }
-        return prio;
+        super(m, t);
+    }
+
+    public LoggingException(String m)
+    {
+        super(m);
     }
 }

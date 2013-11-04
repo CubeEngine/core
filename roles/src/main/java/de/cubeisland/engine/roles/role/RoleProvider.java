@@ -125,8 +125,7 @@ public abstract class RoleProvider
         }
         catch (IOException e)
         {
-            this.module.getLog().warn("Failed to load the configurat");
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            this.module.getLog().warn(e, "Failed to load the configuration");
         }
         this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getFileName(), i);
     }
@@ -206,7 +205,7 @@ public abstract class RoleProvider
             }
             catch (CircularRoleDependencyException ex)
             {
-                this.module.getLog().warn(ex.getMessage());
+                this.module.getLog().warn(ex, "A CircularRoleDependencyException occurred");
                 return null;
             }
         }
@@ -300,10 +299,9 @@ public abstract class RoleProvider
         {
             role.saveConfigToNewFile();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed to save the the config after renaming for {}!", role.getName());
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Failed to save the the config after renaming for {}!", role.getName());
             return false;
         }
 

@@ -25,14 +25,12 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
-
 public class MaterialConverter implements Converter<Material>
 {
     @Override
     public Node toNode(Material object) throws ConversionException
     {
-        return wrapIntoNode(object.name());
+        return StringNode.of(object.name());
     }
 
     @Override

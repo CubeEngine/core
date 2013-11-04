@@ -32,8 +32,7 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
 
-import static de.cubeisland.engine.configuration.Configuration.convertFromNode;
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
+import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 
 public class LocationConverter implements Converter<Location>
 {
@@ -54,7 +53,7 @@ public class LocationConverter implements Converter<Location>
         loc.put("z", location.getZ());
         loc.put("yaw", location.getYaw());
         loc.put("pitch", location.getPitch());
-        return wrapIntoNode(loc);
+        return CONVERTERS.wrapIntoNode(loc);
     }
 
     @Override
@@ -65,11 +64,11 @@ public class LocationConverter implements Converter<Location>
         {
             Map<String, Node> input = ((MapNode)node).getMappedNodes();
             World world = server.getWorld(((StringNode)input.get("world")).getValue());
-            double x = convertFromNode(input.get("x"), double.class);
-            double y = convertFromNode(input.get("y"), double.class);
-            double z = convertFromNode(input.get("z"), double.class);
-            double yaw = convertFromNode(input.get("yaw"), double.class);
-            double pitch = convertFromNode(input.get("pitch"), double.class);
+            double x = CONVERTERS.convertFromNode(input.get("x"), double.class);
+            double y = CONVERTERS.convertFromNode(input.get("y"), double.class);
+            double z = CONVERTERS.convertFromNode(input.get("z"), double.class);
+            double yaw = CONVERTERS.convertFromNode(input.get("yaw"), double.class);
+            double pitch = CONVERTERS.convertFromNode(input.get("pitch"), double.class);
 
             return new Location(world, x, y, z, (float)yaw, (float)pitch);
         }
