@@ -18,6 +18,7 @@
 package de.cubeisland.engine.fun.commands;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -35,6 +36,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.Vector3;
 import de.cubeisland.engine.core.util.math.shape.Cuboid;
@@ -220,10 +222,15 @@ public class NukeCommand
     private class NukeListener implements Listener
     {
         private final Set<TNTPrimed> noBlockDamageSet;
+        private TaskManager taskManager;
+        private int taskID;
 
         public NukeListener()
         {
             this.noBlockDamageSet = new HashSet<>();
+
+            this.taskManager = module.getCore().getTaskManager();
+            this.taskID = -1;
         }
 
         public void add(TNTPrimed tnt)
@@ -231,9 +238,17 @@ public class NukeCommand
             this.noBlockDamageSet.add(tnt);
         }
 
-        public void remove(TNTPrimed tnt)
+        public void removeDeadTNT()
         {
-            this.noBlockDamageSet.remove(tnt);
+            Iterator<TNTPrimed> tntIterator = this.noBlockDamageSet.iterator();
+            while(tntIterator.hasNext())
+            {
+                TNTPrimed tnt = tntIterator.next();
+                if(tnt.isDead())
+                {
+                    tntIterator.remove();
+                }
+            }
         }
 
         public boolean contains(TNTPrimed tnt)
@@ -249,14 +264,19 @@ public class NukeCommand
                 if (event.getEntityType() == EntityType.PRIMED_TNT && this.contains((TNTPrimed)event.getEntity()))
                 {
                     event.blockList().clear();
-                    module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+
+                    if(!this.taskManager.isQueued(this.taskID) && !this.taskManager.isCurrentlyRunning(this.taskID))
                     {
-                        @Override
-                        public void run()
+                        this.taskID = this.taskManager.runTaskDelayed(module, new Runnable()
                         {
-                            remove((TNTPrimed)event.getEntity());
-                        }
-                    }, 1);
+                            @Override
+                            public void run()
+                            {
+                                removeDeadTNT();
+                            }
+                        }, 1);
+                    }
+
                 }
             }
             catch (NullPointerException ignored)
@@ -269,14 +289,6 @@ public class NukeCommand
             if(event.getDamager() instanceof TNTPrimed && this.contains((TNTPrimed)event.getDamager()))
             {
                 event.setCancelled(true);
-                module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        remove((TNTPrimed)event.getDamager());
-                    }
-                }, 1);
             }
         }
     }
