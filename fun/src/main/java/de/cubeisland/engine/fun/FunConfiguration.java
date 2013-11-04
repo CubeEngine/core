@@ -103,12 +103,11 @@ public class FunConfiguration extends YamlConfiguration
         public class NukeSection implements Section
         {
             @Comment("Sets the maximum distance of the tnt carpet")
-            @Name("max.distance")
-            public int maxDistance = 50;
+            public int distance = 50;
 
             @Comment("Sets the maximum tnt block amount of the tnt carpet")
             @Name("max.tnt_amount")
-            public int maxTNTAmount = 200;
+            public int maxTNTAmount = 750;
 
             @Comment("Sets the maximum range of the explosion")
             @Name("max.explosion_range")
