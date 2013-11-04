@@ -17,14 +17,11 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import ch.qos.logback.classic.Level;
@@ -38,12 +35,10 @@ import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logger.JULAppender;
 import de.cubeisland.engine.core.module.BaseModuleManager;
-import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.ModuleLoggerFactory;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
-import de.cubeisland.engine.core.module.exception.ModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,50 +81,6 @@ public class BukkitModuleManager extends BaseModuleManager
     }
 
     @Override
-    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
-    {
-        Module module = super.loadModule(name, moduleInfos, loadStack);
-        if (module == null)
-        {
-            return null;
-        }
-        try
-        {
-            Field[] fields = module.getClass().getDeclaredFields();
-            Map<Class<?>, Plugin> pluginClassMap = this.getPluginClassMap();
-            Class<?> fieldType;
-            for (Field field : fields)
-            {
-                fieldType = field.getType();
-                Inject injectAnnotation = field.getAnnotation(Inject.class);
-                if (Plugin.class.isAssignableFrom(fieldType) && injectAnnotation != null)
-                {
-                    Plugin plugin = pluginClassMap.get(fieldType);
-                    if (plugin != null)
-                    {
-                        this.pluginManager.enablePlugin(plugin); // what their about dependencies?
-                        field.setAccessible(true);
-                        try
-                        {
-                            field.set(module, plugin);
-                        }
-                        catch (Exception e)
-                        {
-                            module.getLog().warn("Failed to inject a plugin dependency: {}", String.valueOf(plugin));
-                        }
-                    }
-                }
-            }
-        }
-        catch (NoClassDefFoundError e)
-        {
-            module.getLog().warn("Failed to get the fields of the main class!");
-            module.getLog().debug(e.getLocalizedMessage(), e);
-        }
-        return module;
-    }
-
-    @Override
     protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
     {
         for (String plugin : info.getPluginDependencies())
@@ -139,17 +90,6 @@ public class BukkitModuleManager extends BaseModuleManager
                 throw new MissingPluginDependencyException(plugin);
             }
         }
-    }
-
-    protected Map<Class<?>, Plugin> getPluginClassMap()
-    {
-        Plugin[] plugins = this.pluginManager.getPlugins();
-        Map<Class<?>, Plugin> pluginClassMap = new HashMap<>(plugins.length);
-        for (Plugin plugin : plugins)
-        {
-            pluginClassMap.put(plugin.getClass(), plugin);
-        }
-        return pluginClassMap;
     }
 
     public static class BukkitModuleLoggerFactory implements ModuleLoggerFactory
