@@ -27,6 +27,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
@@ -138,7 +139,7 @@ public class NukeCommand
 
     private Shape getShape(ParameterizedContext context, Location location, int locationHeight)
     {
-        String shapeName = context.getString("shape", "cylinder");    // TODO load shape with levenstin distance
+        String shapeName = context.getString("shape", "cylinder");
 
         if(shapeName.equals("cylinder"))
         {
@@ -172,9 +173,9 @@ public class NukeCommand
     private Location getSpawnLocation(Location location, int height)
     {
         int noBlock = 0;
-        while (noBlock != height)
+        while (noBlock != Math.abs(height))
         {
-            location.add(0, 1, 0);
+            location.add(0, height > 0 ? 1 : -1, 0);
             if (location.getBlock().getType() == Material.AIR)
             {
                 noBlock++;
@@ -241,18 +242,42 @@ public class NukeCommand
         }
 
         @EventHandler
-        public void onBlockDamage(EntityExplodeEvent event)        // TODO versuchen HangingEntitys und evtl Personen auch zu schuetzen!
+        public void onBlockDamage(final EntityExplodeEvent event)
         {
             try
             {
                 if (event.getEntityType() == EntityType.PRIMED_TNT && this.contains((TNTPrimed)event.getEntity()))
                 {
                     event.blockList().clear();
-                    this.remove((TNTPrimed)event.getEntity());
+                    module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            remove((TNTPrimed)event.getEntity());
+                        }
+                    }, 1);
                 }
             }
             catch (NullPointerException ignored)
             {}
+        }
+
+        @EventHandler
+        public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
+        {
+            if(event.getDamager() instanceof TNTPrimed && this.contains((TNTPrimed)event.getDamager()))
+            {
+                event.setCancelled(true);
+                module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        remove((TNTPrimed)event.getDamager());
+                    }
+                }, 1);
+            }
         }
     }
 }
