@@ -150,8 +150,7 @@ public class KickBanCommands
                 Set<String> bannedUsers = new HashSet<>();
                 for (User ipPlayer : um.getOnlineUsers())
                 {
-                    if (ipPlayer.getAddress() != null
-                        && ipPlayer.getAddress().getAddress().equals(ipAdress))
+                    if (ipPlayer.getAddress() != null && ipPlayer.getAddress().getAddress().equals(ipAdress))
                     {
                         ipPlayer.kickPlayer(ipPlayer.translate(banMessage) + "\n" + reason);
                         bannedUsers.add(ipPlayer.getName());
@@ -172,13 +171,16 @@ public class KickBanCommands
         }
         else
         {
-            if (this.banManager.isUserBanned(user))
+            if (this.banManager.isUserBanned(player.getName()))
             {
                 context.sendTranslated("&2%s&c is already banned!", player.getName());
                 return;
             }
             this.banManager.addBan(new UserBan(player.getName(),context.getSender().getName(), reason));
-            if (user != null) user.kickPlayer(user.translate(banMessage) + "\n" +  reason);
+            if (user != null)
+            {
+                user.kickPlayer(user.translate(banMessage) + "\n" +  reason);
+            }
         }
         context.sendTranslated("&cYou banned &2%s&c!", player.getName());
         um.broadcastMessageWithPerm("&2%s&c was banned from the server by &2%s&c!",
