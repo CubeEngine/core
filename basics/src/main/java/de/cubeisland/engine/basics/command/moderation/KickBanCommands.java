@@ -94,7 +94,7 @@ public class KickBanCommands
             {
                 if (!sendername.equalsIgnoreCase(toKick.getName()))
                 {
-                    toKick.kickPlayer(toKick.translate(kickMessage) + reason);
+                    toKick.kickPlayer(toKick.translate(kickMessage) + "\n" +  reason);
                 }
             }
             return;
@@ -104,7 +104,7 @@ public class KickBanCommands
             context.sendTranslated("&cYou need to specify a player!");
             return;
         }
-        user.kickPlayer(user.translate(kickMessage) + reason);
+        user.kickPlayer(user.translate(kickMessage) + "\n" +  reason);
         this.um.broadcastMessageWithPerm("&2%s&c was kicked from the server by &2%s&c!\n%s", BasicsPerm.KICK_RECEIVEMESSAGE,
                          user.getName(), context.getSender().getName(), reason);
     }
@@ -153,7 +153,7 @@ public class KickBanCommands
                     if (ipPlayer.getAddress() != null
                         && ipPlayer.getAddress().getAddress().equals(ipAdress))
                     {
-                        ipPlayer.kickPlayer(ipPlayer.translate(banMessage) + reason);
+                        ipPlayer.kickPlayer(ipPlayer.translate(banMessage) + "\n" + reason);
                         bannedUsers.add(ipPlayer.getName());
                     }
                 }
@@ -178,7 +178,7 @@ public class KickBanCommands
                 return;
             }
             this.banManager.addBan(new UserBan(player.getName(),context.getSender().getName(), reason));
-            if (user != null) user.kickPlayer(user.translate(banMessage) + reason);
+            if (user != null) user.kickPlayer(user.translate(banMessage) + "\n" +  reason);
         }
         context.sendTranslated("&cYou banned &2%s&c!", player.getName());
         um.broadcastMessageWithPerm("&2%s&c was banned from the server by &2%s&c!",
@@ -191,7 +191,7 @@ public class KickBanCommands
         String reason = "";
         if (context.hasArg(1))
         {
-            reason = "\n" + ChatFormat.parseFormats(context.getStrings(at));
+            reason = ChatFormat.parseFormats(context.getStrings(at));
         }
         else if (!permNeeded.isAuthorized(context.getSender()))
         {
@@ -239,7 +239,7 @@ public class KickBanCommands
             {
                 if (user.getAddress() != null && user.getAddress().getAddress().getHostAddress().equals(ipaddress))
                 {
-                    user.kickPlayer(user.translate(banMessage) + reason);
+                    user.kickPlayer(user.translate(banMessage) + "\n" +  reason);
                     bannedUsers.add(user.getName());
                 }
             }
@@ -310,7 +310,7 @@ public class KickBanCommands
             if (player.isOnline())
             {
                 if (user == null) throw new IllegalStateException();
-                user.kickPlayer(user.translate(banMessage) + reason);
+                user.kickPlayer(user.translate(banMessage) + "\n" +  reason);
             }
             context.sendTranslated("&aYou banned &2%s&a temporarily!", player.getName());
             um.broadcastMessageWithPerm("&2%s &cwas banned temporarily from the server by &2%s&c!\n%s",
