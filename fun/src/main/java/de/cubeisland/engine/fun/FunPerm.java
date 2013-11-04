@@ -70,4 +70,8 @@ public class FunPerm extends PermissionContainer<Fun>
 
     public static final Permission COMMAND_THROW = COMMAND.createAbstractChild("throw");
     public static final Permission COMMAND_THROW_UNSAFE = COMMAND_THROW.createChild("unsafe");
+
+    private static final Permission COMMAND_NUKE = COMMAND.createAbstractChild("nuke");
+    public static final Permission COMMAND_NUKE_CHANGE_RANGE = COMMAND_NUKE.createChild("change_range");
+    public static final Permission COMMAND_NUKE_OTHER = COMMAND_NUKE.createChild("other");
 }
