@@ -51,7 +51,7 @@ public class CuboidBlockClipboard
 {
     static
     {
-        registerConverter(CuboidBlockClipboard.class, new CuboidBlockClipboardConverter()); // register converter for configs
+        CONVERTERS.registerConverter(CuboidBlockClipboard.class, new CuboidBlockClipboardConverter()); // register converter for configs
     }
 
     private final BlockData[][][] data;
@@ -144,9 +144,9 @@ public class CuboidBlockClipboard
                 }
             }
         }
-        result.setExactNode("materials", convertToNode(this.mappedMaterials));
-        result.setExactNode("blocks", convertToNode(blocks));
-        result.setExactNode("data", convertToNode(bData));
+        result.setExactNode("materials", CONVERTERS.convertToNode(this.mappedMaterials));
+        result.setExactNode("blocks", CONVERTERS.convertToNode(blocks));
+        result.setExactNode("data", CONVERTERS.convertToNode(bData));
         return result;
     }
 
@@ -157,12 +157,12 @@ public class CuboidBlockClipboard
             if (node instanceof MapNode)
             {
                 LinkedHashMap<String,Node> mappedNodes = ((MapNode)node).getMappedNodes();
-                int width = convertFromNode(mappedNodes.get("width"), Integer.class);
-                int height = convertFromNode(mappedNodes.get("height"), Integer.class);
-                int length = convertFromNode(mappedNodes.get("length"), Integer.class);
-                Map<Byte,Material> mappedMaterials = convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
-                Byte[] blocks = convertFromNode(mappedNodes.get("blocks"),Byte[].class);
-                Byte[] data = convertFromNode(mappedNodes.get("data"),Byte[].class);
+                int width = CONVERTERS.convertFromNode(mappedNodes.get("width"), Integer.class);
+                int height = CONVERTERS.convertFromNode(mappedNodes.get("height"), Integer.class);
+                int length = CONVERTERS.convertFromNode(mappedNodes.get("length"), Integer.class);
+                Map<Byte,Material> mappedMaterials = CONVERTERS.convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
+                Byte[] blocks = CONVERTERS.convertFromNode(mappedNodes.get("blocks"),Byte[].class);
+                Byte[] data = CONVERTERS.convertFromNode(mappedNodes.get("data"),Byte[].class);
                 Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<BlockVector3, NBTTagCompound>();
                 Node tileE = mappedNodes.get("tileentities");
                 if (tileE != null && tileE instanceof ListNode)

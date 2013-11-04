@@ -422,7 +422,7 @@ public class LoggingConfiguration extends YamlConfiguration
     @Override
     public String[] head()
     {
-        if (this.getParent() == null)
+        if (this.getDefault() == this)
         {
             return new String[]{"This is the global configuration for logging.","Any settings here can be overwritten for each world in their configuration"};
         }

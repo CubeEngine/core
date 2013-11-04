@@ -72,9 +72,9 @@ public class DiscoCommand
         }
 
         final int delay = context.getParam("delay", 10);
-        if (delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
+        if (delay < 1 || delay > this.module.getConfig().command.disco.maxDelay)
         {
-            context.sendTranslated("&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
+            context.sendTranslated("&cThe delay has to be a number between 0 and %d", this.module.getConfig().command.disco.maxDelay);
             return;
         }
 

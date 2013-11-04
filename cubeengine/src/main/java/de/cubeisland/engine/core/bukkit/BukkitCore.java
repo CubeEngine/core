@@ -21,7 +21,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -46,7 +45,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
@@ -65,6 +63,7 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
@@ -96,7 +95,7 @@ import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
 
-import static de.cubeisland.engine.configuration.Configuration.registerConverter;
+import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
@@ -152,17 +151,17 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
 
-        registerConverter(Level.class, new LevelConverter());
-        registerConverter(ItemStack.class, new ItemStackConverter());
-        registerConverter(Material.class, new MaterialConverter());
-        registerConverter(Enchantment.class, new EnchantmentConverter());
-        registerConverter(User.class, new UserConverter());
-        registerConverter(World.class, new WorldConverter());
-        registerConverter(Duration.class, new DurationConverter());
-        registerConverter(Version.class, new VersionConverter());
-        registerConverter(OfflinePlayer.class, new PlayerConverter(this));
-        registerConverter(Location.class, new LocationConverter(this));
-        registerConverter(Locale.class, new LocaleConverter());
+        CONVERTERS.registerConverter(Level.class, new LevelConverter());
+        CONVERTERS.registerConverter(ItemStack.class, new ItemStackConverter());
+        CONVERTERS.registerConverter(Material.class, new MaterialConverter());
+        CONVERTERS.registerConverter(Enchantment.class, new EnchantmentConverter());
+        CONVERTERS.registerConverter(User.class, new UserConverter());
+        CONVERTERS.registerConverter(World.class, new WorldConverter());
+        CONVERTERS.registerConverter(Duration.class, new DurationConverter());
+        CONVERTERS.registerConverter(Version.class, new VersionConverter());
+        CONVERTERS.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        CONVERTERS.registerConverter(Location.class, new LocationConverter(this));
+        CONVERTERS.registerConverter(Locale.class, new LocaleConverter());
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
@@ -197,10 +196,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
         }
 
-        if (this.config.logging.logCommands)
-        {
-            BukkitUtils.disableCommandLogging();
-        }
+        // depends on: file manager
+        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
+                                                                                        .resolve("core.yml").toFile());
 
         this.logFactory = new LogBackLogFactory(this, this.getLogger(), BukkitUtils.isAnsiSupported(server));
 
@@ -211,8 +209,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.banManager = new BukkitBanManager(this);
         this.serviceManager = new ServiceManager(this);
 
-        // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
+        if (this.config.logging.logCommands)
+        {
+            BukkitUtils.disableCommandLogging();
+        }
 
         if (this.config.catchSystemSignals)
         {

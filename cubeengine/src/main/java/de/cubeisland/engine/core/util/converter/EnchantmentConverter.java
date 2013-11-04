@@ -25,14 +25,12 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
-
 public class EnchantmentConverter implements Converter<Enchantment>
 {
     @Override
     public Node toNode(Enchantment object) throws ConversionException
     {
-        return wrapIntoNode(Match.enchant().nameFor(object));
+        return StringNode.of(Match.enchant().nameFor(object));
     }
 
     @Override

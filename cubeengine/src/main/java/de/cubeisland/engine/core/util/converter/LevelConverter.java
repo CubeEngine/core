@@ -26,14 +26,12 @@ import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
-
 public class LevelConverter implements Converter<Level>
 {
     @Override
     public Node toNode(Level object) throws ConversionException
     {
-        return wrapIntoNode(object.toString());
+        return StringNode.of(object.toString());
     }
 
     @Override

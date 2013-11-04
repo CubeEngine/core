@@ -20,10 +20,10 @@ package de.cubeisland.engine.core;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import ch.qos.logback.classic.Level;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.util.time.Duration;
 
 /**

@@ -34,8 +34,7 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.configuration.Configuration.convertToNode;
-import static de.cubeisland.engine.configuration.Configuration.wrapIntoNode;
+import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 
 public class KitItemConverter implements Converter<KitItem>
 {
@@ -46,15 +45,15 @@ public class KitItemConverter implements Converter<KitItem>
     {
         if (object.enchs == null || object.enchs.isEmpty())
         {
-            return wrapIntoNode(object.amount + "*" + object.mat.name() + ":" + object.dura +
-                                            (object.customName == null ? "" : " " + object.customName));
+            return StringNode.of(object.amount + "*" + object.mat.name() + ":" + object.dura +
+                                     (object.customName == null ? "" : " " + object.customName));
         }
         else
         {
             MapNode mapNode = MapNode.emptyMap();
             mapNode.setNode(StringNode.of(object.amount + "*" + object.mat.name() + ":" + object.dura +
                                               (object.customName == null ? "" : " " + object.customName)),
-                            convertToNode(object.enchs));
+                            CONVERTERS.convertToNode(object.enchs));
             return mapNode;
         }
     }

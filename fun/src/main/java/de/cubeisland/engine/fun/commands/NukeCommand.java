@@ -105,15 +105,15 @@ public class NukeCommand
                     return;
                 }
             }
-            if (concentration > this.config.nukeConcentrationLimit || concentrationOfBlocksPerCircle > this.config.nukeConcentrationLimit)
+            if (concentration > 10 || concentrationOfBlocksPerCircle > 10)                       // TODO after refactoring concentration doesn't exist!
             {
-                context.sendTranslated("&cThe concentration should not be greater than %d", this.config.nukeConcentrationLimit);
+                context.sendTranslated("&cThe concentration should not be greater than %d", 10);
                 return;
             }
         }
-        if (radius > this.config.nukeRadiusLimit)
+        if (radius > 10)             // TODO radius will be replaced by maxtntblockamount!
         {
-            context.sendTranslated("&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
+            context.sendTranslated("&cThe radius should not be greater than %d", 10);
             return;
         }
         if (concentration < 1)
@@ -131,9 +131,9 @@ public class NukeCommand
             context.sendTranslated("&cThe height can't be less than 1");
             return;
         }
-        if (range < 0 || range > this.config.nukeMaxExplosionRange)
+        if (range < 0 || range > this.config.command.nuke.maxExplosionRange)
         {
-            context.sendTranslated("&cThe explosion range can't be less than 0 or over %d", this.config.nukeMaxExplosionRange);
+            context.sendTranslated("&cThe explosion range can't be less than 0 or over %d", this.config.command.nuke.maxExplosionRange);
             return;
         }
 
