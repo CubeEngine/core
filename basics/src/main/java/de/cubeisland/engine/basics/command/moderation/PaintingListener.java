@@ -75,6 +75,19 @@ public class PaintingListener implements Listener
         }
     }
 
+    private int compareSlots(int previousSlot, int newSlot)
+    {
+        if(previousSlot == 8 && newSlot == 0)
+        {
+            newSlot = 9;
+        }
+        if(previousSlot == 0 && newSlot == 8)
+        {
+            newSlot = -1;
+        }
+        return Integer.compare(previousSlot, newSlot);
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onItemHeldChange(PlayerItemHeldEvent event)
     {
@@ -99,10 +112,14 @@ public class PaintingListener implements Listener
                 int artNumber = painting.getArt().ordinal();
                 do
                 {
-                    artNumber++;
+                    artNumber += 1 * this.compareSlots(event.getPreviousSlot(), event.getNewSlot());
                     if (artNumber >= Art.values().length)
                     {
                         artNumber = 0;
+                    }
+                    else if(artNumber < 0)
+                    {
+                        artNumber = Art.values().length - 1;
                     }
                 }
                 while (!painting.setArt(Art.values()[artNumber]));

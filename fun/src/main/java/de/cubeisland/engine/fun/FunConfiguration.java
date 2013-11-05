@@ -84,8 +84,6 @@ public class FunConfiguration extends YamlConfiguration
             @Comment("Sets the default delay of the disco command. Has to be between the max and the min value!")
             @Name("delay.default")
             public int defaultDelay = 10;
-
-
         }
 
         public class InvasionSection implements Section
