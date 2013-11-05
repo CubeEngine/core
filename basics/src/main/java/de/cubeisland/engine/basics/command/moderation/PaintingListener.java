@@ -112,7 +112,7 @@ public class PaintingListener implements Listener
                 int artNumber = painting.getArt().ordinal();
                 do
                 {
-                    artNumber += 1 * this.compareSlots(event.getPreviousSlot(), event.getNewSlot());
+                    artNumber += this.compareSlots(event.getPreviousSlot(), event.getNewSlot());
                     if (artNumber >= Art.values().length)
                     {
                         artNumber = 0;
