@@ -40,13 +40,13 @@ public class FunConfiguration extends YamlConfiguration
 
         public class LightningSection implements Section
         {
-            @Comment("Sets the maximum distance of the lightning")
+            @Comment("Sets the (maximum) distance of the lightning")
             public int distance = 200;
         }
 
         public class ExplosionSection implements Section
         {
-            @Comment("Sets the maximum distance of the explosion")
+            @Comment("Sets the (maximum) distance of the explosion")
             public int distance = 30;
 
             @Comment("Sets the maximum power of the explosion")
@@ -73,24 +73,26 @@ public class FunConfiguration extends YamlConfiguration
 
         public class DiscoSection implements Section
         {
+            @Comment("Sets the minimum delay between changes of day to night and vice versa.")
+            @Name("delay.min")
+            public int minDelay = 1;
+
             @Comment("Sets the maximum delay between changes of day to night and vice versa.")
-            @Name("max.delay")
+            @Name("delay.max")
             public int maxDelay = 100;
 
-            @Comment("Sets the minimum delay between changes of day to night and vice versa.")
-            @Name("min.delay")
-            public int minDelay = 1;                  // TODO it's not implemented yet!
+            @Comment("Sets the default delay of the disco command. Has to be between the max and the min value!")
+            @Name("delay.default")
+            public int defaultDelay = 10;
+
+
         }
 
         public class InvasionSection implements Section
         {
-            @Comment("Sets the maximum distance between the mob and the player")
-            @Name("max.distance")
-            public int maxDistance = 10;
-
-            @Comment("Sets the minimum distance between the mob and the player")
-            @Name("min.distance")
-            public int minDistance = 10;      // TODO it's not implemented yet!
+            @Comment("Sets the (maximum) distance between the mob and the player")
+            @Name("distance")
+            public int distance = 10;
         }
 
         public class RocketSection implements Section
@@ -102,10 +104,10 @@ public class FunConfiguration extends YamlConfiguration
 
         public class NukeSection implements Section
         {
-            @Comment("Sets the maximum distance of the tnt carpet")
+            @Comment("Sets the (maximum) distance of the tnt carpet")
             public int distance = 50;
 
-            @Comment("Sets the maximum tnt block amount of the tnt carpet")
+            @Comment("Sets the maximum amount of tnt blocks which are used for the tnt carpet")
             @Name("max.tnt_amount")
             public int maxTNTAmount = 750;
 

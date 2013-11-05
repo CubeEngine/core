@@ -343,7 +343,7 @@ public class PlayerCommands
         {
             seconds = 0;
         }
-        else if (seconds < 1 || seconds > this.module.getConfig().command.burn.maxTime)   // TODO in config anpassen lassen!
+        else if (seconds < 1 || seconds > this.module.getConfig().command.burn.maxTime)
         {
             context.sendTranslated("&cOnly 1 to %d seconds are permitted!", this.module.getConfig().command.burn.maxTime);
             return;
