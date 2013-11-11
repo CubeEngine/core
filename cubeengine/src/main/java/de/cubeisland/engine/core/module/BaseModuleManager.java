@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +40,7 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import javax.annotation.Nullable;
+import javax.print.MultiDoc;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
@@ -214,6 +216,49 @@ public abstract class BaseModuleManager implements ModuleManager
     protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
     {}
 
+    public Stack<String> resolveDependencies(String moduleId, Map<String, ModuleInfo> moduleInfos) throws ModuleException
+    {
+        Stack<String> loadStack = new Stack<>();
+        this.resolveDependencies0(moduleId, moduleInfos, loadStack);
+        return loadStack;
+    }
+
+    private void resolveDependencies0(String moduleId, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
+    {
+        if (loadStack.contains(moduleId))
+        {
+            throw new CircularDependencyException(moduleId, loadStack.peek());
+        }
+        ModuleInfo info = moduleInfos.get(moduleId);
+        if (info == null)
+        {
+            throw new IllegalArgumentException("Given module was not found in the info map! " + moduleId);
+        }
+
+        for (String loadAfterModule : info.getLoadAfter())
+        {
+            if (!loadStack.contains(loadAfterModule) && moduleInfos.containsKey(loadAfterModule))
+            {
+                this.resolveDependencies0(loadAfterModule, moduleInfos, loadStack);
+            }
+        }
+        if (info.getServices() != null)
+        {
+            for (String service : info.getServices())
+            {
+                if (!this.core.getServiceManager().isServiceRegistered(service))
+                {
+                    String providerModule = this.serviceProviders.get(service);
+                    if (providerModule == null)
+                    {
+                        throw new MissingProviderException(moduleId, service);
+                    }
+                    this.resolveDependencies0(providerModule, moduleInfos, loadStack);
+                }
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
     protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
@@ -246,28 +291,15 @@ public abstract class BaseModuleManager implements ModuleManager
 
         this.validateModuleInfo(info);
 
-        for (String loadAfterModule : info.getLoadAfter())
-        {
-            if (!loadStack.contains(loadAfterModule) && moduleInfos.containsKey(loadAfterModule))
-            {
-                this.loadModule(loadAfterModule, moduleInfos, loadStack);
-            }
-        }
-        if (info.getServices() != null)
-        {
-            for (String service : info.getServices())
-            {
-                if (!this.core.getServiceManager().isServiceRegistered(service))
-                {
-                    String providerModule = this.serviceProviders.get(service);
-                    if (providerModule == null)
-                    {
-                        throw new MissingProviderException(name, service);
-                    }
-                    this.loadModule(providerModule, moduleInfos);
-                }
-            }
-        }
+        Stack<String> loadOrder = this.resolveDependencies(info.getId(), moduleInfos);
+
+        System.out.println(loadOrder);
+
+        System.exit(0);
+
+        // TODO actually load the modules
+
+        // TODO finish
         Module depModule;
         String depName;
         for (Entry<String, Version> dep : info.getSoftDependencies().entrySet())
