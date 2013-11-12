@@ -374,7 +374,7 @@ public class InformationCommands
         context.sendTranslated("&aUptime: &6%s", dura.format("%www%ddd%hhh%mmm%sss"));
         //TPS:
         float tps = this.basics.getLagTimer().getAverageTPS();
-        String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
+        String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : tps == 0 ? "&eNaN" : "&4";
         color = ChatFormat.parseFormats(color);
         context.sendTranslated("&aCurrent TPS: %s%.1f", color, tps);
         Pair<Long, Float> lowestTPS = this.basics.getLagTimer().getLowestTPS();
