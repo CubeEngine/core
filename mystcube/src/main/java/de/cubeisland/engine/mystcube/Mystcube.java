@@ -24,12 +24,17 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.block.Furnace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
@@ -74,7 +79,8 @@ public class Mystcube extends Module implements Listener
         ItemStack item = new ItemStack(Material.PAPER, 8);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatFormat.parseFormats("&6Magic Paper"));
-        meta.setLore(Arrays.asList(ChatFormat.parseFormats("&eThe D'ni used this kind of"),ChatFormat.parseFormats("&epaper to write their Ages")));
+        meta.setLore(Arrays.asList(ChatFormat.parseFormats("&eThe D'ni used this kind of"),
+                                   ChatFormat.parseFormats("&epaper to write their Ages")));
         item.setItemMeta(meta);
         MAGIC_PAPER = item.clone();
         MAGIC_PAPER.setAmount(1);
@@ -107,15 +113,15 @@ public class Mystcube extends Module implements Listener
 
         item = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData()); // Setting Color /w MaterialData does not work WHÝ?!
         meta.setDisplayName(ChatFormat.parseFormats("&6Ash"));
-        meta.setLore(Arrays.asList(ChatFormat.parseFormats("&eThis is what happens when"), ChatFormat
-            .parseFormats("&eyou burn normal paper")));
+        meta.setLore(Arrays.asList(ChatFormat.parseFormats("&eThis is what happens when"),
+                                   ChatFormat.parseFormats("&eyou burn normal paper")));
         item.setItemMeta(meta);
         ASH = item;
 
         item = new ItemStack(Material.BOOK, 1);
         meta.setDisplayName(ChatFormat.parseFormats("&6Kortee'nea"));
-        meta.setLore(Arrays.asList(ChatFormat.parseFormats("&eA Blank Book just"), ChatFormat
-                                             .parseFormats("&ewaiting to be written")));
+        meta.setLore(Arrays.asList(ChatFormat.parseFormats("&eA Blank Book just"),
+                                   ChatFormat.parseFormats("&ewaiting to be written")));
         item.setItemMeta(meta);
         BLANK_BOOK = item;
 
@@ -168,8 +174,26 @@ public class Mystcube extends Module implements Listener
                 return;
             }
             Furnace furnace = (Furnace)event.getBlock().getState();
+            int amount = furnace.getInventory().getSmelting().getAmount();
             furnace.getInventory().getSmelting().setAmount(1); // ALL Paper burned
             event.setResult(ASH.clone());
+            Location furnaceLocation = furnace.getLocation();
+            furnace.getWorld().playEffect(furnaceLocation.add(0, 1, 0), Effect.MOBSPAWNER_FLAMES, 4, 50);
+            furnace.getWorld().playSound(furnaceLocation, Sound.FIRE, 1, 1);
+            Location loc2 = new Location(null, 0,0,0);
+            if (amount > 8)
+            {
+                for (Entity entity : furnace.getWorld().getEntities())
+                {
+                    if (entity instanceof Player)
+                    {
+                        if (entity.getLocation(loc2).distanceSquared(furnaceLocation) <= 4)
+                        {
+                            entity.setFireTicks(20 + amount * 2);
+                        }
+                    }
+                }
+            }
         }
     }
 }
