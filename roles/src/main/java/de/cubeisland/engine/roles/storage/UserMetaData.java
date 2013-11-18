@@ -33,10 +33,10 @@ public class UserMetaData extends UpdatableRecordImpl<UserMetaData> implements R
         super(TABLE_META);
     }
 
-    public UserMetaData newMeta(UInteger userId, long worldId, String key, String value)
+    public UserMetaData newMeta(UInteger userId, UInteger worldId, String key, String value)
     {
         this.setUserid(userId);
-        this.setWorldid(UInteger.valueOf(worldId));
+        this.setWorldid(worldId);
         this.setKey(key);
         this.setValue(value);
         return this;
