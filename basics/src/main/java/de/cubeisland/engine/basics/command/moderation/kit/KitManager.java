@@ -29,7 +29,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -94,7 +93,7 @@ public class KitManager implements Listener
     {
         try
         {
-            KitConfiguration config = Configuration.load(KitConfiguration.class, file.toFile());
+            KitConfiguration config = this.module.getCore().getConfigurationFactory().load(KitConfiguration.class, file.toFile());
             config.kitName = StringUtils.stripFileExtension(file.getFileName().toString());
             Kit kit = config.getKit(module);
             kitConfigMap.put(kit, config);

@@ -18,38 +18,38 @@
 
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.core.logging.Level;
-
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.core.logging.Level;
 
 public class LevelConverter implements Converter<Level>
 {
     @Override
-    public Node toNode(Level object) throws ConversionException
+    public Node toNode(ConverterManager manager, Level object) throws ConversionException
     {
         return StringNode.of(object.toString());
     }
 
     @Override
-    public Level fromNode(Node node) throws ConversionException
+    public Level fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
             Level lv = Level.toLevel(((StringNode)node).getValue());
             if (lv == null)
             {
-                throw new ConversionException("Unknown LogLevel: " + ((StringNode)node).getValue());
+                throw ConversionException.of(this, node, "Unknown LogLevel: " + ((StringNode)node).getValue());
             }
             return lv;
         }
         else if (node instanceof BooleanNode && !((BooleanNode)node).getValue())
         { // OFF is interpreted as a boolean false
-            return fromNode(new StringNode("OFF"));
+            return fromNode(manager, new StringNode("OFF"));
         }
-        throw new ConversionException("Invalid Node! " + node.getClass());
+        throw ConversionException.of(this, node, "Node is not a StringNode OR BooleanNode!");
     }
 }

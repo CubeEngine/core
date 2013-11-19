@@ -25,14 +25,13 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
-
-import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 
 public class LocationConverter implements Converter<Location>
 {
@@ -44,7 +43,7 @@ public class LocationConverter implements Converter<Location>
     }
 
     @Override
-    public Node toNode(Location location) throws ConversionException
+    public Node toNode(ConverterManager manager, Location location) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
         loc.put("world", location.getWorld().getName());
@@ -53,25 +52,25 @@ public class LocationConverter implements Converter<Location>
         loc.put("z", location.getZ());
         loc.put("yaw", location.getYaw());
         loc.put("pitch", location.getPitch());
-        return CONVERTERS.wrapIntoNode(loc);
+        return Node.wrapIntoNode(loc);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Location fromNode(Node node) throws ConversionException
+    public Location fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         if (node instanceof MapNode)
         {
             Map<String, Node> input = ((MapNode)node).getMappedNodes();
             World world = server.getWorld(((StringNode)input.get("world")).getValue());
-            double x = CONVERTERS.convertFromNode(input.get("x"), double.class);
-            double y = CONVERTERS.convertFromNode(input.get("y"), double.class);
-            double z = CONVERTERS.convertFromNode(input.get("z"), double.class);
-            double yaw = CONVERTERS.convertFromNode(input.get("yaw"), double.class);
-            double pitch = CONVERTERS.convertFromNode(input.get("pitch"), double.class);
+            double x = manager.convertFromNode(input.get("x"), double.class);
+            double y = manager.convertFromNode(input.get("y"), double.class);
+            double z = manager.convertFromNode(input.get("z"), double.class);
+            double yaw = manager.convertFromNode(input.get("yaw"), double.class);
+            double pitch = manager.convertFromNode(input.get("pitch"), double.class);
 
             return new Location(world, x, y, z, (float)yaw, (float)pitch);
         }
-        throw new ConversionException("Invalid Node!" + node.getClass());
+        throw ConversionException.of(this, node, "Node is not a MapNode!");
     }
 }

@@ -24,7 +24,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.world.WorldManager;
 
@@ -39,7 +38,7 @@ public class Border extends Module
     public void onEnable()
     {
         wm = this.getCore().getWorldManager();
-        this.globalConfig = Configuration.load(BorderConfig.class, this.getFolder().resolve("globalconfig.yml").toFile());
+        this.globalConfig = this.getCore().getConfigurationFactory().load(BorderConfig.class, this.getFolder().resolve("globalconfig.yml").toFile());
         folder = this.getFolder().resolve("worlds").toFile();
         folder.mkdir();
         this.worldConfigs = new HashMap<>();

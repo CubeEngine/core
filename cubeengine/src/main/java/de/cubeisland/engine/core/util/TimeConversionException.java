@@ -15,24 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.converter;
+package de.cubeisland.engine.core.util;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.core.util.CuboidBlockClipboard;
-
-public class CuboidBlockClipboardConverter implements Converter<CuboidBlockClipboard>
+public class TimeConversionException extends Exception
 {
-    @Override
-    public Node toNode(CuboidBlockClipboard object) throws ConversionException
+    public TimeConversionException(String message)
     {
-        return object.toNode();
+        super(message);
     }
 
-    @Override
-    public CuboidBlockClipboard fromNode(Node node) throws ConversionException
+    public TimeConversionException(String message, Throwable cause)
     {
-        return CuboidBlockClipboard.fromNode(node);
+        super(message, cause);
     }
 }

@@ -35,7 +35,7 @@ import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.core.util.TimeConversionException;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
@@ -239,7 +239,7 @@ public class LookupCommands
             params.before(System.currentTimeMillis() - before);
             return true;
         }
-        catch (ConversionException e)
+        catch (TimeConversionException e)
         {
             user.sendTranslated("&6%s&c is not a valid time value!", beforeString);
             return false;
@@ -261,7 +261,7 @@ public class LookupCommands
             }
             return true;
         }
-        catch (ConversionException e)
+        catch (TimeConversionException e)
         {
             user.sendTranslated("&6%s&c is not a valid time value!", sinceString);
             return false;

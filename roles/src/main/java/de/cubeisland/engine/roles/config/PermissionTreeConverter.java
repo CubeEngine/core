@@ -20,8 +20,9 @@ package de.cubeisland.engine.roles.config;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.ListNode;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
@@ -38,7 +39,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     }
 
     @Override
-    public Node toNode(PermissionTree permTree) throws ConversionException
+    public Node toNode(ConverterManager manager, PermissionTree permTree) throws ConversionException
     {
         Map<String, Object> easyMap = new LinkedHashMap<>();
         for (Map.Entry<String, Boolean> entry : permTree.getPermissions().entrySet())
@@ -135,7 +136,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     }
 
     @Override
-    public PermissionTree fromNode(Node node) throws ConversionException
+    public PermissionTree fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         PermissionTree permTree = new PermissionTree();
         if (node instanceof ListNode)

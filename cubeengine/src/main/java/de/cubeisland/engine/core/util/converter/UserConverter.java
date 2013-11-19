@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.CubeEngine;
@@ -27,13 +28,13 @@ import de.cubeisland.engine.core.user.User;
 public class UserConverter implements Converter<User>
 {
     @Override
-    public Node toNode(User user) throws ConversionException
+    public Node toNode(ConverterManager manager, User user) throws ConversionException
     {
         return StringNode.of(user.getName());
     }
 
     @Override
-    public User fromNode(Node node) throws ConversionException
+    public User fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
@@ -42,8 +43,8 @@ public class UserConverter implements Converter<User>
             {
                 return user;
             }
-            throw new ConversionException("Could not convert to a user: User not found!");
+            throw ConversionException.of(this, node, "User does not exist!");
         }
-        throw new ConversionException("Could not convert to a user: The given node is not a string");
+        throw ConversionException.of(this, node, "Node is not a StringNode!");
     }
 }

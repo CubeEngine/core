@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.i18n.Language;
@@ -421,7 +420,7 @@ public class AnnouncementManager
             }
         }
 
-        AnnouncementConfig config = Configuration.load(AnnouncementConfig.class, metaFile.toFile());
+        AnnouncementConfig config = this.module.getCore().getConfigurationFactory().load(AnnouncementConfig.class, metaFile.toFile());
 
         long delay;
         try
@@ -552,7 +551,7 @@ public class AnnouncementManager
 
         Files.createDirectories(folder);
 
-        AnnouncementConfig config = Configuration.create(AnnouncementConfig.class);
+        AnnouncementConfig config = this.module.getCore().getConfigurationFactory().create(AnnouncementConfig.class);
         config.setFile(folder.resolve(META_FILE_NAME).toFile());
         config.delay = delay;
         config.worlds = Arrays.asList(world);

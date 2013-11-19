@@ -23,10 +23,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.configuration.Configuration;
-import de.cubeisland.engine.configuration.InvalidConfigurationException;
+import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
@@ -321,7 +321,7 @@ public abstract class Module
      */
     public <T extends Configuration> T loadConfig(Class<T> clazz)
     {
-        T config = Configuration.create(clazz);
+        T config = this.core.getConfigurationFactory().create(clazz);
         config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
         try
         {

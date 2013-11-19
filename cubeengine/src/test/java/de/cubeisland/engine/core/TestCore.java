@@ -20,7 +20,7 @@ package de.cubeisland.engine.core;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.configuration.Configuration;
+import de.cubeisland.engine.configuration.ConfigurationFactory;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -58,6 +58,7 @@ public class TestCore implements Core
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
     private ModuleManager moduleManager = null;
+    private ConfigurationFactory configurationFactory = new ConfigurationFactory();
 
     {
         CubeEngine.initialize(this);
@@ -93,7 +94,10 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = Configuration.load(CoreConfiguration.class, this.getFileManager().getDataPath().resolve("core.yml").toFile());
+            this.config = this.getConfigurationFactory().load(CoreConfiguration.class, this.getFileManager()
+                                                                                           .getDataPath()
+                                                                                           .resolve("core.yml")
+                                                                                           .toFile());
         }
         return this.config;
     }
@@ -201,5 +205,11 @@ public class TestCore implements Core
     public LogFactory getLogFactory()
     {
         return null; // TODO ?
+    }
+
+    @Override
+    public ConfigurationFactory getConfigurationFactory()
+    {
+        return this.configurationFactory;
     }
 }

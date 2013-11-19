@@ -31,17 +31,19 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.ConfigurationFactory;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.IntNode;
 import de.cubeisland.engine.configuration.node.ListNode;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.NullNode;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
-import de.cubeisland.engine.core.util.converter.CuboidBlockClipboardConverter;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 
-import static de.cubeisland.engine.configuration.Configuration.*;
 import static de.cubeisland.engine.core.bukkit.NBTUtils.convertNBTToNode;
 
 /**
@@ -51,7 +53,7 @@ public class CuboidBlockClipboard
 {
     static
     {
-        CONVERTERS.registerConverter(CuboidBlockClipboard.class, new CuboidBlockClipboardConverter()); // register converter for configs
+        new CuboidBlockClipboardConverter(CubeEngine.getCore().getConfigurationFactory());
     }
 
     private final BlockData[][][] data;
@@ -97,135 +99,6 @@ public class CuboidBlockClipboard
     }
 
     private Map<Byte,Material> mappedMaterials;
-
-    public Node toNode() throws ConversionException
-    {
-        MapNode result = MapNode.emptyMap();
-        result.setExactNode("width",new IntNode(this.size.x));
-        result.setExactNode("height",new IntNode(this.size.y));
-        result.setExactNode("length",new IntNode(this.size.z));
-        if (this.relative != null)
-        {
-            MapNode relative = MapNode.emptyMap();
-            result.setExactNode("relative",relative);
-            relative.setExactNode("x",new IntNode(this.relative.x));
-            relative.setExactNode("y",new IntNode(this.relative.y));
-            relative.setExactNode("z",new IntNode(this.relative.z));
-        }
-        ListNode tileEntities = ListNode.emptyList();
-        result.setExactNode("tileentities",tileEntities);
-        Map<Material,Byte> materials = new HashMap<Material, Byte>();
-        this.mappedMaterials = new HashMap<Byte, Material>();
-        Byte[] blocks = new Byte[this.size.x * this.size.y * this.size.z];
-        Byte[] bData = new Byte[this.size.x * this.size.y * this.size.z];
-        int i = 0;
-        byte lastBdata = 0;
-        for (int y = 0; y < size.y; ++y)
-        {
-            for (int z = 0; z < size.z; ++z)
-            {
-                for (int x = 0; x < size.x; ++x)
-                {
-                    BlockData curData = data[x][y][z];
-                    Byte block = materials.get(curData.material);
-                    if (block == null)
-                    {
-                        block = lastBdata++;
-                        materials.put(curData.material,block);
-                        this.mappedMaterials.put(block,curData.material);
-                    }
-                    blocks[i] = block;
-                    bData[i] = curData.data;
-                    if (curData.nbt != null)
-                    {
-                        tileEntities.addNode(convertNBTToNode(curData.nbt));
-                    }
-                    i++;
-                }
-            }
-        }
-        result.setExactNode("materials", CONVERTERS.convertToNode(this.mappedMaterials));
-        result.setExactNode("blocks", CONVERTERS.convertToNode(blocks));
-        result.setExactNode("data", CONVERTERS.convertToNode(bData));
-        return result;
-    }
-
-    public static CuboidBlockClipboard fromNode(Node node) throws ConversionException
-    {
-        try
-        {
-            if (node instanceof MapNode)
-            {
-                LinkedHashMap<String,Node> mappedNodes = ((MapNode)node).getMappedNodes();
-                int width = CONVERTERS.convertFromNode(mappedNodes.get("width"), Integer.class);
-                int height = CONVERTERS.convertFromNode(mappedNodes.get("height"), Integer.class);
-                int length = CONVERTERS.convertFromNode(mappedNodes.get("length"), Integer.class);
-                Map<Byte,Material> mappedMaterials = CONVERTERS.convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
-                Byte[] blocks = CONVERTERS.convertFromNode(mappedNodes.get("blocks"),Byte[].class);
-                Byte[] data = CONVERTERS.convertFromNode(mappedNodes.get("data"),Byte[].class);
-                Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<BlockVector3, NBTTagCompound>();
-                Node tileE = mappedNodes.get("tileentities");
-                if (tileE != null && tileE instanceof ListNode)
-                {
-                    ArrayList<Node> listedNodes = ((ListNode)tileE).getListedNodes();
-                    for (Node listedNode : listedNodes)
-                    {
-                        if (listedNode instanceof MapNode)
-                        {
-                            LinkedHashMap<String, Node> teData = ((MapNode)listedNode).getMappedNodes();
-                            BlockVector3 vector = new BlockVector3(((IntNode)teData.get("x")).getValue(),
-                                                                    ((IntNode)teData.get("y")).getValue(),
-                                                                    ((IntNode)teData.get("z")).getValue());
-                            NBTTagCompound tileTag = (NBTTagCompound)NBTUtils.convertNodeToNBT("", listedNode);
-                            tileEntities.put(vector,tileTag);
-
-                        }
-                        else if (listedNode instanceof NullNode)
-                        {
-                            continue; // ignore NullNode
-                        }
-                        else
-                        {
-                            throw new ConversionException("TileEntityData was not in a MapNode!");
-                        }
-                    }
-                }
-                BlockVector3 relative = null;
-                if (mappedNodes.containsKey("relative"))
-                {
-                    MapNode relativeMap = (MapNode)mappedNodes.get("relative");
-                    int x = (Integer)relativeMap.getMappedNodes().get("x").getValue();
-                    int y = (Integer)relativeMap.getMappedNodes().get("y").getValue();
-                    int z = (Integer)relativeMap.getMappedNodes().get("z").getValue();
-                    relative = new BlockVector3(x,y,z);
-                }
-                CuboidBlockClipboard result = new CuboidBlockClipboard(new BlockVector3(width, height, length),relative);
-                int i = 0;
-                for (int y = 0; y < height; ++y)
-                {
-                    for (int z = 0; z < length; ++z)
-                    {
-                        for (int x = 0; x < width; ++x)
-                        {
-                            Material mat = mappedMaterials.get(blocks[i]);
-                            result.data[x][y][z] = result.new BlockData(mat,data[i]);
-                            i++;
-                        }
-                    }
-                }
-                for (Entry<BlockVector3, NBTTagCompound> entry : tileEntities.entrySet())
-                {
-                    result.data[entry.getKey().x][entry.getKey().y][entry.getKey().z].nbt = entry.getValue();
-                }
-                return result;
-            }
-        }
-        catch (Exception e)
-        {
-            throw new ConversionException("Cannot create CuboidBlockClipboard",e);
-        }
-        throw new ConversionException("Cannot create CuboidBlockClipboard");
-    }
 
     public void applyToWorld(World world, BlockVector3 relative)
     {
@@ -285,6 +158,146 @@ public class CuboidBlockClipboard
         {
             this.material = mat;
             this.data = b;
+        }
+    }
+
+    public static class CuboidBlockClipboardConverter implements Converter<CuboidBlockClipboard>
+    {
+        public CuboidBlockClipboardConverter(ConfigurationFactory factory)
+        {
+            ConverterManager cManager = factory.getDefaultConverterManager();
+            cManager.registerConverter(CuboidBlockClipboard.class, this);
+        }
+
+        @Override
+        public Node toNode(ConverterManager manager, CuboidBlockClipboard object) throws ConversionException
+        {
+            MapNode result = MapNode.emptyMap();
+            result.setExactNode("width",new IntNode(object.size.x));
+            result.setExactNode("height",new IntNode(object.size.y));
+            result.setExactNode("length",new IntNode(object.size.z));
+            if (object.relative != null)
+            {
+                MapNode relative = MapNode.emptyMap();
+                result.setExactNode("relative",relative);
+                relative.setExactNode("x",new IntNode(object.relative.x));
+                relative.setExactNode("y",new IntNode(object.relative.y));
+                relative.setExactNode("z",new IntNode(object.relative.z));
+            }
+            ListNode tileEntities = ListNode.emptyList();
+            result.setExactNode("tileentities",tileEntities);
+            Map<Material,Byte> materials = new HashMap<Material, Byte>();
+            object.mappedMaterials = new HashMap<Byte, Material>();
+            Byte[] blocks = new Byte[object.size.x * object.size.y * object.size.z];
+            Byte[] bData = new Byte[object.size.x * object.size.y * object.size.z];
+            int i = 0;
+            byte lastBdata = 0;
+            for (int y = 0; y < object.size.y; ++y)
+            {
+                for (int z = 0; z < object.size.z; ++z)
+                {
+                    for (int x = 0; x < object.size.x; ++x)
+                    {
+                        BlockData curData = object.data[x][y][z];
+                        Byte block = materials.get(curData.material);
+                        if (block == null)
+                        {
+                            block = lastBdata++;
+                            materials.put(curData.material,block);
+                            object.mappedMaterials.put(block,curData.material);
+                        }
+                        blocks[i] = block;
+                        bData[i] = curData.data;
+                        if (curData.nbt != null)
+                        {
+                            tileEntities.addNode(convertNBTToNode(curData.nbt));
+                        }
+                        i++;
+                    }
+                }
+            }
+            result.setExactNode("materials", manager.convertToNode(object.mappedMaterials));
+            result.setExactNode("blocks", manager.convertToNode(blocks));
+            result.setExactNode("data", manager.convertToNode(bData));
+            return result;
+        }
+
+        @Override
+        public CuboidBlockClipboard fromNode(ConverterManager manager, Node node) throws ConversionException
+        {
+            try
+            {
+                if (node instanceof MapNode)
+                {
+                    LinkedHashMap<String,Node> mappedNodes = ((MapNode)node).getMappedNodes();
+                    int width = manager.convertFromNode(mappedNodes.get("width"), Integer.class);
+                    int height = manager.convertFromNode(mappedNodes.get("height"), Integer.class);
+                    int length = manager.convertFromNode(mappedNodes.get("length"), Integer.class);
+                    Map<Byte,Material> mappedMaterials = manager.convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
+                    Byte[] blocks = manager.convertFromNode(mappedNodes.get("blocks"),Byte[].class);
+                    Byte[] data = manager.convertFromNode(mappedNodes.get("data"),Byte[].class);
+                    Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<BlockVector3, NBTTagCompound>();
+                    Node tileE = mappedNodes.get("tileentities");
+                    if (tileE != null && tileE instanceof ListNode)
+                    {
+                        ArrayList<Node> listedNodes = ((ListNode)tileE).getListedNodes();
+                        for (Node listedNode : listedNodes)
+                        {
+                            if (listedNode instanceof MapNode)
+                            {
+                                LinkedHashMap<String, Node> teData = ((MapNode)listedNode).getMappedNodes();
+                                BlockVector3 vector = new BlockVector3(((IntNode)teData.get("x")).getValue(),
+                                                                       ((IntNode)teData.get("y")).getValue(),
+                                                                       ((IntNode)teData.get("z")).getValue());
+                                NBTTagCompound tileTag = (NBTTagCompound)NBTUtils.convertNodeToNBT("", listedNode);
+                                tileEntities.put(vector,tileTag);
+
+                            }
+                            else if (listedNode instanceof NullNode)
+                            {
+                                continue; // ignore NullNode
+                            }
+                            else
+                            {
+                                throw ConversionException.of(this, null, "TileEntityData was not in a MapNode!");
+                            }
+                        }
+                    }
+                    BlockVector3 relative = null;
+                    if (mappedNodes.containsKey("relative"))
+                    {
+                        MapNode relativeMap = (MapNode)mappedNodes.get("relative");
+                        int x = (Integer)relativeMap.getMappedNodes().get("x").getValue();
+                        int y = (Integer)relativeMap.getMappedNodes().get("y").getValue();
+                        int z = (Integer)relativeMap.getMappedNodes().get("z").getValue();
+                        relative = new BlockVector3(x,y,z);
+                    }
+                    CuboidBlockClipboard result = new CuboidBlockClipboard(new BlockVector3(width, height, length),relative);
+                    int i = 0;
+                    for (int y = 0; y < height; ++y)
+                    {
+                        for (int z = 0; z < length; ++z)
+                        {
+                            for (int x = 0; x < width; ++x)
+                            {
+                                Material mat = mappedMaterials.get(blocks[i]);
+                                result.data[x][y][z] = result.new BlockData(mat,data[i]);
+                                i++;
+                            }
+                        }
+                    }
+                    for (Entry<BlockVector3, NBTTagCompound> entry : tileEntities.entrySet())
+                    {
+                        result.data[entry.getKey().x][entry.getKey().y][entry.getKey().z].nbt = entry.getValue();
+                    }
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                throw ConversionException.of(this, null, "Cannot create CuboidBlockClipboard",e);
+            }
+            throw ConversionException.of(this, null, "Cannot create CuboidBlockClipboard");
         }
     }
 }

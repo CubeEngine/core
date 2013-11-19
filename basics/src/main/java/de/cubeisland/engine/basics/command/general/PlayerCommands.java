@@ -32,6 +32,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -44,11 +47,8 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.core.util.TimeConversionException;
 import de.cubeisland.engine.core.util.time.Duration;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static java.text.DateFormat.SHORT;
@@ -74,7 +74,7 @@ public class PlayerCommands
                 throw new IllegalStateException("afk-check-time has to be greater than 0!");
             }
         }
-        catch (ConversionException ex)
+        catch (TimeConversionException ex)
         {
             throw new IllegalStateException("illegal time format in configuration!");
         }

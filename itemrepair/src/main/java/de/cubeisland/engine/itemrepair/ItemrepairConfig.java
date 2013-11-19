@@ -25,16 +25,10 @@ import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
-import de.cubeisland.engine.itemrepair.material.BaseMaterialContainerConverter;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 
 public class ItemrepairConfig extends YamlConfiguration
 {
-    static
-    {
-        CONVERTERS.registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
-    }
-
     @Name("server.bank")
     public String serverBank = "server";
     @Name("server.player")

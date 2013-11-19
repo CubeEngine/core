@@ -22,21 +22,22 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 
 public class WorldConverter implements Converter<World>
 {
     @Override
-    public Node toNode(World object) throws ConversionException
+    public Node toNode(ConverterManager manager, World object) throws ConversionException
     {
         return StringNode.of(object.getName() + "(" + object.getUID().toString() + ")");
     }
 
     @Override
-    public World fromNode(Node node) throws ConversionException
+    public World fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
@@ -56,8 +57,8 @@ public class WorldConverter implements Converter<World>
             {
                 return world;
             }
-            throw new ConversionException("Could not convert to a world: World not found! " + string);
+            throw ConversionException.of(this, node, "World not found! ");
         }
-        throw new ConversionException("Could not convert to a world: The given node is not a string");
+        throw ConversionException.of(this, node, "Node is not a StringNode!");
     }
 }
