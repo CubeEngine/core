@@ -611,7 +611,7 @@ public abstract class CubeCommand extends Command
     }
 
     private static final int TAB_LIMIT_THRESHOLD = 50;
-    
+
     @Override
     public final List<String> tabComplete(org.bukkit.command.CommandSender bukkitSender, String alias, String[] args) throws IllegalArgumentException
     {
@@ -723,7 +723,7 @@ public abstract class CubeCommand extends Command
             }
         }
         context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
     }
 
     public void onRegister()
