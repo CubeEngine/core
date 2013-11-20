@@ -39,7 +39,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
     }
 
     @Override
-    public Node toNode(ConverterManager manager, RoleMirror mirror) throws ConversionException
+    public Node toNode(RoleMirror mirror, ConverterManager manager) throws ConversionException
     {
         MapNode resultMap = MapNode.emptyMap();
         resultMap.setNode(new StringNode(mirror.mainWorld), NullNode.emptyNode());
@@ -70,7 +70,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
 
     @Override
     @SuppressWarnings("unchecked")
-    public RoleMirror fromNode(ConverterManager manager, Node node) throws ConversionException
+    public RoleMirror fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         MapNode readMap = (MapNode)node;
         if (readMap.isEmpty())

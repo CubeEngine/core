@@ -31,13 +31,13 @@ import de.cubeisland.engine.configuration.node.StringNode;
 public class WorldConverter implements Converter<World>
 {
     @Override
-    public Node toNode(ConverterManager manager, World object) throws ConversionException
+    public Node toNode(World object, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(object.getName() + "(" + object.getUID().toString() + ")");
     }
 
     @Override
-    public World fromNode(ConverterManager manager, Node node) throws ConversionException
+    public World fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {

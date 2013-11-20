@@ -27,13 +27,13 @@ import de.cubeisland.engine.configuration.node.StringNode;
 public class PriorityConverter implements Converter<Priority>
 {
     @Override
-    public Node toNode(ConverterManager manager, Priority object) throws ConversionException
+    public Node toNode(Priority object, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(object.toString());
     }
 
     @Override
-    public Priority fromNode(ConverterManager manager, Node node) throws ConversionException
+    public Priority fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         Priority prio = Priority.getByName(node.asText());
         if (prio == null)

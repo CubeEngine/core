@@ -28,13 +28,13 @@ public class DurationConverter implements Converter<Duration>
 {
 
     @Override
-    public Node toNode(ConverterManager manager, Duration object) throws ConversionException
+    public Node toNode(Duration object, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(object.format());
     }
 
     @Override
-    public Duration fromNode(ConverterManager manager, Node node) throws ConversionException
+    public Duration fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         return new Duration(node.asText());
     }

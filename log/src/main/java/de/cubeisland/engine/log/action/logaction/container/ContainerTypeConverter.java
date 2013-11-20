@@ -26,13 +26,13 @@ import de.cubeisland.engine.configuration.node.StringNode;
 public class ContainerTypeConverter implements Converter<ContainerType>
 {
     @Override
-    public Node toNode(ConverterManager manager, ContainerType object) throws ConversionException
+    public Node toNode(ContainerType object, ConverterManager manager) throws ConversionException
     {
         return new StringNode(object.name);
     }
 
     @Override
-    public ContainerType fromNode(ConverterManager manager, Node node) throws ConversionException
+    public ContainerType fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         return ContainerType.ofName(node.asText());
     }

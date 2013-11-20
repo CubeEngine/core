@@ -49,7 +49,7 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
     }
 
     @Override
-    public Node toNode(ConverterManager manager, BaseMaterialContainer object) throws ConversionException
+    public Node toNode(BaseMaterialContainer object, ConverterManager manager) throws ConversionException
     {
         Map<Material,Double> result = new TreeMap<>(new Comparator<Material>()
         {
@@ -67,7 +67,7 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
     }
 
     @Override
-    public BaseMaterialContainer fromNode(ConverterManager manager, Node node) throws ConversionException
+    public BaseMaterialContainer fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof MapNode)
         {

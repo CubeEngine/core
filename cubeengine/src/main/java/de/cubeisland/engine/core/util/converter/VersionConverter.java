@@ -27,13 +27,13 @@ import de.cubeisland.engine.core.util.Version;
 public class VersionConverter implements Converter<Version>
 {
     @Override
-    public Node toNode(ConverterManager manager, Version version) throws ConversionException
+    public Node toNode(Version version, ConverterManager manager) throws ConversionException
     {
         return new StringNode(version.toString());
     }
 
     @Override
-    public Version fromNode(ConverterManager manager, Node node) throws ConversionException
+    public Version fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {

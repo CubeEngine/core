@@ -29,13 +29,13 @@ import de.cubeisland.engine.core.util.matcher.Match;
 public class MaterialConverter implements Converter<Material>
 {
     @Override
-    public Node toNode(ConverterManager manager, Material object) throws ConversionException
+    public Node toNode(Material object, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(object.name());
     }
 
     @Override
-    public Material fromNode(ConverterManager manager, Node node) throws ConversionException
+    public Material fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {
