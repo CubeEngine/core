@@ -18,7 +18,10 @@
 package de.cubeisland.engine.signmarket;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.World;
 
@@ -26,10 +29,11 @@ import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.world.WorldManager;
+import org.jooq.types.UInteger;
 
 public class SignMarketConfig extends YamlConfiguration
 {
-
     @Name("sign.admin.enable")
     public boolean enableAdmin = true;
     @Name("sign.user.enable")
@@ -67,6 +71,16 @@ public class SignMarketConfig extends YamlConfiguration
 
     public List<World> disableInWorlds;
 
+    @Comment({"If empty all signs in all worlds can sync.",
+    "Example:",
+    "world:",
+    "  - world_the_end",
+    "  - world_nether",
+    "world2:",
+    "  - world2_the_end",
+    "  - world2_nether",})
+    public Map<World, List<World>> syncWorlds;
+
     @Override
     public void onLoaded(File loadFrom)
     {
@@ -78,5 +92,25 @@ public class SignMarketConfig extends YamlConfiguration
         {
             CubeEngine.getCore().getLog().warn("[MarketSign] All SignTypes are disabled in the configuration!");
         }
+    }
+
+    public boolean canSync(WorldManager manager, UInteger world1, UInteger world2)
+    {
+        if (syncWorlds == null || syncWorlds.isEmpty())
+        {
+            return true;
+        }
+        World w1 = manager.getWorld(world1.longValue());
+        World w2 = manager.getWorld(world2.longValue());
+        for (Entry<World, List<World>> entry : syncWorlds.entrySet())
+        {
+            List<World> list = new ArrayList<>(entry.getValue());
+            list.add(entry.getKey());
+            if (list.contains(w1) && list.contains(w2))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
