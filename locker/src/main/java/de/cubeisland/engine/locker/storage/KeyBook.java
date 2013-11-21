@@ -50,7 +50,9 @@ public class KeyBook
 
     public static KeyBook getKeyBook(ItemStack item, User currentHolder, Locker module)
     {
-        if (item.getType() == Material.ENCHANTED_BOOK && item.getItemMeta().getDisplayName().contains(KeyBook.TITLE))
+        if (item.getType() == Material.ENCHANTED_BOOK &&
+            item.getItemMeta().hasDisplayName() &&
+            item.getItemMeta().getDisplayName().contains(KeyBook.TITLE))
         {
             try
             {

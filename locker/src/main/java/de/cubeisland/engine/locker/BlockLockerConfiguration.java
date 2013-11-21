@@ -19,7 +19,7 @@ package de.cubeisland.engine.locker;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.locker.storage.ProtectedType;
 
@@ -66,7 +66,7 @@ public class BlockLockerConfiguration extends LockerSubConfig<BlockLockerConfigu
             }
             if (material == null)
             {
-                throw new ConversionException(s + " is not a valid BlockType!");
+                throw ConversionException.of(this, s, "Invalid BlockType!");
             }
             return new BlockLockerConfiguration(material);
         }

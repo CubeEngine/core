@@ -19,8 +19,9 @@ package de.cubeisland.engine.core.util.converter;
 
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -28,18 +29,18 @@ import de.cubeisland.engine.core.util.matcher.Match;
 public class ItemStackConverter implements Converter<ItemStack>
 {
     @Override
-    public Node toNode(ItemStack object) throws ConversionException
+    public Node toNode(ConverterManager manager, ItemStack object) throws ConversionException
     {
         return StringNode.of(object.getType().name() + ":" + object.getDurability());
     }
 
     @Override
-    public ItemStack fromNode(Node node) throws ConversionException
+    public ItemStack fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
             return Match.material().itemStack(((StringNode)node).getValue());
         }
-        throw new ConversionException("Invalid Node!" + node.getClass());
+        throw ConversionException.of(this, node, "Node is not a StringNode!");
     }
 }

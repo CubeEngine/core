@@ -63,8 +63,6 @@ import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.roles.Roles;
 
-import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
-
 public class Basics extends Module
 {
     private BasicsConfiguration config;
@@ -128,7 +126,8 @@ public class Basics extends Module
         em.registerListener(this, new PaintingListener(this));
 
         this.getLog().trace("{} ms - Kits", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        CONVERTERS.registerConverter(KitItem.class, new KitItemConverter());
+        this.getCore().getConfigurationFactory().getDefaultConverterManager().
+            registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
         this.kitManager.loadKits();

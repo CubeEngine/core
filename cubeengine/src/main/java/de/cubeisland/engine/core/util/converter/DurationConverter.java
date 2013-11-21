@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.time.Duration;
@@ -27,13 +28,13 @@ public class DurationConverter implements Converter<Duration>
 {
 
     @Override
-    public Node toNode(Duration object) throws ConversionException
+    public Node toNode(ConverterManager manager, Duration object) throws ConversionException
     {
         return StringNode.of(object.format());
     }
 
     @Override
-    public Duration fromNode(Node node) throws ConversionException
+    public Duration fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         return new Duration(node.asText());
     }

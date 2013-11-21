@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleLoadedEvent;
@@ -192,7 +191,7 @@ public class ModuleLoader
 
             try (InputStream is = jarFile.getInputStream(entry))
             {
-                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, is));
+                info = new ModuleInfo(file, this.getCore().getConfigurationFactory().load(ModuleConfig.class, is));
             }
         }
         catch (IOException e)

@@ -17,21 +17,22 @@
  */
 package de.cubeisland.engine.log.action.logaction.container;
 
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
-import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Converter;
 
 public class ContainerTypeConverter implements Converter<ContainerType>
 {
     @Override
-    public Node toNode(ContainerType object) throws ConversionException
+    public Node toNode(ConverterManager manager, ContainerType object) throws ConversionException
     {
         return new StringNode(object.name);
     }
 
     @Override
-    public ContainerType fromNode(Node node) throws ConversionException
+    public ContainerType fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         return ContainerType.ofName(node.asText());
     }

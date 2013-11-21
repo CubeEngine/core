@@ -146,8 +146,7 @@ public class QueryManager
         try
         {
             this.module.getLog().debug("Analyze - Step 1/6: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1);
+            this.awaitAndResetLatch(); // Wait for batch insert to finish!
         }
         catch (InterruptedException ex)
         {
@@ -163,8 +162,7 @@ public class QueryManager
         try
         {
             this.module.getLog().debug("Analyze - Step 4/6: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1); // Block normal inserts
+            this.awaitAndResetLatch();
         }
         catch (InterruptedException ex)
         {
@@ -181,7 +179,6 @@ public class QueryManager
         this.module.getLog().debug("Analyze - Step 6/6: Return back to normal logging. Table optimized!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
         latch.countDown(); // Start normal logging again
-
     }
 
     private boolean optimizeRunning = false;
@@ -207,6 +204,7 @@ public class QueryManager
 
     private void cleanUpLogs()
     {
+        if (CubeEngine.isMainThread()) throw new IllegalStateException("ONLY use Asynchronously!");
         if (cleanUpRunning)
         {
             this.module.getLog().warn("CleanUp - Is currently running cannot start again!");
@@ -217,8 +215,7 @@ public class QueryManager
             this.module.getLog().debug("!! Started automatic log_entries table cleanup !!");
             this.module.getLog().debug("(The CleanUp can take a VERY long time)");
             this.module.getLog().debug("CleanUp - Step 1/7: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1);
+            this.awaitAndResetLatch(); // Wait for batch insert to finish!
             this.cleanUpRunning = true;
         }
         catch (InterruptedException ex)
@@ -268,7 +265,6 @@ public class QueryManager
                     }
                     firstId = nextId;
                 }
-
             }
         }
         else
@@ -278,8 +274,7 @@ public class QueryManager
         try
         {
             this.module.getLog().debug("CleanUp - Step 5/7: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1); // Block normal inserts
+            this.awaitAndResetLatch();
         }
         catch (InterruptedException ex)
         {
@@ -298,6 +293,12 @@ public class QueryManager
         latch.countDown(); // Start normal logging again
         this.analyze();
         this.cleanUpRunning = false;
+    }
+
+    synchronized private void awaitAndResetLatch() throws InterruptedException
+    {
+        this.latch.await();
+        this.latch = new CountDownLatch(1);
     }
 
     private void cleanUpOldLogs(Timestamp until)
@@ -410,8 +411,7 @@ public class QueryManager
         final Queue<QueuedLog> logs = new LinkedList<>();
         try
         {
-            this.latch.await(); // Wait if still doing inserts
-            this.latch = new CountDownLatch(1);
+            this.awaitAndResetLatch();  // Wait if still doing inserts
             if (queuedLogs.isEmpty())
             {
                 return;
@@ -477,11 +477,14 @@ public class QueryManager
         }
         catch (Exception ex)
         {
-            Profiler.endProfiling("logging"); // end profiling so we can start again later
-            latch = new CountDownLatch(0); // and reset latch
             module.getLog().error("Error while logging!");
             module.getLog().debug(ex.getLocalizedMessage(), ex);
             this.queuedLogs.addAll(logs);
+            if (latch.getCount() == 1)
+            {
+                latch.countDown();
+            }
+            Profiler.endProfiling("logging"); // end profiling so we can start again later
             try
             {
                 insertConnection.close();

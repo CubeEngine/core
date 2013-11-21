@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -118,7 +117,7 @@ public abstract class RoleProvider
                 for (Path configFile : directory)
                 {
                     ++i;
-                    RoleConfig config = Configuration.load(RoleConfig.class, configFile.toFile());
+                    RoleConfig config = module.getCore().getConfigurationFactory().load(RoleConfig.class, configFile.toFile());
                     this.configs.put(config.roleName.toLowerCase(), config);
                 }
             }

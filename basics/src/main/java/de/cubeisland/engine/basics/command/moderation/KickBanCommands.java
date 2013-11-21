@@ -40,7 +40,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.core.util.TimeConversionException;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -318,7 +318,7 @@ public class KickBanCommands
             um.broadcastMessageWithPerm("&2%s &cwas banned temporarily from the server by &2%s&c!\n%s",
                         BasicsPerm.BAN_RECEIVEMESSAGE, player.getName(), context.getSender().getName(), reason);
         }
-        catch (ConversionException ex)
+        catch (TimeConversionException ex)
         {
             context.sendTranslated("&cInvalid time value! &eExamples: 1d 12h 5m");
         }

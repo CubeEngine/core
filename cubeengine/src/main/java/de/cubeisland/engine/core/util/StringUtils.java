@@ -30,7 +30,6 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
 
 /**
  * This class contains some utillities to work with Strings.
@@ -203,7 +202,7 @@ public final class StringUtils
     /**
      * Converts Time in y | M | w | d | h | m | s to Long default is m.
      */
-    public static long convertTimeToMillis(String str) throws ConversionException
+    public static long convertTimeToMillis(String str) throws TimeConversionException
     {
         Pattern pattern = Pattern.compile("^(\\d+)([sSmhHdDwWMyY])?$");
         Matcher matcher = pattern.matcher(str);
@@ -216,7 +215,7 @@ public final class StringUtils
         }
         catch (Exception e)
         {
-            throw new ConversionException("Error while Converting String to time in millis");
+            throw new TimeConversionException("Error while Converting String to time in millis");
         }
         if (time < 0)
         {

@@ -51,7 +51,7 @@ public class InvasionCommand
             final Location helperLocation = new Location(null, 0, 0, 0);
             for (Player player : Bukkit.getOnlinePlayers())
             {
-                Location location = player.getTargetBlock(null, this.module.getConfig().command.invasion.maxDistance).getLocation(helperLocation);
+                Location location = player.getTargetBlock(null, this.module.getConfig().command.invasion.distance).getLocation(helperLocation);
                 if (location.getBlock().getType() != Material.AIR)
                 {
                     location = location.clone();

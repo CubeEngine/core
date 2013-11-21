@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.Version;
@@ -26,18 +27,18 @@ import de.cubeisland.engine.core.util.Version;
 public class VersionConverter implements Converter<Version>
 {
     @Override
-    public Node toNode(Version version) throws ConversionException
+    public Node toNode(ConverterManager manager, Version version) throws ConversionException
     {
         return new StringNode(version.toString());
     }
 
     @Override
-    public Version fromNode(Node node) throws ConversionException
+    public Version fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
             return Version.fromString(((StringNode)node).getValue());
         }
-        throw new ConversionException("Versions can only be read from strings!");
+        throw ConversionException.of(this, node, "Node is not a StringNode!");
     }
 }

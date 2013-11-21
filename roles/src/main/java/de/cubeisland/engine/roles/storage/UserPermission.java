@@ -33,10 +33,10 @@ public class UserPermission extends UpdatableRecordImpl<UserPermission> implemen
         super(TABLE_PERM);
     }
 
-    public UserPermission newPerm(UInteger userId, long worldId, String perm, boolean isSet)
+    public UserPermission newPerm(UInteger userId, UInteger worldId, String perm, boolean isSet)
     {
         this.setUserid(userId);
-        this.setWorldid(UInteger.valueOf(worldId));
+        this.setWorldid(worldId);
         this.setPerm(perm);
         this.setIsset((byte)(isSet ? 1 : 0));
         return this;

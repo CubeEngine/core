@@ -42,7 +42,7 @@ public class UserDatabaseStore extends UserDataStore
 
     public UserDatabaseStore(RolesAttachment attachment, long worldID, RolesManager manager)
     {
-        super(attachment, worldID);
+        super(attachment, worldID, UInteger.valueOf(manager.assignedRolesMirrors.get(worldID)));
         this.manager = manager;
         this.loadFromDatabase();
     }
@@ -80,12 +80,12 @@ public class UserDatabaseStore extends UserDataStore
         if (set == null)
         {
             manager.dsl.delete(TABLE_PERM).where(TABLE_PERM.USERID.eq(this.getUserID()),
-                                                 TABLE_PERM.WORLDID.eq(UInteger.valueOf(this.worldID)),
+                                                 TABLE_PERM.WORLDID.eq(this.getMirrorWorldId()),
                                                  TABLE_PERM.PERM.eq(perm)).execute();
         }
         else
         {
-            UserPermission userPerm = manager.dsl.newRecord(TABLE_PERM).newPerm(this.getUserID(), this.worldID, perm, set);
+            UserPermission userPerm = manager.dsl.newRecord(TABLE_PERM).newPerm(this.getUserID(), this.getMirrorWorldId(), perm, set);
             manager.dsl.insertInto(TABLE_PERM).set(userPerm).onDuplicateKeyUpdate().set(userPerm).execute();
         }
         super.setPermission(perm,set);
@@ -97,12 +97,12 @@ public class UserDatabaseStore extends UserDataStore
         if (value == null)
         {
             manager.dsl.delete(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()),
-                                                 TABLE_META.WORLDID.eq(UInteger.valueOf(this.worldID)),
+                                                 TABLE_META.WORLDID.eq(this.getMirrorWorldId()),
                                                  TABLE_META.KEY.eq(key)).execute();
         }
         else
         {
-            UserMetaData userMeta = manager.dsl.newRecord(TABLE_META).newMeta(this.getUserID(), this.worldID, key, value);
+            UserMetaData userMeta = manager.dsl.newRecord(TABLE_META).newMeta(this.getUserID(), this.getMirrorWorldId(), key, value);
             manager.dsl.insertInto(TABLE_META).set(userMeta).onDuplicateKeyUpdate().set(userMeta).execute();
         }
         super.setMetadata(key,value);
@@ -120,11 +120,11 @@ public class UserDatabaseStore extends UserDataStore
         {
             return false;
         }
-        manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(), this.worldID, roleName).insert();
+        manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(), this.getMirrorWorldId(), roleName).insert();
         this.removeAssignedRoles(role.getAssignedRoles());
         if (this.roles.isEmpty())
         {
-            attachment.removeDefaultRoles(this.worldID);
+            attachment.removeDefaultRoles(this.getMirrorWorldId().longValue());
         }
         return super.assignRole(role);
     }
@@ -150,7 +150,7 @@ public class UserDatabaseStore extends UserDataStore
         if (this.roles.contains(roleName))
         {
             manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.USERID.eq(this.getUserID()),
-                                                 TABLE_ROLE.WORLDID.eq(UInteger.valueOf(this.worldID)),
+                                                 TABLE_ROLE.WORLDID.eq(this.getMirrorWorldId()),
                                                  TABLE_ROLE.ROLENAME.eq(roleName)).execute();
             return super.removeRole(role);
         }
@@ -163,7 +163,7 @@ public class UserDatabaseStore extends UserDataStore
         if (!this.permissions.isEmpty())
         {
             manager.dsl.delete(TABLE_PERM).where(TABLE_PERM.USERID.eq(this.getUserID()),
-                                 TABLE_PERM.WORLDID.eq(UInteger.valueOf(this.worldID))).execute();
+                                 TABLE_PERM.WORLDID.eq(this.getMirrorWorldId())).execute();
             super.clearPermissions();
         }
     }
@@ -172,7 +172,7 @@ public class UserDatabaseStore extends UserDataStore
     public void clearMetadata()
     {
         manager.dsl.delete(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()),
-                             TABLE_META.WORLDID.eq(UInteger.valueOf(this.worldID))).execute();
+                             TABLE_META.WORLDID.eq(this.getMirrorWorldId())).execute();
         super.clearMetadata();
     }
 
@@ -180,7 +180,7 @@ public class UserDatabaseStore extends UserDataStore
     public void clearAssignedRoles()
     {
         manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.USERID.eq(this.getUserID()),
-                                             TABLE_ROLE.WORLDID.eq(UInteger.valueOf(this.worldID))).execute();
+                                             TABLE_ROLE.WORLDID.eq(this.getMirrorWorldId())).execute();
         super.clearAssignedRoles();
     }
 
@@ -192,7 +192,7 @@ public class UserDatabaseStore extends UserDataStore
         for (Entry<String, Boolean> entry : perms.entrySet())
         {
             toInsert.add(manager.dsl.newRecord(TABLE_PERM)
-                                .newPerm(this.getUserID(), this.worldID, entry.getKey(), entry.getValue()));
+                                .newPerm(this.getUserID(), this.getMirrorWorldId(), entry.getKey(), entry.getValue()));
         }
         manager.dsl.batchInsert(toInsert).execute();
         super.setPermissions(perms);
@@ -205,7 +205,7 @@ public class UserDatabaseStore extends UserDataStore
         Set<UserMetaData> toInsert = new HashSet<>();
         for (Entry<String, String> entry : metadata.entrySet())
         {
-            toInsert.add(manager.dsl.newRecord(TABLE_META).newMeta(this.getUserID(), this.worldID, entry.getKey(), entry
+            toInsert.add(manager.dsl.newRecord(TABLE_META).newMeta(this.getUserID(), this.getMirrorWorldId(), entry.getKey(), entry
                 .getValue()));
         }
         manager.dsl.batchInsert(toInsert).execute();
@@ -219,7 +219,7 @@ public class UserDatabaseStore extends UserDataStore
         Set<AssignedRole> toInsert = new HashSet<>();
         for (Role role : roles)
         {
-            toInsert.add(manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(), this.worldID, role.getName()));
+            toInsert.add(manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(), this.getMirrorWorldId(), role.getName()));
         }
         manager.dsl.batchInsert(toInsert).execute();
         super.setAssignedRoles(roles);
@@ -229,7 +229,7 @@ public class UserDatabaseStore extends UserDataStore
     public Map<String, Boolean> getAllRawPermissions()
     {
         Map<String,Boolean> result = new THashMap<>();
-        for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
+        for (Role assignedRole : this.attachment.getResolvedData(this.getMainWorldID()).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawPermissions());
         }
@@ -241,7 +241,7 @@ public class UserDatabaseStore extends UserDataStore
     public Map<String, String> getAllRawMetadata()
     {
         Map<String,String> result = new THashMap<>();
-        for (Role assignedRole : this.attachment.getResolvedData(this.worldID).assignedRoles)
+        for (Role assignedRole : this.attachment.getResolvedData(this.getMainWorldID()).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawMetadata());
         }

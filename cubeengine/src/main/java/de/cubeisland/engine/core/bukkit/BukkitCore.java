@@ -45,7 +45,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.cubeisland.engine.configuration.Configuration;
+import de.cubeisland.engine.configuration.ConfigurationFactory;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.converter.LocaleConverter;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -81,7 +83,6 @@ import de.cubeisland.engine.core.util.converter.DurationConverter;
 import de.cubeisland.engine.core.util.converter.EnchantmentConverter;
 import de.cubeisland.engine.core.util.converter.ItemStackConverter;
 import de.cubeisland.engine.core.util.converter.LevelConverter;
-import de.cubeisland.engine.core.util.converter.LocaleConverter;
 import de.cubeisland.engine.core.util.converter.LocationConverter;
 import de.cubeisland.engine.core.util.converter.MaterialConverter;
 import de.cubeisland.engine.core.util.converter.PlayerConverter;
@@ -95,7 +96,6 @@ import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
 
-import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
@@ -126,6 +126,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitBanManager banManager;
     private ServiceManager serviceManager;
     private LogFactory logFactory;
+    private ConfigurationFactory configFactory;
     //endregion
 
     private List<Runnable> initHooks;
@@ -151,25 +152,26 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
 
-        CONVERTERS.registerConverter(Level.class, new LevelConverter());
-        CONVERTERS.registerConverter(ItemStack.class, new ItemStackConverter());
-        CONVERTERS.registerConverter(Material.class, new MaterialConverter());
-        CONVERTERS.registerConverter(Enchantment.class, new EnchantmentConverter());
-        CONVERTERS.registerConverter(User.class, new UserConverter());
-        CONVERTERS.registerConverter(World.class, new WorldConverter());
-        CONVERTERS.registerConverter(Duration.class, new DurationConverter());
-        CONVERTERS.registerConverter(Version.class, new VersionConverter());
-        CONVERTERS.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
-        CONVERTERS.registerConverter(Location.class, new LocationConverter(this));
-        CONVERTERS.registerConverter(Locale.class, new LocaleConverter());
+        this.configFactory = new ConfigurationFactory();
+        ConverterManager manager = this.configFactory.getDefaultConverterManager();
+        manager.registerConverter(Level.class, new LevelConverter());
+        manager.registerConverter(ItemStack.class, new ItemStackConverter());
+        manager.registerConverter(Material.class, new MaterialConverter());
+        manager.registerConverter(Enchantment.class, new EnchantmentConverter());
+        manager.registerConverter(User.class, new UserConverter());
+        manager.registerConverter(World.class, new WorldConverter());
+        manager.registerConverter(Duration.class, new DurationConverter());
+        manager.registerConverter(Version.class, new VersionConverter());
+        manager.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        manager.registerConverter(Location.class, new LocationConverter(this));
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
-            this.pluginConfig = Configuration.load(PluginConfig.class, is);
+            this.pluginConfig = configFactory.load(PluginConfig.class, is);
         }
         catch (IOException e)
         {
-            this.pluginConfig = Configuration.create(PluginConfig.class);
+            this.pluginConfig = configFactory.create(PluginConfig.class);
         }
 
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
@@ -197,7 +199,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
+        this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
                                                                                         .resolve("core.yml").toFile());
 
         this.logFactory = new LogBackLogFactory(this, this.getLogger(), BukkitUtils.isAnsiSupported(server));
@@ -223,7 +225,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
+        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
 
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
@@ -670,6 +672,12 @@ public final class BukkitCore extends JavaPlugin implements Core
     public LogFactory getLogFactory()
     {
         return logFactory;
+    }
+
+    @Override
+    public ConfigurationFactory getConfigurationFactory()
+    {
+        return configFactory;
     }
     //endregion
 }

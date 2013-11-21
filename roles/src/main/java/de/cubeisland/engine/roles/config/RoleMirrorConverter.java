@@ -19,8 +19,9 @@ package de.cubeisland.engine.roles.config;
 
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.ListNode;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
@@ -38,7 +39,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
     }
 
     @Override
-    public Node toNode(RoleMirror mirror) throws ConversionException
+    public Node toNode(ConverterManager manager, RoleMirror mirror) throws ConversionException
     {
         MapNode resultMap = MapNode.emptyMap();
         resultMap.setNode(new StringNode(mirror.mainWorld), NullNode.emptyNode());
@@ -69,7 +70,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
 
     @Override
     @SuppressWarnings("unchecked")
-    public RoleMirror fromNode(Node node) throws ConversionException
+    public RoleMirror fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         MapNode readMap = (MapNode)node;
         if (readMap.isEmpty())

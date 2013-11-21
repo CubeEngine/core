@@ -322,7 +322,7 @@ public class MaterialMatcher
                 if (item == null) // Contained ":" but could not find any matching item
                 {
                     // Try to match bukkit name
-                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    item = this.matchWithLevenshteinDistance(material, bukkitnames);
                     item = materialDataMatcher.setData(item, data);
                     return item;
                 }

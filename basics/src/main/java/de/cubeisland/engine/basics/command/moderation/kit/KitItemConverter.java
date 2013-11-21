@@ -26,22 +26,21 @@ import java.util.regex.Pattern;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.IntNode;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
-
 public class KitItemConverter implements Converter<KitItem>
 {
     private static final Pattern pat = Pattern.compile("(?:([0-9]+)\\*)?([a-zA-Z0-9_]+)(?::([0-9]+))?(?: (.+))?(:)?");
 
     @Override
-    public Node toNode(KitItem object) throws ConversionException
+    public Node toNode(ConverterManager manager, KitItem object) throws ConversionException
     {
         if (object.enchs == null || object.enchs.isEmpty())
         {
@@ -53,13 +52,13 @@ public class KitItemConverter implements Converter<KitItem>
             MapNode mapNode = MapNode.emptyMap();
             mapNode.setNode(StringNode.of(object.amount + "*" + object.mat.name() + ":" + object.dura +
                                               (object.customName == null ? "" : " " + object.customName)),
-                            CONVERTERS.convertToNode(object.enchs));
+                            manager.convertToNode(object.enchs));
             return mapNode;
         }
     }
 
     @Override
-    public KitItem fromNode(Node node) throws ConversionException
+    public KitItem fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         //suported formats: [amount*]id[:data][ customname]
         // if has enchs as map with map of enchs below
@@ -117,9 +116,9 @@ public class KitItemConverter implements Converter<KitItem>
             }
             catch (Exception ex)
             {
-                throw new ConversionException("Could not parse kitItem! " + itemString, ex);
+                throw ConversionException.of(this, node, "Could not parse kitItem! " + itemString, ex);
             }
         }
-        throw new ConversionException("Could not parse kitItem!");
+        throw ConversionException.of(this, node, "Could not parse kitItem!");
     }
 }

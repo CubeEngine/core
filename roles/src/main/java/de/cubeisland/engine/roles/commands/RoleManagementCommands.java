@@ -21,8 +21,8 @@ import java.io.IOException;
 
 import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.convert.ConversionException;
 import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -360,7 +360,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         Priority priority;
         try
         {
-            priority = converter.fromNode(new StringNode(context.getString(1)));
+            priority = converter.fromNode(null, new StringNode(context.getString(1)));
             role.setPriorityValue(priority.value);
             role.saveToConfig();
             this.manager.recalculateAllRoles();

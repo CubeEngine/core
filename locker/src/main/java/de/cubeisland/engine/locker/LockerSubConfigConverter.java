@@ -20,22 +20,23 @@ package de.cubeisland.engine.locker;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.ListNode;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.configuration.node.StringNode;
-import de.cubeisland.engine.configuration.convert.ConversionException;
-import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
 public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> implements Converter<C>
 {
     @Override
-    public Node toNode(C object) throws ConversionException
+    public Node toNode(ConverterManager manager, C object) throws ConversionException
     {
         MapNode root = MapNode.emptyMap();
         MapNode config = MapNode.emptyMap();
@@ -65,7 +66,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
     }
 
     @Override
-    public C fromNode(Node node) throws ConversionException
+    public C fromNode(ConverterManager manager, Node node) throws ConversionException
     {
         if (node instanceof NullNode) return null;
         C configuration;

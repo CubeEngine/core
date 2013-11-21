@@ -19,6 +19,7 @@ package de.cubeisland.engine.core;
 
 import java.nio.charset.Charset;
 
+import de.cubeisland.engine.configuration.ConfigurationFactory;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
@@ -181,4 +182,6 @@ public interface Core
     ServiceManager getServiceManager();
 
     LogFactory getLogFactory();
+
+    ConfigurationFactory getConfigurationFactory();
 }

@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 
 import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.configuration.codec.ConfigurationCodec;
-import de.cubeisland.engine.configuration.convert.ConversionException;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.ByteNode;
 import de.cubeisland.engine.configuration.node.CharNode;
@@ -58,8 +58,6 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-import static de.cubeisland.engine.configuration.Configuration.CONVERTERS;
-
 public class NBTCodec extends ConfigurationCodec
 {
     @Override
@@ -69,12 +67,19 @@ public class NBTCodec extends ConfigurationCodec
     }
 
     @Override
-    protected final void save(MapNode node, OutputStream os, Configuration config) throws IOException
+    protected final void save(MapNode node, OutputStream os, Configuration config) throws ConversionException
     {
-        NBTOutputStream nbtOutputStream = new NBTOutputStream(os, false);
-        nbtOutputStream.writeTag(this.convertMap(node));
-        nbtOutputStream.flush();
-        nbtOutputStream.close();
+        try
+        {
+            NBTOutputStream nbtOutputStream = new NBTOutputStream(os, false);
+            nbtOutputStream.writeTag(this.convertMap(node));
+            nbtOutputStream.flush();
+            nbtOutputStream.close();
+        }
+        catch (IOException e)
+        {
+            throw ConversionException.of(this, null, "Could not write into NBTOutputStream", e);
+        }
     }
 
     @Override
@@ -130,7 +135,7 @@ public class NBTCodec extends ConfigurationCodec
                 }
                 return listNode;
             }
-            else if (  value instanceof ByteTag
+            else if (value instanceof ByteTag
                 || value instanceof StringTag
                 || value instanceof DoubleTag
                 || value instanceof FloatTag
@@ -140,7 +145,7 @@ public class NBTCodec extends ConfigurationCodec
             {
                 try
                 {
-                    return CONVERTERS.convertToNode(((Tag)value).getValue());
+                    return this.getConverterManager().convertToNode(((Tag)value).getValue());
                 }
                 catch (ConversionException e)
                 {
