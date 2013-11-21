@@ -216,14 +216,14 @@ public abstract class BaseModuleManager implements ModuleManager
     protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
     {}
 
-    public Stack<String> resolveDependencies(String moduleId, Map<String, ModuleInfo> moduleInfos) throws ModuleException
+    public LinkedList<String> resolveDependencies(String moduleId, Map<String, ModuleInfo> moduleInfos) throws ModuleException
     {
-        Stack<String> loadStack = new Stack<>();
-        this.resolveDependencies0(moduleId, moduleInfos, loadStack);
-        return loadStack;
+        LinkedList<String> out = new LinkedList<>();
+        this.resolveDependencies0(moduleId, moduleInfos, new Stack<String>(), out);
+        return out;
     }
 
-    private void resolveDependencies0(String moduleId, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
+    private void resolveDependencies0(String moduleId, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, LinkedList<String> out) throws ModuleException
     {
         if (loadStack.contains(moduleId))
         {
@@ -235,11 +235,13 @@ public abstract class BaseModuleManager implements ModuleManager
             throw new IllegalArgumentException("Given module was not found in the info map! " + moduleId);
         }
 
+        out.addFirst(moduleId);
+
         for (String loadAfterModule : info.getLoadAfter())
         {
             if (!loadStack.contains(loadAfterModule) && moduleInfos.containsKey(loadAfterModule))
             {
-                this.resolveDependencies0(loadAfterModule, moduleInfos, loadStack);
+                this.resolveDependencies0(loadAfterModule, moduleInfos, loadStack, out);
             }
         }
         if (info.getServices() != null)
@@ -253,10 +255,12 @@ public abstract class BaseModuleManager implements ModuleManager
                     {
                         throw new MissingProviderException(moduleId, service);
                     }
-                    this.resolveDependencies0(providerModule, moduleInfos, loadStack);
+                    this.resolveDependencies0(providerModule, moduleInfos, loadStack, out);
                 }
             }
         }
+
+        loadStack.remove(moduleId);
     }
 
     @SuppressWarnings("unchecked")
@@ -291,7 +295,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         this.validateModuleInfo(info);
 
-        Stack<String> loadOrder = this.resolveDependencies(info.getId(), moduleInfos);
+        LinkedList<String> loadOrder = this.resolveDependencies(info.getId(), moduleInfos);
 
         System.out.println(loadOrder);
 
