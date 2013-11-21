@@ -321,14 +321,14 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
-        if (!this.loaded)
-        {
-            this.onLoad();
-        }
-        if (!this.loadSucceeded || !this.loaded)
+        if (!this.loadSucceeded)
         {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+        if (!this.loaded)
+        {
+            this.onLoad();
         }
         if (!PacketHookInjector.register(this))
         {

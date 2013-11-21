@@ -30,9 +30,7 @@ import net.minecraft.server.v1_6_R3.EntityPlayer;
 import net.minecraft.server.v1_6_R3.Packet0KeepAlive;
 import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
 
-import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.test.tests.AsyncCommandTest;
 import de.cubeisland.engine.test.tests.ClearChatTest;
@@ -52,9 +50,6 @@ public class Test extends Module
 {
     private Map<String, de.cubeisland.engine.test.tests.Test> tests;
     private Timer timer;
-
-    @Inject
-    public Basics basicsModule;
 
     public Test()
     {

@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.module;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URLClassLoader;
 import java.nio.file.DirectoryStream;
@@ -36,17 +35,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import javax.annotation.Nullable;
-import javax.print.MultiDoc;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
-import de.cubeisland.engine.core.logging.LoggingException;
-import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
-import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
@@ -55,7 +48,8 @@ import de.cubeisland.engine.core.module.exception.IncompatibleDependencyExceptio
 import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
-import de.cubeisland.engine.core.module.exception.MissingProviderException;
+import de.cubeisland.engine.core.module.exception.MissingServiceProviderException;
+import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
@@ -72,7 +66,7 @@ public abstract class BaseModuleManager implements ModuleManager
     protected final Core core;
     private final ModuleLoader loader;
     private final Map<String, Module> modules;
-    private final Map<String, ModuleInfo> moduleInfos;
+    private final Map<String, ModuleInfo> moduleInfoMap;
     private final Map<Class<? extends Module>, Module> classMap;
     private final CoreModule coreModule;
 
@@ -84,7 +78,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.logger = core.getLog();
         this.loader = new ModuleLoader(core, parentClassLoader);
         this.modules = new LinkedHashMap<>();
-        this.moduleInfos = new THashMap<>();
+        this.moduleInfoMap = new THashMap<>();
         this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
@@ -112,6 +106,28 @@ public abstract class BaseModuleManager implements ModuleManager
         return new ArrayList<>(this.modules.values());
     }
 
+    private synchronized ModuleInfo loadModuleInfo(Path modulePath) throws InvalidModuleException, ModuleAlreadyLoadedException
+    {
+        ModuleInfo info = this.loader.loadModuleInfo(modulePath);
+        if (info == null)
+        {
+            throw new InvalidModuleException("Failed to load the module info for file '" + modulePath.getFileName() + "'!");
+        }
+
+        if (this.moduleInfoMap.containsKey(info.getId()))
+        {
+            throw new ModuleAlreadyLoadedException(info.getName());
+        }
+
+        for (String service : info.getServiceProviders())
+        {
+            this.serviceProviders.put(service, info.getId());
+        }
+
+        this.moduleInfoMap.put(info.getId(), info);
+        return info;
+    }
+
     public synchronized Module loadModule(Path modulePath) throws ModuleException
     {
         assert modulePath != null: "The file must not be null!";
@@ -119,20 +135,7 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
         }
-
-        ModuleInfo info = this.loader.loadModuleInfo(modulePath);
-        if (info == null)
-        {
-            throw new InvalidModuleException("Failed to load the module info for file '" + modulePath.getFileName() + "'!");
-        }
-
-        if (this.moduleInfos.containsKey(info.getId()))
-        {
-            throw new ModuleAlreadyLoadedException(info.getName());
-        }
-
-        this.moduleInfos.put(info.getId(), info);
-        return this.loadModule(info.getName(), this.moduleInfos);
+        return this.loadModule(loadModuleInfo(modulePath).getName(), this.moduleInfoMap);
     }
 
     public synchronized void loadModules(Path directory)
@@ -149,7 +152,7 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 try
                 {
-                    info = this.loader.loadModuleInfo(file);
+                    info = this.loadModuleInfo(file);
                     module = this.getModule(info.getId());
                     if (module != null)
                     {
@@ -164,8 +167,10 @@ public abstract class BaseModuleManager implements ModuleManager
                             this.logger.info("A newer version of '{}' will replace the currently loaded version!", info.getName());
                         }
                     }
-                    this.moduleInfos.put(info.getId(), info);
+                    this.moduleInfoMap.put(info.getId(), info);
                 }
+                catch (ModuleAlreadyLoadedException ignored)
+                {}
                 catch (InvalidModuleException ex)
                 {
                     this.logger.error(ex, "Failed to load the module from {}!", file);
@@ -177,164 +182,144 @@ public abstract class BaseModuleManager implements ModuleManager
             this.core.getLog().error(ex, "Failed to load modules!");
             return;
         }
-        Collection<String> moduleNames = new HashSet<>(this.moduleInfos.keySet());
-        for (String moduleName : moduleNames)
-        {
-            if (this.moduleInfos.get(moduleName).getServiceProviders() != null)
-            {
-                for (String service : this.moduleInfos.get(moduleName).getServiceProviders())
-                {
-                    this.serviceProviders.put(service, moduleName);
-                }
-            }
-        }
+        Collection<String> moduleNames = new HashSet<>(this.moduleInfoMap.keySet());
         for (String moduleName : moduleNames)
         {
             try
             {
-                this.loadModule(moduleName, this.moduleInfos);
+                this.loadModule(moduleName, this.moduleInfoMap);
             }
             catch (InvalidModuleException ex)
             {
-                this.moduleInfos.remove(moduleName);
+                this.moduleInfoMap.remove(moduleName);
                 this.logger.debug("ex, Failed to load the module '{}'", moduleName);
             }
             catch (ModuleException ex)
             {
-                this.moduleInfos.remove(moduleName);
+                this.moduleInfoMap.remove(moduleName);
                 this.logger.error(ex, "Failed to load the module '{}'", moduleName);
             }
         }
         this.logger.info("Finished loading modules!");
     }
 
-    private Module loadModule(String name, Map<String, ModuleInfo> moduleInfos) throws ModuleException
-    {
-        return this.loadModule(name, moduleInfos, new Stack<String>());
-    }
-
-    protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
-    {}
-
-    public LinkedList<String> resolveDependencies(String moduleId, Map<String, ModuleInfo> moduleInfos) throws ModuleException
+    public LinkedList<String> resolveDependencies(String moduleId, Map<String, ModuleInfo> infoMap) throws ModuleException
     {
         LinkedList<String> out = new LinkedList<>();
-        this.resolveDependencies0(moduleId, moduleInfos, new Stack<String>(), out);
+        this.resolveDependencies0(moduleId, infoMap, new Stack<String>(), out);
         return out;
     }
 
-    private void resolveDependencies0(String moduleId, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack, LinkedList<String> out) throws ModuleException
+    private void resolveDependencies0(String moduleId, Map<String, ModuleInfo> infoMap, Stack<String> loadStack, LinkedList<String> out) throws ModuleException
     {
         if (loadStack.contains(moduleId))
         {
             throw new CircularDependencyException(moduleId, loadStack.peek());
         }
-        ModuleInfo info = moduleInfos.get(moduleId);
+        ModuleInfo info = infoMap.get(moduleId);
         if (info == null)
         {
-            throw new IllegalArgumentException("Given module was not found in the info map! " + moduleId);
+            throw new MissingDependencyException(moduleId);
         }
 
         out.addFirst(moduleId);
 
-        for (String loadAfterModule : info.getLoadAfter())
+        Set<String> soft = new HashSet<>(info.getLoadAfter());
+        soft.addAll(info.getSoftDependencies().keySet());
+        for (String dep : soft)
         {
-            if (!loadStack.contains(loadAfterModule) && moduleInfos.containsKey(loadAfterModule))
+            if (infoMap.containsKey(dep))
             {
-                this.resolveDependencies0(loadAfterModule, moduleInfos, loadStack, out);
+                this.resolveDependencies0(dep, infoMap, loadStack, out);
             }
         }
-        if (info.getServices() != null)
+
+        Set<String> strong = new HashSet<>();
+        for (String service : info.getServices())
         {
-            for (String service : info.getServices())
+            if (!this.core.getServiceManager().isServiceRegistered(service))
             {
-                if (!this.core.getServiceManager().isServiceRegistered(service))
+                String providerModule = this.serviceProviders.get(service);
+                if (providerModule == null)
                 {
-                    String providerModule = this.serviceProviders.get(service);
-                    if (providerModule == null)
-                    {
-                        throw new MissingProviderException(moduleId, service);
-                    }
-                    this.resolveDependencies0(providerModule, moduleInfos, loadStack, out);
+                    throw new MissingServiceProviderException(moduleId, service);
                 }
+                strong.add(providerModule);
             }
+        }
+        strong.addAll(info.getDependencies().keySet());
+        for (String dep : strong)
+        {
+            this.resolveDependencies0(dep, infoMap, loadStack, out);
         }
 
         loadStack.remove(moduleId);
     }
 
-    @SuppressWarnings("unchecked")
-    @Nullable
-    protected Module loadModule(String name, Map<String, ModuleInfo> moduleInfos, Stack<String> loadStack) throws ModuleException
+    protected void verifyDependencies(ModuleInfo info) throws ModuleDependencyException
     {
-        name = name.toLowerCase(Locale.ENGLISH);
-        Module module = null;
-        if (this.modules.containsKey(name))
-        {
-            module = this.modules.get(name);
-            if (module != null)
-            {
-                return module;
-            }
-            else
-            {
-                this.modules.remove(name);
-            }
-        }
-
-        if (loadStack.contains(name))
-        {
-            throw new CircularDependencyException(loadStack.pop(), name);
-        }
-        ModuleInfo info = moduleInfos.get(name);
-        if (info == null)
-        {
-            return null;
-        }
-        loadStack.push(name);
-
-        this.validateModuleInfo(info);
-
-        LinkedList<String> loadOrder = this.resolveDependencies(info.getId(), moduleInfos);
-
-        System.out.println(loadOrder);
-
-        System.exit(0);
-
-        // TODO actually load the modules
-
-        // TODO finish
-        Module depModule;
-        String depName;
+        Module m;
+        Version v;
         for (Entry<String, Version> dep : info.getSoftDependencies().entrySet())
         {
-            depName = dep.getKey();
-            depModule = this.loadModule(depName, moduleInfos, loadStack);
-            if (dep.getValue().isNewerThan(Version.ZERO) && depModule.getInfo().getVersion().isOlderThan(dep.getValue()))
+            m = this.modules.get(dep.getKey());
+            v = dep.getValue();
+            if (v.isNewerThan(Version.ZERO) && m.getInfo().getVersion().isOlderThan(v))
             {
-                this.logger.warn("The module " + name + " requested a newer version of " + depName + "!");
+                this.logger.warn("The module " + info.getId() + " requested a newer version of " + dep.getKey() + "!");
             }
         }
         for (Entry<String, Version> dep : info.getDependencies().entrySet())
         {
-            depName = dep.getKey();
-            depModule = this.loadModule(depName, moduleInfos, loadStack);
-            if (depModule == null)
+            m = this.modules.get(dep.getKey());
+            v = dep.getValue();
+            if (m == null)
             {
-                throw new MissingDependencyException(depName);
+                throw new MissingDependencyException(dep.getKey());
             }
             else
             {
-                if (dep.getValue().isNewerThan(Version.ZERO) && depModule.getInfo().getVersion().isOlderThan(dep.getValue()))
+                if (v.isNewerThan(Version.ZERO) && m.getInfo().getVersion().isOlderThan(v))
                 {
-                    throw new IncompatibleDependencyException(name, depName, dep.getValue(), depModule.getInfo().getVersion());
+                    throw new IncompatibleDependencyException(info.getId(), m.getId(), v, m.getInfo().getVersion());
                 }
             }
         }
+    }
 
-        module = this.loader.loadModule(info);
-        loadStack.pop();
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private Module loadModule(String id, Map<String, ModuleInfo> infoMap) throws ModuleException
+    {
+        id = id.toLowerCase(Locale.ENGLISH);
+        Module module = this.modules.get(id);
+        if (module != null)
+        {
+            return module;
+        }
 
+        if (!infoMap.containsKey(id))
+        {
+            return null;
+        }
+
+        LinkedList<String> loadOrder = this.resolveDependencies(id, infoMap);
+        loadOrder.removeAll(this.modules.keySet());
+
+        for (String loadId : loadOrder)
+        {
+            ModuleInfo info = infoMap.get(loadId);
+            this.verifyDependencies(info);
+            module = this.loader.loadModule(this.moduleInfoMap.get(loadId));
+            this.postModuleLoad(module);
+            this.modules.put(module.getId(), module);
+        }
+
+        return module;
+    }
+
+    protected void postModuleLoad(Module module)
+    {
         Version requiredVersion;
         Module injectedModule;
         Class fieldType;
@@ -354,7 +339,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
             if (Module.class.isAssignableFrom(fieldType) && injectAnnotation != null)
             {
-                injectedModule = this.classMap.get((Class<? extends Module>)fieldType);
+                injectedModule = this.classMap.get(fieldType);
                 if (injectedModule == null || fieldType == module.getClass())
                 {
                     continue;
@@ -381,8 +366,6 @@ public abstract class BaseModuleManager implements ModuleManager
 
         this.modules.put(module.getId(), module);
         this.classMap.put(module.getClass(), module);
-
-        return module;
     }
 
     public synchronized boolean enableModule(Module module)
@@ -391,14 +374,18 @@ public abstract class BaseModuleManager implements ModuleManager
         Profiler.startProfiling("enable-module");
         boolean result = module.enable();
         final long enableTime = Profiler.endProfiling("enable-module", TimeUnit.MICROSECONDS);
-        if (!result)
+        if (result)
         {
-            module.getLog().error("Module failed to load.");
+            this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, module));
+            for (String service : module.getInfo().getServices())
+            {
+                this.serviceProviders.put(service, module.getId());
+            }
+            module.getLog().info("Successfully enabled within {} microseconds!", enableTime);
         }
         else
         {
-            this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, module));
-            module.getLog().info("Successfully enabled within {} microseconds!", enableTime);
+            module.getLog().error("Module failed to load.");
         }
         return result;
     }
@@ -425,6 +412,15 @@ public abstract class BaseModuleManager implements ModuleManager
             this.core.getApiServer().unregisterApiHandlers(module);
 
             this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
+
+            Iterator<Entry<String, String>> it = this.serviceProviders.entrySet().iterator();
+            while (it.hasNext())
+            {
+                if (it.next().getValue().equals(module.getId()))
+                {
+                    it.remove();
+                }
+            }
         }
         finally
         {
@@ -436,7 +432,7 @@ public abstract class BaseModuleManager implements ModuleManager
     {
         if (this.modules.remove(module.getId()) == null)
         {
-            return; // the module wasn't loaded
+            return; // the module wasn't loaded or has already been unloaded
         }
 
         // search depending modules and unload them as well
@@ -460,7 +456,7 @@ public abstract class BaseModuleManager implements ModuleManager
         // disable and cleanup the framework
         this.disableModule(module);
         this.loader.unloadModule(module);
-        this.moduleInfos.remove(module.getId());
+        this.moduleInfoMap.remove(module.getId());
         this.core.getLogFactory().shutdown(module.getLog());
 
         // null all the fields referencing this module
@@ -509,7 +505,7 @@ public abstract class BaseModuleManager implements ModuleManager
         System.gc();
 
         assert !this.modules.containsKey(module.getId()): "Module not properly removed (modules)!";
-        assert !this.moduleInfos.containsKey(module.getId()): "Module not properly removed (moduleInfos)!";
+        assert !this.moduleInfoMap.containsKey(module.getId()): "Module not properly removed (moduleInfoMap)!";
 
         // reload the modules that only specified soft dependencies
         for (String r : reload.keySet())
@@ -602,7 +598,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.unloadModules();
         this.logger.debug("Unloading the modules took {} milliseconds!", Profiler.endProfiling("unload-modules", TimeUnit.MILLISECONDS));
         this.modules.clear();
-        this.moduleInfos.clear();
+        this.moduleInfoMap.clear();
         this.logger.debug("Shutting down the loader");
         this.loader.shutdown();
     }

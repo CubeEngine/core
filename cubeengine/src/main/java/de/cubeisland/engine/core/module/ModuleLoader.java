@@ -139,7 +139,7 @@ public class ModuleLoader
             this.classLoaders.put(info.getId(), classLoader);
             return module;
         }
-        catch (IOException | ReflectiveOperationException e)
+        catch (IOException | ReflectiveOperationException | NoClassDefFoundError e)
         {
             throw new InvalidModuleException("Module: " + info.getName(), e);
         }

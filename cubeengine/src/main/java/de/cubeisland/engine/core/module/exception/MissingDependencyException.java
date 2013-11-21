@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.module.exception;
 /**
  * This exception is thrown when a dependency is missing while loading a module.
  */
-public class MissingDependencyException extends ModuleException
+public class MissingDependencyException extends ModuleDependencyException
 {
     public MissingDependencyException(String missing)
     {
