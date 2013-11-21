@@ -36,7 +36,7 @@ import de.cubeisland.engine.locker.storage.ProtectionFlag;
 public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> implements Converter<C>
 {
     @Override
-    public Node toNode(ConverterManager manager, C object) throws ConversionException
+    public Node toNode(C object, ConverterManager manager) throws ConversionException
     {
         MapNode root = MapNode.emptyMap();
         MapNode config = MapNode.emptyMap();
@@ -66,7 +66,7 @@ public abstract class LockerSubConfigConverter<C extends LockerSubConfig<C, ?>> 
     }
 
     @Override
-    public C fromNode(ConverterManager manager, Node node) throws ConversionException
+    public C fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof NullNode) return null;
         C configuration;

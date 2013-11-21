@@ -170,7 +170,7 @@ public class CuboidBlockClipboard
         }
 
         @Override
-        public Node toNode(ConverterManager manager, CuboidBlockClipboard object) throws ConversionException
+        public Node toNode(CuboidBlockClipboard object, ConverterManager manager) throws ConversionException
         {
             MapNode result = MapNode.emptyMap();
             result.setExactNode("width",new IntNode(object.size.x));
@@ -223,7 +223,7 @@ public class CuboidBlockClipboard
         }
 
         @Override
-        public CuboidBlockClipboard fromNode(ConverterManager manager, Node node) throws ConversionException
+        public CuboidBlockClipboard fromNode(Node node, ConverterManager manager) throws ConversionException
         {
             try
             {

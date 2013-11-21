@@ -40,7 +40,7 @@ public class KitItemConverter implements Converter<KitItem>
     private static final Pattern pat = Pattern.compile("(?:([0-9]+)\\*)?([a-zA-Z0-9_]+)(?::([0-9]+))?(?: (.+))?(:)?");
 
     @Override
-    public Node toNode(ConverterManager manager, KitItem object) throws ConversionException
+    public Node toNode(KitItem object, ConverterManager manager) throws ConversionException
     {
         if (object.enchs == null || object.enchs.isEmpty())
         {
@@ -58,7 +58,7 @@ public class KitItemConverter implements Converter<KitItem>
     }
 
     @Override
-    public KitItem fromNode(ConverterManager manager, Node node) throws ConversionException
+    public KitItem fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         //suported formats: [amount*]id[:data][ customname]
         // if has enchs as map with map of enchs below

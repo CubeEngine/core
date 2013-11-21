@@ -29,13 +29,13 @@ import de.cubeisland.engine.core.logging.Level;
 public class LevelConverter implements Converter<Level>
 {
     @Override
-    public Node toNode(ConverterManager manager, Level object) throws ConversionException
+    public Node toNode(Level object, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(object.toString());
     }
 
     @Override
-    public Level fromNode(ConverterManager manager, Node node) throws ConversionException
+    public Level fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {
@@ -48,7 +48,7 @@ public class LevelConverter implements Converter<Level>
         }
         else if (node instanceof BooleanNode && !((BooleanNode)node).getValue())
         { // OFF is interpreted as a boolean false
-            return fromNode(manager, new StringNode("OFF"));
+            return fromNode(new StringNode("OFF"), manager);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode OR BooleanNode!");
     }

@@ -43,7 +43,7 @@ public class LocationConverter implements Converter<Location>
     }
 
     @Override
-    public Node toNode(ConverterManager manager, Location location) throws ConversionException
+    public Node toNode(Location location, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
         loc.put("world", location.getWorld().getName());
@@ -57,7 +57,7 @@ public class LocationConverter implements Converter<Location>
 
     @Override
     @SuppressWarnings("unchecked")
-    public Location fromNode(ConverterManager manager, Node node) throws ConversionException
+    public Location fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof MapNode)
         {

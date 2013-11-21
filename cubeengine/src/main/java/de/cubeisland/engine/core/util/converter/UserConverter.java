@@ -28,13 +28,13 @@ import de.cubeisland.engine.core.user.User;
 public class UserConverter implements Converter<User>
 {
     @Override
-    public Node toNode(ConverterManager manager, User user) throws ConversionException
+    public Node toNode(User user, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(user.getName());
     }
 
     @Override
-    public User fromNode(ConverterManager manager, Node node) throws ConversionException
+    public User fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {

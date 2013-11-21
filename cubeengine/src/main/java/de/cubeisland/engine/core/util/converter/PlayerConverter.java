@@ -38,13 +38,13 @@ public class PlayerConverter implements Converter<OfflinePlayer>
     }
 
     @Override
-    public Node toNode(ConverterManager manager, OfflinePlayer object)
+    public Node toNode(OfflinePlayer object, ConverterManager manager)
     {
         return StringNode.of(object.getName());
     }
 
     @Override
-    public OfflinePlayer fromNode(ConverterManager manager, Node node) throws ConversionException
+    public OfflinePlayer fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {

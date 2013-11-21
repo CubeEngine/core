@@ -360,7 +360,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         Priority priority;
         try
         {
-            priority = converter.fromNode(null, new StringNode(context.getString(1)));
+            priority = converter.fromNode(new StringNode(context.getString(1)), null);
             role.setPriorityValue(priority.value);
             role.saveToConfig();
             this.manager.recalculateAllRoles();

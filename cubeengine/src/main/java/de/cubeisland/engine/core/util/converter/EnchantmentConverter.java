@@ -29,13 +29,13 @@ import de.cubeisland.engine.core.util.matcher.Match;
 public class EnchantmentConverter implements Converter<Enchantment>
 {
     @Override
-    public Node toNode(ConverterManager manager, Enchantment object) throws ConversionException
+    public Node toNode(Enchantment object, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(Match.enchant().nameFor(object));
     }
 
     @Override
-    public Enchantment fromNode(ConverterManager manager, Node node) throws ConversionException
+    public Enchantment fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {

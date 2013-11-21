@@ -613,7 +613,8 @@ public class MarketSign
     {
         return this.hasStock() == model.hasStock()
             && this.getItem().isSimilar(model.getItem())
-            && this.itemInfo.getSize() == model.itemInfo.getSize();
+            && this.itemInfo.getSize() == model.itemInfo.getSize()
+            && this.module.getConfig().canSync(this.module.getCore().getWorldManager(), this.blockInfo.getWorld(), model.blockInfo.getWorld());
     }
 
     /**

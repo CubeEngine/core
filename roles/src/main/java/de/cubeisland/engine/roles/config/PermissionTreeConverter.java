@@ -39,7 +39,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     }
 
     @Override
-    public Node toNode(ConverterManager manager, PermissionTree permTree) throws ConversionException
+    public Node toNode(PermissionTree permTree, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> easyMap = new LinkedHashMap<>();
         for (Map.Entry<String, Boolean> entry : permTree.getPermissions().entrySet())
@@ -136,7 +136,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
     }
 
     @Override
-    public PermissionTree fromNode(ConverterManager manager, Node node) throws ConversionException
+    public PermissionTree fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         PermissionTree permTree = new PermissionTree();
         if (node instanceof ListNode)
