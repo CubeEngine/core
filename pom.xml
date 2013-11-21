@@ -50,6 +50,7 @@
     <module>locker</module>
     <module>mystcube</module>
     <module>fakeanticheat</module>
+    <module>stats</module>
   </modules>
 
   <build>
