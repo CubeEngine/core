@@ -19,13 +19,11 @@ package de.cubeisland.engine.core.module;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URLClassLoader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,7 +37,6 @@ import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
-import javax.print.MultiDoc;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
@@ -271,6 +268,7 @@ public abstract class BaseModuleManager implements ModuleManager
             if (m == null)
             {
                 this.logger.debug("The module {} is missing the soft dependency {}...", info.getId(), dep.getKey());
+                continue;
             }
             v = dep.getValue();
             if (v.isNewerThan(Version.ZERO) && m.getInfo().getVersion().isOlderThan(v))
@@ -442,7 +440,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
-    private void resolveModulesForUnload(Module module, Set<Module> modules, LinkedList<Pair<Module, Boolean>> out)
+    private void resolveModulesForUnload(Module module, Collection<Module> modules, LinkedList<Pair<Module, Boolean>> out)
     {
         for (Module m : modules)
         {
@@ -610,11 +608,25 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized void unloadModules()
     {
-        for (Module module : new THashSet<>(this.modules.values()))
+        Set<Module> moduleSet = new THashSet<>(this.modules.values());
+        for (Module module : moduleSet)
         {
-            this.unloadModule(module);
+            if (!this.modules.containsValue(module))
+            {
+                continue;
+            }
+            LinkedList<Pair<Module, Boolean>> unloadFirst = new LinkedList<>();
+            this.resolveModulesForUnload(module, this.modules.values(), unloadFirst);
+            for (Pair<Module, Boolean> pair : unloadFirst)
+            {
+                this.unloadModule0(pair.getLeft());
+            }
+            this.unloadModule0(module);
         }
         this.modules.clear();
+
+        System.gc();
+        System.gc();
     }
 
     @Override
