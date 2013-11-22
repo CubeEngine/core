@@ -117,6 +117,7 @@ public class GeneralsListener implements Listener
         {
             user.sendTranslated("&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
+        // TODO move this to PlayerJoin
         if (bUser.getbUEntity().isGodMode())
         {
             user.setInvulnerable(true);

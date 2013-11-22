@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -202,14 +203,14 @@ public abstract class BaseModuleManager implements ModuleManager
         this.logger.info("Finished loading modules!");
     }
 
-    public LinkedList<String> resolveDependencies(String moduleId, Map<String, ModuleInfo> infoMap) throws ModuleException
+    public LinkedList<String> resolveDependencies(String moduleId, Map<String, ModuleInfo> infoMap) throws CircularDependencyException
     {
         LinkedList<String> out = new LinkedList<>();
         this.resolveDependencies0(moduleId, infoMap, new Stack<String>(), out);
         return out;
     }
 
-    private void resolveDependencies0(String moduleId, Map<String, ModuleInfo> infoMap, Stack<String> loadStack, LinkedList<String> out) throws ModuleException
+    private void resolveDependencies0(String moduleId, Map<String, ModuleInfo> infoMap, Stack<String> loadStack, LinkedList<String> out) throws CircularDependencyException
     {
         if (loadStack.contains(moduleId))
         {
@@ -218,7 +219,7 @@ public abstract class BaseModuleManager implements ModuleManager
         ModuleInfo info = infoMap.get(moduleId);
         if (info == null)
         {
-            throw new MissingDependencyException(moduleId);
+            return;
         }
 
         loadStack.add(moduleId);
@@ -242,11 +243,10 @@ public abstract class BaseModuleManager implements ModuleManager
             if (!this.core.getServiceManager().isServiceRegistered(service))
             {
                 String providerModule = this.serviceProviders.get(service);
-                if (providerModule == null)
+                if (providerModule != null)
                 {
-                    throw new MissingServiceProviderException(moduleId, service);
+                    strong.add(providerModule);
                 }
-                strong.add(providerModule);
             }
         }
         strong.addAll(info.getDependencies().keySet());
@@ -285,6 +285,13 @@ public abstract class BaseModuleManager implements ModuleManager
                 {
                     throw new IncompatibleDependencyException(info.getId(), m.getId(), v, m.getInfo().getVersion());
                 }
+            }
+        }
+        for (String service : info.getServices())
+        {
+            if (!this.serviceProviders.containsKey(service))
+            {
+                throw new MissingServiceProviderException(info.getId(), service);
             }
         }
     }
@@ -430,6 +437,20 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
+    private void resolveModulesForUnload(Module module, Set<Module> modules, Map<Module, Boolean> out)
+    {
+        for (Module m : modules)
+        {
+            final boolean isSoftDep = m.getInfo().getSoftDependencies().containsKey(module.getId());
+            final boolean isDep = isSoftDep || m.getInfo().getDependencies().containsKey(module.getId());
+            if (isDep)
+            {
+                out.put(m, isSoftDep);
+                this.resolveModulesForUnload(m, modules, out);
+            }
+        }
+    }
+
     public synchronized void unloadModule(final Module module)
     {
         if (this.modules.remove(module.getId()) == null)
@@ -437,24 +458,63 @@ public abstract class BaseModuleManager implements ModuleManager
             return; // the module wasn't loaded or has already been unloaded
         }
 
-        // search depending modules and unload them as well
-        final Map<String, ModuleInfo> reload = new THashMap<>();
+        Map<Module, Boolean> unloadModules = new HashMap<>();
 
-        for (Entry<String, Module> entry : new THashSet<>(this.modules.entrySet()))
+        this.resolveModulesForUnload(module, new THashSet<>(this.modules.values()), unloadModules);
+        unloadModules.put(module, false);
+
+        Map<String, ModuleInfo> unload = new HashMap<>();
+        Map<String, ModuleInfo> reload = new HashMap<>();
+
+        for (Entry<Module, Boolean> entry : unloadModules.entrySet())
         {
-            Module m = entry.getValue();
-            final boolean isSoftDep = m.getInfo().getSoftDependencies().containsKey(module.getId());
-            final boolean isDep = isSoftDep || m.getInfo().getDependencies().containsKey(module.getId());
-            if (isDep)
+            Module m = entry.getKey();
+            unload.put(m.getId(), m.getInfo());
+            if (entry.getValue())
             {
-                this.unloadModule(m);
-                if (isSoftDep)
-                {
-                    reload.put(m.getId(), m.getInfo());
-                }
+                reload.put(m.getId(), m.getInfo());
             }
         }
 
+        LinkedList<String> unloadOrder;
+        LinkedList<String> reloadOrder;
+        try
+        {
+            unloadOrder = this.resolveDependencies(module.getId(), unload);
+            reloadOrder = this.resolveDependencies(reload.entrySet().iterator().next().getKey(), reload);
+        }
+        catch (CircularDependencyException e)
+        {
+            this.logger.error("What the f***?! circular dependency during unload...", e);
+            return;
+        }
+
+        Collections.reverse(unloadOrder);
+
+        for (String moduleId : unloadOrder)
+        {
+            this.unloadModule0(this.modules.get(moduleId));
+        }
+
+        // try to get rid of the classes
+        System.gc();
+        System.gc();
+
+        for (String moduleId : reloadOrder)
+        {
+            try
+            {
+                this.loadModule(moduleId, this.moduleInfoMap);
+            }
+            catch (ModuleException e)
+            {
+                this.logger.warn("Failed to reload a module upon unloading a different module!", e);
+            }
+        }
+    }
+
+    protected void unloadModule0(Module module)
+    {
         // disable and cleanup the framework
         this.disableModule(module);
         this.loader.unloadModule(module);
@@ -475,7 +535,8 @@ public abstract class BaseModuleManager implements ModuleManager
                         field.set(m, null);
                     }
                     catch (ReflectiveOperationException ignored)
-                    {}
+                    {
+                    }
                 }
             }
         }
@@ -500,26 +561,6 @@ public abstract class BaseModuleManager implements ModuleManager
         else
         {
             module.getLog().debug("Class loader cannot be closed.");
-        }
-
-        // try to get rid of the classes
-        System.gc();
-        System.gc();
-
-        assert !this.modules.containsKey(module.getId()): "Module not properly removed (modules)!";
-        assert !this.moduleInfoMap.containsKey(module.getId()): "Module not properly removed (moduleInfoMap)!";
-
-        // reload the modules that only specified soft dependencies
-        for (String r : reload.keySet())
-        {
-            try
-            {
-                this.loadModule(r, reload);
-            }
-            catch (ModuleException e)
-            {
-                this.core.getLog().error("Failed to reload the module {}", r);
-            }
         }
     }
 
