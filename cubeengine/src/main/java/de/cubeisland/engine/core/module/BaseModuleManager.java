@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,7 @@ import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
+import javax.print.MultiDoc;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
@@ -51,6 +53,7 @@ import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingServiceProviderException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
+import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
 import gnu.trove.map.hash.THashMap;
@@ -265,6 +268,10 @@ public abstract class BaseModuleManager implements ModuleManager
         for (Entry<String, Version> dep : info.getSoftDependencies().entrySet())
         {
             m = this.modules.get(dep.getKey());
+            if (m == null)
+            {
+                this.logger.debug("The module {} is missing the soft dependency {}...", info.getId(), dep.getKey());
+            }
             v = dep.getValue();
             if (v.isNewerThan(Version.ZERO) && m.getInfo().getVersion().isOlderThan(v))
             {
@@ -322,6 +329,7 @@ public abstract class BaseModuleManager implements ModuleManager
             module = this.loader.loadModule(this.moduleInfoMap.get(loadId));
             this.postModuleLoad(module);
             this.modules.put(module.getId(), module);
+            this.classMap.put(module.getClass(), module);
         }
 
         return module;
@@ -372,9 +380,6 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
             }
         }
-
-        this.modules.put(module.getId(), module);
-        this.classMap.put(module.getClass(), module);
     }
 
     public synchronized boolean enableModule(Module module)
@@ -437,78 +442,76 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
-    private void resolveModulesForUnload(Module module, Set<Module> modules, Map<Module, Boolean> out)
+    private void resolveModulesForUnload(Module module, Set<Module> modules, LinkedList<Pair<Module, Boolean>> out)
     {
         for (Module m : modules)
         {
+            if (module == m)
+            {
+                continue;
+            }
             final boolean isSoftDep = m.getInfo().getSoftDependencies().containsKey(module.getId());
             final boolean isDep = isSoftDep || m.getInfo().getDependencies().containsKey(module.getId());
             if (isDep)
             {
-                out.put(m, isSoftDep);
                 this.resolveModulesForUnload(m, modules, out);
+                out.addLast(new Pair<>(m, isSoftDep));
             }
         }
     }
 
     public synchronized void unloadModule(final Module module)
     {
-        if (this.modules.remove(module.getId()) == null)
+        if (!this.modules.containsKey(module.getId()))
         {
             return; // the module wasn't loaded or has already been unloaded
         }
 
-        Map<Module, Boolean> unloadModules = new HashMap<>();
+        LinkedList<Pair<Module, Boolean>> unloadModules = new LinkedList<>();
 
         this.resolveModulesForUnload(module, new THashSet<>(this.modules.values()), unloadModules);
-        unloadModules.put(module, false);
+        unloadModules.addLast(new Pair<>(module, false));
 
-        Map<String, ModuleInfo> unload = new HashMap<>();
-        Map<String, ModuleInfo> reload = new HashMap<>();
+        List<ModuleInfo> reloadModules = new ArrayList<>();
 
-        for (Entry<Module, Boolean> entry : unloadModules.entrySet())
+        for (Pair<Module, Boolean> entry : unloadModules)
         {
-            Module m = entry.getKey();
-            unload.put(m.getId(), m.getInfo());
-            if (entry.getValue())
+            if (entry.getRight())
             {
-                reload.put(m.getId(), m.getInfo());
+                reloadModules.add(entry.getLeft().getInfo());
             }
         }
 
-        LinkedList<String> unloadOrder;
-        LinkedList<String> reloadOrder;
-        try
-        {
-            unloadOrder = this.resolveDependencies(module.getId(), unload);
-            reloadOrder = this.resolveDependencies(reload.entrySet().iterator().next().getKey(), reload);
-        }
-        catch (CircularDependencyException e)
-        {
-            this.logger.error("What the f***?! circular dependency during unload...", e);
-            return;
-        }
 
-        Collections.reverse(unloadOrder);
-
-        for (String moduleId : unloadOrder)
+        for (Pair<Module, Boolean> pair : unloadModules)
         {
-            this.unloadModule0(this.modules.get(moduleId));
+            this.unloadModule0(pair.getLeft());
         }
 
         // try to get rid of the classes
         System.gc();
         System.gc();
 
-        for (String moduleId : reloadOrder)
+        for (ModuleInfo info : reloadModules)
         {
+            String id = info.getId();
             try
             {
-                this.loadModule(moduleId, this.moduleInfoMap);
+                this.moduleInfoMap.put(id, info);
+                Module m = this.loadModule(id, this.moduleInfoMap);
+                this.enableModule(m);
             }
             catch (ModuleException e)
             {
                 this.logger.warn("Failed to reload a module upon unloading a different module!", e);
+            }
+            finally
+            {
+                // remove the info again if the module has not been loaded
+                if (!this.modules.containsKey(id))
+                {
+                    this.moduleInfoMap.remove(id);
+                }
             }
         }
     }
@@ -518,6 +521,7 @@ public abstract class BaseModuleManager implements ModuleManager
         // disable and cleanup the framework
         this.disableModule(module);
         this.loader.unloadModule(module);
+        this.modules.remove(module.getId());
         this.moduleInfoMap.remove(module.getId());
         this.core.getLogFactory().shutdown(module.getLog());
 
@@ -541,27 +545,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
 
-        // try closing the ClassLoader
-        ClassLoader classLoader = module.getClassLoader();
-        if (classLoader instanceof ModuleClassLoader)
-        {
-            ((ModuleClassLoader)classLoader).shutdown();
-        }
-        else if (classLoader instanceof URLClassLoader)
-        {
-            try
-            {
-                ((URLClassLoader)classLoader).close();
-            }
-            catch (IOException ex)
-            {
-                module.getLog().warn(ex, "Failed to close the class loader of {}!", module.getName());
-            }
-        }
-        else
-        {
-            module.getLog().debug("Class loader cannot be closed.");
-        }
+        this.logger.debug("Unloaded module {}...", module.getId());
     }
 
     @Override

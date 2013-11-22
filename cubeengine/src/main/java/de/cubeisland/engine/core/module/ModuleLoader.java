@@ -137,6 +137,8 @@ public class ModuleLoader
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
 
             this.classLoaders.put(info.getId(), classLoader);
+
+            this.getCore().getLog().debug("Module {} loaded...", info.getId());
             return module;
         }
         catch (IOException | ReflectiveOperationException | NoClassDefFoundError e)
