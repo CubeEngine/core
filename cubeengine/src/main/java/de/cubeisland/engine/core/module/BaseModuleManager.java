@@ -221,6 +221,8 @@ public abstract class BaseModuleManager implements ModuleManager
             throw new MissingDependencyException(moduleId);
         }
 
+        loadStack.add(moduleId);
+
         out.remove(moduleId);
         out.addFirst(moduleId);
 
