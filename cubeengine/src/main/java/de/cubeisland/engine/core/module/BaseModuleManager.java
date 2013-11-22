@@ -47,7 +47,6 @@ import de.cubeisland.engine.core.module.exception.CircularDependencyException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
-import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingServiceProviderException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
@@ -222,6 +221,7 @@ public abstract class BaseModuleManager implements ModuleManager
             throw new MissingDependencyException(moduleId);
         }
 
+        out.remove(moduleId);
         out.addFirst(moduleId);
 
         Set<String> soft = new HashSet<>(info.getLoadAfter());
