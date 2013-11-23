@@ -15,22 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test.tests;
+package de.cubeisland.engine.core.module.exception;
 
-public class ModuleTest extends Test
+public class MissingServiceProviderException extends ModuleDependencyException
 {
-    private final de.cubeisland.engine.test.Test module;
-
-    public ModuleTest(de.cubeisland.engine.test.Test module)
+    public MissingServiceProviderException(String name, String service)
     {
-        this.module = module;
-    }
-
-    @Override
-    public void onEnable()
-    {
-        module.getLog().debug("Basics-Module: {0}", String.valueOf(module.getCore().getModuleManager().getModule("basics")));
-        module.getLog().debug("BukkitCore-Plugin: {0}", String.valueOf(module.getCore()));
-        this.setSuccess(true);
+        super("The module " + name + " is missing a service: " + service);
     }
 }

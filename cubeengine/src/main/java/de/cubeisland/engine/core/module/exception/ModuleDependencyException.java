@@ -17,10 +17,25 @@
  */
 package de.cubeisland.engine.core.module.exception;
 
-public class MissingProviderException extends ModuleException
+public class ModuleDependencyException extends ModuleException
 {
-    public MissingProviderException(String name, String service)
+    public ModuleDependencyException()
     {
-        super("The module " + name + " is missing a service: " + service);
+        super();
+    }
+
+    public ModuleDependencyException(String message)
+    {
+        super(message);
+    }
+
+    public ModuleDependencyException(Throwable cause)
+    {
+        super(cause);
+    }
+
+    public ModuleDependencyException(String message, Throwable cause)
+    {
+        super(message, cause);
     }
 }

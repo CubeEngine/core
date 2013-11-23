@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.service;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import de.cubeisland.engine.core.Core;
@@ -28,7 +29,7 @@ public class ServiceManager
 {
     private Core core;
 
-    private final Map<Class, RegisteredServiceProvider> providers = new HashMap<>();
+    private final Map<Class, LinkedList<RegisteredServiceProvider>> providers = new HashMap<>();
 
     public ServiceManager(Core core)
     {
@@ -38,47 +39,82 @@ public class ServiceManager
     @SuppressWarnings("unchecked")
     public <S> S getServiceProvider(Class<S> service)
     {
-        RegisteredServiceProvider<S> registeredServiceProvider = (RegisteredServiceProvider<S>)this.providers.get(service);
-        if (registeredServiceProvider == null) return null;
+        LinkedList<RegisteredServiceProvider> providers = this.providers.get(service);
+        if (providers == null || providers.isEmpty())
+        {
+            return null;
+        }
+        RegisteredServiceProvider<S> registeredServiceProvider = providers.getLast();
         return registeredServiceProvider.getProvider();
     }
 
     public <S> void registerService(Class<S> service, S provider, Module module)
     {
-        RegisteredServiceProvider<?> replaced = this.providers.put(service, new RegisteredServiceProvider<>(service, provider, module));
-        if (replaced == null)
+        LinkedList<RegisteredServiceProvider> providers = this.providers.get(service);
+        if (providers == null)
         {
-            module.getLog().info("Registered ServiceProvider {} the Service: {}", provider.getClass().getName(),
+            providers = new LinkedList<>();
+            this.providers.put(service, providers);
+        }
+        RegisteredServiceProvider last = providers.isEmpty() ? null : providers.getLast();
+        providers.addLast(new RegisteredServiceProvider<>(service, provider, module));
+        if (last == null)
+        {
+            module.getLog().info("Registered ServiceProvider {} for the Service: {}",
+                                 provider.getClass().getName(),
                                  service.getName());
         }
         else
         {
             module.getLog().info("Replaced the registered ServiceProvider ({}) for the Service {} by {}",
-                                 replaced.getProvider().getClass().getName(),service.getName(),
+                                 last.getProvider().getClass().getName(),
+                                 service.getName(),
                                  provider.getClass().getName());
         }
     }
 
-    public <S> void unregisterService(Class<S> service)
+    public <S> void unregisterService(Class<S> service, Module module)
     {
-        RegisteredServiceProvider removed = this.providers.remove(service);
-        if (removed != null)
+        LinkedList<RegisteredServiceProvider> providers = this.providers.get(service);
+        if (providers == null || providers.isEmpty())
         {
+            return;
+        }
+        RegisteredServiceProvider remove = null;
+        for (RegisteredServiceProvider provider : providers)
+        {
+            if (provider.getModule().getId().equals(module.getId()))
+            {
+                remove = provider;
+                break;
+            }
+        }
+        if (remove != null)
+        {
+            providers.remove(remove);
             this.core.getLog().info("Unregistered ServiceProvider {} of {} for the Service {}",
-                                    removed.getProvider().getClass().getName(), removed.getModule().getName(),
-                                    removed.getService().getName());
+                                    remove.getProvider().getClass().getName(),
+                                    remove.getModule().getName(),
+                                    remove.getService().getName());
         }
     }
 
     public void unregisterServices(Module module)
     {
-        Iterator<RegisteredServiceProvider> iterator = this.providers.values().iterator();
-        while (iterator.hasNext())
+        for (LinkedList<RegisteredServiceProvider> providers : this.providers.values())
         {
-            RegisteredServiceProvider next = iterator.next();
-            if (next.getModule() == module)
+            Iterator<RegisteredServiceProvider> iterator = providers.iterator();
+            while (iterator.hasNext())
             {
-                iterator.remove();
+                RegisteredServiceProvider next = iterator.next();
+                if (next.getModule().getId().equals(module.getId()))
+                {
+                    iterator.remove();
+                    module.getLog().info("Unregistered ServiceProvider {} of {} for the Service {}",
+                                            next.getProvider().getClass().getName(),
+                                            next.getModule().getName(),
+                                            next.getService().getName());
+                }
             }
         }
     }

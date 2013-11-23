@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.module.exception;
 /**
  * This exception is thrown when modules have a circular dependency.
  */
-public class CircularDependencyException extends ModuleException
+public class CircularDependencyException extends ModuleDependencyException
 {
     public CircularDependencyException(String dependingModule, String dependency)
     {
