@@ -118,17 +118,5 @@ public class ServiceManager
             }
         }
     }
-
-    public boolean isServiceRegistered(String serviceString)
-    {
-        for (Class service : this.providers.keySet())
-        {
-            if (service.getName().equals(serviceString))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 }
 

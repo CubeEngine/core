@@ -260,13 +260,10 @@ public abstract class BaseModuleManager implements ModuleManager
         Set<String> strong = new HashSet<>();
         for (String service : info.getServices())
         {
-            if (!this.core.getModuleManager().getServiceManager().isServiceRegistered(service))
+            LinkedList<String> providers = this.serviceProviders.get(service);
+            if (providers != null)
             {
-                String providerModule = this.serviceProviders.get(service).getLast();
-                if (providerModule != null)
-                {
-                    strong.add(providerModule);
-                }
+                strong.add(providers.getLast());
             }
         }
         strong.addAll(info.getDependencies().keySet());
