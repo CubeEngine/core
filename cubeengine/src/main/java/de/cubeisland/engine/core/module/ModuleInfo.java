@@ -104,7 +104,7 @@ public class ModuleInfo
         this.description = config.description;
         this.version = config.version;
         this.sourceVersion = config.sourceVersion;
-        this.minCoreVersion = config.minCoreRevision;
+        this.minCoreVersion = config.minCoreVersion;
 
         int delimOffset;
         Version version;
