@@ -30,17 +30,26 @@ import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
+import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.util.StringUtils;
 
 public class TestModuleManager implements ModuleManager
 {
     private final Core core;
     private final ModuleLoader ldr;
+    private final ServiceManager serviceManager;
 
     public TestModuleManager(Core core)
     {
         this.core = core;
         this.ldr = null;
+        this.serviceManager = new ServiceManager(core);
+    }
+
+    @Override
+    public ServiceManager getServiceManager()
+    {
+        return this.serviceManager;
     }
 
     @Override

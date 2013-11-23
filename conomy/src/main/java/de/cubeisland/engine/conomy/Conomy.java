@@ -26,7 +26,7 @@ import de.cubeisland.engine.conomy.commands.EcoCommands;
 import de.cubeisland.engine.conomy.commands.MoneyCommand;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.storage.database.Database;
 
 public class Conomy extends Module
@@ -49,7 +49,7 @@ public class Conomy extends Module
         cm.registerCommand(new EcoCommands(this));
         cm.registerCommand(new BankCommands(this));
         cm.registerCommand(new EcoBankCommands(this), "eco");
-        this.getCore().getServiceManager().registerService(Economy.class, manager.getInterface(), this);
+        this.getCore().getModuleManager().getServiceManager().registerService(Economy.class, manager.getInterface(), this);
     }
 
     public ConomyConfiguration getConfig()

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.service;
+package de.cubeisland.engine.core.module.service;
 
 import java.util.List;
 import java.util.Locale;

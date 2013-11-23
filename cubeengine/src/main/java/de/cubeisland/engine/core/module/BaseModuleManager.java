@@ -49,6 +49,7 @@ import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingServiceProviderException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
+import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
@@ -68,6 +69,7 @@ public abstract class BaseModuleManager implements ModuleManager
     private final Map<String, ModuleInfo> moduleInfoMap;
     private final Map<Class<? extends Module>, Module> classMap;
     private final CoreModule coreModule;
+    private final ServiceManager serviceManager;
 
     private final Map<String, LinkedList<String>> serviceProviders;
 
@@ -82,6 +84,13 @@ public abstract class BaseModuleManager implements ModuleManager
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null, logger);
+        this.serviceManager = new ServiceManager(core);
+    }
+
+    @Override
+    public ServiceManager getServiceManager()
+    {
+        return this.serviceManager;
     }
 
     public synchronized Module getModule(String name)
@@ -251,7 +260,7 @@ public abstract class BaseModuleManager implements ModuleManager
         Set<String> strong = new HashSet<>();
         for (String service : info.getServices())
         {
-            if (!this.core.getServiceManager().isServiceRegistered(service))
+            if (!this.core.getModuleManager().getServiceManager().isServiceRegistered(service))
             {
                 String providerModule = this.serviceProviders.get(service).getLast();
                 if (providerModule != null)
@@ -444,7 +453,7 @@ public abstract class BaseModuleManager implements ModuleManager
                     it.remove();
                 }
             }
-            this.core.getServiceManager().unregisterServices(module);
+            this.core.getModuleManager().getServiceManager().unregisterServices(module);
         }
         finally
         {

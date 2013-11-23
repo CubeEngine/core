@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.itemrepair.Itemrepair;
 import de.cubeisland.engine.itemrepair.material.BaseMaterial;
@@ -72,7 +72,7 @@ public class RepairBlock
         this.inventoryMap = new HashMap<>();
         this.rand = new Random(System.currentTimeMillis());
         this.config = config;
-        this.economy = module.getCore().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
     }
 
     public final String getName()
@@ -356,12 +356,12 @@ public class RepairBlock
             repairItem(item, durability);
         }
     }
-    
+
     public static void repairItem(ItemStack item)
     {
         repairItem(item, (short)0);
     }
-    
+
     public static void repairItem(ItemStack item, short durability)
     {
         if (item != null)

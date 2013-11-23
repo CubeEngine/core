@@ -25,7 +25,7 @@ import org.bukkit.event.Listener;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.vote.storage.TableVote;
@@ -57,7 +57,7 @@ public class Vote extends Module implements Listener
         if (this.getCore().getUserManager().getUser(vote.getUsername(), false) != null)
         {
             User user = this.getCore().getUserManager().getUser(vote.getUsername());
-            Economy economy = this.getCore().getServiceManager().getServiceProvider(Economy.class);
+            Economy economy = this.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
             VoteModel voteModel = this.dsl.selectFrom(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOne();
             if (voteModel == null)
             {
