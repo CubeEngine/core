@@ -40,7 +40,7 @@ public class ModuleConfig extends YamlConfiguration
     public Set<String> pluginDependencies = new HashSet<>(0);
     public Set<String> loadAfter = new HashSet<>(0);
     public Set<String> services = new HashSet<>(0);
-    public Set<String> serviceProviders = new HashSet<>(0);
+    public Set<String> providedServices = new HashSet<>(0);
 
     @Override
     public boolean useStrictExceptionPolicy()

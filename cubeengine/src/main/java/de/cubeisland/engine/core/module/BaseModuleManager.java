@@ -118,7 +118,7 @@ public abstract class BaseModuleManager implements ModuleManager
             throw new ModuleAlreadyLoadedException(info.getName());
         }
 
-        for (String service : info.getServiceProviders())
+        for (String service : info.getProvidedServices())
         {
             this.addService(service, info.getId());
         }
@@ -462,7 +462,7 @@ public abstract class BaseModuleManager implements ModuleManager
      */
     private void resolveModulesForUnload(Module module, boolean willReload, Collection<Module> modules, LinkedList<Pair<Module, Boolean>> out)
     {
-        boolean isServiceProvider = !module.getInfo().getServiceProviders().isEmpty();
+        boolean isServiceProvider = !module.getInfo().getProvidedServices().isEmpty();
         for (Module m : modules)
         {
             if (module == m)
@@ -478,7 +478,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             else if (isServiceProvider)
             {
-                for (String service : module.getInfo().getServiceProviders())
+                for (String service : module.getInfo().getProvidedServices())
                 {
                     if (m.getInfo().getServices().contains(service))
                     {
