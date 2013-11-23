@@ -406,7 +406,7 @@ public abstract class BaseModuleManager implements ModuleManager
         if (result)
         {
             this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, module));
-            for (String service : module.getInfo().getServices())
+            for (String service : module.getInfo().getProvidedServices())
             {
                 this.addService(service, module.getId());
             }
