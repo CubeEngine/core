@@ -492,7 +492,12 @@ public abstract class BaseModuleManager implements ModuleManager
     }
 
     @Override
-    public void loadModules(List<ModuleInfo> reloadModules)
+    public void unloadModule(Module module)
+    {
+        this.loadModules(this.unloadModule(module, false));
+    }
+
+    private synchronized void loadModules(List<ModuleInfo> reloadModules)
     {
         for (ModuleInfo info : reloadModules)
         {
@@ -518,7 +523,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
-    public synchronized List<ModuleInfo> unloadModule(final Module module, boolean reload)
+    private synchronized List<ModuleInfo> unloadModule(final Module module, boolean reload)
     {
         if (!this.modules.containsKey(module.getId()))
         {

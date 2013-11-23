@@ -89,10 +89,8 @@ public class TestModuleManager implements ModuleManager
     {}
 
     @Override
-    public List<ModuleInfo> unloadModule(Module module, boolean reload)
-    {
-        return null;
-    }
+    public void unloadModule(Module module)
+    {}
 
     @Override
     public void reloadModule(Module module) throws ModuleException
@@ -149,9 +147,5 @@ public class TestModuleManager implements ModuleManager
 
     @Override
     public void clean()
-    {}
-
-    @Override
-    public void loadModules(List<ModuleInfo> moduleInfos)
     {}
 }

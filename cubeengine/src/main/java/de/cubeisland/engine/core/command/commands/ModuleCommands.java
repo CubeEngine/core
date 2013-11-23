@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command.commands;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -127,8 +126,7 @@ public class ModuleCommands extends ContainerCommand
         }
         else
         {
-            List<ModuleInfo> moduleInfos = this.mm.unloadModule(module, false);
-            this.mm.loadModules(moduleInfos);
+            this.mm.unloadModule(module);
             context.sendTranslated("&aThe module &6%s&a was successfully unloaded!", module.getId());
         }
     }
