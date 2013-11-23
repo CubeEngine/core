@@ -110,6 +110,10 @@ public class ServiceManager
                 if (next.getModule().getId().equals(module.getId()))
                 {
                     iterator.remove();
+                    module.getLog().info("Unregistered ServiceProvider {} of {} for the Service {}",
+                                            next.getProvider().getClass().getName(),
+                                            next.getModule().getName(),
+                                            next.getService().getName());
                 }
             }
         }

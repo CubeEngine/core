@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.module;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
@@ -96,9 +97,10 @@ public interface ModuleManager extends Cleanable
      * - remove the module from the module map
      *
      * @param module the module to unload
+     * @param reload
      *
      */
-    void unloadModule(Module module);
+    List<ModuleInfo> unloadModule(Module module, boolean reload);
 
     /**
      * Reloads the given module
@@ -147,4 +149,6 @@ public interface ModuleManager extends Cleanable
      * @return the singleton instance of the dummy CoreModule
      */
     CoreModule getCoreModule();
+
+    void loadModules(List<ModuleInfo> moduleInfos);
 }

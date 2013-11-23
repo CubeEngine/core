@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.command.commands;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -126,7 +127,8 @@ public class ModuleCommands extends ContainerCommand
         }
         else
         {
-            this.mm.unloadModule(module);
+            List<ModuleInfo> moduleInfos = this.mm.unloadModule(module, false);
+            this.mm.loadModules(moduleInfos);
             context.sendTranslated("&aThe module &6%s&a was successfully unloaded!", module.getId());
         }
     }
@@ -137,13 +139,21 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendTranslated("The given module could not be found!");
+            context.sendTranslated("&cThe given module could not be found!");
         }
         else
         {
             try
             {
                 this.mm.reloadModule(module, context.hasFlag("f"));
+                if (context.hasFlag("f"))
+                {
+                    context.sendTranslated("&aThe module &6%s&a was successfully reloaded from file!", module.getId());
+                }
+                else
+                {
+                    context.sendTranslated("&aThe module &6%s&a was successfully reloaded!", module.getId());
+                }
             }
             catch (ModuleException ex)
             {

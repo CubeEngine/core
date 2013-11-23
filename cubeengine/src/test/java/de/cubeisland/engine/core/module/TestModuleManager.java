@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.module;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -88,8 +89,10 @@ public class TestModuleManager implements ModuleManager
     {}
 
     @Override
-    public void unloadModule(Module module)
-    {}
+    public List<ModuleInfo> unloadModule(Module module, boolean reload)
+    {
+        return null;
+    }
 
     @Override
     public void reloadModule(Module module) throws ModuleException
@@ -146,5 +149,9 @@ public class TestModuleManager implements ModuleManager
 
     @Override
     public void clean()
+    {}
+
+    @Override
+    public void loadModules(List<ModuleInfo> moduleInfos)
     {}
 }

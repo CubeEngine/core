@@ -174,7 +174,7 @@ public abstract class BaseModuleManager implements ModuleManager
                         }
                         else
                         {
-                            this.unloadModule(module);
+                            this.unloadModule(module, true);
                             this.logger.info("A newer version of '{}' will replace the currently loaded version!", info.getName());
                         }
                     }
@@ -469,12 +469,12 @@ public abstract class BaseModuleManager implements ModuleManager
             {
                 continue;
             }
-            final boolean isSoftDep = willReload || m.getInfo().getSoftDependencies().containsKey(module.getId());
+            final boolean isSoftDep = m.getInfo().getSoftDependencies().containsKey(module.getId());
             final boolean isDep = isSoftDep || m.getInfo().getDependencies().containsKey(module.getId());
             if (isDep)
             {
-                this.resolveModulesForUnload(m, false, modules, out);
-                out.addLast(new Pair<>(m, isSoftDep));
+                this.resolveModulesForUnload(m, willReload, modules, out);
+                out.addLast(new Pair<>(m, willReload || isSoftDep));
             }
             else if (isServiceProvider)
             {
@@ -491,16 +491,43 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
-    public synchronized void unloadModule(final Module module)
+    @Override
+    public void loadModules(List<ModuleInfo> reloadModules)
+    {
+        for (ModuleInfo info : reloadModules)
+        {
+            String id = info.getId();
+            try
+            {
+                this.moduleInfoMap.put(id, info);
+                Module m = this.loadModule(id, this.moduleInfoMap);
+                this.enableModule(m);
+            }
+            catch (ModuleException e)
+            {
+                this.logger.warn("Failed to reload a module upon unloading a different module!", e);
+            }
+            finally
+            {
+                // remove the info again if the module has not been loaded
+                if (!this.modules.containsKey(id))
+                {
+                    this.moduleInfoMap.remove(id);
+                }
+            }
+        }
+    }
+
+    public synchronized List<ModuleInfo> unloadModule(final Module module, boolean reload)
     {
         if (!this.modules.containsKey(module.getId()))
         {
-            return; // the module wasn't loaded or has already been unloaded
+            return null;
         }
 
         LinkedList<Pair<Module, Boolean>> unloadModules = new LinkedList<>();
 
-        this.resolveModulesForUnload(module, false, new THashSet<>(this.modules.values()), unloadModules);
+        this.resolveModulesForUnload(module, reload, new THashSet<>(this.modules.values()), unloadModules);
         unloadModules.addLast(new Pair<>(module, false));
 
         List<ModuleInfo> reloadModules = new ArrayList<>();
@@ -536,28 +563,7 @@ public abstract class BaseModuleManager implements ModuleManager
         System.gc();
         System.gc();
 
-        for (ModuleInfo info : reloadModules)
-        {
-            String id = info.getId();
-            try
-            {
-                this.moduleInfoMap.put(id, info);
-                Module m = this.loadModule(id, this.moduleInfoMap);
-                this.enableModule(m);
-            }
-            catch (ModuleException e)
-            {
-                this.logger.warn("Failed to reload a module upon unloading a different module!", e);
-            }
-            finally
-            {
-                // remove the info again if the module has not been loaded
-                if (!this.modules.containsKey(id))
-                {
-                    this.moduleInfoMap.remove(id);
-                }
-            }
-        }
+        return reloadModules;
     }
 
     protected void unloadModule0(Module module)
@@ -603,8 +609,9 @@ public abstract class BaseModuleManager implements ModuleManager
     {
         if (fromFile)
         {
-            this.unloadModule(module);
+            List<ModuleInfo> reloadModules = this.unloadModule(module, true);
             this.enableModule(this.loadModule(module.getInfo().getPath()));
+            this.loadModules(reloadModules);
         }
         else
         {
