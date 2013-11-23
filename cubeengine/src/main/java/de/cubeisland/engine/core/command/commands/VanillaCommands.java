@@ -403,8 +403,8 @@ public class VanillaCommands implements CommandHolder
         if (context.hasFlag("s") && sourceVersion != null)
         {
             final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
-            context.sendTranslated("Source Version: %s", sourceVersion);
-            context.sendTranslated("Source link: %s", SOURCE_LINK + commit);
+            context.sendTranslated("&aSource Version: &6%s", sourceVersion);
+            context.sendTranslated("&aSource link: &6%s", SOURCE_LINK + commit);
         }
     }
 
