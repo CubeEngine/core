@@ -96,6 +96,7 @@ public interface ModuleManager extends Cleanable
      * - remove the module from the module map
      *
      * @param module the module to unload
+     *
      */
     void unloadModule(Module module);
 

@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Nullable;
 
 import de.cubeisland.engine.core.Core;
@@ -70,7 +69,7 @@ public abstract class BaseModuleManager implements ModuleManager
     private final Map<Class<? extends Module>, Module> classMap;
     private final CoreModule coreModule;
 
-    private final Map<String, String> serviceProviders;
+    private final Map<String, LinkedList<String>> serviceProviders;
 
     public BaseModuleManager(Core core, ClassLoader parentClassLoader)
     {
@@ -121,11 +120,23 @@ public abstract class BaseModuleManager implements ModuleManager
 
         for (String service : info.getServiceProviders())
         {
-            this.serviceProviders.put(service, info.getId());
+            this.addService(service, info.getId());
         }
 
         this.moduleInfoMap.put(info.getId(), info);
         return info;
+    }
+
+    private void addService(String service, String module)
+    {
+        LinkedList<String> providers = this.serviceProviders.get(service);
+        if (providers == null)
+        {
+            providers = new LinkedList<>();
+            this.serviceProviders.put(service, providers);
+        }
+        providers.remove(module);
+        providers.addLast(module);
     }
 
     public synchronized Module loadModule(Path modulePath) throws ModuleException
@@ -242,7 +253,7 @@ public abstract class BaseModuleManager implements ModuleManager
         {
             if (!this.core.getServiceManager().isServiceRegistered(service))
             {
-                String providerModule = this.serviceProviders.get(service);
+                String providerModule = this.serviceProviders.get(service).getLast();
                 if (providerModule != null)
                 {
                     strong.add(providerModule);
@@ -391,7 +402,7 @@ public abstract class BaseModuleManager implements ModuleManager
             this.core.getEventManager().fireEvent(new ModuleEnabledEvent(this.core, module));
             for (String service : module.getInfo().getServices())
             {
-                this.serviceProviders.put(service, module.getId());
+                this.addService(service, module.getId());
             }
             module.getLog().info("Successfully enabled within {} microseconds!", enableTime);
         }
@@ -425,14 +436,15 @@ public abstract class BaseModuleManager implements ModuleManager
 
             this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
 
-            Iterator<Entry<String, String>> it = this.serviceProviders.entrySet().iterator();
+            Iterator<Entry<String, LinkedList<String>>> it = this.serviceProviders.entrySet().iterator();
             while (it.hasNext())
             {
-                if (it.next().getValue().equals(module.getId()))
+                if (it.next().getValue().remove(module.getId()))
                 {
                     it.remove();
                 }
             }
+            this.core.getServiceManager().unregisterServices(module);
         }
         finally
         {
@@ -440,20 +452,41 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
-    private void resolveModulesForUnload(Module module, Collection<Module> modules, LinkedList<Pair<Module, Boolean>> out)
+    /**
+     * Resolves the module that need to unload or reload when unloading given module
+     *
+     * @param module
+     * @param willReload true if the module will be reloaded
+     * @param modules
+     * @param out the list of modules that can be reloaded
+     */
+    private void resolveModulesForUnload(Module module, boolean willReload, Set<Module> modules, LinkedList<Pair<Module, Boolean>> out)
     {
+        boolean isServiceProvider = !module.getInfo().getServiceProviders().isEmpty();
         for (Module m : modules)
         {
             if (module == m)
             {
                 continue;
             }
-            final boolean isSoftDep = m.getInfo().getSoftDependencies().containsKey(module.getId());
+            final boolean isSoftDep = willReload || m.getInfo().getSoftDependencies().containsKey(module.getId());
             final boolean isDep = isSoftDep || m.getInfo().getDependencies().containsKey(module.getId());
             if (isDep)
             {
-                this.resolveModulesForUnload(m, modules, out);
+                this.resolveModulesForUnload(m, false, modules, out);
                 out.addLast(new Pair<>(m, isSoftDep));
+            }
+            else if (isServiceProvider)
+            {
+                for (String service : module.getInfo().getServiceProviders())
+                {
+                    if (m.getInfo().getServices().contains(service))
+                    {
+                        this.resolveModulesForUnload(m, willReload, modules, out);
+                        out.addLast(new Pair<>(m, willReload));
+                        break;
+                    }
+                }
             }
         }
     }
@@ -467,14 +500,27 @@ public abstract class BaseModuleManager implements ModuleManager
 
         LinkedList<Pair<Module, Boolean>> unloadModules = new LinkedList<>();
 
-        this.resolveModulesForUnload(module, new THashSet<>(this.modules.values()), unloadModules);
+        this.resolveModulesForUnload(module, false, new THashSet<>(this.modules.values()), unloadModules);
         unloadModules.addLast(new Pair<>(module, false));
 
         List<ModuleInfo> reloadModules = new ArrayList<>();
 
         for (Pair<Module, Boolean> entry : unloadModules)
         {
-            if (entry.getRight())
+            if (entry.getRight() == null) // look for services
+            {
+                for (String service : entry.getLeft().getInfo().getServices())
+                {
+                    LinkedList<String> providers = this.serviceProviders.get(service);
+                    if (providers == null || providers.isEmpty())
+                    {
+                        continue;
+                    }
+                    reloadModules.add(entry.getLeft().getInfo());
+                }
+
+            }
+            else if (entry.getRight())
             {
                 reloadModules.add(entry.getLeft().getInfo());
             }
