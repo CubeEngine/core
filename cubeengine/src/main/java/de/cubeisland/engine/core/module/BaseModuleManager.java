@@ -458,9 +458,9 @@ public abstract class BaseModuleManager implements ModuleManager
      * @param module
      * @param willReload true if the module will be reloaded
      * @param modules
-     * @param out the list of modules that can be reloaded
+     * @param out the list of modules that need to be unloaded
      */
-    private void resolveModulesForUnload(Module module, boolean willReload, Set<Module> modules, LinkedList<Pair<Module, Boolean>> out)
+    private void resolveModulesForUnload(Module module, boolean willReload, Collection<Module> modules, LinkedList<Pair<Module, Boolean>> out)
     {
         boolean isServiceProvider = !module.getInfo().getServiceProviders().isEmpty();
         for (Module m : modules)
@@ -662,7 +662,7 @@ public abstract class BaseModuleManager implements ModuleManager
                 continue;
             }
             LinkedList<Pair<Module, Boolean>> unloadFirst = new LinkedList<>();
-            this.resolveModulesForUnload(module, this.modules.values(), unloadFirst);
+            this.resolveModulesForUnload(module, false, this.modules.values(), unloadFirst);
             for (Pair<Module, Boolean> pair : unloadFirst)
             {
                 this.unloadModule0(pair.getLeft());
