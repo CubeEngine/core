@@ -30,7 +30,7 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
                            SIGN_CREATE_USER_DEMAND, SIGN_SIZE_CHANGE, SIGN_DESTROY_OWN,
                        Permission.createPermission(smCmds.getChild("editmode").getPermission())
                            );
-        USE.attach(SIGN_INVENTORY_SHOW);
+        USE.attach(SIGN_INVENTORY_SHOW, USE_BUY, USE_SELL);
         USER.attach(USE, USER_CREATE);
         ADMIN_CREATE.attach(SIGN_CREATE_ADMIN, SIGN_CREATE_ADMIN_BUY, SIGN_CREATE_ADMIN_NOSTOCK, SIGN_CREATE_ADMIN_STOCK,
                      SIGN_CREATE_ADMIN_SELL, SIGN_SETSTOCK, SIGN_SIZE_CHANGE_INFINITE, SIGN_DESTROY_ADMIN);
@@ -43,8 +43,8 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
      */
     private static final Permission USE = Permission.createPermission("use");
 
-    public static final Permission USE_BUY = USE.createChild("buy");
-    public static final Permission USE_SELL = USE.createChild("sell");
+    public static final Permission USE_BUY = USE.createNew("buy");
+    public static final Permission USE_SELL = USE.createNew("sell");
     /**
      * Allow creating user signs
      */
