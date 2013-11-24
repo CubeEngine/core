@@ -53,6 +53,11 @@ public class Signmarket extends Module implements Reloadable
         this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         new MarketSignPerm(this, smCmds);
         this.getLog().trace("{} ms - done", Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS));
+        if (this.getCore().isStartupFinished())
+        {
+            this.config = this.loadConfig(SignMarketConfig.class);
+        }
+        // else do it down there \/
     }
 
     @Override

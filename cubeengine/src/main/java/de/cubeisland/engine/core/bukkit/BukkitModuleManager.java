@@ -22,8 +22,6 @@ import org.bukkit.plugin.PluginManager;
 import de.cubeisland.engine.core.module.BaseModuleManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
-import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
-import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
 
@@ -52,6 +50,7 @@ public class BukkitModuleManager extends BaseModuleManager
                     {
                         try
                         {
+                            core.setStartupFinished();
                             module.onStartupFinished();
                         }
                         catch (Exception ex)
