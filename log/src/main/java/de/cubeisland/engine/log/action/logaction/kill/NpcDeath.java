@@ -67,7 +67,7 @@ public class NpcDeath extends SimpleLogActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).NPC_DEATH_enable;
+        return this.lm.getConfig(world).death.NPC_DEATH_enable;
     }
 
     @Override

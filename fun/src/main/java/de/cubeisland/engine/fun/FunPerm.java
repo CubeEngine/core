@@ -17,17 +17,37 @@
  */
 package de.cubeisland.engine.fun;
 
+import java.util.Locale;
+
+import org.bukkit.entity.EntityType;
+
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
+import de.cubeisland.engine.core.permission.PermissionManager;
 
 public class FunPerm extends PermissionContainer<Fun>
 {
+    public static boolean ARE_THROW_ITEMS_REGISTERED = false;
+
     public FunPerm(Fun module)
     {
         super(module);
         this.bindToModule(COMMAND);
         this.registerAllPermissions();
+
+        if (!ARE_THROW_ITEMS_REGISTERED)
+        {
+            PermissionManager perm = module.getCore().getPermissionManager();
+            for (EntityType type : EntityType.values())
+            {
+                if (type.isSpawnable())
+                {
+                    perm.registerPermission(module, FunPerm.COMMAND_THROW.createChild(type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")));
+                }
+            }
+            ARE_THROW_ITEMS_REGISTERED = true;
+        }
     }
 
     private static final Permission COMMAND = Permission.createAbstractPermission("command");
@@ -42,7 +62,7 @@ public class FunPerm extends PermissionContainer<Fun>
     public static final Permission COMMAND_HAT_OTHER = COMMAND_HAT.createChild("other");
     public static final Permission COMMAND_HAT_ITEM = COMMAND_HAT.createChild("item");
     public static final Permission COMMAND_HAT_QUIET = COMMAND_HAT.createChild("quit");
-    public static final Permission COMMAND_HAT_NOTIFY = COMMAND_HAT.createChild("notify",PermDefault.TRUE);
+    public static final Permission COMMAND_HAT_NOTIFY = COMMAND_HAT.createChild("notify", PermDefault.TRUE);
 
     private static final Permission COMMAND_LIGHTNING = COMMAND.createAbstractChild("lightning");
     public static final Permission COMMAND_LIGHTNING_PLAYER_DAMAGE = COMMAND_LIGHTNING.createChild("player.damage");
@@ -50,4 +70,8 @@ public class FunPerm extends PermissionContainer<Fun>
 
     public static final Permission COMMAND_THROW = COMMAND.createAbstractChild("throw");
     public static final Permission COMMAND_THROW_UNSAFE = COMMAND_THROW.createChild("unsafe");
+
+    private static final Permission COMMAND_NUKE = COMMAND.createAbstractChild("nuke");
+    public static final Permission COMMAND_NUKE_CHANGE_RANGE = COMMAND_NUKE.createChild("change_range");
+    public static final Permission COMMAND_NUKE_OTHER = COMMAND_NUKE.createChild("other");
 }

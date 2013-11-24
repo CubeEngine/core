@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -323,7 +322,7 @@ public class MaterialMatcher
                 if (item == null) // Contained ":" but could not find any matching item
                 {
                     // Try to match bukkit name
-                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    item = this.matchWithLevenshteinDistance(material, bukkitnames);
                     item = materialDataMatcher.setData(item, data);
                     return item;
                 }
@@ -335,15 +334,14 @@ public class MaterialMatcher
                 if (item == null)
                 {
                     // Try to match bukkit name
-                    return this.matchWithLevenshteinDistance(s, bukkitnames);
+                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    if (item == null) return null;
                 }
             }
         }
-        else
-        {
-            item = new ItemStack(item);
-        }
-        return item.clone();
+        item = new ItemStack(item);
+        item.setAmount(1);
+        return item;
     }
 
     /**

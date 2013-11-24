@@ -113,7 +113,7 @@ public class BukkitWorldManager extends AbstractWorldManager
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
         if (!save)
         {
-            this.core.getLog().warn("This is unstable on CraftBukkit servers");
+            this.core.getLog().warn("This is unstable on CraftBukkit servers", new IllegalArgumentException());
         }
         boolean success = this.server.unloadWorld(world, save);
         if (success && !save)

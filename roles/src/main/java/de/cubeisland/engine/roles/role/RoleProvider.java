@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -118,15 +117,14 @@ public abstract class RoleProvider
                 for (Path configFile : directory)
                 {
                     ++i;
-                    RoleConfig config = Configuration.load(RoleConfig.class, configFile);
+                    RoleConfig config = module.getCore().getConfigurationFactory().load(RoleConfig.class, configFile.toFile());
                     this.configs.put(config.roleName.toLowerCase(), config);
                 }
             }
         }
         catch (IOException e)
         {
-            this.module.getLog().warn("Failed to load the configurat");
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            this.module.getLog().warn(e, "Failed to load the configuration");
         }
         this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getFileName(), i);
     }
@@ -206,7 +204,7 @@ public abstract class RoleProvider
             }
             catch (CircularRoleDependencyException ex)
             {
-                this.module.getLog().warn(ex.getMessage());
+                this.module.getLog().warn(ex, "A CircularRoleDependencyException occurred");
                 return null;
             }
         }
@@ -244,7 +242,7 @@ public abstract class RoleProvider
         config.roleName = roleName;
         this.configs.put(roleName,config);
         config.onLoaded(null);
-        config.setPath(this.folder.resolve(roleName + ".yml")); // TODO it's not guaranteed implementations set the folder
+        config.setFile(this.folder.resolve(roleName + ".yml").toFile()); // TODO it's not guaranteed implementations set the folder
         config.save();
         Role role = new Role(this, config);
         this.roles.put(roleName,role);
@@ -300,10 +298,9 @@ public abstract class RoleProvider
         {
             role.saveConfigToNewFile();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed to save the the config after renaming for {}!", role.getName());
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Failed to save the the config after renaming for {}!", role.getName());
             return false;
         }
 

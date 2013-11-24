@@ -27,7 +27,6 @@ import org.bukkit.World;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;
@@ -57,7 +56,8 @@ public class LogManager
         {
             throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder.toAbsolutePath(), e);
         }
-        this.globalConfig = Configuration.load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml"));
+        this.globalConfig = this.module.getCore().getConfigurationFactory().
+            load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml").toFile());
         for (World world : ((BukkitCore)module.getCore()).getServer().getWorlds())
         {
             this.initWorldConfig(world);
@@ -76,7 +76,7 @@ public class LogManager
         {
             throw new FolderNotFoundException("Failed to create the world folder for " + world.getName(), e);
         }
-        LoggingConfiguration config = this.globalConfig.loadChild(worldFolder.resolve("config.yml"));
+        LoggingConfiguration config = this.globalConfig.loadChild(worldFolder.resolve("config.yml").toFile());
         this.worldConfigs.put(world, config);
         return config;
     }

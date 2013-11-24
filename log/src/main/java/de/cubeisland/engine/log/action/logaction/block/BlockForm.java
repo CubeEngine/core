@@ -85,13 +85,13 @@ public class BlockForm extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_FORM_enable;
+        return this.lm.getConfig(world).block.form.BLOCK_FORM_enable;
     }
 
     @Override
     public void logBlockChange(Entity causer, BlockState oldBlock, BlockState newBlock, String additional)
     {
-        if (this.lm.getConfig(newBlock.getWorld()).BLOCK_FORM_ignore.contains(newBlock.getType()))
+        if (this.lm.getConfig(newBlock.getWorld()).block.form.BLOCK_FORM_ignore.contains(newBlock.getType()))
         {
             return;
         }

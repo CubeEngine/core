@@ -42,9 +42,12 @@ public class DiscoCommand
         this.activeTasks = new THashMap<>();
     }
 
-    @Command(desc = "Changes from day to night and vice verca", usage = "[world] [delay <value>]", max = 1, params = @Param(names = {
-    "delay", "d"
-    }, type = Integer.class))
+    @Command(
+        desc = "Changes from day to night and vice verca",
+        usage = "[world] [delay <value>]",
+        max = 1,
+        params = @Param(names = {"delay", "d"}, type = Integer.class)
+    )
     public void disco(ParameterizedContext context)
     {
         final CommandSender sender = context.getSender();
@@ -71,10 +74,10 @@ public class DiscoCommand
             return;
         }
 
-        final int delay = context.getParam("delay", 10);
-        if (delay < 1 || delay > this.module.getConfig().maxDiscoDelay)
+        final int delay = context.getParam("delay", this.module.getConfig().command.disco.defaultDelay);
+        if (delay < this.module.getConfig().command.disco.minDelay || delay > this.module.getConfig().command.disco.maxDelay)
         {
-            context.sendTranslated("&cThe delay has to be a number between 0 and %d", this.module.getConfig().maxDiscoDelay);
+            context.sendTranslated("&cThe delay has to be a number between %d and %d", this.module.getConfig().command.disco.minDelay, this.module.getConfig().command.disco.maxDelay);
             return;
         }
 

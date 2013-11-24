@@ -23,21 +23,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.roles.config.RoleMirror;
 
-@Codec("yml")
-@DefaultConfig
-public class RolesConfig extends Configuration
+public class RolesConfig extends YamlConfiguration
 {
-    @Option("disable-permission-in-offlinemode")
+    @Name("disable-permission-in-offlinemode")
     @Comment("If this is set to true no permissions will be assigned to any user if the server runs in offline-mode")
     public boolean doNotAssignPermIfOffline = true;
-    @Option("default.roles")
+    @Name("default.roles")
     @Comment("The list of roles a user will get when first joining the server.\n" +
                  "default:\n" +
                  "  roles: \n" +
@@ -59,6 +55,6 @@ public class RolesConfig extends Configuration
              "      - roles\n" +
              "      - assigned\n" +
              "      - users\n")
-    @Option("mirrors")
+    @Name("mirrors")
     public List<RoleMirror> mirrors = new ArrayList<>();
 }

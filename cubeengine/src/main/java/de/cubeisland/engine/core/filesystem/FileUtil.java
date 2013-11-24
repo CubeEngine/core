@@ -108,9 +108,9 @@ public class FileUtil
                 list.add(line);
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            CubeEngine.getLog().debug(e.getMessage(), e);
+            CubeEngine.getLog().debug(ex, "Failed to read lines from a buffer");
         }
         finally
         {

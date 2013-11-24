@@ -743,7 +743,7 @@ public class TelePointManager
                 TeleportPointModel point = this.get(invite.getTeleportpoint().longValue());
                 if (point == null)
                 {
-                    this.module.getLog().warn("TeleportPointModel is null for #" + invite.getTeleportpoint().longValue());
+                    this.module.getLog().warn("TeleportPointModel is null for #{}", invite.getTeleportpoint().longValue());
                     continue;
                 }
                 if (point.getType() == TYPE_HOME)

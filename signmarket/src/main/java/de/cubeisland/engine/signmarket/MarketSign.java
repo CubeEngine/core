@@ -34,7 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
@@ -55,8 +55,8 @@ import static de.cubeisland.engine.core.util.InventoryUtil.*;
 import static de.cubeisland.engine.signmarket.storage.TableSignBlock.TABLE_SIGN_BLOCK;
 import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
 
-// TODO CE-420 shift-click to edit multiple signs at the same time
-// TODO CE-437 blacklist
+// TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/414 shift-click to edit multiple signs at the same time
+// TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/431 blacklist
 
 public class MarketSign
 {
@@ -83,7 +83,7 @@ public class MarketSign
     {
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.economy = module.getCore().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
         this.blockInfo = this.dsl.newRecord(TABLE_SIGN_BLOCK).newBlockModel(location);
         this.setItemInfo(this.dsl.newRecord(TABLE_SIGN_ITEM));
         this.msFactory = module.getMarketSignFactory();
@@ -98,7 +98,7 @@ public class MarketSign
     public MarketSign(Signmarket module, SignMarketItemModel itemModel, SignMarketBlockModel blockModel)
     {
         this.module = module;
-        this.economy = module.getCore().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
         this.blockInfo = blockModel;
         this.setItemInfo(itemModel);
         this.msFactory = module.getMarketSignFactory();
@@ -613,7 +613,8 @@ public class MarketSign
     {
         return this.hasStock() == model.hasStock()
             && this.getItem().isSimilar(model.getItem())
-            && this.itemInfo.getSize() == model.itemInfo.getSize();
+            && this.itemInfo.getSize() == model.itemInfo.getSize()
+            && this.module.getConfig().canSync(this.module.getCore().getWorldManager(), this.blockInfo.getWorld(), model.blockInfo.getWorld());
     }
 
     /**
@@ -808,10 +809,24 @@ public class MarketSign
     @SuppressWarnings("deprecation")
     private void useSign(User user)
     {
-        if (!MarketSignPerm.USE.isAuthorized(user))
+        if (this.hasType())
         {
-            user.sendTranslated("&cYou are not allowed to use marketsigns!");
-            return;
+            if (this.isTypeBuy())
+            {
+                if (!MarketSignPerm.USE_BUY.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to use buy-marketsigns!");
+                    return;
+                }
+            }
+            else
+            {
+                if (!MarketSignPerm.USE_SELL.isAuthorized(user))
+                {
+                    user.sendTranslated("&cYou are not allowed to use sell-marketsigns!");
+                    return;
+                }
+            }
         }
         this.economy.createPlayerAccount(user.getName());
         if (this.isValidSign(user))

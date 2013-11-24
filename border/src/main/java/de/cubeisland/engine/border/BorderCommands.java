@@ -25,16 +25,18 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
 
 public class BorderCommands extends ContainerCommand
 {
     private Border module;
-
-
 
     public BorderCommands(Border module)
     {
@@ -51,6 +53,56 @@ public class BorderCommands extends ContainerCommand
     private long lastNotify;
     private int generated;
     private boolean running = false;
+
+    @Command(desc = "Sets the center of the border", usage = "[<chunkX> <chunkZ>]|[-spawn] [in <world>]",
+    flags = @Flag(longName = "spawn", name = "s"),
+    params = @Param(names = {"in", "world", "w"}, type = World.class, completer = WorldCompleter.class))
+    public void setCenter(ParameterizedContext context)
+    {
+        World world;
+        if (context.hasParam("in"))
+        {
+            world = context.getParam("in");
+        }
+        else if (!(context.getSender() instanceof User))
+        {
+            context.sendTranslated("&cYou need to specify a world!");
+            return;
+        }
+        else
+        {
+            world = ((User)context.getSender()).getWorld();
+        }
+        Chunk center;
+        if (context.hasFlag("s"))
+        {
+            this.module.getConfig(world).center.setCenter(world.getSpawnLocation().getChunk(), true);
+            context.sendTranslated("&aCenter for Border in &6%s&a set to world-spawn!", world.getName());
+            return;
+        }
+        else if (context.hasArg(1))
+        {
+            Integer x = context.getArg(0, Integer.class, null);
+            Integer z = context.getArg(0, Integer.class, null);
+            if (x == null || z == null)
+            {
+                context.sendTranslated("&cInvalid Chunk-coordinates!");
+                return;
+            }
+            center = world.getChunkAt(x, z);
+        }
+        else if (context.getSender() instanceof User)
+        {
+            center = ((User)context.getSender()).getLocation().getChunk();
+        }
+        else
+        {
+            context.sendTranslated("&cYou need to specify the chunk-coordinates or use the -spawn flag");
+            return;
+        }
+        this.module.getConfig(world).center.setCenter(center, false);
+        context.sendTranslated("&aCenter for Border in &6%s&a set!", world.getName());
+    }
 
     @Alias(names = "generateBorder")
     @Command(desc = "Generates the chunks located in the border", min = 1, max = 1)
@@ -91,10 +143,11 @@ public class BorderCommands extends ContainerCommand
 
     private void addChunksToGenerate(World world, CommandSender sender)
     {
+        BorderConfig config = this.module.getConfig(world);
         Chunk spawnChunk = world.getSpawnLocation().getChunk();
         final int spawnX = spawnChunk.getX();
         final int spawnZ = spawnChunk.getZ();
-        int radius = this.module.getConfig().radius;
+        int radius = config.radius;
         radius += sender.getServer().getViewDistance();
         int radiusSquared = radius * radius;
         int chunksAdded = 0;
@@ -109,7 +162,7 @@ public class BorderCommands extends ContainerCommand
             for (int i = 0; i < curLen; i++)
             {
                 curX += dir;
-                if (addIfInBorder(worldID, curX, curZ, spawnX, spawnZ, radius,  radiusSquared))
+                if (addIfInBorder(config, worldID, curX, curZ, spawnX, spawnZ, radius,  radiusSquared))
                 {
                     chunksAdded++;
                 }
@@ -117,7 +170,7 @@ public class BorderCommands extends ContainerCommand
             for (int i = 0; i < curLen; i++)
             {
                 curZ += dir;
-                if (addIfInBorder(worldID, curX, curZ, spawnX, spawnZ, radius, radiusSquared))
+                if (addIfInBorder(config, worldID, curX, curZ, spawnX, spawnZ, radius, radiusSquared))
                 {
                     chunksAdded++;
                 }
@@ -128,9 +181,9 @@ public class BorderCommands extends ContainerCommand
         sender.sendTranslated("&aAdded &6%d &achunks to generate in &6%s", chunksAdded, world.getName());
     }
 
-    private boolean addIfInBorder(long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)
+    private boolean addIfInBorder(BorderConfig config, long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)
     {
-        if (this.module.getConfig().square)
+        if (config.square)
         {
             if (Math.abs(spawnX - x) <= radius && Math.abs(spawnZ - z) <= radius)
             {
@@ -169,7 +222,7 @@ public class BorderCommands extends ContainerCommand
         {
             this.scheduleGeneration(20 * 10); // Take a 10 second break
             sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
-            rt.gc(); // TODO this causes short lag
+            rt.gc();
             return;
         }
         while (System.currentTimeMillis() - this.tickStart < TIMELIMIT)

@@ -24,9 +24,8 @@ import org.bukkit.event.Listener;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.vote.storage.TableVote;
@@ -45,7 +44,7 @@ public class Vote extends Module implements Listener
     public void onEnable()
     {
         this.getCore().getDB().registerTable(TableVote.initTable(this.getCore().getDB()));
-        this.config = Configuration.load(VoteConfiguration.class, this);
+        this.config = this.loadConfig(VoteConfiguration.class);
         this.getCore().getEventManager().registerListener(this, this);
         this.getCore().getCommandManager().registerCommands(this, new VoteCommands(this), ReflectedCommand.class);
         this.dsl = this.getCore().getDB().getDSL();
@@ -58,7 +57,7 @@ public class Vote extends Module implements Listener
         if (this.getCore().getUserManager().getUser(vote.getUsername(), false) != null)
         {
             User user = this.getCore().getUserManager().getUser(vote.getUsername());
-            Economy economy = this.getCore().getServiceManager().getServiceProvider(Economy.class);
+            Economy economy = this.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
             VoteModel voteModel = this.dsl.selectFrom(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOne();
             if (voteModel == null)
             {
@@ -67,7 +66,7 @@ public class Vote extends Module implements Listener
             }
             else
             {
-                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.votebonustime.toMillis())
+                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.voteBonusTime.toMillis())
                 {
                     voteModel.setVoteamount(UShort.valueOf(1));
                 }
@@ -80,19 +79,19 @@ public class Vote extends Module implements Listener
             }
             economy.createPlayerAccount(vote.getUsername());
             int voteamount = voteModel.getVoteamount().intValue();
-            double money = this.config.votereward * (Math.pow(1+1.5/voteamount, voteamount-1));
+            double money = this.config.voteReward * (Math.pow(1+1.5/voteamount, voteamount-1));
             economy.deposit(vote.getUsername(), money);
             String moneyFormat = economy.format(money);
-            this.getCore().getUserManager().broadcastMessage(this.config.votebroadcast.
+            this.getCore().getUserManager().broadcastMessage(this.config.voteBroadcast.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).
-                replace("{VOTEURL}", this.config.voteurl));
-            user.sendMessage(ChatFormat.parseFormats(this.config.votemessage.
+                replace("{VOTEURL}", this.config.voteUrl));
+            user.sendMessage(ChatFormat.parseFormats(this.config.voteMessage.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).
-                replace("{VOTEURL}", this.config.voteurl)));
+                replace("{VOTEURL}", this.config.voteUrl)));
         }
     }
 

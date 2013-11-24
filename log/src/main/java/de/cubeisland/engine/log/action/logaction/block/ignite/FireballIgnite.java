@@ -66,6 +66,6 @@ public class FireballIgnite extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).FIREBALL_IGNITE_enable;
+        return this.lm.getConfig(world).block.ignite.FIREBALL_IGNITE_enable;
     }
 }

@@ -26,37 +26,49 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.module.Inject;
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RolesAttachment;
+
 import static de.cubeisland.engine.chat.ChatPerm.*;
+import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class Chat extends Module implements Listener
 {
     private static final String DEFAULT_FORMAT = new AsyncPlayerChatEvent(true, null, null, null).getFormat();
     private ChatConfig config;
-    @Inject private Roles roles;
     private String format;
 
-    // TODO /nick cmd
-
-    // TODO move /me cmd from basics & check for colorPerms
+    private Module rolesModule;
 
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(ChatConfig.class, this);
+        rolesModule = this.getCore().getModuleManager().getModule("roles");
+        if (rolesModule == null)
+        {
+            this.getLog().info("No Roles-Module found!");
+        }
+        this.config = this.loadConfig(ChatConfig.class);
         new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
+        this.getCore().getCommandManager().registerCommands(this, this, ReflectedCommand.class);
         this.format = this.config.format;
-        if (this.config.parseColors)
+        if (this.config.allowColors)
         {
             this.format = ChatFormat.parseFormats(this.format);
         }
+    }
+
+    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
+    public void me(CommandContext context)
+    {
+        String message = context.getStrings(0);
+        this.getCore().getUserManager().broadcastStatus(message, context.getSender());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -71,7 +83,7 @@ public class Chat extends Module implements Listener
         Player player = event.getPlayer();
         String format = this.format;
 
-        if (config.parseColors)
+        if (config.allowColors)
         {
             if (ChatPerm.COLOR.isAuthorized(player))
             {
@@ -92,13 +104,13 @@ public class Chat extends Module implements Listener
         // set the placeholder instead of the actual value to allow other plugins to change the value
         format = format.replace("{MESSAGE}", "%2$s");
 
-        if (roles != null)
+        if (rolesModule != null)
         {
             User user = this.getCore().getUserManager().getExactUser(player.getName());
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment == null)
             {
-                this.roles.getLog().warn("Missing RolesAttachment!");
+                this.rolesModule.getLog().warn("Missing RolesAttachment!");
                 return;
             }
             if (format.contains("{ROLE.PREFIX}"))

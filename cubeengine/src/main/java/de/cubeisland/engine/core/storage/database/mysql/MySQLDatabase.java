@@ -29,7 +29,6 @@ import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.TableName;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.engine.core.storage.database.TableCreator;
@@ -76,7 +75,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         cpds = new ComboPooledDataSource();
         cpds.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
         cpds.setUser(config.user);
-        cpds.setPassword(config.pass);
+        cpds.setPassword(config.password);
         cpds.setMinPoolSize(5);
         cpds.setMaxPoolSize(20);
         cpds.setAcquireIncrement(5);
@@ -102,15 +101,14 @@ public class MySQLDatabase extends AbstractPooledDatabase
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
     {
-        MySQLDatabaseConfiguration config = Configuration.load(MySQLDatabaseConfiguration.class, file);
+        MySQLDatabaseConfiguration config = core.getConfigurationFactory().load(MySQLDatabaseConfiguration.class, file.toFile());
         try
         {
             return new MySQLDatabase(core, config);
         }
-        catch (SQLException e)
+        catch (SQLException ex)
         {
-            core.getLog().error("Could not establish connection with the database!");
-            core.getLog().debug(e.getLocalizedMessage(), e);
+            core.getLog().error(ex, "Could not establish connection with the database!");
         }
         return null;
     }

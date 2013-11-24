@@ -99,7 +99,7 @@ public class ItemInsert extends SimpleLogActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ITEM_INSERT_enable;
+        return this.lm.getConfig(world).container.ITEM_INSERT_enable;
     }
 
     @Override

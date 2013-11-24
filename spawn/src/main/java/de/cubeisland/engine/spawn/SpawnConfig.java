@@ -20,15 +20,9 @@ package de.cubeisland.engine.spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
 
-@Codec("yml")
-@DefaultConfig
-public class SpawnConfig extends Configuration
+public class SpawnConfig extends YamlConfiguration
 {
-    @Option("mainworld")
-    public World mainWorld = Bukkit.getServer().getWorld("world");
+    public World mainWorld = Bukkit.getWorlds().get(0);
 }

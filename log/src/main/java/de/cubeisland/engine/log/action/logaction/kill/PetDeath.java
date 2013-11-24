@@ -99,7 +99,7 @@ public class PetDeath extends SimpleLogActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).PET_DEATH_enable;
+        return this.lm.getConfig(world).death.PET_DEATH_enable;
     }
 
     @Override

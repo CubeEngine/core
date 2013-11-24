@@ -220,7 +220,7 @@ public class FileManager implements Cleanable
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            this.logger.log(Level.WARNING, e.getLocalizedMessage(), e);
             return null;
         }
     }

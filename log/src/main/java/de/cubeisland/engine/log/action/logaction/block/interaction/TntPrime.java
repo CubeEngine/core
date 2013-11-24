@@ -68,6 +68,6 @@ public class TntPrime extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).TNT_PRIME_enable;
+        return this.lm.getConfig(world).block.TNT_PRIME_enable;
     }
 }

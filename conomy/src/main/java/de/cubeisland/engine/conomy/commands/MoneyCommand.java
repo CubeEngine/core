@@ -163,7 +163,7 @@ public class MoneyCommand extends ContainerCommand
     public void pay(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = manager.parse(amountString);
+        Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");

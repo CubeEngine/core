@@ -17,15 +17,11 @@
  */
 package de.cubeisland.engine.fly;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Name;
 
-@Codec("yml")
-@DefaultConfig
-public class FlyConfig extends Configuration
+public class FlyConfig extends YamlConfiguration
 {
-    @Option("enablemode.flyfeather")
+    @Name("enablemode.flyfeather")
     public boolean flyfeather = true; //if false feather fly does not work
 }

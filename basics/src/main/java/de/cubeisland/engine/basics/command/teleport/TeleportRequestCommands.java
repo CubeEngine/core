@@ -63,7 +63,7 @@ public class TeleportRequestCommands
         user.get(BasicsAttachment.class).setPendingTpToRequest(sender.getName());
         user.get(BasicsAttachment.class).removePendingTpFromRequest();
         context.sendTranslated("&aTeleport request send to &2%s&a!", user.getName());
-        int waitTime = this.basics.getConfiguration().tpRequestWait * 20;
+        int waitTime = this.basics.getConfiguration().commands.teleportRequestWait * 20;
         if (waitTime > 0)
         {
             final User sendingUser = sender;
@@ -103,7 +103,7 @@ public class TeleportRequestCommands
             user.get(BasicsAttachment.class).setPendingTpFromRequest(sender.getName());
             user.get(BasicsAttachment.class).removePendingTpToRequest();
             context.sendTranslated("&aTeleport request send to &2%s!", user.getName());
-            int waitTime = this.basics.getConfiguration().tpRequestWait * 20;
+            int waitTime = this.basics.getConfiguration().commands.teleportRequestWait * 20;
             if (waitTime > 0)
             {
                 final User sendingUser = sender;

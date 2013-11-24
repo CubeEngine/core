@@ -47,10 +47,7 @@ public class ShoutListener implements Listener
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
-            if (this.module.getCore().isDebug())
-            {
-                this.module.getLog().debug("Loading user: {}", user.getName());
-            }
+            this.module.getLog().debug("Loading user: {}", user.getName());
             this.am.initializeUser(user);
         }
     }
@@ -62,10 +59,7 @@ public class ShoutListener implements Listener
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
-            if (this.module.getCore().isDebug())
-            {
-                this.module.getLog().debug("Loading user: {}", user.getName());
-            }
+            this.module.getLog().debug("Loading user: {}", user.getName());
             this.am.initializeUser(user);
         }
     }

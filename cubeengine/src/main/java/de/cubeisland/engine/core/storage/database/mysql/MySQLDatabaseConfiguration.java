@@ -17,45 +17,29 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 
 /**
  * MySQLDatabaseConfig containing all needed information to connect to a MySQLDatabase
  */
-@Codec("yml")
 public class MySQLDatabaseConfiguration extends DatabaseConfiguration
 {
-    @Option("host")
     @Comment("The host to connect with. Default: localhost")
     public String host = "localhost";
 
-    @Option("port")
     @Comment("The port to connect with. Default 3306")
     public short port = 3306;
 
-    @Option("user")
     @Comment("The user using the database")
     public String user = "minecraft";
 
-    @Option("password")
     @Comment("The password for the specified user")
-    public String pass = "12345678";
+    public String password = "";
 
-    @Option("database")
     @Comment("The name of the database")
     public String database = "minecraft";
 
-    @Option("table-prefix")
     @Comment("The table prefix to use for all CubeEngine tables")
     public String tablePrefix = "cube_";
-
-    @Override
-    public Class<? extends Database> getDatabaseClass()
-    {
-        return MySQLDatabase.class;
-    }
 }

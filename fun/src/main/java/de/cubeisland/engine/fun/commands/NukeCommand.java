@@ -18,16 +18,17 @@
 package de.cubeisland.engine.fun.commands;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
@@ -35,136 +36,149 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.math.Vector3;
+import de.cubeisland.engine.core.util.math.shape.Cuboid;
+import de.cubeisland.engine.core.util.math.shape.Cylinder;
+import de.cubeisland.engine.core.util.math.shape.Shape;
+import de.cubeisland.engine.core.util.math.shape.Sphere;
 import de.cubeisland.engine.fun.Fun;
-import de.cubeisland.engine.fun.FunConfiguration;
+import de.cubeisland.engine.fun.FunPerm;
 
 public class NukeCommand
 {
+    private final Fun module;
     private final NukeListener nukeListener;
-    private final FunConfiguration config;
 
     public NukeCommand(Fun module)
     {
-        this.config = module.getConfig();
+        this.module = module;
         this.nukeListener = new NukeListener();
+
         module.getCore().getEventManager().registerListener(module, this.nukeListener);
     }
 
-    @Command(desc = "A tnt carpet is falling at a player or the place the player is looking at.", max = 1, flags = {
-        @Flag(longName = "unsafe", name = "u")
-    }, usage = "[radius] [height <value>] [player <name>] [concentration <value>] [range <vaule>] [-unsafe]", params = {
-            @Param(names = {
-                "player", "p"
-            }, type = User.class),
-            @Param(names = {
-                "height", "h"
-            }, type = Integer.class),
-            @Param(names = {
-                "concentration", "c"
-            }, type = String.class),
-            @Param(names = {
-                "range", "r"
-            }, type = Integer.class)
-    })
+    @Command(
+        desc = "A tnt carpet is falling at a player or the place the player is looking at.",
+        max = 3,
+        params =
+            {
+                @Param(names = {"player", "p"}, type = User.class),
+                @Param(names = {"height", "h"}, type = Integer.class),
+                @Param(names = {"range", "r"}, type = Integer.class),
+                @Param(names = {"shape", "s"}, type = String.class)
+            },
+        flags =
+            {
+                @Flag(longName = "unsafe", name = "u"),
+                @Flag(longName = "quiet", name = "q")
+            },
+        usage = "[param1] [param2] [param3] [Shape <shape>] [player <player>] [height <height>] [range <range>] [-unsafe] [-quiet]"
+    )
     public void nuke(ParameterizedContext context)
     {
-        int noBlock = 0;
-
-        int numberOfBlocks = 0;
-
-        int radius = context.getArg(0, Integer.class, 0);
-        int height = context.getParam("height", 5);
-        int concentration = 1;
-        int concentrationOfBlocksPerCircle = 1;
-        int range = context.getParam("range", 4);
-
-        Location centerOfTheCircle;
+        Location location = null;
         User user = null;
 
-        if (context.hasParam("concentration"))
+        int explosionRange = context.getParam("range", 4);
+        int height = context.getParam("height", 5);
+
+        if(explosionRange != 4 && !FunPerm.COMMAND_NUKE_CHANGE_RANGE.isAuthorized(context.getSender()))
         {
-            String concNamed = context.getString("concentration");
-            Matcher matcher = Pattern.compile("(\\d*)(\\.(\\d+))?").matcher(concNamed);
-            if (concNamed != null && matcher.matches())
-            {
-                try
-                {
-                    if (matcher.group(1) != null && matcher.group(1).length() > 0)
-                    {
-                        concentration = Integer.valueOf(matcher.group(1));
-                    }
-                    if (matcher.group(3) != null && matcher.group(3).length() > 0)
-                    {
-                        concentrationOfBlocksPerCircle = Integer.valueOf(matcher.group(3));
-                    }
-                }
-                catch (NumberFormatException e)
-                {
-                    context.sendTranslated("&cThe named Paramter concentration has a wrong usage. \"&a1.1&c\" is the right way. You used %s", concNamed);
-                    return;
-                }
-            }
-            if (concentration > this.config.nukeConcentrationLimit || concentrationOfBlocksPerCircle > this.config.nukeConcentrationLimit)
-            {
-                context.sendTranslated("&cThe concentration should not be greater than %d", this.config.nukeConcentrationLimit);
-                return;
-            }
-        }
-        if (radius > this.config.nukeRadiusLimit)
-        {
-            context.sendTranslated("&cThe radius should not be greater than %d", this.config.nukeRadiusLimit);
+            context.sendTranslated("&cYou are not allowed to change the explosion range of the nuke carpet!");
             return;
         }
-        if (concentration < 1)
+        if(explosionRange < 0 || explosionRange > this.module.getConfig().command.nuke.maxExplosionRange)
         {
-            context.sendTranslated("&cThe concentration should not be smaller than 1");
-            return;
-        }
-        if (concentrationOfBlocksPerCircle < 1)
-        {
-            context.sendTranslated("&cThe concentration of Blocks per Circle should not be smaller than 1");
-            return;
-        }
-        if (height < 1)
-        {
-            context.sendTranslated("&cThe height can't be less than 1");
-            return;
-        }
-        if (range < 0 || range > this.config.nukeMaxExplosionRange)
-        {
-            context.sendTranslated("&cThe explosion range can't be less than 0 or over %d", this.config.nukeMaxExplosionRange);
+            context.sendTranslated("&cThe explosion range can't be less than 0 or greater than %d", this.module.getConfig().command.nuke.maxExplosionRange);
             return;
         }
 
-        if (context.hasParam("player"))
+        if(context.hasParam("player"))
         {
+            if(!FunPerm.COMMAND_NUKE_OTHER.isAuthorized(context.getSender()))
+            {
+                context.sendMessage("&cYou are not allowed to specify a player!");
+                return;
+            }
+
             user = context.getUser("player");
-            if (user == null)
+            if(user == null)
             {
                 context.sendTranslated("&cUser not found");
                 return;
             }
-            centerOfTheCircle = user.getLocation();
+            location = user.getLocation();
         }
         else
         {
-            if (context.getSender() instanceof User)
+            if(context.getSender() instanceof User)
             {
-                user = (User)context.getSender();
+                user = (User) context.getSender();
             }
-            if (user == null)
+            if(user == null)
             {
                 context.sendTranslated("&cThis command can only be used by a player!");
                 return;
             }
-            centerOfTheCircle = user.getTargetBlock(null, 40).getLocation();
+            location = user.getTargetBlock(null, this.module.getConfig().command.nuke.distance).getLocation();
         }
 
-        while (noBlock != height)
+        Shape shape = this.getShape(context, location, height);
+        if(shape == null)
         {
-            centerOfTheCircle.add(0, 1, 0);
-            if (centerOfTheCircle.getBlock().getType() == Material.AIR)
+            return;
+        }
+
+        int blockAmount = this.spawnNuke(shape, user.getWorld(), explosionRange, context.hasFlag("u"));
+
+        if(!context.hasFlag("q"))
+        {
+            context.sendTranslated("&aYou spawned %d blocks of tnt.", blockAmount);
+        }
+    }
+
+    private Shape getShape(ParameterizedContext context, Location location, int locationHeight)
+    {
+        String shapeName = context.getString("shape", "cylinder");
+
+        if(shapeName.equals("cylinder"))
+        {
+            location = this.getSpawnLocation(location, locationHeight);
+            int radiusX = context.getArg(0, Integer.class, 1);
+            return new Cylinder(new Vector3(location.getX(), location.getY(), location.getZ()), radiusX, context.getArg(2, Integer.class, radiusX), context.getArg(1, Integer.class, 1));
+        }
+        else if(shapeName.equals("cube") || shapeName.equals("cuboid"))
+        {
+            int width = context.getArg(0, Integer.class, 1);
+            int height = shapeName.equals("cube") ? width : context.getArg(1, Integer.class, width);
+            int depth = shapeName.equals("cube") ? width : context.getArg(2, Integer.class, width);
+
+            location = location.subtract(width / 2d, 0, depth / 2d);
+            location = this.getSpawnLocation(location, locationHeight);
+            return new Cuboid(new Vector3(location.getX(), location.getY(), location.getZ()), width, height, depth);
+        }
+        else if(shapeName.equals("sphere"))
+        {
+            int radius = context.getArg(0, Integer.class, 1);
+            location = this.getSpawnLocation(location, locationHeight);
+            return new Sphere(new Vector3(location.getX(), location.getY(), location.getZ()), radius);
+        }
+        else
+        {
+            context.sendTranslated("The shape '%s' was not found!", shapeName);
+        }
+        return null;
+    }
+
+    private Location getSpawnLocation(Location location, int height)
+    {
+        int noBlock = 0;
+        while (noBlock != Math.abs(height))
+        {
+            location.add(0, height > 0 ? 1 : -1, 0);
+            if (location.getBlock().getType() == Material.AIR)
             {
                 noBlock++;
             }
@@ -173,83 +187,108 @@ public class NukeCommand
                 noBlock = 0;
             }
         }
+        return location;
+    }
 
-        for (int i = radius; i > 0; i -= concentration)
+    /**
+     * iterates through the points of the shape and spawns a tnt block at the positions.
+     *
+     * @return the number of spawned tnt blocks.
+     */
+    public int spawnNuke(Shape shape, World world, int range, boolean unsafe)
+    {
+        int numberOfBlocks = 0;
+        for (Vector3 vector : shape)
         {
-            double blocksPerCircle = i * 4 / concentrationOfBlocksPerCircle;
-            double angle = 2 * Math.PI / blocksPerCircle;
-            for (int j = 0; j < blocksPerCircle; j++)
-            {
-                TNTPrimed tnt = user.getWorld().spawn(
-                    new Location(centerOfTheCircle.getWorld(),
-                        Math.cos(j * angle) * i + centerOfTheCircle.getX() + 0.6,
-                        centerOfTheCircle.getY(),
-                        Math.sin(j * angle) * i + centerOfTheCircle.getZ() + 0.6
-                    ), TNTPrimed.class);
-                tnt.setVelocity(new Vector(0, 0, 0));
-                tnt.setYield(range);
-
-                numberOfBlocks++;
-
-                if (!context.hasFlag("u"))
-                {
-                    this.nukeListener.add(tnt);
-                }
-            }
-        }
-        if (radius == 0)
-        {
-            TNTPrimed tnt = user.getWorld().spawn(centerOfTheCircle, TNTPrimed.class);
+            TNTPrimed tnt = world.spawn(new Location(world, vector.x, vector.y, vector.z), TNTPrimed.class);
+            tnt.setVelocity(new Vector(0, 0, 0));
             tnt.setYield(range);
 
-            if (!context.hasFlag("u"))
+            numberOfBlocks++;
+
+            if (!unsafe)
             {
                 this.nukeListener.add(tnt);
-                numberOfBlocks++;
+            }
+
+            if(numberOfBlocks >= this.module.getConfig().command.nuke.maxTNTAmount)
+            {
+                return numberOfBlocks;
             }
         }
-
-        context.sendTranslated("&aYou spawnt %d blocks of TNT", numberOfBlocks);
+        return numberOfBlocks;
     }
 
     private class NukeListener implements Listener
     {
         private final Set<TNTPrimed> noBlockDamageSet;
+        private TaskManager taskManager;
+        private int taskID;
 
         public NukeListener()
         {
             this.noBlockDamageSet = new HashSet<>();
+
+            this.taskManager = module.getCore().getTaskManager();
+            this.taskID = -1;
         }
 
         public void add(TNTPrimed tnt)
         {
-            noBlockDamageSet.add(tnt);
+            this.noBlockDamageSet.add(tnt);
         }
 
-        public void remove(TNTPrimed tnt)
+        public void removeDeadTNT()
         {
-            noBlockDamageSet.remove(tnt);
+            Iterator<TNTPrimed> tntIterator = this.noBlockDamageSet.iterator();
+            while(tntIterator.hasNext())
+            {
+                TNTPrimed tnt = tntIterator.next();
+                if(tnt.isDead())
+                {
+                    tntIterator.remove();
+                }
+            }
         }
 
         public boolean contains(TNTPrimed tnt)
         {
-            return noBlockDamageSet.contains(tnt);
+            return this.noBlockDamageSet.contains(tnt);
         }
 
         @EventHandler
-        public void onBlockDamage(EntityExplodeEvent event)
+        public void onEntityExplode(final EntityExplodeEvent event)
         {
             try
             {
                 if (event.getEntityType() == EntityType.PRIMED_TNT && this.contains((TNTPrimed)event.getEntity()))
                 {
                     event.blockList().clear();
-                    remove((TNTPrimed)event.getEntity());
+
+                    if(!this.taskManager.isQueued(this.taskID) && !this.taskManager.isCurrentlyRunning(this.taskID))
+                    {
+                        this.taskID = this.taskManager.runTaskDelayed(module, new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                removeDeadTNT();
+                            }
+                        }, 1);
+                    }
                 }
             }
             catch (NullPointerException ignored)
             {}
         }
-    }
 
+        @EventHandler
+        public void onEntityDamageByEntity(final EntityDamageByEntityEvent event)
+        {
+            if(event.getDamager() instanceof TNTPrimed && this.contains((TNTPrimed)event.getDamager()))
+            {
+                event.setCancelled(true);
+            }
+        }
+    }
 }

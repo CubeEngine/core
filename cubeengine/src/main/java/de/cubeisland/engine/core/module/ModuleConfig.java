@@ -20,39 +20,31 @@ package de.cubeisland.engine.core.module;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.Version;
 
 /**
  * This configuration is used to parse the module.yml file.
  */
-@Codec("yml")
-public class ModuleConfig extends Configuration
+public class ModuleConfig extends YamlConfiguration
 {
-    @Option("main")
     public String main;
-    @Option("name")
     public String name;
-    @Option("description")
     public String description;
-    @Option("version")
     public Version version = Version.ONE;
-    @Option("source-version")
-    public String sourceVersion;
-    @Option("core-version")
-    public Version minCoreRevision = Version.ZERO;
-    @Option("dependencies")
+    public String sourceVersion = "unknown-unknown";
+    public Version minCoreVersion = Version.ZERO;
     public Set<String> dependencies = new HashSet<>(0);
-    @Option("soft-dependencies")
     public Set<String> softDependencies = new HashSet<>(0);
-    @Option("plugin-dependencies")
     public Set<String> pluginDependencies = new HashSet<>(0);
-    @Option("load-after")
     public Set<String> loadAfter = new HashSet<>(0);
-    @Option("services")
     public Set<String> services = new HashSet<>(0);
-    @Option("service-providers")
-    public Set<String> serviceProviders = new HashSet<>(0);
+    public Set<String> providedServices = new HashSet<>(0);
+
+    @Override
+    public boolean useStrictExceptionPolicy()
+    {
+        return true;
+    }
 }

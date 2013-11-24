@@ -45,7 +45,7 @@ public class EcoBankCommands extends ContainerCommand
     public void give(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = this.manager.parse(amountString);
+        Double amount = this.manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount! %s", amountString);
@@ -88,7 +88,7 @@ public class EcoBankCommands extends ContainerCommand
     public void take(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = manager.parse(amountString);
+        Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");
@@ -165,7 +165,7 @@ public class EcoBankCommands extends ContainerCommand
     public void set(ParameterizedContext context)
     {
         String amountString = context.getString(1);
-        Double amount = manager.parse(amountString);
+        Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
             context.sendTranslated("&cCould not parse amount!");

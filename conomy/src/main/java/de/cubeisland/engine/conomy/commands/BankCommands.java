@@ -579,7 +579,7 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-    // TODO bank Info cmd
+    // TODO bank Info cmd http://git.cubeisland.de/cubeengine/cubeengine/issues/246
     // Owners Members Invites Balance Hidden
     public void info(CommandContext context)//list all members with their rank
     {}

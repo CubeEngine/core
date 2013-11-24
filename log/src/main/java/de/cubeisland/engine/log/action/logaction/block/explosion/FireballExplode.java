@@ -87,6 +87,6 @@ public class FireballExplode extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).FIREBALL_EXPLODE_enable;
+        return this.lm.getConfig(world).block.explode.FIREBALL_EXPLODE_enable;
     }
 }

@@ -34,10 +34,10 @@ public abstract class LongRunningResult implements CommandResult
             public void run()
             {
                 LongRunningResult.this.run(context);
-                if (LongRunningResult.this.isDone)
+                if (isDone)
                 {
                     context.getCore().getTaskManager()
-                           .cancelTask(context.getCommand().getModule(), LongRunningResult.this.taskId);
+                           .cancelTask(context.getCommand().getModule(), taskId);
                 }
             }
         }, 0, 1);
@@ -47,7 +47,7 @@ public abstract class LongRunningResult implements CommandResult
         }
     }
 
-    protected void setDone()
+    protected final void setDone()
     {
         this.isDone = true;
     }

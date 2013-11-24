@@ -87,6 +87,6 @@ public class WitherExplode extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).WITHER_EXPLODE_enable;
+        return this.lm.getConfig(world).block.explode.WITHER_EXPLODE_enable;
     }
 }

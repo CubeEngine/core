@@ -32,13 +32,6 @@ public class ChatPerm extends PermissionContainer<Chat>
                           COLOR_RED, COLOR_LIGHT_PURPLE, COLOR_YELLOW,
                           COLOR_WHITE, COLOR_OBFUSCATED, COLOR_BOLD,
                           COLOR_STRIKE, COLOR_UNDERLINE, COLOR_ITALIC, COLOR_RESET);
-        COLOR.attach(COLOR_BLACK, COLOR_DARK_BLUE, COLOR_DARK_GREEN,
-                            COLOR_DARK_AQUA, COLOR_DARK_RED, COLOR_DARK_PURPLE,
-                            COLOR_GOLD, COLOR_GRAY, COLOR_DARK_GRAY,
-                            COLOR_BLUE, COLOR_GREEN, COLOR_AQUA,
-                            COLOR_RED, COLOR_LIGHT_PURPLE, COLOR_YELLOW,
-                            COLOR_WHITE, COLOR_OBFUSCATED, COLOR_BOLD,
-                            COLOR_STRIKE, COLOR_UNDERLINE, COLOR_ITALIC, COLOR_RESET);
         this.registerAllPermissions();
     }
 
@@ -67,4 +60,15 @@ public class ChatPerm extends PermissionContainer<Chat>
     public static final Permission COLOR_UNDERLINE = COLOR.createNew("underline");
     public static final Permission COLOR_ITALIC = COLOR.createNew("italic");
     public static final Permission COLOR_RESET = COLOR.createNew("reset");
+
+    static
+    {
+        COLOR.attach(COLOR_BLACK, COLOR_DARK_BLUE, COLOR_DARK_GREEN,
+                     COLOR_DARK_AQUA, COLOR_DARK_RED, COLOR_DARK_PURPLE,
+                     COLOR_GOLD, COLOR_GRAY, COLOR_DARK_GRAY,
+                     COLOR_BLUE, COLOR_GREEN, COLOR_AQUA,
+                     COLOR_RED, COLOR_LIGHT_PURPLE, COLOR_YELLOW,
+                     COLOR_WHITE, COLOR_OBFUSCATED, COLOR_BOLD,
+                     COLOR_STRIKE, COLOR_UNDERLINE, COLOR_ITALIC, COLOR_RESET);
+    }
 }

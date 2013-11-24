@@ -22,12 +22,15 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import de.cubeisland.engine.configuration.Configuration;
+import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
-import org.slf4j.Logger;
 
 
 /**
@@ -38,7 +41,7 @@ public abstract class Module
     private boolean initialized = false;
     private Core core;
     private ModuleInfo info;
-    private Logger log;
+    private Log log;
     private ModuleLoader loader;
     private ModuleRegistry registry = null;
     private ClassLoader classLoader;
@@ -46,7 +49,7 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Logger logger)
+    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Log logger)
     {
         if (!this.initialized)
         {
@@ -106,7 +109,7 @@ public abstract class Module
      *
      * @return the module log
      */
-    public Logger getLog()
+    public Log getLog()
     {
         return this.log;
     }
@@ -142,10 +145,9 @@ public abstract class Module
         {
             Files.createDirectories(this.folder);
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.log.error("Failed to create the data folder!");
-            this.log.debug(e.getLocalizedMessage(), e);
+            this.log.error(ex, "Failed to create the data folder!");
         }
         return this.folder;
     }
@@ -195,6 +197,19 @@ public abstract class Module
      */
     public void onStartupFinished()
     {}
+
+    /**
+     * This method gets called when a uncaught exception reached root of a thread created by this module
+     *
+     * @param t the thread
+     * @param e the exception
+     */
+    public void onUncaughtException(Thread t, Throwable e)
+    {
+        this.getLog().error("An uncaught exception occurred! This is a critical error and should be reported!");
+        this.getLog().error("The thread: {}", t.getName());
+        this.getLog().error("The error: {}", e.getLocalizedMessage(), e);
+    }
 
     @Override
     public int hashCode()
@@ -250,8 +265,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().error("{} while enabling!", t.getClass().getSimpleName());
-                this.getLog().debug(t.getLocalizedMessage(), t);
+                this.getLog().error(t, "{} while enabling!", t.getClass().getSimpleName());
             }
         }
         return this.enabled;
@@ -275,8 +289,7 @@ public abstract class Module
             }
             catch (Throwable t)
             {
-                this.getLog().warn("{} while disabling!", t.getClass().getSimpleName());
-                this.getLog().debug(t.getLocalizedMessage(), t);
+                this.getLog().warn(t, "{} while disabling!", t.getClass().getSimpleName());
             }
             this.enabled = false;
         }
@@ -298,5 +311,30 @@ public abstract class Module
             modulePermission = Permission.BASE.createAbstractChild(this.getId());
         }
         return modulePermission;
+    }
+
+    /**
+     * Loads and saves from config.{@link de.cubeisland.engine.configuration.codec.ConfigurationCodec#getExtension()} in the module folder // TODO
+     *
+     * @param clazz the configurations class
+     * @return the loaded configuration
+     */
+    public <T extends Configuration> T loadConfig(Class<T> clazz)
+    {
+        T config = this.core.getConfigurationFactory().create(clazz);
+        config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
+        try
+        {
+            if (config.reload(true))
+            {
+                this.getLog().info("Saved new configuration file! config.{}" , config.getCodec().getExtension());
+            }
+        }
+        catch (InvalidConfigurationException ex)
+        {
+            CubeEngine.getLog().error("Failed to load the configuration for {}", config.getFile().getAbsolutePath());
+            CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+        }
+        return config;
     }
 }

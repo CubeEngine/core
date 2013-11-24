@@ -56,6 +56,6 @@ public class LightningIgnite extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LIGHTNING_IGNITE_enable;
+        return this.lm.getConfig(world).block.ignite.LIGHTNING_IGNITE_enable;
     }
 }

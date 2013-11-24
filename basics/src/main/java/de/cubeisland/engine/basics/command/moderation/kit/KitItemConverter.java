@@ -26,13 +26,13 @@ import java.util.regex.Pattern;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.core.config.node.IntNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.IntNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class KitItemConverter implements Converter<KitItem>
@@ -40,28 +40,25 @@ public class KitItemConverter implements Converter<KitItem>
     private static final Pattern pat = Pattern.compile("(?:([0-9]+)\\*)?([a-zA-Z0-9_]+)(?::([0-9]+))?(?: (.+))?(:)?");
 
     @Override
-    public Node toNode(KitItem object) throws ConversionException
+    public Node toNode(KitItem object, ConverterManager manager) throws ConversionException
     {
         if (object.enchs == null || object.enchs.isEmpty())
         {
-            return Convert.wrapIntoNode(object.amount
-                                            + "*" + object.mat.name()
-                                            + ":" + object.dura +
-                                            (object.customName == null ? "" : " " + object.customName));
+            return StringNode.of(object.amount + "*" + object.mat.name() + ":" + object.dura +
+                                     (object.customName == null ? "" : " " + object.customName));
         }
         else
         {
             MapNode mapNode = MapNode.emptyMap();
-            mapNode.setNode(StringNode.of(
-                            object.amount + "*" + object.mat.name() + ":" + object.dura +
-                                (object.customName == null ? "" : " " + object.customName)),
-                            Convert.toNode(object.enchs));
+            mapNode.setNode(StringNode.of(object.amount + "*" + object.mat.name() + ":" + object.dura +
+                                              (object.customName == null ? "" : " " + object.customName)),
+                            manager.convertToNode(object.enchs));
             return mapNode;
         }
     }
 
     @Override
-    public KitItem fromNode(Node node) throws ConversionException
+    public KitItem fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         //suported formats: [amount*]id[:data][ customname]
         // if has enchs as map with map of enchs below
@@ -72,7 +69,7 @@ public class KitItemConverter implements Converter<KitItem>
         }
         else
         {
-            itemString = node.unwrap();
+            itemString = node.asText();
         }
         if (itemString.matches(pat.pattern()))
         {
@@ -119,9 +116,9 @@ public class KitItemConverter implements Converter<KitItem>
             }
             catch (Exception ex)
             {
-                throw new ConversionException("Could not parse kitItem! " + itemString, ex);
+                throw ConversionException.of(this, node, "Could not parse kitItem! " + itemString, ex);
             }
         }
-        throw new ConversionException("Could not parse kitItem!");
+        throw ConversionException.of(this, node, "Could not parse kitItem!");
     }
 }

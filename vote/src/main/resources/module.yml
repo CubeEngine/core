@@ -5,4 +5,4 @@ source-version: ${githead.branch}-${githead.commit}
 plugin-dependencies:
 - Votifier
 services:
-- de.cubeisland.engine.core.service.Economy
+- de.cubeisland.engine.core.module.service.Economy

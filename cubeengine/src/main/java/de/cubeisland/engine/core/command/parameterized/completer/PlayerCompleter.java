@@ -27,6 +27,9 @@ import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
+/**
+ * A PlayerCompleter for the other online users but not the user sending the command
+ */
 public class PlayerCompleter implements Completer
 {
     private static boolean canSee(CommandSender sender, User user)

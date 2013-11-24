@@ -51,10 +51,10 @@ public class VoteCommands
             else
             {
                 context.sendTranslated("&aYou current vote-count is &6%d", voteModel.getVoteamount().intValue());
-                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() >= module.getConfig().votebonustime.toMillis())
+                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() >= module.getConfig().voteBonusTime.toMillis())
                 {
                     context.sendTranslated("&eSadly you did not vote in the last &6%s&e so your vote-count will be reset to 1",
-                                           module.getConfig().votebonustime.format("%www%ddd%hhh%mmm%sss"));
+                                           module.getConfig().voteBonusTime.format("%www%ddd%hhh%mmm%sss"));
                 }
                 else if (System.currentTimeMillis() - voteModel.getLastvote().getTime() < TimeUnit.DAYS.toMillis(1))
                 {
@@ -65,17 +65,17 @@ public class VoteCommands
                 {
                     context.sendTranslated("&eVoting now will increase your consecutive votes and result in higher reward!");
                 }
-                if (!module.getConfig().voteurl.isEmpty())
+                if (!module.getConfig().voteUrl.isEmpty())
                 {
-                    context.sendTranslated("&aYou can vote here now: &6%s", module.getConfig().voteurl);
+                    context.sendTranslated("&aYou can vote here now: &6%s", module.getConfig().voteUrl);
                 }
             }
             return;
         }
         context.sendTranslated("&eWell you wont get any rewards.");
-        if (!module.getConfig().voteurl.isEmpty())
+        if (!module.getConfig().voteUrl.isEmpty())
         {
-            context.sendTranslated("&eBut here go vote anyways: &6%s", module.getConfig().voteurl);
+            context.sendTranslated("&eBut here go vote anyways: &6%s", module.getConfig().voteUrl);
         }
     }
 }

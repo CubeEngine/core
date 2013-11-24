@@ -69,6 +69,6 @@ public class EndermanPlace extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ENDERMAN_PLACE_enable;
+        return this.lm.getConfig(world).block.enderman.ENDERMAN_PLACE_enable;
     }
 }

@@ -29,7 +29,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -87,14 +86,14 @@ public class KitManager implements Listener
             kitMap.put(kit.getKitName(), kit);
         }
         kit.applyToConfig(config);
-        config.save(module.getFolder().resolve("kits").resolve(config.kitName + ".yml"));
+        config.save(module.getFolder().resolve("kits").resolve(config.kitName + ".yml").toFile());
     }
 
     public void loadKit(Path file)
     {
         try
         {
-            KitConfiguration config = Configuration.load(KitConfiguration.class, file);
+            KitConfiguration config = this.module.getCore().getConfigurationFactory().load(KitConfiguration.class, file.toFile());
             config.kitName = StringUtils.stripFileExtension(file.getFileName().toString());
             Kit kit = config.getKit(module);
             kitConfigMap.put(kit, config);
@@ -106,8 +105,7 @@ public class KitManager implements Listener
         }
         catch (Exception ex)
         {
-            module.getLog().warn("Could not load the kit configuration!");
-            module.getLog().debug(ex.getLocalizedMessage(), ex);
+            module.getLog().warn(ex, "Could not load the kit configuration!");
         }
     }
 
@@ -125,10 +123,9 @@ public class KitManager implements Listener
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed load the modules!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Failed load the modules!");
         }
     }
 

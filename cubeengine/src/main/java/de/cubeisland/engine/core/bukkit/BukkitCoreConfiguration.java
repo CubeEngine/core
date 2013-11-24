@@ -17,27 +17,23 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.CoreConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.config.annotations.Revision;
 
-@Revision(1)
 public class BukkitCoreConfiguration extends CoreConfiguration
 {
-    @Option("prevent-spam-kick")
     @Comment("Whether to prevent Bukkit from kicking players for spamming")
     public boolean preventSpamKick = false;
 
-    @Option("commands.improve-vanilla")
-    @Comment("Whether to replace the vanilla standard commands with improved ones")
-    public boolean improveVanillaCommands = true;
+    public BukkitCommandsSection commands;
 
-    @Option("catch-system-signals")
+    public class BukkitCommandsSection extends CommandsSection
+    {
+        @Comment("Whether to replace the vanilla standard commands with improved ones")
+        public boolean improveVanilla = true;
+    }
+
     @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
     public boolean catchSystemSignals = true;
-
-    @Option("metrics-enable")
-    @Comment("Whether to send anonymous plugin metrics to http://mcstats.org")
-    public boolean sendMetrics = true;
 }

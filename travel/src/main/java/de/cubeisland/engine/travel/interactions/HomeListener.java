@@ -60,7 +60,7 @@ public class HomeListener implements Listener
                     }
                     else
                     {
-                        if (this.tpManager.getNumberOfHomes(user) == this.module.getConfig().maxhomes)
+                        if (this.tpManager.getNumberOfHomes(user) == this.module.getConfig().homes.max)
                         {
                             user.sendTranslated("&4You have reached your maximum number of homes!");
                             user.sendTranslated("&cYou have to delete a home to make a new one");

@@ -70,11 +70,19 @@ public class MarketSignFactory
         {
             return null;
         }
+        if (this.module.getConfig().disableInWorlds.contains(location.getWorld()))
+        {
+            return null;
+        }
         return this.marketSigns.get(location);
     }
 
     public MarketSign createSignAt(User user, Location location)
     {
+        if (this.module.getConfig().disableInWorlds.contains(location.getWorld()))
+        {
+            return null;
+        }
         MarketSign marketSign = this.getSignAt(location);
         if (marketSign != null)
         {

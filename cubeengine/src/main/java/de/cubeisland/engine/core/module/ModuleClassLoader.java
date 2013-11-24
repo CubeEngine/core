@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.util.convert.Convert;
 
 /**
  * This is the ClassLoader used by modules
@@ -106,7 +105,7 @@ public class ModuleClassLoader extends URLClassLoader
         while (it.hasNext())
         {
             clazz = it.next().getValue();
-            Convert.removeConverter(clazz);
+            this.moduleLoader.getCore().getConfigurationFactory().getDefaultConverterManager().removeConverter(clazz);
             ArgumentReader.removeReader(clazz);
             this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
             it.remove();
@@ -116,10 +115,9 @@ public class ModuleClassLoader extends URLClassLoader
         {
             this.close();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            CubeEngine.getLog().warn("Failed to close the class loader of the module '{}'", this.moduleInfo.getName());
-            CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
+            CubeEngine.getLog().warn(ex, "Failed to close the class loader of the module '{}'", this.moduleInfo.getName());
         }
     }
 }

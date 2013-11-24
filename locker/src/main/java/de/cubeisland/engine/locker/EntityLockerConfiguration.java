@@ -19,9 +19,8 @@ package de.cubeisland.engine.locker;
 
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.core.util.convert.ConversionException;
+import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.locker.storage.ProtectedType;
 
 public class EntityLockerConfiguration extends LockerSubConfig<EntityLockerConfiguration, EntityType>
@@ -59,7 +58,7 @@ public class EntityLockerConfiguration extends LockerSubConfig<EntityLockerConfi
             }
             if (entityType == null)
             {
-                throw new ConversionException(s + " is not a valid EntityType!");
+                throw ConversionException.of(this, s, "Invalid EntityType!");
             }
             return new EntityLockerConfiguration(entityType);
         }

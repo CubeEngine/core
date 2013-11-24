@@ -17,32 +17,45 @@
  */
 package de.cubeisland.engine.core.command.result;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 
 public abstract class AsyncResult implements CommandResult
 {
-    public abstract void asyncMain(CommandContext context);
+    public abstract void main(CommandContext context);
     public void onFinish(CommandContext context)
     {}
 
     @Override
     public final void show(final CommandContext context)
     {
-        context.getCore().getTaskManager().getThreadFactory().newThread(new Runnable() {
+        if (CubeEngine.isMainThread()) // only run on another thread if we're on the main thread
+        {
+            context.getCore().getTaskManager().getThreadFactory().newThread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    doShow(context);
+                }
+            }).start();
+        }
+        else
+        {
+            this.doShow(context);
+        }
+    }
+
+    private void doShow(final CommandContext context)
+    {
+        this.main(context);
+        context.getCore().getTaskManager().runTask(context.getCommand().getModule(), new Runnable()
+        {
             @Override
             public void run()
             {
-                AsyncResult.this.asyncMain(context);
-                context.getCore().getTaskManager().runTask(context.getCommand().getModule(), new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        AsyncResult.this.onFinish(context);
-                    }
-                });
+                onFinish(context);
             }
-        }).start();
+        });
     }
 }

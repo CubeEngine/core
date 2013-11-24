@@ -166,7 +166,6 @@ public class EnchantMatcher
 
     public boolean applyMatchedEnchantment(ItemStack item, String enchName, int enchStrength, boolean force)
     {
-        //TODO try to match enchNames when they are ids
         Enchantment ench = this.enchantment(enchName);
         if (ench == null)
             return false;

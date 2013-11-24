@@ -51,7 +51,6 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.user.User;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -71,12 +70,10 @@ public class BukkitUtils
         {
             entityPlayerLocaleField = EntityPlayer.class.getDeclaredField("locale");
             entityPlayerLocaleField.setAccessible(true);
-
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            core.getLog().error("Failed to initialize the required hacks!");
-            core.getLog().debug(e.getLocalizedMessage(), e);
+            core.getLog().error(ex, "Failed to initialize the required hacks!");
             return false;
         }
         return true;
@@ -91,7 +88,7 @@ public class BukkitUtils
         return (serverClassName.startsWith("org.bukkit.craftbukkit.") && serverClassName.endsWith(".CraftServer"));
     }
 
-    public static Locale getLocaleFromSender(I18n i18n, CommandSender sender)
+    public static Locale getLocaleFromSender(CommandSender sender)
     {
         if (sender instanceof de.cubeisland.engine.core.command.CommandSender)
         {
@@ -100,7 +97,7 @@ public class BukkitUtils
         Locale locale = null;
         if (sender instanceof Player)
         {
-            locale = getLocaleFromUser(i18n, (Player)sender);
+            locale = getLocaleFromUser((Player)sender);
         }
         if (locale == null)
         {
@@ -115,18 +112,14 @@ public class BukkitUtils
      * @param player the Player instance
      * @return the locale string of the player
      */
-    private static Locale getLocaleFromUser(I18n i18n, Player player)
+    private static Locale getLocaleFromUser(Player player)
     {
         if (player.getClass() == CraftPlayer.class)
         {
             try
             {
                 final String localeString = (String)entityPlayerLocaleField.get(((CraftPlayer)player).getHandle());
-                final Language lang = i18n.getLanguage(I18n.stringToLocale(localeString));
-                if (lang != null)
-                {
-                    return lang.getLocale();
-                }
+                return I18n.stringToLocale(localeString);
             }
             catch (Exception ignored)
             {}
@@ -142,7 +135,7 @@ public class BukkitUtils
     private static Filter filter = null;
     private static CommandLogFilter commandFilter = null;
 
-    static void disableCommandLogging()
+    public static void disableCommandLogging()
     {
         if (commandFilter == null)
         {
@@ -316,11 +309,6 @@ public class BukkitUtils
         {}
     }
 
-    public static boolean isANSISupported()
-    {
-        return ((CraftServer) Bukkit.getServer()).getReader().getTerminal().isAnsiSupported();
-    }
-
 
     public static Player getOfflinePlayerAsPlayer(OfflinePlayer player)
     {
@@ -377,5 +365,10 @@ public class BukkitUtils
             CubeEngine.getCore().getLog().debug(ex.getLocalizedMessage(), ex);
             return null;
         }
+    }
+
+    static boolean isAnsiSupported(Server server)
+    {
+        return ((CraftServer)server).getReader().getTerminal().isAnsiSupported();
     }
 }

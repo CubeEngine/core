@@ -78,7 +78,7 @@ public abstract class BlockActionType extends LogActionType
             return false;
         }
         Material mat = Material.getMaterial(block);
-        if (this.lm.getConfig(world).breakNoLogging.contains(mat))
+        if (this.lm.getConfig(world).block.breakNoLogging.contains(mat))
         {
             return true;
         }
@@ -91,7 +91,7 @@ public abstract class BlockActionType extends LogActionType
             return false;
         }
         Material mat = Material.getMaterial(block);
-        return this.lm.getConfig(world).placeNoLogging.contains(mat);
+        return this.lm.getConfig(world).block.placeNoLogging.contains(mat);
     }
 
     public void logBlockChange(Location location, Entity causer, Material oldBlock, Material newBlock, String additional)
@@ -203,7 +203,7 @@ public abstract class BlockActionType extends LogActionType
             {
                 if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
                 {
-                    hangingBreak.preplanHangingBreak(entity.getLocation(), player); // TODO this produced a NPE / player was null
+                    hangingBreak.preplanHangingBreak(entity.getLocation(), player, this);
                 }
             }
         }

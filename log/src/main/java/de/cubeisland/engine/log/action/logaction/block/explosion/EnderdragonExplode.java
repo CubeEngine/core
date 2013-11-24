@@ -88,6 +88,6 @@ public class EnderdragonExplode extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ENDERDRAGON_EXPLODE_enable;
+        return this.lm.getConfig(world).block.explode.ENDERDRAGON_EXPLODE_enable;
     }
 }

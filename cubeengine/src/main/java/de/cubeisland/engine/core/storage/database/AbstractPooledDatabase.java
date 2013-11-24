@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.util.worker.AsyncTaskQueue;
+import de.cubeisland.engine.core.task.worker.AsyncTaskQueue;
 
 /**
  * Abstract Database implementing most of the database methods.
@@ -83,10 +83,9 @@ public abstract class AbstractPooledDatabase implements Database
                 {
                     update(query, params);
                 }
-                catch (SQLException e)
+                catch (SQLException ex)
                 {
-                    core.getLog().error("An asynchronous query failed!");
-                    core.getLog().debug(e.getLocalizedMessage(), e);
+                    core.getLog().error(ex, "An asynchronous query failed!");
                 }
             }
         });
@@ -117,10 +116,9 @@ public abstract class AbstractPooledDatabase implements Database
                 {
                     execute(query, params);
                 }
-                catch (SQLException e)
+                catch (SQLException ex)
                 {
-                    core.getLog().error("An asynchronous query failed!");
-                    core.getLog().debug(e.getLocalizedMessage(), e);
+                    core.getLog().error(ex, "An asynchronous query failed!");
                 }
             }
         });

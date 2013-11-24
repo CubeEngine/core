@@ -196,12 +196,12 @@ public class PlayerCommands
                 return;
             }
             user = (User)context.getSender();
-            location = user.getTargetBlock(null, this.module.getConfig().explosionDistance).getLocation();
+            location = user.getTargetBlock(null, this.module.getConfig().command.explosion.distance).getLocation();
         }
 
-        if (power > this.module.getConfig().explosionPower)
+        if (power > this.module.getConfig().command.explosion.power)
         {
-            context.sendTranslated("&cThe power of the explosion shouldn't be greater than %d", this.module.getConfig().explosionPower);
+            context.sendTranslated("&cThe power of the explosion shouldn't be greater than %d", this.module.getConfig().command.explosion.power);
             return;
         }
 
@@ -285,7 +285,7 @@ public class PlayerCommands
                 return;
             }
             user = (User)context.getSender();
-            location = user.getTargetBlock(null, this.module.getConfig().lightningDistance).getLocation();
+            location = user.getTargetBlock(null, this.module.getConfig().command.lightning.distance).getLocation();
         }
 
         if (context.hasFlag("u"))
@@ -343,9 +343,9 @@ public class PlayerCommands
         {
             seconds = 0;
         }
-        else if (seconds < 1 || seconds > 26)
+        else if (seconds < 1 || seconds > this.module.getConfig().command.burn.maxTime)
         {
-            context.sendTranslated("&cOnly 1 to 26 seconds are permitted!");
+            context.sendTranslated("&cOnly 1 to %d seconds are permitted!", this.module.getConfig().command.burn.maxTime);
             return;
         }
 

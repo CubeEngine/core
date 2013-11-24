@@ -61,13 +61,13 @@ public class TableIgnorelist extends TableImpl<IgnoreList> implements TableCreat
     @Override
     public void createTable(Connection connection) throws SQLException
     {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` int(10) unsigned NOT NULL,\n" +
-                                        "`ignore` int(10) unsigned NOT NULL,\n" +
+        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (" +
+                                        "`key` int(10) unsigned NOT NULL," +
+                                        "`ignore` int(10) unsigned NOT NULL," +
                                         "PRIMARY KEY (`key`,`ignore`)," +
-                                        "FOREIGN KEY f_user (`key`) REFERENCES `cube_user` (`key`) ON UPDATE CASCADE ON DELETE CASCADE," +
-                                        "FOREIGN KEY f_ignore (`ignore`) REFERENCES " +TABLE_USER.getName() +" (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
+                                        "FOREIGN KEY f_user (`key`) REFERENCES `" + TABLE_USER.getName() + "` (`" + TABLE_USER.KEY.getName() + "`) ON UPDATE CASCADE ON DELETE CASCADE," +
+                                        "FOREIGN KEY f_ignore (`ignore`) REFERENCES `" +TABLE_USER.getName() +"` (`" + TABLE_USER.KEY.getName() + "`) ON UPDATE CASCADE ON DELETE CASCADE) " +
+                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci " +
                                         "COMMENT='1.0.0'").execute();
     }
 

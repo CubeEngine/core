@@ -247,7 +247,6 @@ public class Duration
         convertTime -= convertTime / MS * MS;
     }
 
-    //TODO Formatting not that good! DO IT BETTER.
     public String format(String pattern)
     {
         this.update();
@@ -302,11 +301,11 @@ public class Duration
         {
             milsec += milsec * 60;
         }
-        if (result.contains("%SSS") || result.contains("%SSS") || result.contains("%SSS"))
+        if (result.contains("%SSS") || result.contains("%SS") || result.contains("%S"))
         {
             result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + (milsec == 1 ? " millisecond " : " milliseconds "));
-            result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + "ms");
-            result = result.replaceAll("%SSS", milsec == 0 ? "" : milsec + "");
+            result = result.replaceAll("%SS", milsec == 0 ? "" : milsec + "ms");
+            result = result.replaceAll("%S", milsec == 0 ? "" : milsec + "");
         }
         return result.trim();
     }

@@ -38,7 +38,6 @@ import de.cubeisland.engine.core.util.matcher.Match;
 
 public class SpawnMob
 {
-    // TODO custom loot items & Equipment
     static Entity[] spawnMobs(CommandContext context, String mobString, Location loc, int amount)
     {
         String[] mobStrings = StringUtils.explode(",", mobString);

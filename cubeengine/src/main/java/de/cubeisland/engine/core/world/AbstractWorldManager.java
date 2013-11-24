@@ -30,6 +30,7 @@ import org.bukkit.generator.ChunkGenerator;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
+import gnu.trove.TLongCollection;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.jooq.DSLContext;
@@ -94,9 +95,9 @@ public abstract class AbstractWorldManager implements WorldManager
         return entity.getKey().longValue();
     }
 
-    public synchronized long[] getAllWorldIds()
+    public synchronized TLongCollection getAllWorldIds()
     {
-        return this.worldIds.keys();
+        return this.worldIds.keySet();
     }
 
     public synchronized World getWorld(long id)

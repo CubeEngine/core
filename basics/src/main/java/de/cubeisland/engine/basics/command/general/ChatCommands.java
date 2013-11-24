@@ -46,11 +46,25 @@ public class ChatCommands
         this.um = basics.getCore().getUserManager();
     }
 
-    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
-    public void me(CommandContext context)
+    @Command(desc = "Changes your DisplayName", usage = "<name>|-r", min = 1, max = 1)
+    // TODO param change nick of other player /w perm
+    // TODO perm to take name of a player that is already Playing on the server
+    public void nick(CommandContext context)
     {
-        String message = context.getStrings(0);
-        this.um.broadcastStatus(message, context.getSender());
+        if (context.getSender() instanceof User)
+        {
+            String name = context.getString(0);
+            if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
+            {
+                ((User)context.getSender()).setDisplayName(context.getSender().getName());
+            }
+            else
+            {
+                ((User)context.getSender()).setDisplayName(name);
+            }
+            return;
+        }
+        context.sendMessage("&cYou cannot change the consoles DisplayName");
     }
 
     @Command(desc = "Sends a private message to someone", names = {
@@ -169,7 +183,7 @@ public class ChatCommands
         {
             context.sendTranslated("&2%s &ewas already muted!", user.getName());
         }
-        Duration dura = module.getConfiguration().defaultMuteTime;
+        Duration dura = module.getConfiguration().commands.defaultMuteTime;
         if (context.hasArg(1))
         {
             try

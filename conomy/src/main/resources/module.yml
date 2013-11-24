@@ -2,5 +2,5 @@ name: ${project.name}
 description: ${project.description}
 version: ${project.version}
 source-version: ${githead.branch}-${githead.commit}
-service-providers:
-- de.cubeisland.engine.core.service.Economy
+provided-services:
+- de.cubeisland.engine.core.module.service.Economy

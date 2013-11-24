@@ -21,7 +21,6 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContextFactory;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.module.Module;
 
 public class ConfirmCommand extends CubeCommand
@@ -50,12 +49,5 @@ public class ConfirmCommand extends CubeCommand
             context.sendTranslated("&eYou now have &6%d &epending confirmations", pendingConfirmations);
         }
         return null;
-    }
-
-    @Override
-    public void help(HelpContext context) throws Exception
-    {
-        context.sendMessage(this.getDescription());
-        context.sendTranslated("Usage: %s", this.getUsage(context));
     }
 }

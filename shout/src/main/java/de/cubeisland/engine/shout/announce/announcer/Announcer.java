@@ -22,9 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
-import de.cubeisland.engine.core.task.TaskManager;
 
 /**
  * Class to manage announcers. It's bound to system time, not the server.
@@ -33,16 +32,16 @@ import de.cubeisland.engine.core.task.TaskManager;
  */
 public class Announcer
 {
-    private final TaskManager taskManager;
+    private final ThreadFactory threadFactory;
     private ScheduledExecutorService executor;
     private Map<String, ScheduledFuture> dynamicTasks;
     private Map<String, ScheduledFuture> fixedTasks;
     public int initDelay;
 
-    public Announcer(TaskManager taskManager, int initDelay)
+    public Announcer(ThreadFactory factory, int initDelay)
     {
-        this.taskManager = taskManager;
-        this.executor = Executors.newSingleThreadScheduledExecutor(taskManager.getThreadFactory());
+        this.threadFactory = factory;
+        this.executor = Executors.newSingleThreadScheduledExecutor(factory);
         this.dynamicTasks = new ConcurrentHashMap<>();
         this.fixedTasks = new ConcurrentHashMap<>();
         this.initDelay = initDelay;
@@ -135,7 +134,7 @@ public class Announcer
     public void restart()
     {
         this.shutdown();
-        this.executor = Executors.newSingleThreadScheduledExecutor(taskManager.getThreadFactory());
+        this.executor = Executors.newSingleThreadScheduledExecutor(this.threadFactory);
         this.dynamicTasks = new ConcurrentHashMap<>();
         this.fixedTasks = new ConcurrentHashMap<>();
     }

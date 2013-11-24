@@ -55,6 +55,11 @@ public class BukkitBanManager implements BanManager
     {
         assert ban != null: "Ban must not be null!";
 
+        if (ban.getReason().contains("\n") || ban.getReason().contains("\r"))
+        {
+            throw new IllegalArgumentException("The ban reason my not contain line breaks (LF or CR)!");
+        }
+
         BanEntry entry = new BanEntry(ban.toString());
         entry.setCreated(ban.getCreated());
         entry.setExpires(ban.getExpires());
@@ -76,7 +81,6 @@ public class BukkitBanManager implements BanManager
         assert user != null: "The user must not be null!";
 
         return this.getUserBan(user.getName());
-
     }
 
     @Override

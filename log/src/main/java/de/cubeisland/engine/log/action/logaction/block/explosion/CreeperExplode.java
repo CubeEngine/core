@@ -91,6 +91,6 @@ public class CreeperExplode extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).CREEPER_EXPLODE_enable;
+        return this.lm.getConfig(world).block.explode.CREEPER_EXPLODE_enable;
     }
 }
