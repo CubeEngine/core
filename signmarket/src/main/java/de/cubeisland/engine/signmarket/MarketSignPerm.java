@@ -41,7 +41,7 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
     /**
      * Allow buying and selling to signs
      */
-    private static final Permission USE = Permission.createPermission("use");
+    public static final Permission USE = Permission.createPermission("use");
 
     public static final Permission USE_BUY = USE.createNew("buy");
     public static final Permission USE_SELL = USE.createNew("sell");
