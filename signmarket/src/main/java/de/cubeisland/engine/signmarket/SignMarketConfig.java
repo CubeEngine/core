@@ -19,6 +19,7 @@ package de.cubeisland.engine.signmarket;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,7 +70,7 @@ public class SignMarketConfig extends YamlConfiguration
     @Name("sign.user.stock.max")
     public int maxUserStock = 6;
 
-    public List<World> disableInWorlds;
+    public List<World> disableInWorlds = new ArrayList<>();
 
     @Comment({"If empty all signs in all worlds can sync.",
     "Example:",
@@ -79,7 +80,7 @@ public class SignMarketConfig extends YamlConfiguration
     "world2:",
     "  - world2_the_end",
     "  - world2_nether",})
-    public Map<World, List<World>> syncWorlds;
+    public Map<World, List<World>> syncWorlds = new HashMap<>();
 
     @Override
     public void onLoaded(File loadFrom)
