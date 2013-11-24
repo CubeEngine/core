@@ -69,7 +69,6 @@ import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
@@ -132,6 +131,18 @@ public final class BukkitCore extends JavaPlugin implements Core
     private FreezeDetection freezeDetection;
     private boolean loadSucceeded;
     private boolean loaded = false;
+    private boolean isStartupFinished = false;
+
+    @Override
+    public boolean isStartupFinished()
+    {
+        return this.isStartupFinished;
+    }
+
+    void setStartupFinished()
+    {
+        this.isStartupFinished = true;
+    }
 
     @Override
     public void onLoad()

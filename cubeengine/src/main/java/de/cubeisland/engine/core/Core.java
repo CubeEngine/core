@@ -29,7 +29,6 @@ import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
-import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
@@ -177,4 +176,11 @@ public interface Core
     LogFactory getLogFactory();
 
     ConfigurationFactory getConfigurationFactory();
+
+    /**
+     * Returns true after the first server tick happened
+     *
+     * @return false if the startup has not finished yet
+     */
+    boolean isStartupFinished();
 }
