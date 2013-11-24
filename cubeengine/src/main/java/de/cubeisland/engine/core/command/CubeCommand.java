@@ -496,7 +496,8 @@ public abstract class CubeCommand extends Command
     {
         if (!this.testPermissionSilent(sender))
         {
-            throw new PermissionDeniedException();
+            this.permissionDenied(sender);
+            return true;
         }
         labels.push(label);
         if (args.length > 0)
@@ -563,6 +564,12 @@ public abstract class CubeCommand extends Command
         }
     }
 
+    private void permissionDenied(CommandSender sender)
+    {
+        sender.sendTranslated("&cYou're not allowed to do this!");
+        sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
+    }
+
     private void handleCommandException(final CommandSender sender, Throwable t)
     {
         if (!CubeEngine.isMainThread())
@@ -594,8 +601,7 @@ public abstract class CubeCommand extends Command
         }
         else if (t instanceof PermissionDeniedException)
         {
-            sender.sendTranslated("&cYou're not allowed to do this!");
-            sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
+            this.permissionDenied(sender);
         }
         else
         {
