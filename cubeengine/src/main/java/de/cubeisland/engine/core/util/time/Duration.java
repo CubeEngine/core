@@ -84,7 +84,7 @@ public class Duration
 
     public Duration(String timeString)
     {
-        this(StringUtils.explode(" ", timeString));
+        this(StringUtils.explode(" ", timeString.trim()));
     }
 
     public static long parseDuration(String[] timeStrings) throws IllegalArgumentException
