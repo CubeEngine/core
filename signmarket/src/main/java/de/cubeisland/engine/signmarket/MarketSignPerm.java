@@ -25,7 +25,7 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
     public MarketSignPerm(Signmarket module, SignMarketCommands smCmds)
     {
         super(module);
-        this.bindToModule(SIGN, SIGN_CREATE_USER_OTHER, USE, USER, USER_CREATE, ADMIN, ADMIN_CREATE);
+        this.bindToModule(SIGN, SIGN_CREATE_USER_OTHER, USE, USE_SELL, USE_BUY, USER, USER_CREATE, ADMIN, ADMIN_CREATE);
         USER_CREATE.attach(SIGN_CREATE_USER, SIGN_CREATE_USER_BUY,  SIGN_CREATE_USER_SELL,
                            SIGN_CREATE_USER_DEMAND, SIGN_SIZE_CHANGE, SIGN_DESTROY_OWN,
                        Permission.createPermission(smCmds.getChild("editmode").getPermission())
