@@ -46,7 +46,7 @@ public class BorderConfig extends YamlConfiguration
 
     public class Center implements Section
     {
-        @Comment("When set to true the x y and z values will be et to the worlds spawn")
+        @Comment("When set to true the x and z values will be set to the worlds spawn chunk")
         public boolean useSpawn = true;
         public Integer chunkX = null;
         public Integer chunkZ = null;
@@ -70,6 +70,8 @@ public class BorderConfig extends YamlConfiguration
             try
             {
                 BorderConfig.this.removeInheritedField(BorderConfig.this.getClass().getField("center"));
+                BorderConfig.this.removeInheritedField(this.getClass().getField("chunkX"));
+                BorderConfig.this.removeInheritedField(this.getClass().getField("chunkZ"));
             }
             catch (NoSuchFieldException ignored)
             {}

@@ -192,7 +192,7 @@ public class RepairBlock
         if (items.size() > 0)
         {
             Double price = calculatePrice(items.values());
-            String format = economy.format(price/ economy.fractionalDigitsFactor());
+            String format = economy.format(price);
             if (this.config.breakPercentage > 0)
             {
                 user.sendTranslated("&cItems will break with a chance of &6%.2f%%",this.config.breakPercentage);
@@ -297,7 +297,7 @@ public class RepairBlock
                 user.sendTranslated("&cYou feel that some of your items lost their magical power!");
                 user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
             }
-            user.sendTranslated("&aYou paid &b%s&a to repair your items!", economy.format(price / economy.fractionalDigitsFactor()));
+            user.sendTranslated("&aYou paid &b%s&a to repair your items!", economy.format(price));
             if (this.config.costPercentage > 100)
             {
                 user.sendTranslated("&aThats %.2f%% of the normal price!", this.config.costPercentage);
