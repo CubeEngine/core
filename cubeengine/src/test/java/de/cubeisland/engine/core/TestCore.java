@@ -206,4 +206,10 @@ public class TestCore implements Core
     {
         return this.configurationFactory;
     }
+
+    @Override
+    public boolean isStartupFinished()
+    {
+        return false;
+    }
 }
