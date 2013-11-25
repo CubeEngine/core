@@ -127,6 +127,10 @@ public class ColoredSigns implements Listener
             {
                 toStrip += "rR";
             }
+            if (toStrip.isEmpty())
+            {
+                return;
+            }
             Pattern stripFormats = Pattern.compile("&[" + toStrip + "]");
             String[] lines = event.getLines();
             for (int i = 0; i < 4; ++i)
