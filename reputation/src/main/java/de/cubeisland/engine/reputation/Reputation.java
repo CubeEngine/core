@@ -9,6 +9,6 @@ public class Reputation extends Module
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(ReputationConfig.class, this);
+        this.config = this.loadConfig(ReputationConfig.class);
     }
 }
