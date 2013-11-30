@@ -19,12 +19,15 @@ package de.cubeisland.engine.stats.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
+import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -73,5 +76,33 @@ public class TableStats extends TableImpl<StatsModel> implements TableCreator<St
     public Version getTableVersion()
     {
         return version;
+    }
+
+    @Override
+    public Identity<StatsModel, UInteger> getIdentity()
+    {
+        return IDENTITY;
+    }
+
+    @Override
+    public UniqueKey<StatsModel> getPrimaryKey()
+    {
+        return PRIMARY_KEY;
+    }
+
+    @Override
+    public List<UniqueKey<StatsModel>> getKeys()
+    {
+        return Arrays.asList(PRIMARY_KEY);
+    }
+
+    @Override
+    public List<ForeignKey<StatsModel, ?>> getReferences() {
+        return Arrays.asList();
+    }
+
+    @Override
+    public Class<StatsModel> getRecordType() {
+        return StatsModel.class;
     }
 }

@@ -19,6 +19,8 @@ package de.cubeisland.engine.stats.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.TableCreator;
@@ -81,5 +83,33 @@ public class TableStatsData extends TableImpl<StatsDataModel> implements TableCr
     public Version getTableVersion()
     {
         return version;
+    }
+
+    @Override
+    public Identity<StatsDataModel, UInteger> getIdentity()
+    {
+        return IDENTITY;
+    }
+
+    @Override
+    public UniqueKey<StatsDataModel> getPrimaryKey()
+    {
+        return PRIMARY_KEY;
+    }
+
+    @Override
+    public List<UniqueKey<StatsDataModel>> getKeys()
+    {
+        return Arrays.asList(PRIMARY_KEY);
+    }
+
+    @Override
+    public List<ForeignKey<StatsDataModel, ?>> getReferences() {
+        return Arrays.<ForeignKey<StatsDataModel, ?>>asList(FOREIGN_STAT);
+    }
+
+    @Override
+    public Class<StatsDataModel> getRecordType() {
+        return StatsDataModel.class;
     }
 }

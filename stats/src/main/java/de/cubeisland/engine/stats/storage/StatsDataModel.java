@@ -21,7 +21,6 @@ import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record3;
 import org.jooq.Row3;
-import org.jooq.Table;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
@@ -29,7 +28,7 @@ import static de.cubeisland.engine.stats.storage.TableStatsData.TABLE_STATSDATA;
 
 public class StatsDataModel extends UpdatableRecordImpl<StatsDataModel> implements Record3<UInteger, UInteger, String>
 {
-    public StatsDataModel(Table<StatsDataModel> table)
+    public StatsDataModel()
     {
         super(TABLE_STATSDATA);
     }

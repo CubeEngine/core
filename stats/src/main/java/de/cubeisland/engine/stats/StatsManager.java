@@ -76,6 +76,7 @@ public class StatsManager
         }
         this.stats.put(statToId.get(stat.getName()), stat);
         stat.init(this);
+        stat.onActivate();
     }
 
     public Module getModule()
