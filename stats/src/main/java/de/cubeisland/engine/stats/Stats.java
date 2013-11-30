@@ -22,10 +22,13 @@ import de.cubeisland.engine.core.module.Module;
 public class Stats extends Module
 {
     private StatsManager stats;
+    private PlayTimeStat playTime;
 
     public void onEnable()
     {
         this.stats = new StatsManager(this);
+        this.playTime = new PlayTimeStat();
+        stats.register(playTime);
     }
 
 }
