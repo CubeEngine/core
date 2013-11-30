@@ -15,10 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine;
+package de.cubeisland.engine.stats;
 
 import de.cubeisland.engine.core.module.Module;
 
 public class Stats extends Module
 {
+    private StatsManager stats;
+
+    public void onEnable()
+    {
+        this.stats = new StatsManager(this);
+    }
+
 }
