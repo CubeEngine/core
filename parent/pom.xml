@@ -243,6 +243,17 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.googlecode.gettext-commons</groupId>
+        <artifactId>gettext-maven-plugin</artifactId>
+        <version>1.2.4</version>
+        <configuration>
+          <sourceLocale>en_US</sourceLocale>
+          <poDirectory>${basedir}/src/main/resources/translations</poDirectory>
+          <keysFile>messages.pot</keysFile>
+          <keywords>-ktranslate:1 -ktranslateN:1,2 -kgetTranslation:1 -kgetTranslationN:1,2 -ksendTranslated:1 -ksendTranslatedN:1,2 -k_:1</keywords>
+        </configuration>
+      </plugin>
     </plugins>
 
     <pluginManagement>

@@ -1,0 +1,106 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:75
+msgid "&cThe post office will give you your book!"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:85
+msgid ""
+"&cYou do not have the permissions to add the rulebook to the inventory of an "
+"other player"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:91
+msgid "&cThe given user was not found!"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:102
+msgid "&eIt does not exist a rulebook yet"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:112
+msgid "&cCan't match the language"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:120
+msgid "&eThe language %s is not supported yet."
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:146
+msgid "&aLot's of fun with your rulebook."
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:149
+msgid "&aYour old was removed"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:171
+msgid "&6available languages:"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:180
+msgid "&6supported languages:"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:201
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:249
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:301
+msgid "&cMore than one or no language is matched with %s"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:206
+msgid "&aThe languagefile of %s doesn't exist at the moment"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:213
+msgid "&aThe languagefiles of %s was deleted"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:217
+msgid "%cThe language file of %s couldn't be deleted"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:234
+msgid "&eYou are not able to write, aren't you?"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:242
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:294
+msgid "&cI would try it with a book as item in hand"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:260
+msgid "&aThe rulebook %s was succesful modified."
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:265
+msgid "&eAn error ocurred by deleting the old rulebook"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:271
+msgid "&cYou can't modify a book which does not exist."
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:286
+msgid "&eI thought you are an analphabet?"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:309
+msgid "&aRulebook for the language %s was added succesfully"
+msgstr ""
