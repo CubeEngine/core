@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.itemrepair.Itemrepair;
 import de.cubeisland.engine.itemrepair.material.BaseMaterial;
@@ -72,7 +72,7 @@ public class RepairBlock
         this.inventoryMap = new HashMap<>();
         this.rand = new Random(System.currentTimeMillis());
         this.config = config;
-        this.economy = module.getCore().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
     }
 
     public final String getName()
@@ -192,7 +192,7 @@ public class RepairBlock
         if (items.size() > 0)
         {
             Double price = calculatePrice(items.values());
-            String format = economy.format(price/ economy.fractionalDigitsFactor());
+            String format = economy.format(price);
             if (this.config.breakPercentage > 0)
             {
                 user.sendTranslated("&cItems will break with a chance of &6%.2f%%",this.config.breakPercentage);
@@ -297,7 +297,7 @@ public class RepairBlock
                 user.sendTranslated("&cYou feel that some of your items lost their magical power!");
                 user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
             }
-            user.sendTranslated("&aYou paid &b%s&a to repair your items!", economy.format(price / economy.fractionalDigitsFactor()));
+            user.sendTranslated("&aYou paid &b%s&a to repair your items!", economy.format(price));
             if (this.config.costPercentage > 100)
             {
                 user.sendTranslated("&aThats %.2f%% of the normal price!", this.config.costPercentage);
@@ -356,12 +356,12 @@ public class RepairBlock
             repairItem(item, durability);
         }
     }
-    
+
     public static void repairItem(ItemStack item)
     {
         repairItem(item, (short)0);
     }
-    
+
     public static void repairItem(ItemStack item, short durability)
     {
         if (item != null)

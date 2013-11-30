@@ -51,6 +51,7 @@
     <module>mystcube</module>
     <module>fakeanticheat</module>
     <module>stats</module>
+    <module>reputation</module>
   </modules>
 
   <build>

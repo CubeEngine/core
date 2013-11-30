@@ -15,33 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.service;
+package de.cubeisland.engine.core.module.exception;
 
-import de.cubeisland.engine.core.module.Module;
-
-public class RegisteredServiceProvider<S>
+public class ModuleDependencyException extends ModuleException
 {
-
-    private final Class<S> service;
-    private final S provider;
-    private final Module module;
-
-    public RegisteredServiceProvider(Class<S> service, S provider, Module module)
+    public ModuleDependencyException()
     {
-        this.service = service;
-        this.provider = provider;
-        this.module = module;
+        super();
     }
 
-    public Class<S> getService() {
-        return service;
+    public ModuleDependencyException(String message)
+    {
+        super(message);
     }
 
-    public Module getModule() {
-        return module;
+    public ModuleDependencyException(Throwable cause)
+    {
+        super(cause);
     }
 
-    public S getProvider() {
-        return provider;
+    public ModuleDependencyException(String message, Throwable cause)
+    {
+        super(message, cause);
     }
 }

@@ -1,0 +1,230 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:66
+msgid "&cThe given world was not found!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:73
+msgid "&cNo world has been specified!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:80
+msgid "&cThe delay has to be a number between %d and %d"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:96
+msgid "&aThe disco has been stopped!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:104
+msgid "&aThe disco started!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:108
+msgid "&cThe disco couldn not be started!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/InvasionCommand.java:46
+msgid "&cEntityType %s not found"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:89
+msgid "&cYou are not allowed to change the explosion range of the nuke carpet!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:94
+msgid "&cThe explosion range can't be less than 0 or greater than %d"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:109
+msgid "&cUser not found"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:122
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:195
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:284
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:85
+msgid "&cThis command can only be used by a player!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:138
+msgid "&aYou spawned %d blocks of tnt."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:144
+msgid "shape"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:170
+msgid "The shape '%s' was not found!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:80
+msgid "&cYou can't set the hat of an other player."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:88
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:186
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:269
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:311
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:336
+msgid "&cUser not found!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:98
+msgid "&cYou has to specify a user!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:106
+msgid "&cYou can only use your item in hand!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:112
+msgid "&cItem not found!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:118
+msgid "&cTrying to be Notch? No hat for you!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:119
+msgid "&ePlease specify an item!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:129
+msgid "&cYou do not have any item in your hand!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:153
+msgid "&aYour hat was changed"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:180
+msgid "&cYou are not allowed to use the player parameter."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:204
+msgid "&cThe power of the explosion shouldn't be greater than %d"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:210
+msgid "&cYou are not allowed to break blocks"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:215
+msgid "&cYou are not allowed to set fireticks"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:220
+msgid "&cYou are not allowed to damage an other player"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:255
+msgid "&cYou are not allowed the use the damage parameter"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:260
+msgid "&cYou are not allowed to use the unsafe flag"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:275
+msgid "&cThe damage value has to be a number from 1 to 20"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:319
+msgid "&cOnly damage values from 1 to 20 are allowed!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:348
+msgid "&cOnly 1 to %d seconds are permitted!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:71
+msgid "&cThe &2%s&c not found!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:71
+msgid "player"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:79
+msgid "&cYou have to specify a user!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:87
+msgid "&cDo you never wanna see %s again?"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:92
+msgid "&cThe height has to be greater than 0"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:107
+msgid "&cYou have to add the material you want to throw."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:114
+msgid "&cThe amount has to be a number from 1 to %d"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:121
+msgid "&cThe delay has to be a number from 0 to %d"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:127
+msgid "&cYou are not allowed to execute this command in unsafe-mode."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:138
+msgid "&cThe given object was not found!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:143
+msgid "&cThe Item %s is not supported!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:149
+msgid "&cYou are not allowed to throw this"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:155
+msgid ""
+"&eThis object can only be thrown in unsafe mode. Add -u to enable the unsafe "
+"mode."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:166
+msgid "&cFailed to throw this!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:232
+msgid "&aStarted throwing!"
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:233
+msgid "&aYou will keep throwing until you run this command again."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:252
+msgid "&aYou are no longer throwing."
+msgstr ""
+
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:256
+msgid "&aAll objects thrown."
+msgstr ""

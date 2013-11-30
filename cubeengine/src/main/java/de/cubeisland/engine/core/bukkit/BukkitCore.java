@@ -47,7 +47,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import de.cubeisland.engine.configuration.ConfigurationFactory;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.converter.LocaleConverter;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -70,7 +69,6 @@ import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
@@ -124,7 +122,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private PacketEventManager packetEventManager;
     private CorePerms corePerms;
     private BukkitBanManager banManager;
-    private ServiceManager serviceManager;
     private LogFactory logFactory;
     private ConfigurationFactory configFactory;
     //endregion
@@ -134,6 +131,18 @@ public final class BukkitCore extends JavaPlugin implements Core
     private FreezeDetection freezeDetection;
     private boolean loadSucceeded;
     private boolean loaded = false;
+    private boolean isStartupFinished = false;
+
+    @Override
+    public boolean isStartupFinished()
+    {
+        return this.isStartupFinished;
+    }
+
+    void setStartupFinished()
+    {
+        this.isStartupFinished = true;
+    }
 
     @Override
     public void onLoad()
@@ -209,7 +218,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.fileManager.clearTempDir();
 
         this.banManager = new BukkitBanManager(this);
-        this.serviceManager = new ServiceManager(this);
 
         if (this.config.logging.logCommands)
         {
@@ -321,14 +329,14 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onEnable()
     {
-        if (!this.loaded)
-        {
-            this.onLoad();
-        }
-        if (!this.loadSucceeded || !this.loaded)
+        if (!this.loadSucceeded)
         {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+        if (!this.loaded)
+        {
+            this.onLoad();
         }
         if (!PacketHookInjector.register(this))
         {
@@ -661,12 +669,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     public BukkitBanManager getBanManager()
     {
         return this.banManager;
-    }
-
-    @Override
-    public ServiceManager getServiceManager()
-    {
-        return this.serviceManager;
     }
 
     public LogFactory getLogFactory()

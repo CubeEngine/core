@@ -123,33 +123,8 @@ public class RoleInformationCommands extends RoleCommandHelper
                 }
             }
             Role originRole = (Role)myPerm.getOrigin();
-            if (!originRole.getRawPermissions().containsKey(permission))
-            {
-                boolean found = false;
-                while (!permission.equals("*"))
-                {
-                    if (permission.endsWith("*"))
-                    {
-                        permission = permission.substring(0, permission.lastIndexOf("."));
-                    }
-                    permission = permission.substring(0, permission.lastIndexOf(".") + 1) + "*";
-
-                    if (originRole.getRawPermissions().containsKey(permission))
-                    {
-                        if (originRole.getRawPermissions().get(permission) == myPerm.isSet())
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                if (!found)
-                {
-                    throw new IllegalStateException("Found permission not found in literal permissions");
-                }
-            }
             context.sendTranslated("&ePermission inherited from:");
-            context.sendTranslated("&6%s&e in the role &6%s&e!", permission, originRole.getName());
+            context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getOriginPermission(), originRole.getName());
             return;
         }
         if (global)

@@ -36,7 +36,7 @@ import de.cubeisland.engine.roles.role.RolesAttachment;
 
 public class SpawnListener implements Listener
 {
-    @Inject private final Roles roles;
+    private final Roles roles;
     private WorldManager wm;
     private UserManager um;
 

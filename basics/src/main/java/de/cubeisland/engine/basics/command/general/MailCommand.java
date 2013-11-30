@@ -207,6 +207,8 @@ public class MailCommand extends ContainerCommand
         context.sendTranslated("&aMail send to everyone!");
     }
 
+    // TODO remove single mail
+
     @Command(names = {"clear", "remove"},
             desc = "Clears your mails.", usage = "[player]", min = 0, max = 1)
     public void clear(CommandContext context)

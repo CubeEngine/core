@@ -64,7 +64,7 @@ public class LogBackLogFactory implements LogFactory
         this.loggerContext = (LoggerContext)org.slf4j.LoggerFactory.getILoggerFactory();
         this.loggerContext.start();
 
-        this.parentLogger = this.createParentLogger(julLogger);
+        this.parentLogger = this.createParentLogger();
 
         ColorConverter.setANSISupport(ansiSupport);
         if (!core.getConfiguration().logging.logCommands)
@@ -73,7 +73,7 @@ public class LogBackLogFactory implements LogFactory
         }
     }
 
-    private Logger createParentLogger(java.util.logging.Logger julLogger)
+    private Logger createParentLogger()
     {
         Logger logger = (Logger)org.slf4j.LoggerFactory.getLogger(BASE_NAME);
 
@@ -142,6 +142,25 @@ public class LogBackLogFactory implements LogFactory
         Logger logger = coreLog.getHandle();
         logger.setLevel(parentLogger.getLevel());
 
+        JULAppender consoleAppender = new JULAppender();
+        consoleAppender.setContext(logger.getLoggerContext());
+        consoleAppender.setLogger(this.julLogger);
+
+        PatternLayout consoleLayout = new PatternLayout();
+        consoleLayout.setContext(logger.getLoggerContext());
+        consoleLayout.setPattern("%color(%msg)\n"); // The trailing \n is kind of a workaround, have a look in JULAppender.java:83
+        consoleAppender.setLayout(consoleLayout);
+
+        ThresholdFilter consoleFilter = new ThresholdFilter();
+        consoleFilter.setLevel(this.core.getConfiguration().logging.consoleLevel.toString());
+        consoleAppender.addFilter(consoleFilter);
+
+        consoleAppender.start();
+        consoleLayout.start();
+        consoleFilter.start();
+
+        logger.addAppender(consoleAppender);
+
         // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
         ThresholdFilter fileFilter = new ThresholdFilter();
         fileFilter.setLevel(core.getConfiguration().logging.fileLevel.toString());
@@ -188,6 +207,7 @@ public class LogBackLogFactory implements LogFactory
         //The module has it's own logging
         logger.setAdditive(false);
         // Setup the module's console logging
+
         JULAppender consoleAppender = new JULAppender();
         consoleAppender.setContext(logger.getLoggerContext());
         consoleAppender.setLogger(this.julLogger);

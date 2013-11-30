@@ -202,7 +202,9 @@ public class ItemCommands
         context.sendTranslated("&cThis command can only be used by a player!");
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = @Flag(longName = "unsafe", name = "u"), usage = "<enchantment> [level] [-unsafe]")
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2,
+             flags = @Flag(longName = "unsafe", name = "u"),
+             usage = "<enchantment> [level] [-unsafe]")
     public void enchant(ParameterizedContext context)
     {
         if (!context.hasArg(0))
@@ -254,6 +256,7 @@ public class ItemCommands
                         item.setItemMeta(itemMeta);
                         return;
                     }
+                    // TODO enchant item event ?
                     item.addUnsafeEnchantment(ench, level);
                     context.sendTranslated("&aAdded unsafe enchantment: &6%s %d &ato your item!",
                                            Match.enchant().nameFor(ench), level);

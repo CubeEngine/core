@@ -33,7 +33,7 @@ import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
 import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.logging.Log;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import gnu.trove.map.hash.THashMap;

@@ -21,10 +21,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.World;
 import org.bukkit.block.Block;
 
 import de.cubeisland.engine.core.module.Module;
 import org.jooq.DSLContext;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock.TABLE_REPAIR_BLOCK;
 
@@ -53,9 +55,10 @@ public class RepairBlockPersister
         }
     }
 
-    public Collection<RepairBlockModel> getAll()
+    public Collection<RepairBlockModel> getAll(World world)
     {
-        Collection<RepairBlockModel> all = this.dsl.selectFrom(TABLE_REPAIR_BLOCK).fetch();
+        Collection <RepairBlockModel> all = this.dsl.selectFrom(TABLE_REPAIR_BLOCK)
+            .where(TABLE_REPAIR_BLOCK.WORLD.eq(UInteger.valueOf(this.module.getCore().getWorldManager().getWorldId(world)))).fetch();
         for (RepairBlockModel repairBlockModel : all)
         {
             this.models.put(repairBlockModel.getBlock(this.module.getCore().getWorldManager()),repairBlockModel);

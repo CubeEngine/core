@@ -29,28 +29,22 @@ import de.cubeisland.engine.core.util.Version;
  */
 public class ModuleConfig extends YamlConfiguration
 {
-    @Name("main")
     public String main;
-    @Name("name")
     public String name;
-    @Name("description")
     public String description;
-    @Name("version")
     public Version version = Version.ONE;
-    @Name("source-version")
     public String sourceVersion = "unknown-unknown";
-    @Name("core-version")
-    public Version minCoreRevision = Version.ZERO;
-    @Name("dependencies")
+    public Version minCoreVersion = Version.ZERO;
     public Set<String> dependencies = new HashSet<>(0);
-    @Name("soft-dependencies")
     public Set<String> softDependencies = new HashSet<>(0);
-    @Name("plugin-dependencies")
     public Set<String> pluginDependencies = new HashSet<>(0);
-    @Name("load-after")
     public Set<String> loadAfter = new HashSet<>(0);
-    @Name("services")
     public Set<String> services = new HashSet<>(0);
-    @Name("service-providers")
-    public Set<String> serviceProviders = new HashSet<>(0);
+    public Set<String> providedServices = new HashSet<>(0);
+
+    @Override
+    public boolean useStrictExceptionPolicy()
+    {
+        return true;
+    }
 }

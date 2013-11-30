@@ -34,7 +34,7 @@ import de.cubeisland.engine.core.logging.logback.LogbackLog;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
-import de.cubeisland.engine.core.service.ServiceManager;
+import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
@@ -196,12 +196,6 @@ public class TestCore implements Core
     }
 
     @Override
-    public ServiceManager getServiceManager()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public LogFactory getLogFactory()
     {
         return null; // TODO ?
@@ -211,5 +205,11 @@ public class TestCore implements Core
     public ConfigurationFactory getConfigurationFactory()
     {
         return this.configurationFactory;
+    }
+
+    @Override
+    public boolean isStartupFinished()
+    {
+        return false;
     }
 }

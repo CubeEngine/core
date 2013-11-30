@@ -15,12 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.module.exception;
+package de.cubeisland.engine.reputation;
 
-public class MissingProviderException extends ModuleException
+import de.cubeisland.engine.core.module.Module;
+
+public class Reputation extends Module
 {
-    public MissingProviderException(String name, String service)
+    private ReputationConfig config;
+    
+    @Override
+    public void onEnable()
     {
-        super("The module " + name + " is missing a service: " + service);
+        this.config = this.loadConfig(ReputationConfig.class);
     }
 }

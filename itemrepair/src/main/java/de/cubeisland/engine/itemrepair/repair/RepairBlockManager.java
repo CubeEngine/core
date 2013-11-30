@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.itemrepair.repair;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,9 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.itemrepair.Itemrepair;
@@ -40,7 +44,7 @@ import org.jooq.DSLContext;
 
 import static de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock.TABLE_REPAIR_BLOCK;
 
-public class RepairBlockManager
+public class RepairBlockManager implements Listener
 {
     private Map<Material, RepairBlock> repairBlocks;
     private Map<Block, Material> blockMap;
@@ -65,17 +69,16 @@ public class RepairBlockManager
         }
         this.blockMap = new HashMap<>();
         this.persister = new RepairBlockPersister(module);
-        this.loadBlocks();
+        this.module.getCore().getEventManager().registerListener(module, this);
+        for (World world : this.module.getCore().getWorldManager().getWorlds())
+        {
+            this.loadRepairBlocks(this.persister.getAll(world));
+        }
     }
 
-    /**
-     * Loads the blocks from a persister
-     *
-     * @return fluent interface
-     */
-    public RepairBlockManager loadBlocks()
+    private void loadRepairBlocks(Collection<RepairBlockModel> models)
     {
-        for (RepairBlockModel model : this.persister.getAll())
+        for (RepairBlockModel model : models)
         {
             Block block = model.getBlock(this.module.getCore().getWorldManager());
             if (block.getType().name().equals(model.getType()))
@@ -98,7 +101,12 @@ public class RepairBlockManager
                 model.delete();
             }
         }
-        return this;
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event)
+    {
+        this.loadRepairBlocks(this.persister.getAll(event.getWorld()));
     }
 
     /**

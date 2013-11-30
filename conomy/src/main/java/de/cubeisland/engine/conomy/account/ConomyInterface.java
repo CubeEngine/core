@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 
 public class ConomyInterface implements Economy

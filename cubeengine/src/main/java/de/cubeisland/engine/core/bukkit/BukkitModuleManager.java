@@ -23,6 +23,7 @@ import de.cubeisland.engine.core.module.BaseModuleManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
+import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
 
 public class BukkitModuleManager extends BaseModuleManager
 {
@@ -49,6 +50,7 @@ public class BukkitModuleManager extends BaseModuleManager
                     {
                         try
                         {
+                            core.setStartupFinished();
                             module.onStartupFinished();
                         }
                         catch (Exception ex)
@@ -62,8 +64,9 @@ public class BukkitModuleManager extends BaseModuleManager
     }
 
     @Override
-    protected void validateModuleInfo(ModuleInfo info) throws MissingPluginDependencyException
+    protected void verifyDependencies(ModuleInfo info) throws ModuleDependencyException
     {
+        super.verifyDependencies(info);
         for (String plugin : info.getPluginDependencies())
         {
             if (this.pluginManager.getPlugin(plugin) == null)

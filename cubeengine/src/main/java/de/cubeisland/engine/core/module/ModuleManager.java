@@ -27,6 +27,7 @@ import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
+import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.util.Cleanable;
 
 /**
@@ -146,4 +147,11 @@ public interface ModuleManager extends Cleanable
      * @return the singleton instance of the dummy CoreModule
      */
     CoreModule getCoreModule();
+
+    /**
+     * Gets the service manager
+     *
+     * @return the service manager
+     */
+    ServiceManager getServiceManager();
 }

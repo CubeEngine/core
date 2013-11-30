@@ -50,7 +50,7 @@ public class ModuleInfo
     private final Set<String> loadAfter;
     // Service Info:
     private final Set<String> services;
-    private final Set<String> serviceProviders;
+    private final Set<String> providedServices;
 
     ModuleInfo(Core core)
     {
@@ -73,8 +73,8 @@ public class ModuleInfo
         this.softDependencies = this.dependencies;
         this.pluginDependencies = Collections.emptySet();
         this.loadAfter = this.pluginDependencies;
-        this.services = null;
-        this.serviceProviders = null;
+        this.services = Collections.emptySet();
+        this.providedServices = Collections.emptySet();
     }
 
     private static String nameToId(String name)
@@ -104,7 +104,7 @@ public class ModuleInfo
         this.description = config.description;
         this.version = config.version;
         this.sourceVersion = config.sourceVersion;
-        this.minCoreVersion = config.minCoreRevision;
+        this.minCoreVersion = config.minCoreVersion;
 
         int delimOffset;
         Version version;
@@ -156,7 +156,7 @@ public class ModuleInfo
         this.loadAfter = config.loadAfter;
 
         this.services = config.services;
-        this.serviceProviders = config.serviceProviders;
+        this.providedServices = config.providedServices;
     }
 
     /**
@@ -354,8 +354,8 @@ public class ModuleInfo
         return services;
     }
 
-    public Set<String> getServiceProviders()
+    public Set<String> getProvidedServices()
     {
-        return serviceProviders;
+        return providedServices;
     }
 }
