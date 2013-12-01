@@ -219,7 +219,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.banManager = new BukkitBanManager(this);
 
-        if (this.config.logging.logCommands)
+        if (!this.config.logging.logCommands)
         {
             BukkitUtils.disableCommandLogging();
         }
