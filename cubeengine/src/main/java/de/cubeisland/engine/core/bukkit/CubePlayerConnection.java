@@ -101,6 +101,8 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
 
+// TODO FIXME Packets have changed name. They don't include the number anymore. And each packet has a In and Out version
+
 /**
  * This class is used to replace the original NetServerHandler and calling an
  * Events when receiving packets.
