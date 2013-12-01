@@ -52,6 +52,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -222,6 +223,11 @@ public class BukkitUtils
         playerList.removeWhitelist("");
     }
 
+    private static Item getItem(Material m)
+    {
+        return (Item)Item.REGISTRY.a(m.getId());
+    }
+
     /**
      * Returns true if given material is allowed to be placed in the top brewingstand slot
      *
@@ -230,7 +236,9 @@ public class BukkitUtils
      */
     public static boolean canBePlacedInBrewingstand(Material material)
     {
-        return Item.byId[material.getId()].x();
+        // TODO verify me
+        //return getItem(material).x();
+        return false;
     }
 
     public static boolean isFuel(ItemStack item)
@@ -245,7 +253,7 @@ public class BukkitUtils
     {
         net.minecraft.server.v1_7_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // If the result of that item being cooked is null, it is not cookable
-        return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
+        return RecipesFurnace.getInstance().getResult(nmss) != null; // TODO verify me
     }
 
     static void setSignalHandlers(final BukkitCore core)
@@ -315,7 +323,7 @@ public class BukkitUtils
         MinecraftServer minecraftServer = DedicatedServer.getServer();
 
         //Create and load the target EntityPlayer
-        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), player.getName(),
+        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), new GameProfile("", player.getName()),
                              new PlayerInteractManager(minecraftServer.getWorldServer(0)));
         entityPlayer.getBukkitEntity().loadData();
         return entityPlayer.getBukkitEntity();

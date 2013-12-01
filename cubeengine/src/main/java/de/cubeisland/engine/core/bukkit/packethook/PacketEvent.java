@@ -76,15 +76,4 @@ public abstract class PacketEvent
         }
         this.packet = newPacket;
     }
-
-    /**
-     * Returns the ID of the packet
-     *
-     * @return the packet ID
-     */
-    public int getPacketId()
-    {
-        // TODO FIXME What is the new Packet.getId()?
-        return this.getPacket().n();
-    }
 }

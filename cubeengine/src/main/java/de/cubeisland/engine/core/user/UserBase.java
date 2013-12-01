@@ -83,6 +83,7 @@ import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
@@ -91,6 +92,9 @@ public class UserBase implements Player
 {
     private final String playerName;
     private EntityPlayer dummy = null;
+
+    private static final int NBT_ID_DOUBLE = new NBTTagDouble(1.0).getTypeId();
+    private static final int NBT_ID_FLOAT = new NBTTagFloat(1.0f).getTypeId();
 
     public UserBase(String name)
     {
@@ -108,7 +112,8 @@ public class UserBase implements Player
         {
             CraftServer srv = (CraftServer)this.getServer();
             WorldServer world = ((CraftWorld)srv.getWorlds().get(0)).getHandle();
-            this.dummy = new EntityPlayer(srv.getServer(), world, this.getName(), new PlayerInteractManager(world));
+            // TODO verify me
+            this.dummy = new EntityPlayer(srv.getServer(), world, new GameProfile("", this.getName()), new PlayerInteractManager(world));
         }
         return this.dummy;
     }
@@ -1380,26 +1385,26 @@ public class UserBase implements Player
         }
         else
         {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                NBTTagList list = data.getList("Attributes");
-                if (list == null)
-                {
-                    list = new NBTTagList();
-                    data.set("Attributes", list);
-                }
-                if (list.size() == 0)
-                {
-                    list.add(new NBTTagDouble("generic.MaxHealth",v));
-                }
-                else
-                {
-                    NBTTagDouble nbt = (NBTTagDouble)list.get(0);
-                    nbt.data = v;
-                }
-                this.saveData();
-            }
+//            NBTTagCompound data = this.getData();
+//            if (data != null)
+//            {
+//                NBTTagList list = data.getList("Attributes", NBT_ID_DOUBLE);
+//                if (list == null)
+//                {
+//                    list = new NBTTagList();
+//                    data.set("Attributes", list);
+//                }
+//                if (list.size() == 0)
+//                {
+//                    list.add(new NBTTagDouble("generic.MaxHealth",v));
+//                }
+//                else
+//                {
+//                    NBTTagDouble nbt = (NBTTagDouble)list.get(0);
+//                    nbt.data = v;
+//                }
+//                this.saveData();
+//            }
         }
     }
 
@@ -1453,19 +1458,19 @@ public class UserBase implements Player
         }
         else
         {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                NBTTagList list = data.getList("Attributes");
-                if (list == null || list.size() == 0)
-                {
-                    NBTTagInt nbt = (NBTTagInt)data.get("Bukkit.MaxHealth");
-                    if (nbt == null) return 0;
-                    return nbt.data;
-                }
-                data = (NBTTagCompound)list.get(0);
-                return data.getDouble("Base");
-            }
+//            NBTTagCompound data = this.getData();
+//            if (data != null)
+//            {
+//                NBTTagList list = data.getList("Attributes");
+//                if (list == null || list.size() == 0)
+//                {
+//                    NBTTagInt nbt = (NBTTagInt)data.get("Bukkit.MaxHealth");
+//                    if (nbt == null) return 0;
+//                    return nbt.data;
+//                }
+//                data = (NBTTagCompound)list.get(0);
+//                return data.getDouble("Base");
+//            }
         }
         return 0;
     }
@@ -1561,29 +1566,29 @@ public class UserBase implements Player
         }
         else
         {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                World world = this.getWorld();
-                if (world != null)
-                {
-                    NBTTagList list = data.getList("Pos");
-                    if (list != null)
-                    {
-                        Location loc = new Location(world, 0, 0, 0, 0, 0);
-                        loc.setX(((NBTTagDouble)list.get(0)).data);
-                        loc.setY(((NBTTagDouble)list.get(1)).data);
-                        loc.setZ(((NBTTagDouble)list.get(2)).data);
-                        list = data.getList("Rotation");
-                        if (list != null)
-                        {
-                            loc.setPitch(((NBTTagFloat)list.get(0)).data);
-                            loc.setYaw(((NBTTagFloat)list.get(1)).data);
-                        }
-                        return loc;
-                    }
-                }
-            }
+//            NBTTagCompound data = this.getData();
+//            if (data != null)
+//            {
+//                World world = this.getWorld();
+//                if (world != null)
+//                {
+//                    NBTTagList list = data.getList("Pos", NBT_ID_DOUBLE);
+//                    if (list != null)
+//                    {
+//                        Location loc = new Location(world, 0, 0, 0, 0, 0);
+//                        loc.setX(((NBTTagDouble)list.get(0)).data);
+//                        loc.setY(((NBTTagDouble)list.get(1)).data);
+//                        loc.setZ(((NBTTagDouble)list.get(2)).data);
+//                        list = data.getList("Rotation");
+//                        if (list != null)
+//                        {
+//                            loc.setPitch(((NBTTagFloat)list.get(0)).data);
+//                            loc.setYaw(((NBTTagFloat)list.get(1)).data);
+//                        }
+//                        return loc;
+//                    }
+//                }
+//            }
         }
         return null;
     }
@@ -1597,27 +1602,27 @@ public class UserBase implements Player
         }
         else
         {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                World world = this.getWorld();
-                if (world != null)
-                {
-                    NBTTagList list = data.getList("Pos");
-                    if (list != null)
-                    {
-                        loc.setX(((NBTTagDouble)list.get(0)).data);
-                        loc.setY(((NBTTagDouble)list.get(1)).data);
-                        loc.setZ(((NBTTagDouble)list.get(2)).data);
-                        list = data.getList("Rotation");
-                        if (list != null)
-                        {
-                            loc.setPitch(((NBTTagFloat)list.get(0)).data);
-                            loc.setYaw(((NBTTagFloat)list.get(1)).data);
-                        }
-                    }
-                }
-            }
+//            NBTTagCompound data = this.getData();
+//            if (data != null)
+//            {
+//                World world = this.getWorld();
+//                if (world != null)
+//                {
+//                    NBTTagList list = data.getList("Pos", NBT_ID_DOUBLE);
+//                    if (list != null)
+//                    {
+//                        loc.setX(((NBTTagDouble)list.get(0)).data);
+//                        loc.setY(((NBTTagDouble)list.get(1)).data);
+//                        loc.setZ(((NBTTagDouble)list.get(2)).data);
+//                        list = data.getList("Rotation", NBT_ID_FLOAT);
+//                        if (list != null)
+//                        {
+//                            loc.setPitch(((NBTTagFloat)list.get(0)).data);
+//                            loc.setYaw(((NBTTagFloat)list.get(1)).data);
+//                        }
+//                    }
+//                }
+//            }
         }
         return loc;
     }
@@ -1691,14 +1696,14 @@ public class UserBase implements Player
             if (data != null)
             {
                 NBTTagList list = new NBTTagList();
-                list.add(new NBTTagDouble(null, lctn.getX()));
-                list.add(new NBTTagDouble(null, lctn.getY()));
-                list.add(new NBTTagDouble(null, lctn.getZ()));
+                list.add(new NBTTagDouble(lctn.getX()));
+                list.add(new NBTTagDouble(lctn.getY()));
+                list.add(new NBTTagDouble(lctn.getZ()));
                 data.set("Pos", list);
 
                 list = new NBTTagList();
-                list.add(new NBTTagFloat(null, lctn.getPitch()));
-                list.add(new NBTTagFloat(null, lctn.getYaw()));
+                list.add(new NBTTagFloat(lctn.getPitch()));
+                list.add(new NBTTagFloat(lctn.getYaw()));
                 data.set("Rotation", list);
 
                 UUID id = lctn.getWorld().getUID();

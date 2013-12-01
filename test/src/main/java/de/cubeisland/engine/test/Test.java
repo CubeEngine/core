@@ -27,7 +27,7 @@ import java.util.TimerTask;
 
 import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
 import net.minecraft.server.v1_7_R1.EntityPlayer;
-import net.minecraft.server.v1_7_R1.Packet0KeepAlive;
+import net.minecraft.server.v1_7_R1.PacketPlayOutKeepAlive;
 import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
@@ -172,7 +172,7 @@ public class Test extends Module
         {
             for (EntityPlayer player : (List<EntityPlayer>)this.mojangServer.players)
             {
-                player.playerConnection.sendPacket(new Packet0KeepAlive(random.nextInt()));
+                player.playerConnection.sendPacket(new PacketPlayOutKeepAlive(random.nextInt()));
             }
         }
     }

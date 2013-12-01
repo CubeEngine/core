@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.MaterialData;
 
+import static net.minecraft.server.v1_7_R1.Block.*;
 import static org.bukkit.Material.*;
 
 /**
@@ -50,6 +51,11 @@ public class BlockUtil
         {
             BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
         };
+
+    private static net.minecraft.server.v1_7_R1.Block getBlockForId(int id)
+    {
+        return (net.minecraft.server.v1_7_R1.Block)REGISTRY.a(id);
+    }
 
     /**
      * Searches for blocks that are attached onto given block.
@@ -215,7 +221,7 @@ public class BlockUtil
 
     public static boolean isPowerSource(Material type)
     {
-        return net.minecraft.server.v1_7_R1.Block.byId[type.getId()].isPowerSource();
+        return getBlockForId(type.getId()).isPowerSource();
     }
 
     /**
@@ -252,6 +258,8 @@ public class BlockUtil
         // cb uses: Block.l(...)
         // return block == null ? false : block.material.k() && block.b() && !block.isPowerSource();
         // which is  material.isOccluding && ...
-        return material.isOccluding() && net.minecraft.server.v1_7_R1.Block.byId[material.getId()].b() && !isPowerSource(material);
+        net.minecraft.server.v1_7_R1.Block b = getBlockForId(material.getId());
+        // TODO Block.c() is probably not what we want, but it compiles
+        return material.isOccluding() && b.c() && !b.isPowerSource();
     }
 }
