@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/border/BorderCommands.java:69
+msgid "&cYou need to specify a world!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:80
+msgid "&aCenter for Border in &6%s&a set to world-spawn!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:89
+msgid "&cInvalid Chunk-coordinates!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:100
+msgid "&cYou need to specify the chunk-coordinates or use the -spawn flag"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:104
+msgid "&aCenter for Border in &6%s&a set!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:113
+msgid "&cChunk generation is already running!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:131
+msgid "&cThere is no world named &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:181
+msgid "&aAdded &6%d &achunks to generate in &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:224
+msgid "&cAvailiable Memory getting low! Pausing ChunkGeneration"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:256
+msgid "&aChunkgeneration is at &6%d%% &a(&6%d/%d&a)"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:269
+msgid "&aChunkgeneration completed! Generated &6%d&a chunks"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:59
+msgid "&cYou cannot teleport outside the border!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:72
+msgid ""
+"&eAs you reach the border the world turns on itself and you appear on the "
+"other side of the world!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:77
+msgid "&cYou've reached the border!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:82
+msgid "&6You are near the world-border! You might want to turn around."
+msgstr ""
