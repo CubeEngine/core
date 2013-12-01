@@ -215,7 +215,7 @@ public class BlockUtil
 
     public static boolean isPowerSource(Material type)
     {
-        return net.minecraft.server.v1_6_R3.Block.byId[type.getId()].isPowerSource();
+        return net.minecraft.server.v1_7_R1.Block.byId[type.getId()].isPowerSource();
     }
 
     /**
@@ -252,6 +252,6 @@ public class BlockUtil
         // cb uses: Block.l(...)
         // return block == null ? false : block.material.k() && block.b() && !block.isPowerSource();
         // which is  material.isOccluding && ...
-        return material.isOccluding() && net.minecraft.server.v1_6_R3.Block.byId[material.getId()].b() && !isPowerSource(material);
+        return material.isOccluding() && net.minecraft.server.v1_7_R1.Block.byId[material.getId()].b() && !isPowerSource(material);
     }
 }

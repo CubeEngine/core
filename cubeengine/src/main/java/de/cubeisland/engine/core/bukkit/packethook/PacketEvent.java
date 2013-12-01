@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit.packethook;
 
-import net.minecraft.server.v1_6_R3.Packet;
+import net.minecraft.server.v1_7_R1.Packet;
 
 import org.bukkit.entity.Player;
 
@@ -84,6 +84,7 @@ public abstract class PacketEvent
      */
     public int getPacketId()
     {
+        // TODO FIXME What is the new Packet.getId()?
         return this.getPacket().n();
     }
 }

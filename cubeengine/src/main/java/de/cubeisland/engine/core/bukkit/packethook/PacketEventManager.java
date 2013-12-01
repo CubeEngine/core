@@ -20,8 +20,8 @@ package de.cubeisland.engine.core.bukkit.packethook;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.server.v1_6_R3.Packet;
-import net.minecraft.server.v1_6_R3.Packet204LocaleAndViewDistance;
+import net.minecraft.server.v1_7_R1.Packet;
+import net.minecraft.server.v1_7_R1.Packet204LocaleAndViewDistance;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ import de.cubeisland.engine.core.util.Cleanable;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
 
-
+// TODO FIXME "Packet 204 - Locale and View Distance" has been replaced with "Packet 0x15 - Client Settings"
 
 public class PacketEventManager implements Cleanable
 {

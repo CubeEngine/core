@@ -19,7 +19,7 @@ package de.cubeisland.engine.mystcube.blockpopulator;
 
 import java.util.Random;
 
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
 
 import org.bukkit.Chunk;
 import org.bukkit.World;

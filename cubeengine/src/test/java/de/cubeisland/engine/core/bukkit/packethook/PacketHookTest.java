@@ -22,8 +22,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.v1_6_R3.Connection;
-import net.minecraft.server.v1_6_R3.Packet;
+import net.minecraft.server.v1_7_R1.Connection;
+import net.minecraft.server.v1_7_R1.Packet;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.TestCore;
