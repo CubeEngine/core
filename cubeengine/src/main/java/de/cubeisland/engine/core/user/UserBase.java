@@ -29,13 +29,11 @@ import net.minecraft.server.v1_7_R1.EntityPlayer;
 import net.minecraft.server.v1_7_R1.NBTTagCompound;
 import net.minecraft.server.v1_7_R1.NBTTagDouble;
 import net.minecraft.server.v1_7_R1.NBTTagFloat;
-import net.minecraft.server.v1_7_R1.NBTTagInt;
 import net.minecraft.server.v1_7_R1.NBTTagList;
 import net.minecraft.server.v1_7_R1.PlayerInteractManager;
 import net.minecraft.server.v1_7_R1.WorldNBTStorage;
 import net.minecraft.server.v1_7_R1.WorldServer;
 import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -111,7 +109,10 @@ public class UserBase implements Player
         if (this.dummy == null)
         {
             CraftServer srv = (CraftServer)this.getServer();
-            WorldServer world = ((CraftWorld)srv.getWorlds().get(0)).getHandle();
+            WorldServer world = srv.getServer().getWorldServer(0);
+            // LoginListener is doing this
+            // UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
+            // this.i = new GameProfile(uuid.toString().replaceAll("-", ""), this.i.getName());
             // TODO verify me
             this.dummy = new EntityPlayer(srv.getServer(), world, new GameProfile("", this.getName()), new PlayerInteractManager(world));
         }

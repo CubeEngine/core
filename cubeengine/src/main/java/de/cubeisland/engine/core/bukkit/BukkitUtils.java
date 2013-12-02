@@ -56,8 +56,6 @@ import net.minecraft.util.com.mojang.authlib.GameProfile;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
-
-
 /**
  * This class contains various methods to access bukkit-related stuff.
  */
@@ -236,9 +234,7 @@ public class BukkitUtils
      */
     public static boolean canBePlacedInBrewingstand(Material material)
     {
-        // TODO verify me
-        //return getItem(material).x();
-        return false;
+        return getItem(material).i(null) != null; // Items that can be brewed return a String here else null
     }
 
     public static boolean isFuel(ItemStack item)
@@ -252,8 +248,9 @@ public class BukkitUtils
     public static boolean isSmeltable(ItemStack item)
     {
         net.minecraft.server.v1_7_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        // TileEntityFurnace private canBurn() checks this first for null
         // If the result of that item being cooked is null, it is not cookable
-        return RecipesFurnace.getInstance().getResult(nmss) != null; // TODO verify me
+        return RecipesFurnace.getInstance().getResult(nmss) != null;
     }
 
     static void setSignalHandlers(final BukkitCore core)
