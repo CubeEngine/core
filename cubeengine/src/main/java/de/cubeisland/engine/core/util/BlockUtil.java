@@ -255,11 +255,8 @@ public class BlockUtil
 
     private static boolean isHingeBlock(Material material)
     {
-        // cb uses: Block.l(...)
-        // return block == null ? false : block.material.k() && block.b() && !block.isPowerSource();
-        // which is  material.isOccluding && ...
-        net.minecraft.server.v1_7_R1.Block b = getBlockForId(material.getId());
-        // TODO Block.c() is probably not what we want, but it compiles
-        return material.isOccluding() && b.c() && !b.isPowerSource();
+        net.minecraft.server.v1_7_R1.Block block = getBlockForId(material.getId());
+        // called in ItemDoor.place(...)
+        return block.r(); // return (this.material.k()) && (d()) && (!isPowerSource());
     }
 }
