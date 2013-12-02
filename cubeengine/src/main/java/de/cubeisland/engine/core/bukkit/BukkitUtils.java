@@ -102,7 +102,7 @@ public class BukkitUtils
         }
         if (locale == null)
         {
-            locale = Locale.getDefault();
+            return Locale.getDefault();
         }
         return locale;
     }
