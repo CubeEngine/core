@@ -91,9 +91,12 @@ public class StatsManager
             // Get or register the stat id
             if (!statToId.containsKey(stat.getName()))
             {
-                StatsModel model = this.dsl.newRecord(TABLE_STATS).newStatsModel(stat.getName());
-                model.insert();
-                this.statToId.put(model.getStat(), model.getKey());
+                synchronized (this.dsl)
+                {
+                    StatsModel model = this.dsl.newRecord(TABLE_STATS).newStatsModel(stat.getName());
+                    model.insert();
+                    this.statToId.put(model.getStat(), model.getKey());
+                }
             }
             this.stats.put(statToId.get(stat.getName()), stat);
 
@@ -121,6 +124,8 @@ public class StatsManager
                 {
                     scheduler.scheduleSyncRepeatingTask(core, wrapper, 1, annotation.period());
                 }
+
+                // TODO register period field in a config so it can be overwritten by the user
             }
 
         }
@@ -150,16 +155,19 @@ public class StatsManager
      */
     public void save(Stat stat, Object object)
     {
-        try
+        synchronized (this.dsl)
         {
-            String data = this.jsonMapper.writeValueAsString(object);
-            UInteger statID = this.statToId.get(stat.getName());
-            StatsDataModel model = this.dsl.newRecord(TABLE_STATSDATA).newStatsData(statID, data);
-            model.insert();
-        }
-        catch (JsonProcessingException ex)
-        {
-            log.warn("An error occurred while parsing an object to JSON.", ex);
+            try
+            {
+                String data = this.jsonMapper.writeValueAsString(object);
+                UInteger statID = this.statToId.get(stat.getName());
+                StatsDataModel model = this.dsl.newRecord(TABLE_STATSDATA).newStatsData(statID, data);
+                model.insert();
+            }
+            catch (JsonProcessingException ex)
+            {
+                log.warn("An error occurred while parsing an object to JSON.", ex);
+            }
         }
     }
 

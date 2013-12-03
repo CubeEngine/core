@@ -18,6 +18,7 @@
 package de.cubeisland.engine.stats;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.stats.stat.LagStat;
 import de.cubeisland.engine.stats.stat.PlayTimeStat;
 
 public class Stats extends Module
@@ -28,7 +29,9 @@ public class Stats extends Module
     public void onEnable()
     {
         this.stats = new StatsManager(this);
+
         stats.register(PlayTimeStat.class);
+        stats.register(LagStat.class);
     }
 
 }
