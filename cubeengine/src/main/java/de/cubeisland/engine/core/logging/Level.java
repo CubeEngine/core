@@ -21,16 +21,43 @@ import java.util.Locale;
 
 public enum Level
 {
-    ALL,
-    TRACE,
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR,
-    OFF;
+    ALL(java.util.logging.Level.ALL, org.apache.logging.log4j.Level.ALL),
+    TRACE(new CELevel("TRACE", java.util.logging.Level.INFO.intValue() + 33), org.apache.logging.log4j.Level.TRACE),
+    DEBUG(new CELevel("DEBUG", java.util.logging.Level.INFO.intValue() + 66), org.apache.logging.log4j.Level.DEBUG),
+    INFO(new CELevel("INFO", java.util.logging.Level.INFO.intValue()), org.apache.logging.log4j.Level.INFO),
+    WARN(new CELevel("WARN", java.util.logging.Level.WARNING.intValue()), org.apache.logging.log4j.Level.WARN),
+    ERROR(new CELevel("ERROR", java.util.logging.Level.SEVERE.intValue()), org.apache.logging.log4j.Level.ERROR),
+    OFF(java.util.logging.Level.OFF, org.apache.logging.log4j.Level.OFF);
+
+    private java.util.logging.Level jul;
+    private org.apache.logging.log4j.Level l4j;
+
+    private Level(java.util.logging.Level jul, org.apache.logging.log4j.Level l4j)
+    {
+        this.jul = jul;
+        this.l4j = l4j;
+    }
 
     public static Level toLevel(String level)
     {
         return Level.valueOf(level.toUpperCase(Locale.ENGLISH));
+    }
+
+    public java.util.logging.Level getJulLevel()
+    {
+        return this.jul;
+    }
+
+    public org.apache.logging.log4j.Level getL4jLevel()
+    {
+        return this.l4j;
+    }
+
+    public static class CELevel extends java.util.logging.Level
+    {
+        public CELevel(String name, int level)
+        {
+            super(name, level);
+        }
     }
 }

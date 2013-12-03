@@ -40,13 +40,12 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.Log;
-import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingException;
 import de.cubeisland.engine.core.module.ModuleInfo;
 
 import static java.util.logging.Level.WARNING;
 
-public class LogBackLogFactory implements LogFactory
+public class LogBackLogFactory
 {
     private static final String BASE_NAME = "cubeengine";
 
@@ -69,7 +68,7 @@ public class LogBackLogFactory implements LogFactory
         ColorConverter.setANSISupport(ansiSupport);
         if (!core.getConfiguration().logging.logCommands)
         {
-            this.getLog("commands").getHandle().setAdditive(false);
+            //this.getLog("commands").getHandle().setAdditive(false);
         }
     }
 
@@ -103,23 +102,21 @@ public class LogBackLogFactory implements LogFactory
     }
 
 
-    @Override
     public long getBirthTime()
     {
         return this.loggerContext.getBirthTime();
     }
 
-    @Override
     public synchronized Log getCoreLog()
     {
         if (this.coreLog != null)
         {
-            return this.coreLog;
+            //return this.coreLog;
         }
         // Change the settings of the logger context to the ones from the config.
         try
         {
-            File xmlConfig = new File(this.core.getFileManager().getDataPath().toFile(), "logback.xml");
+            File xmlConfig = new File(this.core.getFileManager().getDataPath().toFile(), "legacy_logging_logback.xml");
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(this.loggerContext);
             this.loggerContext.reset();
@@ -134,12 +131,12 @@ public class LogBackLogFactory implements LogFactory
         }
         catch (JoranException e)
         {
-            julLogger.log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e.getLocalizedMessage(), e);
+            julLogger.log(WARNING, "An error occurred when loading a legacy_logging_logback.xml file from the CubeEngine folder: " + e.getLocalizedMessage(), e);
         }
 
         this.coreLog = this.getLog("core");
 
-        Logger logger = coreLog.getHandle();
+        Logger logger = null;// coreLog.getHandle();
         logger.setLevel(parentLogger.getLevel());
 
         JULAppender consoleAppender = new JULAppender();
@@ -167,16 +164,15 @@ public class LogBackLogFactory implements LogFactory
         logger.getAppender("core-file").addFilter(fileFilter);
         fileFilter.start();
 
-        return this.coreLog;
+        return null;//return this.coreLog;
     }
 
-    @Override
     public Log createModuleLog(ModuleInfo info)
     {
-        // Load the modules logback.xml, if it exists
+        // Load the modules legacy_logging_logback.xml, if it exists
         try (JarFile jarFile = new JarFile(info.getPath().toFile()))
         {
-            ZipEntry entry = jarFile.getEntry("logback.xml");
+            ZipEntry entry = jarFile.getEntry("legacy_logging_logback.xml");
             if (entry != null)
             {
                 try (InputStream is = jarFile.getInputStream(entry))
@@ -199,7 +195,7 @@ public class LogBackLogFactory implements LogFactory
         } // This should never happen
         catch (LoggingException ex)
         {
-            this.getCoreLog().warn(ex, "An error occurred while loading the modules logback.xml config");
+            this.getCoreLog().warn(ex, "An error occurred while loading the modules legacy_logging_logback.xml config");
         }
 
         Logger logger = (Logger)org.slf4j.LoggerFactory.getLogger(BASE_NAME + "." + info.getId());
@@ -258,7 +254,7 @@ public class LogBackLogFactory implements LogFactory
         consoleLayout.start();
         consoleAppender.start();
 
-        return new LogbackLog(logger);
+        return null;//new LogbackLog(logger);
     }
 
     public LogbackLog getLog(String id)
@@ -266,7 +262,6 @@ public class LogBackLogFactory implements LogFactory
         return new LogbackLog(this.loggerContext.getLogger(BASE_NAME + "." + id));
     }
 
-    @Override
     public void shutdown()
     {
         if (this.loggerContext != null)
@@ -277,11 +272,11 @@ public class LogBackLogFactory implements LogFactory
 
     public void shutdown(Log log)
     {
-        if (log instanceof LogbackLog)
+      //  if (log instanceof LogbackLog)
         {
-            ((LogbackLog)log).getHandle().detachAndStopAllAppenders();
+        //    ((LogbackLog)log).getHandle().detachAndStopAllAppenders();
         }
-        else
+       // else
         {
             this.getCoreLog().warn(new IllegalArgumentException(), "Only logback logs can be shutdown by the LogbackLogFactory!");
         }

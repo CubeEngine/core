@@ -17,8 +17,26 @@
  */
 package de.cubeisland.engine.core.logging;
 
-public abstract class Log
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public abstract class Log<T>
 {
+    protected T handle;
+    protected Level level;
+    protected Log parentLog;
+
+    public final T getHandle()
+    {
+        return handle;
+    }
+
+    public Log<T> setParent(Log parent)
+    {
+        this.parentLog = parent;
+        return this;
+    }
+
     // The casts to Throwable are necessary
     public void trace(String message)
     {
@@ -55,7 +73,10 @@ public abstract class Log
         trace(throwable, message, new Object[]{arg1, arg2});
     }
 
-    public abstract void trace(Throwable throwable, String message, Object... args);
+    public void trace(Throwable throwable, String message, Object... args)
+    {
+        this.log(Level.TRACE, throwable, message, args);
+    }
 
     public void debug(String message)
     {
@@ -92,7 +113,10 @@ public abstract class Log
         debug(throwable, message, new Object[]{arg1, arg2});
     }
 
-    public abstract void debug(Throwable throwable, String message, Object... args);
+    public void debug(Throwable throwable, String message, Object... args)
+    {
+        this.log(Level.DEBUG, throwable, message, args);
+    }
 
     public void info(String message)
     {
@@ -129,7 +153,10 @@ public abstract class Log
         info(throwable, message, new Object[]{arg1, arg2});
     }
 
-    public abstract void info(Throwable throwable, String message, Object... args);
+    public void info(Throwable throwable, String message, Object... args)
+    {
+        this.log(Level.INFO, throwable, message, args);
+    }
 
     public void warn(String message)
     {
@@ -166,7 +193,10 @@ public abstract class Log
         warn(throwable, message, new Object[]{arg1, arg2});
     }
 
-    public abstract void warn(Throwable throwable, String message, Object... args);
+    public void warn(Throwable throwable, String message, Object... args)
+    {
+        this.log(Level.WARN, throwable, message, args);
+    }
 
     public void error(String message)
     {
@@ -203,9 +233,42 @@ public abstract class Log
         error(throwable, message, new Object[]{arg1, arg2});
     }
 
-    public abstract void error(Throwable throwable, String message, Object... args);
+    public void error(Throwable throwable, String message, Object... args)
+    {
+        this.log(Level.ERROR, throwable, message, args);
+    }
+
+    public abstract void log(Level level, Throwable throwable, String message, Object... args);
 
     public abstract void setLevel(Level level);
 
     public abstract Level getLevel();
+
+    private static final Pattern pattern = Pattern.compile("\\{(\\d*)}");
+
+    protected String parse(String message, Object... args)
+    {
+        if (args == null || args.length == 0)
+        {
+            return message;
+        }
+        Matcher matcher = pattern.matcher(message);
+        int i = 0;
+        while (matcher.find())
+        {
+            String group = matcher.group(1);
+            if (group.isEmpty())
+            {
+                message = matcher.replaceFirst(String.valueOf(args[i++]));
+                matcher.reset(message);
+            }
+            else
+            {
+                Integer atPos = Integer.valueOf(group);
+                message = matcher.replaceFirst(String.valueOf(args[atPos]));
+                matcher.reset(message);
+            }
+        }
+        return message;
+    }
 }

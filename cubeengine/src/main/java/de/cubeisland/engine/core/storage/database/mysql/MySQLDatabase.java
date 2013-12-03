@@ -42,8 +42,11 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
+import org.jooq.conf.Settings;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
+import org.jooq.impl.DataSourceConnectionProvider;
+import org.jooq.impl.DefaultConfiguration;
 
 public class MySQLDatabase extends AbstractPooledDatabase
 {
@@ -56,12 +59,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private final ListenableExecutorService fetchExecutorService;
     private final ComboPooledDataSource cpds;
 
+    private final Settings settings;
+
     private DatabaseSchema schema;
 
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
         super(core);
         this.fetchExecutorService = new ListenableExecutorService();
+
         try
         {
             Class.forName("com.mysql.jdbc.Driver");
@@ -71,6 +77,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException(e);
         }
         this.config = config;
+
 
         cpds = new ComboPooledDataSource();
         cpds.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
@@ -97,6 +104,9 @@ public class MySQLDatabase extends AbstractPooledDatabase
         connection.close();
         this.schema = new DatabaseSchema(config.database);
         tableprefix = this.config.tablePrefix;
+
+        settings = new Settings();
+        settings.setExecuteLogging(false);
     }
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
@@ -179,7 +189,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException("Cannot create table " + table.getName(), ex);
         }
         this.schema.addTable(table);
-        this.core.getLog().debug("Database-Table {} registered!", table.getName());
+        this.core.getLog().debug("Database-Table {0} registered!", table.getName());
     }
 
     @Override
@@ -197,7 +207,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public DSLContext getDSL()
     {
-        return DSL.using(this.cpds, SQLDialect.MYSQL);
+        return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL)
+                                                   .set(new DataSourceConnectionProvider(this.cpds))
+                                                   .set(new JooqLogger())
+                                                   .set(settings));
     }
 
     public <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query)
