@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.stats.stat.Stat;
 import de.cubeisland.engine.stats.storage.StatsDataModel;
 import de.cubeisland.engine.stats.storage.StatsModel;
 import de.cubeisland.engine.stats.storage.TableStats;
@@ -66,6 +67,13 @@ public class StatsManager
         }
     }
 
+    /**
+     * Register a statistic.
+     * This will make this StatsManager handle the statistic's database connection
+     * and register it as a listener.
+     *
+     * @param stat The stat to register
+     */
     public void register(Stat stat)
     {
         if (!statToId.containsKey(stat.getName()))
@@ -79,11 +87,24 @@ public class StatsManager
         stat.onActivate();
     }
 
+    /**
+     * Get the module that loaded this StatsManager
+     *
+     * @return
+     */
     public Module getModule()
     {
         return module;
     }
 
+    /**
+     * Save an object to the database
+     *
+     * The object must be able to be parsed through ObjectMapper.writeValue()
+     *
+     * @param stat The stat that owns this data
+     * @param object The data to save
+     */
     public void save(Stat stat, Object object)
     {
         try

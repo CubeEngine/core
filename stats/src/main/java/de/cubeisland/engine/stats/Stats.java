@@ -18,6 +18,7 @@
 package de.cubeisland.engine.stats;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.stats.stat.PlayTimeStat;
 
 public class Stats extends Module
 {

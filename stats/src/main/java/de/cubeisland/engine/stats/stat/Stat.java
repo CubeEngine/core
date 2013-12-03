@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.stats;
+package de.cubeisland.engine.stats.stat;
 
 import org.bukkit.event.Listener;
 
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.stats.StatsManager;
 
 /**
  * A statistic, for example play time
@@ -33,6 +34,12 @@ public abstract class Stat implements Listener
     private Module owner;
     private Core core;
 
+    /**
+     * Initialize this statistic.
+     * This should only be used by the StatsManager
+     *
+     * @param manager The StatsManager associated with this statistic
+     */
     public void init(StatsManager manager)
     {
         this.manager = manager;
@@ -41,18 +48,11 @@ public abstract class Stat implements Listener
         core.getEventManager().registerListener(owner, this);
     }
 
+    /**
+     * Per stat initialization, called after init
+     */
     public void onActivate()
     {}
-
-    public UserManager getUserManager()
-    {
-        return core.getUserManager();
-    }
-
-    public StatsManager getManager()
-    {
-        return this.manager;
-    }
 
     /**
      * Write a database entry
@@ -66,5 +66,12 @@ public abstract class Stat implements Listener
         manager.save(this, object);
     }
 
+    /**
+     * Get the unique name of this stat.
+     * It is the statistic's responsibility that this is unique.
+     * NB: Max 20 characters
+     *
+     * @return the unique name of this stat
+     */
     public abstract String getName();
 }
