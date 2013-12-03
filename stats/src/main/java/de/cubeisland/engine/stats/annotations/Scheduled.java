@@ -15,20 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.stats;
+package de.cubeisland.engine.stats.annotations;
 
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.stats.stat.PlayTimeStat;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class Stats extends Module
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Scheduled
 {
-    private StatsManager stats;
-    private PlayTimeStat playTime;
 
-    public void onEnable()
-    {
-        this.stats = new StatsManager(this);
-        stats.register(PlayTimeStat.class);
-    }
+    boolean async() default false;
+
+    abstract long period();
 
 }

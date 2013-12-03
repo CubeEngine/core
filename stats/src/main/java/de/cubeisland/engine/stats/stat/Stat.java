@@ -30,17 +30,17 @@ import de.cubeisland.engine.stats.StatsManager;
  */
 public abstract class Stat implements Listener
 {
-    private StatsManager manager;
-    private Module owner;
-    private Core core;
+    private final StatsManager manager;
+    private final Module owner;
+    private final Core core;
 
     /**
      * Initialize this statistic.
      * This should only be used by the StatsManager
      *
-     * @param manager The StatsManager associated with this statistic
+     * @param manager The StatsManager loading this statistic
      */
-    public void init(StatsManager manager)
+    public Stat(StatsManager manager)
     {
         this.manager = manager;
         this.owner = manager.getModule();

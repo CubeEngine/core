@@ -17,14 +17,21 @@
  */
 package de.cubeisland.engine.stats;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.scheduler.BukkitScheduler;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.stats.annotations.Scheduled;
 import de.cubeisland.engine.stats.stat.Stat;
 import de.cubeisland.engine.stats.storage.StatsDataModel;
 import de.cubeisland.engine.stats.storage.StatsModel;
@@ -72,19 +79,55 @@ public class StatsManager
      * This will make this StatsManager handle the statistic's database connection
      * and register it as a listener.
      *
-     * @param stat The stat to register
+     * @param statType The stat class to register
      */
-    public void register(Stat stat)
+    public void register(Class< ? extends Stat> statType)
     {
-        if (!statToId.containsKey(stat.getName()))
+        try
         {
-            StatsModel model = this.dsl.newRecord(TABLE_STATS).newStatsModel(stat.getName());
-            model.insert();
-            this.statToId.put(model.getStat(), model.getKey());
+            Constructor<? extends Stat> constructor = statType.getConstructor(this.getClass());
+            Stat stat = constructor.newInstance(this);
+
+            // Get or register the stat id
+            if (!statToId.containsKey(stat.getName()))
+            {
+                StatsModel model = this.dsl.newRecord(TABLE_STATS).newStatsModel(stat.getName());
+                model.insert();
+                this.statToId.put(model.getStat(), model.getKey());
+            }
+            this.stats.put(statToId.get(stat.getName()), stat);
+
+            // Activate hook in the stat
+            stat.onActivate();
+
+            // Register Schedulers
+            for (Method method : stat.getClass().getMethods())
+            {
+                if (!method.isAnnotationPresent(Scheduled.class))
+                {
+                    continue;
+                }
+                Scheduled annotation = method.getAnnotation(Scheduled.class);
+                Runnable wrapper = new MethodRunnableWrapper(this.getModule().getLog(), stat, method);
+
+                // TODO custom scheduler
+                BukkitCore core = (BukkitCore)this.module.getCore();
+                BukkitScheduler scheduler = core.getServer().getScheduler();
+                if (annotation.async())
+                {
+                    scheduler.scheduleAsyncRepeatingTask(core, wrapper, 1, annotation.period());
+                }
+                else
+                {
+                    scheduler.scheduleSyncRepeatingTask(core, wrapper, 1, annotation.period());
+                }
+            }
+
         }
-        this.stats.put(statToId.get(stat.getName()), stat);
-        stat.init(this);
-        stat.onActivate();
+        catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex)
+        {
+            this.module.getLog().error("An error occurred while registering statistic", ex);
+        }
     }
 
     /**
@@ -117,6 +160,32 @@ public class StatsManager
         catch (JsonProcessingException ex)
         {
             log.warn("An error occurred while parsing an object to JSON.", ex);
+        }
+    }
+
+    private class MethodRunnableWrapper implements Runnable
+    {
+        private final Log logger;
+        private final Object object;
+        private final Method method;
+
+        MethodRunnableWrapper(Log logger, Object object, Method method)
+        {
+            this.logger = logger;
+            this.object = object;
+            this.method = method;
+        }
+
+        public void run()
+        {
+            try
+            {
+                method.invoke(object);
+            }
+            catch (IllegalAccessException | InvocationTargetException ex)
+            {
+                logger.warn("An error occurred while invoking a scheduled method", ex);
+            }
         }
     }
 }

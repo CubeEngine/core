@@ -24,11 +24,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.cubeisland.engine.stats.StatsManager;
+
 public class PlayTimeStat extends Stat
 {
     private final String name = "playtime";
 
     private Map<String, Long> joined;
+
+    public PlayTimeStat(StatsManager manager)
+    {
+        super(manager);
+    }
 
     public void onActivate()
     {
