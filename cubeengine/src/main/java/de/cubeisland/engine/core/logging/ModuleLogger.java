@@ -19,22 +19,14 @@ package de.cubeisland.engine.core.logging;
 
 import java.util.logging.Logger;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.ModuleInfo;
 
 public class ModuleLogger extends JulLog
 {
-    private final String prefix;
-
-    public ModuleLogger(Logger julLogger, ModuleInfo info)
+    public ModuleLogger(Logger julLogger, ModuleInfo info, Core core)
     {
-        super(julLogger);
-        this.prefix = "[" + info.getName() + "] ";
-    }
-
-    @Override
-    public void log(Level level, Throwable throwable, String message, Object... args)
-    {
-        message = this.prefix + message;
-        super.log(level, throwable, message, args);
+        super(julLogger, core, info.getName());
+        this.setPrefix("[" + info.getName() + "] ");
     }
 }

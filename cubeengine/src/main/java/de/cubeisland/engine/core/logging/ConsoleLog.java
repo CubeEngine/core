@@ -36,7 +36,7 @@ public class ConsoleLog extends Log<org.apache.logging.log4j.core.Logger>
     @Override
     public void log(Level level, Throwable throwable, String message, Object... args)
     {
-        message = this.parse(message, args);
+        message = FileFormater.parse(message, args);
         message = prefix + message;
         this.handle.log(level.getL4jLevel(), message);
         if (throwable != null)
@@ -63,6 +63,4 @@ public class ConsoleLog extends Log<org.apache.logging.log4j.core.Logger>
     {
         return null;
     }
-
-
 }

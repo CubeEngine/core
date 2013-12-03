@@ -17,22 +17,41 @@
  */
 package de.cubeisland.engine.core.logging;
 
+import java.io.IOException;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+
+import de.cubeisland.engine.core.Core;
 
 import static de.cubeisland.engine.core.logging.Level.DEBUG;
 import static de.cubeisland.engine.core.logging.Level.TRACE;
 
 public class JulLog extends Log<Logger>
 {
-    public JulLog(Logger julLogger)
+    private String prefix;
+
+    public JulLog(Logger julLogger, Core core, String name)
     {
         this.handle = julLogger;
+        try
+        {
+            FileHandler fileHandler = new FileHandler(core.getFileManager().getLogPath().resolve(name + ".log").toString(), true);
+            this.handle.addHandler(fileHandler);
+            fileHandler.setFormatter(new FileFormater());
+        }
+        catch (IOException e)
+        {}
+    }
+
+    public void setPrefix(String prefix)
+    {
+        this.prefix = prefix;
     }
 
     @Override
     public void log(Level level, Throwable throwable, String message, Object... args)
     {
-        message = this.parse(message, args);
+        message = FileFormater.parse(message, args);
         this.handle.log(level.getJulLevel(), message);
         if (throwable != null)
         {
@@ -47,6 +66,10 @@ public class JulLog extends Log<Logger>
         }
         if (this.parentLog != null)
         {
+            if (prefix != null)
+            {
+                message = prefix + message;
+            }
             this.parentLog.log(level, throwable, message);
         }
     }

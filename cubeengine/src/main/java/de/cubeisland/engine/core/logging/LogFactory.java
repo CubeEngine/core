@@ -56,7 +56,9 @@ public class LogFactory
     {
         if (this.coreLog == null)
         {
-            this.coreLog = new JulLog(julLogger).setParent(parentLogger);
+            Logger logger = Logger.getLogger(BASE_NAME);
+            logger.setUseParentHandlers(false); // ignore bukkit parentlogger
+            this.coreLog = new JulLog(logger, core, "core").setParent(parentLogger);
         }
         return this.coreLog;
     }
@@ -70,16 +72,14 @@ public class LogFactory
     {
         Logger logger = Logger.getLogger(BASE_NAME + "." + info.getId());
         logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-        //TODO add filehandler
-        return new ModuleLogger(logger, info).setParent(parentLogger);
+        return new ModuleLogger(logger, info, core).setParent(parentLogger);
     }
 
     public Log getLog(String name)
     {
         Logger logger = Logger.getLogger(BASE_NAME + "." + name);
         logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-        //TODO add filehandler
-        return new JulLog(logger);
+        return new JulLog(logger, core, name);
     }
 
     //abstract void shutdown();

@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.core.logging;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public abstract class Log<T>
 {
     protected T handle;
@@ -243,32 +240,4 @@ public abstract class Log<T>
     public abstract void setLevel(Level level);
 
     public abstract Level getLevel();
-
-    private static final Pattern pattern = Pattern.compile("\\{(\\d*)}");
-
-    protected String parse(String message, Object... args)
-    {
-        if (args == null || args.length == 0)
-        {
-            return message;
-        }
-        Matcher matcher = pattern.matcher(message);
-        int i = 0;
-        while (matcher.find())
-        {
-            String group = matcher.group(1);
-            if (group.isEmpty())
-            {
-                message = matcher.replaceFirst(String.valueOf(args[i++]));
-                matcher.reset(message);
-            }
-            else
-            {
-                Integer atPos = Integer.valueOf(group);
-                message = matcher.replaceFirst(String.valueOf(args[atPos]));
-                matcher.reset(message);
-            }
-        }
-        return message;
-    }
 }
