@@ -118,12 +118,14 @@ public class StatsManager
                 Map<String, Long> periods = module.getConfig().periods;
                 long period = annotation.period();
 
-                if (!periods.containsKey(annotation.name()))
+                if (!annotation.periodFinal())
                 {
-                    periods.put(annotation.name(), period);
+                    if (!periods.containsKey(annotation.name()))
+                    {
+                        periods.put(annotation.name(), period);
+                    }
+                    period = periods.get(annotation.name());
                 }
-
-                period = periods.get(annotation.name());
 
                 TaskManager taskManager = module.getCore().getTaskManager();
                 if (annotation.async())

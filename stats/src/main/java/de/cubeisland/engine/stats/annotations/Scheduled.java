@@ -32,5 +32,13 @@ public @interface Scheduled
 
     boolean async() default false;
 
+    /**
+     * If the period field is final.
+     * If this is true, the period will not be put in the config,
+     * and will therefor always be the value set in the annotation.
+     * @return
+     */
+    boolean periodFinal() default false;
+
     String comment() default "";
 }

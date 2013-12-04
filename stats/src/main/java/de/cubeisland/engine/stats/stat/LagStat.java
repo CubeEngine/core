@@ -53,7 +53,7 @@ public class LagStat extends Stat
     }
 
 
-    @Scheduled(name = "~TPS_calculator", period = 20)
+    @Scheduled(name = "TPS_calculator", period = 20, periodFinal = true)
     public void tick()
     {
         this.lagTimer.run();

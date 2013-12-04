@@ -26,8 +26,7 @@ import de.cubeisland.engine.configuration.annotations.Comment;
 public class Config extends YamlConfiguration
 {
 
-    @Comment({"Periods for scheduled tasks for statistics that use it.",
-             "Comments are not working, so there is one rule; Anything prepended with ~ should not be edited."})
+    @Comment({"Periods for scheduled tasks for statistics that use it."})
     public Map<String, Long> periods = new HashMap<>();
 
 }
