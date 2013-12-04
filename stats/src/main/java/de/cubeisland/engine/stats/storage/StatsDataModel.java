@@ -17,25 +17,28 @@
  */
 package de.cubeisland.engine.stats.storage;
 
+import java.sql.Timestamp;
+
 import org.jooq.Field;
 import org.jooq.Record1;
-import org.jooq.Record3;
-import org.jooq.Row3;
+import org.jooq.Record4;
+import org.jooq.Row4;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.stats.storage.TableStatsData.TABLE_STATSDATA;
 
-public class StatsDataModel extends UpdatableRecordImpl<StatsDataModel> implements Record3<UInteger, UInteger, String>
+public class StatsDataModel extends UpdatableRecordImpl<StatsDataModel> implements Record4<UInteger, UInteger, Timestamp, String>
 {
     public StatsDataModel()
     {
         super(TABLE_STATSDATA);
     }
 
-    public StatsDataModel newStatsData(UInteger statsID, String data)
+    public StatsDataModel newStatsData(UInteger statsID, Timestamp timestamp, String data)
     {
         this.setStatID(statsID);
+        this.setTimestamp(timestamp);
         this.setData(data);
         return this;
     }
@@ -60,14 +63,24 @@ public class StatsDataModel extends UpdatableRecordImpl<StatsDataModel> implemen
         this.setValue(1, statID);
     }
 
+    public Timestamp getTimestamp()
+    {
+        return (Timestamp)this.getValue(2);
+    }
+
+    public void setTimestamp(Timestamp timestamp)
+    {
+        this.setValue(2, timestamp);
+    }
+
     public String getData()
     {
-        return (String)this.getValue(2);
+        return (String)this.getValue(3);
     }
 
     public void setData(String data)
     {
-        this.setValue(2, data);
+        this.setValue(3, data);
     }
 
     @Override
@@ -76,13 +89,13 @@ public class StatsDataModel extends UpdatableRecordImpl<StatsDataModel> implemen
     }
 
     @Override
-    public Row3<UInteger, UInteger, String> fieldsRow() {
-        return (Row3)super.fieldsRow();
+    public Row4<UInteger, UInteger, Timestamp, String> fieldsRow() {
+        return (Row4)super.fieldsRow();
     }
 
     @Override
-    public Row3<UInteger, UInteger, String> valuesRow() {
-        return (Row3)super.valuesRow();
+    public Row4<UInteger, UInteger, Timestamp, String> valuesRow() {
+        return (Row4)super.valuesRow();
     }
 
     @Override
@@ -98,7 +111,13 @@ public class StatsDataModel extends UpdatableRecordImpl<StatsDataModel> implemen
     }
 
     @Override
-    public Field<String> field3()
+    public Field<Timestamp> field3()
+    {
+        return TABLE_STATSDATA.TIMESTAMP;
+    }
+
+    @Override
+    public Field<String> field4()
     {
         return TABLE_STATSDATA.DATA;
     }
@@ -116,7 +135,13 @@ public class StatsDataModel extends UpdatableRecordImpl<StatsDataModel> implemen
     }
 
     @Override
-    public String value3()
+    public Timestamp value3()
+    {
+        return getTimestamp();
+    }
+
+    @Override
+    public String value4()
     {
         return getData();
     }

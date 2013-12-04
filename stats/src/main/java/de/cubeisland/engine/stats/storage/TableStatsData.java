@@ -19,6 +19,7 @@ package de.cubeisland.engine.stats.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class TableStatsData extends TableImpl<StatsDataModel> implements TableCr
 
     public final TableField<StatsDataModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<StatsDataModel, UInteger> STAT = createField("stat", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<StatsDataModel, Timestamp> TIMESTAMP = createField("timestamp", SQLDataType.TIMESTAMP, this);
     public final TableField<StatsDataModel, String> DATA = createField("data", SQLDataType.VARCHAR.length(64), this);
     
     public static TableStatsData initTable(Database database)
@@ -70,6 +72,7 @@ public class TableStatsData extends TableImpl<StatsDataModel> implements TableCr
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                         "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
                                         "`stat` int(10) unsigned NOT NULL,\n" +
+                                        "`timestamp` timestamp NOT NULL,\n" +
                                         "`data` varchar(64) DEFAULT NULL,\n" +
                                         "PRIMARY KEY (`key`),\n" +
                                         "FOREIGN KEY `f_stat`(`stat`) REFERENCES " + TABLE_STATS.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)" +
@@ -77,7 +80,7 @@ public class TableStatsData extends TableImpl<StatsDataModel> implements TableCr
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
+    private static final Version version = new Version(1,1);
 
     @Override
     public Version getTableVersion()

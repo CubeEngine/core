@@ -20,6 +20,7 @@ package de.cubeisland.engine.stats;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -161,7 +162,7 @@ public class StatsManager
             {
                 String data = this.jsonMapper.writeValueAsString(object);
                 UInteger statID = this.statToId.get(stat.getName());
-                StatsDataModel model = this.dsl.newRecord(TABLE_STATSDATA).newStatsData(statID, data);
+                StatsDataModel model = this.dsl.newRecord(TABLE_STATSDATA).newStatsData(statID, new Timestamp(System.currentTimeMillis()), data);
                 model.insert();
             }
             catch (JsonProcessingException ex)
