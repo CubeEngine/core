@@ -67,7 +67,6 @@ import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
-import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
@@ -196,22 +195,11 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         this.fileManager.dropResources(CoreResource.values());
 
-        try
-        {
-            System.setProperty("cubeengine.logging.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
-            System.setProperty("cubeengine.logging.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
-            System.setProperty("cubeengine.logging.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
-        }
-        catch (IOException e)
-        {
-            this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
-        }
-
         // depends on: file manager
         this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
                                                                                         .resolve("core.yml").toFile());
 
-        this.logFactory = new LogBackLogFactory(this, this.getLogger(), BukkitUtils.isAnsiSupported(server));
+        this.logFactory = new LogFactory(this, this.getLogger()); // , BukkitUtils.isAnsiSupported(server)
 
         this.logger = logFactory.getCoreLog();
 
@@ -464,7 +452,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.logFactory != null)
         {
-            this.logFactory.shutdown();
+            // TODO this.logFactory.shutdown();
         }
 
         if (this.fileManager != null)

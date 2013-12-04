@@ -15,24 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.logging.logback;
+package de.cubeisland.engine.core.logging;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.filter.Filter;
-import ch.qos.logback.core.spi.FilterReply;
+import java.util.logging.Logger;
 
-public class ExceptionFilter extends Filter<ILoggingEvent>
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.ModuleInfo;
+
+public class ModuleLogger extends JulLog
 {
-    @Override
-    public FilterReply decide(ILoggingEvent event)
+    public ModuleLogger(Logger julLogger, ModuleInfo info, Core core)
     {
-        if (event.getThrowableProxy() != null)
-        {
-            return FilterReply.ACCEPT;
-        }
-        else
-        {
-            return FilterReply.DENY;
-        }
+        super(julLogger, core, info.getName());
+        this.setPrefix("[" + info.getName() + "] ");
     }
 }

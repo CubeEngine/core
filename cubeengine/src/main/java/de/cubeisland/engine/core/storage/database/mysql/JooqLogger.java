@@ -15,23 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.mystcube.blockpopulator;
+package de.cubeisland.engine.core.storage.database.mysql;
 
-import java.util.Random;
+import org.jooq.ExecuteContext;
+import org.jooq.ExecuteListener;
+import org.jooq.ExecuteListenerProvider;
+import org.jooq.impl.DefaultExecuteListener;
 
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
-
-import org.bukkit.Chunk;
-import org.bukkit.World;
-import org.bukkit.generator.BlockPopulator;
-
-public abstract class AbstractBlockPopulator extends BlockPopulator
+public class JooqLogger extends DefaultExecuteListener implements ExecuteListenerProvider
 {
+    // TODO implement me
+
     @Override
-    public void populate(World world, Random random, Chunk source)
+    public void renderEnd(ExecuteContext ctx)
     {
-        this.populate((CraftWorld)world, random, source);
+        //System.out.print(ctx.query());
     }
 
-    public abstract void populate(CraftWorld world, Random random, Chunk source);
+    @Override
+    public ExecuteListener provide()
+    {
+        return this;
+    }
 }

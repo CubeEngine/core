@@ -18,24 +18,25 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_6_R3.NBTBase;
-import net.minecraft.server.v1_6_R3.NBTTagByte;
-import net.minecraft.server.v1_6_R3.NBTTagByteArray;
-import net.minecraft.server.v1_6_R3.NBTTagCompound;
-import net.minecraft.server.v1_6_R3.NBTTagDouble;
-import net.minecraft.server.v1_6_R3.NBTTagEnd;
-import net.minecraft.server.v1_6_R3.NBTTagFloat;
-import net.minecraft.server.v1_6_R3.NBTTagInt;
-import net.minecraft.server.v1_6_R3.NBTTagIntArray;
-import net.minecraft.server.v1_6_R3.NBTTagList;
-import net.minecraft.server.v1_6_R3.NBTTagLong;
-import net.minecraft.server.v1_6_R3.NBTTagShort;
-import net.minecraft.server.v1_6_R3.NBTTagString;
-import net.minecraft.server.v1_6_R3.TileEntity;
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
+import net.minecraft.server.v1_7_R1.NBTBase;
+import net.minecraft.server.v1_7_R1.NBTTagByte;
+import net.minecraft.server.v1_7_R1.NBTTagByteArray;
+import net.minecraft.server.v1_7_R1.NBTTagCompound;
+import net.minecraft.server.v1_7_R1.NBTTagDouble;
+import net.minecraft.server.v1_7_R1.NBTTagEnd;
+import net.minecraft.server.v1_7_R1.NBTTagFloat;
+import net.minecraft.server.v1_7_R1.NBTTagInt;
+import net.minecraft.server.v1_7_R1.NBTTagIntArray;
+import net.minecraft.server.v1_7_R1.NBTTagList;
+import net.minecraft.server.v1_7_R1.NBTTagLong;
+import net.minecraft.server.v1_7_R1.NBTTagShort;
+import net.minecraft.server.v1_7_R1.NBTTagString;
+import net.minecraft.server.v1_7_R1.TileEntity;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
 
 import org.bukkit.Location;
 
@@ -51,6 +52,7 @@ import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.configuration.node.ShortNode;
 import de.cubeisland.engine.configuration.node.StringNode;
 
+// TODO FIXME NBT has changed...
 public class NBTUtils
 {
     public static NBTTagCompound getTileEntityNBTAt(Location location)
@@ -80,32 +82,32 @@ public class NBTUtils
         }
         if (nbtBase instanceof NBTTagByte)
         {
-            return new ByteNode(((NBTTagByte)nbtBase).data);
+            return new ByteNode(((NBTTagByte)nbtBase).f());
         }
         if (nbtBase instanceof NBTTagShort)
         {
-            return new ShortNode(((NBTTagShort)nbtBase).data);
+            return new ShortNode(((NBTTagShort)nbtBase).e());
         }
         if (nbtBase instanceof NBTTagInt)
         {
-            return  new IntNode(((NBTTagInt)nbtBase).data);
+            return  new IntNode(((NBTTagInt)nbtBase).d());
         }
         if (nbtBase instanceof NBTTagLong)
         {
-            return new LongNode(((NBTTagLong)nbtBase).data);
+            return new LongNode(((NBTTagLong)nbtBase).c());
         }
         if (nbtBase instanceof NBTTagFloat)
         {
-            return new FloatNode(((NBTTagFloat)nbtBase).data);
+            return new FloatNode(((NBTTagFloat)nbtBase).h());
         }
         if (nbtBase instanceof NBTTagDouble)
         {
-            return new DoubleNode(((NBTTagDouble)nbtBase).data);
+            return new DoubleNode(((NBTTagDouble)nbtBase).g());
         }
         if (nbtBase instanceof NBTTagByteArray)
         {
             ListNode list = ListNode.emptyList();
-            for (byte b : ((NBTTagByteArray)nbtBase).data)
+            for (byte b : ((NBTTagByteArray)nbtBase).c())
             {
                 list.addNode(new ByteNode(b));
             }
@@ -113,7 +115,7 @@ public class NBTUtils
         }
         if (nbtBase instanceof NBTTagString)
         {
-            return StringNode.of(((NBTTagString)nbtBase).data);
+            return StringNode.of(((NBTTagString)nbtBase).a_());
         }
         if (nbtBase instanceof NBTTagList)
         {
@@ -127,16 +129,17 @@ public class NBTUtils
         if (nbtBase instanceof NBTTagCompound)
         {
             MapNode map = MapNode.emptyMap();
-            for (NBTBase base : (Collection<NBTBase>)((NBTTagCompound)nbtBase).c())
+            NBTTagCompound compound = (NBTTagCompound)nbtBase;
+            for (String key : (Set<String>)compound.c())
             {
-                map.setExactNode(base.getName(),convertNBTToNode(base));
+                map.setExactNode(key,convertNBTToNode(compound.get(key)));
             }
             return map;
         }
         if (nbtBase instanceof NBTTagIntArray)
         {
             ListNode list = ListNode.emptyList();
-            for (int i : ((NBTTagIntArray)nbtBase).data)
+            for (int i : ((NBTTagIntArray)nbtBase).c())
             {
                 list.addNode(new IntNode(i));
             }
@@ -145,36 +148,37 @@ public class NBTUtils
         throw new IllegalStateException("Unknown NbtTag-Type! "+ nbtBase.getClass().getName());
     }
 
+    // TODO verify this
     @SuppressWarnings("unchecked")
-    public static NBTBase convertNodeToNBT(String key, Node node)
+    public static NBTBase convertNodeToNBT(Node node)
     {
         if (node instanceof NullNode)
         {
-            return new NBTTagEnd();
+            return HelperNBTBase.createEnd();
         }
         if (node instanceof ByteNode)
         {
-            return new NBTTagByte(key, (Byte)node.getValue());
+            return new NBTTagByte((Byte)node.getValue());
         }
         if (node instanceof ShortNode)
         {
-            return new NBTTagShort(key, (Short)node.getValue());
+            return new NBTTagShort((Short)node.getValue());
         }
         if (node instanceof IntNode)
         {
-            return new NBTTagInt(key, (Integer)node.getValue());
+            return new NBTTagInt((Integer)node.getValue());
         }
         if (node instanceof LongNode)
         {
-            return new NBTTagLong(key, (Long)node.getValue());
+            return new NBTTagLong((Long)node.getValue());
         }
         if (node instanceof FloatNode)
         {
-            return new NBTTagFloat(key, (Float)node.getValue());
+            return new NBTTagFloat((Float)node.getValue());
         }
         if (node instanceof DoubleNode)
         {
-            return new NBTTagDouble(key, (Double)node.getValue());
+            return new NBTTagDouble((Double)node.getValue());
         }
         if (node instanceof ListNode)
         {
@@ -199,7 +203,7 @@ public class NBTUtils
                 {
                     byteArray[i] = (Byte)listedNodes.get(i).getValue();
                 }
-                return new NBTTagByteArray(key, byteArray);
+                return new NBTTagByteArray(byteArray);
             }
             if (onlyInt)
             {
@@ -208,32 +212,37 @@ public class NBTUtils
                 {
                     intarray[i] = (Integer)listedNodes.get(i).getValue();
                 }
-                return new NBTTagIntArray(key, intarray);
+                return new NBTTagIntArray(intarray);
             }
-            NBTTagList list = new NBTTagList(key);
-            Integer i = 0;
+            NBTTagList list = new NBTTagList();
             for (Node listedNode : listedNodes)
             {
-                list.add(convertNodeToNBT(i.toString(),listedNode));
-                i++;
+                list.add(convertNodeToNBT(listedNode));
             }
             return list;
 
         }
         if (node instanceof StringNode)
         {
-            return new NBTTagString(key, (String)node.getValue());
+            return new NBTTagString((String)node.getValue());
         }
         if (node instanceof MapNode)
         {
-            NBTTagCompound compound = new NBTTagCompound(key);
+            NBTTagCompound compound = new NBTTagCompound();
             for (Entry<String, Node> entry : ((MapNode)node).getMappedNodes().entrySet())
             {
-                compound.set(((MapNode)node).getOriginalKey(entry.getKey()),convertNodeToNBT(entry.getKey(),entry.getValue()));
+                compound.set(((MapNode)node).getOriginalKey(entry.getKey()),convertNodeToNBT(entry.getValue()));
             }
             return compound;
         }
         throw new IllegalStateException("Cannot convert nodes to NbtTags! "+ node.getClass().getName());
     }
 
+    private abstract static class HelperNBTBase extends NBTBase
+    {
+        public static NBTTagEnd createEnd()
+        {
+            return (NBTTagEnd)NBTBase.createTag((byte)0);
+        }
+    }
 }

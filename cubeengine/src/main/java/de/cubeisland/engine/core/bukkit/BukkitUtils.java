@@ -22,19 +22,19 @@ import java.util.Locale;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_6_R3.DedicatedPlayerList;
-import net.minecraft.server.v1_6_R3.DedicatedServer;
-import net.minecraft.server.v1_6_R3.EntityLiving;
-import net.minecraft.server.v1_6_R3.EntityPlayer;
-import net.minecraft.server.v1_6_R3.Item;
-import net.minecraft.server.v1_6_R3.MinecraftServer;
-import net.minecraft.server.v1_6_R3.PlayerInteractManager;
-import net.minecraft.server.v1_6_R3.RecipesFurnace;
-import net.minecraft.server.v1_6_R3.TileEntityFurnace;
-import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
+import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
+import net.minecraft.server.v1_7_R1.DedicatedServer;
+import net.minecraft.server.v1_7_R1.EntityLiving;
+import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.Item;
+import net.minecraft.server.v1_7_R1.MinecraftServer;
+import net.minecraft.server.v1_7_R1.PlayerInteractManager;
+import net.minecraft.server.v1_7_R1.RecipesFurnace;
+import net.minecraft.server.v1_7_R1.TileEntityFurnace;
+import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -52,10 +52,9 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
-
-
 
 /**
  * This class contains various methods to access bukkit-related stuff.
@@ -101,7 +100,7 @@ public class BukkitUtils
         }
         if (locale == null)
         {
-            locale = Locale.getDefault();
+            return Locale.getDefault();
         }
         return locale;
     }
@@ -222,6 +221,11 @@ public class BukkitUtils
         playerList.removeWhitelist("");
     }
 
+    private static Item getItem(Material m)
+    {
+        return (Item)Item.REGISTRY.a(m.getId());
+    }
+
     /**
      * Returns true if given material is allowed to be placed in the top brewingstand slot
      *
@@ -230,22 +234,23 @@ public class BukkitUtils
      */
     public static boolean canBePlacedInBrewingstand(Material material)
     {
-        return Item.byId[material.getId()].x();
+        return getItem(material).i(null) != null; // Items that can be brewed return a String here else null
     }
 
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_6_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_7_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_6_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_7_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        // TileEntityFurnace private canBurn() checks this first for null
         // If the result of that item being cooked is null, it is not cookable
-        return RecipesFurnace.getInstance().getResult(nmss.getItem().id) != null;
+        return RecipesFurnace.getInstance().getResult(nmss) != null;
     }
 
     static void setSignalHandlers(final BukkitCore core)
@@ -315,7 +320,7 @@ public class BukkitUtils
         MinecraftServer minecraftServer = DedicatedServer.getServer();
 
         //Create and load the target EntityPlayer
-        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), player.getName(),
+        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), new GameProfile("", player.getName()),
                              new PlayerInteractManager(minecraftServer.getWorldServer(0)));
         entityPlayer.getBukkitEntity().loadData();
         return entityPlayer.getBukkitEntity();
