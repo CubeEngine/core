@@ -274,8 +274,15 @@ public class BukkitUtils
                     if (time - this.lastReceived <= 5000)
                     {
                         core.getLog().info("Shutting down the server now!");
-                        core.getServer().shutdown();
-                        this.lastReceived = -1;
+                        core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                core.getServer().shutdown();
+                                lastReceived = -1;
+                            }
+                        });
                     }
                     else
                     {
@@ -298,9 +305,16 @@ public class BukkitUtils
                         {
                             this.reloading = true;
                             core.getLog().info("Reloading the server!");
-                            core.getServer().reload();
-                            core.getLog().info("Done reloading the server!");
-                            this.reloading = false;
+                            core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    core.getServer().reload();
+                                    core.getLog().info("Done reloading the server!");
+                                    reloading = false;
+                                }
+                            });
                         }
                     }
                 });
