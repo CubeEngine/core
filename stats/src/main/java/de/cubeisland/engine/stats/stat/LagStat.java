@@ -49,6 +49,7 @@ public class LagStat extends Stat
     public void onActivate()
     {
         this.lagTimer = new LagTimer();
+        lagTimer.run();
     }
 
 
@@ -121,7 +122,9 @@ public class LagStat extends Stat
                     ticks += tps;
                 }
             }
-            return ticks / tpsHistory.size();
+            float tps = ticks / tpsHistory.size();
+            System.out.println("TPS; " + tps);
+            return tps;
         }
     }
 }
