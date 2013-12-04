@@ -53,7 +53,7 @@ public class LagStat extends Stat
     }
 
 
-    @Scheduled(async = false, period = 20)
+    @Scheduled(name = "~TPS_calculator", period = 20)
     public void tick()
     {
         this.lagTimer.run();
@@ -62,7 +62,7 @@ public class LagStat extends Stat
     /**
      * Fetch the current TPS and free memory and push it to the database
      */
-    @Scheduled(async = true, period = 200)
+    @Scheduled(name = "TPS_fetcher", period = 200, async = true)
     public void fetch()
     {
         Map<String, Object> data = new HashMap<>();
@@ -89,42 +89,46 @@ public class LagStat extends Stat
         @Override
         public void run()
         {
-            if (lastTick == 0)
+            synchronized (this)
             {
-                lastTick = System.currentTimeMillis();
-                return;
+                if (lastTick == 0)
+                {
+                    lastTick = System.currentTimeMillis();
+                    return;
+                }
+                final long currentTick = System.currentTimeMillis();
+                long timeSpent = (currentTick - lastTick) / 1000;
+                if (timeSpent == 0)
+                {
+                    timeSpent = 1;
+                }
+                if (tpsHistory.size() > 10)
+                {
+                    tpsHistory.remove();
+                }
+                final float tps = 20f / timeSpent;
+                if (tps <= 20)
+                {
+                    tpsHistory.add(tps);
+                }
+                lastTick = currentTick;
             }
-            final long currentTick = System.currentTimeMillis();
-            long timeSpent = (currentTick - lastTick) / 1000;
-            if (timeSpent == 0)
-            {
-                timeSpent = 1;
-            }
-            if (tpsHistory.size() > 10)
-            {
-                tpsHistory.remove();
-            }
-            final float tps = 20f / timeSpent;
-            if (tps <= 20)
-            {
-                tpsHistory.add(tps);
-            }
-            lastTick = currentTick;
         }
 
         public float getAverageTPS()
         {
-            float ticks = 0;
-            for (Float tps : tpsHistory)
+            synchronized (this)
             {
-                if (tps != null)
+                float ticks = 0;
+                for (Float tps : tpsHistory)
                 {
-                    ticks += tps;
+                    if (tps != null)
+                    {
+                        ticks += tps;
+                    }
                 }
+                return ticks / tpsHistory.size();
             }
-            float tps = ticks / tpsHistory.size();
-            System.out.println("TPS; " + tps);
-            return tps;
         }
     }
 }

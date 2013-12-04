@@ -15,22 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.stats.annotations;
+package de.cubeisland.engine.stats;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Scheduled
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+
+public class Config extends YamlConfiguration
 {
-    abstract String name();
 
-    abstract long period();
+    @Comment({"Periods for scheduled tasks for statistics that use it.",
+             "Comments are not working, so there is one rule; Anything prepended with ~ should not be edited."})
+    public Map<String, Long> periods = new HashMap<>();
 
-    boolean async() default false;
-
-    String comment() default "";
 }

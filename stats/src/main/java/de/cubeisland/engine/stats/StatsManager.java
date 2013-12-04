@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.stats.annotations.Scheduled;
 import de.cubeisland.engine.stats.stat.Stat;
 import de.cubeisland.engine.stats.storage.StatsDataModel;
@@ -114,19 +115,27 @@ public class StatsManager
                 Scheduled annotation = method.getAnnotation(Scheduled.class);
                 Runnable wrapper = new MethodRunnableWrapper(this.getModule().getLog(), stat, method);
 
-                // TODO custom scheduler
-                BukkitCore core = (BukkitCore)this.module.getCore();
-                BukkitScheduler scheduler = core.getServer().getScheduler();
+                Map<String, Long> periods = module.getConfig().periods;
+                long period = annotation.period();
+
+                if (!periods.containsKey(annotation.name()))
+                {
+                    periods.put(annotation.name(), period);
+                }
+
+                period = periods.get(annotation.name());
+
+                TaskManager taskManager = module.getCore().getTaskManager();
                 if (annotation.async())
                 {
-                    scheduler.scheduleAsyncRepeatingTask(core, wrapper, 1, annotation.period());
+                    taskManager.runAsynchronousTimer(module, wrapper, 1, period);
                 }
                 else
                 {
-                    scheduler.scheduleSyncRepeatingTask(core, wrapper, 1, annotation.period());
+                    taskManager.runTimer(module, wrapper, 1, period);
                 }
 
-                // TODO register period field in a config so it can be overwritten by the user
+                this.module.getLog().debug("Scheduled method {} at interval {}", annotation.name(), period);
             }
 
         }

@@ -23,15 +23,26 @@ import de.cubeisland.engine.stats.stat.PlayTimeStat;
 
 public class Stats extends Module
 {
+    private Config config;
     private StatsManager stats;
-    private PlayTimeStat playTime;
 
     public void onEnable()
     {
+        this.config = this.loadConfig(Config.class);
         this.stats = new StatsManager(this);
 
         stats.register(PlayTimeStat.class);
         stats.register(LagStat.class);
+    }
+
+    public void onDisable()
+    {
+        this.config.save();
+    }
+
+    public Config getConfig()
+    {
+        return config;
     }
 
 }
