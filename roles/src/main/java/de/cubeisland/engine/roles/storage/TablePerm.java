@@ -49,7 +49,7 @@ public class TablePerm extends TableImpl<UserPermission> implements TableCreator
     {
         super(prefix + "userperms");
         PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.WORLDID, this.PERM);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
         FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLDID);
     }
 

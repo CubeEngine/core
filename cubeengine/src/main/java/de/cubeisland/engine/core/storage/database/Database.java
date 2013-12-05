@@ -129,6 +129,8 @@ public interface Database
 
     public <T extends TableCreator> void registerTable(T table);
 
+    public <T extends Table> void registerTable(Class<T> table);
+
     public DatabaseConfiguration getDatabaseConfig();
 
     DSLContext getDSL();

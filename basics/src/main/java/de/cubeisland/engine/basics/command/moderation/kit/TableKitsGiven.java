@@ -42,7 +42,7 @@ public class TableKitsGiven extends TableImpl<KitsGiven> implements TableCreator
     {
         super(prefix + "kits");
         PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.KITNAME);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
     }
 
     public static TableKitsGiven initTable(Database database)

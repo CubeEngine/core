@@ -50,7 +50,7 @@ public class TableBankAccess extends TableImpl<BankAccessModel> implements Table
         IDENTITY = Keys.identity(this, this.ID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
         UNIQUE_USERID_ACCOUNTID = Keys.uniqueKey(this, this.USERID, this.ACCOUNTID);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
         FOREIGN_ACCOUNT = Keys.foreignKey(TABLE_ACCOUNT.PRIMARY_KEY, this, this.ACCOUNTID);
     }
 

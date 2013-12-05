@@ -47,8 +47,8 @@ public class TableMail extends TableImpl<Mail> implements TableCreator<Mail>
         super(prefix + "mail");
         IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
-        FOREIGN_SENDER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.SENDERID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
+        FOREIGN_SENDER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.SENDERID);
     }
 
     public static TableMail initTable(Database database)

@@ -51,7 +51,7 @@ public class TableSignBlock extends TableImpl<SignMarketBlockModel> implements T
         super(prefix + "signmarketblocks");
         IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.OWNER);
+        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER);
         FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
         FOREIGN_ITEM = Keys.foreignKey(TABLE_SIGN_ITEM.PRIMARY_KEY, this, this.ITEMKEY);
     }

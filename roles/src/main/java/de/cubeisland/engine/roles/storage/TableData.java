@@ -48,7 +48,7 @@ public class TableData extends TableImpl<UserMetaData> implements TableCreator<U
     {
         super(prefix + "userdata");
         PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.WORLDID, this.KEY);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
         FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLDID);
     }
 

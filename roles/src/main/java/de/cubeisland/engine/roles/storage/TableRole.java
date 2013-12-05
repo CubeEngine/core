@@ -47,7 +47,7 @@ public class TableRole extends TableImpl<AssignedRole> implements TableCreator<A
     {
         super(prefix + "roles");
         PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.WORLDID, this.ROLENAME);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
         FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLDID);
     }
 

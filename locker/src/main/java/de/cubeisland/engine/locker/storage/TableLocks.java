@@ -49,7 +49,7 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
         IDENTITY = Keys.identity(this, this.ID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
         UNIQUE_ENTITY_UID = Keys.uniqueKey(this, this.ENTITY_UID_LEAST, this.ENTITY_UID_MOST);
-        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.OWNER_ID);
+        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER_ID);
     }
 
     public static TableLocks initTable(Database database)

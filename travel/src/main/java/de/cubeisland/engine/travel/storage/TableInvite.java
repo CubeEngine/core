@@ -43,7 +43,7 @@ public class TableInvite extends TableImpl<TeleportInvite> implements TableCreat
     {
         super(prefix + "teleportinvites");
         PRIMARY_KEY = Keys.uniqueKey(this, this.USERKEY, this.TELEPORTPOINT);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERKEY);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERKEY);
         FOREIGN_TPPOINT = Keys.foreignKey(TABLE_TP_POINT.PRIMARY_KEY, this, this.TELEPORTPOINT);
     }
 

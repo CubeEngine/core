@@ -50,7 +50,7 @@ public class TableTeleportPoint extends TableImpl<TeleportPointModel> implements
         IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
         UNIQUE_OWNER_NAME_TYPE = Keys.uniqueKey(this, this.OWNER, this.NAME, this.TYPE);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.OWNER);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER);
         FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
     }
 

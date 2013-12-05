@@ -47,8 +47,8 @@ public class TableIgnorelist extends TableImpl<IgnoreList> implements TableCreat
         super(prefix + "ignorelist");
         IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.KEY);
-        FOREIGN_IGNORED = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.IGNORE);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.KEY);
+        FOREIGN_IGNORED = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.IGNORE);
     }
 
     public static TableIgnorelist initTable(Database database)

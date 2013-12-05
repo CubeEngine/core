@@ -49,7 +49,7 @@ public class TableVote extends TableImpl<VoteModel> implements TableCreator<Vote
         super(prefix + "votes");
         IDENTITY = Keys.identity(this, this.USERID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.USERID);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
     }
 
     public static TableVote initTable(Database database)

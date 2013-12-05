@@ -51,7 +51,7 @@ public class TablePowerSign extends TableImpl<PowerSignModel> implements TableCr
         IDENTITY = Keys.identity(this, this.ID);
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
         UNIQUE_LOC = Keys.uniqueKey(this, this.WORLD, this.X, this.Y, this.Z);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.OWNER_ID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER_ID);
         FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
     }
 

@@ -48,7 +48,7 @@ public class TableBasicsUser extends TableImpl<BasicsUserEntity> implements Tabl
         super(prefix + "basicuser");
         IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.KEY);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.KEY);
     }
 
     public static TableBasicsUser initTable(Database database)

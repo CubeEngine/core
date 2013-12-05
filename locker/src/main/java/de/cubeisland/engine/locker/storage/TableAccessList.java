@@ -50,9 +50,9 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
         PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
         UNIQUE_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.LOCK_ID);
         UNIQUE_G_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.OWNER_ID);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USER_ID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USER_ID);
         FOREIGN_GUARD = Keys.foreignKey(TABLE_LOCK.PRIMARY_KEY, this, this.LOCK_ID);
-        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.OWNER_ID);
+        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER_ID);
     }
 
     public static TableAccessList initTable(Database database)

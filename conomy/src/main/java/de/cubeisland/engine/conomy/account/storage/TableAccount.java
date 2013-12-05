@@ -51,7 +51,7 @@ public class TableAccount extends TableImpl<AccountModel> implements TableCreato
         IDENTITY = Keys.identity(this, this.KEY);
         PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
         UNIQUE_USERID_NAME = Keys.uniqueKey(this, this.USER_ID, this.NAME);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USER_ID);
+        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USER_ID);
     }
 
     public static TableAccount initTable(Database database)
