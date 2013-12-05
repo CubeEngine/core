@@ -25,10 +25,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.engine.stats.StatsManager;
+import de.cubeisland.engine.stats.annotations.Configured;
 
 public class PlayTimeStat extends Stat
 {
-    private final String name = "playtime";
+    private final String name = "play-time";
 
     private Map<String, Long> joined;
 

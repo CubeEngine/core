@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.stats;
+package de.cubeisland.engine.stats.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +23,10 @@ import java.util.Map;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 
-public class Config extends YamlConfiguration
+public class StatsConfig extends YamlConfiguration
 {
 
-    @Comment({"Periods for scheduled tasks for statistics that use it."})
-    public Map<String, Long> periods = new HashMap<>();
+    @Comment({"Configurations for each stat"})
+    public Map<String, DynamicSection> statConfigs = new HashMap<>();
 
 }

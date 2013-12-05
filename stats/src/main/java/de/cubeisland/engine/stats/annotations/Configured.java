@@ -17,32 +17,22 @@
  */
 package de.cubeisland.engine.stats.annotations;
 
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates this method should be scheduled at the given interval.
- * The interval is in ticks.
+ * Indicates that this field should be configured in a configuration file.
+ *
+ * Name and Comments can be done by the @Name and @Comment of ConfigurationAPI
+ * These values should not change during runtime, they will not be saved!
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Scheduled
+@Target(ElementType.FIELD)
+public @interface Configured
 {
-    abstract String name();
+    public String name() default "";
 
-    abstract long interval();
-
-    boolean async() default false;
-
-    /**
-     * If the interval field is final.
-     * If this is true, the interval will not be put in the config,
-     * and will therefor always be the value set in the annotation.
-     * @return
-     */
-    boolean periodFinal() default false;
-
-    String[] comment() default "";
 }

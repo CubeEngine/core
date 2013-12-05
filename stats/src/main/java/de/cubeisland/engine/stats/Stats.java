@@ -18,21 +18,27 @@
 package de.cubeisland.engine.stats;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.stats.configuration.DynamicSection;
+import de.cubeisland.engine.stats.configuration.DynamicSectionConverter;
+import de.cubeisland.engine.stats.configuration.StatsConfig;
 import de.cubeisland.engine.stats.stat.LagStat;
 import de.cubeisland.engine.stats.stat.PlayTimeStat;
 
 public class Stats extends Module
 {
-    private Config config;
-    private StatsManager stats;
+    private StatsConfig config;
+    private StatsManager statsManager;
 
     public void onEnable()
     {
-        this.config = this.loadConfig(Config.class);
-        this.stats = new StatsManager(this);
+        this.getCore().getConfigurationFactory().getDefaultConverterManager()
+            .registerConverter(DynamicSection.class, new DynamicSectionConverter());
+        this.config = this.loadConfig(StatsConfig.class);
 
-        stats.register(PlayTimeStat.class);
-        stats.register(LagStat.class);
+        this.statsManager = new StatsManager(this, getCore().getConfigurationFactory().getDefaultConverterManager());
+
+        statsManager.register(PlayTimeStat.class);
+        statsManager.register(LagStat.class);
     }
 
     public void onDisable()
@@ -40,9 +46,14 @@ public class Stats extends Module
         this.config.save();
     }
 
-    public Config getConfig()
+    public StatsConfig getConfig()
     {
         return config;
+    }
+
+    public StatsManager getStatsManager()
+    {
+        return this.statsManager;
     }
 
 }

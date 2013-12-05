@@ -40,7 +40,7 @@ public class LagStat extends Stat
     @Override
     public String getName()
     {
-        return "LagStat";
+        return "lag-stat";
     }
 
     private LagTimer lagTimer;
@@ -53,7 +53,7 @@ public class LagStat extends Stat
     }
 
 
-    @Scheduled(name = "TPS_calculator", period = 20, periodFinal = true)
+    @Scheduled(name = "tps-calculator", interval = 20, periodFinal = true)
     public void tick()
     {
         this.lagTimer.run();
@@ -62,7 +62,7 @@ public class LagStat extends Stat
     /**
      * Fetch the current TPS and free memory and push it to the database
      */
-    @Scheduled(name = "TPS_fetcher", period = 200, async = true)
+    @Scheduled(name = "fetcher", interval = 200, comment = "The task that fetches the memory and tps and pushes it to the database", async = true)
     public void fetch()
     {
         Map<String, Object> data = new HashMap<>();

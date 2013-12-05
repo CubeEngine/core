@@ -55,6 +55,13 @@ public abstract class Stat implements Listener
     {}
 
     /**
+     * Called when this stat is deactivated.
+     * Cleanup should go here.
+     */
+    public void onDeactivate()
+    {}
+
+    /**
      * Write a database entry
      *
      * This just calls StatsManager.save(Stat, Object)
