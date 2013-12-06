@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
+import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -31,6 +32,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.task.ListenableExecutorService;
@@ -177,7 +179,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
      */
     public <T extends TableCreator> void registerTable(T table)
     {
-        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table)) return;
+        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table))
+        {
+            // return; // TODO DO return
+        }
         try
         {
             Connection connection = this.getConnection();
@@ -190,6 +195,21 @@ public class MySQLDatabase extends AbstractPooledDatabase
         }
         this.schema.addTable(table);
         this.core.getLog().debug("Database-Table {0} registered!", table.getName());
+    }
+
+    @Override
+    public <T extends Table> void registerTable(Class<T> clazz)
+    {
+        try
+        {
+            Constructor<T> constructor = clazz.getDeclaredConstructor(String.class);
+            T table = constructor.newInstance(this.config.tablePrefix);
+            this.registerTable(table);
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalStateException("Unable to instantiate Table!", e);
+        }
     }
 
     @Override
@@ -322,5 +342,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public DatabaseConfiguration getDatabaseConfig()
     {
         return this.config;
+    }
+
+    @Override
+    public String getTablePrefix()
+    {
+        return this.config.tablePrefix;
     }
 }

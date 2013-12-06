@@ -56,13 +56,13 @@ public class UserDatabaseStore extends UserDataStore
         this.roles = new HashSet<>(roleFetch.getValues(TABLE_ROLE.ROLENAME, String.class));
         UInteger userDataMirror = UInteger.valueOf(this.manager.assignedUserDataMirrors.get(this.getMainWorldID()));
 
-        Result<Record2<String,Byte>> permFetch = manager.dsl.select(TABLE_PERM.PERM, TABLE_PERM.ISSET).from(TABLE_PERM)
+        Result<Record2<String,Boolean>> permFetch = manager.dsl.select(TABLE_PERM.PERM, TABLE_PERM.ISSET).from(TABLE_PERM)
                .where(TABLE_PERM.USERID.eq(this.getUserID()),
                       TABLE_PERM.WORLDID.eq(userDataMirror)).fetch();
         this.permissions = new HashMap<>();
-        for (Record2<String, Byte> record2 : permFetch)
+        for (Record2<String, Boolean> record2 : permFetch)
         {
-            this.permissions.put(record2.value1(), record2.value2() == 1);
+            this.permissions.put(record2.value1(), record2.value2());
         }
         Result<Record2<String,String>> metaFetch = manager.dsl.select(TABLE_META.KEY, TABLE_META.VALUE).from(TABLE_META)
                                                         .where(TABLE_META.USERID.eq(this.getUserID()),

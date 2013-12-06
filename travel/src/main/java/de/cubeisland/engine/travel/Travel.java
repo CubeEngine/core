@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.travel.interactions.HomeAdminCommand;
 import de.cubeisland.engine.travel.interactions.HomeCommand;
@@ -45,13 +46,14 @@ public class Travel extends Module
     {
         Profiler.startProfiling("travelEnable");
         this.config = this.loadConfig(TravelConfig.class);
-        this.getCore().getDB().registerTable(TableTeleportPoint.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableInvite.initTable(this.getCore().getDB()));
+        Database db = this.getCore().getDB();
+        db.registerTable(TableTeleportPoint.class);
+        db.registerTable(TableInvite.class);
         Log log = this.getLog();
         log.trace("{} ms - TelePointManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager = new TelePointManager(this);
         log.trace("{} ms - InviteManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        this.inviteManager = new InviteManager(this.getCore().getDB(), this);
+        this.inviteManager = new InviteManager(db, this);
         log.trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager.load(this.inviteManager);
         final CommandManager cm = this.getCore().getCommandManager();

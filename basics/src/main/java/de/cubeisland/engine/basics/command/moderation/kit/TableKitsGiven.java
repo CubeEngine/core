@@ -17,85 +17,30 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.ForeignKey;
-import org.jooq.UniqueKey;
-import org.jooq.impl.TableImpl;
+import org.jooq.TableField;
+import org.jooq.impl.SQLDataType;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class TableKitsGiven extends TableImpl<KitsGiven> implements TableCreator<KitsGiven>
+public class TableKitsGiven extends Table<KitsGiven>
 {
     public static TableKitsGiven TABLE_KITS;
 
-    private TableKitsGiven(String prefix)
+    public TableKitsGiven(String prefix)
     {
-        super(prefix + "kits");
-        PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.KITNAME);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        super(prefix + "kits", new Version(1));
+        this.setPrimaryKey(USERID);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
+        this.addFields(USERID, KITNAME, AMOUNT);
+        TABLE_KITS = this;
     }
 
-    public static TableKitsGiven initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_KITS = new TableKitsGiven(config.tablePrefix);
-        return TABLE_KITS;
-    }
-
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`userId` int(10) unsigned NOT NULL,\n" +
-                                        "`kitName` varchar(50) NOT NULL,\n" +
-                                        "`amount` int(11) NOT NULL,\n" +
-                                        "PRIMARY KEY (`userId`,`kitName`),\n" +
-                                        "FOREIGN KEY `f_user`(`userId`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final UniqueKey<KitsGiven> PRIMARY_KEY;
-    public final ForeignKey<KitsGiven, UserEntity> FOREIGN_USER;
-
-    public final org.jooq.TableField<KitsGiven, org.jooq.types.UInteger> USERID = createField("userId", org.jooq.impl.SQLDataType.INTEGERUNSIGNED, this);
-    public final org.jooq.TableField<KitsGiven, java.lang.String> KITNAME = createField("kitName", org.jooq.impl.SQLDataType.VARCHAR.length(50), this);
-    public final org.jooq.TableField<KitsGiven, java.lang.Integer> AMOUNT = createField("amount", org.jooq.impl.SQLDataType.INTEGER, this);
-
-    @Override
-    public UniqueKey<KitsGiven> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<KitsGiven>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<KitsGiven, ?>> getReferences() {
-        return Arrays.<ForeignKey<KitsGiven, ?>>asList(FOREIGN_USER);
-    }
+    public final TableField<KitsGiven, UInteger> USERID = createField("userId", U_INTEGER.nullable(false), this);
+    public final TableField<KitsGiven, String> KITNAME = createField("kitName", SQLDataType.VARCHAR.length(50).nullable(false), this);
+    public final TableField<KitsGiven, Integer> AMOUNT = createField("amount", SQLDataType.INTEGER.nullable(false), this);
 
     @Override
     public Class<KitsGiven> getRecordType() {

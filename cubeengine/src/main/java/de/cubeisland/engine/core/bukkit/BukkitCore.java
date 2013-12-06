@@ -246,8 +246,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: database
-        this.database.registerTable(TableUser.initTable(this.database));
-        this.database.registerTable(TableWorld.initTable(this.database));
+        this.database.registerTable(TableUser.class);
+        this.database.registerTable(TableWorld.class);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);

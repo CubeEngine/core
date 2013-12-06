@@ -43,7 +43,7 @@ public class Vote extends Module implements Listener
     @Override
     public void onEnable()
     {
-        this.getCore().getDB().registerTable(TableVote.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableVote.class);
         this.config = this.loadConfig(VoteConfiguration.class);
         this.getCore().getEventManager().registerListener(this, this);
         this.getCore().getCommandManager().registerCommands(this, new VoteCommands(this), ReflectedCommand.class);

@@ -17,99 +17,32 @@
  */
 package de.cubeisland.engine.vote.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 import org.jooq.types.UShort;
+import org.jooq.util.mysql.MySQLDataType;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class TableVote extends TableImpl<VoteModel> implements TableCreator<VoteModel>
+public class TableVote extends Table<VoteModel>
 {
     public static TableVote TABLE_VOTE;
 
-    private TableVote(String prefix)
+    public TableVote(String prefix)
     {
-        super(prefix + "votes");
-        IDENTITY = Keys.identity(this, this.USERID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.USERID);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.USERID);
+        super(prefix + "votes", new Version(1));
+        this.setPrimaryKey(USERID);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
+        this.addFields(USERID, LASTVOTE, VOTEAMOUNT);
     }
 
-    public static TableVote initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_VOTE = new TableVote(config.tablePrefix);
-        return TABLE_VOTE;
-    }
-
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`userid` int(10) unsigned NOT NULL,\n" +
-                                        "`lastvote` datetime NOT NULL,\n" +
-                                        "`voteamount` smallint(5) unsigned NOT NULL,\n" +
-                                        "PRIMARY KEY (`userid`)," +
-                                        "FOREIGN KEY `f_user`(`userid`) REFERENCES " + TABLE_USER.getName() +" (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<VoteModel, UInteger> IDENTITY;
-    public final UniqueKey<VoteModel> PRIMARY_KEY;
-    public final ForeignKey<VoteModel, UserEntity> FOREIGN_USER;
-
-    public final TableField<VoteModel, UInteger> USERID = createField("userid", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<VoteModel, Timestamp> LASTVOTE = createField("lastvote", SQLDataType.TIMESTAMP, this);
-    public final TableField<VoteModel, UShort> VOTEAMOUNT = createField("voteamount", SQLDataType.SMALLINTUNSIGNED, this);
-
-    @Override
-    public Identity<VoteModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<VoteModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<VoteModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<VoteModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<VoteModel, ?>>asList(FOREIGN_USER);
-    }
+    public final TableField<VoteModel, UInteger> USERID = createField("userid", U_INTEGER.nullable(false), this);
+    public final TableField<VoteModel, Timestamp> LASTVOTE = createField("lastvote", MySQLDataType.DATETIME.nullable(false), this);
+    public final TableField<VoteModel, UShort> VOTEAMOUNT = createField("voteamount", U_SMALLINT.nullable(false), this);
 
     @Override
     public Class<VoteModel> getRecordType() {
