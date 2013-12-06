@@ -17,19 +17,9 @@
  */
 package de.cubeisland.engine.signmarket.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
 import org.jooq.types.UShort;
@@ -42,34 +32,18 @@ public class TableSignItem extends AutoIncrementTable<SignMarketItemModel, UInte
     {
         super(prefix + "signmarketitem", new Version(1));
         this.setAIKey(KEY);
+        this.addFields(KEY, STOCK, ITEM, DAMAGEVALUE, CUSTOMNAME, LORE, ENCHANTMENTS, SIZE);
         TABLE_SIGN_ITEM = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "  `key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "  `stock` mediumint(8) unsigned DEFAULT NULL,\n" +
-                                        "  `item` varchar(32) NOT NULL,\n" +
-                                        "  `damageValue` smallint(5) unsigned NOT NULL,\n" +
-                                        "  `customName` varchar(100) DEFAULT NULL,\n" +
-                                        "  `lore` varchar(1000) DEFAULT NULL,\n" +
-                                        "  `enchantments` varchar(255) DEFAULT NULL,\n" +
-                                        "  `size` tinyint(4) NOT NULL,\n" +
-                                        "  PRIMARY KEY (`key`))\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<SignMarketItemModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<SignMarketItemModel, UInteger> STOCK = createField("stock", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<SignMarketItemModel, String> ITEM = createField("item", SQLDataType.VARCHAR.length(32), this);
-    public final TableField<SignMarketItemModel, UShort> DAMAGEVALUE = createField("damageValue", SQLDataType.SMALLINTUNSIGNED, this);
+    public final TableField<SignMarketItemModel, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<SignMarketItemModel, UInteger> STOCK = createField("stock", U_MEDIUMINT, this);
+    public final TableField<SignMarketItemModel, String> ITEM = createField("item", SQLDataType.VARCHAR.length(32).nullable(false), this);
+    public final TableField<SignMarketItemModel, UShort> DAMAGEVALUE = createField("damageValue", U_SMALLINT.nullable(false), this);
     public final TableField<SignMarketItemModel, String> CUSTOMNAME = createField("customName", SQLDataType.VARCHAR.length(100), this);
     public final TableField<SignMarketItemModel, String> LORE = createField("lore", SQLDataType.VARCHAR.length(1000), this);
     public final TableField<SignMarketItemModel, String> ENCHANTMENTS = createField("enchantments", SQLDataType.VARCHAR.length(255), this);
-    public final TableField<SignMarketItemModel, Byte> SIZE = createField("size", SQLDataType.TINYINT, this);
+    public final TableField<SignMarketItemModel, Byte> SIZE = createField("size", SQLDataType.TINYINT.nullable(false), this);
 
     @Override
     public Class<SignMarketItemModel> getRecordType() {

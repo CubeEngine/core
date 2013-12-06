@@ -17,24 +17,10 @@
  */
 package de.cubeisland.engine.roles.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
-import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.Table;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
-import org.jooq.ForeignKey;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
@@ -50,26 +36,13 @@ public class TableRole extends Table<AssignedRole>
         this.setPrimaryKey(USERID, WORLDID, ROLENAME);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
         this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLDID);
+        this.addFields(USERID, WORLDID, ROLENAME);
         TABLE_ROLE = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`userId` int(10) unsigned NOT NULL,\n" +
-                                        "`worldId` int(10) unsigned NOT NULL,\n" +
-                                        "`roleName` varchar(255) NOT NULL,\n" +
-                                        "PRIMARY KEY (`userId`,`worldId`,`roleName`)," +
-                                        "FOREIGN KEY `f_user`(`userId`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY `f_world`(`worldId`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<AssignedRole, UInteger> USERID = createField("userId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<AssignedRole, UInteger> WORLDID = createField("worldId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<AssignedRole, String> ROLENAME = createField("roleName", SQLDataType.VARCHAR.length(255), this);
+    public final TableField<AssignedRole, UInteger> USERID = createField("userId", U_INTEGER.nullable(false), this);
+    public final TableField<AssignedRole, UInteger> WORLDID = createField("worldId", U_INTEGER.nullable(false), this);
+    public final TableField<AssignedRole, String> ROLENAME = createField("roleName", SQLDataType.VARCHAR.length(255).nullable(false), this);
 
     @Override
     public Class<AssignedRole> getRecordType() {

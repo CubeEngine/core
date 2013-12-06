@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.roles.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -39,28 +36,14 @@ public class TablePerm extends Table<UserPermission>
         this.setPrimaryKey(USERID, WORLDID, PERM);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
         this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLDID);
+        this.addFields(USERID, WORLDID, PERM, ISSET);
         TABLE_PERM = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`userId` int(10) unsigned NOT NULL,\n" +
-                                        "`worldId` int(10) unsigned NOT NULL,\n" +
-                                        "`perm` varchar(255) NOT NULL,\n" +
-                                        "`isSet` tinyint(1) NOT NULL,\n" +
-                                        "PRIMARY KEY (`userId`,`worldId`,`perm`)," +
-                                        "FOREIGN KEY `f_user`(`userId`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY `f_world`(`worldId`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<UserPermission, UInteger> USERID = createField("userId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<UserPermission, UInteger> WORLDID = createField("worldId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<UserPermission, String> PERM = createField("perm", SQLDataType.VARCHAR.length(255), this);
-    public final TableField<UserPermission, Byte> ISSET = createField("isSet", SQLDataType.TINYINT, this);
+    public final TableField<UserPermission, UInteger> USERID = createField("userId", U_INTEGER.nullable(false), this);
+    public final TableField<UserPermission, UInteger> WORLDID = createField("worldId", U_INTEGER.nullable(false), this);
+    public final TableField<UserPermission, String> PERM = createField("perm", SQLDataType.VARCHAR.length(255).nullable(false), this);
+    public final TableField<UserPermission, Boolean> ISSET = createField("isSet", BOOLEAN.nullable(false), this);
 
     @Override
     public Class<UserPermission> getRecordType() {

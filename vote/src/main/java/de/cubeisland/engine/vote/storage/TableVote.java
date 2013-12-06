@@ -17,16 +17,14 @@
  */
 package de.cubeisland.engine.vote.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
 import org.jooq.types.UShort;
+import org.jooq.util.mysql.MySQLDataType;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
@@ -39,24 +37,12 @@ public class TableVote extends Table<VoteModel>
         super(prefix + "votes", new Version(1));
         this.setPrimaryKey(USERID);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
+        this.addFields(USERID, LASTVOTE, VOTEAMOUNT);
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`userid` int(10) unsigned NOT NULL,\n" +
-                                        "`lastvote` datetime NOT NULL,\n" +
-                                        "`voteamount` smallint(5) unsigned NOT NULL,\n" +
-                                        "PRIMARY KEY (`userid`)," +
-                                        "FOREIGN KEY `f_user`(`userid`) REFERENCES " + TABLE_USER.getName() +" (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<VoteModel, UInteger> USERID = createField("userid", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<VoteModel, Timestamp> LASTVOTE = createField("lastvote", SQLDataType.TIMESTAMP, this);
-    public final TableField<VoteModel, UShort> VOTEAMOUNT = createField("voteamount", SQLDataType.SMALLINTUNSIGNED, this);
+    public final TableField<VoteModel, UInteger> USERID = createField("userid", U_INTEGER.nullable(false), this);
+    public final TableField<VoteModel, Timestamp> LASTVOTE = createField("lastvote", MySQLDataType.DATETIME.nullable(false), this);
+    public final TableField<VoteModel, UShort> VOTEAMOUNT = createField("voteamount", U_SMALLINT.nullable(false), this);
 
     @Override
     public Class<VoteModel> getRecordType() {

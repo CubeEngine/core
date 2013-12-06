@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.powersigns.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -41,41 +38,20 @@ public class TablePowerSign extends AutoIncrementTable<PowerSignModel, UInteger>
         this.addUniqueKey(WORLD, X, Y, Z);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER_ID);
         this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
+        this.addFields(ID, OWNER_ID, PSID, WORLD, X,Y,Z, CHUNKX, CHUNKZ, DATA);
         TABLE_POWER_SIGN = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`owner_id` int(10) unsigned DEFAULT NULL,\n" +
-                                        "`PSID` varchar(6) DEFAULT NULL,\n" +
-                                        "`world` int(10) unsigned DEFAULT NULL,\n" +
-                                        "`x` int(10) NOT NULL,\n" +
-                                        "`y` int(10) NOT NULL,\n" +
-                                        "`z` int(10) NOT NULL,\n" +
-                                        "`chunkx` int(10) NOT NULL,\n" +
-                                        "`chunkz` int(10) NOT NULL,\n" +
-                                        "`data` TEXT DEFAULT NULL,\n" +
-                                        "PRIMARY KEY (`id`),\n" +
-                                        "UNIQUE KEY `loc` (`world`,`x`,`y`,`z`),\n" +
-                                        "FOREIGN KEY `f_user`(`owner_id`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY `f_world`(`world`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<PowerSignModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<PowerSignModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<PowerSignModel, UInteger> ID = createField("id", U_INTEGER.nullable(false), this);
+    public final TableField<PowerSignModel, UInteger> OWNER_ID = createField("owner_id", U_INTEGER, this);
     public final TableField<PowerSignModel, String> PSID = createField("psid", SQLDataType.VARCHAR.length(6), this);
-    public final TableField<PowerSignModel, UInteger> WORLD = createField("world", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<PowerSignModel, Integer> X = createField("x", SQLDataType.INTEGER, this);
-    public final TableField<PowerSignModel, Integer> Y = createField("y", SQLDataType.INTEGER, this);
-    public final TableField<PowerSignModel, Integer> Z = createField("z", SQLDataType.INTEGER, this);
+    public final TableField<PowerSignModel, UInteger> WORLD = createField("world", U_INTEGER, this);
+    public final TableField<PowerSignModel, Integer> X = createField("x", SQLDataType.INTEGER.nullable(false), this);
+    public final TableField<PowerSignModel, Integer> Y = createField("y", SQLDataType.INTEGER.nullable(false), this);
+    public final TableField<PowerSignModel, Integer> Z = createField("z", SQLDataType.INTEGER.nullable(false), this);
 
-    public final TableField<PowerSignModel, Integer> CHUNKX = createField("chunkx", SQLDataType.INTEGER, this);
-    public final TableField<PowerSignModel, Integer> CHUNKZ = createField("chunkz", SQLDataType.INTEGER, this);
+    public final TableField<PowerSignModel, Integer> CHUNKX = createField("chunkx", SQLDataType.INTEGER.nullable(false), this);
+    public final TableField<PowerSignModel, Integer> CHUNKZ = createField("chunkz", SQLDataType.INTEGER.nullable(false), this);
 
     public final TableField<PowerSignModel, String> DATA = createField("data", MySQLDataType.TEXT, this);
 

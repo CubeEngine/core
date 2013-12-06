@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.log.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -35,22 +32,12 @@ public class TableActionTypes extends AutoIncrementTable<ActionTypeModel, UInteg
         super(prefix + "log_actiontypes", new Version(1));
         this.setAIKey(ID);
         this.addUniqueKey(NAME);
+        this.addFields(ID, NAME);
         TABLE_ACTION_TYPE = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`name` varchar(32) UNIQUE NOT NULL,\n" +
-                                        "PRIMARY KEY (`id`))\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<ActionTypeModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<ActionTypeModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32), this);
+    public final TableField<ActionTypeModel, UInteger> ID = createField("id", U_INTEGER.nullable(false), this);
+    public final TableField<ActionTypeModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32).nullable(false), this);
 
     @Override
     public Class<ActionTypeModel> getRecordType() {

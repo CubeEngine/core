@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.travel.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -40,45 +37,22 @@ public class TableTeleportPoint extends AutoIncrementTable<TeleportPointModel, U
         this.addUniqueKey(OWNER, NAME, TYPE);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER);
         this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
+        this.addFields(KEY, OWNER, TYPE, VISIBILITY, WORLD, X, Y, Z, YAW, PITCH, NAME, WELCOMEMSG);
         TABLE_TP_POINT = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`owner` int(10) unsigned NOT NULL,\n" +
-                                        "`type` smallint(1) NOT NULL,\n" +
-                                        "`visibility` smallint(1) NOT NULL,\n" +
-                                        "`world` int(10) unsigned NOT NULL,\n" +
-                                        "`x` double NOT NULL,\n" +
-                                        "`y` double NOT NULL,\n" +
-                                        "`z` double NOT NULL,\n" +
-                                        "`yaw` float NOT NULL,\n" +
-                                        "`pitch` float NOT NULL,\n" +
-                                        "`name` varchar(32) NOT NULL,\n" +
-                                        "`welcomemsg` longtext,\n" +
-                                        "PRIMARY KEY (`key`),\n" +
-                                        "UNIQUE KEY `owner` (`owner`,`name`,`type`),\n" +
-                                        "FOREIGN KEY `f_world`(`world`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY `f_user`(`owner`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<TeleportPointModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<TeleportPointModel, UInteger> OWNER = createField("owner", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<TeleportPointModel, Short> TYPE = createField("type", SQLDataType.SMALLINT, this);
-    public final TableField<TeleportPointModel, Short> VISIBILITY = createField("visibility", SQLDataType.SMALLINT, this);
-    public final TableField<TeleportPointModel, UInteger> WORLD = createField("world", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<TeleportPointModel, Double> X = createField("x", SQLDataType.DOUBLE, this);
-    public final TableField<TeleportPointModel, Double> Y = createField("y", SQLDataType.DOUBLE, this);
-    public final TableField<TeleportPointModel, Double> Z = createField("z", SQLDataType.DOUBLE, this);
-    public final TableField<TeleportPointModel, Double> YAW = createField("yaw", SQLDataType.FLOAT, this);
-    public final TableField<TeleportPointModel, Double> PITCH = createField("pitch", SQLDataType.FLOAT, this);
-    public final TableField<TeleportPointModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32), this);
-    public final TableField<TeleportPointModel, String> WELCOMEMSG = createField("welcomemsg", SQLDataType.CLOB, this);
+    public final TableField<TeleportPointModel, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<TeleportPointModel, UInteger> OWNER = createField("owner", U_INTEGER.nullable(false), this);
+    public final TableField<TeleportPointModel, Short> TYPE = createField("type", SQLDataType.SMALLINT.nullable(false), this);
+    public final TableField<TeleportPointModel, Short> VISIBILITY = createField("visibility", SQLDataType.SMALLINT.nullable(false), this);
+    public final TableField<TeleportPointModel, UInteger> WORLD = createField("world", U_INTEGER.nullable(false), this);
+    public final TableField<TeleportPointModel, Double> X = createField("x", SQLDataType.DOUBLE.nullable(false), this);
+    public final TableField<TeleportPointModel, Double> Y = createField("y", SQLDataType.DOUBLE.nullable(false), this);
+    public final TableField<TeleportPointModel, Double> Z = createField("z", SQLDataType.DOUBLE.nullable(false), this);
+    public final TableField<TeleportPointModel, Double> YAW = createField("yaw", SQLDataType.FLOAT.nullable(false), this);
+    public final TableField<TeleportPointModel, Double> PITCH = createField("pitch", SQLDataType.FLOAT.nullable(false), this);
+    public final TableField<TeleportPointModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32).nullable(false), this);
+    public final TableField<TeleportPointModel, String> WELCOMEMSG = createField("welcomemsg", LONGTEXT, this);
 
     @Override
     public Class<TeleportPointModel> getRecordType() {

@@ -35,11 +35,15 @@ import org.jooq.impl.DefaultDataType;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
+import org.jooq.types.UShort;
 
 public abstract class Table<R extends Record> extends TableImpl<R> implements TableCreator<R>
 {
     public static final DataType<UInteger> U_INTEGER = new DefaultDataType<UInteger>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "integer unsigned", "integer unsigned");
+    public static final DataType<UShort> U_SMALLINT = new DefaultDataType<UShort>(SQLDialect.MYSQL, SQLDataType.SMALLINTUNSIGNED, "smallint unsigned", "smallint unsigned");
+    public static final DataType<UInteger> U_MEDIUMINT = new DefaultDataType<UInteger>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "mediumint unsigned", "mediumint unsigned");
     public static final DataType<Boolean> BOOLEAN = new DefaultDataType<Boolean>(SQLDialect.MYSQL, SQLDataType.BOOLEAN, "boolean", "boolean");
+    public static final DataType<String> LONGTEXT = new DefaultDataType<String>(SQLDialect.MYSQL, SQLDataType.CLOB, "longtext", "longtext");
 
     public Table(String name, Version version)
     {

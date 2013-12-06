@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.signmarket.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -39,47 +36,25 @@ public class TableSignBlock extends AutoIncrementTable<SignMarketBlockModel, UIn
     {
         super(prefix + "signmarketblocks", new Version(1));
         this.setAIKey(KEY);
+        this.addIndex(WORLD, X, Y, Z);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER);
         this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
         this.addForeignKey(TABLE_SIGN_ITEM.getPrimaryKey(), ITEMKEY);
-        this.TABLE_SIGN_BLOCK = this;
+        this.addFields(KEY, WORLD, X,Y,Z, SIGNTYPE,OWNER, ITEMKEY, AMOUNT, DEMAND, PRICE);
+        TABLE_SIGN_BLOCK = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                    "`key`int(10) unsigned NOT NULL AUTO_INCREMENT,\n " +
-                                    "`world` int(10) unsigned NOT NULL,\n" +
-                                    "`x` int(11) NOT NULL,\n" +
-                                    "`y` int(11) NOT NULL,\n" +
-                                    "`z` int(11) NOT NULL,\n" +
-                                    "`signType` tinyint(1) NOT NULL,\n" +
-                                    "`owner` int(10) unsigned DEFAULT NULL,\n" +
-                                    "`itemKey` int(10) unsigned NOT NULL,\n" +
-                                    "`amount` smallint(5) unsigned NOT NULL,\n" +
-                                    "`demand` mediumint(8) unsigned DEFAULT NULL,\n" +
-                                    "`price` int(10) unsigned NOT NULL,\n" +
-                                    "PRIMARY KEY (`key`),\n" +
-                                    "KEY `loc` (`world`,`x`,`y`,`z`),\n" +
-                                    "FOREIGN KEY `f_owner`(`owner`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                    "FOREIGN KEY `f_world`(`world`) REFERENCES " + TABLE_WORLD.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                    "FOREIGN KEY `f_world`(`itemKey`) REFERENCES " + TABLE_SIGN_ITEM.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                    "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                    "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<SignMarketBlockModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<SignMarketBlockModel, UInteger> WORLD = createField("world", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<SignMarketBlockModel, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<SignMarketBlockModel, UInteger> WORLD = createField("world", U_INTEGER.nullable(false), this);
     public final TableField<SignMarketBlockModel, Integer> X = createField("x", SQLDataType.INTEGER, this);
     public final TableField<SignMarketBlockModel, Integer> Y = createField("y", SQLDataType.INTEGER, this);
     public final TableField<SignMarketBlockModel, Integer> Z = createField("z", SQLDataType.INTEGER, this);
     public final TableField<SignMarketBlockModel, Byte> SIGNTYPE = createField("signType", SQLDataType.TINYINT, this);
-    public final TableField<SignMarketBlockModel, UInteger> OWNER = createField("owner", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<SignMarketBlockModel, UInteger> ITEMKEY = createField("itemKey", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<SignMarketBlockModel, UShort> AMOUNT = createField("amount", SQLDataType.SMALLINTUNSIGNED, this);
-    public final TableField<SignMarketBlockModel, UInteger> DEMAND = createField("demand", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<SignMarketBlockModel, UInteger> PRICE = createField("price", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<SignMarketBlockModel, UInteger> OWNER = createField("owner", U_INTEGER, this);
+    public final TableField<SignMarketBlockModel, UInteger> ITEMKEY = createField("itemKey", U_INTEGER.nullable(false), this);
+    public final TableField<SignMarketBlockModel, UShort> AMOUNT = createField("amount", U_SMALLINT.nullable(false), this);
+    public final TableField<SignMarketBlockModel, UInteger> DEMAND = createField("demand", U_MEDIUMINT, this);
+    public final TableField<SignMarketBlockModel, UInteger> PRICE = createField("price", U_INTEGER.nullable(false), this);
 
     @Override
     public Class<SignMarketBlockModel> getRecordType() {
