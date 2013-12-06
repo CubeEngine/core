@@ -17,15 +17,13 @@
  */
 package de.cubeisland.engine.basics.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
+import org.jooq.util.mysql.MySQLDataType;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
@@ -38,25 +36,13 @@ public class TableBasicsUser extends Table<BasicsUserEntity>
         super(prefix + "basicuser", new Version(1));
         this.setPrimaryKey(KEY);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), KEY);
+        this.addFields(KEY, MUTED, GODMODE);
         TABLE_BASIC_USER = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` int(10) unsigned NOT NULL,\n" +
-                                        "`muted` datetime NULL DEFAULT NULL,\n" +
-                                        "`godMode` tinyint(1) NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`)," +
-                                        "FOREIGN KEY f_user (`key`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<BasicsUserEntity, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<BasicsUserEntity, Timestamp> MUTED = createField("muted", SQLDataType.TIMESTAMP, this);
-    public final TableField<BasicsUserEntity, Byte> GODMODE = createField("godMode", SQLDataType.TINYINT, this);
+    public final TableField<BasicsUserEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<BasicsUserEntity, Timestamp> MUTED = createField("muted", MySQLDataType.DATETIME, this);
+    public final TableField<BasicsUserEntity, Boolean> GODMODE = createField("godMode", BOOLEAN.nullable(false), this);
 
     @Override
     public Class<BasicsUserEntity> getRecordType() {

@@ -181,7 +181,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table))
         {
-            return;
+            // return; // TODO DO return
         }
         try
         {

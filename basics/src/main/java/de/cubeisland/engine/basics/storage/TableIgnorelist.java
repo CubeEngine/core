@@ -17,13 +17,9 @@
  */
 package de.cubeisland.engine.basics.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
@@ -38,24 +34,12 @@ public class TableIgnorelist extends Table<IgnoreList>
         this.addForeignKey(TABLE_USER.getPrimaryKey(), KEY);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), IGNORE);
         this.setPrimaryKey(KEY, IGNORE);
+        this.addFields(KEY, IGNORE);
         TABLE_IGNORE_LIST = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (" +
-                                        "`key` int(10) unsigned NOT NULL," +
-                                        "`ignore` int(10) unsigned NOT NULL," +
-                                        "PRIMARY KEY (`key`,`ignore`)," +
-                                        "FOREIGN KEY f_user (`key`) REFERENCES `" + TABLE_USER.getName() + "` (`" + TABLE_USER.KEY.getName() + "`) ON UPDATE CASCADE ON DELETE CASCADE," +
-                                        "FOREIGN KEY f_ignore (`ignore`) REFERENCES `" +TABLE_USER.getName() +"` (`" + TABLE_USER.KEY.getName() + "`) ON UPDATE CASCADE ON DELETE CASCADE) " +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci " +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<IgnoreList, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<IgnoreList, UInteger> IGNORE = createField("ignore", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<IgnoreList, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<IgnoreList, UInteger> IGNORE = createField("ignore", U_INTEGER.nullable(false), this);
 
     @Override
     public Class<IgnoreList> getRecordType() {

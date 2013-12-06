@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.basics.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -38,28 +35,14 @@ public class TableMail extends AutoIncrementTable<Mail, UInteger>
         this.setAIKey(KEY);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
         this.addForeignKey(TABLE_USER.getPrimaryKey(),  SENDERID);
+        this.addFields(KEY, MESSAGE, USERID, SENDERID);
         TABLE_MAIL = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`message` varchar(100) NOT NULL,\n" +
-                                        "`userId` int(10) unsigned NOT NULL,\n" +
-                                        "`senderId` int(10) unsigned DEFAULT NULL,\n" +
-                                        "PRIMARY KEY (`key`),\n" +
-                                        "FOREIGN KEY f_user (`userId`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY f_sender (`senderId`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<Mail, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<Mail, String> MESSAGE = createField("message", SQLDataType.VARCHAR.length(100), this);
-    public final TableField<Mail, UInteger> USERID = createField("userId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<Mail, UInteger> SENDERID = createField("senderId", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<Mail, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<Mail, String> MESSAGE = createField("message", SQLDataType.VARCHAR.length(100).nullable(false), this);
+    public final TableField<Mail, UInteger> USERID = createField("userId", U_INTEGER.nullable(false), this);
+    public final TableField<Mail, UInteger> SENDERID = createField("senderId", U_INTEGER, this);
 
     @Override
     public Class<Mail> getRecordType() {

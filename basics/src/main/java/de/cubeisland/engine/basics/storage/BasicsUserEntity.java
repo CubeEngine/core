@@ -29,7 +29,7 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.basics.storage.TableBasicsUser.TABLE_BASIC_USER;
 
-public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> implements Record3<UInteger, Timestamp, Byte>
+public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> implements Record3<UInteger, Timestamp, Boolean>
 {
     public BasicsUserEntity()
     {
@@ -39,18 +39,8 @@ public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> impl
     public BasicsUserEntity newBasicUser(User user)
     {
         this.setKey(user.getEntity().getKey());
-        this.setGodMode(false);
+        this.setGodmode(false);
         return this;
-    }
-
-    public void setGodMode(boolean set)
-    {
-        this.setGodmode((byte)(set ? 1 : 0));
-    }
-
-    public boolean isGodMode()
-    {
-        return this.getGodmode() == 1;
     }
 
     public void setKey(UInteger value) {
@@ -69,12 +59,12 @@ public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> impl
         return (Timestamp) getValue(1);
     }
 
-    public void setGodmode(Byte value) {
-        setValue(2, value);
+    public void setGodmode(boolean set) {
+        setValue(2, set);
     }
 
-    public Byte getGodmode() {
-        return (Byte) getValue(2);
+    public Boolean getGodmode() {
+        return (Boolean) getValue(2);
     }
 
     // -------------------------------------------------------------------------
@@ -91,12 +81,12 @@ public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> impl
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<UInteger, Timestamp, Byte> fieldsRow() {
+    public Row3<UInteger, Timestamp, Boolean> fieldsRow() {
         return (Row3) super.fieldsRow();
     }
 
     @Override
-    public Row3<UInteger, Timestamp, Byte> valuesRow() {
+    public Row3<UInteger, Timestamp, Boolean> valuesRow() {
         return (Row3) super.valuesRow();
     }
 
@@ -111,7 +101,7 @@ public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> impl
     }
 
     @Override
-    public Field<Byte> field3() {
+    public Field<Boolean> field3() {
         return TABLE_BASIC_USER.GODMODE;
     }
 
@@ -126,7 +116,7 @@ public class BasicsUserEntity extends UpdatableRecordImpl<BasicsUserEntity> impl
     }
 
     @Override
-    public Byte value3() {
+    public Boolean value3() {
         return getGodmode();
     }
 }

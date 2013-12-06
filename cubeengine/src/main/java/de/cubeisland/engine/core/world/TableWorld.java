@@ -21,19 +21,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
-import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
 
@@ -46,21 +39,8 @@ public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implem
         super(prefix + "worlds", new Version(2));
         this.setAIKey(KEY);
         this.addUniqueKey(LEAST, MOST);
+        this.addFields(KEY, WORLDNAME, LEAST, MOST);
         TABLE_WORLD = this;
-    }
-
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " ("+
-                                        "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`worldName` varchar(64) NOT NULL,\n" +
-                                        "`UUIDleast` bigint NOT NULL,\n" +
-                                        "`UUIDmost` bigint NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`)," +
-                                        "UNIQUE `u_UUID` (`UUIDleast`, `UUIDmost`)) " +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='2.0.0'").execute();
     }
 
     @Override
@@ -95,10 +75,10 @@ public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implem
         }
     }
 
-    public final TableField<WorldEntity, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<WorldEntity, String> WORLDNAME = createField("worldName", SQLDataType.VARCHAR.length(64), this);
-    public final TableField<WorldEntity, Long> LEAST = createField("UUIDleast", SQLDataType.BIGINT, this);
-    public final TableField<WorldEntity, Long> MOST = createField("UUIDmost", SQLDataType.BIGINT, this);
+    public final TableField<WorldEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<WorldEntity, String> WORLDNAME = createField("worldName", SQLDataType.VARCHAR.length(64).nullable(false), this);
+    public final TableField<WorldEntity, Long> LEAST = createField("UUIDleast", SQLDataType.BIGINT.nullable(false), this);
+    public final TableField<WorldEntity, Long> MOST = createField("UUIDmost", SQLDataType.BIGINT.nullable(false), this);
 
     @Override
     public Class<WorldEntity> getRecordType() {

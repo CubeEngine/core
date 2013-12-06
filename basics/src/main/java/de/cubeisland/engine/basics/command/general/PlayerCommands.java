@@ -470,7 +470,7 @@ public class PlayerCommands
     {
         if (!force)
         {
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().isGodMode())
+            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().getGodmode())
             {
                 context.sendTranslated("&cYou cannot kill &2%s&c!", user.getDisplayName());
                 return false;
@@ -710,8 +710,8 @@ public class PlayerCommands
             return;
         }
         BasicsUserEntity bUser = module.getBasicsUser(user).getbUEntity();
-        bUser.setGodMode(!bUser.isGodMode());
-        if (bUser.isGodMode())
+        bUser.setGodmode(!bUser.getGodmode());
+        if (bUser.getGodmode())
         {
             if (other)
             {

@@ -51,24 +51,6 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger>
         }
         return TABLE_USER;
     }
-/*
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                    "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                    "`player` varchar(16) NOT NULL,\n" +
-                                    "`nogc` tinyint(1) NOT NULL,\n" +
-                                    "`lastseen` datetime NOT NULL,\n" +
-                                    "`passwd` varbinary(128) DEFAULT NULL,\n" +
-                                    "`firstseen` datetime NOT NULL,\n" +
-                                    "`language` varchar(5) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`key`),\n" +
-                                    "UNIQUE KEY `player` (`player`))\n" +
-                                    "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                    "COMMENT='1.0.0'").execute();
-    }
-    */
 
     public final TableField<UserEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
     public final TableField<UserEntity, String> PLAYER = createField("player", SQLDataType.VARCHAR.length(16).nullable(false), this);
