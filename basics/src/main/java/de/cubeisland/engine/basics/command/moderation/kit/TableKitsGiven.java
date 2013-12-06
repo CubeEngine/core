@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -37,25 +34,13 @@ public class TableKitsGiven extends Table<KitsGiven>
         super(prefix + "kits", new Version(1));
         this.setPrimaryKey(USERID);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
+        this.addFields(USERID, KITNAME, AMOUNT);
         TABLE_KITS = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`userId` int(10) unsigned NOT NULL,\n" +
-                                        "`kitName` varchar(50) NOT NULL,\n" +
-                                        "`amount` int(11) NOT NULL,\n" +
-                                        "PRIMARY KEY (`userId`,`kitName`),\n" +
-                                        "FOREIGN KEY `f_user`(`userId`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<KitsGiven, UInteger> USERID = createField("userId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<KitsGiven, String> KITNAME = createField("kitName", SQLDataType.VARCHAR.length(50), this);
-    public final TableField<KitsGiven, Integer> AMOUNT = createField("amount", SQLDataType.INTEGER, this);
+    public final TableField<KitsGiven, UInteger> USERID = createField("userId", U_INTEGER.nullable(false), this);
+    public final TableField<KitsGiven, String> KITNAME = createField("kitName", SQLDataType.VARCHAR.length(50).nullable(false), this);
+    public final TableField<KitsGiven, Integer> AMOUNT = createField("amount", SQLDataType.INTEGER.nullable(false), this);
 
     @Override
     public Class<KitsGiven> getRecordType() {

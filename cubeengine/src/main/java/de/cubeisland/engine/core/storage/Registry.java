@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.core.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
@@ -77,7 +74,8 @@ public class Registry extends Table<RegistryModel>
     public Registry(String prefix)
     {
         super(prefix + "registry", new Version(1));
-        this.setPrimaryKey(KEY);
+        this.setPrimaryKey(KEY, MODULE);
+        this.addFields(KEY, MODULE, VALUE);
         TABLE_REGISTRY = this;
     }
 
@@ -86,21 +84,9 @@ public class Registry extends Table<RegistryModel>
         this.dsl = dsl;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` varchar(16) NOT NULL,\n" +
-                                        "`module` varchar(16) NOT NULL,\n" +
-                                        "`value` varchar(256) NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`,`module`))\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<RegistryModel, String> KEY = createField("key", SQLDataType.VARCHAR.length(16), this);
-    public final TableField<RegistryModel, String> MODULE = createField("module", SQLDataType.VARCHAR.length(16), this);
-    public final TableField<RegistryModel, String> VALUE = createField("value", SQLDataType.VARCHAR.length(256), this);
+    public final TableField<RegistryModel, String> KEY = createField("key", SQLDataType.VARCHAR.length(16).nullable(false), this);
+    public final TableField<RegistryModel, String> MODULE = createField("module", SQLDataType.VARCHAR.length(16).nullable(false), this);
+    public final TableField<RegistryModel, String> VALUE = createField("value", SQLDataType.VARCHAR.length(256).nullable(false), this);
 
     @Override
     public Class<RegistryModel> getRecordType() {

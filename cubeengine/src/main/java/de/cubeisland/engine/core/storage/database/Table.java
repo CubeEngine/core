@@ -170,7 +170,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
         sb.append(")\n");
         sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n");// TODO
         sb.append("COMMENT='").append(this.version.toString()).append("'");
-        System.out.print("\n" + sb.toString()); // TODO remove
+        //System.out.print("\n" + sb.toString()); // TODO remove
         connection.prepareStatement(sb.toString()).execute();
     }
     private static final char QUOTE = '`';
