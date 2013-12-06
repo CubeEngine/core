@@ -19,23 +19,11 @@ package de.cubeisland.engine.travel.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
@@ -52,6 +40,7 @@ public class TableTeleportPoint extends AutoIncrementTable<TeleportPointModel, U
         this.addUniqueKey(OWNER, NAME, TYPE);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER);
         this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
+        TABLE_TP_POINT = this;
     }
 
     @Override

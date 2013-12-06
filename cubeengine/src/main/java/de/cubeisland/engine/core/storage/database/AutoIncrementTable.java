@@ -38,9 +38,19 @@ public abstract class AutoIncrementTable<R extends Record, K extends Number> ext
         return identity;
     }
 
-    public final Table<R> setAIKey(TableField<R, K> field)
+    public final void setAIKey(TableField<R, K> field)
     {
         this.identity = Keys.identity(this, field);
-        return super.setPrimaryKey(field);
+        super.setPrimaryKey(field);
+    }
+
+    @Override
+    protected void appendColumnDefinition(StringBuilder sb, TableField<R, ?> field)
+    {
+        super.appendColumnDefinition(sb, field);
+        if (identity.getField() == field)
+        {
+            sb.append(" AUTO_INCREMENT");
+        }
     }
 }

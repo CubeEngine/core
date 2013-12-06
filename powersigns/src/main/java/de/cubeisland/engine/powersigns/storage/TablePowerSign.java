@@ -19,24 +19,11 @@ package de.cubeisland.engine.powersigns.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.Table;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 import org.jooq.util.mysql.MySQLDataType;
 
@@ -47,7 +34,7 @@ public class TablePowerSign extends AutoIncrementTable<PowerSignModel, UInteger>
 {
     public static TablePowerSign TABLE_POWER_SIGN;
 
-    private TablePowerSign(String prefix)
+    public TablePowerSign(String prefix)
     {
         super(prefix + "powersign", new Version(1));
         this.setAIKey(ID);

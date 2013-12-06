@@ -33,7 +33,7 @@ public class TableBankAccess extends AutoIncrementTable<BankAccessModel, UIntege
 {
     public static TableBankAccess TABLE_BANK_ACCESS;
 
-    private TableBankAccess(String prefix)
+    public TableBankAccess(String prefix)
     {
         super(prefix + "account_access", new Version(1));
         this.setAIKey(ID);

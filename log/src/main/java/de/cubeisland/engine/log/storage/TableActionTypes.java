@@ -30,7 +30,7 @@ public class TableActionTypes extends AutoIncrementTable<ActionTypeModel, UInteg
 {
     public static TableActionTypes TABLE_ACTION_TYPE;
 
-    private TableActionTypes(String prefix)
+    public TableActionTypes(String prefix)
     {
         super(prefix + "log_actiontypes", new Version(1));
         this.setAIKey(ID);

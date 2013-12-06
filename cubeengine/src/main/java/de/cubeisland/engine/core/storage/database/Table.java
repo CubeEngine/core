@@ -17,19 +17,29 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.util.Version;
+import org.jooq.DataType;
 import org.jooq.ForeignKey;
 import org.jooq.Record;
+import org.jooq.SQLDialect;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
+import org.jooq.impl.DefaultDataType;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import org.jooq.types.UInteger;
 
 public abstract class Table<R extends Record> extends TableImpl<R> implements TableCreator<R>
 {
+    public static final DataType<UInteger> U_INTEGER = new DefaultDataType<UInteger>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "integer unsigned", "integer unsigned");
+    public static final DataType<Boolean> BOOLEAN = new DefaultDataType<Boolean>(SQLDialect.MYSQL, SQLDataType.BOOLEAN, "boolean", "boolean");
+
     public Table(String name, Version version)
     {
         super(name);
@@ -37,44 +47,46 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     }
 
     private final Version version;
-
-    public Table<R> setPrimaryKey(TableField<R, ?>... fields)
-    {
-        this.primaryKey = Keys.uniqueKey(this, fields);
-        this.uniqueKeys.add(primaryKey);
-        return this;
-    }
-
-    public Table<R> addForeignKey(UniqueKey<?> referencedKey, TableField<R, ?>... fields)
-    {
-        this.foreignKeys.add(Keys.foreignKey(referencedKey, this, fields));
-        return this;
-    }
-
-    public Table<R> addUniqueKey(TableField<R, ?>... fields)
-    {
-        this.uniqueKeys.add(Keys.uniqueKey(this, fields));
-        return this;
-    }
-
     private UniqueKey<R> primaryKey;
     private List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
     private List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
+    private TableField<R, ?>[] fields;
+
+    public final void setPrimaryKey(TableField<R, ?>... fields)
+    {
+        this.primaryKey = Keys.uniqueKey(this, fields);
+        this.uniqueKeys.add(primaryKey);
+    }
+
+    public final void addForeignKey(UniqueKey<?> referencedKey, TableField<R, ?>... fields)
+    {
+        this.foreignKeys.add(Keys.foreignKey(referencedKey, this, fields));
+    }
+
+    public final void addUniqueKey(TableField<R, ?>... fields)
+    {
+        this.uniqueKeys.add(Keys.uniqueKey(this, fields));
+    }
+
+    public final void addFields(TableField<R, ?>... fields)
+    {
+        this.fields = fields;
+    }
 
     @Override
-    public UniqueKey<R> getPrimaryKey()
+    public final UniqueKey<R> getPrimaryKey()
     {
         return primaryKey;
     }
 
     @Override
-    public List<UniqueKey<R>> getKeys()
+    public final List<UniqueKey<R>> getKeys()
     {
         return uniqueKeys;
     }
 
     @Override
-    public List<ForeignKey<R, ?>> getReferences() {
+    public final List<ForeignKey<R, ?>> getReferences() {
         return foreignKeys;
     }
 
@@ -82,8 +94,99 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     public abstract Class<R> getRecordType();
 
     @Override
-    public Version getTableVersion()
+    public final Version getTableVersion()
     {
         return version;
+    }
+
+    @Override
+    public void createTable(Connection connection) throws SQLException
+    {
+        if (this.fields == null)
+        {
+            throw new IllegalStateException("Add your fields to the table OR implement createTable yourself!");
+        }
+        StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
+        sb.append(QUOTE).append(this.getName()).append(QUOTE).append(" (\n");
+        boolean first = true;
+        for (TableField<R, ?> field : this.fields)
+        {
+            if (!first)
+            {
+                sb.append(",\n");
+            }
+            this.appendColumnDefinition(sb, field);
+            first = false;
+        }
+        if (this.primaryKey != null)
+        {
+            sb.append(",\nPRIMARY KEY ");
+            this.appendFieldList(sb, primaryKey.getFields());
+        }
+        for (UniqueKey<R> uniqueKey : this.uniqueKeys)
+        {
+            if (uniqueKey == primaryKey)
+            {
+                continue;
+            }
+            sb.append(",\nUNIQUE KEY ");
+            // TODO unique Key Name
+            this.appendFieldList(sb, uniqueKey.getFields());
+        }
+        for (ForeignKey<R, ?> foreignKey : this.foreignKeys)
+        {
+            sb.append(",\nFOREIGN KEY ");
+            // TODO foreign Key Name
+            this.appendFieldList(sb, foreignKey.getFields());
+            UniqueKey<? extends Record> key = foreignKey.getKey();
+            sb.append(" REFERENCES ").append(QUOTE).append(key.getTable().getName()).append(QUOTE);
+            sb.append("(");
+            first = true;
+            for (TableField field : key.getFields())
+            {
+                if (!first)
+                {
+                    sb.append(",");
+                }
+                sb.append(QUOTE).append(field.getName()).append(QUOTE);
+                first = false;
+            }
+            sb.append(") ON UPDATE CASCADE ON DELETE CASCADE");
+        }
+        sb.append(")\n");
+        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n");// TODO
+        sb.append("COMMENT='").append(this.version.toString()).append("'");
+        System.out.print(sb.toString());
+    }
+    private static final char QUOTE = '`';
+
+    private void appendFieldList(StringBuilder sb, List<TableField<R, ?>> fields)
+    {
+        sb.append("(");
+        boolean first = true;
+        for (TableField field : fields)
+        {
+            if (!first)
+            {
+                sb.append(",");
+            }
+            sb.append(QUOTE).append(field.getName()).append(QUOTE);
+            first = false;
+        }
+        sb.append(")");
+    }
+
+    protected void appendColumnDefinition(StringBuilder sb, TableField<R, ?> field)
+    {
+        sb.append(QUOTE).append(field.getName()).append(QUOTE).append(" ");
+        sb.append(field.getDataType().getCastTypeName());
+        if (field.getDataType().nullable())
+        {
+            sb.append(" DEFAULT NULL");
+        }
+        else
+        {
+            sb.append(" NOT NULL");
+        }
     }
 }
