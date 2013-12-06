@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.storage.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
@@ -50,6 +51,9 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     private UniqueKey<R> primaryKey;
     private List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
     private List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
+
+    private List<TableField<R, ? >[]> indices = new ArrayList<>();
+
     private TableField<R, ?>[] fields;
 
     public final void setPrimaryKey(TableField<R, ?>... fields)
@@ -123,6 +127,12 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
             sb.append(",\nPRIMARY KEY ");
             this.appendFieldList(sb, primaryKey.getFields());
         }
+        for (TableField<R, ?>[] index : this.indices)
+        {
+            sb.append(",\nINDEX ");
+            // TODO index Key Name
+            this.appendFieldList(sb, Arrays.asList(index));
+        }
         for (UniqueKey<R> uniqueKey : this.uniqueKeys)
         {
             if (uniqueKey == primaryKey)
@@ -156,7 +166,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
         sb.append(")\n");
         sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n");// TODO
         sb.append("COMMENT='").append(this.version.toString()).append("'");
-        System.out.print("\n"+sb.toString()); // TODO remove
+        System.out.print("\n" + sb.toString()); // TODO remove
         connection.prepareStatement(sb.toString()).execute();
     }
     private static final char QUOTE = '`';
@@ -189,5 +199,10 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
         {
             sb.append(" NOT NULL");
         }
+    }
+
+    public void addIndex(TableField<R,?>... fields)
+    {
+        this.indices.add(fields);
     }
 }

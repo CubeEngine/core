@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.conomy.account.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -40,29 +37,14 @@ public class TableBankAccess extends AutoIncrementTable<BankAccessModel, UIntege
         this.addUniqueKey(USERID, ACCOUNTID);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
         this.addForeignKey(TABLE_ACCOUNT.getPrimaryKey(), ACCOUNTID);
+        this.addFields(ID, USERID, ACCOUNTID, ACCESSLEVEL);
         TABLE_BANK_ACCESS = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`userId` int(10) unsigned NOT NULL,\n" +
-                                        "`accountId` int(10) unsigned NOT NULL,\n" +
-                                        "`accessLevel` tinyint(4) NOT NULL,\n" +
-                                        "PRIMARY KEY (`id`),\n" +
-                                        "UNIQUE KEY `userId` (`userId`,`accountId`),\n" +
-                                        "FOREIGN KEY `f_user`(`userId`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
-                                        "FOREIGN KEY `f_account`(`accountId`) REFERENCES " + TABLE_ACCOUNT.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<BankAccessModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<BankAccessModel, UInteger> USERID = createField("userId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<BankAccessModel, UInteger> ACCOUNTID = createField("accountId", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<BankAccessModel, Byte> ACCESSLEVEL = createField("accessLevel", SQLDataType.TINYINT, this);
+    public final TableField<BankAccessModel, UInteger> ID = createField("id", U_INTEGER.nullable(false), this);
+    public final TableField<BankAccessModel, UInteger> USERID = createField("userId", U_INTEGER.nullable(false), this);
+    public final TableField<BankAccessModel, UInteger> ACCOUNTID = createField("accountId", U_INTEGER.nullable(false), this);
+    public final TableField<BankAccessModel, Byte> ACCESSLEVEL = createField("accessLevel", SQLDataType.TINYINT.nullable(false), this);
 
     @Override
     public Class<BankAccessModel> getRecordType() {

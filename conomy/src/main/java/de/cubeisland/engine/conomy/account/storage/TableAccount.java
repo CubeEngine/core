@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.conomy.account.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
@@ -38,29 +35,14 @@ public class TableAccount extends AutoIncrementTable<AccountModel, UInteger>
         this.setAIKey(KEY);
         this.addUniqueKey(USER_ID, NAME);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USER_ID);
+        this.addFields(KEY, USER_ID, NAME, VALUE, MASK);
         TABLE_ACCOUNT = this;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`user_id` int(10) unsigned DEFAULT NULL,\n" +
-                                        "`name` varchar(64) DEFAULT NULL,\n" +
-                                        "`value` bigint(20) NOT NULL,\n" +
-                                        "`mask` tinyint(4) DEFAULT NULL,\n" +
-                                        "PRIMARY KEY (`key`),\n" +
-                                        "UNIQUE KEY `user_id` (`user_id`,`name`),\n" +
-                                        "FOREIGN KEY `f_user`(`user_id`) REFERENCES " + TABLE_USER.getName() + "(`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    public final TableField<AccountModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<AccountModel, UInteger> USER_ID = createField("user_id", SQLDataType.INTEGERUNSIGNED, this);
+    public final TableField<AccountModel, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<AccountModel, UInteger> USER_ID = createField("user_id", U_INTEGER, this);
     public final TableField<AccountModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(64), this);
-    public final TableField<AccountModel, Long> VALUE = createField("value", SQLDataType.BIGINT, this);
+    public final TableField<AccountModel, Long> VALUE = createField("value", SQLDataType.BIGINT.nullable(false), this);
     public final TableField<AccountModel, Byte> MASK = createField("mask", SQLDataType.TINYINT, this);
 
     @Override
