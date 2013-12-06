@@ -20,43 +20,26 @@ package de.cubeisland.engine.locker.storage;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class TableLocks extends TableImpl<LockModel> implements TableCreator<LockModel>
+public class TableLocks extends AutoIncrementTable<LockModel, UInteger>
 {
     public static TableLocks TABLE_LOCK;
 
-    private TableLocks(String prefix)
+    public TableLocks(String prefix)
     {
-        super(prefix + "locks");
-        IDENTITY = Keys.identity(this, this.ID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        UNIQUE_ENTITY_UID = Keys.uniqueKey(this, this.ENTITY_UID_LEAST, this.ENTITY_UID_MOST);
-        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER_ID);
-    }
-
-    public static TableLocks initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_LOCK = new TableLocks(config.tablePrefix);
-        return TABLE_LOCK;
+        super(prefix + "locks", new Version(1));
+        this.setAIKey(ID);
+        this.addUniqueKey(ENTITY_UID_LEAST, ENTITY_UID_MOST);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER_ID);
+        TABLE_LOCK = this;
     }
 
     @Override
@@ -80,19 +63,6 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
     }
-
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<LockModel, UInteger> IDENTITY;
-    public final UniqueKey<LockModel> PRIMARY_KEY;
-    public final UniqueKey<LockModel> UNIQUE_ENTITY_UID;
-    public final ForeignKey<LockModel, UserEntity> FOREIGN_OWNER;
 
     public final TableField<LockModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<LockModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
@@ -121,29 +91,6 @@ public class TableLocks extends TableImpl<LockModel> implements TableCreator<Loc
 
     public final TableField<LockModel, Timestamp> LAST_ACCESS = createField("last_access", SQLDataType.TIMESTAMP, this);
     public final TableField<LockModel, Timestamp> CREATED = createField("created", SQLDataType.TIMESTAMP, this);
-
-    @Override
-    public Identity<LockModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<LockModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<LockModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_ENTITY_UID);
-    }
-
-    @Override
-    public List<ForeignKey<LockModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<LockModel, ?>>asList(FOREIGN_OWNER);
-    }
 
     @Override
     public Class<LockModel> getRecordType() {

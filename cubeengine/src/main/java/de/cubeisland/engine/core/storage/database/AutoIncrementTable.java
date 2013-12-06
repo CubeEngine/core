@@ -15,3 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+package de.cubeisland.engine.core.storage.database;
+
+import de.cubeisland.engine.core.storage.database.mysql.Keys;
+import de.cubeisland.engine.core.util.Version;
+import org.jooq.Identity;
+import org.jooq.Record;
+import org.jooq.TableField;
+
+public abstract class AutoIncrementTable<R extends Record, K extends Number> extends Table<R>
+{
+    protected AutoIncrementTable(String name, Version version)
+    {
+        super(name, version);
+    }
+
+    private Identity<R, K> identity;
+
+    @Override
+    public Identity<R, K> getIdentity()
+    {
+        return identity;
+    }
+
+    public final Table<R> setAIKey(TableField<R, K> field)
+    {
+        this.identity = Keys.identity(this, field);
+        return super.setPrimaryKey(field);
+    }
+}

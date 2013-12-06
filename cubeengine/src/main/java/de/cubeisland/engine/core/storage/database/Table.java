@@ -23,13 +23,12 @@ import java.util.List;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.TableImpl;
 
-public abstract class Table<R extends Record, K extends Number> extends TableImpl<R> implements TableCreator<R>
+public abstract class Table<R extends Record> extends TableImpl<R> implements TableCreator<R>
 {
     public Table(String name, Version version)
     {
@@ -39,36 +38,28 @@ public abstract class Table<R extends Record, K extends Number> extends TableImp
 
     private final Version version;
 
-    public final Table<R, K> setPrimaryKey(TableField<R, K> field)
+    public Table<R> setPrimaryKey(TableField<R, ?>... fields)
     {
-        this.identity = Keys.identity(this, field);
-        this.primaryKey = Keys.uniqueKey(this, field);
+        this.primaryKey = Keys.uniqueKey(this, fields);
         this.uniqueKeys.add(primaryKey);
         return this;
     }
 
-    public final Table<R, K> addForeignKey(UniqueKey referencedKey, TableField<R, ?>... fields)
+    public Table<R> addForeignKey(UniqueKey<?> referencedKey, TableField<R, ?>... fields)
     {
         this.foreignKeys.add(Keys.foreignKey(referencedKey, this, fields));
         return this;
     }
 
-    public final Table<R, K> addUniqueKey(TableField<R, ?>... fields)
+    public Table<R> addUniqueKey(TableField<R, ?>... fields)
     {
         this.uniqueKeys.add(Keys.uniqueKey(this, fields));
         return this;
     }
 
-    private Identity<R, K> identity;
     private UniqueKey<R> primaryKey;
     private List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
     private List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
-
-    @Override
-    public Identity<R, K> getIdentity()
-    {
-        return identity;
-    }
 
     @Override
     public UniqueKey<R> getPrimaryKey()
@@ -90,11 +81,9 @@ public abstract class Table<R extends Record, K extends Number> extends TableImp
     @Override
     public abstract Class<R> getRecordType();
 
-
     @Override
     public Version getTableVersion()
     {
         return version;
     }
-
 }

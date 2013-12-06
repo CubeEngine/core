@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
@@ -40,25 +41,17 @@ import org.jooq.types.UInteger;
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
-public class TableTeleportPoint extends TableImpl<TeleportPointModel> implements TableCreator<TeleportPointModel>
+public class TableTeleportPoint extends AutoIncrementTable<TeleportPointModel, UInteger>
 {
     public static TableTeleportPoint TABLE_TP_POINT;
 
-    private TableTeleportPoint(String prefix)
+    public TableTeleportPoint(String prefix)
     {
-        super(prefix + "teleportpoints");
-        IDENTITY = Keys.identity(this, this.KEY);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        UNIQUE_OWNER_NAME_TYPE = Keys.uniqueKey(this, this.OWNER, this.NAME, this.TYPE);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
-    }
-
-    public static TableTeleportPoint initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_TP_POINT = new TableTeleportPoint(config.tablePrefix);
-        return TABLE_TP_POINT;
+        super(prefix + "teleportpoints", new Version(1));
+        this.setAIKey(KEY);
+        this.addUniqueKey(OWNER, NAME, TYPE);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER);
+        this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
     }
 
     @Override
@@ -85,20 +78,6 @@ public class TableTeleportPoint extends TableImpl<TeleportPointModel> implements
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<TeleportPointModel, UInteger> IDENTITY;
-    public final UniqueKey<TeleportPointModel> PRIMARY_KEY;
-    public final UniqueKey<TeleportPointModel> UNIQUE_OWNER_NAME_TYPE;
-    public final ForeignKey<TeleportPointModel, UserEntity> FOREIGN_USER;
-    public final ForeignKey<TeleportPointModel, WorldEntity> FOREIGN_WORLD;
-
     public final TableField<TeleportPointModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<TeleportPointModel, UInteger> OWNER = createField("owner", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<TeleportPointModel, Short> TYPE = createField("type", SQLDataType.SMALLINT, this);
@@ -111,29 +90,6 @@ public class TableTeleportPoint extends TableImpl<TeleportPointModel> implements
     public final TableField<TeleportPointModel, Double> PITCH = createField("pitch", SQLDataType.FLOAT, this);
     public final TableField<TeleportPointModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32), this);
     public final TableField<TeleportPointModel, String> WELCOMEMSG = createField("welcomemsg", SQLDataType.CLOB, this);
-
-    @Override
-    public Identity<TeleportPointModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<TeleportPointModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<TeleportPointModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_OWNER_NAME_TYPE);
-    }
-
-    @Override
-    public List<ForeignKey<TeleportPointModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<TeleportPointModel, ?>>asList(FOREIGN_USER, FOREIGN_WORLD);
-    }
 
     @Override
     public Class<TeleportPointModel> getRecordType() {

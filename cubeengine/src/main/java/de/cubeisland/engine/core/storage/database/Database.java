@@ -138,4 +138,6 @@ public interface Database
     ListenableFuture<Integer> executeLater(Query query);
 
     <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query);
+
+    String getTablePrefix();
 }

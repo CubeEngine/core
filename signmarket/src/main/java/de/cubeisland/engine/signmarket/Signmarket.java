@@ -37,8 +37,8 @@ public class Signmarket extends Module implements Reloadable
     {
         Profiler.startProfiling("marketSignEnable");
         Database db = this.getCore().getDB();
-        db.registerTable(TableSignItem.initTable(db)); // Init Item-table first!!!
-        db.registerTable(TableSignBlock.initTable(db));
+        db.registerTable(TableSignItem.class); // Init Item-table first!!!
+        db.registerTable(TableSignBlock.class);
         this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);
         this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
@@ -71,8 +71,8 @@ public class Signmarket extends Module implements Reloadable
     {
         Profiler.startProfiling("msreload");
         Database db = this.getCore().getDB();
-        db.registerTable(TableSignItem.initTable(db)); // Init Item-table first!!!
-        db.registerTable(TableSignBlock.initTable(db));
+        db.registerTable(TableSignItem.class); // Init Item-table first!!!
+        db.registerTable(TableSignBlock.class);
         this.config = this.loadConfig(SignMarketConfig.class);
         this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);

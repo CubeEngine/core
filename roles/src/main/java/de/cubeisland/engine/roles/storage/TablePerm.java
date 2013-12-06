@@ -17,47 +17,29 @@
  */
 package de.cubeisland.engine.roles.storage;
 
-import java.lang.Byte;
-import java.lang.String;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
-import org.jooq.ForeignKey;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
-public class TablePerm extends TableImpl<UserPermission> implements TableCreator<UserPermission>
+public class TablePerm extends Table<UserPermission>
 {
     public static TablePerm TABLE_PERM;
 
-    private TablePerm(String prefix)
+    public TablePerm(String prefix)
     {
-        super(prefix + "userperms");
-        PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.WORLDID, this.PERM);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLDID);
-    }
-
-    public static TablePerm initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_PERM = new TablePerm(config.tablePrefix);
-        return TABLE_PERM;
+        super(prefix + "userperms", new Version(1));
+        this.setPrimaryKey(USERID, WORLDID, PERM);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
+        this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLDID);
+        TABLE_PERM = this;
     }
 
     @Override
@@ -75,39 +57,10 @@ public class TablePerm extends TableImpl<UserPermission> implements TableCreator
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final UniqueKey<UserPermission> PRIMARY_KEY;
-    public final ForeignKey<UserPermission, UserEntity> FOREIGN_USER;
-    public final ForeignKey<UserPermission, WorldEntity> FOREIGN_WORLD;
-
     public final TableField<UserPermission, UInteger> USERID = createField("userId", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<UserPermission, UInteger> WORLDID = createField("worldId", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<UserPermission, String> PERM = createField("perm", SQLDataType.VARCHAR.length(255), this);
     public final TableField<UserPermission, Byte> ISSET = createField("isSet", SQLDataType.TINYINT, this);
-
-    @Override
-    public UniqueKey<UserPermission> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<UserPermission>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<UserPermission, ?>> getReferences() {
-        return Arrays.<ForeignKey<UserPermission, ?>>asList(FOREIGN_WORLD, FOREIGN_USER);
-    }
 
     @Override
     public Class<UserPermission> getRecordType() {

@@ -19,43 +19,26 @@ package de.cubeisland.engine.itemrepair.repair.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
-public class TableRepairBlock extends TableImpl<RepairBlockModel> implements TableCreator<RepairBlockModel>
+public class TableRepairBlock extends AutoIncrementTable<RepairBlockModel, UInteger>
 {
     public static TableRepairBlock TABLE_REPAIR_BLOCK;
 
-    private TableRepairBlock(String prefix)
+    public TableRepairBlock(String prefix)
     {
-        super(prefix + "repairblocks");
-        IDENTITY = Keys.identity(this, this.ID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        UNIQUE_USERID_NAME = Keys.uniqueKey(this, this.WORLD, this.X, this.Y, this.Z);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
-    }
-
-    public static TableRepairBlock initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_REPAIR_BLOCK = new TableRepairBlock(config.tablePrefix);
-        return TABLE_REPAIR_BLOCK;
+        super(prefix + "repairblocks", new Version(1));
+        this.setAIKey(ID);
+        this.addUniqueKey(WORLD, X, Y, Z);
+        this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
+        TABLE_REPAIR_BLOCK = this;
     }
 
     @Override
@@ -75,48 +58,12 @@ public class TableRepairBlock extends TableImpl<RepairBlockModel> implements Tab
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<RepairBlockModel, UInteger> IDENTITY;
-    public final UniqueKey<RepairBlockModel> PRIMARY_KEY;
-    public final UniqueKey<RepairBlockModel> UNIQUE_USERID_NAME;
-    public final ForeignKey<RepairBlockModel, WorldEntity> FOREIGN_WORLD;
-
     public final TableField<RepairBlockModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<RepairBlockModel, UInteger> WORLD = createField("world", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<RepairBlockModel, Integer> X = createField("x", SQLDataType.INTEGER, this);
     public final TableField<RepairBlockModel, Integer> Y = createField("y", SQLDataType.INTEGER, this);
     public final TableField<RepairBlockModel, Integer> Z = createField("z", SQLDataType.INTEGER, this);
     public final TableField<RepairBlockModel, String> TYPE = createField("type", SQLDataType.VARCHAR.length(64), this);
-
-    @Override
-    public Identity<RepairBlockModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<RepairBlockModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<RepairBlockModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<RepairBlockModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<RepairBlockModel, ?>>asList(FOREIGN_WORLD);
-    }
 
     @Override
     public Class<RepairBlockModel> getRecordType() {

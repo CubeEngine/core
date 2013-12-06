@@ -22,7 +22,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
@@ -41,25 +43,18 @@ import org.jooq.util.mysql.MySQLDataType;
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
-public class TablePowerSign extends TableImpl<PowerSignModel> implements TableCreator<PowerSignModel>
+public class TablePowerSign extends AutoIncrementTable<PowerSignModel, UInteger>
 {
     public static TablePowerSign TABLE_POWER_SIGN;
 
     private TablePowerSign(String prefix)
     {
-        super(prefix + "powersign");
-        IDENTITY = Keys.identity(this, this.ID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        UNIQUE_LOC = Keys.uniqueKey(this, this.WORLD, this.X, this.Y, this.Z);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER_ID);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
-    }
-
-    public static TablePowerSign initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_POWER_SIGN = new TablePowerSign(config.tablePrefix);
-        return TABLE_POWER_SIGN;
+        super(prefix + "powersign", new Version(1));
+        this.setAIKey(ID);
+        this.addUniqueKey(WORLD, X, Y, Z);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER_ID);
+        this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
+        TABLE_POWER_SIGN = this;
     }
 
     @Override
@@ -84,20 +79,6 @@ public class TablePowerSign extends TableImpl<PowerSignModel> implements TableCr
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<PowerSignModel, UInteger> IDENTITY;
-    public final UniqueKey<PowerSignModel> PRIMARY_KEY;
-    public final UniqueKey<PowerSignModel> UNIQUE_LOC;
-    public final ForeignKey<PowerSignModel, UserEntity> FOREIGN_USER;
-    public final ForeignKey<PowerSignModel, WorldEntity> FOREIGN_WORLD;
-
     public final TableField<PowerSignModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<PowerSignModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<PowerSignModel, String> PSID = createField("psid", SQLDataType.VARCHAR.length(6), this);
@@ -110,29 +91,6 @@ public class TablePowerSign extends TableImpl<PowerSignModel> implements TableCr
     public final TableField<PowerSignModel, Integer> CHUNKZ = createField("chunkz", SQLDataType.INTEGER, this);
 
     public final TableField<PowerSignModel, String> DATA = createField("data", MySQLDataType.TEXT, this);
-
-    @Override
-    public Identity<PowerSignModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<PowerSignModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<PowerSignModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_LOC);
-    }
-
-    @Override
-    public List<ForeignKey<PowerSignModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<PowerSignModel, ?>>asList(FOREIGN_USER, FOREIGN_WORLD);
-    }
 
     @Override
     public Class<PowerSignModel> getRecordType() {

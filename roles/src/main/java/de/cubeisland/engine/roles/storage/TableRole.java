@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
@@ -39,23 +40,17 @@ import org.jooq.types.UInteger;
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
-public class TableRole extends TableImpl<AssignedRole> implements TableCreator<AssignedRole>
+public class TableRole extends Table<AssignedRole>
 {
     public static TableRole TABLE_ROLE;
 
-    private TableRole(String prefix)
+    public TableRole(String prefix)
     {
-        super(prefix + "roles");
-        PRIMARY_KEY = Keys.uniqueKey(this, this.USERID, this.WORLDID, this.ROLENAME);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERID);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLDID);
-    }
-
-    public static TableRole initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_ROLE = new TableRole(config.tablePrefix);
-        return TABLE_ROLE;
+        super(prefix + "roles", new Version(1));
+        this.setPrimaryKey(USERID, WORLDID, ROLENAME);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
+        this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLDID);
+        TABLE_ROLE = this;
     }
 
     @Override
@@ -72,38 +67,9 @@ public class TableRole extends TableImpl<AssignedRole> implements TableCreator<A
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final UniqueKey<AssignedRole> PRIMARY_KEY;
-    public final ForeignKey<AssignedRole, UserEntity> FOREIGN_USER;
-    public final ForeignKey<AssignedRole, WorldEntity> FOREIGN_WORLD;
-
     public final TableField<AssignedRole, UInteger> USERID = createField("userId", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AssignedRole, UInteger> WORLDID = createField("worldId", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AssignedRole, String> ROLENAME = createField("roleName", SQLDataType.VARCHAR.length(255), this);
-
-    @Override
-    public UniqueKey<AssignedRole> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<AssignedRole>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<AssignedRole, ?>> getReferences() {
-        return Arrays.<ForeignKey<AssignedRole, ?>>asList(FOREIGN_WORLD, FOREIGN_USER);
-    }
 
     @Override
     public Class<AssignedRole> getRecordType() {

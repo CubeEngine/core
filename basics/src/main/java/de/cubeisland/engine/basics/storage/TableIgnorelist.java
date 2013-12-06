@@ -19,43 +19,26 @@ package de.cubeisland.engine.basics.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class TableIgnorelist extends TableImpl<IgnoreList> implements TableCreator<IgnoreList>
+public class TableIgnorelist extends Table<IgnoreList>
 {
     public static TableIgnorelist TABLE_IGNORE_LIST;
 
-    private TableIgnorelist(String prefix)
+    public TableIgnorelist(String prefix)
     {
-        super(prefix + "ignorelist");
-        IDENTITY = Keys.identity(this, this.KEY);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.KEY);
-        FOREIGN_IGNORED = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.IGNORE);
-    }
-
-    public static TableIgnorelist initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_IGNORE_LIST = new TableIgnorelist(config.tablePrefix);
-        return TABLE_IGNORE_LIST;
+        super(prefix + "ignorelist", new Version(1));
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), KEY);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), IGNORE);
+        this.setPrimaryKey(KEY, IGNORE);
+        TABLE_IGNORE_LIST = this;
     }
 
     @Override
@@ -71,44 +54,8 @@ public class TableIgnorelist extends TableImpl<IgnoreList> implements TableCreat
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<IgnoreList, UInteger> IDENTITY;
-    public final UniqueKey<IgnoreList> PRIMARY_KEY;
-    public final ForeignKey<IgnoreList, UserEntity> FOREIGN_USER;
-    public final ForeignKey<IgnoreList, UserEntity> FOREIGN_IGNORED;
-
     public final TableField<IgnoreList, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<IgnoreList, UInteger> IGNORE = createField("ignore", SQLDataType.INTEGERUNSIGNED, this);
-
-    @Override
-    public Identity<IgnoreList, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<IgnoreList> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<IgnoreList>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<IgnoreList, ?>> getReferences() {
-        return Arrays.<ForeignKey<IgnoreList, ?>>asList(FOREIGN_USER, FOREIGN_IGNORED);
-    }
 
     @Override
     public Class<IgnoreList> getRecordType() {

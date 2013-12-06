@@ -38,8 +38,8 @@ public class Conomy extends Module
     public void onEnable()
     {
         Database db = this.getCore().getDB();
-        db.registerTable(TableAccount.initTable(db));
-        db.registerTable(TableBankAccess.initTable(db));
+        db.registerTable(TableAccount.class);
+        db.registerTable(TableBankAccess.class);
 
         this.config = this.loadConfig(ConomyConfiguration.class);
         this.manager = new ConomyManager(this);

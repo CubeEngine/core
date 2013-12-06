@@ -20,53 +20,34 @@ package de.cubeisland.engine.log.storage;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 import static de.cubeisland.engine.log.storage.TableActionTypes.TABLE_ACTION_TYPE;
 
-public class TableLogEntry extends TableImpl<LogEntry> implements TableCreator<LogEntry>
+public class TableLogEntry extends AutoIncrementTable<LogEntry, UInteger>
 {
     private static TableLogEntry TEMP_TABLE_LOG_ENTRY;
     public static TableLogEntry TABLE_LOG_ENTRY;
 
-    private TableLogEntry(String prefix)
+    private TableLogEntry(String prefix, boolean temp)
     {
-        super(prefix + "log_entries");
-        IDENTITY = Keys.identity(this, this.ID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
-        FOREIGN_TYPE = Keys.foreignKey(TABLE_ACTION_TYPE.PRIMARY_KEY, this, this.ACTION);
-    }
-
-    private TableLogEntry(String prefix, String tempTable)
-    {
-        super(prefix + tempTable);
-        IDENTITY = Keys.identity(this, this.ID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
-        FOREIGN_TYPE = Keys.foreignKey(TABLE_ACTION_TYPE.PRIMARY_KEY, this, this.ACTION);
+        super(prefix + (temp ? "TEMP_log_entries" : "log_entries"), new Version(1));
+        this.setAIKey(ID);
+        this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
+        this.addForeignKey(TABLE_ACTION_TYPE.getPrimaryKey(), ACTION);
     }
 
     public static TableLogEntry initTable(Database database)
     {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_LOG_ENTRY = new TableLogEntry(config.tablePrefix);
+        TABLE_LOG_ENTRY = new TableLogEntry(database.getTablePrefix(), false);
         return TABLE_LOG_ENTRY;
     }
 
@@ -74,8 +55,7 @@ public class TableLogEntry extends TableImpl<LogEntry> implements TableCreator<L
     {
         if (TEMP_TABLE_LOG_ENTRY == null)
         {
-            MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-            TEMP_TABLE_LOG_ENTRY = new TableLogEntry(config.tablePrefix, "TEMP_log_entries");
+            TEMP_TABLE_LOG_ENTRY = new TableLogEntry(database.getTablePrefix(), true);
         }
         database.registerTable(TEMP_TABLE_LOG_ENTRY); // recreate Table
         return TEMP_TABLE_LOG_ENTRY;
@@ -111,19 +91,6 @@ public class TableLogEntry extends TableImpl<LogEntry> implements TableCreator<L
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<LogEntry, UInteger> IDENTITY;
-    public final UniqueKey<LogEntry> PRIMARY_KEY;
-    public final ForeignKey<LogEntry, WorldEntity> FOREIGN_WORLD;
-    public final ForeignKey<LogEntry, ActionTypeModel> FOREIGN_TYPE;
-
     public final TableField<LogEntry, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<LogEntry, Timestamp> DATE = createField("date", SQLDataType.TIMESTAMP, this);
     public final TableField<LogEntry, UInteger> WORLD = createField("world", SQLDataType.INTEGERUNSIGNED, this);
@@ -137,29 +104,6 @@ public class TableLogEntry extends TableImpl<LogEntry> implements TableCreator<L
     public final TableField<LogEntry, String> NEWBLOCK = createField("newBlock", SQLDataType.VARCHAR.length(255), this);
     public final TableField<LogEntry, Byte> NEWDATA = createField("newData", SQLDataType.TINYINT, this);
     public final TableField<LogEntry, String> ADDITIONALDATA = createField("additionalData", SQLDataType.VARCHAR.length(255), this);
-
-    @Override
-    public Identity<LogEntry, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<LogEntry> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<LogEntry>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<LogEntry, ?>> getReferences() {
-        return Arrays.<ForeignKey<LogEntry, ?>>asList(FOREIGN_WORLD, FOREIGN_TYPE);
-    }
 
     @Override
     public Class<LogEntry> getRecordType() {

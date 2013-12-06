@@ -23,35 +23,28 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.ForeignKey;
 import org.jooq.UniqueKey;
-import org.jooq.impl.TableImpl;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.travel.storage.TableTeleportPoint.TABLE_TP_POINT;
 
-public class TableInvite extends TableImpl<TeleportInvite> implements TableCreator<TeleportInvite>
+public class TableInvite extends Table<TeleportInvite>
 {
     public static TableInvite TABLE_INVITE;
 
-    private TableInvite(String prefix)
+    public TableInvite(String prefix)
     {
-        super(prefix + "teleportinvites");
-        PRIMARY_KEY = Keys.uniqueKey(this, this.USERKEY, this.TELEPORTPOINT);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USERKEY);
-        FOREIGN_TPPOINT = Keys.foreignKey(TABLE_TP_POINT.PRIMARY_KEY, this, this.TELEPORTPOINT);
-    }
-
-    public static TableInvite initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_INVITE = new TableInvite(config.tablePrefix);
-        return TABLE_INVITE;
+        super(prefix + "teleportinvites", new Version(1));
+        this.setPrimaryKey(USERKEY, TELEPORTPOINT);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), USERKEY);
+        this.addForeignKey(TABLE_TP_POINT.getPrimaryKey(), TELEPORTPOINT);
+        TABLE_INVITE = this;
     }
 
     @Override
@@ -67,37 +60,8 @@ public class TableInvite extends TableImpl<TeleportInvite> implements TableCreat
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final UniqueKey<TeleportInvite> PRIMARY_KEY;
-    public final ForeignKey<TeleportInvite, UserEntity> FOREIGN_USER;
-    public final ForeignKey<TeleportInvite, TeleportPointModel> FOREIGN_TPPOINT;
-
     public final org.jooq.TableField<TeleportInvite, org.jooq.types.UInteger> TELEPORTPOINT = createField("teleportpoint", org.jooq.impl.SQLDataType.INTEGERUNSIGNED, this);
     public final org.jooq.TableField<TeleportInvite, org.jooq.types.UInteger> USERKEY = createField("userkey", org.jooq.impl.SQLDataType.INTEGERUNSIGNED, this);
-
-    @Override
-    public UniqueKey<TeleportInvite> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<TeleportInvite>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<TeleportInvite, ?>> getReferences() {
-        return Arrays.<ForeignKey<TeleportInvite, ?>>asList(FOREIGN_USER, FOREIGN_TPPOINT);
-    }
 
     @Override
     public Class<TeleportInvite> getRecordType() {

@@ -19,47 +19,32 @@ package de.cubeisland.engine.locker.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_LOCK;
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
+import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_LOCK;
 
-public class TableAccessList extends TableImpl<AccessListModel> implements TableCreator<AccessListModel>
+public class TableAccessList extends AutoIncrementTable<AccessListModel, UInteger>
 {
     public static TableAccessList TABLE_ACCESS_LIST;
 
-    private TableAccessList(String prefix)
+    public TableAccessList(String prefix)
     {
-        super(prefix + "lockaccesslist");
-        IDENTITY = Keys.identity(this, this.ID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        UNIQUE_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.LOCK_ID);
-        UNIQUE_G_ACCESS = Keys.uniqueKey(this, this.USER_ID, this.OWNER_ID);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.USER_ID);
-        FOREIGN_GUARD = Keys.foreignKey(TABLE_LOCK.PRIMARY_KEY, this, this.LOCK_ID);
-        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER_ID);
-    }
-
-    public static TableAccessList initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_ACCESS_LIST = new TableAccessList(config.tablePrefix);
-        return TABLE_ACCESS_LIST;
+        super(prefix + "lockaccesslist", new Version(1));
+        this.setAIKey(ID);
+        this.addUniqueKey(USER_ID, LOCK_ID);
+        this.addUniqueKey(USER_ID, OWNER_ID);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), USER_ID);
+        this.addForeignKey(TABLE_LOCK.getPrimaryKey(), LOCK_ID);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER_ID);
+        TABLE_ACCESS_LIST = this;
     }
 
     @Override
@@ -81,22 +66,6 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<AccessListModel, UInteger> IDENTITY;
-    public final UniqueKey<AccessListModel> PRIMARY_KEY;
-    public final UniqueKey<AccessListModel> UNIQUE_ACCESS;
-    public final UniqueKey<AccessListModel> UNIQUE_G_ACCESS;
-    public final ForeignKey<AccessListModel, UserEntity> FOREIGN_USER;
-    public final ForeignKey<AccessListModel, LockModel> FOREIGN_GUARD;
-    public final ForeignKey<AccessListModel, UserEntity> FOREIGN_OWNER;
-
     public final TableField<AccessListModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AccessListModel, UInteger> USER_ID = createField("user_id", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<AccessListModel, UInteger> LOCK_ID = createField("lock_id", SQLDataType.INTEGERUNSIGNED, this);
@@ -104,30 +73,6 @@ public class TableAccessList extends TableImpl<AccessListModel> implements Table
     public final TableField<AccessListModel, Short> LEVEL = createField("level", SQLDataType.SMALLINT, this);
 
     public final TableField<AccessListModel, UInteger> OWNER_ID = createField("owner_id", SQLDataType.INTEGERUNSIGNED, this);
-
-
-    @Override
-    public Identity<AccessListModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<AccessListModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<AccessListModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_ACCESS, UNIQUE_G_ACCESS);
-    }
-
-    @Override
-    public List<ForeignKey<AccessListModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<AccessListModel, ?>>asList(FOREIGN_USER, FOREIGN_GUARD, FOREIGN_OWNER);
-    }
 
     @Override
     public Class<AccessListModel> getRecordType() {

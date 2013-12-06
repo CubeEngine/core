@@ -20,6 +20,7 @@ package de.cubeisland.engine.locker;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.Reloadable;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
 import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityLockerConfigConverter;
 import de.cubeisland.engine.locker.commands.LockerAdminCommands;
@@ -43,9 +44,10 @@ public class Locker extends Module implements Reloadable
         cManager.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
         cManager.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
         this.config = this.loadConfig(LockerConfig.class);
-        this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
+        Database db = this.getCore().getDB();
+        db.registerTable(TableLocks.class);
+        db.registerTable(TableLockLocations.class);
+        db.registerTable(TableAccessList.class);
         manager = new LockManager(this);
         LockerCommands mainCmd = new LockerCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
@@ -68,9 +70,10 @@ public class Locker extends Module implements Reloadable
     {
         this.onDisable();
         this.config = this.loadConfig(LockerConfig.class);
-        this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
+        Database db = this.getCore().getDB();
+        db.registerTable(TableLocks.class);
+        db.registerTable(TableLockLocations.class);
+        db.registerTable(TableAccessList.class);
         manager = new LockManager(this);
         LockerCommands mainCmd = new LockerCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);

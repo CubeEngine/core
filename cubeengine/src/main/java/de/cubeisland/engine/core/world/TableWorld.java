@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
@@ -34,26 +35,18 @@ import org.jooq.Identity;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-public class TableWorld extends TableImpl<WorldEntity> implements TableUpdateCreator<WorldEntity>
+public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implements TableUpdateCreator<WorldEntity>
 {
     public static TableWorld TABLE_WORLD;
 
-    private TableWorld(String prefix)
+    public TableWorld(String prefix)
     {
-        super(prefix + "worlds");
-        INDENTIFY_WORLD = Keys.identity(this, this.KEY);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        UNIQUE_UUID = Keys.uniqueKey(this, this.LEAST, this.MOST);
-    }
-
-    public static TableWorld initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_WORLD = new TableWorld(config.tablePrefix);
-        return TABLE_WORLD;
+        super(prefix + "worlds", new Version(2));
+        this.setAIKey(KEY);
+        this.addUniqueKey(LEAST, MOST);
+        TABLE_WORLD = this;
     }
 
     @Override
@@ -102,39 +95,10 @@ public class TableWorld extends TableImpl<WorldEntity> implements TableUpdateCre
         }
     }
 
-    private static final Version version = new Version(2);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<WorldEntity, UInteger> INDENTIFY_WORLD;
-    public final UniqueKey<WorldEntity> PRIMARY_KEY;
-    public final UniqueKey<WorldEntity> UNIQUE_UUID;
-
     public final TableField<WorldEntity, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<WorldEntity, String> WORLDNAME = createField("worldName", SQLDataType.VARCHAR.length(64), this);
-
     public final TableField<WorldEntity, Long> LEAST = createField("UUIDleast", SQLDataType.BIGINT, this);
     public final TableField<WorldEntity, Long> MOST = createField("UUIDmost", SQLDataType.BIGINT, this);
-
-    @Override
-    public Identity<WorldEntity, UInteger> getIdentity() {
-        return this.INDENTIFY_WORLD;
-    }
-
-    @Override
-    public UniqueKey<WorldEntity> getPrimaryKey() {
-        return this.PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<WorldEntity>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_UUID);
-    }
 
     @Override
     public Class<WorldEntity> getRecordType() {

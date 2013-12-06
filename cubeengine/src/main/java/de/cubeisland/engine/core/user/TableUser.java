@@ -22,15 +22,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
 
-public class TableUser extends Table<UserEntity, UInteger>
+public class TableUser extends AutoIncrementTable<UserEntity, UInteger>
 {
     public static TableUser TABLE_USER;
 
@@ -39,10 +39,6 @@ public class TableUser extends Table<UserEntity, UInteger>
         super(prefix + "user", new Version(1));
         this.setPrimaryKey(this.KEY);
         this.addUniqueKey(this.PLAYER);
-        if (TABLE_USER != null)
-        {
-            throw new IllegalStateException(); // TODO
-        }
         TABLE_USER = this;
     }
 

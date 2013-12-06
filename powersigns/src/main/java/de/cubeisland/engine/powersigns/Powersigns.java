@@ -28,7 +28,7 @@ public class Powersigns extends Module
     @Override
     public void onEnable()
     {
-        this.getCore().getDB().registerTable(TablePowerSign.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TablePowerSign.class);
         this.config = this.loadConfig(PowersignsConfig.class);
         this.signManager = new SignManager(this);
         this.signManager.init();

@@ -19,22 +19,11 @@ package de.cubeisland.engine.signmarket.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.world.WorldEntity;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 import org.jooq.types.UShort;
 
@@ -42,25 +31,18 @@ import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
 
-public class TableSignBlock extends TableImpl<SignMarketBlockModel> implements TableCreator<SignMarketBlockModel>
+public class TableSignBlock extends AutoIncrementTable<SignMarketBlockModel, UInteger>
 {
     public static TableSignBlock TABLE_SIGN_BLOCK;
 
-    private TableSignBlock(String prefix)
+    public TableSignBlock(String prefix)
     {
-        super(prefix + "signmarketblocks");
-        IDENTITY = Keys.identity(this, this.KEY);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        FOREIGN_OWNER = Keys.foreignKey(TABLE_USER.getPrimaryKey(), this, this.OWNER);
-        FOREIGN_WORLD = Keys.foreignKey(TABLE_WORLD.PRIMARY_KEY, this, this.WORLD);
-        FOREIGN_ITEM = Keys.foreignKey(TABLE_SIGN_ITEM.PRIMARY_KEY, this, this.ITEMKEY);
-    }
-
-    public static TableSignBlock initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_SIGN_BLOCK = new TableSignBlock(config.tablePrefix);
-        return TABLE_SIGN_BLOCK;
+        super(prefix + "signmarketblocks", new Version(1));
+        this.setAIKey(KEY);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), OWNER);
+        this.addForeignKey(TABLE_WORLD.getPrimaryKey(), WORLD);
+        this.addForeignKey(TABLE_SIGN_ITEM.getPrimaryKey(), ITEMKEY);
+        this.TABLE_SIGN_BLOCK = this;
     }
 
     @Override
@@ -87,21 +69,6 @@ public class TableSignBlock extends TableImpl<SignMarketBlockModel> implements T
                                     "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<SignMarketBlockModel, UInteger> IDENTITY;
-    public final UniqueKey<SignMarketBlockModel> PRIMARY_KEY;
-
-    public final ForeignKey<SignMarketBlockModel, UserEntity> FOREIGN_OWNER;
-    public final ForeignKey<SignMarketBlockModel, WorldEntity> FOREIGN_WORLD;
-    public final ForeignKey<SignMarketBlockModel, SignMarketItemModel> FOREIGN_ITEM;
-
     public final TableField<SignMarketBlockModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<SignMarketBlockModel, UInteger> WORLD = createField("world", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<SignMarketBlockModel, Integer> X = createField("x", SQLDataType.INTEGER, this);
@@ -113,29 +80,6 @@ public class TableSignBlock extends TableImpl<SignMarketBlockModel> implements T
     public final TableField<SignMarketBlockModel, UShort> AMOUNT = createField("amount", SQLDataType.SMALLINTUNSIGNED, this);
     public final TableField<SignMarketBlockModel, UInteger> DEMAND = createField("demand", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<SignMarketBlockModel, UInteger> PRICE = createField("price", SQLDataType.INTEGERUNSIGNED, this);
-
-    @Override
-    public Identity<SignMarketBlockModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<SignMarketBlockModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<SignMarketBlockModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<SignMarketBlockModel, ?>> getReferences() {
-        return Arrays.<ForeignKey<SignMarketBlockModel, ?>>asList(FOREIGN_ITEM, FOREIGN_OWNER, FOREIGN_WORLD);
-    }
 
     @Override
     public Class<SignMarketBlockModel> getRecordType() {

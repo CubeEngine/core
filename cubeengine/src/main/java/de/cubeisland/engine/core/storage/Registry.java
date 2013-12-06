@@ -19,23 +19,16 @@ package de.cubeisland.engine.core.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 
-public class Registry extends TableImpl<RegistryModel>implements TableCreator<RegistryModel>
+public class Registry extends Table<RegistryModel>
 {
     private THashMap<String, THashMap<String, String>> data = new THashMap<>();
 
@@ -81,19 +74,16 @@ public class Registry extends TableImpl<RegistryModel>implements TableCreator<Re
     public static Registry TABLE_REGISTRY;
     private DSLContext dsl;
 
-    private Registry(String prefix, Database database)
+    public Registry(String prefix)
     {
-        super(prefix + "registry");
-        this.dsl = database.getDSL();
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY, this.MODULE);
+        super(prefix + "registry", new Version(1));
+        this.setPrimaryKey(KEY);
+        TABLE_REGISTRY = this;
     }
 
-    public static Registry initTable(Database database)
+    public void setDsl(DSLContext dsl)
     {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_REGISTRY = new Registry(config.tablePrefix, database);
-        database.registerTable(TABLE_REGISTRY);
-        return TABLE_REGISTRY;
+        this.dsl = dsl;
     }
 
     @Override
@@ -108,31 +98,9 @@ public class Registry extends TableImpl<RegistryModel>implements TableCreator<Re
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final UniqueKey<RegistryModel> PRIMARY_KEY;
-
     public final TableField<RegistryModel, String> KEY = createField("key", SQLDataType.VARCHAR.length(16), this);
     public final TableField<RegistryModel, String> MODULE = createField("module", SQLDataType.VARCHAR.length(16), this);
     public final TableField<RegistryModel, String> VALUE = createField("value", SQLDataType.VARCHAR.length(256), this);
-
-    @Override
-    public UniqueKey<RegistryModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<RegistryModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
 
     @Override
     public Class<RegistryModel> getRecordType() {

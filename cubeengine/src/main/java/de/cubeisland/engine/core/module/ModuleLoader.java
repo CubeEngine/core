@@ -62,7 +62,9 @@ public class ModuleLoader
         this.classLoaders = new HashMap<>();
         this.infoFileName = "module.yml";
         this.tempPath = core.getFileManager().getTempPath().resolve("modules");
-        this.registry = Registry.initTable(core.getDB());
+        this.core.getDB().registerTable(Registry.class);
+        this.registry = Registry.TABLE_REGISTRY;
+        this.registry.setDsl(core.getDB().getDSL());
         try
         {
             Files.createDirectories(this.tempPath);

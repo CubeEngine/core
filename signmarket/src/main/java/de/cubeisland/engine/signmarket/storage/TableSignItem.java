@@ -22,8 +22,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
@@ -31,26 +31,18 @@ import org.jooq.Identity;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 import org.jooq.types.UShort;
 
-public class TableSignItem extends TableImpl<SignMarketItemModel> implements TableCreator<SignMarketItemModel>
-    {
+public class TableSignItem extends AutoIncrementTable<SignMarketItemModel, UInteger>
+{
     public static TableSignItem TABLE_SIGN_ITEM;
 
-    private TableSignItem(String prefix)
+    public TableSignItem(String prefix)
     {
-        super(prefix + "signmarketitem");
-        IDENTITY = Keys.identity(this, this.KEY);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-    }
-
-    public static TableSignItem initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_SIGN_ITEM = new TableSignItem(config.tablePrefix);
-        return TABLE_SIGN_ITEM;
+        super(prefix + "signmarketitem", new Version(1));
+        this.setAIKey(KEY);
+        TABLE_SIGN_ITEM = this;
     }
 
     @Override
@@ -70,17 +62,6 @@ public class TableSignItem extends TableImpl<SignMarketItemModel> implements Tab
                                         "COMMENT='1.0.0'").execute();
     }
 
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<SignMarketItemModel, UInteger> IDENTITY;
-    public final UniqueKey<SignMarketItemModel> PRIMARY_KEY;
-
     public final TableField<SignMarketItemModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<SignMarketItemModel, UInteger> STOCK = createField("stock", SQLDataType.INTEGERUNSIGNED, this);
     public final TableField<SignMarketItemModel, String> ITEM = createField("item", SQLDataType.VARCHAR.length(32), this);
@@ -89,24 +70,6 @@ public class TableSignItem extends TableImpl<SignMarketItemModel> implements Tab
     public final TableField<SignMarketItemModel, String> LORE = createField("lore", SQLDataType.VARCHAR.length(1000), this);
     public final TableField<SignMarketItemModel, String> ENCHANTMENTS = createField("enchantments", SQLDataType.VARCHAR.length(255), this);
     public final TableField<SignMarketItemModel, Byte> SIZE = createField("size", SQLDataType.TINYINT, this);
-
-    @Override
-    public Identity<SignMarketItemModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<SignMarketItemModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<SignMarketItemModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
 
     @Override
     public Class<SignMarketItemModel> getRecordType() {

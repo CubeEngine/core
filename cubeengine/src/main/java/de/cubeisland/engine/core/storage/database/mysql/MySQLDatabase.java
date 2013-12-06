@@ -179,7 +179,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
      */
     public <T extends TableCreator> void registerTable(T table)
     {
-        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table)) return;
+        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table))
+        {
+            return;
+        }
         try
         {
             Connection connection = this.getConnection();
@@ -201,17 +204,9 @@ public class MySQLDatabase extends AbstractPooledDatabase
         {
             Constructor<T> constructor = clazz.getDeclaredConstructor(String.class);
             T table = constructor.newInstance(this.config.tablePrefix);
-            if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table))
-            {
-                return;
-            }
-            Connection connection = this.getConnection();
-            table.createTable(connection);
-            connection.close();
-            this.schema.addTable(table);
-            this.core.getLog().debug("Database-Table {0} registered!", table.getName());
+            this.registerTable(table);
         }
-        catch (ReflectiveOperationException|SQLException e)
+        catch (ReflectiveOperationException e)
         {
             throw new IllegalStateException("Unable to instantiate Table!", e);
         }
@@ -347,5 +342,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public DatabaseConfiguration getDatabaseConfig()
     {
         return this.config;
+    }
+
+    @Override
+    public String getTablePrefix()
+    {
+        return this.config.tablePrefix;
     }
 }
