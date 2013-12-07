@@ -21,7 +21,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,12 +40,10 @@ import de.cubeisland.engine.stats.annotations.Configured;
 import de.cubeisland.engine.stats.annotations.Scheduled;
 import de.cubeisland.engine.stats.configuration.DynamicSection;
 import de.cubeisland.engine.stats.stat.Stat;
-import de.cubeisland.engine.stats.storage.StatsDataModel;
 import de.cubeisland.engine.stats.storage.StatsModel;
 import de.cubeisland.engine.stats.storage.TableStats;
 import de.cubeisland.engine.stats.storage.TableStatsData;
 import org.jooq.DSLContext;
-import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.stats.storage.TableStats.TABLE_STATS;
 import static de.cubeisland.engine.stats.storage.TableStatsData.TABLE_STATSDATA;
@@ -60,9 +57,11 @@ public class StatsManager
     private final ConverterManager converterManager;
 
     private final ObjectMapper jsonMapper;
-    private final Map<String, UInteger> statToId;
-    private final Map<UInteger, Stat> stats;
-    private final Map<String, Set<Integer>> tasks;
+    private final Map<Class<? extends Stat>, Stat> stats;
+    private final Set<Class<? extends Stat>> registeredStats;
+    private final Map<Class<? extends Stat>, Set<Integer>> tasks;
+
+    private boolean started = false;
 
     public StatsManager(Stats stats, ConverterManager converterManager)
     {
@@ -76,14 +75,23 @@ public class StatsManager
         database.registerTable(TableStatsData.initTable(database));
 
         this.jsonMapper = new ObjectMapper();
-        this.statToId = new HashMap<>();
         this.stats = new HashMap<>();
+        this.registeredStats = new HashSet<>();
         this.tasks = new HashMap<>();
 
         for (StatsModel stat : dsl.selectFrom(TableStats.TABLE_STATS).fetch())
         {
-            statToId.put(stat.getStat(), stat.getKey());
+            try
+            {
+                registeredStats.add((Class<? extends Stat>)Class.forName(stat.getStat()));
+            }
+            catch (ClassNotFoundException e)
+            {
+                stats.getLog().warn("A previously existing statistic has been removed. ClassNotFoundException...");
+            }
         }
+
+        this.started = true;
     }
 
     /**
@@ -95,23 +103,27 @@ public class StatsManager
      */
     public void register(Class< ? extends Stat> statType)
     {
+        if (!this.started)
+        {
+            throw new IllegalStateException("StatsManager not started!");
+        }
         try
         {
             // Get the Constructor, and construct a new instance of the Stat.
-            Constructor<? extends Stat> constructor = statType.getConstructor(this.getClass());
-            Stat stat = constructor.newInstance(this);
+            Constructor<? extends Stat> constructor = statType.getConstructor(this.getClass(), Module.class);
+            Stat stat = constructor.newInstance(this, this.module);
 
             // Get or register the stat id
-            if (!statToId.containsKey(stat.getName()))
+            if (!registeredStats.contains(statType))
             {
                 synchronized (this.dsl)
                 {
-                    StatsModel model = this.dsl.newRecord(TABLE_STATS).newStatsModel(stat.getName());
+                    StatsModel model = this.dsl.newRecord(TABLE_STATS).newStatsModel(statType.getName());
                     model.insert();
-                    this.statToId.put(model.getStat(), model.getKey());
+                    registeredStats.add(statType);
                 }
             }
-            this.stats.put(statToId.get(stat.getName()), stat);
+            this.stats.put(statType, stat);
 
             // Load configured fields
 
@@ -128,11 +140,11 @@ public class StatsManager
                     name = nameAnnotation.value();
                 }
 
-                if (!module.getConfig().statConfigs.containsKey(stat.getName()))
+                if (!module.getConfig().statConfigs.containsKey(statType.getSimpleName()))
                 {
-                    module.getConfig().statConfigs.put(stat.getName(), new DynamicSection(converterManager));
+                    module.getConfig().statConfigs.put(statType.getSimpleName(), new DynamicSection(converterManager));
                 }
-                DynamicSection section = module.getConfig().statConfigs.get(stat.getName());
+                DynamicSection section = module.getConfig().statConfigs.get(statType.getSimpleName());
                 if (section.hasKey(name))
                 {
                     field.set(stat, section.get(name));
@@ -167,11 +179,11 @@ public class StatsManager
                 }
                 else
                 {
-                    if (!module.getConfig().statConfigs.containsKey(stat.getName()))
+                    if (!module.getConfig().statConfigs.containsKey(statType.getSimpleName()))
                     {
-                        module.getConfig().statConfigs.put(stat.getName(), new DynamicSection(converterManager));
+                        module.getConfig().statConfigs.put(statType.getSimpleName(), new DynamicSection(converterManager));
                     }
-                    DynamicSection section = module.getConfig().statConfigs.get(stat.getName());
+                    DynamicSection section = module.getConfig().statConfigs.get(statType.getSimpleName());
                     if (!section.hasKey("tasks"))
                     {
                         section.put("tasks", new DynamicSection(converterManager), "Intervals for the tasks this statistic schedules");
@@ -184,12 +196,12 @@ public class StatsManager
                     interval = (Long)tasks.get(annotation.name(), Long.class);
                 }
 
-                if (!this.tasks.containsKey(stat.getName()))
+                if (!this.tasks.containsKey(statType))
                 {
-                    this.tasks.put(stat.getName(), new HashSet<Integer>());
+                    this.tasks.put(statType, new HashSet<Integer>());
                 }
-                Set<Integer> tasks = this.tasks.get(stat.getName());
-                Runnable wrapper = new ScheduledMethod(this.getModule().getLog(), stat, method);
+                Set<Integer> tasks = this.tasks.get(statType);
+                Runnable wrapper = new ScheduledMethod(this.module.getLog(), stat, method);
                 TaskManager taskManager = module.getCore().getTaskManager();
                 if (annotation.async())
                 {
@@ -206,12 +218,16 @@ public class StatsManager
         }
         catch (ReflectiveOperationException | ConversionException ex)
         {
-            this.module.getLog().error("An error occurred while registering statistic", ex);
+            this.module.getLog().error(ex, "An error occurred while registering statistic");
         }
     }
 
-    public void disableStat(String stat)
+    public void disableStat(Class<? extends Stat> stat)
     {
+        if (!this.started)
+        {
+            throw new IllegalStateException("StatsManager not started!");
+        }
         if (this.tasks.containsKey(stat))
         {
             for (Integer id : tasks.get(stat))
@@ -219,17 +235,7 @@ public class StatsManager
                 this.module.getCore().getTaskManager().cancelTask(this.module, id);
             }
         }
-        this.stats.get(this.statToId.get(stat)).onDeactivate();
-    }
-
-    /**
-     * Get the module that loaded this StatsManager
-     *
-     * @return
-     */
-    public Module getModule()
-    {
-        return module;
+        this.stats.get(stat).onDeactivate();
     }
 
     /**
@@ -242,20 +248,40 @@ public class StatsManager
      */
     public void save(Stat stat, Object object)
     {
+        if (!this.started)
+        {
+            throw new IllegalStateException("StatsManager not started!");
+        }
         synchronized (this.dsl)
         {
             try
             {
                 String data = this.jsonMapper.writeValueAsString(object);
-                UInteger statID = this.statToId.get(stat.getName());
-                StatsDataModel model = this.dsl.newRecord(TABLE_STATSDATA).newStatsData(statID, new Timestamp(System.currentTimeMillis()), data);
-                model.insert();
+                int result = this.dsl.insertInto(TABLE_STATSDATA)
+                    .set(TABLE_STATSDATA.STAT, dsl.select(TABLE_STATS.KEY)
+                           .from(TABLE_STATS)
+                           .where(TABLE_STATS.STAT.eq(stat.getClass().getName())).getQuery())
+                    .set(TABLE_STATSDATA.DATA, data).execute();
+                if (result != 1)
+                {
+                    log.warn("Tried to insert a row in the data table for statistics, but the row wasn't inserted!");
+                    log.debug("Result int from jOOQ was {}", result);
+                }
             }
             catch (JsonProcessingException ex)
             {
-                log.warn("An error occurred while parsing an object to JSON.", ex);
+                log.warn(ex, "An error occurred while parsing an object to JSON.");
             }
         }
+    }
+
+    public void shutdown()
+    {
+        for (Class<? extends Stat> stat : this.registeredStats)
+        {
+            this.disableStat(stat);
+        }
+        this.started = false;
     }
 
     private static final class ScheduledMethod implements Runnable

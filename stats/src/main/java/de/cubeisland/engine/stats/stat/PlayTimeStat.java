@@ -24,29 +24,23 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.stats.StatsManager;
 import de.cubeisland.engine.stats.annotations.Configured;
 
 public class PlayTimeStat extends Stat
 {
-    private final String name = "play-time";
 
     private Map<String, Long> joined;
 
-    public PlayTimeStat(StatsManager manager)
+    public PlayTimeStat(StatsManager manager, Module owner)
     {
-        super(manager);
+        super(manager, owner);
     }
 
     public void onActivate()
     {
         this.joined = new HashMap<>();
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.name;
     }
 
     @EventHandler()

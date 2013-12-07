@@ -40,10 +40,10 @@ public abstract class Stat implements Listener
      *
      * @param manager The StatsManager loading this statistic
      */
-    public Stat(StatsManager manager)
+    public Stat(StatsManager manager, Module owner)
     {
         this.manager = manager;
-        this.owner = manager.getModule();
+        this.owner = owner;
         this.core = owner.getCore();
         core.getEventManager().registerListener(owner, this);
     }
@@ -72,13 +72,4 @@ public abstract class Stat implements Listener
     {
         manager.save(this, object);
     }
-
-    /**
-     * Get the unique name of this stat.
-     * It is the statistic's responsibility that this is unique.
-     * NB: Max 20 characters
-     *
-     * @return the unique name of this stat
-     */
-    public abstract String getName();
 }
