@@ -43,6 +43,7 @@ public class Stats extends Module
 
     public void onDisable()
     {
+        this.statsManager.shutdown();
         this.config.save();
     }
 

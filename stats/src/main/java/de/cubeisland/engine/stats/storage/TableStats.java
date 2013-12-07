@@ -50,7 +50,7 @@ public class TableStats extends TableImpl<StatsModel> implements TableCreator<St
     public final UniqueKey<StatsModel> PRIMARY_KEY;
 
     public final TableField<StatsModel, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED.length(10), this);
-    public final TableField<StatsModel, String> STAT = createField("stat", SQLDataType.VARCHAR.length(20), this);
+    public final TableField<StatsModel, String> STAT = createField("stat", SQLDataType.VARCHAR.length(64), this);
 
     public static TableStats initTable(Database database)
     {
@@ -64,7 +64,7 @@ public class TableStats extends TableImpl<StatsModel> implements TableCreator<St
     {
         connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
                                         "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`stat` varchar(20) NOT NULL,\n" +
+                                        "`stat` varchar(64) NOT NULL,\n" +
                                         "PRIMARY KEY (`key`))\n" +
                                         "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
                                         "COMMENT='1.0.0'").execute();
