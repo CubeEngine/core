@@ -212,7 +212,7 @@ public abstract class BaseModuleManager implements ModuleManager
             catch (InvalidModuleException ex)
             {
                 this.moduleInfoMap.remove(moduleName);
-                this.logger.debug("ex, Failed to load the module '{}'", moduleName);
+                this.logger.debug(ex, "Failed to load the module '{}'", moduleName);
             }
             catch (ModuleException ex)
             {
@@ -516,7 +516,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             catch (ModuleException e)
             {
-                this.logger.warn("Failed to reload a module upon unloading a different module!", e);
+                this.logger.warn(e, "Failed to reload a module upon unloading a different module!");
             }
             finally
             {

@@ -374,8 +374,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             }
             catch (JsonProcessingException e)
             {
-                this.log.error("Failed to generate the JSON code for a response!");
-                this.log.debug(e.getLocalizedMessage(), e);
+                this.log.error(e, "Failed to generate the JSON code for a response!");
                 return "null";
             }
         }

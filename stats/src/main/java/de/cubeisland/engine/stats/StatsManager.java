@@ -206,7 +206,7 @@ public class StatsManager
         }
         catch (ReflectiveOperationException | ConversionException ex)
         {
-            this.module.getLog().error("An error occurred while registering statistic", ex);
+            this.module.getLog().error(ex, "An error occurred while registering statistic");
         }
     }
 
@@ -253,7 +253,7 @@ public class StatsManager
             }
             catch (JsonProcessingException ex)
             {
-                log.warn("An error occurred while parsing an object to JSON.", ex);
+                log.warn(ex, "An error occurred while parsing an object to JSON.");
             }
         }
     }
@@ -279,7 +279,7 @@ public class StatsManager
             }
             catch (IllegalAccessException | InvocationTargetException ex)
             {
-                logger.warn("An error occurred while invoking a scheduled method", ex);
+                logger.warn(ex, "An error occurred while invoking a scheduled method");
             }
         }
     }

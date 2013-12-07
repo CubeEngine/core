@@ -255,8 +255,7 @@ public class CommandListener implements Listener
         }
         catch (Exception ex)
         {
-            this.module.getLog().error("Error with CommandInteract!");
-            this.module.getLog().debug(ex.getLocalizedMessage(), ex);
+            this.module.getLog().error(ex, "Error with CommandInteract!");
             user.sendTranslated("&4An unknown error occurred!");
             user.sendTranslated("&4Please report this error to an administrator.");
         }

@@ -380,8 +380,7 @@ public class BukkitUtils
         }
         catch (Exception ex)
         {
-            CubeEngine.getCore().getLog().warn("Could not get Target of Ghast or Enderdragon");
-            CubeEngine.getCore().getLog().debug(ex.getLocalizedMessage(), ex);
+            CubeEngine.getCore().getLog().warn(ex, "Could not get Target of Ghast or Enderdragon");
             return null;
         }
     }

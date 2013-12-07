@@ -314,7 +314,7 @@ public abstract class Module
     }
 
     /**
-     * Loads and saves from config.{@link de.cubeisland.engine.configuration.codec.ConfigurationCodec#getExtension()} in the module folder // TODO
+     * Loads and saves from config.{@link de.cubeisland.engine.configuration.codec.ConfigurationCodec#getExtension()} in the module folder
      *
      * @param clazz the configurations class
      * @return the loaded configuration
@@ -332,8 +332,7 @@ public abstract class Module
         }
         catch (InvalidConfigurationException ex)
         {
-            CubeEngine.getLog().error("Failed to load the configuration for {}", config.getFile().getAbsolutePath());
-            CubeEngine.getLog().debug(ex.getLocalizedMessage(), ex);
+            CubeEngine.getLog().error(ex, "Failed to load the configuration for {}", config.getFile().getAbsolutePath());
         }
         return config;
     }
