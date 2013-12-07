@@ -17,83 +17,77 @@
  */
 package de.cubeisland.engine.core.bukkit.packethook;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import net.minecraft.server.v1_6_R2.Packet;
-import net.minecraft.server.v1_6_R2.Packet204LocaleAndViewDistance;
+import net.minecraft.server.v1_7_R1.Packet;
+import net.minecraft.server.v1_7_R1.PacketPlayInSettings;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.util.Cleanable;
 
 import gnu.trove.map.hash.TIntObjectHashMap;
-import org.slf4j.Logger;
 
-
+// TODO FIXME "Packet 204 - Locale and View Distance" has been replaced with "Packet 0x15 - Client Settings"
 
 public class PacketEventManager implements Cleanable
 {
-    private final Logger logger;
-    private final TIntObjectHashMap<List<PacketReceivedListener>> receivedListeners;
-    private final TIntObjectHashMap<List<PacketSentListener>> sentListeners;
+    private final Log logger;
+    private final Map<Class<? extends Packet>, List<PacketReceivedListener>> receivedListeners;
+    private final Map<Class<? extends Packet>, List<PacketSentListener>> sentListeners;
 
-    public PacketEventManager(Logger logger)
+    public PacketEventManager(Log logger)
     {
         this.logger = logger;
-        this.receivedListeners = new TIntObjectHashMap<>();
-        this.sentListeners = new TIntObjectHashMap<>();
-        this.addReceivedListener(204, new PacketReceivedListener()
+        this.receivedListeners = new HashMap<>();
+        this.sentListeners = new HashMap<>();
+        this.addReceivedListener(PacketPlayInSettings.class, new PacketReceivedListener()
         {
             @Override
             public void handle(PacketReceivedEvent event)
             {
-                Bukkit.getPluginManager().callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((Packet204LocaleAndViewDistance)event.getPacket()).d()));
+                Bukkit.getPluginManager().callEvent(new PlayerLanguageReceivedEvent(event.getPlayer(), ((PacketPlayInSettings)event.getPacket()).c()));
             }
         });
     }
 
-    public void addReceivedListener(int packetId, PacketReceivedListener listener)
+    public void addReceivedListener(Class<? extends Packet> clazz, PacketReceivedListener listener)
     {
         if (listener == null)
         {
             throw new IllegalArgumentException("The listener must not be null!");
         }
-        if (packetId < 0 || packetId > 255)
-        {
-            throw new IllegalArgumentException("Packet IDs have to be between 0 and 255!");
-        }
-        List<PacketReceivedListener> listeners = this.receivedListeners.get(packetId);
+        List<PacketReceivedListener> listeners = this.receivedListeners.get(clazz);
         if (listeners == null)
         {
-            this.receivedListeners.put(packetId, listeners = new LinkedList<>());
+            this.receivedListeners.put(clazz, listeners = new LinkedList<>());
         }
         listeners.add(listener);
     }
 
-    public void addSentListener(int packetId, PacketSentListener listener)
+    public void addSentListener(Class<? extends Packet> clazz, PacketSentListener listener)
     {
         if (listener == null)
         {
             throw new IllegalArgumentException("The listener must not be null!");
         }
-        if (packetId < 0 || packetId > 255)
-        {
-            throw new IllegalArgumentException("Packet IDs have to be between 0 and 255!");
-        }
-        List<PacketSentListener> listeners = this.sentListeners.get(packetId);
+        List<PacketSentListener> listeners = this.sentListeners.get(clazz);
         if (listeners == null)
         {
-            this.sentListeners.put(packetId, listeners = new LinkedList<>());
+            this.sentListeners.put(clazz, listeners = new LinkedList<>());
         }
         listeners.add(listener);
     }
 
-    public void removeListener(int packetId, PacketReceivedListener listener)
+    public void removeListener(Class<? extends Packet> clazz, PacketReceivedListener listener)
     {
-        List<PacketReceivedListener> listeners = this.receivedListeners.get(packetId);
+        List<PacketReceivedListener> listeners = this.receivedListeners.get(clazz);
         if (listeners == null)
         {
             return;
@@ -101,13 +95,13 @@ public class PacketEventManager implements Cleanable
         listeners.remove(listener);
         if (listeners.isEmpty())
         {
-            this.receivedListeners.remove(packetId);
+            this.receivedListeners.remove(clazz);
         }
     }
 
-    public void removeListener(int packetId, PacketSentListener listener)
+    public void removeListener(Class<? extends Packet> clazz, PacketSentListener listener)
     {
-        List<PacketSentListener> listeners = this.sentListeners.get(packetId);
+        List<PacketSentListener> listeners = this.sentListeners.get(clazz);
         if (listeners == null)
         {
             return;
@@ -115,7 +109,7 @@ public class PacketEventManager implements Cleanable
         listeners.remove(listener);
         if (listeners.isEmpty())
         {
-            this.sentListeners.remove(packetId);
+            this.sentListeners.remove(clazz);
         }
     }
 
@@ -131,7 +125,7 @@ public class PacketEventManager implements Cleanable
             this.logger.debug("The packet was null!");
             return false;
         }
-        List<PacketReceivedListener> listeners = this.receivedListeners.get(packet.n());
+        List<PacketReceivedListener> listeners = this.receivedListeners.get(packet.getClass());
         if (listeners == null)
         {
             return false;
@@ -156,7 +150,7 @@ public class PacketEventManager implements Cleanable
             this.logger.debug("The packet was null!");
             return false;
         }
-        List<PacketSentListener> listeners = this.sentListeners.get(packet.n());
+        List<PacketSentListener> listeners = this.sentListeners.get(packet.getClass());
         if (listeners == null)
         {
             return false;

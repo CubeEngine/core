@@ -96,7 +96,7 @@ public class WarpCommand extends ContainerCommand
     }, permDefault = PermDefault.OP, desc = "Create a warp", min = 1, max = 1)
     public void createWarp(ParameterizedContext context)
     {
-        if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().maxwarps)
+        if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().warps.max)
         {
             context.sendTranslated("&4The server have reached it's maximum number of warps!");
             context.sendTranslated("&cSome warps have to be delete for new ones to be made");
@@ -120,7 +120,7 @@ public class WarpCommand extends ContainerCommand
             }
             Location loc = sender.getLocation();
             Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("priv") ? VISIBILITY_PRIVATE : VISIBILITY_PUBLIC));
-            context.sendTranslated("&aYour warp have been created");
+            context.sendTranslated("&aYour warp &6%s&a has been created!", warp.getName());
             return;
         }
         context.sendTranslated("&4This command can only be used by users!");
@@ -233,7 +233,7 @@ public class WarpCommand extends ContainerCommand
             TreeMap<String, Integer> results;
 
             @Override
-            public void asyncMain(CommandContext context)
+            public void main(CommandContext context)
             {
                 results = telePointManager.searchWarp(context.getString(0), context.getSender());
             }

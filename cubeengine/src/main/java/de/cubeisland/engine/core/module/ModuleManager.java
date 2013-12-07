@@ -27,6 +27,7 @@ import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
+import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.util.Cleanable;
 
 /**
@@ -76,7 +77,7 @@ public interface ModuleManager extends Cleanable
     boolean enableModule(Module module);
 
     /**
-     * This method enables all modules or at least all that don't provide world generators
+     * This method enables all modules or at least all that don't provide world chunkgenerator
      */
     void enableModules();
 
@@ -146,4 +147,11 @@ public interface ModuleManager extends Cleanable
      * @return the singleton instance of the dummy CoreModule
      */
     CoreModule getCoreModule();
+
+    /**
+     * Gets the service manager
+     *
+     * @return the service manager
+     */
+    ServiceManager getServiceManager();
 }

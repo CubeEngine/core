@@ -17,18 +17,23 @@
  */
 package de.cubeisland.engine.conomy.account;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadFactory;
 
 import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
-import de.cubeisland.engine.core.service.Economy;
+import de.cubeisland.engine.core.logging.Level;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import gnu.trove.map.hash.THashMap;
@@ -36,8 +41,6 @@ import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.conomy.account.storage.TableAccount.TABLE_ACCOUNT;
 import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_BANK_ACCESS;
@@ -45,11 +48,12 @@ import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_
 public class ConomyManager
 {
     protected final Conomy module;
+    private final ThreadFactory threadFactory;
 
     private Map<String,BankAccount> bankaccounts = new THashMap<>();
     private Map<Long,BankAccount> bankaccountsID = new THashMap<>();
 
-    protected final Logger logger;
+    protected final Log logger;
     protected final ConomyConfiguration config;
     private Economy conomyInterface;
 
@@ -60,14 +64,16 @@ public class ConomyManager
     public ConomyManager(Conomy module)
     {
         this.module = module;
+        this.threadFactory = module.getCore().getTaskManager().getThreadFactory(module);
         this.config = module.getConfig();
 
         this.dsl = this.module.getCore().getDB().getDSL();
 
-        this.logger =  LoggerFactory.getLogger("cubeengine.conomy.transactions");
+
+        this.logger = module.getCore().getLogFactory().getLog("conomy.transactions");
         if (!this.module.getConfig().enableLogging)
         {
-            ((ch.qos.logback.classic.Logger)logger).getAppender("conomy.transactions-file").stop();
+            logger.setLevel(Level.OFF);
         }
 
         this.um = this.module.getCore().getUserManager();
@@ -145,7 +151,7 @@ public class ConomyManager
     {
         if (this.thread == null || !this.thread.isAlive())
         {
-            thread = this.module.getCore().getTaskManager().getThreadFactory().newThread(r);
+            thread = this.threadFactory.newThread(r);
             thread.start();
             return true;
         }
@@ -396,7 +402,7 @@ public class ConomyManager
         }
         bankAccount.model.delete();
         this.bankaccounts.remove(name);
-        this.bankaccountsID.remove(bankAccount.model.getKey());
+        this.bankaccountsID.remove(bankAccount.model.getKey().longValue());
         return true;
     }
 
@@ -411,18 +417,21 @@ public class ConomyManager
             + "f "+ this.config.symbol, balance);
     }
 
-    public Double parse(String amountString)
+    public Double parse(String amountString, Locale locale)
     {
+
         //private Pattern pattern2 = Pattern.compile("[^a-zA-Z]+");
         //private Pattern pattern1;
         //this.pattern1 = Pattern.compile("^-*[\\d,]+$");
+        NumberFormat format = NumberFormat.getInstance(locale);
         try
         {
-            return Double.parseDouble(amountString);
+            Number parsed = format.parse(amountString);
+            return parsed.doubleValue();
         }
-        catch (NumberFormatException ex)
+        catch (NumberFormatException | ParseException ex)
         {}
-        // TODO filter currency Names / Symbols
+        // TODO filter currency Names / Symbols http://git.cubeisland.de/cubeengine/cubeengine/issues/250
         return null;
     }
 

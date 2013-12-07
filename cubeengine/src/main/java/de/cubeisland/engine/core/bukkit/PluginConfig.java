@@ -17,16 +17,14 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Name;
 
 /**
  * Configuration class to parse the custom CubeEngine values of plugin.yml
  */
-@Codec("yml")
-public class PluginConfig extends Configuration
+public class PluginConfig extends YamlConfiguration
 {
-    @Option("source-version")
+    @Name("source-version")
     public String sourceVersion = "unknown";
 }

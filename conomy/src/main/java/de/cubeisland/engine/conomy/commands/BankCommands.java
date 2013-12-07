@@ -579,7 +579,7 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-    // TODO bank Info cmd
+    // TODO bank Info cmd http://git.cubeisland.de/cubeengine/cubeengine/issues/246
     // Owners Members Invites Balance Hidden
     public void info(CommandContext context)//list all members with their rank
     {}
@@ -715,6 +715,11 @@ public class BankCommands extends ContainerCommand
         if (amount == null)
         {
             context.sendTranslated("&6%s&c is not a valid amount!", context.getString(1));
+            return;
+        }
+        if (amount < 0)
+        {
+            context.sendTranslated("&cSorry but robbing a bank is not allowed!");
             return;
         }
         boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_PAY_FORCE.isAuthorized(context.getSender());

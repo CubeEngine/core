@@ -18,35 +18,28 @@
 package de.cubeisland.engine.core.user;
 
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
 
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
+import org.jooq.util.mysql.MySQLDataType;
 
-public class TableUser extends TableImpl<UserEntity> implements TableCreator<UserEntity>
+public class TableUser extends AutoIncrementTable<UserEntity, UInteger>
 {
-
     public static TableUser TABLE_USER;
 
-    private TableUser(String prefix)
+    public TableUser(String prefix)
     {
-        super(prefix + "user");
-        IDENTITY = Keys.identity(this, this.KEY);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        UNIQUE_PLAYER = Keys.uniqueKey(this, this.PLAYER);
+        super(prefix + "user", new Version(1));
+        this.setAIKey(this.KEY);
+        this.addUniqueKey(this.PLAYER);
+        this.addFields(KEY, PLAYER, NOGC, LASTSEEN, PASSWD, FIRSTSEEN, LANGUAGE);
+        TABLE_USER = this;
     }
 
     public static TableUser initTable(Database database)
@@ -55,65 +48,17 @@ public class TableUser extends TableImpl<UserEntity> implements TableCreator<Use
         {
             MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
             TABLE_USER = new TableUser(config.tablePrefix);
-
         }
         return TABLE_USER;
     }
 
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                    "`key` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                    "`player` varchar(16) NOT NULL,\n" +
-                                    "`nogc` tinyint(1) NOT NULL,\n" +
-                                    "`lastseen` datetime NOT NULL,\n" +
-                                    "`passwd` varbinary(128) DEFAULT NULL,\n" +
-                                    "`firstseen` datetime NOT NULL,\n" +
-                                    "`language` varchar(5) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`key`),\n" +
-                                    "UNIQUE KEY `player` (`player`))\n" +
-                                    "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                    "COMMENT='1.0.0'").execute();
-}
-
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<UserEntity, UInteger> IDENTITY;
-    public final UniqueKey<UserEntity> PRIMARY_KEY;
-    public final UniqueKey<UserEntity> UNIQUE_PLAYER;
-
-    public final TableField<UserEntity, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<UserEntity, String> PLAYER = createField("player", SQLDataType.VARCHAR.length(16), this);
-    public final TableField<UserEntity, Byte> NOGC = createField("nogc", SQLDataType.TINYINT, this);
-    public final TableField<UserEntity, Timestamp> LASTSEEN = createField("lastseen", SQLDataType.TIMESTAMP, this);
+    public final TableField<UserEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<UserEntity, String> PLAYER = createField("player", SQLDataType.VARCHAR.length(16).nullable(false), this);
+    public final TableField<UserEntity, Boolean> NOGC = createField("nogc", BOOLEAN.nullable(false), this);
+    public final TableField<UserEntity, Timestamp> LASTSEEN = createField("lastseen", MySQLDataType.DATETIME.nullable(false), this);
     public final TableField<UserEntity, byte[]> PASSWD = createField("passwd", SQLDataType.VARBINARY.length(128), this);
-    public final TableField<UserEntity, Timestamp> FIRSTSEEN = createField("firstseen", SQLDataType.TIMESTAMP, this);
+    public final TableField<UserEntity, Timestamp> FIRSTSEEN = createField("firstseen", MySQLDataType.DATETIME.nullable(false), this);
     public final TableField<UserEntity, String> LANGUAGE = createField("language", SQLDataType.VARCHAR.length(5), this);
-
-    @Override
-    public Identity<UserEntity, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<UserEntity> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<UserEntity>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_PLAYER);
-    }
 
     @Override
     public Class<UserEntity> getRecordType()

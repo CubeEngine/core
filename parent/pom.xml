@@ -16,7 +16,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <minecraftVersion>1.6.2</minecraftVersion>
+    <minecraftVersion>1.7.2</minecraftVersion>
     <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
     <jdkVersion>1.7</jdkVersion>
     <projectBase>${basedir}/..</projectBase>
@@ -60,9 +60,9 @@
   </issueManagement>
 
   <scm>
-    <url>scm:git:https://github.com/CubeEngineDev/CubeEngine</url>
-    <connection>scm:git:https://github.com/CubeEngineDev/CubeEngine</connection>
-    <developerConnection>scm:git:https://github.com/CubeEngineDev/CubeEngine</developerConnection>
+    <url>scm:git:http://git.cubeisland.de/cubeengine/cubeengine</url>
+    <connection>scm:git:http://git.cubeisland.de/cubeengine/cubeengine.git</connection>
+    <developerConnection>scm:git:http://git.cubeisland.de/cubeengine/cubeengine.git</developerConnection>
   </scm>
 
   <repositories>
@@ -162,12 +162,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Logback dependencies-->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
-      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -205,8 +199,12 @@
         <filtering>true</filtering>
         <includes>
           <include>module.yml</include>
-          <include>logback.xml</include>
         </includes>
+      </resource>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}/src/main/resources/</directory>
+        <filtering>false</filtering>
       </resource>
       <resource>
         <targetPath>./resources</targetPath>
@@ -235,6 +233,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.googlecode.gettext-commons</groupId>
+        <artifactId>gettext-maven-plugin</artifactId>
+        <version>1.2.4</version>
+        <configuration>
+          <sourceLocale>en_US</sourceLocale>
+          <poDirectory>${basedir}/src/main/resources/translations</poDirectory>
+          <keysFile>messages.pot</keysFile>
+          <keywords>-ktranslate:1 -ktranslateN:1,2 -kgetTranslation:1 -kgetTranslationN:1,2 -ksendTranslated:1 -ksendTranslatedN:1,2 -k_:1</keywords>
+        </configuration>
       </plugin>
     </plugins>
 

@@ -48,6 +48,11 @@ public class SignMarketCommands extends ContainerCommand
             }
             else
             {
+                if (this.module.getConfig().disableInWorlds.contains(((User)context.getSender()).getWorld()))
+                {
+                    context.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                    return;
+                }
                 this.module.getEditModeListener().addUser((User)context.getSender());
                 context.sendTranslated("&aYou are now in edit mode!\n" +
                                            "Chat will now work as commands.\n" +

@@ -32,10 +32,10 @@ public class AssignedRole extends UpdatableRecordImpl<AssignedRole> implements R
         super(TABLE_ROLE);
     }
 
-    public AssignedRole newAssignedRole(UInteger userId, long worldId, String roleName)
+    public AssignedRole newAssignedRole(UInteger userId, UInteger worldId, String roleName)
     {
         this.setUserid(userId);
-        this.setWorldid(UInteger.valueOf(worldId));
+        this.setWorldid(worldId);
         this.setRolename(roleName);
         return this;
     }

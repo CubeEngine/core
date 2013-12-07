@@ -28,12 +28,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.itemrepair.repair.RepairBlockManager;
 import de.cubeisland.engine.itemrepair.repair.RepairRequest;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock;
+import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock.RepairBlockInventory;
 
 public class ItemRepairListener implements Listener
 {
@@ -79,12 +79,12 @@ public class ItemRepairListener implements Listener
             return;
         }
 
-        Inventory inventory = repairBlock.getInventory(user);
+        RepairBlockInventory inventory = repairBlock.getInventory(user);
         
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
         {
             this.cancelRequest(event);
-            user.openInventory(inventory);
+            user.openInventory(inventory.inventory);
         }
         else if (event.getAction() == Action.LEFT_CLICK_BLOCK)
         {

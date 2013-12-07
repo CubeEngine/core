@@ -20,37 +20,21 @@ package de.cubeisland.engine.itemrepair;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
-import de.cubeisland.engine.core.config.annotations.MapComment;
-import de.cubeisland.engine.core.config.annotations.MapComments;
-import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.util.convert.Convert;
+import de.cubeisland.engine.configuration.Section;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
-import de.cubeisland.engine.itemrepair.material.BaseMaterialContainerConverter;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 
-
-@Codec("yml")
-@DefaultConfig
-@MapComments(value = @MapComment(path = "price.enchant-multiplier", text = "factor x base^EnchantmentLevel"))
-public class ItemrepairConfig extends Configuration
+public class ItemrepairConfig extends YamlConfiguration
 {
-    static
-    {
-        Convert.registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
-    }
-
-    @Option("server.bank")
+    @Name("server.bank")
     public String serverBank = "server";
-    @Option("server.player")
+    @Name("server.player")
     public String serverPlayer = "";
-    @Option("price.enchant-multiplier.base")
-    public float enchMultiplierBase = 1.75f;
-    @Option("price.enchant-multiplier.factor")
-    public float enchMultiplierFactor = 2.2f;
-    @Option("repair-blocks")
+    public Price price = new Price();
+    @Name("repair-blocks")
     public Map<String,RepairBlockConfig> repairBlockConfigs = new HashMap<String, RepairBlockConfig>()
     {
         {
@@ -59,6 +43,18 @@ public class ItemrepairConfig extends Configuration
         }
     };
 
-    @Option("price.materials")
-    public BaseMaterialContainer baseMaterials = new BaseMaterialContainer();
+    public class Price implements Section
+    {
+        @Comment("factor x base^EnchantmentLevel")
+        @Name("enchant-multiplier")
+        public EnchantMultiplier enchantMultiplier = new EnchantMultiplier();
+        @Name("materials")
+        public BaseMaterialContainer baseMaterials = new BaseMaterialContainer();
+
+        public class EnchantMultiplier implements Section
+        {
+            public float base = 1.75f;
+            public float factor = 2.2f;
+        }
+    }
 }

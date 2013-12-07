@@ -71,7 +71,7 @@ public class CropTrample extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).CROP_TRAMPLE_enable;
+        return this.lm.getConfig(world).block.CROP_TRAMPLE_enable;
     }
 
     @Override

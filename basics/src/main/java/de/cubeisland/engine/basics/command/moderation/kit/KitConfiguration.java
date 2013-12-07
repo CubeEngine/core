@@ -17,46 +17,49 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.Transient;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.time.Duration;
 
 public class KitConfiguration extends YamlConfiguration
 {
-    public String kitName;
     @Comment("Players that join your server the first time will receive this kit if set on true.")
-    @Option("give-on-first-join")
+    @Name("give-on-first-join")
     public boolean giveOnFirstJoin = false;
     @Comment("If not empty this message will be displayed when receiving this kit.")
-    @Option("custom-receive-message")
+    @Name("custom-receive-message")
     public String customReceiveMsg = "";
     @Comment("amount*itemName/Id:Data customName\n"
-        + "example: 64*1:0 MyFirstStoneBlocks")
-    @Option("items")
+        + "example: 64*STONE:0 MyFirstStoneBlocks")
+    @Name("items")
     public List<KitItem> kitItems = new LinkedList<>();
-    @Option("commands")
+    @Name("commands")
     public List<String> kitCommands = new LinkedList<>();
     @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
-    @Option("generate-permission")
+    @Name("generate-permission")
     public boolean usePerm = false;
     @Comment("The delay between each usage of this kit.")
-    @Option("limit-usage-delay")
+    @Name("limit-usage-delay")
     public Duration limitUsageDelay = new Duration("-1");
     @Comment("Limits the usage to x amount. Use 0 for infinite.")
-    @Option("limit-usage")
+    @Name("limit-usage")
     public int limitUsage = 0;
 
+    @Transient
+    public String kitName;
+
     @Override
-    public void onLoaded(Path loadFrom)
+    public void onLoaded(File loadFrom)
     {
-        this.kitName = StringUtils.stripFileExtension(this.getPath().getFileName().toString());
+        this.kitName = StringUtils.stripFileExtension(this.getFile().getName());
         if (this.kitName.length() > 50)
         {
             this.kitName = this.kitName.substring(0, 50); // limit for db
@@ -67,6 +70,4 @@ public class KitConfiguration extends YamlConfiguration
     {
         return new Kit(module, this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
     }
-
-
 }

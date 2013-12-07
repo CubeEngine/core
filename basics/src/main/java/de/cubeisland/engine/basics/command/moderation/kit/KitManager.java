@@ -24,29 +24,51 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Set;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
-public class KitManager
+public class KitManager implements Listener
 {
    private final Basics module;
 
-    public KitManager(Basics module) {
+    public KitManager(Basics module)
+    {
         this.module = module;
+        this.module.getCore().getEventManager().registerListener(module, this);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onJoin(PlayerJoinEvent event)
+    {
+        if (!event.getPlayer().hasPlayedBefore())
+        {
+            for (Kit kit : kitMap.values())
+            {
+                if (kit.isGiveKitOnFirstJoin())
+                {
+                    User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                    kit.give(null, user, true);
+                }
+            }
+        }
     }
 
     private THashMap<String, Kit> kitMap = new THashMap<>();
     private THashMap<Kit, KitConfiguration> kitConfigMap = new THashMap<>();
 
-
     public Kit getKit(String name)
     {
-        Set<String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
+        if (name == null) return null;
+        Set <String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
         if (match.isEmpty())
         {
             return null;
@@ -64,14 +86,14 @@ public class KitManager
             kitMap.put(kit.getKitName(), kit);
         }
         kit.applyToConfig(config);
-        config.save(module.getFolder().resolve("kits").resolve(config.kitName + ".yml"));
+        config.save(module.getFolder().resolve("kits").resolve(config.kitName + ".yml").toFile());
     }
 
     public void loadKit(Path file)
     {
         try
         {
-            KitConfiguration config = Configuration.load(KitConfiguration.class, file);
+            KitConfiguration config = this.module.getCore().getConfigurationFactory().load(KitConfiguration.class, file.toFile());
             config.kitName = StringUtils.stripFileExtension(file.getFileName().toString());
             Kit kit = config.getKit(module);
             kitConfigMap.put(kit, config);
@@ -83,8 +105,7 @@ public class KitManager
         }
         catch (Exception ex)
         {
-            module.getLog().warn("Could not load the kit configuration!");
-            module.getLog().debug(ex.getLocalizedMessage(), ex);
+            module.getLog().warn(ex, "Could not load the kit configuration!");
         }
     }
 
@@ -102,10 +123,9 @@ public class KitManager
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().warn("Failed load the modules!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Failed load the modules!");
         }
     }
 

@@ -36,12 +36,14 @@ public class UserDataStore implements RawDataStore
     protected Map<String,String> metadata;
 
     protected final RolesAttachment attachment;
-    protected final long worldID;
+    private final long worldID;
+    private UInteger mirrorWorld;
 
-    public UserDataStore(RolesAttachment attachment, long worldID)
+    public UserDataStore(RolesAttachment attachment, long worldID, UInteger mirrorWorld)
     {
         this.attachment = attachment;
         this.worldID = worldID;
+        this.mirrorWorld = mirrorWorld;
 
         this.roles = new HashSet<>();
         this.permissions = new HashMap<>();
@@ -188,6 +190,11 @@ public class UserDataStore implements RawDataStore
     public long getWorldID()
     {
         return this.worldID;
+    }
+
+    protected UInteger getMirrorWorldId()
+    {
+        return this.mirrorWorld;
     }
 
     public UInteger getUserID()

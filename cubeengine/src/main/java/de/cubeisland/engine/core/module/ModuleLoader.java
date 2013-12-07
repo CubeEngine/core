@@ -18,8 +18,7 @@
 package de.cubeisland.engine.core.module;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -32,7 +31,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.Configuration;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
@@ -40,7 +39,6 @@ import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.storage.Registry;
 import gnu.trove.set.hash.THashSet;
-import org.slf4j.Logger;
 
 /**
  * This class is used to load modules and provide a centralized place for class
@@ -54,10 +52,9 @@ public class ModuleLoader
     private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final Path tempPath;
-    private final ModuleLoggerFactory loggerFactory;
     private Registry registry;
 
-    ModuleLoader(Core core, ClassLoader parentClassLoader, ModuleLoggerFactory loggerFactory)
+    ModuleLoader(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
         this.parentClassLoader = parentClassLoader;
@@ -65,8 +62,9 @@ public class ModuleLoader
         this.classLoaders = new HashMap<>();
         this.infoFileName = "module.yml";
         this.tempPath = core.getFileManager().getTempPath().resolve("modules");
-        this.registry = Registry.initTable(core.getDB());
-        this.loggerFactory = loggerFactory;
+        this.core.getDB().registerTable(Registry.class);
+        this.registry = Registry.TABLE_REGISTRY;
+        this.registry.setDsl(core.getDB().getDSL());
         try
         {
             Files.createDirectories(this.tempPath);
@@ -133,7 +131,7 @@ public class ModuleLoader
             ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
-            Logger logger = this.loggerFactory.getLogger(info);
+            Log logger = core.getLogFactory().createModuleLog(info);
 
             module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader, logger);
             module.onLoad();
@@ -141,9 +139,11 @@ public class ModuleLoader
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
 
             this.classLoaders.put(info.getId(), classLoader);
+
+            this.getCore().getLog().debug("Module {} loaded...", info.getId());
             return module;
         }
-        catch (Exception e)
+        catch (IOException | ReflectiveOperationException | NoClassDefFoundError e)
         {
             throw new InvalidModuleException("Module: " + info.getName(), e);
         }
@@ -193,9 +193,9 @@ public class ModuleLoader
                 throw new InvalidModuleException("The file '" + file + "' does not contain a module.yml!");
             }
 
-            try (Reader reader = new InputStreamReader(jarFile.getInputStream(entry), Core.CHARSET))
+            try (InputStream is = jarFile.getInputStream(entry))
             {
-                info = new ModuleInfo(file, Configuration.load(ModuleConfig.class, reader, null));
+                info = new ModuleInfo(file, this.getCore().getConfigurationFactory().load(ModuleConfig.class, is));
             }
         }
         catch (IOException e)

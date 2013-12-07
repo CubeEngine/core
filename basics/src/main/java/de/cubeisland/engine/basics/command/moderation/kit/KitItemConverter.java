@@ -17,36 +17,60 @@
  */
 package de.cubeisland.engine.basics.command.moderation.kit;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.IntNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class KitItemConverter implements Converter<KitItem>
 {
-    private static final Pattern pat = Pattern.compile("(?:([0-9]+)\\*)?([a-zA-Z0-9]+)(?::([0-9]+))?(?: (.+))?");
+    private static final Pattern pat = Pattern.compile("(?:([0-9]+)\\*)?([a-zA-Z0-9_]+)(?::([0-9]+))?(?: (.+))?(:)?");
 
     @Override
-    public Node toNode(KitItem object) throws ConversionException
+    public Node toNode(KitItem object, ConverterManager manager) throws ConversionException
     {
-        return Convert.wrapIntoNode(object.amount
-                + "*" + object.mat.getId()
-                + ":" + object.dura +
-                (object.customName == null ? "" : " " + object.customName));
+        if (object.enchs == null || object.enchs.isEmpty())
+        {
+            return StringNode.of(object.amount + "*" + object.mat.name() + ":" + object.dura +
+                                     (object.customName == null ? "" : " " + object.customName));
+        }
+        else
+        {
+            MapNode mapNode = MapNode.emptyMap();
+            mapNode.setNode(StringNode.of(object.amount + "*" + object.mat.name() + ":" + object.dura +
+                                              (object.customName == null ? "" : " " + object.customName)),
+                            manager.convertToNode(object.enchs));
+            return mapNode;
+        }
     }
 
     @Override
-    public KitItem fromNode(Node node) throws ConversionException
+    public KitItem fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        //TODO add support for enchantments
-        //suported formats: [amount*]id[:data][ customname] 
-        String itemString = node.unwrap();
+        //suported formats: [amount*]id[:data][ customname]
+        // if has enchs as map with map of enchs below
+        String itemString;
+        if (node instanceof MapNode)
+        {
+            itemString = ((MapNode)node).getFirstKey();
+        }
+        else
+        {
+            itemString = node.asText();
+        }
         if (itemString.matches(pat.pattern()))
         {
             Matcher matcher = pat.matcher(itemString);
@@ -76,13 +100,25 @@ public class KitItemConverter implements Converter<KitItem>
                 {
                     dura = Short.parseShort(duraString);
                 }
-                return new KitItem(mat, dura, amount, name);
+                Map<Enchantment, Integer> enchs = new HashMap<>();
+                if (node instanceof MapNode)
+                {
+                    MapNode subNode= (MapNode)((MapNode)node).getExactNode(((MapNode)node).getFirstKey());
+                    for (Entry<String, Node> enchNode : subNode.getMappedNodes().entrySet())
+                    {
+                        int lv;
+                        Enchantment enchantment = Match.enchant().enchantment(enchNode.getKey());
+                        lv = ((IntNode)enchNode.getValue()).getValue();
+                        enchs.put(enchantment, lv);
+                    }
+                }
+                return new KitItem(mat, dura, amount, name, enchs);
             }
             catch (Exception ex)
             {
-                throw new ConversionException("Could not parse kitItem!", ex);
+                throw ConversionException.of(this, node, "Could not parse kitItem! " + itemString, ex);
             }
         }
-        throw new ConversionException("Could not parse kitItem!");
+        throw ConversionException.of(this, node, "Could not parse kitItem!");
     }
 }

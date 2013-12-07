@@ -152,8 +152,7 @@ public final class RulebookManager
             }
             catch(IOException ex)
             {
-                this.module.getLog().error("Error when creating the book!");
-                this.module.getLog().debug(ex.getLocalizedMessage(), ex);
+                this.module.getLog().error(ex, "Error when creating the book!");
             }
         }
     }

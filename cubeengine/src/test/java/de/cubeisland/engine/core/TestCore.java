@@ -18,20 +18,23 @@
 package de.cubeisland.engine.core;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.cubeisland.engine.configuration.ConfigurationFactory;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.CommandManager;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;
 import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.logging.JulLog;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
-import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
@@ -40,8 +43,6 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -50,12 +51,13 @@ import org.slf4j.LoggerFactory;
 public class TestCore implements Core
 {
     private final Version version = Version.ONE;
-    private final String sourceVersion = "master-aaaaaaaa";
-    private final Logger logger = LoggerFactory.getLogger("");
+    private final String sourceVersion = "master-testcore";
+    private final Log logger = new JulLog(Logger.getLogger(""), this, "");
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
     private ModuleManager moduleManager = null;
+    private ConfigurationFactory configurationFactory = new ConfigurationFactory();
 
     {
         CubeEngine.initialize(this);
@@ -91,13 +93,16 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = Configuration.load(CoreConfiguration.class, this.getFileManager().getDataPath().resolve("core.yml"));
+            this.config = this.getConfigurationFactory().load(CoreConfiguration.class, this.getFileManager()
+                                                                                           .getDataPath()
+                                                                                           .resolve("core.yml")
+                                                                                           .toFile());
         }
         return this.config;
     }
 
     @Override
-    public org.slf4j.Logger getLog()
+    public Log getLog()
     {
         return this.logger;
     }
@@ -166,12 +171,6 @@ public class TestCore implements Core
     }
 
     @Override
-    public boolean isDebug()
-    {
-        return false;
-    }
-
-    @Override
     public WorldManager getWorldManager()
     {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -196,8 +195,20 @@ public class TestCore implements Core
     }
 
     @Override
-    public ServiceManager getServiceManager()
+    public LogFactory getLogFactory()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null; // TODO ?
+    }
+
+    @Override
+    public ConfigurationFactory getConfigurationFactory()
+    {
+        return this.configurationFactory;
+    }
+
+    @Override
+    public boolean isStartupFinished()
+    {
+        return false;
     }
 }

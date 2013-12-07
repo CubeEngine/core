@@ -122,7 +122,7 @@ public class VanillaCommands implements CommandHolder
         desc = "Changes the difficulty level of the server",
         usage = "[difficulty] {world <world>}",
         max = 1,
-        params = @Param(names = {"world", "w"}, type = World.class, completer = WorldCompleter.class)
+        params = @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)
     )
     public void difficulty(ParameterizedContext context)
     {
@@ -301,11 +301,11 @@ public class VanillaCommands implements CommandHolder
 
         context.sendTranslated("There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
         context.sendMessage(" ");
-        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (r" + context.getCore().getVersion() + ")");
+        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + context.getCore().getVersion() + ")");
 
         for (Module m : modules)
         {
-            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (r" + m.getVersion() + ")");
+            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (" + m.getVersion() + ")");
         }
 
         for (Plugin p : plugins)
@@ -365,8 +365,7 @@ public class VanillaCommands implements CommandHolder
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)
             {
-                context.sendTranslated("&cThe given plugin doesn't seem to be loaded, have you type it correctly (casing does matter)?");
-                return;
+                context.sendTranslated("&cThe given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
             }
             else
             {
@@ -391,9 +390,9 @@ public class VanillaCommands implements CommandHolder
         else
         {
             context.sendTranslated("This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
-            context.sendTranslated("&eBukkit API&r Version: &9%s", server.getBukkitVersion());
+            context.sendTranslated("&eBukkit API&r version: &9%s", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated("Expanded and improved by &aCubeEngine&r revision &9%s", context.getCore().getVersion());
+            context.sendTranslated("Expanded and improved by &aCubeEngine&r version &9%s", context.getCore().getVersion());
             showSourceVersion(context, core.getSourceVersion());
         }
     }
@@ -401,11 +400,11 @@ public class VanillaCommands implements CommandHolder
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
     protected static void showSourceVersion(ParameterizedContext context, String sourceVersion)
     {
-        if (context.hasFlag("s"))
+        if (context.hasFlag("s") && sourceVersion != null)
         {
             final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
-            context.sendTranslated("Source Version: %s", sourceVersion);
-            context.sendTranslated("Source link: %s", SOURCE_LINK + commit);
+            context.sendTranslated("&aSource Version: &6%s", sourceVersion);
+            context.sendTranslated("&aSource link: &6%s", SOURCE_LINK + commit);
         }
     }
 

@@ -37,6 +37,7 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.ItemData;
@@ -73,18 +74,19 @@ public class HangingBreak extends BlockActionType
         {
             if (!this.isActive(event.getEntity().getWorld())) return;
             Location location = event.getEntity().getLocation();
-            Entity causer = this.plannedHangingBreak.get(location);
-            if (causer != null)
+            Pair<Entity, BlockActionType> cause = this.plannedHangingBreak.get(location);
+            // TODO use BlockActionType cause
+            if (cause != null)
             {
                 if (event.getEntity() instanceof ItemFrame)
                 {
                     ItemStack itemStack = ((ItemFrame) event.getEntity()).getItem();
                     String itemInFrame = itemStack == null ? null : new ItemData(itemStack).serialize(this.om);
-                    this.logBlockChange(location,causer,ITEM_FRAME,AIR,itemInFrame);
+                    this.logBlockChange(location,cause.getLeft(),ITEM_FRAME,AIR,itemInFrame);
                 }
                 else if (event.getEntity() instanceof Painting)
                 {
-                    this.queueLog(location,causer,PAINTING.name(),1L*((Painting)event.getEntity()).getArt().getId(),AIR.name(),(byte)0,null);
+                    this.queueLog(location,cause.getLeft(),PAINTING.name(),1L*((Painting)event.getEntity()).getArt().getId(),AIR.name(),(byte)0,null);
                 }
             }
             else
@@ -132,10 +134,10 @@ public class HangingBreak extends BlockActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location,Entity> plannedHangingBreak = new ConcurrentHashMap<>();
-    public void preplanHangingBreak(Location location, Entity player)
+    private Map<Location, Pair<Entity, BlockActionType>> plannedHangingBreak = new ConcurrentHashMap<>();
+    public void preplanHangingBreak(Location location, Entity player, BlockActionType cause)
     {
-        plannedHangingBreak.put(location, player);
+        plannedHangingBreak.put(location, new Pair<>(player, cause));
         if (!clearPlanned)
         {
             clearPlanned = true;

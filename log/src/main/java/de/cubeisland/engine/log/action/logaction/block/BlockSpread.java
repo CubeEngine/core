@@ -77,6 +77,6 @@ public class BlockSpread extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_SPREAD_enable;
+        return this.lm.getConfig(world).block.spread.BLOCK_SPREAD_enable;
     }
 }

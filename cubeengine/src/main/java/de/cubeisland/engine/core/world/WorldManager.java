@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,13 +28,14 @@ import org.bukkit.generator.ChunkGenerator;
 
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
+import gnu.trove.TLongCollection;
 
 public interface WorldManager extends Cleanable
 {
     World createWorld(WorldCreator creator);
     long getWorldId(World world);
     Long getWorldId(String name);
-    long[] getAllWorldIds();
+    TLongCollection getAllWorldIds();
     World getWorld(long id);
     World getWorld(String name);
     World getWorld(UUID uid);
@@ -48,4 +50,6 @@ public interface WorldManager extends Cleanable
     void removeGenerators(Module module);
 
     WorldEntity getWorldEntity(World world);
+
+    List<String> getWorldNames();
 }

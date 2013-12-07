@@ -35,6 +35,7 @@ import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
 
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
+import org.jooq.types.UInteger;
 
 public class RolesAttachment extends UserAttachment
 {
@@ -188,7 +189,7 @@ public class RolesAttachment extends UserAttachment
         if (rawDataStore == null)
         {
             rawDataStore = new UserDatabaseStore(this, worldID, manager);
-            this.rawUserData.put(worldID,rawDataStore);
+            this.rawUserData.put(worldID, rawDataStore);
         }
         return rawDataStore;
     }
@@ -204,7 +205,7 @@ public class RolesAttachment extends UserAttachment
         UserDataStore rawDataStore = this.temporaryData.get(worldID);
         if (rawDataStore == null)
         {
-            rawDataStore = new UserDataStore(this,worldID);
+            rawDataStore = new UserDataStore(this, worldID, UInteger.valueOf(this.manager.assignedRolesMirrors.get(worldID)));
             this.temporaryData.put(worldID,rawDataStore);
         }
         return rawDataStore;

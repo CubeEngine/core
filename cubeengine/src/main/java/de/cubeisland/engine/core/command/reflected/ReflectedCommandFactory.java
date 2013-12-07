@@ -120,10 +120,9 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 {
                     commandParameter.setCompleter(completerClass.newInstance());
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    module.getLog().error("Failed to create the completer '{}'", completerClass.getName());
-                    module.getLog().debug(e.getLocalizedMessage(), e);
+                    module.getLog().error(ex, "Failed to create the completer '{}'", completerClass.getName());
                 }
             }
 
@@ -163,6 +162,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 cmd.setPermission(perm.getName());
             }
         }
+        cmd.setAsynchronous(annotation.async());
         return (T)cmd;
     }
 

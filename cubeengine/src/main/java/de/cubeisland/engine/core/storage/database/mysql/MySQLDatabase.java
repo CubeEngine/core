@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
+import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -29,9 +30,9 @@ import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.TableName;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.task.ListenableExecutorService;
@@ -43,7 +44,11 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
+import org.jooq.conf.Settings;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
+import org.jooq.impl.DataSourceConnectionProvider;
+import org.jooq.impl.DefaultConfiguration;
 
 public class MySQLDatabase extends AbstractPooledDatabase
 {
@@ -56,12 +61,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private final ListenableExecutorService fetchExecutorService;
     private final ComboPooledDataSource cpds;
 
+    private final Settings settings;
+
     private DatabaseSchema schema;
 
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
         super(core);
         this.fetchExecutorService = new ListenableExecutorService();
+
         try
         {
             Class.forName("com.mysql.jdbc.Driver");
@@ -72,10 +80,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
         }
         this.config = config;
 
+
         cpds = new ComboPooledDataSource();
         cpds.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
         cpds.setUser(config.user);
-        cpds.setPassword(config.pass);
+        cpds.setPassword(config.password);
         cpds.setMinPoolSize(5);
         cpds.setMaxPoolSize(20);
         cpds.setAcquireIncrement(5);
@@ -83,22 +92,35 @@ public class MySQLDatabase extends AbstractPooledDatabase
         cpds.setInitialPoolSize(3);
         cpds.setMaxStatements(0); // No Caching jOOQ will do this if needed
         cpds.setMaxStatementsPerConnection(0); // No Caching jOOQ will do this if needed
-        cpds.setMaxIdleTime(20 * 60); // 20 min
+        Connection connection = cpds.getConnection();
+        ResultSet resultSet = connection.prepareStatement("SHOW variables where Variable_name='wait_timeout'").executeQuery();
+        if (resultSet.next())
+        {
+            int second = resultSet.getInt("Value") - 5;
+            if (second <= 0)
+            {
+                second += 5;
+            }
+            cpds.setMaxIdleTime(second);
+        }
+        connection.close();
         this.schema = new DatabaseSchema(config.database);
         tableprefix = this.config.tablePrefix;
+
+        settings = new Settings();
+        settings.setExecuteLogging(false);
     }
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
     {
-        MySQLDatabaseConfiguration config = Configuration.load(MySQLDatabaseConfiguration.class, file);
+        MySQLDatabaseConfiguration config = core.getConfigurationFactory().load(MySQLDatabaseConfiguration.class, file.toFile());
         try
         {
             return new MySQLDatabase(core, config);
         }
-        catch (SQLException e)
+        catch (SQLException ex)
         {
-            core.getLog().error("Could not establish connection with the database!");
-            core.getLog().debug(e.getLocalizedMessage(), e);
+            core.getLog().error(ex, "Could not establish connection with the database!");
         }
         return null;
     }
@@ -157,7 +179,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
      */
     public <T extends TableCreator> void registerTable(T table)
     {
-        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table)) return;
+        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table))
+        {
+            return;
+        }
         try
         {
             Connection connection = this.getConnection();
@@ -169,7 +194,22 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException("Cannot create table " + table.getName(), ex);
         }
         this.schema.addTable(table);
-        this.core.getLog().debug("Database-Table {} registered!", table.getName());
+        this.core.getLog().debug("Database-Table {0} registered!", table.getName());
+    }
+
+    @Override
+    public <T extends Table> void registerTable(Class<T> clazz)
+    {
+        try
+        {
+            Constructor<T> constructor = clazz.getDeclaredConstructor(String.class);
+            T table = constructor.newInstance(this.config.tablePrefix);
+            this.registerTable(table);
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalStateException("Unable to instantiate Table!", e);
+        }
     }
 
     @Override
@@ -187,7 +227,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public DSLContext getDSL()
     {
-        return DSL.using(this.cpds, SQLDialect.MYSQL);
+        return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL)
+                                                   .set(new DataSourceConnectionProvider(this.cpds))
+                                                   .set(new JooqLogger())
+                                                   .set(settings));
     }
 
     public <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query)
@@ -197,7 +240,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
             @Override
             public Result<R> call() throws Exception
             {
-                return query.fetch();
+                try
+                {
+                    return query.fetch();
+                }
+                catch (DataAccessException e)
+                {
+                    core.getLog().error("An error occurred while fetching later", e);
+                    throw e;
+                }
             }
         });
     }
@@ -210,7 +261,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
             @Override
             public Integer call() throws Exception
             {
-                return query.execute();
+                try
+                {
+                    return query.execute();
+                }
+                catch (DataAccessException e)
+                {
+                    core.getLog().error("An error occurred while executing later", e);
+                    throw e;
+                }
             }
         });
     }
@@ -283,5 +342,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public DatabaseConfiguration getDatabaseConfig()
     {
         return this.config;
+    }
+
+    @Override
+    public String getTablePrefix()
+    {
+        return this.config.tablePrefix;
     }
 }

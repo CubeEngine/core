@@ -63,7 +63,7 @@ public class TeleportRequestCommands
         user.get(BasicsAttachment.class).setPendingTpToRequest(sender.getName());
         user.get(BasicsAttachment.class).removePendingTpFromRequest();
         context.sendTranslated("&aTeleport request send to &2%s&a!", user.getName());
-        int waitTime = this.basics.getConfiguration().tpRequestWait * 20;
+        int waitTime = this.basics.getConfiguration().commands.teleportRequestWait * 20;
         if (waitTime > 0)
         {
             final User sendingUser = sender;
@@ -103,7 +103,7 @@ public class TeleportRequestCommands
             user.get(BasicsAttachment.class).setPendingTpFromRequest(sender.getName());
             user.get(BasicsAttachment.class).removePendingTpToRequest();
             context.sendTranslated("&aTeleport request send to &2%s!", user.getName());
-            int waitTime = this.basics.getConfiguration().tpRequestWait * 20;
+            int waitTime = this.basics.getConfiguration().commands.teleportRequestWait * 20;
             if (waitTime > 0)
             {
                 final User sendingUser = sender;
@@ -150,7 +150,7 @@ public class TeleportRequestCommands
                 User user = this.basics.getCore().getUserManager().getUser(name, false);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendTranslated("&2%s &cseems to have disappeared.", user.getName());
+                    context.sendTranslated("&2%s &cseems to have disappeared.", name);
                     return;
                 }
                 if (!TeleportCommands.teleport(sender, user.getLocation(), true, false, true))
@@ -164,7 +164,7 @@ public class TeleportRequestCommands
                 User user = this.basics.getCore().getUserManager().getUser(name, false);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendTranslated("&2%s &cseems to have disappeared.", user.getName());
+                    context.sendTranslated("&2%s &cseems to have disappeared.", name);
                     return;
                 }
                 if (!TeleportCommands.teleport(user, sender.getLocation(), true, false, true))

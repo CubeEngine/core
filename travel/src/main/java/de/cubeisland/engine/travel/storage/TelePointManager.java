@@ -53,8 +53,8 @@ public class TelePointManager
     {
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.homes = new HashMap<String, Home>();
-        this.warps = new HashMap<String, Warp>();
+        this.homes = new HashMap<>();
+        this.warps = new HashMap<>();
     }
 
     /**
@@ -743,7 +743,7 @@ public class TelePointManager
                 TeleportPointModel point = this.get(invite.getTeleportpoint().longValue());
                 if (point == null)
                 {
-                    this.module.getLog().warn("TeleportPointModel is null for #" + invite.getTeleportpoint().longValue());
+                    this.module.getLog().warn("TeleportPointModel is null for #{}", invite.getTeleportpoint().longValue());
                     continue;
                 }
                 if (point.getType() == TYPE_HOME)

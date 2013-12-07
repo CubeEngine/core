@@ -17,7 +17,10 @@
  */
 package de.cubeisland.engine.locker;
 
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.Reloadable;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.locker.BlockLockerConfiguration.BlockLockerConfigConverter;
 import de.cubeisland.engine.locker.EntityLockerConfiguration.EntityLockerConfigConverter;
 import de.cubeisland.engine.locker.commands.LockerAdminCommands;
@@ -27,53 +30,56 @@ import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.TableAccessList;
 import de.cubeisland.engine.locker.storage.TableLockLocations;
 import de.cubeisland.engine.locker.storage.TableLocks;
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.convert.Convert;
 
 public class Locker extends Module implements Reloadable
 {
     private LockerConfig config;
     private LockManager manager;
+    private LockerListener listener;
 
     @Override
     public void onEnable()
     {
-        Convert.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
-        Convert.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
-        this.config = Configuration.load(LockerConfig.class, this);
-        this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
+        ConverterManager cManager = this.getCore().getConfigurationFactory().getDefaultConverterManager();
+        cManager.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
+        cManager.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
+        this.config = this.loadConfig(LockerConfig.class);
+        Database db = this.getCore().getDB();
+        db.registerTable(TableLocks.class);
+        db.registerTable(TableLockLocations.class);
+        db.registerTable(TableAccessList.class);
         manager = new LockManager(this);
         LockerCommands mainCmd = new LockerCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
         this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
         this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
         new LockerPerm(this, mainCmd);
-        new LockerListener(this, manager);
+        listener = new LockerListener(this, manager);
     }
 
     @Override
     public void onDisable()
     {
         this.manager.saveAll();
+        this.getCore().getEventManager().removeListeners(this);
+        this.getCore().getCommandManager().removeCommands(this);
     }
 
     @Override
     public void reload()
     {
         this.onDisable();
-        this.config = Configuration.load(LockerConfig.class, this);
-        this.getCore().getDB().registerTable(TableLocks.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableLockLocations.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableAccessList.initTable(this.getCore().getDB()));
+        this.config = this.loadConfig(LockerConfig.class);
+        Database db = this.getCore().getDB();
+        db.registerTable(TableLocks.class);
+        db.registerTable(TableLockLocations.class);
+        db.registerTable(TableAccessList.class);
         manager = new LockManager(this);
         LockerCommands mainCmd = new LockerCommands(this, manager);
         this.getCore().getCommandManager().registerCommand(mainCmd);
         this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
         this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
-        new LockerListener(this, manager);
+        listener = new LockerListener(this, manager);
     }
 
     public LockerConfig getConfig()

@@ -20,130 +20,105 @@ package de.cubeisland.engine.basics.command.general;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.core.command.BasicContextFactory;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.roles.role.Role;
-import de.cubeisland.engine.roles.role.RolesAttachment;
-import gnu.trove.map.hash.THashMap;
 
-public class ListCommand
+public class ListCommand extends CubeCommand
 {
-    private final Basics module;
+    protected static final Comparator<User> USER_COMPARATOR = new UserComparator();
 
-    public ListCommand(Basics module) {
-        this.module = module;
+    public ListCommand(Basics basics)
+    {
+        super(basics, "list", "Displays all the online players.", new BasicContextFactory());
     }
 
-    @Command(desc = "Displays all the online players.")
-    public void list(CommandContext context)
+    protected SortedMap<String, Set<User>> groupUsers(Set<User> users)
     {
-        CommandSender sender = context.getSender();
-        Set<User> users = context.getCore().getUserManager().getOnlineUsers();
-        if (users.isEmpty())
+        SortedMap<String, Set<User>> grouped = new TreeMap<>();
+        grouped.put("&6Players", users);
+
+        return grouped;
+    }
+
+    @Override
+    public CommandResult run(CommandContext context) throws Exception
+    {
+        final CommandSender sender = context.getSender();
+        final SortedSet<User> users = new TreeSet<>(USER_COMPARATOR);
+
+        for (User user : context.getCore().getUserManager().getOnlineUsers())
         {
-            sender.sendTranslated("&cThere are no players online now!");
-            return;
-        }
-        THashMap<User,String> userStrings = new THashMap<>();
-        ArrayList<User> defaultList = new ArrayList<>();
-        ArrayList<User> afkList = new ArrayList<>();
-        for (User user : users)
-        {
-            if ((sender instanceof User) && !((User)sender).canSee(user)) // TODO add a permission and a marker for hiddens
+            if (sender instanceof User && !((User)sender).canSee(user))
             {
                 continue;
             }
-            String s = "&2"+user.getDisplayName();
-            if (user.attachOrGet(BasicsAttachment.class,this.module).isAfk())
-            {
-                s += "&f(&7afk&f)";
-                afkList.add(user);
-            }
-            else
-            {
-                defaultList.add(user);
-            }
-            userStrings.put(user, s);
-        }
-        Comparator<User> comparator = new Comparator<User>()
-        {
-            @Override
-            public int compare(User user1, User user2)
-            {
-                return String.CASE_INSENSITIVE_ORDER.compare(user1.getDisplayName(), user2.getDisplayName());
-            }
-        };
-        Collections.sort(defaultList,comparator);
-        Collections.sort(afkList,comparator);
-        defaultList.addAll(afkList);
-        Map<String, List<User>> grouped = new HashMap<>();
-        grouped.put("&6Players", defaultList);
-        sender.sendTranslated("&9Players online: &a%d&f/&e%d", userStrings.size(), Bukkit.getMaxPlayers());
-        if (this.module.getRolesModule() != null)
-        {
-            String noRole = ChatFormat.parseFormats("&7No Role");
-            grouped.clear();
-            for (User user : defaultList)
-            {
-                RolesAttachment attachment = user.get(RolesAttachment.class);
-                if (attachment == null)
-                {
-                    List<User> list = grouped.get(noRole);
-                    if (list == null)
-                    {
-                        list = new ArrayList<>();
-                        grouped.put(noRole,list);
-                    }
-                    list.add(user);
-                }
-                else
-                {
-                    Role role = attachment.getDominantRole();
-                    String display;
-                    if (role.getRawMetadata().get("prefix") == null)
-                    {
-                        display = "&7"+role.getName();
-                    }
-                    else
-                    {
-                        display = role.getRawMetadata().get("prefix");
-                    }
-                    display = ChatFormat.parseFormats(display);
-                    List<User> list = grouped.get(display);
-                    if (list == null)
-                    {
-                        list = new ArrayList<>();
-                        grouped.put(display,list);
-                    }
-                    list.add(user);
-                }
-            }
-        }
-        for (Entry<String,List<User>> entry : grouped.entrySet())
-        {
-            String group = entry.getKey()+ChatFormat.parseFormats("&f: ");
-            List<String> displayNames = new ArrayList<>();
-            for (User user : entry.getValue())
-            {
-                displayNames.add(userStrings.get(user));
-            }
-            group += StringUtils.implode("&f, &2",displayNames);
-            sender.sendMessage(ChatFormat.parseFormats(group));
+            users.add(user);
         }
 
+        if (users.isEmpty())
+        {
+            sender.sendTranslated("&cThere are no players online at the moment!");
+            return null;
+        }
+
+        SortedMap<String, Set<User>> grouped = this.groupUsers(users);
+        sender.sendTranslated("&9Players online: &a%d&f/&e%d", users.size(), Bukkit.getMaxPlayers());
+
+        for (Entry<String, Set<User>> entry : grouped.entrySet())
+        {
+            Iterator<User> it = entry.getValue().iterator();
+            if (!it.hasNext())
+            {
+                continue;
+            }
+            StringBuilder group = new StringBuilder(entry.getKey()).append("&f: ");
+            group.append(this.formatUser(it.next()));
+
+            while (it.hasNext())
+            {
+                group.append("&f, ").append(this.formatUser(it.next()));
+            }
+            sender.sendMessage(ChatFormat.parseFormats(group.toString()));
+        }
+
+        return null;
+    }
+
+    private String formatUser(User user)
+    {
+        String entry = "&2" + user.getDisplayName();
+        if (user.get(BasicsAttachment.class).isAfk())
+        {
+            entry += "&f(&7afk&f)";
+        }
+        return entry;
+    }
+
+    private static final class UserComparator implements Comparator<User>
+    {
+        @Override
+        public int compare(User user1, User user2)
+        {
+            return String.CASE_INSENSITIVE_ORDER.compare(user1.getDisplayName(), user2.getDisplayName());
+        }
     }
 }

@@ -1,0 +1,89 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:65
+msgid "&c%s was not found!"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:101
+msgid "&aThe announcement &e%s&a has been announced!"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:116
+msgid "Here is the list of announcements:"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:124
+msgid "There are no announcements loaded!"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:160
+msgid "You have to include a message!"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:164
+msgid "message"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:168
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:172
+msgid "locale"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:172
+msgid "%s isn't a valid locale!"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:182
+msgid "delay"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:183
+msgid "world"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:184
+msgid "permission"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:189
+msgid "Some of your arguments are not valid."
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:190
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:195
+msgid "The error message was: %s"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:194
+msgid "There was an error creating some of the files."
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:200
+msgid "Your announcement have been created and loaded into the plugin"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:207
+msgid ""
+"All the announcements have now been reloaded, and the players have been re-"
+"added"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:225
+msgid "&eThere is no message of the day."
+msgstr ""

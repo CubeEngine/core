@@ -75,6 +75,6 @@ public class FireSpread extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).FIRE_SPREAD_enable;
+        return this.lm.getConfig(world).block.spread.FIRE_SPREAD_enable;
     }
 }

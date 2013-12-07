@@ -18,6 +18,8 @@
 package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +30,7 @@ import org.bukkit.generator.ChunkGenerator;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
+import gnu.trove.TLongCollection;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.jooq.DSLContext;
@@ -92,9 +95,9 @@ public abstract class AbstractWorldManager implements WorldManager
         return entity.getKey().longValue();
     }
 
-    public synchronized long[] getAllWorldIds()
+    public synchronized TLongCollection getAllWorldIds()
     {
-        return this.worldIds.keys();
+        return this.worldIds.keySet();
     }
 
     public synchronized World getWorld(long id)
@@ -165,5 +168,16 @@ public abstract class AbstractWorldManager implements WorldManager
         this.worlds.clear();
         this.worldIds.clear();
         this.generatorMap.clear();
+    }
+
+    @Override
+    public List<String> getWorldNames()
+    {
+        List<String> worlds = new ArrayList<>();
+        for (World world : this.getWorlds())
+        {
+            worlds.add(world.getName());
+        }
+        return worlds;
     }
 }

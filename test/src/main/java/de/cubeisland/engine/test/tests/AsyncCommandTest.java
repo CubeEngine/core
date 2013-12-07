@@ -45,20 +45,20 @@ public class AsyncCommandTest extends Test
         context.sendMessage("Async GO!");
         return new AsyncResult() {
             @Override
-            public void asyncMain(CommandContext sender)
+            public void main(CommandContext sender)
             {
                 try
                 {
                     Thread.sleep(1000 * 5L);
                 }
-                catch (InterruptedException e)
+                catch (InterruptedException ignored)
                 {}
                 sender.sendMessage("Delayed!");
                 try
                 {
                     Thread.sleep(1000 * 5L);
                 }
-                catch (InterruptedException e)
+                catch (InterruptedException ignored)
                 {}
             }
 

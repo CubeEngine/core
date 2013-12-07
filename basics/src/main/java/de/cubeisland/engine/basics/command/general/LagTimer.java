@@ -19,29 +19,34 @@ package de.cubeisland.engine.basics.command.general;
 
 import java.util.LinkedList;
 
-import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.core.util.Pair;
 
 public class LagTimer implements Runnable
 {
-    private long lastTick = System.currentTimeMillis();
+    private long lastTick = 0;
     private final LinkedList<Float> tpsHistory = new LinkedList<>();
-    private final Basics module;
 
     private float lowestTPS = 20;
     private long lowestTPSTime = 0;
-    private boolean reached20 = false;
 
     private long lastLowTps = 0;
+    private Basics module;
 
-    public LagTimer(Basics module) {
+    public LagTimer(Basics module)
+    {
         this.module = module;
-        module.getCore().getTaskManager().runTimer(module, this, 0, 20); //start timer
+        module.getCore().getTaskManager().runTimer(module, this, 200, 20); //start timer after 10 sec
     }
 
     @Override
     public void run()
     {
+        if (lastTick == 0)
+        {
+            lastTick = System.currentTimeMillis();
+            return;
+        }
         final long currentTick = System.currentTimeMillis();
         long timeSpent = (currentTick - lastTick) / 1000;
         if (timeSpent == 0)
@@ -55,14 +60,17 @@ public class LagTimer implements Runnable
         final float tps = 20f / timeSpent;
         if (tps <= 20)
         {
-            if (tps == 20) this.reached20 = true;
             tpsHistory.add(tps);
-            if (reached20 && tps < 20)
+            if (tps < 20)
             {
                 if (tps < lowestTPS)
                 {
                     lowestTPS = tps;
                     this.lowestTPSTime = currentTick;
+                }
+                if (tps < 1)
+                {
+                    module.getLog().warn("Server is running slowly! Less then 1 Tick per Second!");
                 }
                 this.lastLowTps = currentTick;
             }
@@ -85,7 +93,7 @@ public class LagTimer implements Runnable
 
     public Pair<Long,Float> getLowestTPS()
     {
-        return new Pair<>(this.lowestTPSTime,this.lowestTPS);
+        return new Pair<>(this.lowestTPSTime, this.lowestTPS);
     }
 
     public long getLastLowTPS()

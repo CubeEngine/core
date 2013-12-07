@@ -20,10 +20,10 @@ package de.cubeisland.engine.core.bukkit.packethook;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-import net.minecraft.server.v1_6_R2.PlayerConnection;
-import net.minecraft.server.v1_6_R2.ServerConnection;
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.PlayerConnection;
+import net.minecraft.server.v1_7_R1.ServerConnection;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -75,10 +75,9 @@ public final class PacketHookInjector implements Listener
                     instance.replacePlayerConnection(player);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                core.getLog().error("An error occurred while registering the packet hook injector");
-                core.getLog().debug(e.getLocalizedMessage(), e);
+                core.getLog().error(ex, "An error occurred while registering the packet hook injector");
                 return false;
             }
         }
@@ -122,44 +121,43 @@ public final class PacketHookInjector implements Listener
 
     public void resetPlayerConnection(Player player)
     {
-        final EntityPlayer entity = ((CraftPlayer)player).getHandle();
-
-        // only swap back if it's still our wrapper
-        if (entity.playerConnection instanceof CubePlayerConnection)
-        {
-            PlayerConnection old = ((CubePlayerConnection)entity.playerConnection).getOldPlayerConnection();
-            old.disconnected = false;
-            swapPlayerConnection(entity, old);
-        }
+//        final EntityPlayer entity = ((CraftPlayer)player).getHandle();
+//
+//        // only swap back if it's still our wrapper
+//        if (entity.playerConnection instanceof CubePlayerConnection)
+//        {
+//            PlayerConnection old = ((CubePlayerConnection)entity.playerConnection).getOldPlayerConnection();
+//            // old.disconnected = false; TODO verify this
+//            swapPlayerConnection(entity, old);
+//        }
     }
 
     @SuppressWarnings("unchecked")
     private void swapPlayerConnection(EntityPlayer player, PlayerConnection newHandler)
     {
-        if (playerConnectionListField == null)
-        {
-            return;
-        }
-        PlayerConnection oldHandler = player.playerConnection;
-        try
-        {
-            if (oldHandler.getClass() != newHandler.getClass())
-            {
-                Location loc = player.getBukkitEntity().getLocation();
-                newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-
-                ServerConnection serverConnection = player.server.ag();
-                ((List<PlayerConnection>)playerConnectionListField.get(serverConnection)).remove(oldHandler);
-                serverConnection.a(newHandler);
-                CubeEngine.getLog().debug("Replaced the PlayerConnection of player '{}'", player.getName());
-                oldHandler.disconnected = true;
-            }
-        }
-        catch (Exception e)
-        {
-            player.playerConnection = oldHandler;
-            CubeEngine.getLog().debug("Failed to swap the PlayerConnection of player {}", player.getName());
-            CubeEngine.getLog().debug(e.getLocalizedMessage(), e);
-        }
+//        if (playerConnectionListField == null)
+//        {
+//            return;
+//        }
+//        PlayerConnection oldHandler = player.playerConnection;
+//        try
+//        {
+//            if (oldHandler.getClass() != newHandler.getClass())
+//            {
+//                Location loc = player.getBukkitEntity().getLocation();
+//                newHandler.a(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+//
+//                ServerConnection serverConnection = player.server.ag();
+//                ((List<PlayerConnection>)playerConnectionListField.get(serverConnection)).remove(oldHandler);
+//                serverConnection.a(newHandler);
+//                CubeEngine.getLog().debug("Replaced the PlayerConnection of player '{}'", player.getName());
+//                // oldHandler.disconnected = true; TODO verify this
+//            }
+//        }
+//        catch (Exception ex)
+//        {
+//            player.playerConnection = oldHandler;
+//            CubeEngine.getLog().debug(ex, "Failed to swap the PlayerConnection of player {}", player.getName());
+//        }
     }
 }

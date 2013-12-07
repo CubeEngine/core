@@ -18,22 +18,9 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import de.cubeisland.engine.core.filesystem.FileManager;
-import de.cubeisland.engine.core.filesystem.FileUtil;
-
-import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.LOG;
-import static java.util.logging.Level.WARNING;
 
 public class BukkitFileManager extends FileManager
 {
@@ -47,12 +34,13 @@ public class BukkitFileManager extends FileManager
 
     private static final SimpleDateFormat LOG_DIR_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd--HHmm");
 
+    // TODO
     public void cycleLogs()
-    {
-        if (this.core.getConfiguration().loggingArchiveLogs)
+    {/*
+        if (this.core.getConfiguration().logging.archiveLogs)
         {
-            String dateString = LOG_DIR_DATE_FORMAT.format(new Date(core.getLog().getLoggerContext().getBirthTime()));
-            final Path base = Paths.get(System.getProperty("cubeengine.logger.default-path"));
+            String dateString = LOG_DIR_DATE_FORMAT.format(new Date(core.getLogFactory().getBirthTime()));
+            final Path base = Paths.get(System.getProperty("cubeengine.logging.default-path"));
             final Path folderPath = base.resolve(dateString);
             final Path zipPath = base.resolve(dateString + ".zip");
 
@@ -90,6 +78,6 @@ public class BukkitFileManager extends FileManager
                 core.getLogger().log(WARNING, "An error occurred while compressing the logs: " + ex
                     .getLocalizedMessage(), ex);
             }
-        }
+        }*/
     }
 }

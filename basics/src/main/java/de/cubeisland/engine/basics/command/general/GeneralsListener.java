@@ -25,9 +25,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.basics.Basics;
@@ -56,7 +59,7 @@ public class GeneralsListener implements Listener
         if (event.getEntity() instanceof Player)
         {
             BasicsUserEntity bUser = this.module.getBasicsUser((Player)event.getEntity()).getbUEntity();
-            if (bUser.isGodMode())
+            if (bUser.getGodmode())
             {
                 event.setCancelled(true);
             }
@@ -80,7 +83,7 @@ public class GeneralsListener implements Listener
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
-            bUser.setGodMode(false);
+            bUser.setGodmode(false);
         }
         bUser.update();
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
@@ -95,7 +98,7 @@ public class GeneralsListener implements Listener
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
-            bUser.setGodMode(false);
+            bUser.setGodmode(false);
         }
         bUser.update();
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
@@ -114,7 +117,8 @@ public class GeneralsListener implements Listener
         {
             user.sendTranslated("&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
-        if (bUser.getbUEntity().isGodMode())
+        // TODO move this to PlayerJoin
+        if (bUser.getbUEntity().getGodmode())
         {
             user.setInvulnerable(true);
         }
@@ -146,6 +150,37 @@ public class GeneralsListener implements Listener
                 colored = colored.substring(0,16);
             }
             event.getUser().setPlayerListName(colored);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInventoryClick(InventoryClickEvent event)
+    {
+        if (this.module.getConfiguration().preventOverstackedItems && !BasicsPerm.OVERSTACKED_ANVIL_AND_BREWING.isAuthorized(event.getWhoClicked()))
+        {
+
+            if (event.getView().getTopInventory() instanceof AnvilInventory
+                || event.getView().getTopInventory() instanceof BrewerInventory)
+            {
+                boolean topClick = event.getRawSlot() < event.getView().getTopInventory().getSize();
+                switch (event.getAction())
+                {
+                case PLACE_ALL:
+                case PLACE_SOME:
+                    if (!topClick) return;
+                    if (event.getCursor().getAmount() > event.getCursor().getMaxStackSize())
+                    {
+                        event.setCancelled(true);
+                    }
+                    break;
+                case MOVE_TO_OTHER_INVENTORY:
+                    if (topClick) return;
+                    if (event.getCurrentItem().getAmount() > event.getCurrentItem().getMaxStackSize())
+                    {
+                        event.setCancelled(true);
+                    }
+                }
+            }
         }
     }
 }

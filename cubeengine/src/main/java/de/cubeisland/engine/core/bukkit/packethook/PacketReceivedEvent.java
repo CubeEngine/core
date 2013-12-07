@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit.packethook;
 
-import net.minecraft.server.v1_6_R2.Packet;
+import net.minecraft.server.v1_7_R1.Packet;
 
 import org.bukkit.entity.Player;
 

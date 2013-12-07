@@ -134,6 +134,6 @@ public class SignChange extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).SIGN_CHANGE_enable;
+        return this.lm.getConfig(world).block.SIGN_CHANGE_enable;
     }
 }

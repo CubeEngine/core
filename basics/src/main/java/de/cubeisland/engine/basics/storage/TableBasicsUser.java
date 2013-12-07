@@ -17,98 +17,32 @@
  */
 package de.cubeisland.engine.basics.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.List;
 
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
-import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
+import org.jooq.util.mysql.MySQLDataType;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class TableBasicsUser extends TableImpl<BasicsUserEntity> implements TableCreator<BasicsUserEntity>
+public class TableBasicsUser extends Table<BasicsUserEntity>
 {
     public static TableBasicsUser TABLE_BASIC_USER;
 
-    private TableBasicsUser(String prefix)
+    public TableBasicsUser(String prefix)
     {
-        super(prefix + "basicuser");
-        IDENTITY = Keys.identity(this, this.KEY);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.KEY);
-        FOREIGN_USER = Keys.foreignKey(TABLE_USER.PRIMARY_KEY, this, this.KEY);
+        super(prefix + "basicuser", new Version(1));
+        this.setPrimaryKey(KEY);
+        this.addForeignKey(TABLE_USER.getPrimaryKey(), KEY);
+        this.addFields(KEY, MUTED, GODMODE);
+        TABLE_BASIC_USER = this;
     }
 
-    public static TableBasicsUser initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_BASIC_USER = new TableBasicsUser(config.tablePrefix);
-        return TABLE_BASIC_USER;
-    }
-
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`key` int(10) unsigned NOT NULL,\n" +
-                                        "`muted` timestamp NULL DEFAULT NULL,\n" +
-                                        "`godMode` tinyint(1) NOT NULL,\n" +
-                                        "PRIMARY KEY (`key`)," +
-                                        "FOREIGN KEY f_user (`key`) REFERENCES " + TABLE_USER.getName() + " (`key`) ON UPDATE CASCADE ON DELETE CASCADE)\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<BasicsUserEntity, UInteger> IDENTITY;
-    public final UniqueKey<BasicsUserEntity> PRIMARY_KEY;
-    public final ForeignKey<BasicsUserEntity, UserEntity> FOREIGN_USER;
-
-    public final TableField<BasicsUserEntity, UInteger> KEY = createField("key", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<BasicsUserEntity, Timestamp> MUTED = createField("muted", SQLDataType.TIMESTAMP, this);
-    public final TableField<BasicsUserEntity, Byte> GODMODE = createField("godMode", SQLDataType.TINYINT, this);
-
-    @Override
-    public Identity<BasicsUserEntity, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<BasicsUserEntity> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<BasicsUserEntity>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY);
-    }
-
-    @Override
-    public List<ForeignKey<BasicsUserEntity, ?>> getReferences() {
-        return Arrays.<ForeignKey<BasicsUserEntity, ?>>asList(FOREIGN_USER);
-    }
+    public final TableField<BasicsUserEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<BasicsUserEntity, Timestamp> MUTED = createField("muted", MySQLDataType.DATETIME, this);
+    public final TableField<BasicsUserEntity, Boolean> GODMODE = createField("godMode", BOOLEAN.nullable(false), this);
 
     @Override
     public Class<BasicsUserEntity> getRecordType() {

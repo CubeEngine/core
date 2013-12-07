@@ -43,7 +43,6 @@ import gnu.trove.map.hash.TShortObjectHashMap;
  */
 public class MaterialMatcher
 {
-    //TODO rename item ; is it possible?
     private THashMap<String, ImmutableItemStack> items;
     private THashMap<Material, TShortObjectHashMap<String>> itemnames;
 
@@ -323,7 +322,7 @@ public class MaterialMatcher
                 if (item == null) // Contained ":" but could not find any matching item
                 {
                     // Try to match bukkit name
-                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    item = this.matchWithLevenshteinDistance(material, bukkitnames);
                     item = materialDataMatcher.setData(item, data);
                     return item;
                 }
@@ -335,15 +334,14 @@ public class MaterialMatcher
                 if (item == null)
                 {
                     // Try to match bukkit name
-                    return this.matchWithLevenshteinDistance(s, bukkitnames);
+                    item = this.matchWithLevenshteinDistance(s, bukkitnames);
+                    if (item == null) return null;
                 }
             }
         }
-        else
-        {
-            item = new ItemStack(item);
-        }
-        return item.clone();
+        item = new ItemStack(item);
+        item.setAmount(1);
+        return item;
     }
 
     /**

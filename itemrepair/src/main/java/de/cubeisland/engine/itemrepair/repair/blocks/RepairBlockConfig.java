@@ -17,37 +17,27 @@
  */
 package de.cubeisland.engine.itemrepair.repair.blocks;
 
-import java.nio.file.Path;
-
 import org.bukkit.Material;
 
-import de.cubeisland.engine.core.config.InvalidConfigurationException;
-import de.cubeisland.engine.core.config.YamlConfiguration;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.Section;
 
-public class RepairBlockConfig extends YamlConfiguration
+public class RepairBlockConfig implements Section
 {
-    @Option("title")
     public String title;
-    @Option("block")
-    public Material blockType;
-    @Option("break-percentage")
+    public Material block;
     public float breakPercentage;
-    @Option("fail-percentage")
     public float failPercentage;
-    @Option("cost-percentage")
     public float costPercentage;
-    @Option("loose-enchantments-percentage")
-    public float looseEnchPercentage;
+    public float looseEnchantmentsPercentage;
 
     public static RepairBlockConfig defaultNormal()
     {
         RepairBlockConfig config = new RepairBlockConfig();
         config.title = "Normal Repair";
-        config.blockType = Material.IRON_BLOCK;
+        config.block = Material.IRON_BLOCK;
         config.breakPercentage = 0;
         config.costPercentage = 100;
-        config.looseEnchPercentage = 0;
+        config.looseEnchantmentsPercentage = 0;
         config.failPercentage = 0;
         return config;
     }
@@ -56,20 +46,11 @@ public class RepairBlockConfig extends YamlConfiguration
     {
         RepairBlockConfig config = new RepairBlockConfig();
         config.title = "Cheap Repair";
-        config.blockType = Material.DIAMOND_BLOCK;
+        config.block = Material.DIAMOND_BLOCK;
         config.breakPercentage = 0;
         config.costPercentage = 70;
-        config.looseEnchPercentage = 5;
+        config.looseEnchantmentsPercentage = 5;
         config.failPercentage = 15;
         return config;
-    }
-
-    @Override
-    public void onLoaded(Path loadFrom)
-    {
-        if (!this.blockType.isBlock())
-        {
-            throw new InvalidConfigurationException("blockType must be a block!");
-        }
     }
 }

@@ -80,6 +80,6 @@ public class BlockBurn extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_BURN_enable;
+        return this.lm.getConfig(world).block.BLOCK_BURN_enable;
     }
 }

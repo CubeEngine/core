@@ -116,7 +116,7 @@ public class SpawnCommands
             user = (User)context.getSender();
         }
         World world = basics.getConfiguration().mainWorld;
-        if (world == null)
+        if (world == null && user != null)
         {
             world = user.getWorld();
         }
@@ -130,9 +130,14 @@ public class SpawnCommands
             world = context.getParam("world", null);
             if (world == null)
             {
-                context.sendTranslated("&cWorld not found!");
+                context.sendTranslated("&cWorld &6%s&c not found!", context.getString("world"));
                 return;
             }
+        }
+        if (world == null)
+        {
+            context.sendTranslated("&cYou have to specify a world!");
+            return;
         }
         if (context.hasFlag("a"))
         {

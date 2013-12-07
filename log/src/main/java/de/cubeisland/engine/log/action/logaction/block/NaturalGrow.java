@@ -116,6 +116,6 @@ public class NaturalGrow extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).NATURAL_GROW_enable;
+        return this.lm.getConfig(world).block.grow.NATURAL_GROW_enable;
     }
 }

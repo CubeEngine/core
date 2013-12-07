@@ -60,6 +60,6 @@ public class LavaBreak extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LAVA_BREAK_enable;
+        return this.lm.getConfig(world).block.breakFlow.LAVA_BREAK_enable;
     }
 }

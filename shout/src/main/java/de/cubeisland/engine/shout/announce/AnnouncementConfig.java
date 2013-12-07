@@ -20,27 +20,25 @@ package de.cubeisland.engine.shout.announce;
 import java.util.Arrays;
 import java.util.List;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.Option;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 
-@Codec("yml")
-public class AnnouncementConfig extends Configuration
+public class AnnouncementConfig extends YamlConfiguration
 {
-    @Option("delay")
+    @Name("delay")
     public String delay = "10 minutes";
 
-    @Option("worlds")
+    @Name("worlds")
     public List<String> worlds = Arrays.asList("*");
 
     @Comment("The name that should be used in the permission. It'll end up like this: " +
                  "cubeengine.shout.announcement.permission-name")
-    @Option("permission-name")
+    @Name("permission-name")
     public String permName = "*";
 
     @Comment("An announcement with fixed cycle will be broadcast at a fixed cycle.\n" +
                  "In opposite to it being displayed to each user after their last announcement.")
-    @Option("fixed-cycle")
+    @Name("fixed-cycle")
     public boolean fixedCycle = false;
 }

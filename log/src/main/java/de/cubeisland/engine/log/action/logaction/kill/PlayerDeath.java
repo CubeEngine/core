@@ -86,7 +86,7 @@ public class PlayerDeath extends SimpleLogActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).PLAYER_DEATH_enable;
+        return this.lm.getConfig(world).death.PLAYER_DEATH_enable;
     }
 
     @Override

@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.module.exception;
 /**
  * This exception is thrown when a plugin dependency is missing while loading a module.
  */
-public class MissingPluginDependencyException extends ModuleException
+public class MissingPluginDependencyException extends ModuleDependencyException
 {
     public MissingPluginDependencyException(String missing)
     {

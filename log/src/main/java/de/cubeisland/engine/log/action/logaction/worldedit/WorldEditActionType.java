@@ -101,6 +101,6 @@ public class WorldEditActionType extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).WORLDEDIT_enable;
+        return this.lm.getConfig(world).block.WORLDEDIT_enable;
     }
 }

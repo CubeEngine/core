@@ -83,6 +83,6 @@ public class EntityForm extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).ENTITY_FORM_enable;
+        return this.lm.getConfig(world).block.form.ENTITY_FORM_enable;
     }
 }

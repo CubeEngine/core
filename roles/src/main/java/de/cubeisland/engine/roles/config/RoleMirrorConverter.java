@@ -19,13 +19,14 @@ package de.cubeisland.engine.roles.config;
 
 import java.util.Map;
 
-import de.cubeisland.engine.core.config.node.ListNode;
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.ListNode;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.NullNode;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.roles.Roles;
 
 public class RoleMirrorConverter implements Converter<RoleMirror>
@@ -38,7 +39,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
     }
 
     @Override
-    public Node toNode(RoleMirror mirror) throws ConversionException
+    public Node toNode(RoleMirror mirror, ConverterManager manager) throws ConversionException
     {
         MapNode resultMap = MapNode.emptyMap();
         resultMap.setNode(new StringNode(mirror.mainWorld), NullNode.emptyNode());
@@ -69,7 +70,7 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
 
     @Override
     @SuppressWarnings("unchecked")
-    public RoleMirror fromNode(Node node) throws ConversionException
+    public RoleMirror fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         MapNode readMap = (MapNode)node;
         if (readMap.isEmpty())
@@ -95,15 +96,15 @@ public class RoleMirrorConverter implements Converter<RoleMirror>
             boolean assigned = false;
             for (Node inList : world.getListedNodes())
             {
-                if (inList.unwrap().equals("roles"))
+                if (inList.asText().equals("roles"))
                 {
                     roles = true;
                 }
-                else if (inList.unwrap().equals("users"))
+                else if (inList.asText().equals("users"))
                 {
                     users = true;
                 }
-                else if (inList.unwrap().equals("assigned"))
+                else if (inList.asText().equals("assigned"))
                 {
                     assigned = true;
                 }

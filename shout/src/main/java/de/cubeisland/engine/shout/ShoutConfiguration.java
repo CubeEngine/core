@@ -17,28 +17,21 @@
  */
 package de.cubeisland.engine.shout;
 
-import de.cubeisland.engine.core.config.Configuration;
-import de.cubeisland.engine.core.config.annotations.Codec;
-import de.cubeisland.engine.core.config.annotations.Comment;
-import de.cubeisland.engine.core.config.annotations.DefaultConfig;
-import de.cubeisland.engine.core.config.annotations.Option;
-import de.cubeisland.engine.core.config.annotations.Revision;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.configuration.annotations.Name;
 
-@Codec("yml")
-@Revision(1)
-@DefaultConfig
-public class ShoutConfiguration extends Configuration
+public class ShoutConfiguration extends YamlConfiguration
 {
-    @Option("initial-delay")
     @Comment("The delay after a player joins before he receives his first message")
-    public int initDelay = 20;
+    public int initialDelay = 20;
 
     @Override
     public String[] head()
     {
         return new String[] {
                 "The global config for all announcements.",
-                "All times are in millisecounds"
+                "All times are in milliseconds"
         };
     }
 }

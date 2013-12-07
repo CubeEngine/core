@@ -31,20 +31,20 @@ public class LoggerTest extends Test
     @Override
     public void onEnable()
     {
-        CubeEngine.getLog().trace("Trace log on core's logger");
-        CubeEngine.getLog().debug("Debug log on core's logger");
-        CubeEngine.getLog().info("Info log on core's logger");
-        CubeEngine.getLog().warn("Warn log on core's logger");
-        CubeEngine.getLog().error("Error log on core's logger");
+        CubeEngine.getLog().trace("Trace log on core's logging");
+        CubeEngine.getLog().debug("Debug log on core's logging");
+        CubeEngine.getLog().info("Info log on core's logging");
+        CubeEngine.getLog().warn("Warn log on core's logging");
+        CubeEngine.getLog().error("Error log on core's logging");
         
-        module.getLog().trace("Trace log on test's logger");
-        module.getLog().debug("Debug log on test's logger");
-        module.getLog().info("Info log on test's logger");
-        module.getLog().warn("Warn log on test's logger");
-        module.getLog().error("Error log on test's logger");
+        module.getLog().trace("Trace log on test's logging");
+        module.getLog().debug("Debug log on test's logging");
+        module.getLog().info("Info log on test's logging");
+        module.getLog().warn("Warn log on test's logging");
+        module.getLog().error("Error log on test's logging");
 
         Exception ex = new Exception("Nothing dangerous!");
-        module.getLog().debug(ex.getLocalizedMessage(), ex);
+        module.getLog().debug(ex, ex.getLocalizedMessage());
         this.setSuccess(true);
     }
 }

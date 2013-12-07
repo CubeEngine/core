@@ -20,7 +20,6 @@ package de.cubeisland.engine.basics.command.moderation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -29,6 +28,9 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -36,9 +38,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -167,7 +166,7 @@ public class ItemCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            boolean unlimited = false;
+            boolean unlimited;
             if (context.hasArg(0))
             {
                 if (context.getString(0).equalsIgnoreCase("on"))
@@ -203,7 +202,9 @@ public class ItemCommands
         context.sendTranslated("&cThis command can only be used by a player!");
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2, flags = @Flag(longName = "unsafe", name = "u"), usage = "<enchantment> [level] [-unsafe]")
+    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2,
+             flags = @Flag(longName = "unsafe", name = "u"),
+             usage = "<enchantment> [level] [-unsafe]")
     public void enchant(ParameterizedContext context)
     {
         if (!context.hasArg(0))
@@ -255,6 +256,7 @@ public class ItemCommands
                         item.setItemMeta(itemMeta);
                         return;
                     }
+                    // TODO enchant item event ?
                     item.addUnsafeEnchantment(ench, level);
                     context.sendTranslated("&aAdded unsafe enchantment: &6%s %d &ato your item!",
                                            Match.enchant().nameFor(ench), level);
@@ -331,7 +333,7 @@ public class ItemCommands
             return;
         }
         if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(context.getSender())
-            && this.basics.getConfiguration().blacklist.contains(item))
+            && this.basics.getConfiguration().commands.itemBlacklist.contains(item))
         {
             context.sendTranslated("&cThis item is blacklisted!");
             return;
@@ -372,7 +374,7 @@ public class ItemCommands
                 return;
             }
             if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(sender)
-                    && this.basics.getConfiguration().blacklist.contains(item))
+                    && this.basics.getConfiguration().commands.itemBlacklist.contains(item))
             {
                 context.sendTranslated("&cThis item is blacklisted!");
                 return;

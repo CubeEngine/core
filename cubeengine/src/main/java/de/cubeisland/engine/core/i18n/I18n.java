@@ -28,16 +28,14 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.gettext.MessageCatalogFactory;
+import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.util.Cleanable;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
@@ -49,7 +47,7 @@ public class I18n implements Cleanable
 {
     private final Core core;
     private static final Object[] NO_PARAMS = {};
-    private final Logger logger;
+    private final Log logger;
     private final SourceLanguage sourceLanguage;
     private final Map<Locale, Language> languages;
     private final Map<String, Language> languageLookupMap;
@@ -59,7 +57,7 @@ public class I18n implements Cleanable
     public I18n(Core core)
     {
         this.core = core;
-        this.logger = LoggerFactory.getLogger("cubeengine.language");
+        this.logger = core.getLogFactory().getLog("language");
         // TODO
         this.languages = new THashMap<>();
         this.languageLookupMap = new THashMap<>();
@@ -122,7 +120,7 @@ public class I18n implements Cleanable
         {
             for (Path file : directory)
             {
-                config = Configuration.load(LocaleConfig.class, file, false);
+                config = this.core.getConfigurationFactory().load(LocaleConfig.class, file.toFile(), false);
                 if (config.locale != null)
                 {
                     languages.put(config.locale, config);
@@ -133,10 +131,9 @@ public class I18n implements Cleanable
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.core.getLog().warn("Failed to load the languages!");
-            this.core.getLog().debug(e.getLocalizedMessage(), e);
+            this.core.getLog().warn(ex, "Failed to load the languages!");
         }
 
         Stack<Locale> loadStack = new Stack<>();

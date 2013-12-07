@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.basics.command.general;
 
-import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -63,7 +63,7 @@ public class FlyListener implements Listener
         {
             ((CraftPlayer)p).getHandle().abilities.flySpeed -= FLY_SPEED_MARKER;
         }
-        catch (IllegalArgumentException e)
+        catch (IllegalArgumentException ignored)
         {}
     }
 

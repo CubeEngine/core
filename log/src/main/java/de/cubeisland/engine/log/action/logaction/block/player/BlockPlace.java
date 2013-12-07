@@ -149,6 +149,6 @@ public class BlockPlace extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_PLACE_enable;
+        return this.lm.getConfig(world).block.BLOCK_PLACE_enable;
     }
 }

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.shout.announce.AnnouncementManager;
@@ -49,9 +48,9 @@ public class Shout extends Module
     {
         this.announcePerm = this.getBasePermission().createAbstract("announcement");
 
-        this.config = Configuration.load(ShoutConfiguration.class, this);
+        this.config = this.loadConfig(ShoutConfiguration.class);
 
-        this.announcer = new Announcer(this.getCore().getTaskManager(), this.config.initDelay);
+        this.announcer = new Announcer(this.getCore().getTaskManager().getThreadFactory(this), this.config.initialDelay);
         this.announcementManager = new AnnouncementManager(this, this.getFolder());
 
         if (isFirstRun())
@@ -63,8 +62,7 @@ public class Shout extends Module
             }
             catch (Exception ex)
             {
-                this.getLog().warn("An exception occured when creating the example announcement!");
-                this.getLog().debug(ex.getLocalizedMessage(), ex);
+                this.getLog().warn(ex, "An exception occured when creating the example announcement!");
             }
         }
         this.announcementManager.loadAnnouncements(this.getFolder());
@@ -101,10 +99,9 @@ public class Shout extends Module
         {
             Files.createFile(file);
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.getLog().debug("There was an error creating a file: {}", file);
-            this.getLog().debug(e.getLocalizedMessage(), e);
+            this.getLog().debug(ex, "There was an error creating a file: {}", file);
         }
         return true;
     }

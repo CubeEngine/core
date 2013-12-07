@@ -59,6 +59,6 @@ public class Lighter extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).LIGHTER_IGNITE_enable;
+        return this.lm.getConfig(world).block.ignite.LIGHTER_IGNITE_enable;
     }
 }

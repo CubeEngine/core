@@ -26,25 +26,20 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.roles.storage.TablePerm.TABLE_PERM;
 
-public class UserPermission extends UpdatableRecordImpl<UserPermission> implements Record4<UInteger, UInteger, String, Byte>
+public class UserPermission extends UpdatableRecordImpl<UserPermission> implements Record4<UInteger, UInteger, String, Boolean>
 {
     public UserPermission()
     {
         super(TABLE_PERM);
     }
 
-    public UserPermission newPerm(UInteger userId, long worldId, String perm, boolean isSet)
+    public UserPermission newPerm(UInteger userId, UInteger worldId, String perm, boolean isSet)
     {
         this.setUserid(userId);
-        this.setWorldid(UInteger.valueOf(worldId));
+        this.setWorldid(worldId);
         this.setPerm(perm);
-        this.setIsset((byte)(isSet ? 1 : 0));
+        this.setIsset(isSet);
         return this;
-    }
-
-    public boolean isSet()
-    {
-        return getIsset() == 1;
     }
 
     public void setUserid(UInteger value) {
@@ -71,12 +66,12 @@ public class UserPermission extends UpdatableRecordImpl<UserPermission> implemen
         return (String) getValue(2);
     }
 
-    public void setIsset(Byte value) {
+    public void setIsset(Boolean value) {
         setValue(3, value);
     }
 
-    public Byte getIsset() {
-        return (Byte) getValue(3);
+    public Boolean getIsset() {
+        return (Boolean) getValue(3);
     }
 
     // -------------------------------------------------------------------------
@@ -93,12 +88,12 @@ public class UserPermission extends UpdatableRecordImpl<UserPermission> implemen
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<UInteger, UInteger, String, Byte> fieldsRow() {
+    public Row4<UInteger, UInteger, String, Boolean> fieldsRow() {
         return (Row4) super.fieldsRow();
     }
 
     @Override
-    public Row4<UInteger, UInteger, String, Byte> valuesRow() {
+    public Row4<UInteger, UInteger, String, Boolean> valuesRow() {
         return (Row4) super.valuesRow();
     }
 
@@ -118,7 +113,7 @@ public class UserPermission extends UpdatableRecordImpl<UserPermission> implemen
     }
 
     @Override
-    public Field<Byte> field4() {
+    public Field<Boolean> field4() {
         return TABLE_PERM.ISSET;
     }
 
@@ -138,7 +133,7 @@ public class UserPermission extends UpdatableRecordImpl<UserPermission> implemen
     }
 
     @Override
-    public Byte value4() {
+    public Boolean value4() {
         return getIsset();
     }
 }

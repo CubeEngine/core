@@ -25,11 +25,15 @@ import java.util.concurrent.ThreadFactory;
 
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.TaskManager;
 
+import de.cubeisland.engine.core.task.worker.CoreThreadFactory;
 import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -38,14 +42,16 @@ public class BukkitTaskManager implements TaskManager
     private final BukkitCore corePlugin;
     private final BukkitScheduler bukkitScheduler;
     private final Map<Module, TIntSet> moduleTasks;
-    private final ThreadFactory threadFactory;
+    private final CoreThreadFactory threadFactory;
+    private final Map<String, ModuleThreadFactory> moduleThreadFactories;
 
-    public BukkitTaskManager(Core core, ThreadFactory threadFactory, BukkitScheduler bukkitScheduler)
+    public BukkitTaskManager(Core core, BukkitScheduler bukkitScheduler)
     {
         this.corePlugin = (BukkitCore)core;
-        this.threadFactory = threadFactory;
+        this.threadFactory = new CoreThreadFactory(core);
         this.bukkitScheduler = bukkitScheduler;
         this.moduleTasks = new ConcurrentHashMap<>();
+        this.moduleThreadFactories = new THashMap<>();
     }
 
     private TIntSet getModuleIDs(Module module)
@@ -63,36 +69,26 @@ public class BukkitTaskManager implements TaskManager
         return IDs;
     }
 
-    /**
-     * Returns the thread factory used by the CubeEngine to create its threads
-     *
-     * @return a ThreadFactory implementation
-     */
-    public ThreadFactory getThreadFactory()
+    public CoreThreadFactory getThreadFactory()
     {
         return this.threadFactory;
     }
 
-    /**
-     * Schedules a delayed task for a module
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @return the ID of the task
-     */
+    public synchronized ModuleThreadFactory getThreadFactory(Module module)
+    {
+        ModuleThreadFactory threadFactory = this.moduleThreadFactories.get(module.getId());
+        if (threadFactory == null)
+        {
+            this.moduleThreadFactories.put(module.getId(), threadFactory = new ModuleThreadFactory(module));
+        }
+        return threadFactory;
+    }
+
     public int runTask(Module module, Runnable runnable)
     {
         return this.runTaskDelayed(module, runnable, 0);
     }
 
-    /**
-     * Schedules a delayed task for a module with the given delay on the main server thread
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @param delay    the delay in ticks
-     * @return the ID of the task
-     */
     public int runTaskDelayed(Module module, Runnable runnable, long delay)
     {
         assert module != null: "The module must not be null!";
@@ -109,15 +105,6 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
-    /**
-     * Schedules a repeating task for a module with the given delay and interval
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @param delay    the delay in ticks in ticks
-     * @param interval the interval in ticks
-     * @return the ID of the task
-     */
     public int runTimer(Module module, Runnable runnable, long delay, long interval)
     {
         assert module != null: "The module must not be null!";
@@ -134,26 +121,11 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
-    /**
-     * Schedules a asynchronous delayed task for a module
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @return the ID of the task
-     */
     public int runAsynchronousTask(Module module, Runnable runnable)
     {
         return this.runAsynchronousTaskDelayed(module, runnable, 0);
     }
 
-    /**
-     * Schedules a asynchronous delayed task for a module with the given delay
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @param delay    the delay in ticks
-     * @return the ID of the task
-     */
     public int runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
         assert module != null: "The module must not be null!";
@@ -170,15 +142,6 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
-    /**
-     * Schedules a asynchronous repeating task for a module with the given delay and interval
-     *
-     * @param module   the module
-     * @param runnable the task
-     * @param delay    the delay in ticks
-     * @param interval the interval in ticks
-     * @return the ID of the task
-     */
     public int runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
         assert module != null: "The module must not be null!";
@@ -195,25 +158,12 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
-    /**
-     * Schedules a method for execution on the main server thread
-     *
-     * @param <T>      the return type of the method
-     * @param callable the method to call
-     * @return a future object
-     */
     public <T> Future<T> callSync(Callable<T> callable)
     {
         assert callable != null: "The callable must not be null!";
         return this.bukkitScheduler.callSyncMethod(this.corePlugin, callable);
     }
 
-    /**
-     * Cancels a task of a module
-     *
-     * @param module the module
-     * @param ID     the taskID
-     */
     public void cancelTask(Module module, int ID)
     {
         this.bukkitScheduler.cancelTask(ID);
@@ -229,40 +179,42 @@ public class BukkitTaskManager implements TaskManager
         TIntSet taskIDs = this.moduleTasks.remove(module);
         if (taskIDs != null)
         {
-            TIntIterator iter = taskIDs.iterator();
-            while (iter.hasNext())
+            TIntIterator it = taskIDs.iterator();
+            while (it.hasNext())
             {
-                this.bukkitScheduler.cancelTask(iter.next());
+                this.bukkitScheduler.cancelTask(it.next());
             }
         }
     }
 
-    /**
-     * Checks whether the given task ID revers to a task that's currently running
-     *
-     * @param taskID the task ID
-     * @return true if there is a running task for this ID
-     */
     public boolean isCurrentlyRunning(int taskID)
     {
         return this.bukkitScheduler.isCurrentlyRunning(taskID);
     }
 
-    /**
-     * Checks whether the given task ID is
-     *
-     * @param taskID the task ID
-     * @return true if there is a task for this ID
-     */
     public boolean isQueued(int taskID)
     {
         return this.bukkitScheduler.isQueued(taskID);
     }
 
-    @Override
-    public void clean()
+    public synchronized void clean(Module module)
     {
+        this.cancelTasks(module);
+        final ModuleThreadFactory factory = this.moduleThreadFactories.remove(module.getId());
+        if (factory != null)
+        {
+            factory.shutdown();
+        }
+    }
 
+    @Override
+    public synchronized void clean()
+    {
+        for (ModuleThreadFactory factory : this.moduleThreadFactories.values())
+        {
+            factory.shutdown();
+        }
+        this.moduleThreadFactories.clear();
     }
 
     private class Task implements Runnable

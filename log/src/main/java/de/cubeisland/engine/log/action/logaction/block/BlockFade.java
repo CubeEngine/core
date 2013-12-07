@@ -56,7 +56,7 @@ public class BlockFade extends BlockActionType
     {
         if (this.isActive(event.getBlock().getWorld()))
         {
-            if (!this.lm.getConfig(event.getBlock().getWorld()).BLOCK_FADE_ignore.contains(event.getBlock().getType()))
+            if (!this.lm.getConfig(event.getBlock().getWorld()).block.fade.ignore.contains(event.getBlock().getType()))
             {
                 this.logBlockChange(null,
                                     event.getBlock().getState(),
@@ -75,6 +75,6 @@ public class BlockFade extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BLOCK_FADE_enable;
+        return this.lm.getConfig(world).block.fade.enable;
     }
 }

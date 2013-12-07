@@ -19,14 +19,16 @@ package de.cubeisland.engine.core;
 
 import java.nio.charset.Charset;
 
+import de.cubeisland.engine.configuration.ConfigurationFactory;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
-import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
@@ -35,8 +37,6 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-
-import org.slf4j.Logger;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
@@ -97,11 +97,11 @@ public interface Core
     FileManager getFileManager();
 
     /**
-     * This method returns the engine logger
+     * This method returns the engine logging
      *
-     * @return the engine logger
+     * @return the engine logging
      */
-    Logger getLog();
+    Log getLog();
 
     /**
      * This method returns the module manager
@@ -139,13 +139,6 @@ public interface Core
     TaskManager getTaskManager();
 
     /**
-     * This method returns the DebugMode
-     *
-     * @return the debugMode
-     */
-    boolean isDebug();
-
-    /**
      * This method returns the web API server
      *
      * @return the API server
@@ -180,10 +173,14 @@ public interface Core
      */
     BanManager getBanManager();
 
+    LogFactory getLogFactory();
+
+    ConfigurationFactory getConfigurationFactory();
+
     /**
-     * Returns the service-manager
+     * Returns true after the first server tick happened
      *
-     * @return the service-manager
+     * @return false if the startup has not finished yet
      */
-    ServiceManager getServiceManager();
+    boolean isStartupFinished();
 }

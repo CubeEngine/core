@@ -29,7 +29,7 @@ public class ModuleTest extends Test
     @Override
     public void onEnable()
     {
-        module.getLog().debug("Basics-Module: {0}", String.valueOf(module.basicsModule));
+        module.getLog().debug("Basics-Module: {0}", String.valueOf(module.getCore().getModuleManager().getModule("basics")));
         module.getLog().debug("BukkitCore-Plugin: {0}", String.valueOf(module.getCore()));
         this.setSuccess(true);
     }

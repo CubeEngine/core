@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Triplet;
@@ -38,7 +37,6 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import de.cubeisland.engine.roles.config.RoleMirror;
-
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.TLongHashSet;
@@ -86,10 +84,9 @@ public class RolesManager
             // AND Resolve Dependencies and Role-Data
             this.reloadAllRoles();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.module.getLog().error("Failed to initialize the role providers!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().error(ex, "Failed to initialize the role providers!");
         }
     }
 
@@ -163,7 +160,7 @@ public class RolesManager
 
     private void createMissingWorldRoleProviders()
     {
-        for (long worldId : this.module.getCore().getWorldManager().getAllWorldIds())
+        for (long worldId : this.module.getCore().getWorldManager().getAllWorldIds().toArray())
         {
             if (this.worldRoleProviders.get(worldId) == null)
             {

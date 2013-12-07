@@ -21,17 +21,17 @@ import java.io.IOException;
 
 import org.bukkit.World;
 
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.config.node.StringNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.Priority;
+import de.cubeisland.engine.roles.config.PriorityConverter;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
@@ -356,11 +356,11 @@ public class RoleManagementCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Converter<Priority> converter = Convert.matchConverter(Priority.class);
+        Converter<Priority> converter = new PriorityConverter();
         Priority priority;
         try
         {
-            priority = converter.fromNode(new StringNode(context.getString(1)));
+            priority = converter.fromNode(new StringNode(context.getString(1)), null);
             role.setPriorityValue(priority.value);
             role.saveToConfig();
             this.manager.recalculateAllRoles();
@@ -474,10 +474,9 @@ public class RoleManagementCommands extends RoleCommandHelper
             }
             context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            context.getCommand().getModule().getLog().warn("Failed to delete the role configuration for {}!", role.getName());
-            context.getCommand().getModule().getLog().debug(e.getLocalizedMessage(), e);
+            context.getCommand().getModule().getLog().warn(ex, "Failed to delete the role configuration for {}!", role.getName());
             context.sendTranslated("&eDeleted the role, however its configuration file could not be removed.");
         }
     }

@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.command.reflected;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -28,7 +27,6 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
-import de.cubeisland.engine.core.command.result.ErrorResult;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.ChatFormat;
 
@@ -56,52 +54,16 @@ public class ReflectedCommand extends ParameterizedCommand
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(final CommandContext context) throws Exception
     {
         if (this.contextType.isInstance(context))
         {
-            try
+            Object result = this.method.invoke(this.holder, context);
+            if (result instanceof CommandResult)
             {
-                Object result = this.method.invoke(this.holder, context);
-                if (result instanceof CommandResult)
-                {
-                    return (CommandResult)result;
-                }
-            }
-            catch (InvocationTargetException e)
-            {
-                if (e.getCause() instanceof Exception)
-                {
-                    throw (Exception)e.getCause();
-                }
-                return new ErrorResult(e);
+                return (CommandResult)result;
             }
         }
         return null;
-    }
-
-    @Override
-    public void help(HelpContext context) throws Exception
-    {
-        context.sendTranslated("&7Description: &f%s", this.getDescription());
-        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
-
-        if (this.hasChildren())
-        {
-            context.sendMessage(" ");
-            context.sendTranslated("The following sub commands are available:");
-            context.sendMessage(" ");
-
-            final CommandSender sender = context.getSender();
-            for (CubeCommand command : context.getCommand().getChildren())
-            {
-                if (command.testPermissionSilent(sender))
-                {
-                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.translate(command.getDescription()));
-                }
-            }
-        }
-        context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 }

@@ -27,7 +27,6 @@ import org.bukkit.World;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;
@@ -57,7 +56,8 @@ public class LogManager
         {
             throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder.toAbsolutePath(), e);
         }
-        this.globalConfig = Configuration.load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml"));
+        this.globalConfig = this.module.getCore().getConfigurationFactory().
+            load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml").toFile());
         for (World world : ((BukkitCore)module.getCore()).getServer().getWorlds())
         {
             this.initWorldConfig(world);
@@ -76,40 +76,10 @@ public class LogManager
         {
             throw new FolderNotFoundException("Failed to create the world folder for " + world.getName(), e);
         }
-        LoggingConfiguration config = this.globalConfig.loadChild(worldFolder.resolve("config.yml"));
+        LoggingConfiguration config = this.globalConfig.loadChild(worldFolder.resolve("config.yml").toFile());
         this.worldConfigs.put(world, config);
         return config;
     }
-// TODO DATABASE
-    /*
-    private void buildWorldAndLocation(SelectBuilder builder, World world, Location loc1, Location loc2)
-    {
-        if (world != null)
-        {
-            builder.field("world_id").isEqual().value(this.module.getCore().getWorldManager().getWorldId(world));
-            if (loc1 != null)
-            {
-                if (loc2 == null) // single location
-                {
-                    builder.and().field("x").isEqual().value(loc1.getBlockX()).and().field("y").isEqual()
-                           .value(loc1.getBlockY()).and().field("z").isEqual().value(loc1.getBlockZ());
-                }
-                else
-                // range of locations
-                {
-                    builder.and().field("x").between(loc1.getBlockX(), loc2.getBlockX()).and().field("y")
-                           .between(loc1.getBlockY(), loc2.getBlockY()).and().field("z")
-                           .between(loc1.getBlockZ(), loc2.getBlockZ());
-                }
-            }
-            builder.and();
-        }
-    }
-    private void buildDates(SelectBuilder builder, Timestamp fromDate, Timestamp toDate)
-    {
-        builder.beginSub().field("date").between(fromDate, toDate).endSub();
-    }
-    */
 
     public void disable()
     {

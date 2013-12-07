@@ -64,7 +64,7 @@ public class InformationCommands
         this.basics = basics;
     }
 
-    @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z]", max = 3)
+    @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z}", max = 3)
     public void biome(CommandContext context)
     {
         World world;
@@ -75,7 +75,7 @@ public class InformationCommands
             world = context.getArg(0,World.class,null);
             if (world == null)
             {
-                context.sendTranslated("&cUnkown world %s!", context.getString(0));
+                context.sendTranslated("&cUnknown world %s!", context.getString(0));
                 return;
             }
             x = context.getArg(1,Integer.class,null);
@@ -208,7 +208,7 @@ public class InformationCommands
             context.sendTranslated("&eI am right &cbehind &eyou!");
             return;
         }
-        int radius = this.basics.getConfiguration().nearDefaultRadius;
+        int radius = this.basics.getConfiguration().commands.nearDefaultRadius;
         if (context.hasArg(0))
         {
             radius = context.getArg(0, Integer.class, radius);
@@ -371,10 +371,10 @@ public class InformationCommands
         Date start = new Date(ManagementFactory.getRuntimeMXBean().getStartTime());
         Duration dura = new Duration(start.getTime(), System.currentTimeMillis());
         context.sendTranslated("&aServer is running since &6%s", df.format(start));
-        context.sendTranslated("&aUptime: &6%s", dura.format("%www %ddd %hhh %mmm %sss"));
+        context.sendTranslated("&aUptime: &6%s", dura.format("%www%ddd%hhh%mmm%sss"));
         //TPS:
         float tps = this.basics.getLagTimer().getAverageTPS();
-        String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : "&4";
+        String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : tps == 0 ? "&eNaN" : "&4";
         color = ChatFormat.parseFormats(color);
         context.sendTranslated("&aCurrent TPS: %s%.1f", color, tps);
         Pair<Long, Float> lowestTPS = this.basics.getLagTimer().getLowestTPS();
@@ -428,7 +428,7 @@ public class InformationCommands
     }
 
 
-    @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist"})
+    @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist","worlds"})
     public void listWorlds(CommandContext context)
     {
         context.sendTranslated("&aLoaded worlds:");

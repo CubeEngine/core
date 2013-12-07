@@ -180,7 +180,7 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().jumpToMaxRange).getLocation();
+            Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().navigation.jumpToMaxRange).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
                 context.sendTranslated("&cNo block in sight!");
@@ -203,8 +203,8 @@ public class MovementCommands
         {
             User sender = (User)context.getSender();
             Location loc = LocationUtil.getBlockBehindWall(sender,
-                    this.basics.getConfiguration().jumpThruMaxRange,
-                    this.basics.getConfiguration().jumpThruMaxWallThickness);
+                    this.basics.getConfiguration().navigation.thru.maxRange,
+                    this.basics.getConfiguration().navigation.thru.maxWallThickness);
             if (loc == null)
             {
                 sender.sendTranslated("&cNothing to pass through!");

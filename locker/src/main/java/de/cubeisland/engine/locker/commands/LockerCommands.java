@@ -62,7 +62,7 @@ public class LockerCommands extends ContainerCommand
         if (context.getSender() instanceof User)
         {
             User user = (User)context.getSender();
-            KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender());
+            KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender(), this.module);
             if (keyBook != null)
             {
                 Lock lock = this.manager.getLockById(keyBook.lockID);
@@ -71,7 +71,7 @@ public class LockerCommands extends ContainerCommand
                     context.sendTranslated("&aThe strong magic surrounding this KeyBook allows you to access the designated protection");
                     if (lock.isBlockLock())
                     {
-                        Location loc = lock.getLocation();
+                        Location loc = lock.getFirstLocation();
                         context.sendTranslated("&aThe protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s",
                                                loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
                     }
@@ -98,7 +98,7 @@ public class LockerCommands extends ContainerCommand
                 return;
             }
             manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
-            context.sendTranslated("&aRightclock to show protection-info");
+            context.sendTranslated("&aRightclick to show protection-info");
         }
         else
         {

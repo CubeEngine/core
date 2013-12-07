@@ -108,9 +108,9 @@ public class FileUtil
                 list.add(line);
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            CubeEngine.getLog().debug(e.getMessage(), e);
+            CubeEngine.getLog().debug(ex, "Failed to read lines from a buffer");
         }
         finally
         {
@@ -205,7 +205,6 @@ public class FileUtil
     public static void copy(ReadableByteChannel in, WritableByteChannel out) throws IOException
     {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 4);
-        // TODO test if this works
         while (in.read(buffer) != -1)
         {
             out.write(buffer);

@@ -25,14 +25,12 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_6_R2.EntityPlayer;
-import net.minecraft.server.v1_6_R2.Packet0KeepAlive;
-import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
+import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.PacketPlayOutKeepAlive;
+import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
 
-import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.test.tests.AsyncCommandTest;
 import de.cubeisland.engine.test.tests.ClearChatTest;
@@ -53,9 +51,6 @@ public class Test extends Module
     private Map<String, de.cubeisland.engine.test.tests.Test> tests;
     private Timer timer;
 
-    @Inject
-    public Basics basicsModule;
-
     public Test()
     {
         this.tests = new HashMap<>();
@@ -68,7 +63,7 @@ public class Test extends Module
         this.registerTest("Clear chat test", new ClearChatTest(this));
         this.registerTest("Command args test", new CommandArgsTest(this));
         this.registerTest("Database test", new DatabaseTest(this));
-        this.registerTest("Logger test", new LoggerTest(this));
+        this.registerTest("Log test", new LoggerTest(this));
         this.registerTest("Match test", new MatchTest(this));
         this.registerTest("Module test", new ModuleTest(this));
         this.registerTest("Parse time test", new ParseTimeTest(this));
@@ -88,8 +83,7 @@ public class Test extends Module
             catch (Exception ex)
             {
                 test.getValue().setSuccess(false);
-                getLog().warn("{} failed in onLoad", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onLoad", test.getKey());
             }
         }
     }
@@ -106,8 +100,7 @@ public class Test extends Module
             catch (Exception ex)
             {
                 test.getValue().setSuccess(false);
-                getLog().warn("{} failed in onEnable", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onEnable", test.getKey());
             }
         }
 
@@ -128,8 +121,7 @@ public class Test extends Module
             catch (Exception ex)
             {
                 test.getValue().setSuccess(false);
-                getLog().warn("{} failed in onStartupFinished", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onStartupFinished", test.getKey());
             }
             if (!test.getValue().isSuccessSet() || !test.getValue().wasSuccess())
             {
@@ -150,8 +142,7 @@ public class Test extends Module
             }
             catch (Exception ex)
             {
-                getLog().warn("{} failed in onDisable", test.getKey());
-                getLog().debug(ex.getLocalizedMessage(), ex);
+                getLog().warn(ex, "{} failed in onDisable", test.getKey());
             }
         }
 
@@ -181,7 +172,7 @@ public class Test extends Module
         {
             for (EntityPlayer player : (List<EntityPlayer>)this.mojangServer.players)
             {
-                player.playerConnection.sendPacket(new Packet0KeepAlive(random.nextInt()));
+                player.playerConnection.sendPacket(new PacketPlayOutKeepAlive(random.nextInt()));
             }
         }
     }

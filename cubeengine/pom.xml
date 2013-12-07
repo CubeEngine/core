@@ -16,7 +16,26 @@
     <projectBase>${project.basedir}</projectBase>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>sonatype-nexus</id>
+      <url>https://oss.sonatype.org/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
+    <dependency>
+      <groupId>de.cubeisland.engine</groupId>
+      <artifactId>configuration</artifactId>
+      <version>1.0.2</version>
+    </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
@@ -33,13 +52,6 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-codec-http</artifactId>
       <version>4.0.4.Final</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>1.12</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -91,30 +103,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.mcstats.bukkit</groupId>
-      <artifactId>metrics</artifactId>
-      <version>R6</version>
-      <type>jar</type>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.bukkit</groupId>
-          <artifactId>bukkit</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- Logback dependencies-->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.0.13</version>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.13</version>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.5</version>
@@ -136,12 +124,17 @@
     <dependency>
       <groupId>org.jooq</groupId>
       <artifactId>jooq</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.0</version>
     </dependency>
     <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
       <version>0.9.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.spout</groupId>
+      <artifactId>simplenbt</artifactId>
+      <version>1.0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -153,8 +146,12 @@
         <filtering>true</filtering>
         <includes>
           <include>plugin.yml</include>
-          <include>logback.xml</include>
         </includes>
+      </resource>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${basedir}/src/main/resources/</directory>
+        <filtering>false</filtering>
       </resource>
       <resource>
         <targetPath>./resources</targetPath>

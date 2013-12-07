@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.itemrepair.repair;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,12 +28,15 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.itemrepair.Itemrepair;
 import de.cubeisland.engine.itemrepair.material.RepairItemContainer;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock;
+import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock.RepairBlockInventory;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 import de.cubeisland.engine.itemrepair.repair.storage.RepairBlockModel;
 import de.cubeisland.engine.itemrepair.repair.storage.RepairBlockPersister;
@@ -40,7 +44,7 @@ import org.jooq.DSLContext;
 
 import static de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock.TABLE_REPAIR_BLOCK;
 
-public class RepairBlockManager
+public class RepairBlockManager implements Listener
 {
     private Map<Material, RepairBlock> repairBlocks;
     private Map<Block, Material> blockMap;
@@ -56,7 +60,7 @@ public class RepairBlockManager
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
         this.repairBlocks = new EnumMap<>(Material.class);
-        this.itemProvider = new RepairItemContainer(module.getConfig().baseMaterials);
+        this.itemProvider = new RepairItemContainer(module.getConfig().price.baseMaterials);
 
         for (Entry<String, RepairBlockConfig> entry : module.getConfig().repairBlockConfigs.entrySet())
         {
@@ -65,17 +69,16 @@ public class RepairBlockManager
         }
         this.blockMap = new HashMap<>();
         this.persister = new RepairBlockPersister(module);
-        this.loadBlocks();
+        this.module.getCore().getEventManager().registerListener(module, this);
+        for (World world : this.module.getCore().getWorldManager().getWorlds())
+        {
+            this.loadRepairBlocks(this.persister.getAll(world));
+        }
     }
 
-    /**
-     * Loads the blocks from a persister
-     *
-     * @return fluent interface
-     */
-    public RepairBlockManager loadBlocks()
+    private void loadRepairBlocks(Collection<RepairBlockModel> models)
     {
-        for (RepairBlockModel model : this.persister.getAll())
+        for (RepairBlockModel model : models)
         {
             Block block = model.getBlock(this.module.getCore().getWorldManager());
             if (block.getType().name().equals(model.getType()))
@@ -86,19 +89,24 @@ public class RepairBlockManager
                 }
                 else
                 {
-                    this.module.getLog().warn("Deleting saved RepairBlock that is no longer a RepairBlock at {}:{}:{} in {}",
+                    this.module.getLog().info("Deleting saved RepairBlock that is no longer a RepairBlock at {}:{}:{} in {}",
                                               block.getX(), block.getY(), block.getZ(), block.getWorld().getName());
-                    // TODO delete
+                    model.delete();
                 }
             }
             else
             {
-                this.module.getLog().warn("Deleting saved RepairBlock that does not correspond to block at {}:{}:{} in {}",
+                this.module.getLog().info("Deleting saved RepairBlock that does not correspond to block at {}:{}:{} in {}",
                                           block.getX(), block.getY(), block.getZ(), block.getWorld().getName());
-                // TODO delete
+                model.delete();
             }
         }
-        return this;
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event)
+    {
+        this.loadRepairBlocks(this.persister.getAll(event.getWorld()));
     }
 
     /**
@@ -197,7 +205,7 @@ public class RepairBlockManager
         {
             return;
         }
-        Inventory inventory;
+        RepairBlockInventory inventory;
         for (RepairBlock repairBlock : this.repairBlocks.values())
         {
             inventory = repairBlock.removeInventory(player);
@@ -205,7 +213,7 @@ public class RepairBlockManager
             {
                 final World world = player.getWorld();
                 final Location loc = player.getLocation();
-                for (ItemStack stack : inventory)
+                for (ItemStack stack : inventory.inventory)
                 {
                     if (stack != null && stack.getType() != Material.AIR)
                     {

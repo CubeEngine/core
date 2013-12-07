@@ -24,12 +24,12 @@ import java.util.TreeMap;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.core.config.node.MapNode;
-import de.cubeisland.engine.core.config.node.Node;
-import de.cubeisland.engine.core.config.node.NullNode;
-import de.cubeisland.engine.core.util.convert.ConversionException;
-import de.cubeisland.engine.core.util.convert.Convert;
-import de.cubeisland.engine.core.util.convert.Converter;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.convert.Converter;
+import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.NullNode;
 
 public class BaseMaterialContainerConverter implements Converter<BaseMaterialContainer>
 {
@@ -49,7 +49,7 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
     }
 
     @Override
-    public Node toNode(BaseMaterialContainer object) throws ConversionException
+    public Node toNode(BaseMaterialContainer object, ConverterManager manager) throws ConversionException
     {
         Map<Material,Double> result = new TreeMap<>(new Comparator<Material>()
         {
@@ -67,11 +67,11 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
     }
 
     @Override
-    public BaseMaterialContainer fromNode(Node node) throws ConversionException
+    public BaseMaterialContainer fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof MapNode)
         {
-            map = Convert.fromNode(node,fieldType);
+            map = manager.convertFromNode(node, fieldType);
             BaseMaterialContainer container = new BaseMaterialContainer(map);
             map = null;
             return container;
@@ -82,7 +82,7 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
         }
         else
         {
-            throw new ConversionException("The BaseMaterialContainer has to be stored in a map");
+            throw ConversionException.of(this, node, "Node is not a MapNode!");
         }
     }
 }

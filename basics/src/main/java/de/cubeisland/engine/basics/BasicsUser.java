@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import org.jooq.DSLContext;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.basics.storage.TableBasicsUser.TABLE_BASIC_USER;
 import static de.cubeisland.engine.basics.storage.TableMail.TABLE_MAIL;
@@ -109,11 +110,11 @@ public class BasicsUser
 
     public void clearMailFrom(User sender)
     {
-        List<Mail> mailsFrom = this.getMailsFrom(sender);
+        final List<Mail> mailsFrom = this.getMailsFrom(sender);
         this.mailbox.removeAll(mailsFrom);
-        for (Mail mail : mailsFrom)
-        {
-            mail.delete(); // TODO better
-        }
+        UInteger senderId = sender == null ? null : sender.getEntity().getKey();
+        this.dsl.delete(TABLE_MAIL).where(
+            TABLE_MAIL.USERID.eq(this.bUEntity.getKey()),
+            TABLE_MAIL.SENDERID.eq(senderId)).execute();
     }
 }

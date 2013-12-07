@@ -31,15 +31,19 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
+import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
+import gnu.trove.TLongCollection;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -47,6 +51,7 @@ import org.jooq.SelectConditionStep;
 import org.jooq.SelectWhereStep;
 import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 import static de.cubeisland.engine.log.storage.TableActionTypes.TABLE_ACTION_TYPE;
 import static de.cubeisland.engine.log.storage.TableLogEntry.TABLE_LOG_ENTRY;
 
@@ -100,12 +105,13 @@ public class QueryManager
                 try {
                     doEmptyLogs(batchSize);
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().error("Error while logging!");
-                    QueryManager.this.module.getLog().debug(ex.getLocalizedMessage(), ex);
+                    QueryManager.this.module.getLog().error(ex, "Error while logging!");
                 }
             }
         };
-        this.storeExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
+
+        final ThreadFactory factory = this.module.getCore().getTaskManager().getThreadFactory(this.module);
+        this.storeExecutor = Executors.newSingleThreadExecutor(factory);
         this.lookupRunner = new Runnable()
         {
             @Override
@@ -114,12 +120,11 @@ public class QueryManager
                 try {
                     doQueryLookup();
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().error("Error while lookup!");
-                    QueryManager.this.module.getLog().debug(ex.getLocalizedMessage(), ex);
+                    QueryManager.this.module.getLog().error(ex, "Error while lookup!");
                 }
             }
         };
-        this.lookupExecutor = Executors.newSingleThreadExecutor(this.module.getCore().getTaskManager().getThreadFactory());
+        this.lookupExecutor = Executors.newSingleThreadExecutor(factory);
 
         this.cleanUpTaskId = this.module.getCore().getTaskManager().runAsynchronousTimer(this.module, new Runnable()
         {
@@ -128,7 +133,8 @@ public class QueryManager
             {
                 cleanUpLogs();
             }
-        }, this.module.getConfiguration().cleanUpDelay.toTicks(), this.module.getConfiguration().cleanUpDelay.toTicks());
+        }, this.module.getConfiguration().cleanup.delay.toTicks(), this.module.getConfiguration().cleanup.delay
+                                                                                                         .toTicks());
     }
 
     /**
@@ -140,13 +146,11 @@ public class QueryManager
         try
         {
             this.module.getLog().debug("Analyze - Step 1/6: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1);
+            this.awaitAndResetLatch(); // Wait for batch insert to finish!
         }
-        catch (InterruptedException e)
+        catch (InterruptedException ex)
         {
-            this.module.getLog().error("Could not start optimizing!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().error(ex, "Could not start optimizing!");
         }
         this.module.getLog().debug("Analyze - Step 2/6: Create temporary table and swap tables");
         TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
@@ -158,13 +162,11 @@ public class QueryManager
         try
         {
             this.module.getLog().debug("Analyze - Step 4/6: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1); // Block normal inserts
+            this.awaitAndResetLatch();
         }
-        catch (InterruptedException e)
+        catch (InterruptedException ex)
         {
-            this.module.getLog().error("Could not start copying back to optimized table!");
-            this.module.getLog().error(e.getLocalizedMessage(), e);
+            this.module.getLog().error(ex, "Could not start copying back to optimized table!");
         }
         this.module.getLog().debug("Analyze - Step 5/6: Insert data from temporary table into the optimized table and drop temporary table");
         this.cleanUpDsl.insertInto(OPTIMIZE_TABLE, OPTIMIZE_TABLE.DATE, OPTIMIZE_TABLE.WORLD, OPTIMIZE_TABLE.X, OPTIMIZE_TABLE.Y, OPTIMIZE_TABLE.Z,
@@ -177,7 +179,6 @@ public class QueryManager
         this.module.getLog().debug("Analyze - Step 6/6: Return back to normal logging. Table optimized!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
         latch.countDown(); // Start normal logging again
-
     }
 
     private boolean optimizeRunning = false;
@@ -188,7 +189,7 @@ public class QueryManager
     public void analyze()
     {
         if (optimizeRunning) return;
-        this.module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+        this.module.getCore().getTaskManager().getThreadFactory(this.module).newThread(new Runnable()
         {
             @Override
             public void run()
@@ -199,54 +200,87 @@ public class QueryManager
         }).start();
     }
 
+    private boolean cleanUpRunning = false;
+
     private void cleanUpLogs()
     {
+        if (CubeEngine.isMainThread()) throw new IllegalStateException("ONLY use Asynchronously!");
+        if (cleanUpRunning)
+        {
+            this.module.getLog().warn("CleanUp - Is currently running cannot start again!");
+            return;
+        }
         try
         {
+            this.module.getLog().debug("!! Started automatic log_entries table cleanup !!");
+            this.module.getLog().debug("(The CleanUp can take a VERY long time)");
             this.module.getLog().debug("CleanUp - Step 1/7: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1);
+            this.awaitAndResetLatch(); // Wait for batch insert to finish!
+            this.cleanUpRunning = true;
         }
-        catch (InterruptedException e)
+        catch (InterruptedException ex)
         {
-            this.module.getLog().error("Could not start optimizing!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().error(ex, "Could not start optimizing!");
         }
         this.module.getLog().debug("CleanUp - Step 2/7: Create temporary table and swap tables");
         TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
         this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
         this.CURRENT_TABLE = temporaryTable;
-        this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of deleted worlds");
+
         latch.countDown();
-        if (this.module.getConfiguration().cleanUpDeletedWorlds)
+        if (this.module.getConfiguration().cleanup.oldLogs.enable)
         {
-            long[] worlds = this.module.getCore().getWorldManager().getAllWorldIds();
-            final UInteger[] values = new UInteger[worlds.length];
-            for (int i = 0 ; i < worlds.length; i++)
-            {
-                values[i] = UInteger.valueOf(worlds[i]);
-            }
-            cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.notIn(values)).execute();
+            this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of old logs");
+            this.cleanUpOldLogs(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanup.oldLogs.time.toMillis()));
         }
-        this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of old logs");
-        if (this.module.getConfiguration().cleanUpOldLogs)
+        else
         {
-            cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.DATE.le(new Timestamp(System
-                                                                                               .currentTimeMillis() - module
-                .getConfiguration().cleanUpOldLogsTime.toMillis()))).execute();
+            this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of old logs; Skipped");
+        }
+        if (this.module.getConfiguration().cleanup.deletedWorlds)
+        {
+            this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of deleted worlds");
+            TLongCollection loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
+            for (UInteger dbWorld : cleanUpDsl.select(TABLE_WORLD.KEY).from(TABLE_WORLD).fetch().getValues(TABLE_WORLD.KEY))
+            {
+                if (loadedworlds.contains(dbWorld.longValue()))
+                {
+                    continue;
+                }
+                int count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).fetchCount();
+                if (count == 0) continue;
+                this.module.getLog().debug("        - Step 4/7: Marked {} logs in world #{} for removal", count, dbWorld.longValue());
+                UInteger lastId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
+                            .where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).orderBy(TABLE_LOG_ENTRY.ID.desc()).limit(1).fetchOne().value1();
+                UInteger firstId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
+                                            .where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).orderBy(TABLE_LOG_ENTRY.ID.asc()).limit(1).fetchOne().value1();
+                while (firstId.longValue() < lastId.longValue())
+                {
+                    UInteger nextId = UInteger.valueOf(firstId.longValue() + this.module.getConfiguration().cleanup.steps);
+                    int del = cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld).and(TABLE_LOG_ENTRY.ID.between(firstId, nextId))).execute();
+                    count -= del;
+                    if (del != 0)
+                    {
+                        this.module.getLog().debug("        - Step 4/7: Deleted {} logs in world #{} ; Remaining: {}", del, dbWorld.longValue(), count);
+                    }
+                    firstId = nextId;
+                }
+            }
+        }
+        else
+        {
+            this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of deleted worlds; Skipped");
         }
         try
         {
             this.module.getLog().debug("CleanUp - Step 5/7: Wait for inserts to finish then pause inserts");
-            latch.await(); // Wait for batch insert to finish!
-            latch = new CountDownLatch(1); // Block normal inserts
+            this.awaitAndResetLatch();
         }
-        catch (InterruptedException e)
+        catch (InterruptedException ex)
         {
-            this.module.getLog().error("Could not start copying back to clean table!");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().error(ex, "Could not start copying back to clean table!");
         }
-        this.module.getLog().debug("Optimize - Step 6/7: Insert data from temporary table into the optimized table and drop temporary table");
+        this.module.getLog().debug("CleanUp - Step 6/7: Insert data from temporary table into the optimized table and drop temporary table");
         this.cleanUpDsl.insertInto(OPTIMIZE_TABLE, OPTIMIZE_TABLE.DATE, OPTIMIZE_TABLE.WORLD, OPTIMIZE_TABLE.X, OPTIMIZE_TABLE.Y, OPTIMIZE_TABLE.Z,
                                    OPTIMIZE_TABLE.ACTION, OPTIMIZE_TABLE.CAUSER,OPTIMIZE_TABLE.BLOCK, OPTIMIZE_TABLE.DATA,
                                    OPTIMIZE_TABLE.NEWBLOCK, OPTIMIZE_TABLE.NEWDATA, OPTIMIZE_TABLE.ADDITIONALDATA).
@@ -254,10 +288,72 @@ public class QueryManager
                                                          CURRENT_TABLE.ACTION, CURRENT_TABLE.CAUSER,CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA,
                                                          CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA).from(CURRENT_TABLE)).execute();
         this.dsl.execute("DROP TABLE " + temporaryTable.getName());
-        this.module.getLog().debug("Optimize - Step 7/7: Re-Analyze Indices and then return back to normal logging. Table cleaned up!");
+        this.module.getLog().debug("CleanUp - Step 7/7: Re-Analyze Indices and then return back to normal logging. Table cleaned up!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
         latch.countDown(); // Start normal logging again
         this.analyze();
+        this.cleanUpRunning = false;
+    }
+
+    synchronized private void awaitAndResetLatch() throws InterruptedException
+    {
+        this.latch.await();
+        this.latch = new CountDownLatch(1);
+    }
+
+    private void cleanUpOldLogs(Timestamp until)
+    {
+        Integer count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.DATE.le(until)).fetchCount();
+        if (count == 0) return;
+        this.module.getLog().debug("        - Step 3/7: Marked {} old logs for removal", count);
+        UInteger lastId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
+                                      .where(TABLE_LOG_ENTRY.DATE.le(until)).orderBy(TABLE_LOG_ENTRY.ID.desc()).limit(1).fetchOne().value1();
+        this.cleanUpOldLogsPart(UInteger.valueOf(0), lastId, new MutableInteger(count),0);
+        /* TODO probably better idea for deleting (same for deleting logs from deleted worlds)
+        // sadly jOOQ does not support limit on delete queries yet https://github.com/jOOQ/jOOQ/issues/714
+        int stepSize = this.module.getConfiguration().cleanup.oldLogs.steps;
+        long startTime = System.currentTimeMillis();
+        while (count > 0)
+        {
+            this.module.getLog().debug("        - Step 3/7: Deleting {} old logs ; {} remaining", stepSize, count);
+            count -= stepSize;
+            cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.ID.le(lastId)).limit(stepSize).execute();
+            this.module.getLog().debug("        - Step 3/7: Runtime: {}", new Duration(startTime, System.currentTimeMillis()).format("%www%ddd%hhh%mmm%sss"));
+        }
+        //*/
+    }
+
+    private class MutableInteger
+    {
+        private MutableInteger(int value)
+        {
+            this.value = value;
+        }
+
+        public int value;
+    }
+
+    private int cleanUpOldLogsPart(UInteger from, UInteger to, MutableInteger totalCount, int depth)
+    {
+        int count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.ID.between(from, to)).fetchCount();
+        if (count == 0) return 0;
+        if (count <= this.module.getConfiguration().cleanup.steps)
+        {
+            totalCount.value -= count;
+            return cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.ID.between(from, to)).execute();
+        }
+        else
+        {
+            long startTime = System.currentTimeMillis();
+            UInteger half = UInteger.valueOf((to.longValue() + from.longValue()) / 2);
+            this.module.getLog().debug("{}- Step 3/7: Deleting old logs {}-{} ; Remaining {}",
+                       StringUtils.repeat(" ", depth), from, to, totalCount.value);
+            int del = this.cleanUpOldLogsPart(from, half, totalCount, depth +1);
+            del += this.cleanUpOldLogsPart(half, to, totalCount, depth +1);
+            this.module.getLog().debug("{}- Step 3/7: Deleted {} old logs in {}", StringUtils.repeat(" ", depth),
+                           del, new Duration(startTime, System.currentTimeMillis()).format("%ww%dd%hh%mm%ss%SS"));
+            return del;
+        }
     }
 
     private void doQueryLookup()
@@ -271,7 +367,7 @@ public class QueryManager
         final Lookup lookup = poll.lookup;
         final User user = poll.user;
         Result<LogEntry> entries = poll.query.limit(10000).fetch();
-        QueryResults results = new QueryResults(lookup);
+        QueryResults results = new QueryResults(lookup, module);
         for (LogEntry entry : entries)
         {
             results.addResult(entry.init(module));
@@ -315,8 +411,7 @@ public class QueryManager
         final Queue<QueuedLog> logs = new LinkedList<>();
         try
         {
-            this.latch.await(); // Wait if still doing inserts
-            this.latch = new CountDownLatch(1);
+            this.awaitAndResetLatch();  // Wait if still doing inserts
             if (queuedLogs.isEmpty())
             {
                 return;
@@ -338,6 +433,7 @@ public class QueryManager
                             CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z, CURRENT_TABLE.CAUSER,
                             CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA, CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA)
                 .values((Timestamp)null, null, null, null, null, null, null, null, null, null, null, null).getSQL();
+
             if (this.insertConnection == null || this.insertConnection.isClosed())
             {
                 this.insertConnection = this.database.getConnection();
@@ -381,11 +477,13 @@ public class QueryManager
         }
         catch (Exception ex)
         {
-            Profiler.endProfiling("logging"); // end profiling so we can start again later
-            latch = new CountDownLatch(0); // and reset latch
-            module.getLog().error("Error while logging!");
-            module.getLog().debug(ex.getLocalizedMessage(), ex);
+            module.getLog().error(ex, "Error while logging!");
             this.queuedLogs.addAll(logs);
+            if (latch.getCount() == 1)
+            {
+                latch.countDown();
+            }
+            Profiler.endProfiling("logging"); // end profiling so we can start again later
             try
             {
                 insertConnection.close();
@@ -427,10 +525,9 @@ public class QueryManager
         try {
             shutDownLatch.await(1, TimeUnit.MINUTES); // wait for all logs to be logged (stop after 3 min)
         }
-        catch (InterruptedException e)
+        catch (InterruptedException ex)
         {
-            this.module.getLog().warn("Error while waiting! ");
-            this.module.getLog().debug(e.getLocalizedMessage(), e);
+            this.module.getLog().warn(ex, "Error while waiting! ");
             return;
         }
         if (this.queuedLogs.size() != 0)
@@ -441,9 +538,7 @@ public class QueryManager
             }
             else
             {
-                this.module.getLog().warn("Logging doesn't seem to progress! Aborting...");
-                Exception ex = new Exception();
-                this.module.getLog().debug(ex.getLocalizedMessage(), ex);
+                this.module.getLog().warn(new Exception(), "Logging doesn't seem to progress! Aborting...");
             }
         }
     }
@@ -462,8 +557,24 @@ public class QueryManager
 
     public void prepareLookupQuery(final Lookup lookup, final User user, QueryAction action)
     {
+        if (this.cleanUpRunning)
+        {
+            switch (action)
+            {
+            case SHOW:
+                user.sendTranslated("&eLookups cannot return all data while cleaning up the database!");
+                break;
+            case ROLLBACK:
+            case REDO:
+            case ROLLBACK_PREVIEW:
+            case REDO_PREVIEW:
+                user.sendTranslated("&cThis action is not possible while cleaning up the database!");
+                user.sendTranslated("&ePleas");
+                return;
+            }
+        }
         final QueryParameter params = lookup.getQueryParameter();
-        SelectWhereStep<LogEntry> whereStep = this.dsl.selectFrom(TABLE_LOG_ENTRY);
+        SelectWhereStep<LogEntry> whereStep = this.dsl.selectFrom(CURRENT_TABLE);
         ArrayList<Condition> conditions = new ArrayList<>();
         if (!params.actions.isEmpty())
         {
@@ -478,31 +589,31 @@ public class QueryManager
             }
             if (!include)
             {
-                conditions.add(TABLE_LOG_ENTRY.ACTION.notIn(actions));
+                conditions.add(CURRENT_TABLE.ACTION.notIn(actions));
             }
             else
             {
-                conditions.add(TABLE_LOG_ENTRY.ACTION.in(actions));
+                conditions.add(CURRENT_TABLE.ACTION.in(actions));
             }
         }
         if (params.hasTime()) // has since / before / from-to
         {
             if (params.from_since == null) // before
             {
-                conditions.add(TABLE_LOG_ENTRY.DATE.le(new Timestamp(params.to_before)));
+                conditions.add(CURRENT_TABLE.DATE.le(new Timestamp(params.to_before)));
             }
             else if (params.to_before == null) // since
             {
-                conditions.add(TABLE_LOG_ENTRY.DATE.greaterThan(new Timestamp(params.from_since)));
+                conditions.add(CURRENT_TABLE.DATE.greaterThan(new Timestamp(params.from_since)));
             }
             else // from - to
             {
-                conditions.add(TABLE_LOG_ENTRY.DATE.between(new Timestamp(params.from_since), new Timestamp(params.to_before)));
+                conditions.add(CURRENT_TABLE.DATE.between(new Timestamp(params.from_since), new Timestamp(params.to_before)));
             }
         }
         if (params.worldID != null) // has world
         {
-            conditions.add(TABLE_LOG_ENTRY.WORLD.eq(UInteger.valueOf(params.worldID)));
+            conditions.add(CURRENT_TABLE.WORLD.eq(UInteger.valueOf(params.worldID)));
             if (params.location1 != null)
             {
                 BlockVector3 loc1 = params.location1;
@@ -512,31 +623,31 @@ public class QueryManager
                     boolean locX = loc1.x < loc2.x;
                     boolean locY = loc1.y < loc2.y;
                     boolean locZ = loc1.z < loc2.z;
-                    conditions.add(TABLE_LOG_ENTRY.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
-                    conditions.add(TABLE_LOG_ENTRY.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
-                    conditions.add(TABLE_LOG_ENTRY.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
+                    conditions.add(CURRENT_TABLE.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
+                    conditions.add(CURRENT_TABLE.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
+                    conditions.add(CURRENT_TABLE.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
                 }
                 else if (params.radius == null)// has single location
                 {
-                    conditions.add(TABLE_LOG_ENTRY.X.eq(loc1.x));
-                    conditions.add(TABLE_LOG_ENTRY.Y.eq(loc1.y));
-                    conditions.add(TABLE_LOG_ENTRY.Z.eq(loc1.z));
+                    conditions.add(CURRENT_TABLE.X.eq(loc1.x));
+                    conditions.add(CURRENT_TABLE.Y.eq(loc1.y));
+                    conditions.add(CURRENT_TABLE.Z.eq(loc1.z));
                 }
                 else // has radius
                 {
-                    conditions.add(TABLE_LOG_ENTRY.X.between(loc1.x-params.radius,loc1.x+params.radius));
-                    conditions.add(TABLE_LOG_ENTRY.Y.between(loc1.y-params.radius,loc1.y+params.radius));
-                    conditions.add(TABLE_LOG_ENTRY.Z.between(loc1.z-params.radius,loc1.z+params.radius));
+                    conditions.add(CURRENT_TABLE.X.between(loc1.x-params.radius,loc1.x+params.radius));
+                    conditions.add(CURRENT_TABLE.Y.between(loc1.y-params.radius,loc1.y+params.radius));
+                    conditions.add(CURRENT_TABLE.Z.between(loc1.z-params.radius,loc1.z+params.radius));
                 }
             }
         }
         if (!params.blocks.isEmpty())
         {
             // make sure there is data for blocks first
-            conditions.add(TABLE_LOG_ENTRY.BLOCK.isNotNull().
-                        or(TABLE_LOG_ENTRY.DATA.isNotNull()).
-                        or(TABLE_LOG_ENTRY.NEWBLOCK.isNotNull()).
-                        or(TABLE_LOG_ENTRY.NEWDATA.isNotNull()));
+            conditions.add(CURRENT_TABLE.BLOCK.isNotNull().
+                        or(CURRENT_TABLE.DATA.isNotNull()).
+                        or(CURRENT_TABLE.NEWBLOCK.isNotNull()).
+                        or(CURRENT_TABLE.NEWDATA.isNotNull()));
             // Start filter blocks:
             boolean include = params.includeBlocks();
             Condition blockCondition = null;
@@ -545,11 +656,11 @@ public class QueryManager
                 if (!include || data.getValue()) // all exclude OR only include
                 {
                     String mat = data.getKey().material.name();
-                    Condition condition = TABLE_LOG_ENTRY.BLOCK.eq(mat).or(TABLE_LOG_ENTRY.NEWBLOCK.eq(mat));
+                    Condition condition = CURRENT_TABLE.BLOCK.eq(mat).or(CURRENT_TABLE.NEWBLOCK.eq(mat));
                     Byte metadata = data.getKey().data;
                     if (metadata != null)
                     {
-                        condition = condition.and(TABLE_LOG_ENTRY.DATA.eq(metadata.longValue()).or(TABLE_LOG_ENTRY.NEWDATA.eq(metadata)));
+                        condition = condition.and(CURRENT_TABLE.DATA.eq(metadata.longValue()).or(CURRENT_TABLE.NEWDATA.eq(metadata)));
                     }
                     if (!include)
                     {
@@ -584,11 +695,11 @@ public class QueryManager
             }
             if (include)
             {
-                conditions.add(TABLE_LOG_ENTRY.CAUSER.in(users));
+                conditions.add(CURRENT_TABLE.CAUSER.in(users));
             }
             else
             {
-                conditions.add(TABLE_LOG_ENTRY.CAUSER.notIn(users));
+                conditions.add(CURRENT_TABLE.CAUSER.notIn(users));
             }
         }
         // TODO finish queryParams

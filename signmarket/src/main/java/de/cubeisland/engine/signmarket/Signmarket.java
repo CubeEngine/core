@@ -19,7 +19,6 @@ package de.cubeisland.engine.signmarket;
 
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.Reloadable;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -38,9 +37,8 @@ public class Signmarket extends Module implements Reloadable
     {
         Profiler.startProfiling("marketSignEnable");
         Database db = this.getCore().getDB();
-        db.registerTable(TableSignItem.initTable(db)); // Init Item-table first!!!
-        db.registerTable(TableSignBlock.initTable(db));
-        this.config = Configuration.load(SignMarketConfig.class, this);
+        db.registerTable(TableSignItem.class); // Init Item-table first!!!
+        db.registerTable(TableSignBlock.class);
         this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);
         this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
@@ -55,6 +53,17 @@ public class Signmarket extends Module implements Reloadable
         this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         new MarketSignPerm(this, smCmds);
         this.getLog().trace("{} ms - done", Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS));
+        if (this.getCore().isStartupFinished())
+        {
+            this.config = this.loadConfig(SignMarketConfig.class);
+        }
+        // else do it down there \/
+    }
+
+    @Override
+    public void onStartupFinished()
+    {
+        this.config = this.loadConfig(SignMarketConfig.class);
     }
 
     @Override
@@ -62,9 +71,9 @@ public class Signmarket extends Module implements Reloadable
     {
         Profiler.startProfiling("msreload");
         Database db = this.getCore().getDB();
-        db.registerTable(TableSignItem.initTable(db)); // Init Item-table first!!!
-        db.registerTable(TableSignBlock.initTable(db));
-        this.config = Configuration.load(SignMarketConfig.class, this);
+        db.registerTable(TableSignItem.class); // Init Item-table first!!!
+        db.registerTable(TableSignBlock.class);
+        this.config = this.loadConfig(SignMarketConfig.class);
         this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);
         this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));

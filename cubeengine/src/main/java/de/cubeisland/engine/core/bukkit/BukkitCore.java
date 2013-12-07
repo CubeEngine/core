@@ -18,10 +18,8 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,21 +32,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.filter.ThresholdFilter;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
+import de.cubeisland.engine.configuration.ConfigurationFactory;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -57,7 +55,6 @@ import de.cubeisland.engine.core.bukkit.command.CommandBackend;
 import de.cubeisland.engine.core.bukkit.command.CubeCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.FallbackCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.SimpleCommandBackend;
-import de.cubeisland.engine.core.bukkit.metrics.MetricsInitializer;
 import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
 import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -66,32 +63,38 @@ import de.cubeisland.engine.core.command.commands.ModuleCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
-import de.cubeisland.engine.core.command.reflected.readable.ReadableCommandFactory;
-import de.cubeisland.engine.core.config.Configuration;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logger.ColorConverter;
-import de.cubeisland.engine.core.logger.JULAppender;
+import de.cubeisland.engine.core.logging.Level;
+import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.service.ServiceManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.util.convert.Convert;
+import de.cubeisland.engine.core.util.converter.DurationConverter;
+import de.cubeisland.engine.core.util.converter.EnchantmentConverter;
+import de.cubeisland.engine.core.util.converter.ItemStackConverter;
+import de.cubeisland.engine.core.util.converter.LevelConverter;
+import de.cubeisland.engine.core.util.converter.LocationConverter;
+import de.cubeisland.engine.core.util.converter.MaterialConverter;
+import de.cubeisland.engine.core.util.converter.PlayerConverter;
+import de.cubeisland.engine.core.util.converter.UserConverter;
+import de.cubeisland.engine.core.util.converter.VersionConverter;
+import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.core.util.worker.CubeThreadFactory;
+import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
-import org.slf4j.LoggerFactory;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
-import static java.util.logging.Level.WARNING;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -107,7 +110,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
-    private Logger logger;
+    private Log logger;
     private EventManager eventRegistration;
     private BukkitCommandManager commandManager;
     private BukkitTaskManager taskManager;
@@ -118,40 +121,65 @@ public final class BukkitCore extends JavaPlugin implements Core
     private PacketEventManager packetEventManager;
     private CorePerms corePerms;
     private BukkitBanManager banManager;
-    private ServiceManager serviceManager;
+    private LogFactory logFactory;
+    private ConfigurationFactory configFactory;
     //endregion
 
     private List<Runnable> initHooks;
-    private LoggerContext loggerContext;
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
+    private boolean loadSucceeded;
+    private boolean loaded = false;
+    private boolean isStartupFinished = false;
+
+    @Override
+    public boolean isStartupFinished()
+    {
+        return this.isStartupFinished;
+    }
+
+    void setStartupFinished()
+    {
+        this.isStartupFinished = true;
+    }
 
     @Override
     public void onLoad()
     {
+        this.loadSucceeded = false;
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
-        if (!BukkitUtils.isCompatible(this) && !BukkitUtils.init(this))
+        if (!BukkitUtils.isCompatible(this) || !BukkitUtils.init(this))
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Your Bukkit server is incompatible with this CubeEngine version.");
-            pm.disablePlugin(this);
             return;
         }
-
 
         this.version = Version.fromString(this.getDescription().getVersion());
 
         CubeEngine.initialize(this);
-        Convert.init(this);
 
-        try (Reader reader = new InputStreamReader(this.getResource("plugin.yml")))
+        this.configFactory = new ConfigurationFactory();
+        ConverterManager manager = this.configFactory.getDefaultConverterManager();
+        manager.registerConverter(Level.class, new LevelConverter());
+        manager.registerConverter(ItemStack.class, new ItemStackConverter());
+        manager.registerConverter(Material.class, new MaterialConverter());
+        manager.registerConverter(Enchantment.class, new EnchantmentConverter());
+        manager.registerConverter(User.class, new UserConverter());
+        manager.registerConverter(World.class, new WorldConverter());
+        manager.registerConverter(Duration.class, new DurationConverter());
+        manager.registerConverter(Version.class, new VersionConverter());
+        manager.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
+        manager.registerConverter(Location.class, new LocationConverter(this));
+
+        try (InputStream is = this.getResource("plugin.yml"))
         {
-            this.pluginConfig = Configuration.load(PluginConfig.class, reader);
+            this.pluginConfig = configFactory.load(PluginConfig.class, is);
         }
         catch (IOException e)
         {
-            pluginConfig = Configuration.createInstance(PluginConfig.class);
+            this.pluginConfig = configFactory.create(PluginConfig.class);
         }
 
         this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
@@ -163,90 +191,25 @@ public final class BukkitCore extends JavaPlugin implements Core
         catch (IOException e)
         {
             this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to initialize the FileManager", e);
-            pm.disablePlugin(this);
             return;
         }
         this.fileManager.dropResources(CoreResource.values());
 
-        try
-        {
-            System.setProperty("cubeengine.logger.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
-            System.setProperty("cubeengine.logger.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
-            System.setProperty("cubeengine.logger.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
-        }
-        catch (IOException e)
-        {
-            this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
-        }
+        // depends on: file manager
+        this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
+                                                                                        .resolve("core.yml").toFile());
 
-        this.loggerContext = (LoggerContext)LoggerFactory.getILoggerFactory();
-        this.loggerContext.start();
+        this.logFactory = new LogFactory(this, this.getLogger()); // , BukkitUtils.isAnsiSupported(server)
 
-        try
-        {
-            File logbackXML = new File(this.getDataFolder(), "logback.xml");
-            JoranConfigurator logbackConfigurator = new JoranConfigurator();
-            logbackConfigurator.setContext((LoggerContext)LoggerFactory.getILoggerFactory());
-            ((LoggerContext)LoggerFactory.getILoggerFactory()).reset();
-            if (logbackXML.exists())
-            {
-                logbackConfigurator.doConfigure(logbackXML.getAbsolutePath());
-            }
-            else
-            {
-                logbackConfigurator.doConfigure(new ContextInitializer((LoggerContext)LoggerFactory.getILoggerFactory()).findURLOfDefaultConfigurationFile(true));
-            }
-        }
-        catch (JoranException e)
-        {
-            this.getLogger().log(WARNING, "An error occurred when loading a logback.xml file from the CubeEngine folder: " + e
-                .getLocalizedMessage(), e);
-        }
-        // Configure the logger
-        Logger parentLogger = (Logger)LoggerFactory.getLogger("cubeengine");
-        JULAppender consoleAppender = new JULAppender();
-        consoleAppender.setContext(parentLogger.getLoggerContext());
-        consoleAppender.setName("cubeengine-console");
-        consoleAppender.setLogger(this.getLogger());
-        PatternLayout consoleLayout = new PatternLayout();
-        consoleLayout.setContext(parentLogger.getLoggerContext());
-        consoleLayout.setPattern("%color(%msg)");
-        consoleAppender.setLayout(consoleLayout);
-        parentLogger.addAppender(consoleAppender);
-        consoleLayout.start();
-        consoleAppender.start();
-
-        this.logger = (Logger)LoggerFactory.getLogger("cubeengine.core");
-        // TODO RemoteHandler is not yet implemented this.logger.addHandler(new RemoteHandler(LogLevel.ERROR, this));
-        this.logger.setLevel(Level.DEBUG);
-        ColorConverter.setANSISupport(BukkitUtils.isANSISupported());
+        this.logger = logFactory.getCoreLog();
 
         this.fileManager.clearTempDir();
 
         this.banManager = new BukkitBanManager(this);
-        this.serviceManager = new ServiceManager(this);
 
-        // depends on: file manager
-        this.config = Configuration.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml"));
-
-
-        parentLogger.setLevel(Level.ALL);
-        this.logger.setLevel(parentLogger.getLevel());
-        // Set a filter for the console log, so sub loggers don't write logs with lower level than the user wants
-        ThresholdFilter consoleFilter = new ThresholdFilter();
-        consoleFilter.setLevel(this.config.loggingConsoleLevel.toString());
-        parentLogger.getAppender("cubeengine-console").addFilter(consoleFilter);
-        consoleFilter.start();
-        // Set a filter for the file log, so sub loggers don't write logs with lower level than the user wants
-        ThresholdFilter fileFilter = new ThresholdFilter();
-        fileFilter.setLevel(this.config.loggingFileLevel.toString());
-        this.logger.getAppender("core-file").addFilter(fileFilter);
-        fileFilter.start();
-
-        if (!this.config.logCommands)
+        if (!this.config.logging.logCommands)
         {
             BukkitUtils.disableCommandLogging();
-            ((Logger)LoggerFactory.getLogger("cubeengine.commands")).setAdditive(false);
         }
 
         if (this.config.catchSystemSignals)
@@ -258,21 +221,20 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(Configuration.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml")));
+        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
 
         // depends on: core config, server
-        this.taskManager = new BukkitTaskManager(this, new CubeThreadFactory("CubeEngine"), this.getServer().getScheduler());
+        this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
 
-        if (this.config.userWebapi)
+        if (this.config.useWebapi)
         {
             try
             {
                 this.apiServer.start();
             }
-            catch (ApiStartupException e)
+            catch (ApiStartupException ex)
             {
-                this.logger.error("The web API will not be available as the server failed to start properly...");
-                this.logger.debug(e.getLocalizedMessage(), e);
+                this.logger.error(ex, "The web API will not be available as the server failed to start properly...");
             }
         }
 
@@ -284,8 +246,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: database
-        this.database.registerTable(TableUser.initTable(this.database));
-        this.database.registerTable(TableWorld.initTable(this.database));
+        this.database.registerTable(TableUser.class);
+        this.database.registerTable(TableWorld.class);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
@@ -323,7 +285,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.getLog().debug("Chosen command backend: {}", commandBackend.getClass().getName());
         this.commandManager = new BukkitCommandManager(this, commandBackend);
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
-        this.commandManager.registerCommandFactory(new ReadableCommandFactory());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
@@ -334,7 +295,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
-        if (this.config.improveVanillaCommands)
+        if (this.config.commands.improveVanilla)
         {
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
@@ -346,21 +307,24 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on loaded worlds
         this.worldManager = new BukkitWorldManager(BukkitCore.this);
 
-        MetricsInitializer metricsInit = new MetricsInitializer(BukkitCore.this);
-
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
-        metricsInit.start();
+        this.loadSucceeded = true;
+        this.loaded = true;
     }
 
     @Override
     public void onEnable()
     {
-        if (this.database == null)
+        if (!this.loadSucceeded)
         {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+        if (!this.loaded)
+        {
+            this.onLoad();
         }
         if (!PacketHookInjector.register(this))
         {
@@ -373,10 +337,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             {
                 it.next().run();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                this.getLog().error("An error occurred during startup!");
-                this.getLog().debug(e.getLocalizedMessage(), e);
+                this.getLog().error(ex, "An error occurred during startup!");
             }
             it.remove();
         }
@@ -406,6 +369,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onDisable()
     {
+        this.loaded = false;
         this.logger.debug("utils cleanup");
         BukkitUtils.cleanup();
 
@@ -478,7 +442,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         CubeEngine.clean();
-        Convert.cleanup();
         Profiler.clean();
 
         if (this.fileManager != null)
@@ -487,9 +450,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.fileManager.clean();
         }
 
-        if (this.loggerContext != null)
+        if (this.logFactory != null)
         {
-            this.loggerContext.stop();
+            // TODO this.logFactory.shutdown();
         }
 
         if (this.fileManager != null)
@@ -513,10 +476,9 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             Files.createDirectories(threadDumpFolder);
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.getLog().warn("Failed to create the folder for the thread dumps!");
-            this.getLog().debug(e.getLocalizedMessage(), e);
+            this.getLog().warn(ex, "Failed to create the folder for the thread dumps!");
             return;
         }
 
@@ -534,10 +496,9 @@ public final class BukkitCore extends JavaPlugin implements Core
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            this.getLog().warn("Failed to write a thread dump!");
-            this.getLog().debug(e.getLocalizedMessage(), e);
+            this.getLog().warn(ex, "Failed to write a thread dump!");
         }
     }
 
@@ -634,7 +595,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public Logger getLog()
+    public Log getLog()
     {
         return this.logger;
     }
@@ -661,12 +622,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     public BukkitTaskManager getTaskManager()
     {
         return this.taskManager;
-    }
-
-    @Override
-    public boolean isDebug()
-    {
-        return Level.DEBUG.isGreaterOrEqual(this.logger.getLevel());
     }
 
     @Override
@@ -704,10 +659,15 @@ public final class BukkitCore extends JavaPlugin implements Core
         return this.banManager;
     }
 
-    @Override
-    public ServiceManager getServiceManager()
+    public LogFactory getLogFactory()
     {
-        return this.serviceManager;
+        return logFactory;
+    }
+
+    @Override
+    public ConfigurationFactory getConfigurationFactory()
+    {
+        return configFactory;
     }
     //endregion
 }

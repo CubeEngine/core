@@ -22,7 +22,7 @@ import de.cubeisland.engine.core.util.Version;
 /**
  * This exception is thrown when the dependency was found but its revision is not correct.
  */
-public class IncompatibleDependencyException extends ModuleException
+public class IncompatibleDependencyException extends ModuleDependencyException
 {
     public IncompatibleDependencyException(String module, String dep, Version requiredVersion, Version actualVersion)
     {

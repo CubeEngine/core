@@ -1,0 +1,995 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/log/action/ActionType.java:156
+msgid "&4Encountered an unimplemented LogAction-Rollback: &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockBurn.java:74
+msgid "%s&6%s &awent up into flames%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockFade.java:71
+msgid "%s&6%s &afaded away%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockFall.java:114
+msgid "%s&6%s&a did fall to a lower place %s&a because of &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockFall.java:119
+msgid "%s&2%s &acaused &6%s&a to fall to a lower place%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockForm.java:75
+msgid "%s&6%dx %s &aformed naturally%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockForm.java:80
+msgid "%s&6%s &aformed naturally%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:121
+msgid " &6%d times"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:125
+msgid "%s&aA piston moved &6%s&a in place%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:132
+msgid "%s&aA piston retracted%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:137
+msgid "%s&aA piston retracted a moving &6%s&a in place%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:143
+msgid "%s&6%s&a got moved away by a Piston%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:148
+msgid "%s&6%s&a got retracted by a Piston%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:153
+msgid "%s&aA piston moved &6%s&a in to replace &6%s%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockSpread.java:72
+msgid "%s&6%s&a spreaded%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/EndermanPickup.java:57
+msgid "%s&6Enderman &apicked up &6%s&6 x%d%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/EndermanPickup.java:62
+msgid "%s&6Enderman &apicked up &6%s%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/EndermanPlace.java:58
+msgid "%s&6Enderman &aplaced &6%s&6 x%d%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/EndermanPlace.java:63
+msgid "%s&6Enderman &aplaced &6%s%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/EntityBreak.java:72
+msgid "%s&aA &6%s &adestroyed &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/EntityForm.java:70
+msgid "%s&6%s &aformed &6%s&6 x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/EntityForm.java:76
+msgid "%s&6%s &aformed &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/SheepEat.java:58
+msgid "%s&aA sheep ate all the grass%s&6 x%d"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/entity/SheepEat.java:62
+msgid "%s&aA sheep ate all the grass%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/CreeperExplode.java:59
+msgid "%s&aA Creeper-Explosion wrecked &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/CreeperExplode.java:64
+msgid "%s&2%s &alet a Creeper detonate and destroy &6%dx &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/CreeperExplode.java:76
+msgid "%s&aA Creeper-Explosion wrecked &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/CreeperExplode.java:81
+msgid "%s&2%s &alet a Creeper detonate and destroy &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/EnderdragonExplode.java:60
+msgid "%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/EnderdragonExplode.java:66
+msgid "%s&aAn enderdragon changed the integrity of &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/EnderdragonExplode.java:75
+msgid "%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/EnderdragonExplode.java:81
+msgid "%s&aAn enderdragon changed the integrity of &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/EntityExplode.java:58
+msgid "%s&aSomething blew up &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/EntityExplode.java:63
+msgid "%s&aSomething blew up &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/FireballExplode.java:59
+msgid "%s&aA Fireball flying towards &2%s &ablasted away &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/FireballExplode.java:65
+msgid "%s&aA Fireball blasted away &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/FireballExplode.java:74
+msgid "%s&aA Fireball flying towards &2%s &ablasted away &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/FireballExplode.java:80
+msgid "%s&aA Fireball blasted away &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/TntExplode.java:59
+msgid "%s&aA TNT-Explosion induced by &2%s&a got rid of &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/TntExplode.java:65
+msgid "%s&aA TNT-Explosion got rid of &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/TntExplode.java:73
+msgid "%s&aA TNT-Explosion induced by &2%s&a got rid of &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/TntExplode.java:79
+msgid "%s&aA TNT-Explosion got rid of &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/WitherExplode.java:59
+msgid "%s&aA Wither hunting down &2%s &ablasted away &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/WitherExplode.java:65
+msgid "%s&6%dx %s&a got destroyed in a Wither-Explosion%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/WitherExplode.java:74
+msgid "%s&aA Wither hunting down &2%s &ablasted away &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/explosion/WitherExplode.java:80
+msgid "%s&6%s&a got destroyed in a Wither-Explosion%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/flow/LavaBreak.java:55
+msgid "%s&6%s &agot destroyed by lava%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/flow/LavaFlow.java:131
+msgid "%s&aLava occupied this block &6%d times%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/flow/LavaFlow.java:135
+msgid "%s&aLava occupied the block%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/flow/WaterBreak.java:54
+msgid "%s&6%s &agot flushed away by water%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/flow/WaterFlow.java:138
+msgid "%s&aWater flooded &6%dx&a the block%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/flow/WaterFlow.java:142
+msgid "%s&aWater flooded the block%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/ignite/FireballIgnite.java:56
+msgid "%s&aFire got set by a FireBall shot at &2%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/ignite/FireballIgnite.java:61
+msgid "%s&aFire got set by a FireBall%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/ignite/FireSpread.java:72
+msgid "%s&aFire spreaded%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/ignite/LavaIgnite.java:54
+msgid "%s&aFire got set by lava%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/ignite/Lighter.java:54
+msgid "%s&2%s &aset fire%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/ignite/LightningIgnite.java:53
+msgid "%s&aFire got set by a lightning strike%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/ignite/OtherIgnite.java:54
+msgid "%s&aFire got set by an explosion or something else%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/BonemealUse.java:57
+msgid "%s&2%s &aused bonemeal on &6%s x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/BonemealUse.java:63
+msgid "%s&2%s &aused bonemeal on &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/ButtonUse.java:61
+msgid "%s&2%s &apressed a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/CakeEat.java:58
+msgid "%s&aThe cake is a lie%s&a! Ask &2%s&a he knows it!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/CakeEat.java:63
+msgid "%s&2%s &aate a piece of cake%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/ComparatorChange.java:58
+msgid "%s&2%s &aactivated the comparator%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/ComparatorChange.java:63
+msgid "%s&2%s &adeactivated the comparator%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/ContainerAccess.java:62
+msgid "%s&2%s &alooked into a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/CropTrample.java:66
+msgid "%s&2%s &atrampeled down &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/DoorUse.java:58
+msgid "%s&2%s &aopened the &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/DoorUse.java:64
+msgid "%s&2%s &aclosed the &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/LeverUse.java:58
+msgid "%s&2%s &aactivated the lever%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/LeverUse.java:63
+msgid "%s&2%s &adeactivated the lever%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/NoteBlockChange.java:66
+msgid ""
+"%s&2&s &afiddled around with the noteblock but did not change anything%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/NoteBlockChange.java:71
+msgid "%s&2%s &aset the noteblock to &6%d&a clicks%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/PlateStep.java:58
+msgid "%s&2%s &astepped on a &6%s&6 x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/PlateStep.java:64
+msgid "%s&2%s &astepped on a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/RepeaterChange.java:65
+msgid "%s&2%s &afiddled around with the repeater but did not change anything%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/RepeaterChange.java:70
+msgid "%s&2%s &aset the repeater to &6%d&a ticks delay%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/TntPrime.java:57
+msgid "%s&2%s &aignited &6%d &aTNT!%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/interaction/TntPrime.java:62
+msgid "%s&2%s &aignited TNT!%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/LeafDecay.java:69
+msgid "%s&6%s &adecayed%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/NaturalGrow.java:96
+msgid "%s&6%dx %s &agrew naturally%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/NaturalGrow.java:103
+msgid "%s&6%s &agrew naturally into &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/NaturalGrow.java:109
+msgid "%s&6%s &agrew naturally%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BlockBreak.java:218
+msgid "%s&2%s &abroke &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BlockBreak.java:237
+msgid ""
+"%s&2%s &abroke &6%s&a \n"
+"   with &7[&f%s&7]&a written on it%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BlockBreak.java:245
+msgid "%s&2%s &abroke &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BlockPlace.java:108
+msgid "%s&2%s &aplaced &6%dx %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BlockPlace.java:117
+msgid "%s&2%s &areplaced &6%dx %s&a with &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BlockPlace.java:130
+msgid "%s&2%s &aplaced &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BlockPlace.java:138
+msgid "%s&2%s &areplaced &6%s&a with &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BucketFill.java:90
+msgid "%s&2%s &afilled &6%d&a buckets with lava%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BucketFill.java:96
+msgid "%s&2%s &afilled &6%s&a buckets with water%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BucketFill.java:101
+msgid "%s&2%s &afilled &6%s buckets with some random fluids%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BucketFill.java:110
+msgid "%s&2%s &afilled a bucket with lava%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BucketFill.java:116
+msgid "%s&2%s &afilled a bucket with water%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/BucketFill.java:121
+msgid "%s&2%s &afilled a bucket with some random fluids%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/HangingBreak.java:161
+msgid "%s&6%s&a got removed by &2%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/HangingBreak.java:167
+msgid "%s&2%s &abroke an&6 item-frame &acontaining &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/HangingPlace.java:78
+msgid "%s&6%s &agot hung up by &2%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/LavaBucket.java:57
+msgid "&2%s &aemptied &6&d&a lava-buckets"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/LavaBucket.java:62
+msgid "&2%s &aemptied a lava-bucket"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/PlayerGrow.java:59
+msgid "%s&2%s let grow &6%d %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/PlayerGrow.java:67
+msgid "%s&2%s let grow &6%s&a into &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/PlayerGrow.java:74
+msgid "%s&2%s let grow &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/SignChange.java:121
+msgid "%s&2%s &awrote &7[&f%s&7]&a on a sign%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/SignChange.java:127
+msgid ""
+"%s&2%s &awrote &7[&f%s&7]&a%s\n"
+"    &aThe old signtext was &7[&f%s&7]"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/WaterBucket.java:57
+msgid "&2%s &aemptied &6&d&a water-buckets"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/player/WaterBucket.java:62
+msgid "&2%s &aemptied a water-bucket"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemInsert.java:73
+#: de/cubeisland/engine/log/action/logaction/container/ItemRemove.java:73
+msgid "%s&2%s&a placed &6%d %s&a into &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemInsert.java:80
+#: de/cubeisland/engine/log/action/logaction/container/ItemRemove.java:80
+msgid "%s&2%s&a took &6%d %s&a out of &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemInsert.java:87
+#: de/cubeisland/engine/log/action/logaction/container/ItemRemove.java:87
+msgid "%s&2%s&a did not change the amount of &6%s&a in &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemInsert.java:124
+msgid "&cCould not rollback an item-insert!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemInsert.java:131
+msgid "&cInvalid Container to rollback item-insert!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemRemove.java:126
+msgid "&cCould not rollback an item-remove!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemRemove.java:134
+msgid "&cInvalid Container to rollback item-remove!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/container/ItemTransfer.java:54
+msgid "%s&6%s&a got moved out of &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/CraftItem.java:73
+msgid "%s&2%s&a crafted &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/EnchantItem.java:81
+msgid "%s&2%s&a enchanted &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/EntityDye.java:66
+msgid "%s&2%s&a dyed a &6%s&a in &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/EntityShear.java:74
+msgid "%s&2%s&a sheared &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/FireworkUse.java:60
+msgid "%s&2%s &aused a firework rocket%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/MilkFill.java:68
+msgid "%s&2%s &amilked a cow%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/MonsterEggUse.java:64
+msgid "%s&2%s &aspawned &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/PotionSplash.java:147
+msgid ""
+"%s&2%s&a used &6%d splash potions &a&f(%s&f)&a onto &6%d&a entities in total%"
+"s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/PotionSplash.java:153
+msgid "%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/SoupFill.java:61
+msgid "%s&2%s &amade soup with a mooshroom"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/VehicleBreak.java:99
+msgid "%s&2%s&a broke a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/VehicleEnter.java:74
+msgid "%s&6%s &aentered a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/VehicleEnter.java:80
+msgid "%s&2%s &aentered a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/VehicleExit.java:75
+msgid "%s&6%s &aexited a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/VehicleExit.java:81
+msgid "%s&2%s &aexited a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/interact/VehiclePlace.java:107
+msgid "%s&2%s &aplaced a &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/ItemDrop.java:131
+msgid "%s&2%s&a let drop &6%d %s&a from &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/ItemDrop.java:137
+msgid "%s&2%s&a dropped &6%d %s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/ItemDrop.java:146
+msgid "%s&6%s&a let drop %d &6%s&a from &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/ItemDrop.java:153
+msgid "%s&6%s&a dropped %d &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/ItemPickup.java:87
+msgid "%s&2%s&a picked up %d &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/KillActionType.java:230
+msgid "%s&6%s &agot slaughtered by &2%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/KillActionType.java:237
+msgid "%s&6%dx %s &agot slaughtered by &2%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/KillActionType.java:248
+msgid "%s&6%s &acould not escape &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/KillActionType.java:255
+msgid "%s&6%dx %s &acould not escape &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/KillActionType.java:266
+msgid "%s&6%s &adied%s &f(&6%s&f)"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/KillActionType.java:273
+msgid "%s&6%dx %s &adied%s &f(&6%s&f)"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/PetDeath.java:69
+msgid "%s&aThe &6%s&a of &2%s &agot slaughtered by &2%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/PetDeath.java:76
+msgid "%s&aThe &6%s&a of &2%s &acould not escape &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/PetDeath.java:83
+msgid "%s&aThe &6%s&a of &2%s &adied%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/PetDeath.java:90
+msgid "&6%s &adied! &4(Pet without owner)"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/PlayerDeath.java:59
+msgid "&2%s &agot slaughtered by &2%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/PlayerDeath.java:65
+msgid "&2%s &acould not escape &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/kill/PlayerDeath.java:73
+msgid "&2%s &adied &f(&6%s&f)"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerChat.java:82
+msgid "%s&2%s&a spammed &f\"&6%s&f\" &6x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerChat.java:89
+msgid "%s&2%s&a chatted &f\"&6%s&f\" &6x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerChat.java:97
+msgid "%s&2%s&a chatted &f\"&6%s&f\"%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerCommand.java:78
+msgid "%s&2%s&a used the command &f\"&6%s&f\" &6x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerCommand.java:84
+msgid "%s&2%s&a used the command &f\"&6%s&f\"%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerJoin.java:82
+msgid "%s&2%s&a joined the server &6x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerJoin.java:87
+msgid "%s&2%s&a joined the server%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerQuit.java:73
+msgid "%s&2%s&a left the server &6x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerQuit.java:78
+msgid "%s&2%s&a left the server%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerTeleport.java:105
+msgid ""
+"%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s&a to &6%d&f:&6%d&f:&6%"
+"d&a in &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerTeleport.java:114
+msgid "%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/PlayerTeleport.java:122
+msgid "%s&2%s&a teleported to &6%d&f:&6%d&f:&6%d&a in &6%s%s!"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/spawn/NaturalSpawn.java:61
+msgid "%s&6%s &aspawned naturally%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/spawn/OtherSpawn.java:60
+msgid "%s&6%s &aspawned%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/spawn/SpawnerSpawn.java:61
+msgid "%s&6%s &aspawned from a spawner%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/worldedit/WorldEditActionType.java:57
+msgid "%s&2%s &aused worldedit to remove &6%s x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/worldedit/WorldEditActionType.java:64
+msgid "%s&2%s &aused worldedit to place &6%s x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/worldedit/WorldEditActionType.java:70
+msgid "%s&2%s &aused worldedit to replace &6%s&a with &6%s x%d%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/worldedit/WorldEditActionType.java:80
+msgid "%s&2%s &aused worldedit to remove &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/worldedit/WorldEditActionType.java:87
+msgid "%s&2%s &aused worldedit to place &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/worldedit/WorldEditActionType.java:93
+msgid "%s&2%s &aused worldedit to replace &6%s&a with &6%s%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/XpPickup.java:83
+msgid "%s&2%s&a earned &6%d experience%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:59
+msgid "&aLogging-queue is currently empty!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:63
+msgid "&a%d logs are currently queued!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:133
+msgid "&aReceived a new Log-Tool!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:144
+msgid "&aFound a Log-Tool in your inventory!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:163
+#: de/cubeisland/engine/log/commands/LogCommands.java:191
+msgid ""
+"&6%s&c is not a valid log-type.&e Use chest, container, player, block or "
+"kills instead!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:171
+#: de/cubeisland/engine/log/commands/LogCommands.java:199
+msgid "&cWhy don't you check in your log-file? You won't need a block there!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:231
+msgid "&aReceived a new Region-Selector Tool"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:239
+msgid "&aFound a Region-Selector Tool in your inventory!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:251
+msgid "&cYou cannot hold a selection tool!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:65
+msgid "params"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:70
+msgid "&6Registered ActionTypes:"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:73
+msgid "&6Lookup&f/&6Rollback&f/&6Restore&f-&6Parameters:"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:75
+msgid ""
+" &f-&6 action &7<actionType> &flike &3a block-break &f(See full list above)"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:76
+msgid " &f-&6 radius &7<radius>&f or &3sel&f, &3global&f, &3player:<radius>"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:77
+msgid " &f-&6 player &7<users>&f like &3p Faithcaio "
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:78
+msgid " &f-&6 entity &7<entities>&f like &3e sheep"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:79
+msgid " &f-&6 block &7<blocks>&f like &3b stone &for &3b 1"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:80
+msgid " &f-&6 since &7<time>&f default is 3 days"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:81
+msgid " &f-&6 before &7<time>"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:82
+msgid " &f-&6 world &7<world>&f default is your current world"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:85
+msgid "Use &6!&f to exclude the parameters instead of including them."
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:162
+#: de/cubeisland/engine/log/commands/LookupCommands.java:211
+msgid "action"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:163
+#: de/cubeisland/engine/log/commands/LookupCommands.java:212
+msgid "radius"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:164
+#: de/cubeisland/engine/log/commands/LookupCommands.java:213
+msgid "user"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:165
+#: de/cubeisland/engine/log/commands/LookupCommands.java:214
+msgid "block"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:166
+#: de/cubeisland/engine/log/commands/LookupCommands.java:215
+msgid "entity"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:167
+#: de/cubeisland/engine/log/commands/LookupCommands.java:216
+msgid "world"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:168
+#: de/cubeisland/engine/log/commands/LookupCommands.java:217
+msgid "since"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:169
+#: de/cubeisland/engine/log/commands/LookupCommands.java:218
+msgid "before"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:204
+msgid "&cYou need to define parameters to rollback!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:244
+#: de/cubeisland/engine/log/commands/LookupCommands.java:266
+msgid "&6%s&c is not a valid time value!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:276
+msgid "&cYou cannot define a radius or selection and a world."
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:282
+msgid "&cUnkown world: &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:297
+msgid "&cYou have to select a region first!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:300
+msgid "&eUse worldedit to select a cuboid region!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:304
+msgid "&eUse this selection wand."
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:323
+#: de/cubeisland/engine/log/commands/LookupCommands.java:343
+msgid "&cInvalid radius/location selection"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:324
+#: de/cubeisland/engine/log/commands/LookupCommands.java:344
+msgid ""
+"&aThe radius parameter can be: <radius> | selection | global | <player>[:"
+"<radius>]"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:368
+msgid "&eYour page-limit is to high! Showing 100 logs per page."
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:384
+#: de/cubeisland/engine/log/commands/LookupCommands.java:406
+msgid "&cYou have to do a query first!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:397
+msgid "&cInvalid page!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:427
+msgid "&cUser &2%s&c not found!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:463
+msgid "&cInvalid BlockData: &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:471
+msgid "&cUnknown Material: &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:501
+msgid "&cUnknown EntityType: &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:531
+msgid "&cUnkown action-type: &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryManager.java:566
+msgid "&eLookups cannot return all data while cleaning up the database!"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryManager.java:572
+msgid "&cThis action is not possible while cleaning up the database!"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryManager.java:573
+msgid "&ePleas"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryParameter.java:229
+msgid ""
+"&eNo logs found in between &3%d&f:&3%d&f:&3%d&e and &3%d&f:&3%d&f:&3%d&e in "
+"&3%s&e!"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryParameter.java:236
+msgid "&eNo logs found at &3%s&f:&3%d&f:&3%d&f:&3%d&e!"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryParameter.java:244
+msgid "&eNo logs found in a radius of &3%d&e around you!"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryParameter.java:248
+msgid ""
+"&eNo logs found in a radius of &3%d around %d&f:&3%d&f:&3%d&e in &3%s&e!"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryParameter.java:255
+msgid "&eNo logs found for your given parameters"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryResults.java:69
+msgid "&6%d&a distinct logs (&6%d&a pages)"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryResults.java:97
+msgid "&aCompressed into &6%d&a logs! (&6%d&a pages)"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryResults.java:101
+msgid "&aCompressed into &6%d&a logs!"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryResults.java:124
+msgid "&aShowing %d most recent logs:"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryResults.java:128
+msgid "&aShowing %d logs (Page %d):"
+msgstr ""
+
+#: de/cubeisland/engine/log/storage/QueryResults.java:226
+msgid "&cCould not Rollback:"
+msgstr ""
+
+#: de/cubeisland/engine/log/tool/ToolListener.java:68
+msgid "&aFirst Position selected!"
+msgstr ""
+
+#: de/cubeisland/engine/log/tool/ToolListener.java:73
+msgid "&aSecond Position selected!"
+msgstr ""
+
+#: de/cubeisland/engine/log/tool/ToolListener.java:89
+msgid "&cInvalid LoggingTool-Block!"
+msgstr ""

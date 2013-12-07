@@ -100,7 +100,7 @@ public class WorldControlCommands
             }
             duration *= 20;
         }
-        World world = null;
+        World world;
         if (context.hasParam("in"))
         {
             world = context.getParam("in", null);
@@ -156,7 +156,7 @@ public class WorldControlCommands
             }
             world = sender.getWorld();
         }
-        int radius = this.config.removeCmdDefaultRadius;
+        int radius = this.config.commands.removeDefaultRadius;
         if (context.hasFlag("a")) // remove all selected entities in world
         {
             radius = -1;
@@ -290,7 +290,7 @@ public class WorldControlCommands
             sender = (User)context.getSender();
         }
         Location loc;
-        int radius = this.config.butcherCmdDefaultRadius;
+        int radius = this.config.commands.butcherDefaultRadius;
         int removed;
         if (sender == null)
         {

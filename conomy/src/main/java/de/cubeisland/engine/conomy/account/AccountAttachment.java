@@ -49,7 +49,7 @@ public class AccountAttachment extends UserAttachment
             if (model != null)
             {
                 this.userAccount = new UserAccount(this, manager, model);
-                manager.logger.debug("LOAD User:" + userAccount.getName() + " :: " + userAccount.balance());
+                manager.logger.debug("LOAD User: {} :: {}", userAccount.getName(), userAccount.balance());
             }
         }
         else
@@ -70,7 +70,7 @@ public class AccountAttachment extends UserAttachment
             newAccount(this.getHolder(), null,(long) (this.manager.config.defaultBalance * this.manager.config.fractionalDigitsFactor()), false);
         model.insert();
         this.userAccount = new UserAccount(this, this.manager, model);
-        this.manager.logger.debug("NEW User:" + this.getHolder().getName() + " :: " + userAccount.balance());
+        this.manager.logger.debug("NEW User: {} :: {}", this.getHolder().getName(), userAccount.balance());
         return this.userAccount;
     }
 }

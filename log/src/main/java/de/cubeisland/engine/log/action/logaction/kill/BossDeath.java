@@ -65,7 +65,7 @@ public class BossDeath extends SimpleLogActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BOSS_DEATH_enable;
+        return this.lm.getConfig(world).death.BOSS_DEATH_enable;
     }
 
     @Override

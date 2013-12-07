@@ -23,10 +23,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.server.v1_6_R2.BanEntry;
-import net.minecraft.server.v1_6_R2.BanList;
-import net.minecraft.server.v1_6_R2.DedicatedPlayerList;
-import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import net.minecraft.server.v1_7_R1.BanEntry;
+import net.minecraft.server.v1_7_R1.BanList;
+import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
+import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
 
 import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
@@ -55,6 +55,11 @@ public class BukkitBanManager implements BanManager
     {
         assert ban != null: "Ban must not be null!";
 
+        if (ban.getReason().contains("\n") || ban.getReason().contains("\r"))
+        {
+            throw new IllegalArgumentException("The ban reason my not contain line breaks (LF or CR)!");
+        }
+
         BanEntry entry = new BanEntry(ban.toString());
         entry.setCreated(ban.getCreated());
         entry.setExpires(ban.getExpires());
@@ -76,7 +81,6 @@ public class BukkitBanManager implements BanManager
         assert user != null: "The user must not be null!";
 
         return this.getUserBan(user.getName());
-
     }
 
     @Override

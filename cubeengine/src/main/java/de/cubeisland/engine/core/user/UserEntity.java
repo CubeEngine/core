@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.user;
 
 import java.sql.Timestamp;
 import java.util.Locale;
-
 import javax.persistence.Transient;
 
 import org.jooq.Record7;
@@ -30,7 +29,7 @@ import org.jooq.types.UInteger;
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
 public class UserEntity extends UpdatableRecordImpl<UserEntity>
-    implements Record7<UInteger, String, Byte, Timestamp, byte[], Timestamp, String>
+    implements Record7<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String>
 {
     public UserEntity()
     {
@@ -76,12 +75,12 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
 
     public boolean isNogc()
     {
-        return getValue(2).equals(1);
+        return (boolean)getValue(2);
     }
 
     public void setNogc(boolean value)
     {
-        setValue(2, value ? 1 : 0);
+        setValue(2, value);
     }
 
     public Timestamp getLastseen()
@@ -150,12 +149,12 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<UInteger, String, Byte, Timestamp, byte[], Timestamp, String> fieldsRow() {
+    public Row7<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String> fieldsRow() {
         return (Row7) super.fieldsRow();
     }
 
     @Override
-    public Row7<UInteger, String, Byte, Timestamp, byte[], Timestamp, String> valuesRow() {
+    public Row7<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String> valuesRow() {
         return (Row7) super.valuesRow();
     }
 
@@ -170,7 +169,7 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
     }
 
     @Override
-    public org.jooq.Field<java.lang.Byte> field3() {
+    public org.jooq.Field<java.lang.Boolean> field3() {
         return TABLE_USER.NOGC;
     }
 
@@ -205,8 +204,8 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
     }
 
     @Override
-    public java.lang.Byte value3() {
-        return (Byte)getValue(3);
+    public java.lang.Boolean value3() {
+        return (Boolean)getValue(3);
     }
 
     @Override

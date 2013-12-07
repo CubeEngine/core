@@ -19,9 +19,10 @@ package de.cubeisland.engine.core.task;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.ModuleThreadFactory;
+import de.cubeisland.engine.core.task.worker.CoreThreadFactory;
 import de.cubeisland.engine.core.util.Cleanable;
 
 /**
@@ -30,13 +31,20 @@ import de.cubeisland.engine.core.util.Cleanable;
  */
 public interface TaskManager extends Cleanable
 {
-
     /**
      * Returns the thread factory used by the CubeEngine to create its threads
      *
      * @return a ThreadFactory implementation
      */
-    ThreadFactory getThreadFactory();
+    CoreThreadFactory getThreadFactory();
+
+    /**
+     * Returns a new thread factory for a module
+     *
+     * @return a ThreadFactory implementation
+     */
+    ModuleThreadFactory getThreadFactory(Module module);
+
 
     /**
      * Schedules a delayed task for a module
@@ -132,4 +140,11 @@ public interface TaskManager extends Cleanable
      * @return true if there is a task for this ID
      */
     boolean isQueued(int taskID);
+
+    /**
+     * This method can be used to remove all objects related to the given module
+     *
+     * @param module the module
+     */
+    void clean(Module module);
 }

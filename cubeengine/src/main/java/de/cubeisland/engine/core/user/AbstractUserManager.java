@@ -63,7 +63,7 @@ public abstract class AbstractUserManager implements UserManager
     protected ConcurrentHashMap<Object, User> cachedUsers;
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
-    protected MessageDigest messageDigest;
+    protected final MessageDigest messageDigest;
 
     protected Database database;
 
@@ -254,7 +254,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void cacheUser(User user)
     {
-        this.core.getLog().debug("User "+ user.getName()+ " cached!");
+        this.core.getLog().debug("User {} cached!", user.getName());
         this.cachedUsers.put(user.getName().toLowerCase(), user);
         this.cachedUsers.put(user.getId(), user);
         this.attachDefaults(user);
@@ -262,7 +262,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void removeCachedUser(User user)
     {
-        this.core.getLog().debug("Removed cached user "+ user.getName()+ "!");
+        this.core.getLog().debug("Removed cached user {}!", user.getName());
         this.cachedUsers.remove(user.getName().toLowerCase());
         this.cachedUsers.remove(user.getId());
         user.detachAll();
@@ -310,7 +310,7 @@ public abstract class AbstractUserManager implements UserManager
         message = ChatFormat.parseFormats(message);
         if (args != null && args.length != 0)
         {
-            message = String.format(message,args); //TODO is allowed to use color ?
+            message = String.format(message,args);
         }
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
@@ -494,14 +494,12 @@ public abstract class AbstractUserManager implements UserManager
         this.defaultAttachments = null;
 
         this.salt = null;
-
-        this.messageDigest = null;
     }
 
     @Override
     public void clean()
     {
-        Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().userManagerCleanupDatabase.toMillis());
+        Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().usermanager.garbageCollection.toMillis());
         this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC
                                                                                                 .isFalse()).execute();
     }

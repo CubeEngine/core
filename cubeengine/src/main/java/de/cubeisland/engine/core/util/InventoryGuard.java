@@ -52,10 +52,17 @@ public class InventoryGuard implements Listener
     private HashSet<Runnable> onClose = new HashSet<>();
     private HashSet<Runnable> onChange = new HashSet<>();
 
+    private boolean ignoreRepaircost = true;
+
     public InventoryGuard(Core core, Inventory inventory, User[] users)
     {
         this.inventory = inventory;
         this.users = new HashSet<>(Arrays.asList(users));
+    }
+
+    public void setIgnoreRepaircost(boolean set)
+    {
+        this.ignoreRepaircost = set;
     }
 
     public void submitInventory(Module module, boolean openInventory)
@@ -164,7 +171,7 @@ public class InventoryGuard implements Listener
                     {
                         for (GuardedItemStack guardedItem : this.noBlockIn)
                         {
-                            if (guardedItem.item.isSimilar(event.getOldCursor()))
+                            if (guardedItem.isSimilar(event.getOldCursor(), this.ignoreRepaircost))
                             {
                                 if (guardedItem.amount == 0)
                                 {
@@ -249,7 +256,7 @@ public class InventoryGuard implements Listener
                         case HOTBAR_SWAP:
                             if (this.blockAllOut) // Block all out except allowed
                             {
-                                if (!this.hasAllowOut(invent, event.getAction())) // Check allowed (& amount)
+                                if (!this.hasAllowOut(invent, cursor, event.getAction())) // Check allowed (& amount)
                                 {
                                     event.setCancelled(true);
                                     user.updateInventory();
@@ -271,7 +278,7 @@ public class InventoryGuard implements Listener
                         case SWAP_WITH_CURSOR:
                             if (this.blockAllIn) // Block all in except allowed
                             {
-                                if (!this.hasAllowIn(cursor, event.getAction())) // Check allowed (& amount)
+                                if (!this.hasAllowIn(cursor, invent, event.getAction())) // Check allowed (& amount)
                                 {
                                     event.setCancelled(true);
                                     user.updateInventory();
@@ -290,7 +297,7 @@ public class InventoryGuard implements Listener
                             {
                                 if (this.blockAllIn) // Block all in except allowed
                                 {
-                                    if (!this.hasAllowIn(user.getInventory().getItem(event.getHotbarButton()), event.getAction()))
+                                    if (!this.hasAllowIn(user.getInventory().getItem(event.getHotbarButton()), invent, event.getAction()))
                                     {
                                         event.setCancelled(true);
                                         user.updateInventory();
@@ -311,7 +318,7 @@ public class InventoryGuard implements Listener
                 {
                     if (this.blockAllIn) // Block all in except allowed
                     {
-                        if (this.hasAllowIn(invent, event.getAction())) // Check allowed (& amount)
+                        if (this.hasAllowIn(invent, null, event.getAction())) // Check allowed (& amount)
                         {
                             this.runOnChange();
                             return;
@@ -343,7 +350,7 @@ public class InventoryGuard implements Listener
                             int amountIn = InventoryUtil.getAmountOf(this.inventory, cursor);
                             ItemStack clone = cursor.clone();
                             clone.setAmount(Math.min(amountIn, clone.getMaxStackSize()));
-                            if (this.hasAllowOut(clone, InventoryAction.PICKUP_ALL))
+                            if (this.hasAllowOut(clone, null, InventoryAction.PICKUP_ALL))
                             {
                                 this.runOnChange();
                                 return;
@@ -374,7 +381,7 @@ public class InventoryGuard implements Listener
     {
         for (GuardedItemStack guardedItem : this.blockOut)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStack, this.ignoreRepaircost))
                 return true;
         }
         return false;
@@ -384,7 +391,7 @@ public class InventoryGuard implements Listener
     {
         for (GuardedItemStack guardedItem : this.blockIn)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStack, this.ignoreRepaircost))
             {
                 return true;
             }
@@ -392,39 +399,47 @@ public class InventoryGuard implements Listener
         return false;
     }
 
-    private boolean hasAllowIn(ItemStack itemStack, InventoryAction action)
+    private boolean hasAllowIn(ItemStack itemStackToGoIn, ItemStack itemStackAtPosition, InventoryAction action)
     {
         for (GuardedItemStack guardedItem : this.noBlockIn)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStackToGoIn, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
-                int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
+                int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStackToGoIn);
                 switch (action)
                 {
                     case PLACE_ALL:
                     case SWAP_WITH_CURSOR:
                     case HOTBAR_SWAP:
-                        return amountIn + itemStack.getAmount() <= guardedItem.amount;
+                        return amountIn + itemStackToGoIn.getAmount() <= guardedItem.amount;
                     case PLACE_ONE:
                         return amountIn + 1 <= guardedItem.amount;
                     case PLACE_SOME:
-                        return amountIn + itemStack.getAmount() <= guardedItem.amount; //TODO do not assume full stack
-
+                        if (itemStackAtPosition == null)
+                        {
+                            return amountIn + itemStackToGoIn.getAmount() <= guardedItem.amount; // Not sure what happens assume full stack
+                        }
+                        int missing = itemStackToGoIn.getMaxStackSize() - itemStackAtPosition.getAmount();
+                        if (missing < 0)
+                        {
+                            return amountIn + itemStackToGoIn.getAmount() <= guardedItem.amount; // Not sure what happens assume full stack
+                        }
+                        return amountIn + missing <= guardedItem.amount; // Missing filling up
                 }
             }
         }
         return false;
     }
 
-    private boolean hasAllowOut(ItemStack itemStack,InventoryAction action)
+    private boolean hasAllowOut(ItemStack itemStackToOut, ItemStack item, InventoryAction action)
     {
         for (GuardedItemStack guardedItem : this.noBlockOut)
         {
-            if (guardedItem.item.isSimilar(itemStack))
+            if (guardedItem.isSimilar(itemStackToOut, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
-                int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStack);
+                int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStackToOut);
                 switch (action)
                 {
                 case PICKUP_ALL:
@@ -433,16 +448,25 @@ public class InventoryGuard implements Listener
                 case HOTBAR_SWAP:
                 case DROP_ALL_SLOT:
                 case MOVE_TO_OTHER_INVENTORY: // assume the complete stack
-                    return amountIn - itemStack.getAmount() >= guardedItem.amount;
+                    return amountIn - itemStackToOut.getAmount() >= guardedItem.amount;
                 case PICKUP_SOME:
-                    return amountIn - itemStack.getAmount() >= guardedItem.amount; //TODO do not assume full stack
+                    if (item == null)
+                    {
+                        return amountIn - itemStackToOut.getAmount() >= guardedItem.amount; //no idea what happens assume full stack to be sure
+                    }
+                    if (itemStackToOut.getAmount() > itemStackToOut.getMaxStackSize()) // overstacked in inventory
+                    {
+                        // items that are over max stacksize get moved to cursor
+                        return amountIn - (itemStackToOut.getAmount() - itemStackToOut.getMaxStackSize()) >= guardedItem.amount;
+                    }
+                    return amountIn - itemStackToOut.getAmount() >= guardedItem.amount; //no idea what happens assume full stack to be sure
                 case PICKUP_HALF:
-                    return amountIn - ((itemStack.getAmount()+1)/2) >= guardedItem.amount;
+                    return amountIn - ((itemStackToOut.getAmount()+1)/2) >= guardedItem.amount;
                 case PICKUP_ONE:
                 case DROP_ONE_SLOT:
                     return amountIn - 1 >= guardedItem.amount;
                 case COLLECT_TO_CURSOR:
-                    return amountIn - Math.min(amountIn, itemStack.getAmount()) >= guardedItem.amount;
+                    return amountIn - Math.min(amountIn, itemStackToOut.getAmount()) >= guardedItem.amount;
                 }
                 System.out.print("#################################### This should be impossible");
             }

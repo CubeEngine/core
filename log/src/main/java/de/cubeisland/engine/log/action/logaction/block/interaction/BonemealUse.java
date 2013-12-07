@@ -69,6 +69,6 @@ public class BonemealUse extends BlockActionType
     @Override
     public boolean isActive(World world)
     {
-        return this.lm.getConfig(world).BONEMEAL_USE_enable;
+        return this.lm.getConfig(world).block.BONEMEAL_USE_enable;
     }
 }

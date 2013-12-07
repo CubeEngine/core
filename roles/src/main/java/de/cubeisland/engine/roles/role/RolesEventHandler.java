@@ -22,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
@@ -62,30 +63,31 @@ public class RolesEventHandler implements Listener
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
     {
         User user = this.module.getCore().getUserManager().findUser(event.getName());
-        if (user != null && (user.hasPlayedBefore() || user.isOnline())) // prevent NPE for players that are banned but never joined the server
+        if (user != null && (user.hasPlayedBefore() || user.isOnline())) // prevent NPE for players that never joined the server
         {
-            // TODO this has to be sync
-            RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(user);
-            rolesAttachment.getResolvedData(user.getWorldId()); // Pre-calculate
+            if (user.getWorld() != null) // prevent NPE for players on deleted worlds
+            {
+                user.attachOrGet(RolesAttachment.class, this.module).getResolvedData(user.getWorldId());
+            }
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onLogin(PlayerLoginEvent event)
     {
         if (event.getResult().equals(Result.ALLOWED)) // only if allowed to join
         {
             final RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
             rolesAttachment.getResolvedData(this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld())); // Pre-calculate
-            this.module.getCore().getTaskManager().runTask(this.module, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    rolesAttachment.apply(); // apply once joined
-                }
-            });
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onJoin(PlayerJoinEvent event)
+    {
+        final RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
+        rolesAttachment.getResolvedData(this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld())); // Pre-calculate
+        rolesAttachment.apply();
     }
 
     @EventHandler
