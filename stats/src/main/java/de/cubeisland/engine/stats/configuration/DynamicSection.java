@@ -72,12 +72,17 @@ public class DynamicSection
      */
     public Object get(String key)
     {
-        Node node = parent.getMappedNodes().get(StringUtils.fieldNameToPath(key));
+        Node node = this.getNode(key);
         if (node instanceof NullNode)
         {
             return null;
         }
         return node.getValue();
+    }
+
+    public Node getNode(String key)
+    {
+        return parent.getMappedNodes().get(StringUtils.fieldNameToPath(key));
     }
 
     /**
@@ -90,8 +95,7 @@ public class DynamicSection
      */
     public Object get(String key, Class<?> type) throws ConversionException
     {
-
-        Node node = parent.getMappedNodes().get(StringUtils.fieldNameToPath(key));
+        Node node = this.getNode(key);
         if (node == null)
         {
             return null;

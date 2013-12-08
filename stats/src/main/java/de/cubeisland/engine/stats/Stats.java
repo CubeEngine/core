@@ -52,7 +52,7 @@ public class Stats extends Module
         return config;
     }
 
-    public StatsManager getStatsManager()
+    protected StatsManager getStatsManager()
     {
         return this.statsManager;
     }

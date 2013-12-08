@@ -107,13 +107,14 @@ public class StatsManager
         {
             throw new IllegalStateException("StatsManager not started!");
         }
+
         try
         {
             // Get the Constructor, and construct a new instance of the Stat.
             Constructor<? extends Stat> constructor = statType.getConstructor(this.getClass(), Module.class);
             Stat stat = constructor.newInstance(this, this.module);
 
-            // Get or register the stat id
+            // Get or register the stat in the database
             if (!registeredStats.contains(statType))
             {
                 synchronized (this.dsl)
@@ -133,11 +134,18 @@ public class StatsManager
                 {
                     return;
                 }
+
                 String name = field.getName();
+                String[] comment = {};
                 if (field.isAnnotationPresent(Name.class))
                 {
                     Name nameAnnotation = field.getAnnotation(Name.class);
                     name = nameAnnotation.value();
+                }
+                if (field.isAnnotationPresent(Comment.class))
+                {
+                    Comment commentAnnotation = field.getAnnotation(Comment.class);
+                    comment = commentAnnotation.value();
                 }
 
                 if (!module.getConfig().statConfigs.containsKey(statType.getSimpleName()))
@@ -145,19 +153,16 @@ public class StatsManager
                     module.getConfig().statConfigs.put(statType.getSimpleName(), new DynamicSection(converterManager));
                 }
                 DynamicSection section = module.getConfig().statConfigs.get(statType.getSimpleName());
+
                 if (section.hasKey(name))
                 {
+                    section.getNode(name).setComments(comment);
                     field.set(stat, section.get(name));
-                    continue;
                 }
-
-                String[] comment = {};
-                if (field.isAnnotationPresent(Comment.class))
+                else
                 {
-                    Comment commentAnnotation = field.getAnnotation(Comment.class);
-                    comment = commentAnnotation.value();
+                    section.put(name, field.get(stat), comment);
                 }
-                section.put(name, field.get(stat), comment);
             }
 
             // Activate hook in the stat
@@ -188,10 +193,18 @@ public class StatsManager
                     {
                         section.put("tasks", new DynamicSection(converterManager), "Intervals for the tasks this statistic schedules");
                     }
+                    else
+                    {
+                        section.getNode("tasks").setComments(new String[]{"Intervals for the tasks this statistic schedules"});
+                    }
                     DynamicSection tasks = (DynamicSection)section.get("tasks", DynamicSection.class);
                     if (!tasks.hasKey(annotation.name()))
                     {
                         tasks.put(annotation.name(), annotation.interval(), annotation.comment());
+                    }
+                    else
+                    {
+                        tasks.getNode(annotation.name()).setComments(annotation.comment());
                     }
                     interval = (Long)tasks.get(annotation.name(), Long.class);
                 }
