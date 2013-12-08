@@ -230,13 +230,14 @@ public class ChatCommands
         context.sendMessage("&aThe following chat-codes are available:");
         StringBuilder builder = new StringBuilder();
         int i = 0;
+        String reset = ChatFormat.parseFormats("&r");
         for (ChatFormat chatFormat : ChatFormat.values())
         {
             if (i++ % 3 == 0)
             {
                 builder.append("\n");
             }
-            builder.append(" ").append(chatFormat.getChar()).append(" ").append(chatFormat.toString()).append(chatFormat.name()).append("&r");
+            builder.append(" ").append(chatFormat.getChar()).append(" ").append(chatFormat.toString()).append(chatFormat.name()).append(reset);
         }
         context.sendMessage(builder.toString());
         context.sendTranslated("&aTo use these type &6&&a followed by the code above");
