@@ -26,32 +26,12 @@ import java.util.Map;
 
 public class MacroProcessor
 {
-    private final Map<String, Integer> keyIndexMap;
-    private final int size;
+    public static final char MACRO_BEGIN = '{';
+    public static final char MACRO_END = '}';
+    public static final char MACRO_ESCAPE = '\\';
 
-    public MacroProcessor(Collection<String> keys)
+    public String process(String message, Map<String, String> args)
     {
-        this.keyIndexMap = new HashMap<>();
-        int size = 0;
-        for (String key : keys)
-        {
-            this.keyIndexMap.put(key.toLowerCase(), size++);
-        }
-        this.size = size;
-    }
-
-    public MacroProcessor(String... keys)
-    {
-        this(Arrays.asList(keys));
-    }
-
-    public String process(String message, String... values)
-    {
-        if (values.length != size)
-        {
-            throw new IllegalArgumentException("The number of values does not match the number of macros!");
-        }
-
         StringBuilder finalString = new StringBuilder();
 
         char[] chars = message.toCharArray();
@@ -59,15 +39,22 @@ public class MacroProcessor
         {
             switch (chars[i])
             {
-                case '\\':
+                case MACRO_ESCAPE:
                     if (i + 1 < chars.length)
                     {
                         finalString.append(chars[++i]);
                         break;
                     }
-                case '{':
-                    i = replaceVar(finalString, chars, i + 1, values);
-                    break;
+                case MACRO_BEGIN:
+                    if (i + 2 < chars.length)
+                    {
+                        int newOffset = replaceVar(finalString, chars, i, args);
+                        if (newOffset > i)
+                        {
+                            i = newOffset;
+                            break;
+                        }
+                    }
                 default:
                     finalString.append(chars[i]);
             }
@@ -76,16 +63,16 @@ public class MacroProcessor
         return finalString.toString();
     }
 
-    private int replaceVar(StringBuilder out, char[] in, int offset, String[] values)
+    private int replaceVar(StringBuilder out, char[] in, int offset, Map<String, String> values)
     {
-        int i = offset;
+        int i = offset + 1;
         String name = "";
         boolean done = false;
         for (; i < in.length && !done; ++i)
         {
             switch (in[i])
             {
-                case '}':
+                case MACRO_END:
                     done = true;
                     --i;
                     break;
@@ -94,10 +81,14 @@ public class MacroProcessor
             }
         }
 
-        Integer key = this.keyIndexMap.get(name.toLowerCase());
-        if (key != null && key >= 0 && key < values.length)
+        String value = values.get(name);
+        if (value != null)
         {
-            out.append(values[key]);
+            out.append(value);
+        }
+        else
+        {
+            return offset;
         }
 
         return i;

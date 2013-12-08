@@ -17,14 +17,21 @@
  */
 package de.cubeisland.engine.core.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 public class MacroProcessorTest extends TestCase
 {
     public void testProcess() throws Exception
     {
-        MacroProcessor processor = new MacroProcessor("parameter1", "paramEter2");
+        MacroProcessor processor = new MacroProcessor();
 
-        assertEquals("test {normal textvalue1 or }value2", processor.process("test \\{normal text{parameter1} or }{PARAMETER2}", "value1", "value2"));
+        Map<String, String> args = new HashMap<>();
+        args.put("parameter1", "value1");
+        args.put("PARAMETER2", "value2");
+
+        assertEquals("test {normal textvalue1 or }value2", processor.process("test \\{normal text{parameter1} or }{PARAMETER2}", args));
     }
 }
