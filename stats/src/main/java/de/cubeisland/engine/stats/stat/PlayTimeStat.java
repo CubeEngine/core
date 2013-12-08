@@ -30,13 +30,7 @@ import de.cubeisland.engine.stats.annotations.Configured;
 
 public class PlayTimeStat extends Stat
 {
-
     private Map<String, Long> joined;
-
-    public PlayTimeStat(StatsManager manager, Module owner)
-    {
-        super(manager, owner);
-    }
 
     public void onActivate()
     {

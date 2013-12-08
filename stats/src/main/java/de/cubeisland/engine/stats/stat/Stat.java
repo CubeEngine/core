@@ -30,9 +30,11 @@ import de.cubeisland.engine.stats.StatsManager;
  */
 public abstract class Stat implements Listener
 {
-    private final StatsManager manager;
-    private final Module owner;
-    private final Core core;
+    private StatsManager manager;
+    private Module owner;
+    private Core core;
+
+    private boolean started = false;
 
     /**
      * Initialize this statistic.
@@ -40,25 +42,53 @@ public abstract class Stat implements Listener
      *
      * @param manager The StatsManager loading this statistic
      */
-    public Stat(StatsManager manager, Module owner)
+    public final void init(StatsManager manager, Module owner)
     {
         this.manager = manager;
         this.owner = owner;
         this.core = owner.getCore();
         core.getEventManager().registerListener(owner, this);
+        this.started = true;
+        // We make a onInit if we need it.
     }
 
     /**
-     * Per stat initialization, called after init
+     * Activate this statistic.
      */
-    public void onActivate()
+    public final void activate()
+    {
+        if (!this.started)
+        {
+            throw new IllegalStateException("Stat was not started!");
+        }
+        this.onActivate();
+    }
+
+    /**
+     * Deactivate this statistic.
+     *
+     * Once deactivated, no methods can be called on it again. It can be reactivated by running init again.
+     */
+    public final void deactivate()
+    {
+        if (!this.started)
+        {
+            throw new IllegalStateException("Stat was not started!");
+        }
+        this.onDeactivate();
+        this.started = false;
+    }
+
+    /**
+     * Called when the stat is activated
+     */
+    protected void onActivate()
     {}
 
     /**
-     * Called when this stat is deactivated.
-     * Cleanup should go here.
+     * Called when the stat is disabled
      */
-    public void onDeactivate()
+    protected void onDeactivate()
     {}
 
     /**
@@ -70,6 +100,20 @@ public abstract class Stat implements Listener
      */
     public void save(Object object)
     {
+        if (!this.started)
+        {
+            throw new IllegalStateException("Stat was not started!");
+        }
         manager.save(this, object);
+    }
+
+    protected StatsManager getStatsManager()
+    {
+        return this.manager;
+    }
+
+    protected Core getCore()
+    {
+        return this.core;
     }
 }

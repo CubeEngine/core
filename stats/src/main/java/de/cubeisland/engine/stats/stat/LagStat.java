@@ -27,17 +27,6 @@ import de.cubeisland.engine.stats.annotations.Scheduled;
 
 public class LagStat extends Stat
 {
-    /**
-     * Initialize this statistic.
-     * This should only be used by the StatsManager
-     *
-     * @param manager The StatsManager loading this statistic
-     */
-    public LagStat(StatsManager manager, Module owner)
-    {
-        super(manager, owner);
-    }
-
     private LagTimer lagTimer;
 
     @Override

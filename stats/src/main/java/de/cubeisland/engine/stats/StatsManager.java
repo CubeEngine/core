@@ -111,8 +111,10 @@ public class StatsManager
         try
         {
             // Get the Constructor, and construct a new instance of the Stat.
-            Constructor<? extends Stat> constructor = statType.getConstructor(this.getClass(), Module.class);
-            Stat stat = constructor.newInstance(this, this.module);
+            Constructor<? extends Stat> constructor = statType.getConstructor();
+            Stat stat = constructor.newInstance();
+            Method init = statType.getMethod("init", this.getClass(), Module.class);
+            init.invoke(stat, this, this.module);
 
             // Get or register the stat in the database
             if (!registeredStats.contains(statType))
@@ -166,7 +168,7 @@ public class StatsManager
             }
 
             // Activate hook in the stat
-            stat.onActivate();
+            stat.activate();
 
             // Register Schedulers
             for (Method method : stat.getClass().getMethods())
@@ -227,12 +229,12 @@ public class StatsManager
 
                 this.module.getLog().debug("Scheduled method {} at interval {}", annotation.name(), interval);
             }
-
         }
         catch (ReflectiveOperationException | ConversionException ex)
         {
             this.module.getLog().error(ex, "An error occurred while registering statistic");
         }
+        this.module.getLog().debug("Registered statistic {}.", statType.getSimpleName());
     }
 
     public void disableStat(Class<? extends Stat> stat)
@@ -248,7 +250,7 @@ public class StatsManager
                 this.module.getCore().getTaskManager().cancelTask(this.module, id);
             }
         }
-        this.stats.get(stat).onDeactivate();
+        this.stats.get(stat).deactivate();
     }
 
     /**
