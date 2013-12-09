@@ -48,7 +48,7 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
-        ConverterManager cManager = this.getCore().getConfigurationFactory().getDefaultConverterManager();
+        ConverterManager cManager = this.getCore().getConfigFactory().getDefaultConverterManager();
         cManager.registerConverter(PermissionTree.class, new PermissionTreeConverter(this));
         cManager.registerConverter(Priority.class, new PriorityConverter());
         cManager.registerConverter(RoleMirror.class, new RoleMirrorConverter(this));

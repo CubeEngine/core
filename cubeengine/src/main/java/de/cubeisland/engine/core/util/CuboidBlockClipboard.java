@@ -53,7 +53,7 @@ public class CuboidBlockClipboard
 {
     static
     {
-        new CuboidBlockClipboardConverter(CubeEngine.getCore().getConfigurationFactory());
+        new CuboidBlockClipboardConverter(CubeEngine.getCore().getConfigFactory());
     }
 
     private final BlockData[][][] data;

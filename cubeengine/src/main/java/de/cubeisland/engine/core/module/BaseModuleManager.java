@@ -39,7 +39,6 @@ import javax.annotation.Nullable;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -53,6 +52,7 @@ import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.logging.Log;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -83,7 +83,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
-        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null, logger);
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null);
         this.serviceManager = new ServiceManager(core);
     }
 

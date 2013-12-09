@@ -17,33 +17,50 @@
  */
 package de.cubeisland.engine.core.logging;
 
-import java.util.logging.Logger;
-
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.module.ModuleInfo;
+import de.cubeisland.engine.logging.DefaultLogFactory;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogTarget;
+import de.cubeisland.engine.logging.filter.ExceptionFilter;
+import de.cubeisland.engine.logging.filter.PrefixFilter;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+import de.cubeisland.engine.logging.target.proxy.LogProxyTarget;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 
-public class LogFactory
+public class LogFactory extends DefaultLogFactory
 {
-    private static final String BASE_NAME = "cubeengine";
-
     protected Core core;
-    protected final Logger julLogger;
-
-    protected ConsoleLog parentLogger; // console logging
-    protected JulLog exceptionLogger; // TODO
+    protected LogTarget exceptionTarget;
 
     protected Log coreLog;
+    private Log parent;
 
     public LogFactory(Core core, java.util.logging.Logger julLogger)
     {
         this.core = core;
-        this.julLogger = julLogger;
+        this.parent = this.getLog(core.getClass());
+        Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget((Logger)LogManager.getLogger(julLogger.getName()));
+        log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
+        this.parent.addTarget(log4jProxyTarget);
 
-        this.parentLogger = new ConsoleLog(julLogger);
-        this.parentLogger.setLevel(core.getConfiguration().logging.consoleLevel);
-        if (!core.getConfiguration().logging.logCommands)
+        Log exLog = this.getLog(Core.class, "Exceptions");
+        exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Exceptions"),
+                                               LoggingUtil.getFileFormat(true, false),
+                                               true, null, // TODO cycler
+                                               core.getTaskManager().getThreadFactory()));
+        this.exceptionTarget = new LogProxyTarget(exLog);
+        this.exceptionTarget.appendFilter(new ExceptionFilter());
+        this.parent.addTarget(exceptionTarget);
+        log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
+
+        if (core.getConfiguration().logging.logCommands)
         {
-            //this.getLog("commands").getHandle().setAdditive(false); // TODO
+            Log commands = this.getLog(Core.class, "Commands");
+            commands.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Commands"),
+                                                   LoggingUtil.getFileFormat(true, false),
+                                                   true, null, // TODO cycler
+                                                   core.getTaskManager().getThreadFactory()));
         }
     }
 
@@ -56,33 +73,19 @@ public class LogFactory
     {
         if (this.coreLog == null)
         {
-            Logger logger = Logger.getLogger(BASE_NAME);
-            logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-            this.coreLog = new JulLog(logger, core, "core").setParent(parentLogger);
+            this.coreLog = this.getLog(Core.class);
+            AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Core"),
+                                                         LoggingUtil.getFileFormat(true, true),
+                                                         true, null,// TODO cycler
+                                                         core.getTaskManager().getThreadFactory());
+            target.setLevel(this.core.getConfiguration().logging.fileLevel);
+            this.coreLog.addDelegate(this.getParent());
         }
         return this.coreLog;
     }
 
-    /**
-     * Get or create a logging for the module
-     * @param info The module
-     * @return The logging for the module
-     */
-    public Log createModuleLog(ModuleInfo info)
+    public Log getParent()
     {
-        Logger logger = Logger.getLogger(BASE_NAME + "." + info.getId());
-        logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-        return new ModuleLogger(logger, info, core).setParent(parentLogger);
+        return this.parent;
     }
-
-    public Log getLog(String name)
-    {
-        Logger logger = Logger.getLogger(BASE_NAME + "." + name);
-        logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-        return new JulLog(logger, core, name);
-    }
-
-    //abstract void shutdown();
-
-    //abstract void shutdown(Log log);
 }

@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.configuration.ConfigurationFactory;
+import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -29,20 +30,29 @@ import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logging.JulLog;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
+import de.cubeisland.engine.core.task.TestTaskManager;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.core.util.converter.DurationConverter;
+import de.cubeisland.engine.core.util.converter.LevelConverter;
+import de.cubeisland.engine.core.util.converter.UserConverter;
+import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
+import de.cubeisland.engine.logging.DefaultLogFactory;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logging.target.PrintTarget;
 
 /**
  *
@@ -52,16 +62,33 @@ public class TestCore implements Core
 {
     private final Version version = Version.ONE;
     private final String sourceVersion = "master-testcore";
-    private final Log logger = new JulLog(Logger.getLogger(""), this, "");
+    private final Log logger;
     private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
     private ModuleManager moduleManager = null;
-    private ConfigurationFactory configurationFactory = new ConfigurationFactory();
+    private ConfigurationFactory configFactory = new ConfigurationFactory();;
+    private LogFactory logFactory;
 
     {
         CubeEngine.initialize(this);
         ArgumentReader.init(this);
+    }
+
+    private TaskManager taskManager = new TestTaskManager();
+
+    public TestCore()
+    {
+        ConverterManager manager = this.configFactory.getDefaultConverterManager();
+        manager.registerConverter(LogLevel.class, new LevelConverter());
+        manager.registerConverter(User.class, new UserConverter());
+        manager.registerConverter(Duration.class, new DurationConverter());
+        manager.registerConverter(Version.class, new VersionConverter());
+
+        this.logFactory = new LogFactory(this, Logger.getLogger(TestCore.class.getName()));
+        DefaultLogFactory factory = new DefaultLogFactory();
+        this.logger = factory.getLog(TestCore.class);
+        this.logger.addTarget(PrintTarget.STDOUT);
     }
 
     @Override
@@ -93,7 +120,7 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = this.getConfigurationFactory().load(CoreConfiguration.class, this.getFileManager()
+            this.config = this.getConfigFactory().load(CoreConfiguration.class, this.getFileManager()
                                                                                            .getDataPath()
                                                                                            .resolve("core.yml")
                                                                                            .toFile());
@@ -161,7 +188,7 @@ public class TestCore implements Core
     @Override
     public TaskManager getTaskManager()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.taskManager;
     }
 
     @Override
@@ -197,13 +224,13 @@ public class TestCore implements Core
     @Override
     public LogFactory getLogFactory()
     {
-        return null; // TODO ?
+        return this.logFactory;
     }
 
     @Override
-    public ConfigurationFactory getConfigurationFactory()
+    public ConfigurationFactory getConfigFactory()
     {
-        return this.configurationFactory;
+        return this.configFactory;
     }
 
     @Override

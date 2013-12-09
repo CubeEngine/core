@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandBackend;
 import de.cubeisland.engine.core.command.AliasCommand;
@@ -34,10 +35,9 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
-
+import de.cubeisland.engine.logging.Log;
 import gnu.trove.map.hash.THashMap;
 
 public class BukkitCommandManager implements CommandManager
@@ -58,7 +58,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandBackend = commandBackend;
         this.commandFactories = new THashMap<>();
 
-        this.commandLogger = core.getLogFactory().getLog("commands");
+        this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
         // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
     }

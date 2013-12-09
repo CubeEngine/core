@@ -113,7 +113,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
     {
-        MySQLDatabaseConfiguration config = core.getConfigurationFactory().load(MySQLDatabaseConfiguration.class, file.toFile());
+        MySQLDatabaseConfiguration config = core.getConfigFactory().load(MySQLDatabaseConfiguration.class, file.toFile());
         try
         {
             return new MySQLDatabase(core, config);

@@ -31,11 +31,11 @@ public class Stats extends Module
 
     public void onEnable()
     {
-        this.getCore().getConfigurationFactory().getDefaultConverterManager()
+        this.getCore().getConfigFactory().getDefaultConverterManager()
             .registerConverter(DynamicSection.class, new DynamicSectionConverter());
         this.config = this.loadConfig(StatsConfig.class);
 
-        this.statsManager = new StatsManager(this, getCore().getConfigurationFactory().getDefaultConverterManager());
+        this.statsManager = new StatsManager(this, getCore().getConfigFactory().getDefaultConverterManager());
 
         statsManager.register(PlayTimeStat.class);
         statsManager.register(LagStat.class);

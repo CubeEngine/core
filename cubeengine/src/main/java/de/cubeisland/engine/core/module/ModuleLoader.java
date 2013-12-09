@@ -31,7 +31,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleLoadedEvent;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
@@ -131,9 +130,8 @@ public class ModuleLoader
             ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
             Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
             Module module = moduleClass.getConstructor().newInstance();
-            Log logger = core.getLogFactory().createModuleLog(info);
 
-            module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader, logger);
+            module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader);
             module.onLoad();
 
             this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
@@ -195,7 +193,7 @@ public class ModuleLoader
 
             try (InputStream is = jarFile.getInputStream(entry))
             {
-                info = new ModuleInfo(file, this.getCore().getConfigurationFactory().load(ModuleConfig.class, is));
+                info = new ModuleInfo(file, this.getCore().getConfigFactory().load(ModuleConfig.class, is));
             }
         }
         catch (IOException e)

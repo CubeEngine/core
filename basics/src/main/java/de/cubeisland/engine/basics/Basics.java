@@ -126,7 +126,7 @@ public class Basics extends Module
         em.registerListener(this, new PaintingListener(this));
 
         this.getLog().trace("{} ms - Kits", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.getCore().getConfigurationFactory().getDefaultConverterManager().
+        this.getCore().getConfigFactory().getDefaultConverterManager().
             registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
