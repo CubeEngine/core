@@ -24,20 +24,20 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.logging.DefaultLogFactory;
 import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogTarget;
+import de.cubeisland.engine.logging.filter.ExceptionFilter;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
-import de.cubeisland.engine.logging.target.AsyncFileTarget;
-import de.cubeisland.engine.logging.target.LogProxyTarget;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import de.cubeisland.engine.logging.target.file.cycler.LogCycler;
 import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
+import de.cubeisland.engine.logging.target.proxy.LogProxyTarget;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
 public class LogFactory extends DefaultLogFactory
 {
-    private static final String BASE_NAME = "cubeengine";
-
     protected Core core;
-    //protected JulLog exceptionLogger; // TODO
+    protected LogTarget exceptionTarget;
 
     protected Log coreLog;
     private Log parent;
@@ -48,7 +48,12 @@ public class LogFactory extends DefaultLogFactory
 
         this.parent = this.getLog(core.getClass());
         Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget((Logger)LogManager.getLogger(julLogger.getName()));
+        log4jProxyTarget.setLevel(core.getConfiguration().logging.consoleLevel);
         this.parent.addTarget(log4jProxyTarget);
+
+        this.exceptionTarget = new LogProxyTarget(this.createFileLog(Core.class, "Exceptions"));
+        this.exceptionTarget.appendFilter(new ExceptionFilter());
+        this.parent.addTarget(exceptionTarget);
         log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
 
         if (!core.getConfiguration().logging.logCommands)
@@ -80,9 +85,8 @@ public class LogFactory extends DefaultLogFactory
         Log log = this.getLog(module.getClass());
         File file = this.getLogFile(module.getName());
         this.addFileTarget(log, file, "{date} [{level}] {msg}");
-        LogProxyTarget proxy = new LogProxyTarget(this.parent);
+        LogTarget proxy = log.addDelegate(parent);
         proxy.appendFilter(new PrefixFilter("[" + module.getName() + "] "));
-        log.addTarget(proxy);
         return log;
     }
 

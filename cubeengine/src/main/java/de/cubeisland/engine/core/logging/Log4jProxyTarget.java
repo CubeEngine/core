@@ -20,10 +20,10 @@ package de.cubeisland.engine.core.logging;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.logging.DefaultFormat;
 import de.cubeisland.engine.logging.LogEntry;
 import de.cubeisland.engine.logging.LogLevel;
-import de.cubeisland.engine.logging.target.ProxyTarget;
+import de.cubeisland.engine.logging.target.format.DefaultFormat;
+import de.cubeisland.engine.logging.target.proxy.ProxyTarget;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 
@@ -46,7 +46,6 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
     public Log4jProxyTarget(Logger handle)
     {
         super(handle);
-        this.handle.setLevel(Level.ALL);
     }
 
     @Override
@@ -58,5 +57,22 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
             level = Level.INFO;
         }
         this.handle.log(level, DefaultFormat.parseArgs(entry.getMessage(), entry.getArgs()), entry.getThrowable());
+    }
+
+    @Override
+    public void setProxyLevel(LogLevel level)
+    {
+        Level l4jLevel = levelMap.get(level);
+        if (l4jLevel == null)
+        {
+            l4jLevel = Level.INFO;
+        }
+        this.handle.setLevel(l4jLevel);
+    }
+
+    @Override
+    protected void shutdown()
+    {
+        // TODO ?
     }
 }

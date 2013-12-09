@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.target.AsyncFileTarget;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import de.cubeisland.engine.logging.target.file.cycler.LogCycler;
 import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
 

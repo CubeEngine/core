@@ -196,10 +196,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.fileManager.dropResources(CoreResource.values());
 
         // depends on: file manager
-        this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
-                                                                                        .resolve("core.yml").toFile());
-
-        this.logFactory = new LogFactory(this, this.getLogger()); // , BukkitUtils.isAnsiSupported(server)
+        this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
 
         this.fileManager.clearTempDir();
 
@@ -210,15 +207,18 @@ public final class BukkitCore extends JavaPlugin implements Core
             BukkitUtils.disableCommandLogging();
         }
 
-        // depends on: object mapper
-        this.apiServer = new ApiServer(this);
-        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
-
         // depends on: core config, server
         this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
 
         // depends on: taskmanager
+        this.logFactory = new LogFactory(this, this.getLogger()); // , BukkitUtils.isAnsiSupported(server)
+
+        // depends on: taskmanager
         this.logger = logFactory.createCoreLog();
+
+        // depends on: object mapper, logger
+        this.apiServer = new ApiServer(this);
+        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
 
         // depends on: logger
         if (this.config.catchSystemSignals)
