@@ -214,7 +214,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.logFactory = new LogFactory(this, this.getLogger()); // , BukkitUtils.isAnsiSupported(server)
 
         // depends on: taskmanager
-        this.logger = logFactory.createCoreLog();
+        this.logger = logFactory.getCoreLog();
 
         // depends on: object mapper, logger
         this.apiServer = new ApiServer(this);

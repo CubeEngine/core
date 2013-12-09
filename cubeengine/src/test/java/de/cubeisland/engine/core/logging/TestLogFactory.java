@@ -35,11 +35,11 @@ public class TestLogFactory extends LogFactory
     }
 
     @Override
-    protected LogTarget addFileTarget(Log log, File file, String formatString)
+    protected LogTarget addFileTarget(Log log, File file, String formatString, boolean append)
     {
         LogFileFormat fileFormat = new LogFileFormat(formatString, sdf);
         LogCycler cycler = null;// TODO cycler
-        AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, true, cycler, null);
+        AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, append, cycler, null);
         log.addTarget(target);
         return target;
     }

@@ -68,7 +68,7 @@ public class LogFactory extends DefaultLogFactory
      *
      * @return The logging for the core
      */
-    public synchronized Log createCoreLog()
+    public synchronized Log getCoreLog()
     {
         if (this.coreLog == null)
         {
