@@ -57,7 +57,7 @@ public class I18n implements Cleanable
     public I18n(Core core)
     {
         this.core = core;
-        this.logger = core.getLogFactory().getLog(Core.class, "language");
+        this.logger = core.getLogFactory().createFileLog(Core.class, "Language");
         // TODO
         this.languages = new THashMap<>();
         this.languageLookupMap = new THashMap<>();

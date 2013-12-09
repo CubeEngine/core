@@ -56,9 +56,10 @@ public class LogFactory extends DefaultLogFactory
         this.parent.addTarget(exceptionTarget);
         log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
 
-        if (!core.getConfiguration().logging.logCommands)
+        if (core.getConfiguration().logging.logCommands)
         {
-            //this.getLog("commands").getHandle().setAdditive(false); // TODO
+            Log commands = this.getLog(Core.class, "commands");
+            this.addFileTarget(commands, this.getLogFile("Commands"), "{date} {msg}", true);
         }
     }
 
@@ -72,7 +73,7 @@ public class LogFactory extends DefaultLogFactory
         if (this.coreLog == null)
         {
             this.coreLog = this.getLog(Core.class);
-            LogTarget target = this.addFileTarget(this.coreLog, this.getLogFile("Core"), "{date} [{level}] {msg}");
+            LogTarget target = this.addFileTarget(this.coreLog, this.getLogFile("Core"), "{date} [{level}] {msg}", true);
             target.setLevel(this.core.getConfiguration().logging.fileLevel);
             this.coreLog.addTarget(new LogProxyTarget(this.parent));
         }
@@ -85,7 +86,7 @@ public class LogFactory extends DefaultLogFactory
     {
         Log log = this.getLog(module.getClass());
         File file = this.getLogFile(module.getName());
-        this.addFileTarget(log, file, "{date} [{level}] {msg}");
+        this.addFileTarget(log, file, "{date} [{level}] {msg}", true);
         LogTarget proxy = log.addDelegate(parent);
         proxy.appendFilter(new PrefixFilter("[" + module.getName() + "] "));
         return log;
@@ -96,20 +97,37 @@ public class LogFactory extends DefaultLogFactory
         return this.core.getFileManager().getLogPath().resolve(name + ".log").toFile();
     }
 
-    protected LogTarget addFileTarget(Log log, File file, String formatString)
+    protected LogTarget addFileTarget(Log log, File file, String formatString, boolean append)
     {
         LogFileFormat fileFormat = new LogFileFormat(formatString, sdf);
         LogCycler cycler = null;// TODO cycler
-        AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, true, cycler, core.getTaskManager().getThreadFactory());
+        AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, append, cycler, core.getTaskManager().getThreadFactory());
         log.addTarget(target);
         return target;
     }
 
     public Log createFileLog(Class clazz, String name)
     {
+        return this.createFileLog(clazz, name, true, true);
+    }
+
+    public Log createFileLog(Class clazz, String name, boolean withLevel, boolean append)
+    {
         Log log = this.getLog(clazz, name);
         File file = this.getLogFile(name);
-        this.addFileTarget(log, file, "{date} [{level}] {msg}");
+        this.addFileTarget(log, file, "{date}" + (withLevel ? " [{level}]" : " ") + "{msg}", append);
+        return log;
+    }
+
+    public Log createFileLog(Class clazz, String name, boolean withLevel, boolean withDate, boolean append)
+    {
+        if (withDate)
+        {
+            return this.createFileLog(clazz, name, withLevel, append);
+        }
+        Log log = this.getLog(clazz, name);
+        File file = this.getLogFile(name);
+        this.addFileTarget(log, file, (withLevel ? "[{level}] " : "") + "{msg}", append);
         return log;
     }
 }

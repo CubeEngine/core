@@ -70,7 +70,7 @@ public class ConomyManager
         this.dsl = this.module.getCore().getDB().getDSL();
 
 
-        this.logger = module.getCore().getLogFactory().createFileLog(Conomy.class, "transactions");
+        this.logger = module.getCore().getLogFactory().createFileLog(Conomy.class, "Conomy-Transactions", false);
         if (!this.module.getConfig().enableLogging)
         {
             logger.setLevel(LogLevel.NONE);

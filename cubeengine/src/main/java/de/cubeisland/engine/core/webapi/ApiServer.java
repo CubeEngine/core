@@ -76,7 +76,7 @@ public class ApiServer
     public ApiServer(Core core)
     {
         this.core = core;
-        this.log = core.getLogFactory().getLog(Core.class, "webapi");
+        this.log = core.getLogFactory().createFileLog(Core.class, "WebAPI");
         this.bootstrap = new AtomicReference<>(null);
         this.eventLoopGroup = new AtomicReference<>(null);
         this.channel = new AtomicReference<>(null);
