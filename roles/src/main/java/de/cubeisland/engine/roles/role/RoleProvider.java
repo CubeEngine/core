@@ -117,7 +117,7 @@ public abstract class RoleProvider
                 for (Path configFile : directory)
                 {
                     ++i;
-                    RoleConfig config = module.getCore().getConfigurationFactory().load(RoleConfig.class, configFile.toFile());
+                    RoleConfig config = module.getCore().getConfigFactory().load(RoleConfig.class, configFile.toFile());
                     this.configs.put(config.roleName.toLowerCase(), config);
                 }
             }

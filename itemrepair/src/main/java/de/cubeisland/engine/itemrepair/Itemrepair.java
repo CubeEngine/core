@@ -32,7 +32,7 @@ public class Itemrepair extends Module
     public void onEnable()
     {
         this.getCore().getDB().registerTable(TableRepairBlock.class);
-        this.getCore().getConfigurationFactory().getDefaultConverterManager().
+        this.getCore().getConfigFactory().getDefaultConverterManager().
             registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
         this.config = this.loadConfig(ItemrepairConfig.class);
         this.repairBlockManager = new RepairBlockManager(this);

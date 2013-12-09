@@ -29,10 +29,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.util.Cleanable;
-
-import gnu.trove.map.hash.TIntObjectHashMap;
+import de.cubeisland.engine.logging.Log;
 
 // TODO FIXME "Packet 204 - Locale and View Distance" has been replaced with "Packet 0x15 - Client Settings"
 

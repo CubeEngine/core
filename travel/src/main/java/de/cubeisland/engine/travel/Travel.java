@@ -20,10 +20,10 @@ package de.cubeisland.engine.travel;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.command.CommandManager;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
+import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.travel.interactions.HomeAdminCommand;
 import de.cubeisland.engine.travel.interactions.HomeCommand;
 import de.cubeisland.engine.travel.interactions.HomeListener;

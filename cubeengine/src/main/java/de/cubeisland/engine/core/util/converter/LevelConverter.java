@@ -24,22 +24,22 @@ import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.BooleanNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
-import de.cubeisland.engine.core.logging.Level;
+import de.cubeisland.engine.logging.LogLevel;
 
-public class LevelConverter implements Converter<Level>
+public class LevelConverter implements Converter<LogLevel>
 {
     @Override
-    public Node toNode(Level object, ConverterManager manager) throws ConversionException
+    public Node toNode(LogLevel object, ConverterManager manager) throws ConversionException
     {
-        return StringNode.of(object.toString());
+        return StringNode.of(object.getName());
     }
 
     @Override
-    public Level fromNode(Node node, ConverterManager manager) throws ConversionException
+    public LogLevel fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            Level lv = Level.toLevel(((StringNode)node).getValue());
+            LogLevel lv = LogLevel.toLevel(((StringNode)node).getValue());
             if (lv == null)
             {
                 throw ConversionException.of(this, node, "Unknown LogLevel: " + ((StringNode)node).getValue());

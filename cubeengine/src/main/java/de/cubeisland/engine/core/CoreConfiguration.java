@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.util.time.Duration;
+import de.cubeisland.engine.logging.LogLevel;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -79,10 +79,10 @@ public class CoreConfiguration extends YamlConfiguration
     public class LoggingSection implements Section
     {
         @Comment({"Logging into Console", "ALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF"})
-        public Level consoleLevel = Level.INFO;
+        public LogLevel consoleLevel = LogLevel.INFO;
 
         @Comment({"Logging to the main log file", "ALL > DEBUG > INFO > WARN > ERROR > OFF"})
-        public Level fileLevel = Level.INFO;
+        public LogLevel fileLevel = LogLevel.INFO;
 
         @Comment("Zip all old logs to zip archives")
         public boolean archiveLogs = true;

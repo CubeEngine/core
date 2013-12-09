@@ -40,7 +40,7 @@ public class Locker extends Module implements Reloadable
     @Override
     public void onEnable()
     {
-        ConverterManager cManager = this.getCore().getConfigurationFactory().getDefaultConverterManager();
+        ConverterManager cManager = this.getCore().getConfigFactory().getDefaultConverterManager();
         cManager.registerConverter(BlockLockerConfiguration.class, new BlockLockerConfigConverter());
         cManager.registerConverter(EntityLockerConfiguration.class, new EntityLockerConfigConverter());
         this.config = this.loadConfig(LockerConfig.class);

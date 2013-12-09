@@ -31,11 +31,11 @@ import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
-import de.cubeisland.engine.core.logging.Level;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogLevel;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -70,10 +70,10 @@ public class ConomyManager
         this.dsl = this.module.getCore().getDB().getDSL();
 
 
-        this.logger = module.getCore().getLogFactory().getLog("conomy.transactions");
+        this.logger = module.getCore().getLogFactory().createFileLog(Conomy.class, "transactions");
         if (!this.module.getConfig().enableLogging)
         {
-            logger.setLevel(Level.OFF);
+            logger.setLevel(LogLevel.NONE);
         }
 
         this.um = this.module.getCore().getUserManager();

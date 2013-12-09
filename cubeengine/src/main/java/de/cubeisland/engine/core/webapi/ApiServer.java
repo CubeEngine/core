@@ -36,10 +36,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
-
+import de.cubeisland.engine.logging.Log;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -77,7 +76,7 @@ public class ApiServer
     public ApiServer(Core core)
     {
         this.core = core;
-        this.log = core.getLogFactory().getLog("webapi");
+        this.log = core.getLogFactory().getLog(Core.class, "webapi");
         this.bootstrap = new AtomicReference<>(null);
         this.eventLoopGroup = new AtomicReference<>(null);
         this.channel = new AtomicReference<>(null);

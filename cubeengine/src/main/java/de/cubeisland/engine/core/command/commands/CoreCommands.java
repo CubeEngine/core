@@ -39,12 +39,11 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.core.logging.Level;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
-
+import de.cubeisland.engine.logging.LogLevel;
 
 import static java.util.Arrays.asList;
 
@@ -262,7 +261,7 @@ public class CoreCommands extends ContainerCommand
     {
         if (context.hasArgs())
         {
-            Level level = Level.toLevel(context.getString(0));
+            LogLevel level = LogLevel.toLevel(context.getString(0));
             if (level != null)
             {
                 context.getCore().getLog().setLevel(level);

@@ -29,17 +29,16 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.util.StringUtils;
-
+import de.cubeisland.engine.logging.Log;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
-
 
 import static de.cubeisland.engine.core.permission.Permission.BASE;
 
@@ -80,7 +79,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
         this.wildcards = new THashMap<>(0);
         this.modulePermissionMap = new THashMap<>(0);
-        this.logger = core.getLogFactory().getLog("permissions");
+        this.logger = core.getLogFactory().getLog(Core.class, "permissions");
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }

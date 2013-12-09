@@ -26,11 +26,11 @@ import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.logging.Log;
 
 
 /**
@@ -49,7 +49,7 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
-    final void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader, Log logger)
+    void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader)
     {
         if (!this.initialized)
         {
@@ -60,7 +60,7 @@ public abstract class Module
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
-            this.log = logger;
+            this.log = core.getLogFactory().createModuleLog(this);
         }
     }
 
@@ -321,7 +321,7 @@ public abstract class Module
      */
     public <T extends Configuration> T loadConfig(Class<T> clazz)
     {
-        T config = this.core.getConfigurationFactory().create(clazz);
+        T config = this.core.getConfigFactory().create(clazz);
         config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
         try
         {

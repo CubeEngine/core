@@ -17,16 +17,28 @@
  */
 package de.cubeisland.engine.core.logging;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.module.ModuleInfo;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.target.AsyncFileTarget;
+import de.cubeisland.engine.logging.target.file.cycler.LogCycler;
+import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
 
-public class ModuleLogger extends JulLog
+public class TestLogFactory extends LogFactory
 {
-    public ModuleLogger(Logger julLogger, ModuleInfo info, Core core)
+    public TestLogFactory(Core core, Logger julLogger)
     {
-        super(julLogger, core, info.getName());
-        this.setPrefix("[" + info.getName() + "] ");
+        super(core, julLogger);
+    }
+
+    @Override
+    protected void addFileTarget(Log log, File file, String formatString)
+    {
+        LogFileFormat fileFormat = new LogFileFormat(formatString, sdf);
+        LogCycler cycler = null;// TODO cycler
+        AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, true, cycler, null);
+        log.addTarget(target);
     }
 }

@@ -17,30 +17,40 @@
  */
 package de.cubeisland.engine.core.logging;
 
-import java.util.logging.Logger;
+import java.io.File;
+import java.text.SimpleDateFormat;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.module.ModuleInfo;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.logging.DefaultLogFactory;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.filter.PrefixFilter;
+import de.cubeisland.engine.logging.target.AsyncFileTarget;
+import de.cubeisland.engine.logging.target.LogProxyTarget;
+import de.cubeisland.engine.logging.target.file.cycler.LogCycler;
+import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 
-public class LogFactory
+public class LogFactory extends DefaultLogFactory
 {
     private static final String BASE_NAME = "cubeengine";
 
     protected Core core;
-    protected final Logger julLogger;
-
-    protected ConsoleLog parentLogger; // console logging
-    protected JulLog exceptionLogger; // TODO
+    //protected JulLog exceptionLogger; // TODO
 
     protected Log coreLog;
+    private Log parent;
 
     public LogFactory(Core core, java.util.logging.Logger julLogger)
     {
         this.core = core;
-        this.julLogger = julLogger;
 
-        this.parentLogger = new ConsoleLog(julLogger);
-        this.parentLogger.setLevel(core.getConfiguration().logging.consoleLevel);
+        this.parent = this.getLog(core.getClass());
+        Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget((Logger)LogManager.getLogger(julLogger.getName()));
+        this.parent.addTarget(log4jProxyTarget);
+        log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
+
         if (!core.getConfiguration().logging.logCommands)
         {
             //this.getLog("commands").getHandle().setAdditive(false); // TODO
@@ -52,37 +62,48 @@ public class LogFactory
      *
      * @return The logging for the core
      */
-    public synchronized Log getCoreLog()
+    public synchronized Log createCoreLog()
     {
         if (this.coreLog == null)
         {
-            Logger logger = Logger.getLogger(BASE_NAME);
-            logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-            this.coreLog = new JulLog(logger, core, "core").setParent(parentLogger);
+            this.coreLog = this.getLog(Core.class);
+            this.addFileTarget(this.coreLog, this.getLogFile("Core"), "{date} [{level}] {msg}");
+            this.coreLog.addTarget(new LogProxyTarget(this.parent));
         }
         return this.coreLog;
     }
 
-    /**
-     * Get or create a logging for the module
-     * @param info The module
-     * @return The logging for the module
-     */
-    public Log createModuleLog(ModuleInfo info)
+    protected final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public Log createModuleLog(Module module)
     {
-        Logger logger = Logger.getLogger(BASE_NAME + "." + info.getId());
-        logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-        return new ModuleLogger(logger, info, core).setParent(parentLogger);
+        Log log = this.getLog(module.getClass());
+        File file = this.getLogFile(module.getName());
+        this.addFileTarget(log, file, "{date} [{level}] {msg}");
+        LogProxyTarget proxy = new LogProxyTarget(this.parent);
+        proxy.appendFilter(new PrefixFilter("[" + module.getName() + "] "));
+        log.addTarget(proxy);
+        return log;
     }
 
-    public Log getLog(String name)
+    private File getLogFile(String name)
     {
-        Logger logger = Logger.getLogger(BASE_NAME + "." + name);
-        logger.setUseParentHandlers(false); // ignore bukkit parentlogger
-        return new JulLog(logger, core, name);
+        return this.core.getFileManager().getLogPath().resolve(name + ".log").toFile();
     }
 
-    //abstract void shutdown();
+    protected void addFileTarget(Log log, File file, String formatString)
+    {
+        LogFileFormat fileFormat = new LogFileFormat(formatString, sdf);
+        LogCycler cycler = null;// TODO cycler
+        AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, true, cycler, core.getTaskManager().getThreadFactory());
+        log.addTarget(target);
+    }
 
-    //abstract void shutdown(Log log);
+    public Log createFileLog(Class clazz, String name)
+    {
+        Log log = this.getLog(clazz, name);
+        File file = this.getLogFile(name);
+        this.addFileTarget(log, file, "{date} [{level}] {msg}");
+        return log;
+    }
 }

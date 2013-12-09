@@ -25,7 +25,6 @@ import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -37,6 +36,7 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
+import de.cubeisland.engine.logging.Log;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
@@ -175,7 +175,7 @@ public interface Core
 
     LogFactory getLogFactory();
 
-    ConfigurationFactory getConfigurationFactory();
+    ConfigurationFactory getConfigFactory();
 
     /**
      * Returns true after the first server tick happened
