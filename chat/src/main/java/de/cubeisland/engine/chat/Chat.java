@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.chat;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -32,6 +33,7 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.MacroProcessor;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 
 import static de.cubeisland.engine.chat.ChatPerm.*;
@@ -48,11 +50,6 @@ public class Chat extends Module implements Listener
     @Override
     public void onEnable()
     {
-        rolesModule = this.getCore().getModuleManager().getModule("roles");
-        if (rolesModule == null)
-        {
-            this.getLog().info("No Roles-Module found!");
-        }
         this.config = this.loadConfig(ChatConfig.class);
         new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
@@ -61,6 +58,14 @@ public class Chat extends Module implements Listener
         if (this.config.allowColors)
         {
             this.format = ChatFormat.parseFormats(this.format);
+        }
+        if (this.getCore().getModuleManager().getModule("roles") != null)
+        {
+            this.getCore().getEventManager().registerListener(this, new RoleChatFormatListener(this));
+        }
+        else
+        {
+            this.getLog().info("No Roles-Module found!");
         }
     }
 
@@ -80,59 +85,38 @@ public class Chat extends Module implements Listener
             return;
         }
 
-        Player player = event.getPlayer();
-        String format = this.format;
+        User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
         if (config.allowColors)
         {
-            if (ChatPerm.COLOR.isAuthorized(player))
+            if (ChatPerm.COLOR.isAuthorized(user))
             {
                 event.setMessage(ChatFormat.parseFormats(event.getMessage()));
             }
             else
             {
-                event.setMessage(this.stripFormat(event.getMessage(), player));
+                event.setMessage(this.stripFormat(event.getMessage(), user));
             }
         }
 
-        ChatFormatEvent formatEvent = new ChatFormatEvent(player, event.getMessage(), format, event.isAsynchronous());
+        ChatFormatEvent formatEvent = new ChatFormatEvent(user, event.getMessage(), format, event.isAsynchronous());
 
-        format = format.replace("{NAME}", player.getName());
-        // set the placeholder instead of the actual value to allow other plugins to change the value
-        format = format.replace("{DISPLAY_NAME}", "%1$s");
-        format = format.replace("{WORLD}", player.getWorld().getName());
-        // set the placeholder instead of the actual value to allow other plugins to change the value
-        format = format.replace("{MESSAGE}", "%2$s");
+        MacroProcessor processor = new MacroProcessor();
 
-        if (rolesModule != null)
-        {
-            User user = this.getCore().getUserManager().getExactUser(player.getName());
-            RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
-            if (rolesAttachment == null)
-            {
-                this.rolesModule.getLog().warn("Missing RolesAttachment!");
-                return;
-            }
-            if (format.contains("{ROLE.PREFIX}"))
-            {
-                String prefix = rolesAttachment.getCurrentMetadata("prefix");
-                format = format.replace("{ROLE.PREFIX}", prefix == null ? "" : ChatFormat.parseFormats(prefix));
-            }
-            if (format.contains("{ROLE.SUFFIX}"))
-            {
-                String suffix = rolesAttachment.getCurrentMetadata("suffix");
-                format = format.replace("{ROLE.SUFFIX}", suffix == null ? "" : ChatFormat.parseFormats(suffix));
-            }
-        }
+        Map<String, String> args = new HashMap<>();
+
+        args.put("NAME", user.getName());
+        // set the placeholder instead of the actual value to allow other plugins to change the value
+        args.put("DISPLAY_NAME", "%1$s");
+        args.put("WORLD", user.getWorld().getName());
+        // set the placeholder instead of the actual value to allow other plugins to change the value
+        args.put("MESSAGE", "%2$s");
 
         this.getCore().getEventManager().fireEvent(formatEvent);
 
-        for (Map.Entry<String, String> entry : formatEvent.variables.entrySet())
-        {
-            format = format.replace("{" + entry.getKey() + "}", entry.getValue());
-        }
+        args.putAll(formatEvent.variables);
 
-        event.setFormat(format);
+        event.setFormat(processor.process(this.format, args));
     }
 
     private String stripFormat(String message, Player player)
