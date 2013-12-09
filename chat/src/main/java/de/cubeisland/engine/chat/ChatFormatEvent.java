@@ -25,27 +25,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import de.cubeisland.engine.core.user.User;
+
 public class ChatFormatEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
 
-    private final Player player;
+    private final User user;
     private final String message;
     private final String format;
     final Map<String, String> variables;
 
-    public ChatFormatEvent(Player player, String message, String format, boolean async)
+    public ChatFormatEvent(User user, String message, String format, boolean async)
     {
         super(async);
-        this.player = player;
+        this.user = user;
         this.message = message;
         this.format = format;
         this.variables = new HashMap<>();
     }
 
-    public Player getPlayer()
+    public User getUser()
     {
-        return player;
+        return user;
     }
 
     public String getMessage()
