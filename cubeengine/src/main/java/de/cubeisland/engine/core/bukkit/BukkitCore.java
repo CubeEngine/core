@@ -454,7 +454,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.logFactory != null)
         {
-            // TODO this.logFactory.shutdown();
+            this.logFactory.shutdown();
         }
 
         if (this.fileManager != null)

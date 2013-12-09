@@ -71,7 +71,7 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
     }
 
     @Override
-    protected void shutdown()
+    protected void shutdown0()
     {
         // TODO ?
     }

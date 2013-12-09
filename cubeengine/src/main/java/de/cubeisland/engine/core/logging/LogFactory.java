@@ -48,7 +48,7 @@ public class LogFactory extends DefaultLogFactory
 
         this.parent = this.getLog(core.getClass());
         Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget((Logger)LogManager.getLogger(julLogger.getName()));
-        log4jProxyTarget.setLevel(core.getConfiguration().logging.consoleLevel);
+        log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
         this.parent.addTarget(log4jProxyTarget);
 
         this.exceptionTarget = new LogProxyTarget(this.createFileLog(Core.class, "Exceptions"));
@@ -72,7 +72,8 @@ public class LogFactory extends DefaultLogFactory
         if (this.coreLog == null)
         {
             this.coreLog = this.getLog(Core.class);
-            this.addFileTarget(this.coreLog, this.getLogFile("Core"), "{date} [{level}] {msg}");
+            LogTarget target = this.addFileTarget(this.coreLog, this.getLogFile("Core"), "{date} [{level}] {msg}");
+            target.setLevel(this.core.getConfiguration().logging.fileLevel);
             this.coreLog.addTarget(new LogProxyTarget(this.parent));
         }
         return this.coreLog;
@@ -95,12 +96,13 @@ public class LogFactory extends DefaultLogFactory
         return this.core.getFileManager().getLogPath().resolve(name + ".log").toFile();
     }
 
-    protected void addFileTarget(Log log, File file, String formatString)
+    protected LogTarget addFileTarget(Log log, File file, String formatString)
     {
         LogFileFormat fileFormat = new LogFileFormat(formatString, sdf);
         LogCycler cycler = null;// TODO cycler
         AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, true, cycler, core.getTaskManager().getThreadFactory());
         log.addTarget(target);
+        return target;
     }
 
     public Log createFileLog(Class clazz, String name)

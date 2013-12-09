@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import de.cubeisland.engine.logging.target.file.cycler.LogCycler;
 import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
@@ -34,11 +35,12 @@ public class TestLogFactory extends LogFactory
     }
 
     @Override
-    protected void addFileTarget(Log log, File file, String formatString)
+    protected LogTarget addFileTarget(Log log, File file, String formatString)
     {
         LogFileFormat fileFormat = new LogFileFormat(formatString, sdf);
         LogCycler cycler = null;// TODO cycler
         AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, true, cycler, null);
         log.addTarget(target);
+        return target;
     }
 }
