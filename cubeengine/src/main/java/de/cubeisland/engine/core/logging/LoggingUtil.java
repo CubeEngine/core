@@ -18,29 +18,41 @@
 package de.cubeisland.engine.core.logging;
 
 import java.io.File;
-import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.LogTarget;
-import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
-import de.cubeisland.engine.logging.target.file.cycler.LogCycler;
+import de.cubeisland.engine.logging.target.file.format.FileFormat;
 import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
 
-public class TestLogFactory extends LogFactory
+public class LoggingUtil
 {
-    public TestLogFactory(Core core, Logger julLogger)
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public static File getLogFile(Core core, String name)
     {
-        super(core, julLogger);
+        return core.getFileManager().getLogPath().resolve(name + ".log").toFile();
     }
 
-    @Override
-    protected LogTarget addFileTarget(Log log, File file, String formatString, boolean append)
+    public static FileFormat getFileFormat(boolean withDate, boolean withLevel)
     {
-        LogFileFormat fileFormat = new LogFileFormat(formatString, sdf);
-        LogCycler cycler = null;// TODO cycler
-        AsyncFileTarget target = new AsyncFileTarget(file, fileFormat, append, cycler, null);
-        log.addTarget(target);
-        return target;
+        if (withDate)
+        {
+            if (withLevel)
+            {
+                return new LogFileFormat("{date} [{level}] {msg}", sdf);
+            }
+            else
+            {
+                return new LogFileFormat("{date} {msg}", sdf);
+            }
+        }
+        if (withLevel)
+        {
+            return new LogFileFormat("[{level}] {msg}", sdf);
+        }
+        else
+        {
+            return new LogFileFormat("{msg}", sdf);
+        }
     }
 }

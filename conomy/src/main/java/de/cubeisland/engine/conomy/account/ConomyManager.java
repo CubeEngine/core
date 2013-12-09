@@ -31,11 +31,13 @@ import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
+import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -69,8 +71,11 @@ public class ConomyManager
 
         this.dsl = this.module.getCore().getDB().getDSL();
 
-
-        this.logger = module.getCore().getLogFactory().createFileLog(Conomy.class, "Conomy-Transactions", false);
+        this.logger = module.getCore().getLogFactory().getLog(Conomy.class, "Conomy-Transactions");
+        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(module.getCore(), "Conomy-Transactions"),
+                                                  LoggingUtil.getFileFormat(false, false),
+                                                  false, null, // TODO cycler
+                                                  module.getCore().getTaskManager().getThreadFactory()));
         if (!this.module.getConfig().enableLogging)
         {
             logger.setLevel(LogLevel.NONE);

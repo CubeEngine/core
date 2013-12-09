@@ -31,12 +31,12 @@ import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
-import de.cubeisland.engine.core.logging.TestLogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;
+import de.cubeisland.engine.core.task.TestTaskManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
@@ -75,6 +75,8 @@ public class TestCore implements Core
         ArgumentReader.init(this);
     }
 
+    private TaskManager taskManager = new TestTaskManager();
+
     public TestCore()
     {
         ConverterManager manager = this.configFactory.getDefaultConverterManager();
@@ -83,7 +85,7 @@ public class TestCore implements Core
         manager.registerConverter(Duration.class, new DurationConverter());
         manager.registerConverter(Version.class, new VersionConverter());
 
-        this.logFactory = new TestLogFactory(this, Logger.getLogger(TestCore.class.getName()));
+        this.logFactory = new LogFactory(this, Logger.getLogger(TestCore.class.getName()));
         DefaultLogFactory factory = new DefaultLogFactory();
         this.logger = factory.getLog(TestCore.class);
         this.logger.addTarget(PrintTarget.STDOUT);
@@ -186,7 +188,7 @@ public class TestCore implements Core
     @Override
     public TaskManager getTaskManager()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.taskManager;
     }
 
     @Override

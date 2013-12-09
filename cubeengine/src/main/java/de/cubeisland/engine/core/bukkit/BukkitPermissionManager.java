@@ -31,12 +31,14 @@ import org.bukkit.plugin.SimplePluginManager;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -79,7 +81,11 @@ public class BukkitPermissionManager implements PermissionManager
         }
         this.wildcards = new THashMap<>(0);
         this.modulePermissionMap = new THashMap<>(0);
-        this.logger = core.getLogFactory().createFileLog(Core.class, "Permissions", false, false, false);
+        this.logger = core.getLogFactory().getLog(Core.class, "Permissions");
+        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Permissions"),
+                                                  LoggingUtil.getFileFormat(false, false),
+                                                  false, null, // TODO cycler
+                                                  core.getTaskManager().getThreadFactory()));
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
     }

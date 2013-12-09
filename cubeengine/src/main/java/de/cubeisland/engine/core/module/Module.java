@@ -26,11 +26,16 @@ import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.logging.LogFactory;
+import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogTarget;
+import de.cubeisland.engine.logging.filter.PrefixFilter;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 
 
 /**
@@ -60,7 +65,14 @@ public abstract class Module
             this.classLoader = classLoader;
             this.folder = folder;
             this.enabled = false;
-            this.log = core.getLogFactory().createModuleLog(this);
+            LogFactory logFactory = core.getLogFactory();
+            this.log = logFactory.getLog(this.getClass(), this.getName());
+            this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, this.getName()),
+                                                   LoggingUtil.getFileFormat(true, true),
+                                                   true, null,// TODO cycler
+                                                   this.core.getTaskManager().getThreadFactory()));
+            LogTarget parentTarget = this.log.addDelegate(logFactory.getParent());
+            parentTarget.appendFilter(new PrefixFilter("[" + this.getName() + "] "));
         }
     }
 
