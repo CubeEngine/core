@@ -55,6 +55,11 @@ public class SimpleCommandBackend implements CommandBackend
         return this.knownCommands;
     }
 
+    protected final SimpleCommandMap getCommandMap()
+    {
+        return this.commandMap;
+    }
+
     @Override
     public void registerCommand(CubeCommand command)
     {
