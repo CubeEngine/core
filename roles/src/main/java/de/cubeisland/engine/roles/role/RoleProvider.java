@@ -238,7 +238,7 @@ public abstract class RoleProvider
         {
             return null;
         }
-        RoleConfig config = new RoleConfig();
+        RoleConfig config = this.module.getCore().getConfigFactory().create(RoleConfig.class);
         config.roleName = roleName;
         this.configs.put(roleName,config);
         config.onLoaded(null);
