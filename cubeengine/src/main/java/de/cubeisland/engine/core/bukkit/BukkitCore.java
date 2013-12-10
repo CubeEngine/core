@@ -267,19 +267,22 @@ public final class BukkitCore extends JavaPlugin implements Core
         ArgumentReader.init(this);
 
         // depends on: server
-        SimpleCommandMap commandMap = getFieldValue(server, findFirstField(server, CommandMap.class), SimpleCommandMap.class);
-        CommandBackend commandBackend;
-        if (commandMap.getClass() == SimpleCommandMap.class)
+        CommandMap commandMap = getFieldValue(server, findFirstField(server, CommandMap.class), CommandMap.class);
+        CommandBackend commandBackend = null;
+        if (commandMap != null)
         {
-            commandBackend = new CubeCommandBackend(this);
+            if (commandMap.getClass() == SimpleCommandMap.class)
+            {
+                commandBackend = new CubeCommandBackend(this);
+            }
+            else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
+            {
+                this.getLog().warn("The server you are using is not fully compatible, some advanced command features will be disabled.");
+                this.getLog().debug("The type of the command map: {}", commandMap.getClass().getName());
+                commandBackend = new SimpleCommandBackend(this, SimpleCommandMap.class.cast(commandMap));
+            }
         }
-        else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
-        {
-            this.getLog().warn("The server you are using is not fully compatible, some advanced command features will be disabled.");
-            this.getLog().debug("The type of the command map: {}", commandMap.getClass().getName());
-            commandBackend = new SimpleCommandBackend(this, commandMap);
-        }
-        else
+        if (commandBackend == null)
         {
             this.getLog().warn("We encountered a serious compatibility issue, however basic command features should still work. Please report this issue to the developers!");
             commandBackend = new FallbackCommandBackend(this);
