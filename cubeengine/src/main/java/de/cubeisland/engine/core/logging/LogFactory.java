@@ -24,6 +24,7 @@ import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.filter.ExceptionFilter;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+import de.cubeisland.engine.logging.target.file.cycler.FilesizeCycler;
 import de.cubeisland.engine.logging.target.proxy.LogProxyTarget;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
@@ -73,12 +74,13 @@ public class LogFactory extends DefaultLogFactory
     {
         if (this.coreLog == null)
         {
-            this.coreLog = this.getLog(Core.class);
+            this.coreLog = this.getLog(Core.class, "Core");
             AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Core"),
                                                          LoggingUtil.getFileFormat(true, true),
-                                                         true, null,// TODO cycler
+                                                         true, new FilesizeCycler(5000000L, "{name}\\\\{name}_{date}{_i}{ending}"),
                                                          core.getTaskManager().getThreadFactory());
             target.setLevel(this.core.getConfiguration().logging.fileLevel);
+            coreLog.addTarget(target);
             this.coreLog.addDelegate(this.getParent());
         }
         return this.coreLog;
