@@ -26,9 +26,14 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.PluginManager;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.command.CubeCommand;
 
@@ -38,9 +43,30 @@ import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
 public class CubeCommandBackend extends SimpleCommandBackend
 {
+    private final BukkitCore core;
+    private final Server server;
+    private Listener commandPreprocessHook;
+    private boolean warned;
+
     public CubeCommandBackend(BukkitCore core)
     {
         super(core, swapCommandMap(core, null));
+        this.core = core;
+        this.server = core.getServer();
+        this.commandPreprocessHook = new Listener() {
+            @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+            public void onCommandPreprocess(PlayerCommandPreprocessEvent event)
+            {
+                verifyCommandMap(event.getPlayer().getServer());
+            }
+
+            public void onServerCommand(ServerCommandEvent event)
+            {
+                verifyCommandMap(event.getSender().getServer());
+            }
+        };
+        this.server.getPluginManager().registerEvents(this.commandPreprocessHook, core);
+        this.warned = false;
     }
 
     @Override
@@ -48,32 +74,56 @@ public class CubeCommandBackend extends SimpleCommandBackend
     {
         super.shutdown();
         this.resetCommandMap();
+        HandlerList.unregisterAll(this.commandPreprocessHook);
     }
 
-    private static SimpleCommandMap swapCommandMap(BukkitCore core, SimpleCommandMap newCommandMAp)
+    private void verifyCommandMap(Server server)
+    {
+        final Field serverField = findFirstField(server, CommandMap.class);
+        final SimpleCommandMap currentMap = getFieldValue(server, serverField, SimpleCommandMap.class);
+
+        if (currentMap != this.getCommandMap())
+        {
+            if (!this.warned)
+            {
+                this.warned = true;
+                this.core.getLog().warn("The server's CommandMap has changed since we replaced it!");
+                this.core.getLog().warn("We won't be able to add new commands! Existing commands should still work though.");
+            }
+        }
+    }
+
+    @Override
+    public void registerCommand(CubeCommand command)
+    {
+        this.verifyCommandMap(this.server);
+        super.registerCommand(command);
+    }
+
+    private static SimpleCommandMap swapCommandMap(BukkitCore core, SimpleCommandMap newCommandMap)
     {
         final Server server = core.getServer();
         final PluginManager pm = server.getPluginManager();
         final Field serverField = findFirstField(server, CommandMap.class);
         final Field pmField = findFirstField(pm, CommandMap.class);
 
-        if (newCommandMAp == null)
+        if (newCommandMap == null)
         {
-            newCommandMAp = new CubeCommandMap(core, getFieldValue(server, serverField, SimpleCommandMap.class));
+            newCommandMap = new CubeCommandMap(core, getFieldValue(server, serverField, SimpleCommandMap.class));
         }
         if (serverField != null && pmField != null)
         {
             try
             {
-                serverField.set(server, newCommandMAp);
-                pmField.set(pm, newCommandMAp);
+                serverField.set(server, newCommandMap);
+                pmField.set(pm, newCommandMap);
             }
             catch (Exception ex)
             {
-                CubeEngine.getLog().debug(ex, "Failed to swap command map");
+                core.getLog().debug(ex, "Failed to swap command map");
             }
         }
-        return newCommandMAp;
+        return newCommandMap;
     }
 
     private void resetCommandMap()
