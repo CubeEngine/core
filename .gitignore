@@ -20,6 +20,8 @@ maven-eclipse.xml
 .idea/*
 !.idea/codeStyleSettings.xml
 *.iml
+# Atlassian connector
+/atlassian-ide-plugin.xml
 
 # Unit Tests
 test-data/
