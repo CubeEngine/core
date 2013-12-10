@@ -81,7 +81,7 @@ public class KitManager implements Listener
         KitConfiguration config = kitConfigMap.get(kit);
         if (config == null)
         {
-            config = new KitConfiguration();
+            config = this.module.getCore().getConfigFactory().create(KitConfiguration.class);
             kitConfigMap.put(kit, config);
             kitMap.put(kit.getKitName(), kit);
         }
