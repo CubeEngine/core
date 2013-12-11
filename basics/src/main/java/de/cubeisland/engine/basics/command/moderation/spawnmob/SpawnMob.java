@@ -38,6 +38,7 @@ import de.cubeisland.engine.core.util.matcher.Match;
 
 public class SpawnMob
 {
+    // TODO SpawnEvent (allows logging &| preventing)
     static Entity[] spawnMobs(CommandContext context, String mobString, Location loc, int amount)
     {
         String[] mobStrings = StringUtils.explode(",", mobString);
