@@ -52,6 +52,7 @@
     <module>fakeanticheat</module>
     <module>stats</module>
     <module>reputation</module>
+    <module>multiverse</module>
   </modules>
 
   <build>
