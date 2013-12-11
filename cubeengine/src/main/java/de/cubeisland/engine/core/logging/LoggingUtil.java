@@ -21,6 +21,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.logging.target.file.cycler.FilesizeCycler;
 import de.cubeisland.engine.logging.target.file.format.FileFormat;
 import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
 
@@ -54,5 +55,10 @@ public class LoggingUtil
         {
             return new LogFileFormat("{msg}", sdf);
         }
+    }
+
+    public static FilesizeCycler getCycler()
+    {
+        return new FilesizeCycler(5000000L, "{name}\\\\{name}_{date}{_i}{ending}");
     }
 }

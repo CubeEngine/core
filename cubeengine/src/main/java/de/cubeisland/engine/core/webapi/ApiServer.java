@@ -81,7 +81,7 @@ public class ApiServer
         this.log = core.getLogFactory().getLog(Core.class, "WebAPI");
         this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "WebAPI"),
                                                   LoggingUtil.getFileFormat(true, true),
-                                                  true, null,// TODO cycler
+                                                  true, LoggingUtil.getCycler(),
                                                   core.getTaskManager().getThreadFactory()));
 
         this.bootstrap = new AtomicReference<>(null);

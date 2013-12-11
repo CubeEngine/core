@@ -62,7 +62,7 @@ public class I18n implements Cleanable
         this.logger = core.getLogFactory().getLog(Core.class, "Language");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Language"),
                                                   LoggingUtil.getFileFormat(false, false),
-                                                  true, null, // TODO cycler
+                                                  true, LoggingUtil.getCycler(),
                                                   core.getTaskManager().getThreadFactory()));
         this.languages = new THashMap<>();
         this.languageLookupMap = new THashMap<>();

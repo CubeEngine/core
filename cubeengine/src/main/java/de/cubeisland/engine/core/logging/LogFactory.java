@@ -24,7 +24,6 @@ import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.filter.ExceptionFilter;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
-import de.cubeisland.engine.logging.target.file.cycler.FilesizeCycler;
 import de.cubeisland.engine.logging.target.proxy.LogProxyTarget;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
@@ -48,7 +47,7 @@ public class LogFactory extends DefaultLogFactory
         Log exLog = this.getLog(Core.class, "Exceptions");
         exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Exceptions"),
                                                LoggingUtil.getFileFormat(true, false),
-                                               true, null, // TODO cycler
+                                               true, LoggingUtil.getCycler(),
                                                core.getTaskManager().getThreadFactory()));
         this.exceptionTarget = new LogProxyTarget(exLog);
         this.exceptionTarget.appendFilter(new ExceptionFilter());
@@ -60,7 +59,7 @@ public class LogFactory extends DefaultLogFactory
             Log commands = this.getLog(Core.class, "Commands");
             commands.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Commands"),
                                                    LoggingUtil.getFileFormat(true, false),
-                                                   true, null, // TODO cycler
+                                                   true, LoggingUtil.getCycler(),
                                                    core.getTaskManager().getThreadFactory()));
         }
     }
@@ -77,7 +76,7 @@ public class LogFactory extends DefaultLogFactory
             this.coreLog = this.getLog(Core.class, "Core");
             AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Core"),
                                                          LoggingUtil.getFileFormat(true, true),
-                                                         true, new FilesizeCycler(5000000L, "{name}\\\\{name}_{date}{_i}{ending}"),
+                                                         true, LoggingUtil.getCycler(),
                                                          core.getTaskManager().getThreadFactory());
             target.setLevel(this.core.getConfiguration().logging.fileLevel);
             coreLog.addTarget(target);

@@ -84,7 +84,7 @@ public class BukkitPermissionManager implements PermissionManager
         this.logger = core.getLogFactory().getLog(Core.class, "Permissions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
-                                                  false, null, // TODO cycler
+                                                  false, LoggingUtil.getCycler(),
                                                   core.getTaskManager().getThreadFactory()));
 
         this.registerBukkitPermission(CUBEENGINE_WILDCARD);
