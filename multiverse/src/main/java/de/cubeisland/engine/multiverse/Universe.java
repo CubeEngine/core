@@ -61,6 +61,9 @@ public class Universe
             {
                 this.config.mainWorld = world;
                 this.defaults = this.createWorldConfigFromExisting(world);
+                this.defaults.spawn.spawnLocation = null;
+                this.defaults.generation.seed = null;
+                this.defaults.spawn.respawnWorld = this.config.mainWorld;
                 this.defaults.setFile(new File(universeDir, "defaults.yml"));
                 this.defaults.save();
             }
@@ -68,10 +71,13 @@ public class Universe
         }
         for (Entry<World, WorldConfig> entry : configs.entrySet())
         {
-            entry.getValue().setDefault(this.defaults);
-            entry.getValue().setFile(new File(universeDir, entry.getKey().getName() + ".yml"));
-            entry.getValue().updateInheritance();
-            entry.getValue().save();
+            WorldConfig config = entry.getValue();
+            config.spawn.respawnWorld = this.config.mainWorld;
+
+            config.setDefault(this.defaults);
+            config.setFile(new File(universeDir, entry.getKey().getName() + ".yml"));
+            config.updateInheritance();
+            config.save();
         }
     }
 
@@ -82,12 +88,11 @@ public class Universe
         {
             config.scale = 8.0; // Nether is 1:8
         }
-        if (world == this.config.mainWorld)
+        config.spawn.spawnLocation = world.getSpawnLocation();
+        if (this.defaults != null && this.config.mainWorld == world)
         {
-            config.spawn.respawnWorld = world;
-            config.spawn.spawnLocation = world.getSpawnLocation();
+            config.spawn.keepSpawnInMemory = true; // KEEP MAIN SPAWN LOADED
         }
-
         config.generation.worldType = world.getWorldType();
         config.generation.generateStructures = world.canGenerateStructures();
         config.generation.environment = world.getEnvironment();

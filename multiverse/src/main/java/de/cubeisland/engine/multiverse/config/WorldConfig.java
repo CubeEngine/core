@@ -42,7 +42,7 @@ public class WorldConfig extends YamlConfiguration
     public class Spawn implements Section
     {
         public World respawnWorld; // empty means main universe world
-        public boolean allowBedRespawn = false;
+        public boolean allowBedRespawn = true;
         public boolean keepSpawnInMemory = false;
         public Location spawnLocation; // TODO only xyz yaw pitch double precision
     }
@@ -62,7 +62,7 @@ public class WorldConfig extends YamlConfiguration
         public Environment environment = Environment.NORMAL;
         public boolean generateStructures = true;
         public String customGenerator = null; // TODO not supported yet
-        public long seed;
+        public Long seed;
     }
 
     public Spawning spawning = new Spawning();
