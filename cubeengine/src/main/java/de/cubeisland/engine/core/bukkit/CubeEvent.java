@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
 import de.cubeisland.engine.core.Core;
@@ -25,10 +24,9 @@ import de.cubeisland.engine.core.Core;
 /**
  * This class is a custom Event containing the core to allow easy access.
  */
-public abstract class CubeEvent extends Event implements Cancellable
+public abstract class CubeEvent extends Event
 {
     private final Core core;
-    private boolean cancelled;
 
     public CubeEvent(Core core)
     {
@@ -43,17 +41,5 @@ public abstract class CubeEvent extends Event implements Cancellable
     public Core getCore()
     {
         return this.core;
-    }
-
-    @Override
-    public boolean isCancelled()
-    {
-        return this.cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean bln)
-    {
-        this.cancelled = bln;
     }
 }

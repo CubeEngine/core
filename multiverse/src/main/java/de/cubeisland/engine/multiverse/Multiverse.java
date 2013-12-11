@@ -30,21 +30,26 @@ import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.multiverse.config.MultiverseConfig;
+import de.cubeisland.engine.multiverse.config.WorldConfig;
 import de.cubeisland.engine.multiverse.converter.DiffcultyConverter;
 import de.cubeisland.engine.multiverse.converter.EnvironmentConverter;
 import de.cubeisland.engine.multiverse.converter.GameModeConverter;
 import de.cubeisland.engine.multiverse.converter.WorldTypeConverter;
 
-public class Multiverse extends Module
+public class Multiverse extends Module implements Listener
 {
     private MultiverseConfig config;
 
     private Map<String, Universe> universes = new HashMap<>();
+    private Map<World, Universe> worlds = new HashMap<>();
 
     @Override
     public void onLoad()
@@ -125,6 +130,16 @@ public class Multiverse extends Module
             }
             sender.sendTranslated("&eFound &6%d&e universes with &6%d&e worlds!", found.size(), this.getCore().getWorldManager().getWorlds().size());
         }
+
+        for (Universe universe : this.universes.values())
+        {
+            for (World world : universe.getWorlds())
+            {
+                this.worlds.put(world, universe);
+            }
+        }
+
+        this.getCore().getEventManager().registerListener(this, this);
     }
 
     private void searchUniverses(Map<String, Set<World>> found, Collection<World> worldList, CommandSender sender)
@@ -162,5 +177,24 @@ public class Multiverse extends Module
                 break;
             }
         }
+    }
+
+    @EventHandler
+    public void onSetSpawn(WorldSetSpawnEvent event)
+    {
+        WorldConfig worldConfig = this.getWorldConfig(event.getWorld());
+        worldConfig.spawn.spawnLocation = event.getNewLocation();
+        worldConfig.updateInheritance();
+        worldConfig.save();
+    }
+
+    private WorldConfig getWorldConfig(World world)
+    {
+        Universe universe = this.worlds.get(world);
+        if (universe == null)
+        {
+            // TODO
+        }
+        return universe.getWorldConfig(world);
     }
 }

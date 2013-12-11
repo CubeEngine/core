@@ -15,17 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.fly;
+package de.cubeisland.engine.core.world;
 
-import org.bukkit.event.Cancellable;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserEvent;
+import de.cubeisland.engine.core.bukkit.CubeEvent;
 
-public class FlyStartEvent extends UserEvent implements Cancellable
+public class WorldSetSpawnEvent extends CubeEvent
 {
+    private World world;
+    private Location location;
+
+    public WorldSetSpawnEvent(Core core, World world, Location location)
+    {
+        super(core);
+        this.world = world;
+        this.location = location;
+    }
+
+    public World getWorld()
+    {
+        return world;
+    }
+
+    public Location getNewLocation()
+    {
+        return location;
+    }
+
     private static final HandlerList handlers = new HandlerList();
 
     public HandlerList getHandlers()
@@ -36,24 +56,5 @@ public class FlyStartEvent extends UserEvent implements Cancellable
     public static HandlerList getHandlerList()
     {
         return handlers;
-    }
-
-    public FlyStartEvent(Core core, User user)
-    {
-        super(core, user);
-    }
-
-    private boolean cancelled;
-
-    @Override
-    public boolean isCancelled()
-    {
-        return this.cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean bln)
-    {
-        this.cancelled = bln;
     }
 }

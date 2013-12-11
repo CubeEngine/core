@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.commands.ManagementCommands;
 import de.cubeisland.engine.roles.role.Role;
@@ -54,7 +55,7 @@ public class SpawnCommands
         manager = roles.getRolesManager();
     }
 
-    @Command(desc = "Changes the respawnpoint", usage = "[role] [<x> <y> <z>] [world]", max = 4)
+    @Command(desc = "Changes the respawnpoint", usage = "[<role>|global] [<x> <y> <z>] [world]", max = 4)
     public void setSpawn(CommandContext context)
     {
         User sender = null;
@@ -62,9 +63,9 @@ public class SpawnCommands
         {
             sender = (User)context.getSender();
         }
-        Integer x;
-        Integer y;
-        Integer z;
+        Double x;
+        Double y;
+        Double z;
         float yaw = 0;
         float pitch = 0;
         World world;
@@ -89,9 +90,9 @@ public class SpawnCommands
         }
         if (context.hasArg(3))
         {
-            x = context.getArg(1, Integer.class, null);
-            y = context.getArg(2, Integer.class, null);
-            z = context.getArg(3, Integer.class, null);
+            x = context.getArg(1, Double.class, null);
+            y = context.getArg(2, Double.class, null);
+            z = context.getArg(3, Double.class, null);
             if (x == null || y == null || z == null)
             {
                 context.sendTranslated("&cCoordinates are invalid!");
@@ -107,9 +108,9 @@ public class SpawnCommands
                 return;
             }
             final Location loc = sender.getLocation();
-            x = loc.getBlockX();
-            y = loc.getBlockY();
-            z = loc.getBlockZ();
+            x = loc.getX();
+            y = loc.getY();
+            z = loc.getZ();
             yaw = loc.getYaw();
             pitch = loc.getPitch();
         }
@@ -139,7 +140,9 @@ public class SpawnCommands
                 return;
             }
         }
-        world.setSpawnLocation(x, y, z);
+        this.module.getCore().getEventManager().fireEvent(
+            new WorldSetSpawnEvent(this.module.getCore(), world, new Location(world, x,y,z, yaw, pitch)));
+        world.setSpawnLocation(x.intValue(), y.intValue(), z.intValue());
         context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
     }
 

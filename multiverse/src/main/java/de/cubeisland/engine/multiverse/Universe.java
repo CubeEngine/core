@@ -211,6 +211,11 @@ public class Universe
         }
     }
 
+    public WorldConfig getWorldConfig(World world)
+    {
+        return this.configs.get(world);
+    }
+
     // intercept PortalCreateEvent if not allowed
     // intercept EntityCreatePortalEvent if not allowed
 }
