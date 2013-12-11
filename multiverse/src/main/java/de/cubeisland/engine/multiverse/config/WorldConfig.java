@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
@@ -42,7 +43,7 @@ public class WorldConfig extends YamlConfiguration
     public class Spawn implements Section
     {
         public World respawnWorld; // empty means main universe world
-        public boolean allowBedRespawn = true;
+        public boolean allowBedRespawn = true; // TODO
         public boolean keepSpawnInMemory = false;
         public Location spawnLocation; // TODO only xyz yaw pitch double precision
     }
@@ -77,8 +78,8 @@ public class WorldConfig extends YamlConfiguration
         public Integer spawnLimit_monster;
         public Integer spawnLimit_waterAnimal;
 
-        public Long spawnRate_animal;
-        public Long spawnRate_monster;
+        public Integer spawnRate_animal;
+        public Integer spawnRate_monster;
     }
 
     public Map<String, String> gamerules = new HashMap<>();
@@ -87,4 +88,28 @@ public class WorldConfig extends YamlConfiguration
 
     public GameMode gameMode = GameMode.SURVIVAL;
     public Difficulty difficulty = Difficulty.NORMAL;
+
+    public void applyToWorld(World world)
+    {
+        world.setKeepSpawnInMemory(this.spawn.keepSpawnInMemory);
+        if (this.spawn.spawnLocation != null)
+        {
+            world.setSpawnLocation(this.spawn.spawnLocation.getBlockX(), this.spawn.spawnLocation.getBlockY(), this.spawn.spawnLocation.getBlockZ());
+        }
+
+        world.setSpawnFlags(!this.spawning.disable_monster, !this.spawning.disable_animals);
+        world.setAmbientSpawnLimit(this.spawning.spawnLimit_ambient);
+        world.setAnimalSpawnLimit(this.spawning.spawnLimit_animal);
+        world.setMonsterSpawnLimit(this.spawning.spawnLimit_monster);
+        world.setWaterAnimalSpawnLimit(this.spawning.spawnLimit_waterAnimal);
+        world.setTicksPerAnimalSpawns(this.spawning.spawnRate_animal);
+        world.setTicksPerMonsterSpawns(this.spawning.spawnRate_monster);
+        for (Entry<String, String> entry : this.gamerules.entrySet())
+        {
+            world.setGameRuleValue(entry.getKey(), entry.getValue());
+        }
+        world.setPVP(this.pvp);
+        world.setAutoSave(this.autosave);
+        world.setDifficulty(this.difficulty);
+    }
 }
