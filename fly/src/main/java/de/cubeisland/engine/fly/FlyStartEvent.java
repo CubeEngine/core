@@ -27,10 +27,23 @@ import de.cubeisland.engine.core.user.UserEvent;
 public class FlyStartEvent extends UserEvent implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
+    private boolean isCancelled = false;
 
     public FlyStartEvent(Core core, User user)
     {
         super(core, user);
+    }
+
+    @Override
+    public boolean isCancelled()
+    {
+        return isCancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancel)
+    {
+        isCancelled = cancel;
     }
 
     public HandlerList getHandlers()

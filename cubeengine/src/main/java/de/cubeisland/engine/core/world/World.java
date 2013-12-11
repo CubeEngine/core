@@ -1,3 +1,20 @@
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ *
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.cubeisland.engine.core.world;
 
 import java.io.File;
@@ -45,6 +62,16 @@ public class World implements org.bukkit.World
     {
         this.bukkitWorld = bukkitWorld;
         this.core = core;
+    }
+
+    public org.bukkit.World getHandle()
+    {
+        return bukkitWorld;
+    }
+
+    public Core getCore()
+    {
+        return core;
     }
 
     @Override
@@ -331,6 +358,7 @@ public class World implements org.bukkit.World
     @Override
     public boolean setSpawnLocation(int x, int y, int z)
     {
+        core.getEventManager().fireEvent(new WorldSetSpawnEvent(core, this, x,y,z));
         return bukkitWorld.setSpawnLocation(x, y, z);
     }
 

@@ -88,7 +88,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
 
-        return new de.cubeisland.engine.core.world.World(this.server.createWorld(creator), core);
+        return wrapWorld(this.server.createWorld(creator));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
 
-        return new de.cubeisland.engine.core.world.World(this.server.getWorld(name), core);
+        return wrapWorld(this.server.getWorld(name));
     }
 
     @Override
@@ -104,7 +104,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
 
-        return new de.cubeisland.engine.core.world.World(this.server.getWorld(uid), core);
+        return wrapWorld(this.server.getWorld(uid));
     }
 
     @Override
@@ -146,8 +146,17 @@ public class BukkitWorldManager extends AbstractWorldManager
         THashSet<World> set = new THashSet<>();
         for (World world : this.server.getWorlds())
         {
-            set.add(new de.cubeisland.engine.core.world.World(world, core));
+            set.add(wrapWorld(world));
         }
         return set;
+    }
+
+    private World wrapWorld(World world)
+    {
+        if (world == null)
+        {
+            return null;
+        }
+        return new de.cubeisland.engine.core.world.World(world, core);
     }
 }

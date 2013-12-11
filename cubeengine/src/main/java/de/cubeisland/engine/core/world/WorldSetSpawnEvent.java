@@ -15,31 +15,46 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.world;
 
-import org.bukkit.event.Event;
+import org.bukkit.Location;
+import org.bukkit.event.HandlerList;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.bukkit.CubeEvent;
 
-/**
- * This class is a custom Event containing the core to allow easy access.
- */
-public abstract class CubeEvent extends Event
+public class WorldSetSpawnEvent extends CubeEvent
 {
-    private final Core core;
+    private World world;
+    private Location location;
 
-    public CubeEvent(Core core)
+    public WorldSetSpawnEvent(Core core, World world, int x, int y, int z)
     {
-        this.core = core;
+        super(core);
+        this.world = world;
+        this.location = new Location(world, x, y, z);
     }
 
-    /**
-     * Returns the CubeEngine-Core
-     *
-     * @return the core
-     */
-    public Core getCore()
+    public World getWorld()
     {
-        return this.core;
+        return world;
+    }
+
+    public Location getNewLocation()
+    {
+        return this.location;
+    }
+
+    private static final HandlerList handlers = new HandlerList();
+
+    @Override
+    public HandlerList getHandlers()
+    {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
     }
 }
