@@ -43,7 +43,7 @@ public class KitConfiguration extends YamlConfiguration
     public List<KitItem> kitItems = new LinkedList<>();
     @Name("commands")
     public List<String> kitCommands = new LinkedList<>();
-    @Comment("If a permission is generated the user needs the permission to bew able to receive this kit")
+    @Comment("If a permission is generated the user needs the permission to be able to receive this kit")
     @Name("generate-permission")
     public boolean usePerm = false;
     @Comment("The delay between each usage of this kit.")

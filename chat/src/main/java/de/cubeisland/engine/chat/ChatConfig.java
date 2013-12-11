@@ -19,11 +19,17 @@ package de.cubeisland.engine.chat;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
 
 public class ChatConfig extends YamlConfiguration
 {
-    @Comment("There at least the following variables available:\n- {NAME} -> player name\n- {DISPLAY_NAME} -> display name\n- {WORLD} -> the world the player is in\n- {MESSAGE} -> the message\n\nUsual color/format codes are also supported: &1, ... &f, ... &r")
+    @Comment({"There at least the following variables available:" ,
+                 "- {NAME} -> player name" ,
+                 "- {DISPLAY_NAME} -> display name" ,
+                 "- {WORLD} -> the world the player is in" ,
+                 "- {MESSAGE} -> the message" ,
+                 "- {ROLE.PREFIX} -> a prefix set in the role module" ,
+                 "- {ROLE.SUFFIX} -> a suffix set in the role module" ,
+                 "\nUsual color/format codes are also supported: &1, ... &f, ... &r"})
     public String format = "{NAME}: {MESSAGE}";
 
     @Comment("This also counts for the format string!")
