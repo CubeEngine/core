@@ -48,7 +48,7 @@ public class CubeCommandBackend extends SimpleCommandBackend
     private Listener commandPreprocessHook;
     private boolean warned;
 
-    public CubeCommandBackend(BukkitCore core)
+    public CubeCommandBackend(final BukkitCore core)
     {
         super(core, swapCommandMap(core, null));
         this.core = core;
@@ -65,7 +65,14 @@ public class CubeCommandBackend extends SimpleCommandBackend
                 verifyCommandMap(event.getSender().getServer());
             }
         };
-        this.server.getPluginManager().registerEvents(this.commandPreprocessHook, core);
+        core.addInitHook(new Runnable() {
+            @Override
+            public void run()
+            {
+                server.getPluginManager().registerEvents(commandPreprocessHook, core);
+            }
+        });
+
         this.warned = false;
     }
 
