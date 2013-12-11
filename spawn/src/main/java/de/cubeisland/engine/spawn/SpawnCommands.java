@@ -143,7 +143,7 @@ public class SpawnCommands
         this.module.getCore().getEventManager().fireEvent(
             new WorldSetSpawnEvent(this.module.getCore(), world, new Location(world, x,y,z, yaw, pitch)));
         world.setSpawnLocation(x.intValue(), y.intValue(), z.intValue());
-        context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
+        context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x.intValue(), y.intValue(), z.intValue());
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>] [role <role>]", max = 2,
