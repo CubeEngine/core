@@ -15,31 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.fly;
+package de.cubeisland.engine.multiverse;
 
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.HandlerList;
-
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserEvent;
-
-public class FlyStartEvent extends UserEvent implements Cancellable
+/**
+ * Represents a world in a Universe
+ */
+public class MultiverseWorld
 {
-    private static final HandlerList handlers = new HandlerList();
-
-    public FlyStartEvent(Core core, User user)
-    {
-        super(core, user);
-    }
-
-    public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
-    {
-        return handlers;
-    }
 }

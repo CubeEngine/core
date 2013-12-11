@@ -30,10 +30,6 @@ public abstract class AbstractBlockPopulator extends BlockPopulator
     @Override
     public void populate(World world, Random random, Chunk source)
     {
-        if (world instanceof de.cubeisland.engine.core.world.World)
-        {
-            world = ((de.cubeisland.engine.core.world.World)world).getHandle();
-        }
         this.populate((CraftWorld)world, random, source);
     }
 
