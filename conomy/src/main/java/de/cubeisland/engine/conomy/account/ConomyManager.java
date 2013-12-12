@@ -246,8 +246,8 @@ public class ConomyManager
     public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
     {
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? * " + TABLE_ACCOUNT.VALUE.getName() +
-                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?")
-                         .bind(1, factor).bind(2, userAcc).bind(3, bankAcc).execute();
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
+                       factor, userAcc, bankAcc).execute();
         this.logger.info("SCALE-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), factor);
         // update all loaded accounts...
         if (userAcc)
