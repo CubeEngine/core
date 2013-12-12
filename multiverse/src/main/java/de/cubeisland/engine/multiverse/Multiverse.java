@@ -18,8 +18,6 @@
 package de.cubeisland.engine.multiverse;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,11 +36,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
@@ -55,7 +51,6 @@ import de.cubeisland.engine.multiverse.converter.GameModeConverter;
 import de.cubeisland.engine.multiverse.converter.InventoryConverter;
 import de.cubeisland.engine.multiverse.converter.PotionEffectConverter;
 import de.cubeisland.engine.multiverse.converter.WorldTypeConverter;
-import de.cubeisland.engine.multiverse.player.PlayerConfiguration;
 
 public class Multiverse extends Module implements Listener
 {
@@ -72,7 +67,7 @@ public class Multiverse extends Module implements Listener
         manager.registerConverter(Environment.class, new EnvironmentConverter());
         manager.registerConverter(GameMode.class, new GameModeConverter());
         manager.registerConverter(WorldType.class, new WorldTypeConverter());
-///*
+///*TODO remove
         manager.registerConverter(Inventory.class, new InventoryConverter(Bukkit.getServer()));
         manager.registerConverter(PotionEffect.class, new PotionEffectConverter());
 
@@ -213,47 +208,28 @@ public class Multiverse extends Module implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        PlayerConfiguration config = this.getCore().getConfigFactory().create(PlayerConfiguration.class);
-        config.inventory = event.getPlayer().getInventory();
-        config.enderChest = event.getPlayer().getEnderChest();
-        config.activePotionEffects = event.getPlayer().getActivePotionEffects();
-
-        config.setFile(this.getFolder().resolve(event.getPlayer().getName() +".dat").toFile());
-
-        YamlCodec codec = this.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
-        try
+        Universe universe = this.worlds.get(event.getPlayer().getWorld());
+        if (universe != null)
         {
-            codec.saveConfig(config, new FileOutputStream(this.getFolder().resolve(event.getPlayer().getName() +".yml").toFile()));
+            // TODO handle missing universe for world
+            universe.savePlayer(event.getPlayer());
         }
-        catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-
-        config.save();
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent e)
+    public void onChat(AsyncPlayerChatEvent event)
     {
-        if (e.getMessage().equals("load"))
+        if (event.getMessage().equals("load"))
         {
-            File file = this.getFolder().resolve(e.getPlayer().getName() + ".dat").toFile();
-            if (file.exists())
-            {
-                PlayerConfiguration load = this.getCore().getConfigFactory().load(PlayerConfiguration.class, file);
-                ItemStack[] contents = load.inventory.getContents();
-                for (int i = 0; i < contents.length; i++)
-                {
-                    if (i>=e.getPlayer().getInventory().getSize() + 4)
-                    {
-                        break;
-                    }
-                    e.getPlayer().getInventory().setItem(i, contents[i]);
-                }
-            }
-        }
 
+            Universe universe = this.worlds.get(event.getPlayer().getWorld());
+            if (universe != null)
+            {
+                // TODO handle missing universe for world
+                universe.loadPlayer(event.getPlayer());
+            }
+
+        }
     }
 
     private WorldConfig getWorldConfig(World world)

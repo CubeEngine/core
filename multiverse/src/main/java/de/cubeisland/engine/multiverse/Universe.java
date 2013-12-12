@@ -18,6 +18,8 @@
 package de.cubeisland.engine.multiverse;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,10 +29,13 @@ import java.util.Set;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
+import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.multiverse.config.UniverseConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig.Generation;
+import de.cubeisland.engine.multiverse.player.PlayerConfiguration;
 
 /**
  * Represents multiple worlds in a universe
@@ -41,6 +46,7 @@ public class Universe
     private WorldConfig worldConfigDefaults = null;
     private Map<World, WorldConfig> configs = new HashMap<>();
     private File universeDir;
+    private File playersDir;
     private Multiverse module;
     private Set<World> worlds;
 
@@ -48,6 +54,8 @@ public class Universe
     public Universe(File universeDir, Multiverse module)
     {
         this.universeDir = universeDir;
+        this.playersDir = new File(universeDir, "players");
+        this.playersDir.mkdir();
         this.module = module;
         this.worlds = new HashSet<>();
 
@@ -69,7 +77,7 @@ public class Universe
                     String name = file.getName().substring(0, file.getName().indexOf(".yml"));
                     WorldConfig config = this.worldConfigDefaults.loadChild(file);
                     World world = this.module.getCore().getWorldManager().getWorld(name);
-                    if (this.universeConfig.mainWorld == null)
+                    if (this.universeConfig.mainWorld == null && world != null)
                     {
                         this.universeConfig.mainWorld = world;
                         module.getLog().warn("The universe {} had no mainworld! {} is now the main world", universeDir.getName(), world.getName());
@@ -79,7 +87,7 @@ public class Universe
                     {
                         WorldCreator creator = WorldCreator.name(name);
                         Generation gen = config.generation;
-                        if (gen.worldType!= null)
+                        if (gen.worldType != null)
                         {
                             creator.type(gen.worldType);
                         }
@@ -100,7 +108,7 @@ public class Universe
                     this.configs.put(world, config);
                     config.applyToWorld(world);
                 }
-                else
+                else if (!file.isDirectory())
                 {
                     module.getLog().warn("File with unknown ending! {}" , file.getName());
                 }
@@ -214,6 +222,35 @@ public class Universe
     public WorldConfig getWorldConfig(World world)
     {
         return this.configs.get(world);
+    }
+
+    public void savePlayer(Player player)
+    {
+        PlayerConfiguration config = this.module.getCore().getConfigFactory().create(PlayerConfiguration.class);
+        config.inventory = player.getInventory();
+        config.enderChest = player.getEnderChest();
+        config.activePotionEffects = player.getActivePotionEffects();
+        config.setFile(new File(playersDir, player.getName() +".dat"));
+        YamlCodec codec = this.module.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
+        try
+        {
+            codec.saveConfig(config, new FileOutputStream(new File(universeDir, "players" + File.separator +player.getName() +".yml")));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        config.save();
+    }
+
+    public void loadPlayer(Player player)
+    {
+        File file = new File(playersDir, player.getName() +".dat");
+        if (file.exists())
+        {
+            PlayerConfiguration load = this.module.getCore().getConfigFactory().load(PlayerConfiguration.class, file);
+            load.applyToPlayer(player);
+        }
     }
 
     // intercept PortalCreateEvent if not allowed
