@@ -217,10 +217,9 @@ public class ConomyManager
     public void setAll(boolean userAcc, boolean bankAcc, double value)
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
-        this.dsl.update(TABLE_ACCOUNT).set(DSL.row(TABLE_ACCOUNT.VALUE),DSL.row(longValue)).
-            where(DSL.condition(TABLE_ACCOUNT.NAME.getName() + " IS NULL = ?"))
-            .or(DSL.condition(TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?"))
-            .bind(1, userAcc).bind(2, bankAcc).execute();
+        this.dsl.update(TABLE_ACCOUNT).set(TABLE_ACCOUNT.VALUE,longValue).
+            where(DSL.condition(TABLE_ACCOUNT.NAME.getName() + " IS NULL = ?", userAcc))
+            .or(DSL.condition(TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", bankAcc)).execute();
         this.logger.info("SET-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
@@ -274,8 +273,8 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? + " + TABLE_ACCOUNT.VALUE.getName() +
-                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?")
-                .bind(1, value).bind(2, userAcc).bind(3, bankAcc).execute();
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
+                       value, userAcc, bankAcc).execute();
         this.logger.info("TRANSACTION-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
@@ -339,8 +338,8 @@ public class ConomyManager
     public void hideAll(boolean userAcc, boolean bankAcc)
     {
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 | " + TABLE_ACCOUNT.MASK.getName() +
-                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?").
-                        bind(1, userAcc).bind(2, bankAcc).execute();
+                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
+                       userAcc, bankAcc).execute();
         if (userAcc)
         {
             for (User user : this.um.getOnlineUsers())
@@ -364,8 +363,8 @@ public class ConomyManager
     public void unhideAll(boolean userAcc, boolean bankAcc)
     {
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 & ~" + TABLE_ACCOUNT.MASK.getName() +
-                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?").
-                        bind(1, userAcc).bind(2, bankAcc).execute();
+                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?"
+                      ,userAcc, bankAcc).execute();
         if (userAcc)
         {
             for (User user : this.um.getOnlineUsers())
