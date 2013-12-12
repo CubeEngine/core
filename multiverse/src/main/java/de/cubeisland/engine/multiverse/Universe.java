@@ -58,10 +58,7 @@ public class Universe
         this.playersDir.mkdir();
         this.module = module;
         this.worlds = new HashSet<>();
-
         File universeFile = new File(universeDir, "config.yml");
-        this.universeConfig = this.module.getCore().getConfigFactory().load(UniverseConfig.class, universeFile);
-
         File defaultsFile = new File(universeDir, "defaults.yml");
         if (!defaultsFile.exists())
         {
@@ -77,12 +74,6 @@ public class Universe
                     String name = file.getName().substring(0, file.getName().indexOf(".yml"));
                     WorldConfig config = this.worldConfigDefaults.loadChild(file);
                     World world = this.module.getCore().getWorldManager().getWorld(name);
-                    if (this.universeConfig.mainWorld == null && world != null)
-                    {
-                        this.universeConfig.mainWorld = world;
-                        module.getLog().warn("The universe {} had no mainworld! {} is now the main world", universeDir.getName(), world.getName());
-                        this.universeConfig.save();
-                    }
                     if (world == null)
                     {
                         WorldCreator creator = WorldCreator.name(name);
@@ -114,6 +105,21 @@ public class Universe
                 }
             }
         }
+        this.universeConfig = this.module.getCore().getConfigFactory().load(UniverseConfig.class, universeFile);
+        if (this.universeConfig.mainWorld == null)
+        {
+            World world = this.worlds.iterator().next();
+            module.getLog().warn("The universe {} had no mainworld! {} is now the main world", universeDir.getName(), world.getName());
+            this.universeConfig.save();
+            for (WorldConfig worldConfig : this.configs.values())
+            {
+                if (worldConfig.spawn.respawnWorld == null)
+                {
+                    worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
+                    worldConfig.save();
+                }
+            }
+        }
     }
 
     // For creating new Universe
@@ -124,7 +130,6 @@ public class Universe
         this.worlds = new HashSet<>(worlds);
         this.universeConfig = this.module.getCore().getConfigFactory().create(UniverseConfig.class);
         this.universeConfig.setFile(new File(universeDir, "config.yml"));
-
 
         for (World world : worlds)
         {

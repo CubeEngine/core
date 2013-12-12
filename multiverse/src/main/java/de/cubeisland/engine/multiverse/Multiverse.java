@@ -34,7 +34,7 @@ import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.potion.PotionEffect;
 
@@ -206,17 +206,6 @@ public class Multiverse extends Module implements Listener
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event)
-    {
-        Universe universe = this.worlds.get(event.getPlayer().getWorld());
-        if (universe != null)
-        {
-            // TODO handle missing universe for world
-            universe.savePlayer(event.getPlayer());
-        }
-    }
-
-    @EventHandler
     public void onChat(AsyncPlayerChatEvent event)
     {
         if (event.getMessage().equals("load"))
@@ -229,6 +218,18 @@ public class Multiverse extends Module implements Listener
                 universe.loadPlayer(event.getPlayer());
             }
 
+        }
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        Universe oldUniverse = this.worlds.get(event.getFrom());
+        Universe newUniverse = this.worlds.get(event.getPlayer().getWorld());
+        if (oldUniverse != newUniverse)
+        {
+            oldUniverse.savePlayer(event.getPlayer());
+            newUniverse.loadPlayer(event.getPlayer());
         }
     }
 
