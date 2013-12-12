@@ -35,8 +35,10 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
@@ -229,6 +231,29 @@ public class Multiverse extends Module implements Listener
         }
 
         config.save();
+    }
+
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent e)
+    {
+        if (e.getMessage().equals("load"))
+        {
+            File file = this.getFolder().resolve(e.getPlayer().getName() + ".dat").toFile();
+            if (file.exists())
+            {
+                PlayerConfiguration load = this.getCore().getConfigFactory().load(PlayerConfiguration.class, file);
+                ItemStack[] contents = load.inventory.getContents();
+                for (int i = 0; i < contents.length; i++)
+                {
+                    if (i>=e.getPlayer().getInventory().getSize() + 4)
+                    {
+                        break;
+                    }
+                    e.getPlayer().getInventory().setItem(i, contents[i]);
+                }
+            }
+        }
+
     }
 
     private WorldConfig getWorldConfig(World world)

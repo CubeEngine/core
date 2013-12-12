@@ -24,6 +24,7 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
@@ -51,25 +52,41 @@ public class InventoryConverter implements Converter<Inventory>
         MapNode node = MapNode.emptyMap();
         ItemStack[] contents = object.getContents();
         ListNode list = ListNode.emptyList();
-        node.setExactNode("Size", new IntNode(object.getSize()));
+        node.setExactNode("Size", new IntNode(object.getSize() + 9));
         node.setExactNode("Contents", list);
         for (int i = 0; i < contents.length; i++)
         {
             ItemStack itemStack = contents[i];
-            if (itemStack == null)
+            if (itemStack != null)
             {
-                continue;
+                this.addItem(list, itemStack, i);
             }
-            MapNode item = MapNode.emptyMap();
-            item.setExactNode("Slot", new IntNode(i));
-            item.setExactNode("Count", new IntNode(itemStack.getAmount()));
-            item.setExactNode("Damage", new ShortNode(itemStack.getDurability()));
-            item.setExactNode("Item", StringNode.of(itemStack.getType().name()));
-            NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).tag;
-            item.setExactNode("tag", tag == null ? MapNode.emptyMap() : NBTUtils.convertNBTToNode(tag));
-            list.addNode(item);
+        }
+        if (object instanceof PlayerInventory)
+        {
+            ItemStack[] armorContents = ((PlayerInventory)object).getArmorContents();
+            for (int i = 0; i < armorContents.length; i++)
+            {
+                ItemStack itemStack = armorContents[i];
+                if (itemStack != null)
+                {
+                    this.addItem(list, itemStack, i + object.getSize());
+                }
+            }
         }
         return node;
+    }
+
+    private void addItem(ListNode list, ItemStack itemStack, int index)
+    {
+        MapNode item = MapNode.emptyMap();
+        item.setExactNode("Slot", new IntNode(index));
+        item.setExactNode("Count", new IntNode(itemStack.getAmount()));
+        item.setExactNode("Damage", new ShortNode(itemStack.getDurability()));
+        item.setExactNode("Item", StringNode.of(itemStack.getType().name()));
+        NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).tag;
+        item.setExactNode("tag", tag == null ? MapNode.emptyMap() : NBTUtils.convertNBTToNode(tag));
+        list.addNode(item);
     }
 
     @Override

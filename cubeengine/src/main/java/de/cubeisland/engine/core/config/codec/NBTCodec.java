@@ -165,15 +165,15 @@ public class NBTCodec extends ConfigurationCodec
         LinkedHashMap<String,Node> map = baseNode.getMappedNodes();
         CompoundTag result = new CompoundTag("root", new CompoundMap());
         if (map.isEmpty()) return result;
-        this.convertMap(result.getValue(),map);
+        this.convertMap(result.getValue(),map, baseNode);
         return result;
     }
 
-    private void convertMap(CompoundMap rootMap, Map<String,Node> map)
+    private void convertMap(CompoundMap rootMap, Map<String,Node> map, MapNode base)
     {
         for (Entry<String, Node> entry : map.entrySet())
         {
-            rootMap.put(this.convertValue(entry.getKey(),entry.getValue()));
+            rootMap.put(this.convertValue(base.getOriginalKey(entry.getKey()),entry.getValue()));
         }
     }
 
@@ -182,7 +182,7 @@ public class NBTCodec extends ConfigurationCodec
         if (value instanceof MapNode)
         {
             CompoundMap map = new CompoundMap();
-            this.convertMap(map,((MapNode)value).getMappedNodes());
+            this.convertMap(map,((MapNode)value).getMappedNodes(), (MapNode)value);
             return new CompoundTag(name,map);
         }
         else if (value instanceof ListNode)
