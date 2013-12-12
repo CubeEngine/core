@@ -18,9 +18,8 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.minecraft.server.v1_7_R1.NBTBase;
 import net.minecraft.server.v1_7_R1.NBTTagByte;
@@ -40,7 +39,6 @@ import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.ByteNode;
 import de.cubeisland.engine.configuration.node.DoubleNode;
 import de.cubeisland.engine.configuration.node.FloatNode;
@@ -48,6 +46,7 @@ import de.cubeisland.engine.configuration.node.IntNode;
 import de.cubeisland.engine.configuration.node.ListNode;
 import de.cubeisland.engine.configuration.node.LongNode;
 import de.cubeisland.engine.configuration.node.MapNode;
+import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.configuration.node.ShortNode;
 import de.cubeisland.engine.configuration.node.StringNode;
@@ -122,7 +121,46 @@ public class NBTUtils
             ListNode list = ListNode.emptyList();
             for (int i = 0; i < ((NBTTagList)nbtBase).size(); i++)
             {
-                list.addNode(convertNBTToNode(((NBTTagList)nbtBase).get(i)));
+                switch (((NBTTagList)nbtBase).d())
+                {
+                case 0:
+                    //return new net.minecraft.server.NBTTagEnd();
+                case 1:
+                    //return new net.minecraft.server.NBTTagByte();
+                case 2:
+                    //return new net.minecraft.server.NBTTagShort();
+                case 3:
+                    //return new net.minecraft.server.NBTTagInt();
+                case 4:
+                    //return new net.minecraft.server.NBTTagLong();
+                    throw new UnsupportedOperationException();
+                case 5:
+                    list.addNode(new FloatNode(((NBTTagList)nbtBase).e(i)));
+                    break;
+                case 6:
+                    list.addNode(new DoubleNode(((NBTTagList)nbtBase).d(i)));
+                    break;
+                case 7:
+                    // return new net.minecraft.server.NBTTagByteArray();
+                    throw new UnsupportedOperationException();
+                case 11:
+                    ListNode listNode = ListNode.emptyList();
+                    for (int anInt : ((NBTTagList)nbtBase).c(i))
+                    {
+                        listNode.addNode(new IntNode(anInt));
+                    }
+                    list.addNode(listNode);
+                    break;
+                case 8:
+                    list.addNode(StringNode.of(((NBTTagList)nbtBase).f(i)));
+                    break;
+                case 9:
+                    //return new net.minecraft.server.NBTTagList();
+                    throw new UnsupportedOperationException();
+                case 10:
+                    list.addNode(convertNBTToNode(((NBTTagList)nbtBase).get(i)));
+                    break;
+                }
             }
             return list;
         }

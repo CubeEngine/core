@@ -194,7 +194,11 @@ public class NBTCodec extends ConfigurationCodec
                 i++;
                 tagList.add(this.convertValue(i.toString(),node));
             }
-            return new ListTag(name,Tag.class,tagList);
+            if (tagList.size() == 0)
+            {
+                return new ListTag(name,CompoundTag.class,tagList);
+            }
+            return new ListTag(name,tagList.get(0).getClass(),tagList);
         }
         else if (value instanceof BooleanNode)
         {

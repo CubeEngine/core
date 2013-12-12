@@ -18,6 +18,8 @@
 package de.cubeisland.engine.multiverse;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
@@ -32,9 +35,14 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.multiverse.config.MultiverseConfig;
@@ -42,7 +50,10 @@ import de.cubeisland.engine.multiverse.config.WorldConfig;
 import de.cubeisland.engine.multiverse.converter.DiffcultyConverter;
 import de.cubeisland.engine.multiverse.converter.EnvironmentConverter;
 import de.cubeisland.engine.multiverse.converter.GameModeConverter;
+import de.cubeisland.engine.multiverse.converter.InventoryConverter;
+import de.cubeisland.engine.multiverse.converter.PotionEffectConverter;
 import de.cubeisland.engine.multiverse.converter.WorldTypeConverter;
+import de.cubeisland.engine.multiverse.player.PlayerConfiguration;
 
 public class Multiverse extends Module implements Listener
 {
@@ -59,6 +70,15 @@ public class Multiverse extends Module implements Listener
         manager.registerConverter(Environment.class, new EnvironmentConverter());
         manager.registerConverter(GameMode.class, new GameModeConverter());
         manager.registerConverter(WorldType.class, new WorldTypeConverter());
+///*
+        manager.registerConverter(Inventory.class, new InventoryConverter(Bukkit.getServer()));
+        manager.registerConverter(PotionEffect.class, new PotionEffectConverter());
+
+        //*/
+        NBTCodec codec = this.getCore().getConfigFactory().getCodecManager().getCodec(NBTCodec.class);
+        manager = codec.getConverterManager();
+        manager.registerConverter(Inventory.class, new InventoryConverter(Bukkit.getServer()));
+        manager.registerConverter(PotionEffect.class, new PotionEffectConverter());
     }
 
     @Override
@@ -186,6 +206,29 @@ public class Multiverse extends Module implements Listener
         worldConfig.spawn.spawnLocation = event.getNewLocation();
         worldConfig.updateInheritance();
         worldConfig.save();
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event)
+    {
+        PlayerConfiguration config = this.getCore().getConfigFactory().create(PlayerConfiguration.class);
+        config.inventory = event.getPlayer().getInventory();
+        config.enderChest = event.getPlayer().getEnderChest();
+        config.activePotionEffects = event.getPlayer().getActivePotionEffects();
+
+        config.setFile(this.getFolder().resolve(event.getPlayer().getName() +".dat").toFile());
+
+        YamlCodec codec = this.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
+        try
+        {
+            codec.saveConfig(config, new FileOutputStream(this.getFolder().resolve(event.getPlayer().getName() +".yml").toFile()));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+        config.save();
     }
 
     private WorldConfig getWorldConfig(World world)
