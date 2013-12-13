@@ -103,10 +103,16 @@ public class WorldConfig extends YamlConfiguration
 
     public void applyToWorld(World world)
     {// TODO if anything is null take from world ; update inheritance & save
+        boolean save = false;
         world.setKeepSpawnInMemory(this.spawn.keepSpawnInMemory);
         if (this.spawn.spawnLocation != null)
         {
             world.setSpawnLocation((int)this.spawn.spawnLocation.x, (int)this.spawn.spawnLocation.y, (int)this.spawn.spawnLocation.z);
+        }
+        else
+        {
+            save = true;
+            this.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());
         }
 
         world.setSpawnFlags(!this.spawning.disable_monster, !this.spawning.disable_animals);
@@ -123,6 +129,12 @@ public class WorldConfig extends YamlConfiguration
         world.setPVP(this.pvp);
         world.setAutoSave(this.autosave);
         world.setDifficulty(this.difficulty);
+
+        if (save)
+        {
+            this.updateInheritance();
+            this.save();
+        }
     }
 
 
