@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.multiverse.player;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.bukkit.entity.Player;
@@ -27,35 +28,48 @@ import org.bukkit.potion.PotionEffect;
 import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 
-public class PlayerConfiguration extends Configuration<NBTCodec>
+public class PlayerDataConfig extends Configuration<NBTCodec>
 {
-    public int selectedItemSlot;
+    public int heldItemSlot = 0;
     public double health = 20;
     public double maxHealth = 20;
     public int foodLevel = 20;
     public float saturation = 20;
     public float exhaustion = 0;
-    public int expTotal = 0;
+    public float exp = 0;
+    public int lvl = 0;
     public int fireTicks = 0;
 
-    public Collection<PotionEffect> activePotionEffects;
+    public Collection<PotionEffect> activePotionEffects = new ArrayList<>();
     public Inventory inventory;
     public Inventory enderChest;
+
+    private transient String[] head = null;
 
     public void applyToPlayer(Player player)
     {
         Inventory inv = player.getInventory();
-        player.getInventory().setHeldItemSlot(selectedItemSlot);
+        player.getInventory().setHeldItemSlot(heldItemSlot);
         player.setMaxHealth(maxHealth);
         player.setHealth(health);
         player.setFoodLevel(foodLevel);
         player.setSaturation(saturation);
         player.setExhaustion(exhaustion);
-        player.setTotalExperience(expTotal);
+        player.setLevel(lvl);
+        player.setExp(exp);
         player.setFireTicks(fireTicks);
         player.addPotionEffects(activePotionEffects);
 
-        ItemStack[] contents = inventory.getContents();
+        ItemStack[] contents;
+        if (inventory == null)
+        {
+            contents = new ItemStack[36+4];
+        }
+        else
+        {
+            contents = inventory.getContents();
+        }
+
         for (int i = 0; i < contents.length; i++)
         {
             if (i >= inv.getSize() + 4)
@@ -66,7 +80,14 @@ public class PlayerConfiguration extends Configuration<NBTCodec>
         }
 
         inv = player.getEnderChest();
-        contents = enderChest.getContents();
+        if (inventory == null)
+        {
+            contents = new ItemStack[27];
+        }
+        else
+        {
+            contents = enderChest.getContents();
+        }
         for (int i = 0; i < contents.length; i++)
         {
             if (i >= inv.getSize())
@@ -75,5 +96,32 @@ public class PlayerConfiguration extends Configuration<NBTCodec>
             }
             inv.setItem(i, contents[i]);
         }
+    }
+
+    public void applyFromPlayer(Player player)
+    {
+        this.heldItemSlot = player.getInventory().getHeldItemSlot();
+        this.maxHealth = player.getMaxHealth();
+        this.health = player.getHealth();
+        this.foodLevel = player.getFoodLevel();
+        this.saturation = player.getSaturation();
+        this.exhaustion = player.getExhaustion();
+        this.lvl = player.getLevel();
+        this.exp = player.getExp();
+        this.fireTicks = player.getFireTicks();
+        this.activePotionEffects = player.getActivePotionEffects();
+        this.inventory = player.getInventory();
+        this.enderChest = player.getEnderChest();
+    }
+
+    public void setHead(String... head)
+    {
+        this.head = head;
+    }
+
+    @Override
+    public String[] head()
+    {
+        return this.head;
     }
 }

@@ -25,7 +25,6 @@ import java.util.Map.Entry;
 
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
@@ -45,7 +44,7 @@ public class WorldConfig extends YamlConfiguration
         public World respawnWorld; // empty means main universe world
         public boolean allowBedRespawn = true; // TODO
         public boolean keepSpawnInMemory = false;
-        public Location spawnLocation; // TODO only xyz yaw pitch double precision
+        public WorldLocation spawnLocation;
     }
     public Access access = new Access();
 
@@ -94,7 +93,7 @@ public class WorldConfig extends YamlConfiguration
         world.setKeepSpawnInMemory(this.spawn.keepSpawnInMemory);
         if (this.spawn.spawnLocation != null)
         {
-            world.setSpawnLocation(this.spawn.spawnLocation.getBlockX(), this.spawn.spawnLocation.getBlockY(), this.spawn.spawnLocation.getBlockZ());
+            world.setSpawnLocation((int)this.spawn.spawnLocation.x, (int)this.spawn.spawnLocation.y, (int)this.spawn.spawnLocation.z);
         }
 
         world.setSpawnFlags(!this.spawning.disable_monster, !this.spawning.disable_animals);
