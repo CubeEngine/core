@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
@@ -34,7 +35,6 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.multiverse.config.UniverseConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig;
-import de.cubeisland.engine.multiverse.config.WorldConfig.Generation;
 import de.cubeisland.engine.multiverse.config.WorldLocation;
 import de.cubeisland.engine.multiverse.player.PlayerDataConfig;
 
@@ -65,7 +65,7 @@ public class Universe
         {
             module.getLog().warn("defaults.yml is missing for the universe {}! Regenerating...", universeDir.getName());
         }
-        this.worldConfigDefaults = module.getCore().getConfigFactory().load(WorldConfig.class, defaultsFile, true); // Loads &| saves
+        this.worldConfigDefaults = module.getCore().getConfigFactory().load(WorldConfig.class, defaultsFile, true);
         for (File file : universeDir.listFiles())
         {
             if (!(file.equals(defaultsFile) || file.equals(universeFile)))
@@ -75,26 +75,37 @@ public class Universe
                     String name = file.getName().substring(0, file.getName().indexOf(".yml"));
                     WorldConfig config = this.worldConfigDefaults.loadChild(file);
                     World world = this.module.getCore().getWorldManager().getWorld(name);
-                    if (world == null)
+                    if (world == null) // world loaded?
                     {
+                        if (config.generation.environment == null || config.generation.seed == null)
+                        {
+                            module.getLog().info("Insufficient Generation Information to load {}!", name);
+                            continue;
+                        }
+                        if (new File(Bukkit.getServer().getWorldContainer(), name).exists()) // world is just not loaded yet
+                        {
+                            module.getLog().info("Loading World {}...", name);
+                        }
+                        else // World does not exist
+                        {
+                            module.getLog().info("Creating new World {}...", name);
+                        }
                         WorldCreator creator = WorldCreator.name(name);
-                        Generation gen = config.generation;
-                        if (gen.worldType != null)
-                        {
-                            creator.type(gen.worldType);
-                        }
-                        if (gen.environment != null)
-                        {
-                            creator.environment(gen.environment);
-                        }
-                        creator.generateStructures(gen.generateStructures);
-                        if (gen.seed != null)
-                        {
-                            creator.seed(gen.seed);
-                        }
-                        // TODO custom generator
-                        module.getLog().info("Creating new World {}...", name);
+                        config.applyToCreator(creator);
                         world = this.module.getCore().getWorldManager().createWorld(creator);
+                        if (config.spawn.spawnLocation == null)
+                        {
+                            config.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());
+                        }
+                        config.updateInheritance();
+                        config.save();
+                    }
+                    else
+                    {
+                        module.getLog().info("{} is already loaded!", name);
+                        config.applyGenerationFromWorld(world);
+                        config.updateInheritance();
+                        config.save();
                     }
                     this.worlds.add(world);
                     this.configs.put(world, config);
@@ -141,9 +152,11 @@ public class Universe
 
                 this.worldConfigDefaults = this.createWorldConfigFromExisting(world);
                 this.worldConfigDefaults.spawn.spawnLocation = null;
+                this.worldConfigDefaults.generation.worldType = null;
                 this.worldConfigDefaults.generation.seed = null;
                 this.worldConfigDefaults.spawn.respawnWorld = this.universeConfig.mainWorld;
                 this.worldConfigDefaults.setFile(new File(universeDir, "defaults.yml"));
+
                 this.worldConfigDefaults.save();
             }
             this.configs.put(world, this.createWorldConfigFromExisting(world));
@@ -175,7 +188,7 @@ public class Universe
         config.generation.worldType = world.getWorldType();
         config.generation.generateStructures = world.canGenerateStructures();
         config.generation.environment = world.getEnvironment();
-        config.generation.seed = world.getSeed();
+        config.generation.seed = String.valueOf(world.getSeed());
         // TODO config.generation.customGenerator = world.getGenerator();
 
         config.spawning.disable_animals = !world.getAllowAnimals();
@@ -251,7 +264,8 @@ public class Universe
 
     public void loadPlayer(Player player)
     {
-        this.module.getLog().debug("{} loaded for {} in {}" , player.getName(), this.getName(), player.getWorld().getName());
+        this.module.getLog().debug("{} loaded for {} in {}", player.getName(), this.getName(), player.getWorld()
+                                                                                                     .getName());
         File file = new File(playersDir, player.getName() +".dat");
         if (file.exists())
         {

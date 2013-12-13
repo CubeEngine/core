@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.multiverse.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 
 import de.cubeisland.engine.configuration.Section;
@@ -35,6 +37,28 @@ import de.cubeisland.engine.configuration.YamlConfiguration;
 public class WorldConfig extends YamlConfiguration
 {
     public List<String> alias = new ArrayList<>();
+
+    public Generation generation = new Generation();
+
+    public class Generation implements Section
+    {
+        public WorldType worldType = WorldType.NORMAL;
+        public boolean generateStructures = true;
+        public Environment environment;
+        public String seed = "";
+        public String customGenerator = null; // TODO not supported yet
+    }
+
+    @Override
+    public void onLoaded(File loadedFrom)
+    {
+        if (this.getDefault() == this)
+        {
+            this.generation.environment = null;
+            this.generation.seed = null;
+        }
+    }
+
     public double scale = 1.0;
 
     public Spawn spawn = new Spawn();
@@ -52,17 +76,6 @@ public class WorldConfig extends YamlConfiguration
     {
         public boolean world = true; // if false need perm to access world
         public boolean interceptTeleport = false;
-    }
-
-    public Generation generation = new Generation();
-
-    public class Generation implements Section
-    {
-        public WorldType worldType = WorldType.NORMAL;
-        public Environment environment = Environment.NORMAL;
-        public boolean generateStructures = true;
-        public String customGenerator = null; // TODO not supported yet
-        public Long seed;
     }
 
     public Spawning spawning = new Spawning();
@@ -89,11 +102,17 @@ public class WorldConfig extends YamlConfiguration
     public Difficulty difficulty = Difficulty.NORMAL;
 
     public void applyToWorld(World world)
-    {
+    {// TODO if anything is null take from world ; update inheritance & save
+        boolean save = false;
         world.setKeepSpawnInMemory(this.spawn.keepSpawnInMemory);
         if (this.spawn.spawnLocation != null)
         {
             world.setSpawnLocation((int)this.spawn.spawnLocation.x, (int)this.spawn.spawnLocation.y, (int)this.spawn.spawnLocation.z);
+        }
+        else
+        {
+            save = true;
+            this.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());
         }
 
         world.setSpawnFlags(!this.spawning.disable_monster, !this.spawning.disable_animals);
@@ -110,5 +129,46 @@ public class WorldConfig extends YamlConfiguration
         world.setPVP(this.pvp);
         world.setAutoSave(this.autosave);
         world.setDifficulty(this.difficulty);
+
+        if (save)
+        {
+            this.updateInheritance();
+            this.save();
+        }
+    }
+
+
+    public void applyToCreator(WorldCreator creator)
+    {
+        if (generation.worldType != null)
+        {
+            creator.type(generation.worldType);
+        }
+        if (generation.environment != null)
+        {
+            creator.environment(generation.environment);
+        }
+        creator.generateStructures(generation.generateStructures);
+        if (generation.seed != null)
+        {
+            try
+            {
+                creator.seed(Long.valueOf(generation.seed));
+            }
+            catch (NumberFormatException ex)
+            {
+                creator.seed(generation.seed.hashCode());
+            }
+        }
+        // TODO custom generator
+    }
+
+    public void applyGenerationFromWorld(World world)
+    {
+        this.generation.generateStructures = world.canGenerateStructures();
+        this.generation.seed = String.valueOf(world.getSeed());
+        this.generation.environment = world.getEnvironment();
+        this.generation.worldType = world.getWorldType();
+        // TODO generator
     }
 }
