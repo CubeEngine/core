@@ -43,10 +43,10 @@ public class WorldConfig extends YamlConfiguration
     public class Generation implements Section
     {
         public WorldType worldType = WorldType.NORMAL;
-        public Environment environment;
         public boolean generateStructures = true;
-        public String customGenerator = null; // TODO not supported yet
+        public Environment environment;
         public Long seed = 0L;
+        public String customGenerator = null; // TODO not supported yet
     }
 
     @Override
