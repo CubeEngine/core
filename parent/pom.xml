@@ -217,34 +217,6 @@
     </resources>
 
     <plugins>
-      <plugin>
-        <groupId>de.cubeisland.maven.plugins</groupId>
-        <artifactId>githead-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-license-headers</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.googlecode.gettext-commons</groupId>
-        <artifactId>gettext-maven-plugin</artifactId>
-        <version>1.2.4</version>
-        <configuration>
-          <sourceLocale>en_US</sourceLocale>
-          <poDirectory>${basedir}/src/main/resources/translations</poDirectory>
-          <keysFile>messages.pot</keysFile>
-          <keywords>-ktranslate:1 -ktranslateN:1,2 -kgetTranslation:1 -kgetTranslationN:1,2 -ksendTranslated:1 -ksendTranslatedN:1,2 -k_:1</keywords>
-        </configuration>
-      </plugin>
 
       <plugin>
         <groupId>de.cubeisland.maven.plugins</groupId>
@@ -252,15 +224,25 @@
         <version>1.0.0-SNAPSHOT</version>
         <configuration>
           <source>
-            <options>
-              <methods>translate translateN:1,2 getTranslation getTranslationN:1,2 sendTranslated sendTranslatedN:1,2 _</methods>
-              <annotations>de.cubeisland.engine.core.command.reflected.Command:desc,usage</annotations>
-            </options>
+            <translatables>
+              <methods>
+                <method>translate</method>
+                <method>translateN:1,2</method>
+                <method>getTranslation</method>
+                <method>getTranslationN:1,2</method>
+                <method>sendTranslated</method>
+                <method>sendTranslatedN:1,2</method>
+                <method>_</method>
+              </methods>
+              <annotations>
+                <annotation>de.cubeisland.engine.core.command.reflected.Command:desc,usage</annotation>
+              </annotations>
+            </translatables>
           </source>
           <catalog>
             <templateFile>${basedir}/src/main/resources/translations/messages</templateFile>
             <removeUnusedMessages>false</removeUnusedMessages>
-            <header>../header.txt</header>
+            <header>${basedir}/../header.txt</header>
           </catalog>
         </configuration>
       </plugin>
