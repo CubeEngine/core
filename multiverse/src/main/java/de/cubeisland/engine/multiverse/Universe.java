@@ -127,7 +127,7 @@ public class Universe
             {
                 if (worldConfig.spawn.respawnWorld == null)
                 {
-                    worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
+                    worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld.getName();
                     worldConfig.save();
                 }
             }
@@ -154,7 +154,7 @@ public class Universe
                 this.worldConfigDefaults.spawn.spawnLocation = null;
                 this.worldConfigDefaults.generation.worldType = null;
                 this.worldConfigDefaults.generation.seed = null;
-                this.worldConfigDefaults.spawn.respawnWorld = this.universeConfig.mainWorld;
+                this.worldConfigDefaults.spawn.respawnWorld = this.universeConfig.mainWorld.getName();
                 this.worldConfigDefaults.setFile(new File(universeDir, "defaults.yml"));
 
                 this.worldConfigDefaults.save();
@@ -164,7 +164,7 @@ public class Universe
         for (Entry<World, WorldConfig> entry : configs.entrySet())
         {
             WorldConfig worldConfig = entry.getValue();
-            worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
+            worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld.getName();
 
             worldConfig.setDefault(this.worldConfigDefaults);
             worldConfig.setFile(new File(universeDir, entry.getKey().getName() + ".yml"));

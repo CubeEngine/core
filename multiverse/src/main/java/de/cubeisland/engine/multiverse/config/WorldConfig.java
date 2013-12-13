@@ -65,7 +65,7 @@ public class WorldConfig extends YamlConfiguration
 
     public class Spawn implements Section
     {
-        public World respawnWorld; // empty means main universe world
+        public String respawnWorld; // empty means main universe world
         public boolean allowBedRespawn = true; // TODO
         public boolean keepSpawnInMemory = false;
         public WorldLocation spawnLocation;
