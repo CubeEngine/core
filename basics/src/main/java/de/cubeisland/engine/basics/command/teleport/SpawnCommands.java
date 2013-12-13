@@ -160,7 +160,9 @@ public class SpawnCommands
                     }
                 }
                 if (!TeleportCommands.teleport(player, loc, true, force, true))
+                {
                     return;
+                }
             }
             this.module.getCore().getUserManager().broadcastMessage("&aTeleported everyone to the spawn of %s!", world.getName());
             return;
@@ -193,7 +195,10 @@ public class SpawnCommands
         final Location userLocation = user.getLocation();
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
-        TeleportCommands.teleport(user, spawnLocation, true, force, true);
+        if (!TeleportCommands.teleport(user, spawnLocation, true, force, true))
+        {
+            context.sendTranslated("&cTeleport failed!");
+        }
     }
 
     @Command(desc = "Teleports you to the spawn of given world",
@@ -219,7 +224,9 @@ public class SpawnCommands
                 return;
             }
             if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
+            {
                 context.sendTranslated("&aTeleported to the spawn of world &6%s&a!", world.getName());
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");

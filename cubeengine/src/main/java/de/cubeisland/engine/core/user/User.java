@@ -292,7 +292,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return this.entity.getLastseen().getTime();
     }
 
-    public void safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
+    public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Location checkLocation = location.clone().add(0, 1, 0);
         // Search for 2 non occluding blocks
@@ -328,7 +328,10 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             checkLocation = location.clone();
             while (checkLocation.add(0, -1, 0).getBlock().getType() == Material.AIR)
             {
-                if (checkLocation.getY() < 0) return;
+                if (checkLocation.getY() < 0)
+                {
+                    return false;
+                }
                 location.add(0, -1, 0);
             }
         }
@@ -357,7 +360,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             location.setPitch(loc.getPitch());
             location.setYaw(loc.getYaw());
         }
-        this.teleport(location, cause);
+        return this.teleport(location, cause);
     }
 
     public boolean isPasswordSet()

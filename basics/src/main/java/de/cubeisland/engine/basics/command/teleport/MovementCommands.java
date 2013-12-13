@@ -78,7 +78,9 @@ public class MovementCommands
                 block.setType(Material.GLASS);
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
+            {
                 context.sendTranslated("&aYou just lifted!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -93,7 +95,9 @@ public class MovementCommands
             Location loc = sender.getLocation();
             loc.getWorld().getHighestBlockAt(loc).getLocation(loc);
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
+            {
                 context.sendTranslated("&aYou are now on top!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -131,8 +135,10 @@ public class MovementCommands
                 return;
             }
             //reached new location
-            context.sendTranslated("&aAscended a level!");
-            TeleportCommands.teleport(sender, currentLocation, true, false, true);
+            if (TeleportCommands.teleport(sender, currentLocation, true, false, true))
+            {
+                context.sendTranslated("&aAscended a level!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -165,8 +171,10 @@ public class MovementCommands
                 return;
             }
             //reached new location
-            context.sendTranslated("&aDescended a level!");
-            TeleportCommands.teleport(sender, currentLocation, true, false, true);
+            if (TeleportCommands.teleport(sender, currentLocation, true, false, true))
+            {
+                context.sendTranslated("&aDescended a level!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -188,7 +196,9 @@ public class MovementCommands
             }
             loc.add(0.5, 1, 0.5);
             if (TeleportCommands.teleport(sender, loc, true, false, true))
+            {
                 context.sendTranslated("&aYou just jumped!");
+            }
             return;
         }
         context.sendTranslated("&eJumping in the console is not allowed! Go play outside!");
@@ -211,7 +221,9 @@ public class MovementCommands
                 return;
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true))
+            {
                 context.sendTranslated("&aYou just passed the wall!");
+            }
             return;
         }
         context.sendTranslated("&ePassing through firewalls in the console is not allowed! Go play outside!");
