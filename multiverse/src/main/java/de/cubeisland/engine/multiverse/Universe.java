@@ -188,7 +188,7 @@ public class Universe
         config.generation.worldType = world.getWorldType();
         config.generation.generateStructures = world.canGenerateStructures();
         config.generation.environment = world.getEnvironment();
-        config.generation.seed = world.getSeed();
+        config.generation.seed = String.valueOf(world.getSeed());
         // TODO config.generation.customGenerator = world.getGenerator();
 
         config.spawning.disable_animals = !world.getAllowAnimals();

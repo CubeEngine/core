@@ -45,7 +45,7 @@ public class WorldConfig extends YamlConfiguration
         public WorldType worldType = WorldType.NORMAL;
         public boolean generateStructures = true;
         public Environment environment;
-        public Long seed = 0L;
+        public String seed = "";
         public String customGenerator = null; // TODO not supported yet
     }
 
@@ -151,7 +151,14 @@ public class WorldConfig extends YamlConfiguration
         creator.generateStructures(generation.generateStructures);
         if (generation.seed != null)
         {
-            creator.seed(generation.seed);
+            try
+            {
+                creator.seed(Long.valueOf(generation.seed));
+            }
+            catch (NumberFormatException ex)
+            {
+                creator.seed(generation.seed.hashCode());
+            }
         }
         // TODO custom generator
     }
@@ -159,7 +166,7 @@ public class WorldConfig extends YamlConfiguration
     public void applyGenerationFromWorld(World world)
     {
         this.generation.generateStructures = world.canGenerateStructures();
-        this.generation.seed = world.getSeed();
+        this.generation.seed = String.valueOf(world.getSeed());
         this.generation.environment = world.getEnvironment();
         this.generation.worldType = world.getWorldType();
         // TODO generator
