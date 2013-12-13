@@ -99,6 +99,8 @@ public class Multiverse extends Module implements Listener
         this.playersDir = this.getFolder().resolve("players").toFile();
         this.playersDir.mkdir();
 
+        new MultiversePermissions(this);
+
         File universesFolder = this.getFolder().resolve("universes").toFile();
         if (universesFolder.exists() && universesFolder.list().length != 0)
         {
