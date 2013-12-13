@@ -15,11 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.multiverse;
+package de.cubeisland.engine.multiverse.player;
 
-/**
- * Represents a world in a Universe
- */
-public class MultiverseWorld
+import org.bukkit.World;
+
+import de.cubeisland.engine.configuration.YamlConfiguration;
+
+public class PlayerConfig extends YamlConfiguration
 {
+    public World lastWorld;
 }

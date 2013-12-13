@@ -17,11 +17,37 @@
  */
 package de.cubeisland.engine.multiverse.config;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import org.bukkit.Location;
+import org.bukkit.World;
 
-public class MultiverseConfig extends YamlConfiguration
+public class WorldLocation
 {
-    public String mainUniverse;
-    public boolean adjustFirstSpawn = false;
-    // ? public List<String> universes = new ArrayList<>();
+    public final double x;
+    public final double y;
+    public final double z;
+    public final float yaw;
+    public final float pitch;
+
+    public WorldLocation(double x, double y, double z, float yaw, float pitch)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
+
+    public WorldLocation(Location location)
+    {
+        this.x = location.getX();
+        this.y = location.getY();
+        this.z = location.getZ();
+        this.yaw = location.getYaw();
+        this.pitch = location.getPitch();
+    }
+
+    public final Location getLocationIn(World world)
+    {
+        return new Location(world, x,y,z, yaw, pitch);
+    }
 }

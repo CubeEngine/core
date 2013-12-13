@@ -18,7 +18,9 @@
 package de.cubeisland.engine.multiverse;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,10 +33,14 @@ import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.potion.PotionEffect;
 
@@ -45,19 +51,26 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.multiverse.config.MultiverseConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig;
+import de.cubeisland.engine.multiverse.config.WorldLocation;
 import de.cubeisland.engine.multiverse.converter.DiffcultyConverter;
 import de.cubeisland.engine.multiverse.converter.EnvironmentConverter;
 import de.cubeisland.engine.multiverse.converter.GameModeConverter;
 import de.cubeisland.engine.multiverse.converter.InventoryConverter;
 import de.cubeisland.engine.multiverse.converter.PotionEffectConverter;
+import de.cubeisland.engine.multiverse.converter.WorldLocationConverter;
 import de.cubeisland.engine.multiverse.converter.WorldTypeConverter;
+import de.cubeisland.engine.multiverse.player.PlayerConfig;
+import de.cubeisland.engine.multiverse.player.PlayerDataConfig;
 
 public class Multiverse extends Module implements Listener
 {
     private MultiverseConfig config;
+    private World mainWorld;
 
     private Map<String, Universe> universes = new HashMap<>();
     private Map<World, Universe> worlds = new HashMap<>();
+
+    private File playersDir;
 
     @Override
     public void onLoad()
@@ -67,11 +80,12 @@ public class Multiverse extends Module implements Listener
         manager.registerConverter(Environment.class, new EnvironmentConverter());
         manager.registerConverter(GameMode.class, new GameModeConverter());
         manager.registerConverter(WorldType.class, new WorldTypeConverter());
+        manager.registerConverter(WorldLocation.class, new WorldLocationConverter());
 ///*TODO remove
         manager.registerConverter(Inventory.class, new InventoryConverter(Bukkit.getServer()));
         manager.registerConverter(PotionEffect.class, new PotionEffectConverter());
 
-        //*/
+//*/
         NBTCodec codec = this.getCore().getConfigFactory().getCodecManager().getCodec(NBTCodec.class);
         manager = codec.getConverterManager();
         manager.registerConverter(Inventory.class, new InventoryConverter(Bukkit.getServer()));
@@ -82,6 +96,8 @@ public class Multiverse extends Module implements Listener
     public void onEnable()
     {
         this.config = this.loadConfig(MultiverseConfig.class);
+        this.playersDir = this.getFolder().resolve("players").toFile();
+        this.playersDir.mkdir();
 
         File universesFolder = this.getFolder().resolve("universes").toFile();
         if (universesFolder.exists() && universesFolder.list().length != 0)
@@ -90,6 +106,11 @@ public class Multiverse extends Module implements Listener
             {
                 if (universeDir.isDirectory())
                 {
+                    if (this.config.mainUniverse == null)
+                    {
+                        this.config.mainUniverse = universeDir.getName();
+                        this.config.save();
+                    }
                     this.universes.put(universeDir.getName(), new Universe(universeDir, this));
                 }
             }
@@ -155,7 +176,17 @@ public class Multiverse extends Module implements Listener
                 this.worlds.put(world, universe);
             }
         }
-
+        this.mainWorld = this.universes.get(this.config.mainUniverse).getMainWorld();
+        if (this.config.mainUniverse == null || this.universes.get(this.config.mainUniverse) == null)
+        {
+            Universe universe = this.universes.get("world");
+            if (universe == null)
+            {
+                universe = this.universes.values().iterator().next();
+            }
+            this.getLog().warn("No main universe set. {} is now the main universe!", universe.getName());
+            this.config.mainUniverse = universe.getName();
+        }
         this.getCore().getEventManager().registerListener(this, this);
     }
 
@@ -200,7 +231,7 @@ public class Multiverse extends Module implements Listener
     public void onSetSpawn(WorldSetSpawnEvent event)
     {
         WorldConfig worldConfig = this.getWorldConfig(event.getWorld());
-        worldConfig.spawn.spawnLocation = event.getNewLocation();
+        worldConfig.spawn.spawnLocation = new WorldLocation(event.getNewLocation());
         worldConfig.updateInheritance();
         worldConfig.save();
     }
@@ -228,9 +259,94 @@ public class Multiverse extends Module implements Listener
         Universe newUniverse = this.worlds.get(event.getPlayer().getWorld());
         if (oldUniverse != newUniverse)
         {
+            event.getPlayer().closeInventory();
             oldUniverse.savePlayer(event.getPlayer());
             newUniverse.loadPlayer(event.getPlayer());
         }
+        this.savePlayer(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void onJoin(PlayerJoinEvent event)
+    {
+        if (this.config.adjustFirstSpawn && !event.getPlayer().hasPlayedBefore())
+        {
+            Universe universe = this.universes.get(this.config.mainUniverse);
+            World world = universe.getMainWorld();
+            WorldConfig worldConfig = universe.getWorldConfig(world);
+            event.getPlayer().teleport(worldConfig.spawn.spawnLocation.getLocationIn(world));
+        }
+        this.checkForExpectedWorld(event.getPlayer());
+    }
+
+    private void checkForExpectedWorld(Player player)
+    {
+        File file = new File(this.playersDir, player.getName() + ".yml");
+        PlayerConfig config;
+        if (file.exists())
+        {
+            config = this.getCore().getConfigFactory().load(PlayerConfig.class, file, false);
+            if (config.lastWorld != null)
+            {
+                Universe universe = this.worlds.get(player.getWorld());
+                Universe expected = this.worlds.get(config.lastWorld);
+                if (universe != expected)
+                {
+                    File errors = this.getFolder().resolve("errors").toFile();
+                    errors.mkdir();
+                    // expectedworld-actualworld_playername.yml
+                    File errorFile = new File(errors, config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName()  + ".yml");
+                    int i = 1;
+                    while (errorFile.exists())
+                    {
+                        errorFile = new File(errors, config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName() + "_" + i++ + ".yml");
+                    }
+                    this.getLog().warn("The Player {} was not in the expected world! Overwritten Inventory is saved under /errors/{}", player.getName(), errorFile.getName());
+                    PlayerDataConfig pdc = this.getCore().getConfigFactory().create(PlayerDataConfig.class);
+                    pdc.setHead(new SimpleDateFormat().format(new Date()) + " " + player
+                        .getName() + " did not spawn in " +
+                                    config.lastWorld.getName() + " but instead in " + player.getWorld()
+                                                                                            .getName(), "This are the items the player had when spawning. They got overwritten!");
+                    pdc.setFile(errorFile);
+                    pdc.applyFromPlayer(player);
+                    pdc.save();
+                }
+                if (config.lastWorld == player.getWorld())
+                {
+                    return; // everything is ok
+                }
+                this.getLog().debug("{} was not in expected world but in the same universe {} instead of {}",
+                                    player.getName(), player.getWorld().getName(), config.lastWorld.getName());
+                universe.loadPlayer(player);
+                // else save new world (strange that player changed world but nvm
+            }
+            // else no last-world saved. why does this file exist?
+        }
+        else
+        {
+            this.getLog().debug("Created PlayerConfig for {}" , player.getName());
+            config = this.getCore().getConfigFactory().create(PlayerConfig.class);
+        }
+        config.lastWorld = player.getWorld(); // update last world
+        config.setFile(file);
+        config.save();
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event)
+    {
+        Universe universe = this.worlds.get(event.getPlayer().getWorld());
+        universe.savePlayer(event.getPlayer());
+        this.savePlayer(event.getPlayer());
+    }
+
+    private void savePlayer(Player player)
+    {
+        File file = new File(this.playersDir, player.getName() + ".yml");
+        PlayerConfig config = this.getCore().getConfigFactory().load(PlayerConfig.class, file);
+        config.lastWorld = player.getWorld();
+        config.save();
+        this.getLog().debug("Saved last world of {}: {}", player.getName(), player.getWorld().getName());
     }
 
     private WorldConfig getWorldConfig(World world)

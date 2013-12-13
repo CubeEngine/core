@@ -35,7 +35,8 @@ import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.multiverse.config.UniverseConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig.Generation;
-import de.cubeisland.engine.multiverse.player.PlayerConfiguration;
+import de.cubeisland.engine.multiverse.config.WorldLocation;
+import de.cubeisland.engine.multiverse.player.PlayerDataConfig;
 
 /**
  * Represents multiple worlds in a universe
@@ -166,7 +167,7 @@ public class Universe
         {
             config.scale = 8.0; // Nether is 1:8
         }
-        config.spawn.spawnLocation = world.getSpawnLocation();
+        config.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());
         if (this.worldConfigDefaults != null && this.universeConfig.mainWorld == world)
         {
             config.spawn.keepSpawnInMemory = true; // KEEP MAIN SPAWN LOADED
@@ -231,10 +232,10 @@ public class Universe
 
     public void savePlayer(Player player)
     {
-        PlayerConfiguration config = this.module.getCore().getConfigFactory().create(PlayerConfiguration.class);
-        config.inventory = player.getInventory();
-        config.enderChest = player.getEnderChest();
-        config.activePotionEffects = player.getActivePotionEffects();
+        this.module.getLog().debug("{} saved for {} in {}" , player.getName(), this.getName(), player.getWorld().getName());
+        PlayerDataConfig config = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
+        config.applyFromPlayer(player);
+
         config.setFile(new File(playersDir, player.getName() +".dat"));
         YamlCodec codec = this.module.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
         try
@@ -250,12 +251,25 @@ public class Universe
 
     public void loadPlayer(Player player)
     {
+        this.module.getLog().debug("{} loaded for {} in {}" , player.getName(), this.getName(), player.getWorld().getName());
         File file = new File(playersDir, player.getName() +".dat");
         if (file.exists())
         {
-            PlayerConfiguration load = this.module.getCore().getConfigFactory().load(PlayerConfiguration.class, file);
+            PlayerDataConfig load = this.module.getCore().getConfigFactory().load(PlayerDataConfig.class, file);
             load.applyToPlayer(player);
         }
+        else
+        {
+            this.module.getLog().debug("Created PlayerDataConfig for {} in the {} universe" , player.getName(), this.getName());
+            PlayerDataConfig save = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
+            save.applyToPlayer(player);
+            this.savePlayer(player);
+        }
+    }
+
+    public World getMainWorld()
+    {
+        return this.universeConfig.mainWorld;
     }
 
     // intercept PortalCreateEvent if not allowed

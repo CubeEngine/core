@@ -68,7 +68,7 @@ public class InventoryConverter implements Converter<Inventory>
             for (int i = 0; i < armorContents.length; i++)
             {
                 ItemStack itemStack = armorContents[i];
-                if (itemStack != null)
+                if (itemStack != null && itemStack.getType() != Material.AIR)
                 {
                     this.addItem(list, itemStack, i + object.getSize());
                 }
