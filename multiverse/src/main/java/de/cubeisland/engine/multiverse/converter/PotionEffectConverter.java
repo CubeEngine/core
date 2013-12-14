@@ -23,7 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.BooleanNode;
+import de.cubeisland.engine.configuration.node.ByteNode;
 import de.cubeisland.engine.configuration.node.IntNode;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
@@ -56,12 +56,12 @@ public class PotionEffectConverter implements Converter<PotionEffect>
             Node duration = ((MapNode)node).getExactNode("duration");
             Node type = ((MapNode)node).getExactNode("type");
             Node ambient = ((MapNode)node).getExactNode("ambient");
-            if (amplifier instanceof IntNode && duration instanceof IntNode && type instanceof StringNode && ambient instanceof BooleanNode)
+            if (amplifier instanceof IntNode && duration instanceof IntNode && type instanceof StringNode && ambient instanceof ByteNode)
             {
                 PotionEffectType byName = PotionEffectType.getByName(type.asText());
                 if (byName != null)
                 {
-                    return new PotionEffect(byName, ((IntNode)duration).getValue(), ((IntNode)amplifier).getValue(), ((BooleanNode)ambient).getValue());
+                    return new PotionEffect(byName, ((IntNode)duration).getValue(), ((IntNode)amplifier).getValue(), ambient.getValue() == 1);
                 }
                 else
                 {
