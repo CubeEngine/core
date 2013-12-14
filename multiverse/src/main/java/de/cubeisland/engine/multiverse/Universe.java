@@ -38,6 +38,9 @@ import de.cubeisland.engine.multiverse.config.WorldConfig;
 import de.cubeisland.engine.multiverse.config.WorldLocation;
 import de.cubeisland.engine.multiverse.player.PlayerDataConfig;
 
+import static de.cubeisland.engine.multiverse.MultiversePermissions.KEEP_FLYMODE;
+import static de.cubeisland.engine.multiverse.MultiversePermissions.KEEP_GAMEMODE;
+
 /**
  * Represents multiple worlds in a universe
  */
@@ -45,7 +48,7 @@ public class Universe
 {
     private UniverseConfig universeConfig;
     private WorldConfig worldConfigDefaults = null;
-    private Map<World, WorldConfig> configs = new HashMap<>();
+    private Map<World, WorldConfig> worldConfigs = new HashMap<>();
     private File universeDir;
     private File playersDir;
     private Multiverse module;
@@ -108,7 +111,7 @@ public class Universe
                         config.save();
                     }
                     this.worlds.add(world);
-                    this.configs.put(world, config);
+                    this.worldConfigs.put(world, config);
                     config.applyToWorld(world);
                 }
                 else if (!file.isDirectory())
@@ -123,7 +126,7 @@ public class Universe
             World world = this.worlds.iterator().next();
             module.getLog().warn("The universe {} had no mainworld! {} is now the main world", universeDir.getName(), world.getName());
             this.universeConfig.save();
-            for (WorldConfig worldConfig : this.configs.values())
+            for (WorldConfig worldConfig : this.worldConfigs.values())
             {
                 if (worldConfig.spawn.respawnWorld == null)
                 {
@@ -159,9 +162,9 @@ public class Universe
 
                 this.worldConfigDefaults.save();
             }
-            this.configs.put(world, this.createWorldConfigFromExisting(world));
+            this.worldConfigs.put(world, this.createWorldConfigFromExisting(world));
         }
-        for (Entry<World, WorldConfig> entry : configs.entrySet())
+        for (Entry<World, WorldConfig> entry : worldConfigs.entrySet())
         {
             WorldConfig worldConfig = entry.getValue();
             worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld.getName();
@@ -233,14 +236,14 @@ public class Universe
             config.setFile(new File(universeDir, world.getName() + ".yml"));
             config.updateInheritance();
             config.save();
-            this.configs.put(world, config);
+            this.worldConfigs.put(world, config);
             this.worlds.add(world);
         }
     }
 
     public WorldConfig getWorldConfig(World world)
     {
-        return this.configs.get(world);
+        return this.worldConfigs.get(world);
     }
 
     public void savePlayer(Player player)
@@ -278,6 +281,14 @@ public class Universe
             PlayerDataConfig save = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
             save.applyToPlayer(player);
             this.savePlayer(player);
+        }
+        if (!(this.universeConfig.keepFlyMode || KEEP_FLYMODE.isAuthorized(player)))
+        {
+            player.setFlying(player.isFlying());
+        }
+        if (!(this.universeConfig.keepGameMode || KEEP_GAMEMODE.isAuthorized(player)))
+        {
+            player.setGameMode(this.worldConfigs.get(player.getWorld()).gameMode);
         }
     }
 
