@@ -33,6 +33,7 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.configuration.codec.YamlCodec;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.multiverse.config.UniverseConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig;
 import de.cubeisland.engine.multiverse.config.WorldLocation;
@@ -54,9 +55,17 @@ public class Universe
     private Multiverse module;
     private Set<World> worlds;
 
+    private Permission universeAccessPerm;
+
     // For Loading
     public Universe(File universeDir, Multiverse module)
     {
+        if (!this.universeConfig.freeAccess)
+        {
+            this.universeAccessPerm = this.module.getUniverseRootPerm().createAbstractChild("access").createChild(universeDir.getName());
+            this.module.getCore().getPermissionManager().registerPermission(module, this.universeAccessPerm);
+        }
+
         this.universeDir = universeDir;
         this.playersDir = new File(universeDir, "players");
         this.playersDir.mkdir();
@@ -295,6 +304,11 @@ public class Universe
     public World getMainWorld()
     {
         return this.universeConfig.mainWorld;
+    }
+
+    public boolean checkPlayerAccess(Player player)
+    {
+        return this.universeConfig.freeAccess || this.universeAccessPerm.isAuthorized(player);
     }
 
     // intercept PortalCreateEvent if not allowed

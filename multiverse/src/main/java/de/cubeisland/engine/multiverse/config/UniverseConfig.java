@@ -30,6 +30,8 @@ public class UniverseConfig extends YamlConfiguration
     public boolean keepGameMode = false; // if false can use perm
     public boolean keepFlyMode = false; // if false can use perm
 
+    public boolean freeAccess = true; // if false generate permission
+
     @Override
     public void onLoaded(File loadedFrom)
     {

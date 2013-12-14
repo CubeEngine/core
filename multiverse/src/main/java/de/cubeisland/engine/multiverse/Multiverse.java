@@ -30,6 +30,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
@@ -41,6 +42,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.potion.PotionEffect;
 
@@ -48,6 +50,8 @@ import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.multiverse.config.MultiverseConfig;
 import de.cubeisland.engine.multiverse.config.WorldConfig;
@@ -71,6 +75,8 @@ public class Multiverse extends Module implements Listener
     private Map<World, Universe> worlds = new HashMap<>();
 
     private File playersDir;
+
+    private Permission universeRootPerm;
 
     @Override
     public void onLoad()
@@ -98,6 +104,8 @@ public class Multiverse extends Module implements Listener
         this.config = this.loadConfig(MultiverseConfig.class);
         this.playersDir = this.getFolder().resolve("players").toFile();
         this.playersDir.mkdir();
+
+        this.universeRootPerm = this.getBasePermission().createAbstractChild("universe");
 
         new MultiversePermissions(this);
 
@@ -268,6 +276,19 @@ public class Multiverse extends Module implements Listener
         this.savePlayer(event.getPlayer());
     }
 
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent event)
+    {
+        Location to = event.getTo();
+        Universe universe = this.worlds.get(to.getWorld());
+        if (!universe.checkPlayerAccess(event.getPlayer()))
+        {
+            event.setCancelled(true); // TODO check old location
+            User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            user.sendTranslated("&cYou are not allowed to enter the universe &6%s&c!", universe.getName());
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent event)
     {
@@ -359,5 +380,10 @@ public class Multiverse extends Module implements Listener
             // TODO
         }
         return universe.getWorldConfig(world);
+    }
+
+    public Permission getUniverseRootPerm()
+    {
+        return universeRootPerm;
     }
 }
