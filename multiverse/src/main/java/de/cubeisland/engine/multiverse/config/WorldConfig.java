@@ -59,6 +59,8 @@ public class WorldConfig extends YamlConfiguration
         }
     }
 
+    public boolean freeAccess = true;
+    public boolean autoLoad = true;
     public double scale = 1.0;
 
     public Spawn spawn = new Spawn();
@@ -137,6 +139,37 @@ public class WorldConfig extends YamlConfiguration
         }
     }
 
+    public void applyFromWorld(World world)
+    {
+        this.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());
+
+        this.generation.worldType = world.getWorldType();
+        this.generation.generateStructures = world.canGenerateStructures();
+        this.generation.environment = world.getEnvironment();
+        this.generation.seed = String.valueOf(world.getSeed());
+        // TODO this.generation.customGenerator = world.getGenerator();
+
+        this.spawning.disable_animals = !world.getAllowAnimals();
+        this.spawning.disable_monster = !world.getAllowMonsters();
+        this.spawning.spawnLimit_ambient = world.getAmbientSpawnLimit();
+        this.spawning.spawnLimit_animal = world.getAnimalSpawnLimit();
+        this.spawning.spawnLimit_monster = world.getMonsterSpawnLimit();
+        this.spawning.spawnLimit_waterAnimal = world.getWaterAnimalSpawnLimit();
+        this.spawning.spawnRate_animal = (int)world.getTicksPerAnimalSpawns();
+        this.spawning.spawnRate_monster = (int)world.getTicksPerMonsterSpawns();
+        this.pvp = world.getPVP();
+        this.autosave = world.isAutoSave();
+        this.difficulty = world.getDifficulty();
+        // TODO gamemode
+        for (String rule : world.getGameRules())
+        {
+            String value = world.getGameRuleValue(rule);
+            if (value != null)
+            {
+                this.gamerules.put(rule, value);
+            }
+        }
+    }
 
     public void applyToCreator(WorldCreator creator)
     {

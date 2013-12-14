@@ -281,7 +281,7 @@ public class Multiverse extends Module implements Listener
     {
         Location to = event.getTo();
         Universe universe = this.worlds.get(to.getWorld());
-        if (!universe.checkPlayerAccess(event.getPlayer()))
+        if (!universe.checkPlayerAccess(event.getPlayer(), to.getWorld()))
         {
             event.setCancelled(true); // TODO check old location
             User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());

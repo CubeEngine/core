@@ -56,16 +56,12 @@ public class Universe
     private Set<World> worlds;
 
     private Permission universeAccessPerm;
+    private Map<World, Permission> worldPerms = new HashMap<>();
+    private World mainWorld;
 
     // For Loading
     public Universe(File universeDir, Multiverse module)
     {
-        if (!this.universeConfig.freeAccess)
-        {
-            this.universeAccessPerm = this.module.getUniverseRootPerm().createAbstractChild("access").createChild(universeDir.getName());
-            this.module.getCore().getPermissionManager().registerPermission(module, this.universeAccessPerm);
-        }
-
         this.universeDir = universeDir;
         this.playersDir = new File(universeDir, "players");
         this.playersDir.mkdir();
@@ -86,6 +82,10 @@ public class Universe
                 {
                     String name = file.getName().substring(0, file.getName().indexOf(".yml"));
                     WorldConfig config = this.worldConfigDefaults.loadChild(file);
+                    if (!config.autoLoad)
+                    {
+                        continue;
+                    }
                     World world = this.module.getCore().getWorldManager().getWorld(name);
                     if (world == null) // world loaded?
                     {
@@ -139,10 +139,32 @@ public class Universe
             {
                 if (worldConfig.spawn.respawnWorld == null)
                 {
-                    worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld.getName();
+                    worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
                     worldConfig.save();
                 }
             }
+        }
+        this.mainWorld = this.module.getCore().getWorldManager().getWorld(this.universeConfig.mainWorld);
+        this.generatePermissions();
+    }
+
+    private void generatePermissions()
+    {
+        if (!this.universeConfig.freeAccess)
+        {
+            this.universeAccessPerm = this.module.getUniverseRootPerm().createAbstractChild("access").createChild(universeDir.getName());
+            this.module.getCore().getPermissionManager().registerPermission(module, this.universeAccessPerm);
+        }
+        Permission worldAccess = this.module.getUniverseRootPerm().createAbstractChild("world-access");
+        for (Entry<World, WorldConfig> entry : this.worldConfigs.entrySet())
+        {
+            if (!entry.getValue().freeAccess)
+            {
+                Permission perm = worldAccess.createChild(entry.getKey().getName());
+                this.module.getCore().getPermissionManager().registerPermission(module, perm);
+                this.worldPerms.put(entry.getKey(), perm);
+            }
+
         }
     }
 
@@ -159,14 +181,14 @@ public class Universe
         {
             if (world.getName().equals(universeDir.getName()))
             {
-                this.universeConfig.mainWorld = world;
+                this.universeConfig.mainWorld = world.getName();
                 this.universeConfig.save();
 
                 this.worldConfigDefaults = this.createWorldConfigFromExisting(world);
                 this.worldConfigDefaults.spawn.spawnLocation = null;
                 this.worldConfigDefaults.generation.worldType = null;
                 this.worldConfigDefaults.generation.seed = null;
-                this.worldConfigDefaults.spawn.respawnWorld = this.universeConfig.mainWorld.getName();
+                this.worldConfigDefaults.spawn.respawnWorld = this.universeConfig.mainWorld;
                 this.worldConfigDefaults.setFile(new File(universeDir, "defaults.yml"));
 
                 this.worldConfigDefaults.save();
@@ -176,13 +198,14 @@ public class Universe
         for (Entry<World, WorldConfig> entry : worldConfigs.entrySet())
         {
             WorldConfig worldConfig = entry.getValue();
-            worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld.getName();
+            worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
 
             worldConfig.setDefault(this.worldConfigDefaults);
             worldConfig.setFile(new File(universeDir, entry.getKey().getName() + ".yml"));
             worldConfig.updateInheritance();
             worldConfig.save();
         }
+        this.generatePermissions();
     }
 
     private WorldConfig createWorldConfigFromExisting(World world)
@@ -192,37 +215,11 @@ public class Universe
         {
             config.scale = 8.0; // Nether is 1:8
         }
-        config.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());
-        if (this.worldConfigDefaults != null && this.universeConfig.mainWorld == world)
+        if (this.worldConfigDefaults != null && this.universeConfig.mainWorld.equals(world.getName()))
         {
             config.spawn.keepSpawnInMemory = true; // KEEP MAIN SPAWN LOADED
         }
-        config.generation.worldType = world.getWorldType();
-        config.generation.generateStructures = world.canGenerateStructures();
-        config.generation.environment = world.getEnvironment();
-        config.generation.seed = String.valueOf(world.getSeed());
-        // TODO config.generation.customGenerator = world.getGenerator();
-
-        config.spawning.disable_animals = !world.getAllowAnimals();
-        config.spawning.disable_monster = !world.getAllowMonsters();
-        config.spawning.spawnLimit_ambient = world.getAmbientSpawnLimit();
-        config.spawning.spawnLimit_animal = world.getAnimalSpawnLimit();
-        config.spawning.spawnLimit_monster = world.getMonsterSpawnLimit();
-        config.spawning.spawnLimit_waterAnimal = world.getWaterAnimalSpawnLimit();
-        config.spawning.spawnRate_animal = (int)world.getTicksPerAnimalSpawns();
-        config.spawning.spawnRate_monster = (int)world.getTicksPerMonsterSpawns();
-        config.pvp = world.getPVP();
-        config.autosave = world.isAutoSave();
-        config.difficulty = world.getDifficulty();
-        // TODO gamemode
-        for (String rule : world.getGameRules())
-        {
-            String value = world.getGameRuleValue(rule);
-            if (value != null)
-            {
-                config.gamerules.put(rule, value);
-            }
-        }
+        config.applyFromWorld(world);
         return config;
     }
 
@@ -303,12 +300,20 @@ public class Universe
 
     public World getMainWorld()
     {
-        return this.universeConfig.mainWorld;
+        return this.mainWorld;
     }
 
-    public boolean checkPlayerAccess(Player player)
+    public boolean checkPlayerAccess(Player player, World world)
     {
-        return this.universeConfig.freeAccess || this.universeAccessPerm.isAuthorized(player);
+        if (this.universeConfig.freeAccess || this.universeAccessPerm.isAuthorized(player))
+        {
+            Permission permission = this.worldPerms.get(world);
+            if (permission == null || permission.isAuthorized(player))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     // intercept PortalCreateEvent if not allowed

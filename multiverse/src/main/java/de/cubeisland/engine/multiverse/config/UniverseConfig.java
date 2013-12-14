@@ -19,13 +19,11 @@ package de.cubeisland.engine.multiverse.config;
 
 import java.io.File;
 
-import org.bukkit.World;
-
 import de.cubeisland.engine.configuration.YamlConfiguration;
 
 public class UniverseConfig extends YamlConfiguration
 {
-    public World mainWorld;
+    public String mainWorld;
 
     public boolean keepGameMode = false; // if false can use perm
     public boolean keepFlyMode = false; // if false can use perm
