@@ -31,6 +31,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.TravelAgent;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldType;
@@ -41,6 +42,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
@@ -124,18 +126,18 @@ public class Multiverse extends Module implements Listener
                     this.universes.put(universeDir.getName(), new Universe(universeDir, this));
                 }
             }
-            Set<World> worlds = this.getCore().getWorldManager().getWorlds();
+            Set<World> missingWorlds = this.getCore().getWorldManager().getWorlds();
             Map<String, Set<World>> found = new HashMap<>();
             for (Entry<String, Universe> entry : this.universes.entrySet())
             {
                 found.put(entry.getKey(), new HashSet<>(entry.getValue().getWorlds()));
-                worlds.removeAll(entry.getValue().getWorlds());
+                missingWorlds.removeAll(entry.getValue().getWorlds());
             }
-            if (!worlds.isEmpty())
+            if (!missingWorlds.isEmpty())
             {
                 CommandSender sender = this.getCore().getCommandManager().getConsoleSender();
                 sender.sendTranslated("&eDiscovering unknown worlds...");
-                this.searchUniverses(found, worlds, sender);
+                this.searchUniverses(found, missingWorlds, sender);
                 sender.sendTranslated("&eFinishing research...");
                 for (Entry<String, Set<World>> entry : found.entrySet())
                 {
@@ -178,7 +180,6 @@ public class Multiverse extends Module implements Listener
             }
             sender.sendTranslated("&eFound &6%d&e universes with &6%d&e worlds!", found.size(), this.getCore().getWorldManager().getWorlds().size());
         }
-
         for (Universe universe : this.universes.values())
         {
             for (World world : universe.getWorlds())
@@ -186,7 +187,6 @@ public class Multiverse extends Module implements Listener
                 this.worlds.put(world, universe);
             }
         }
-        this.mainWorld = this.universes.get(this.config.mainUniverse).getMainWorld();
         if (this.config.mainUniverse == null || this.universes.get(this.config.mainUniverse) == null)
         {
             Universe universe = this.universes.get("world");
@@ -197,6 +197,7 @@ public class Multiverse extends Module implements Listener
             this.getLog().warn("No main universe set. {} is now the main universe!", universe.getName());
             this.config.mainUniverse = universe.getName();
         }
+        this.mainWorld = this.universes.get(this.config.mainUniverse).getMainWorld();
         this.getCore().getEventManager().registerListener(this, this);
     }
 
@@ -252,7 +253,7 @@ public class Multiverse extends Module implements Listener
         if (event.getMessage().equals("load"))
         {
 
-            Universe universe = this.worlds.get(event.getPlayer().getWorld());
+            Universe universe = this.getUniverse(event.getPlayer().getWorld());
             if (universe != null)
             {
                 // TODO handle missing universe for world
@@ -265,8 +266,8 @@ public class Multiverse extends Module implements Listener
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
-        Universe oldUniverse = this.worlds.get(event.getFrom());
-        Universe newUniverse = this.worlds.get(event.getPlayer().getWorld());
+        Universe oldUniverse = this.getUniverse(event.getFrom());
+        Universe newUniverse = this.getUniverse(event.getPlayer().getWorld());
         if (oldUniverse != newUniverse)
         {
             event.getPlayer().closeInventory();
@@ -280,12 +281,44 @@ public class Multiverse extends Module implements Listener
     public void onTeleport(PlayerTeleportEvent event)
     {
         Location to = event.getTo();
-        Universe universe = this.worlds.get(to.getWorld());
+        if (event.getFrom().getWorld() == to.getWorld())
+        {
+            return;
+        }
+        Universe universe = this.getUniverse(to.getWorld());
         if (!universe.checkPlayerAccess(event.getPlayer(), to.getWorld()))
         {
             event.setCancelled(true); // TODO check old location
             User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             user.sendTranslated("&cYou are not allowed to enter the universe &6%s&c!", universe.getName());
+        }
+    }
+
+    @EventHandler
+    public void onPortalUse(PlayerPortalEvent event)
+    {
+        World world = event.getPlayer().getWorld();
+        Universe universe = this.getUniverse(world);
+        TravelAgent agent = event.getPortalTravelAgent();
+
+        switch (event.getCause())
+        {
+            case NETHER_PORTAL:
+                if (universe.hasNetherTarget(world))
+                {
+                    System.out.print(agent.getSearchRadius() + " <-S:PRE:C->"+ agent.getCreationRadius());
+                    event.setTo(universe.handleNetherTarget(event.getPlayer().getLocation(), agent));
+                    System.out.print(agent.getSearchRadius() + " <-S:N:C->"+ agent.getCreationRadius());
+                    event.useTravelAgent(true);
+                }
+                break;
+            case END_PORTAL:
+                if (universe.hasEndTarget(world))
+                {
+                    event.setTo(universe.handleEndTarget(event.getPlayer().getLocation(), agent));
+                    event.useTravelAgent(true);
+                }
+                break;
         }
     }
 
@@ -311,8 +344,8 @@ public class Multiverse extends Module implements Listener
             config = this.getCore().getConfigFactory().load(PlayerConfig.class, file, false);
             if (config.lastWorld != null)
             {
-                Universe universe = this.worlds.get(player.getWorld());
-                Universe expected = this.worlds.get(config.lastWorld);
+                Universe universe = this.getUniverse(player.getWorld());
+                Universe expected = this.getUniverse(config.lastWorld);
                 if (universe != expected)
                 {
                     File errors = this.getFolder().resolve("errors").toFile();
@@ -358,7 +391,7 @@ public class Multiverse extends Module implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        Universe universe = this.worlds.get(event.getPlayer().getWorld());
+        Universe universe = this.getUniverse(event.getPlayer().getWorld());
         universe.savePlayer(event.getPlayer());
         this.savePlayer(event.getPlayer());
     }
@@ -374,7 +407,7 @@ public class Multiverse extends Module implements Listener
 
     private WorldConfig getWorldConfig(World world)
     {
-        Universe universe = this.worlds.get(world);
+        Universe universe = this.getUniverse(world);
         if (universe == null)
         {
             // TODO
@@ -385,5 +418,10 @@ public class Multiverse extends Module implements Listener
     public Permission getUniverseRootPerm()
     {
         return universeRootPerm;
+    }
+    
+    public Universe getUniverse(World world)
+    {
+        return this.worlds.get(world);
     }
 }

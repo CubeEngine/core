@@ -87,13 +87,13 @@ public class WorldConfig extends YamlConfiguration
         public boolean disable_animals = false;
         public boolean disable_monster = false;  // ^ world.setSpawnFlags();
 
-        public Integer spawnLimit_ambient;
-        public Integer spawnLimit_animal;
-        public Integer spawnLimit_monster;
-        public Integer spawnLimit_waterAnimal;
+        public Integer spawnLimit_ambient = 15;
+        public Integer spawnLimit_animal = 15;
+        public Integer spawnLimit_monster = 70;
+        public Integer spawnLimit_waterAnimal = 5;
 
-        public Integer spawnRate_animal;
-        public Integer spawnRate_monster;
+        public Integer spawnRate_animal = 400;
+        public Integer spawnRate_monster = 1;
     }
 
     public Map<String, String> gamerules = new HashMap<>();
@@ -148,7 +148,6 @@ public class WorldConfig extends YamlConfiguration
         this.generation.environment = world.getEnvironment();
         this.generation.seed = String.valueOf(world.getSeed());
         // TODO this.generation.customGenerator = world.getGenerator();
-
         this.spawning.disable_animals = !world.getAllowAnimals();
         this.spawning.disable_monster = !world.getAllowMonsters();
         this.spawning.spawnLimit_ambient = world.getAmbientSpawnLimit();
@@ -171,7 +170,7 @@ public class WorldConfig extends YamlConfiguration
         }
     }
 
-    public void applyToCreator(WorldCreator creator)
+    public WorldCreator applyToCreator(WorldCreator creator)
     {
         if (generation.worldType != null)
         {
@@ -194,6 +193,7 @@ public class WorldConfig extends YamlConfiguration
             }
         }
         // TODO custom generator
+        return creator;
     }
 
     public void applyGenerationFromWorld(World world)
@@ -204,4 +204,7 @@ public class WorldConfig extends YamlConfiguration
         this.generation.worldType = world.getWorldType();
         // TODO generator
     }
+
+    public String netherTarget;
+    public String endTarget;
 }
