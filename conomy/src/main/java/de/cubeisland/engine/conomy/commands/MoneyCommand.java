@@ -149,7 +149,7 @@ public class MoneyCommand extends ContainerCommand
         {
             context.sendTranslated("&a%d &f- &2%s&f: &6%s", i++,
                    this.module.getCore().getUserManager().getUser(account.getUserId().longValue()).getName()
-                   , manager.format(account.getValue() / manager.fractionalDigitsFactor()));
+                   , manager.format((double)account.getValue() / manager.fractionalDigitsFactor()));
         }
     }
 
