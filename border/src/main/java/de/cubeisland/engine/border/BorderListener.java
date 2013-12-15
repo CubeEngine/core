@@ -111,9 +111,13 @@ public class BorderListener implements Listener
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerPortalEvent(PlayerPortalEvent event)
     {
+        if (event.getTo() == null)
+        {
+            return;
+        }
         BorderConfig config = this.module.getConfig(event.getTo().getWorld());
         if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
         {

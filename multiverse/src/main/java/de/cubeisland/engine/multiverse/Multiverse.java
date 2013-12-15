@@ -326,7 +326,7 @@ public class Multiverse extends Module implements Listener
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event)
     {
-        System.out.print(event.getTo());
+        System.out.print("Before: " + event.getTo());
         World world = event.getEntity().getWorld();
         Universe universe = this.getUniverse(world);
         TravelAgent agent = event.getPortalTravelAgent();
@@ -339,6 +339,7 @@ public class Multiverse extends Module implements Listener
                 System.out.print(agent.getSearchRadius() + " <-S:A-PRE:C->"+ agent.getCreationRadius());
                 event.setTo(universe.handleNetherTarget(event.getEntity().getLocation(), agent));
                 System.out.print(agent.getSearchRadius() + " <-S:A-N:C->"+ agent.getCreationRadius());
+                System.out.print("After" + event.getTo());
                 event.useTravelAgent(true);
             }
             break;
