@@ -102,16 +102,20 @@ public class BorderListener implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPortalEvent(EntityPortalEvent event)
     {
+        if (event.getTo() == null)
+        {
+            return;
+        }
         if (!isChunkInRange(event.getTo().getChunk(), this.module.getConfig(event.getTo().getWorld())))
         {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerPortalEvent(PlayerPortalEvent event)
     {
         if (event.getTo() == null)
