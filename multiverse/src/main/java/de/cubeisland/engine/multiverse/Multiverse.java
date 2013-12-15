@@ -301,23 +301,20 @@ public class Multiverse extends Module implements Listener
         World world = event.getPlayer().getWorld();
         Universe universe = this.getUniverse(world);
         TravelAgent agent = event.getPortalTravelAgent();
-
         switch (event.getCause())
         {
             case NETHER_PORTAL:
                 if (universe.hasNetherTarget(world))
                 {
-                    System.out.print(agent.getSearchRadius() + " <-S:PRE:C->"+ agent.getCreationRadius());
-                    event.setTo(universe.handleNetherTarget(event.getPlayer().getLocation(), agent));
-                    System.out.print(agent.getSearchRadius() + " <-S:N:C->"+ agent.getCreationRadius());
+                    event.setTo(universe.handleNetherTarget(event.getFrom(), agent));
                     event.useTravelAgent(true);
                 }
                 break;
             case END_PORTAL:
                 if (universe.hasEndTarget(world))
                 {
-                    event.setTo(universe.handleEndTarget(event.getPlayer().getLocation(), agent));
-                    event.useTravelAgent(true);
+                    event.setTo(universe.handleEndTarget(event.getFrom()));
+                    event.useTravelAgent(event.getTo().getWorld().getEnvironment() == Environment.THE_END);
                 }
                 break;
         }
@@ -326,7 +323,6 @@ public class Multiverse extends Module implements Listener
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event)
     {
-        System.out.print("Before: " + event.getTo() + " " + event.getEntityType().name());
         World world = event.getEntity().getWorld();
         Universe universe = this.getUniverse(world);
         TravelAgent agent = event.getPortalTravelAgent();
@@ -337,12 +333,9 @@ public class Multiverse extends Module implements Listener
         switch (event.getTo().getWorld().getEnvironment())
         {
         case NETHER:
-        case NORMAL:
             if (universe.hasNetherTarget(world))
             {
-                System.out.print(agent.getSearchRadius() + " <-S:A-PRE:C->"+ agent.getCreationRadius());
-                event.setTo(universe.handleNetherTarget(event.getEntity().getLocation(), agent));
-                System.out.print(agent.getSearchRadius() + " <-S:A-N:C->"+ agent.getCreationRadius());
+                event.setTo(universe.handleNetherTarget(event.getFrom(), agent));
                 System.out.print("After" + event.getTo());
                 event.useTravelAgent(true);
             }
@@ -350,10 +343,20 @@ public class Multiverse extends Module implements Listener
         case THE_END:
             if (universe.hasEndTarget(world))
             {
-                event.setTo(universe.handleEndTarget(event.getEntity().getLocation(), agent));
+                event.setTo(universe.handleEndTarget(event.getEntity().getLocation()));
                 event.useTravelAgent(true);
             }
             break;
+        case NORMAL:
+            if (event.getFrom().getWorld().getEnvironment() == Environment.THE_END)
+            {
+                event.setTo(universe.handleEndTarget(event.getFrom()));
+            }
+            else
+            {
+                event.setTo(universe.handleNetherTarget(event.getFrom(), event.getPortalTravelAgent()));
+                event.useTravelAgent(true);
+            }
         }
     }
 

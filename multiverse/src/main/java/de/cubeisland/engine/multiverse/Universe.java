@@ -348,7 +348,7 @@ public class Universe
         return new Location(toWorld, from.getX() * factor, from.getY(), from.getZ() * factor, from.getYaw(), from.getPitch());
     }
 
-    public Location handleEndTarget(Location from, TravelAgent agent)
+    public Location handleEndTarget(Location from)
     {
         WorldConfig fromConfig = this.worldConfigs.get(from.getWorld());
         World toWorld = this.module.getCore().getWorldManager().getWorld(fromConfig.endTarget);
