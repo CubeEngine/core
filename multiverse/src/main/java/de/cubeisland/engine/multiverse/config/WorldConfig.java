@@ -57,6 +57,14 @@ public class WorldConfig extends YamlConfiguration
             this.generation.environment = null;
             this.generation.seed = null;
         }
+        if (this.generation.environment == Environment.THE_END)
+        {
+            this.netherTarget =  null;
+        }
+        if (this.generation.environment == Environment.NETHER)
+        {
+            this.endTarget =  null;
+        }
     }
 
     public boolean freeAccess = true;

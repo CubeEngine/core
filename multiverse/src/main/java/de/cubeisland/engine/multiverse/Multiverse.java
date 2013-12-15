@@ -336,7 +336,6 @@ public class Multiverse extends Module implements Listener
             if (universe.hasNetherTarget(world))
             {
                 event.setTo(universe.handleNetherTarget(event.getFrom(), agent));
-                System.out.print("After" + event.getTo());
                 event.useTravelAgent(true);
             }
             break;
