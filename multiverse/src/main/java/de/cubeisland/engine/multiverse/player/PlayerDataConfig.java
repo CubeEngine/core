@@ -58,6 +58,11 @@ public class PlayerDataConfig extends Configuration<NBTCodec>
         player.setLevel(lvl);
         player.setExp(exp);
         player.setFireTicks(fireTicks);
+
+        for (PotionEffect potionEffect : player.getActivePotionEffects())
+        {
+            player.removePotionEffect(potionEffect.getType());
+        }
         player.addPotionEffects(activePotionEffects);
 
         ItemStack[] contents;
