@@ -39,6 +39,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -271,7 +272,7 @@ public class Multiverse extends Module implements Listener
         if (oldUniverse != newUniverse)
         {
             event.getPlayer().closeInventory();
-            oldUniverse.savePlayer(event.getPlayer());
+            oldUniverse.savePlayer(event.getPlayer(), event.getFrom());
             newUniverse.loadPlayer(event.getPlayer());
         }
         this.savePlayer(event.getPlayer());
@@ -320,6 +321,37 @@ public class Multiverse extends Module implements Listener
                 }
                 break;
         }
+    }
+
+    @EventHandler
+    public void onEntityPortal(EntityPortalEvent event)
+    {
+        System.out.print(event.getTo());
+        /*
+        // TODO we dont have a tp cause here
+        World world = event.getEntity().getWorld();
+        Universe universe = this.getUniverse(world);
+        TravelAgent agent = event.getPortalTravelAgent();
+        switch (event.getCause())
+        {
+        case NETHER_PORTAL:
+            if (universe.hasNetherTarget(world))
+            {
+                System.out.print(agent.getSearchRadius() + " <-S:PRE:C->"+ agent.getCreationRadius());
+                event.setTo(universe.handleNetherTarget(event.getEntity().getLocation(), agent));
+                System.out.print(agent.getSearchRadius() + " <-S:N:C->"+ agent.getCreationRadius());
+                event.useTravelAgent(true);
+            }
+            break;
+        case END_PORTAL:
+            if (universe.hasEndTarget(world))
+            {
+                event.setTo(universe.handleEndTarget(event.getEntity().getLocation(), agent));
+                event.useTravelAgent(true);
+            }
+            break;
+        }
+        //*/
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -392,7 +424,7 @@ public class Multiverse extends Module implements Listener
     public void onQuit(PlayerQuitEvent event)
     {
         Universe universe = this.getUniverse(event.getPlayer().getWorld());
-        universe.savePlayer(event.getPlayer());
+        universe.savePlayer(event.getPlayer(), event.getPlayer().getWorld());
         this.savePlayer(event.getPlayer());
     }
 

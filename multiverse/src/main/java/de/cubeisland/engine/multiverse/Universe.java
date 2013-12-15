@@ -273,9 +273,9 @@ public class Universe
         return this.worldConfigs.get(world);
     }
 
-    public void savePlayer(Player player)
+    public void savePlayer(Player player, World world)
     {
-        this.module.getLog().debug("{} saved for {} in {}" , player.getName(), this.getName(), player.getWorld().getName());
+        this.module.getLog().debug("{} saved for {} in {}" , player.getName(), this.getName(), world.getName());
         PlayerDataConfig config = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
         config.applyFromPlayer(player);
 
@@ -307,7 +307,7 @@ public class Universe
             this.module.getLog().debug("Created PlayerDataConfig for {} in the {} universe" , player.getName(), this.getName());
             PlayerDataConfig save = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
             save.applyToPlayer(player);
-            this.savePlayer(player);
+            this.savePlayer(player, player.getWorld());
         }
         if (!(this.universeConfig.keepFlyMode || KEEP_FLYMODE.isAuthorized(player)))
         {
