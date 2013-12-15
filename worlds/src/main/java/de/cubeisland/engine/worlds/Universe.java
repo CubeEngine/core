@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.multiverse;
+package de.cubeisland.engine.worlds;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,20 +36,20 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.multiverse.config.UniverseConfig;
-import de.cubeisland.engine.multiverse.config.WorldConfig;
-import de.cubeisland.engine.multiverse.config.WorldLocation;
-import de.cubeisland.engine.multiverse.player.PlayerDataConfig;
+import de.cubeisland.engine.worlds.config.UniverseConfig;
+import de.cubeisland.engine.worlds.config.WorldConfig;
+import de.cubeisland.engine.worlds.config.WorldLocation;
+import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 
-import static de.cubeisland.engine.multiverse.MultiversePermissions.KEEP_FLYMODE;
-import static de.cubeisland.engine.multiverse.MultiversePermissions.KEEP_GAMEMODE;
+import static de.cubeisland.engine.worlds.WorldsPermissions.KEEP_FLYMODE;
+import static de.cubeisland.engine.worlds.WorldsPermissions.KEEP_GAMEMODE;
 
 /**
  * Represents multiple worlds in a universe
  */
 public class Universe
 {
-    private Multiverse module;
+    private Worlds module;
 
     private UniverseConfig universeConfig;
     private WorldConfig defaults = null;
@@ -78,7 +78,7 @@ public class Universe
     }
 
     // For Loading
-    public Universe(File universeDir, Multiverse module)
+    public Universe(File universeDir, Worlds module)
     {
         this(universeDir);
         this.module = module;
@@ -191,7 +191,7 @@ public class Universe
     }
 
     // For creating new Universe
-    public Universe(File universeDir, Multiverse module, Set<World> worlds)
+    public Universe(File universeDir, Worlds module, Set<World> worlds)
     {
         this(universeDir);
         this.module = module;

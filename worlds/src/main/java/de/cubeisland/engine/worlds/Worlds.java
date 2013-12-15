@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.multiverse;
+package de.cubeisland.engine.worlds;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -56,20 +56,20 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
-import de.cubeisland.engine.multiverse.config.MultiverseConfig;
-import de.cubeisland.engine.multiverse.config.WorldConfig;
-import de.cubeisland.engine.multiverse.config.WorldLocation;
-import de.cubeisland.engine.multiverse.converter.DiffcultyConverter;
-import de.cubeisland.engine.multiverse.converter.EnvironmentConverter;
-import de.cubeisland.engine.multiverse.converter.GameModeConverter;
-import de.cubeisland.engine.multiverse.converter.InventoryConverter;
-import de.cubeisland.engine.multiverse.converter.PotionEffectConverter;
-import de.cubeisland.engine.multiverse.converter.WorldLocationConverter;
-import de.cubeisland.engine.multiverse.converter.WorldTypeConverter;
-import de.cubeisland.engine.multiverse.player.PlayerConfig;
-import de.cubeisland.engine.multiverse.player.PlayerDataConfig;
+import de.cubeisland.engine.worlds.config.MultiverseConfig;
+import de.cubeisland.engine.worlds.config.WorldConfig;
+import de.cubeisland.engine.worlds.config.WorldLocation;
+import de.cubeisland.engine.worlds.converter.DiffcultyConverter;
+import de.cubeisland.engine.worlds.converter.EnvironmentConverter;
+import de.cubeisland.engine.worlds.converter.GameModeConverter;
+import de.cubeisland.engine.worlds.converter.InventoryConverter;
+import de.cubeisland.engine.worlds.converter.PotionEffectConverter;
+import de.cubeisland.engine.worlds.converter.WorldLocationConverter;
+import de.cubeisland.engine.worlds.converter.WorldTypeConverter;
+import de.cubeisland.engine.worlds.player.PlayerConfig;
+import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 
-public class Multiverse extends Module implements Listener
+public class Worlds extends Module implements Listener
 {
     private MultiverseConfig config;
     private World mainWorld;
@@ -110,7 +110,7 @@ public class Multiverse extends Module implements Listener
 
         this.universeRootPerm = this.getBasePermission().createAbstractChild("universe");
 
-        new MultiversePermissions(this);
+        new WorldsPermissions(this);
 
         File universesFolder = this.getFolder().resolve("universes").toFile();
         if (universesFolder.exists() && universesFolder.list().length != 0)

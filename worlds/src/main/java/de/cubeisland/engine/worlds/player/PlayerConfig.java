@@ -15,22 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.multiverse.commands;
+package de.cubeisland.engine.worlds.player;
 
-public class WorldCommands
+import org.bukkit.World;
+
+import de.cubeisland.engine.configuration.YamlConfiguration;
+
+public class PlayerConfig extends YamlConfiguration
 {
-    // create name environement seed generator worldtype structures?
-    // load (config file must exist)
-    // unload (-f teleports all players out of this world)
-    // remove/delete
-    // list / list worlds that you can enter
-    // info
-    // listplayers in world/universe
-
-    // reload
-
-    // set main world (of universe) (of universes)
-    // set main universe
-
-    // move to other universe
+    public World lastWorld;
 }

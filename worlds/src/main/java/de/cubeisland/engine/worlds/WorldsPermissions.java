@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.multiverse;
+package de.cubeisland.engine.worlds;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
-public class MultiversePermissions extends PermissionContainer<Multiverse>
+public class WorldsPermissions extends PermissionContainer<Worlds>
 {
-    public MultiversePermissions(Multiverse module)
+    public WorldsPermissions(Worlds module)
     {
         super(module);
 

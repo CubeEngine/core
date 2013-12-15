@@ -15,33 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.multiverse.converter;
+package de.cubeisland.engine.worlds.converter;
 
-import org.bukkit.WorldType;
+import org.bukkit.GameMode;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 
-public class WorldTypeConverter implements Converter<WorldType>
+public class GameModeConverter implements Converter<GameMode>
 {
     @Override
-    public Node toNode(WorldType object, ConverterManager manager) throws ConversionException
+    public Node toNode(GameMode object, ConverterManager manager) throws ConversionException
     {
         return Node.wrapIntoNode(object.toString());
     }
 
     @Override
-    public WorldType fromNode(Node node, ConverterManager manager) throws ConversionException
+    public GameMode fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         try
         {
-            return WorldType.valueOf(node.asText());
+            return GameMode.valueOf(node.asText());
         }
         catch (IllegalArgumentException e)
         {
-            throw ConversionException.of(this, node, "Invalid WorldType!", e);
+            throw ConversionException.of(this, node, "Invalid Environment!", e);
         }
     }
 }

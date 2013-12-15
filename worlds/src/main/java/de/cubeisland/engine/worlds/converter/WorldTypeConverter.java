@@ -15,33 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.multiverse.converter;
+package de.cubeisland.engine.worlds.converter;
 
-import org.bukkit.Difficulty;
+import org.bukkit.WorldType;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.Node;
 
-public class DiffcultyConverter implements Converter<Difficulty>
+public class WorldTypeConverter implements Converter<WorldType>
 {
     @Override
-    public Node toNode(Difficulty object, ConverterManager manager) throws ConversionException
+    public Node toNode(WorldType object, ConverterManager manager) throws ConversionException
     {
         return Node.wrapIntoNode(object.toString());
     }
 
     @Override
-    public Difficulty fromNode(Node node, ConverterManager manager) throws ConversionException
+    public WorldType fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         try
         {
-            return Difficulty.valueOf(node.asText());
+            return WorldType.valueOf(node.asText());
         }
         catch (IllegalArgumentException e)
         {
-            throw ConversionException.of(this, node, "Invalid Environment!", e);
+            throw ConversionException.of(this, node, "Invalid WorldType!", e);
         }
     }
 }
