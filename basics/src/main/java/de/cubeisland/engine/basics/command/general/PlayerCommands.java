@@ -269,9 +269,10 @@ public class PlayerCommands
                     context.sendTranslated("&cUser %s not found or offline!", name);
                     continue;
                 }
-                user.setFoodLevel(0);
-                user.setSaturation(0);
-                user.setExhaustion(4);
+                sender.setHealth(sender.getMaxHealth());
+                sender.setFoodLevel(20);
+                sender.setSaturation(20);
+                sender.setExhaustion(0);
                 healed.add(user.getName());
                 user.sendTranslated("&aYou got healed by &2%s&a!", context.getSender().getName());
             }
