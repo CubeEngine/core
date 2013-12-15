@@ -326,10 +326,14 @@ public class Multiverse extends Module implements Listener
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event)
     {
-        System.out.print("Before: " + event.getTo());
+        System.out.print("Before: " + event.getTo() + " " + event.getEntityType().name());
         World world = event.getEntity().getWorld();
         Universe universe = this.getUniverse(world);
         TravelAgent agent = event.getPortalTravelAgent();
+        if (event.getTo() == null)
+        {
+            return;
+        }
         switch (event.getTo().getWorld().getEnvironment())
         {
         case NETHER:
