@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.core.command.CommandSender;
@@ -323,8 +324,16 @@ public class Multiverse implements Listener
         this.savePlayer(event.getPlayer());
     }
 
-
-
+    @EventHandler(priority = EventPriority.LOW) // Allow others e.g spawn module to adjust spawn later
+    public void onRespawn(PlayerRespawnEvent event)
+    {
+        if (!event.isBedSpawn())
+        {
+            World world = event.getPlayer().getWorld();
+            Universe universe = this.getUniverse(world);
+            event.setRespawnLocation(universe.getRespawnLocation(world));
+        }
+    }
 
     private void checkForExpectedWorld(Player player)
     {

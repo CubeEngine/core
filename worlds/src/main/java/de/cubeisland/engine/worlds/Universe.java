@@ -393,6 +393,24 @@ public class Universe
         return false;
     }
 
-    // intercept PortalCreateEvent if not allowed
-    // intercept EntityCreatePortalEvent if not allowed
+    public Location getRespawnLocation(World world)
+    {
+        WorldConfig worldConfig = this.getWorldConfig(world);
+        if (worldConfig.spawn.respawnWorld == null)
+        {
+            return this.getSpawnLocation(this.getMainWorld());
+        }
+        World respawnWorld = this.module.getCore().getWorldManager().getWorld(worldConfig.spawn.respawnWorld);
+        if (respawnWorld == null)
+        {
+            this.module.getLog().warn("Unknown respawn world for {}", world.getName());
+            return this.getSpawnLocation(world);
+        }
+        return this.multiverse.getUniverse(respawnWorld).getSpawnLocation(respawnWorld);
+    }
+
+    public Location getSpawnLocation(World world)
+    {
+        return this.getWorldConfig(world).spawn.spawnLocation.getLocationIn(world);
+    }
 }
