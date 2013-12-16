@@ -17,23 +17,96 @@
  */
 package de.cubeisland.engine.worlds.commands;
 
-public class WorldCommands
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.module.Module;
+
+public class WorldCommands extends ContainerCommand
 {
+    public WorldCommands(Module module)
+    {
+        super(module, "worlds", "Worlds commands");
+    }
+
+    @Command(desc = "Creates and loads a new world")
+    public void create(ParameterizedContext context)
+    {
+
+    }
     // create name environement seed generator worldtype structures?
+
+    @Command(desc = "Loads a world from configuration")
+    public void load(CommandContext context)
+    {
+
+    }
     // load (config file must exist)
+
+
+    @Command(desc = "Unload a loaded world")
+    public void unload(CommandContext context) // -f to tp players out of that world
+    {
+
+    }
     // unload (-f teleports all players out of this world)
+
+    @Command(desc = "Remove a world")
+    public void remove(CommandContext context) // -f unload and tp players out
+    {
+
+    }
     // remove/delete
+
+    @Command(desc = "Lists all worls")
+    public void list(CommandContext context)
+    {
+
+    }
     // list / list worlds that you can enter
+
+    @Command(desc = "Show info about a world")
+    public void info(CommandContext context)
+    {
+
+    }
     // info
+
+    @Command(desc = "Lists the players in a world")
+    public void listplayers(CommandContext context)
+    {
+
+    }
     // listplayers in world/universe
 
+    @Command(desc = "Reloads the module")
+    public void reload(CommandContext context)
+    {
+
+    }
     // reload
 
+    @Command(desc = "Sets the main world")
+    public void setMainWorld(CommandContext context)
+    {
+
+    }
     // set main world (of universe) (of universes)
     // set main universe
 
+    @Command(desc = "Moves a world into another universe")
+    public void move(CommandContext context)
+    {
+
+    }
     // move to other universe
 
+    @Command(desc = "Teleports to the spawn of a world")
+    public void spawn(CommandContext context)
+    {
+        
+    }
     // spawn to universe spawn
     // spawn to world spawn
 }
