@@ -17,30 +17,19 @@
  */
 package de.cubeisland.engine.worlds.config;
 
-import java.io.File;
-
 import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
 
 public class UniverseConfig extends YamlConfiguration
 {
+    @Comment("The main world in this universe")
     public String mainWorld;
 
+    @Comment("Players will keep their gamemode when changing worlds in this universe")
     public boolean keepGameMode = false; // if false can use perm
+    @Comment("Players will keep their flymode when changing worlds in this universe")
     public boolean keepFlyMode = false; // if false can use perm
 
+    @Comment("If true players do not need permissions to enter this universe")
     public boolean freeAccess = true; // if false generate permission
-
-    @Override
-    public void onLoaded(File loadedFrom)
-    {
-        // TODO search for unknown but loaded worlds matching pattern
-        // main world is: world
-        // matching pattern would be any world with
-        // world_something_else
-
-        // TODO when loading UniverseConfigs
-        // check for missing universes
-    }
-
-
 }

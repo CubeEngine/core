@@ -33,19 +33,27 @@ import org.bukkit.WorldType;
 
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
 
 public class WorldConfig extends YamlConfiguration
 {
+    @Comment("Alias")
     public List<String> alias = new ArrayList<>();
 
+    @Comment("World Creator Options\n" +
+                 "Changes here may result in DELETING your world")
     public Generation generation = new Generation();
 
     public class Generation implements Section
     {
-        public WorldType worldType = WorldType.NORMAL;
-        public boolean generateStructures = true;
+        @Comment("NORMAL, NETHER or THE_END")
         public Environment environment;
         public String seed = "";
+        @Comment("FLAT, DEFAULT_1_1, LARGEBIOMES or AMPLIFIED")
+        public WorldType worldType = WorldType.NORMAL;
+        @Comment("Whether to generate structures or not")
+        public boolean generateStructures = true;
+        @Comment("Custom Generator Class NOT IMPLEMENTED YET")
         public String customGenerator = null; // TODO not supported yet
     }
 
@@ -67,48 +75,69 @@ public class WorldConfig extends YamlConfiguration
         }
     }
 
-    public boolean freeAccess = true;
+    @Comment("If false this world will not load automatically")
     public boolean autoLoad = true;
+    @Comment("The scale of this world (used for netherportals by default NetherWorlds are at 8.0 others at 1.0)")
     public double scale = 1.0;
 
     public Spawn spawn = new Spawn();
 
     public class Spawn implements Section
     {
+        @Comment("The world a player will respawn in when dying and not having a bedspawn set\n" +
+                     "Empty means main world of this universe")
         public String respawnWorld; // empty means main universe world
-        public boolean allowBedRespawn = true; // TODO
+        @Comment("If false sleeping in a bed will not set a players spawn. Not implemented yet")
+        public boolean allowBedRespawn = true; // TODO implement bedspawn
+        @Comment("Keeps the spawn of this world loaded.")
         public boolean keepSpawnInMemory = false;
+        @Comment("This worlds spawn")
         public WorldLocation spawnLocation;
     }
     public Access access = new Access();
 
     public class Access implements Section
     {
-        public boolean world = true; // if false need perm to access world
-        public boolean interceptTeleport = false;
+        @Comment("If true players wont need permissions to access this world")
+        public boolean free = true;
+        public boolean interceptTeleport = false; // TODO
     }
 
+    @Comment("Mob Spawing Settings of this world")
     public Spawning spawning = new Spawning();
 
     public class Spawning implements Section
     {
+        @Comment("If true completely disable animal spawning")
         public boolean disable_animals = false;
+        @Comment("If true completely disable monster spawning")
         public boolean disable_monster = false;  // ^ world.setSpawnFlags();
 
+        @Comment("SpawnLimits for ambient mobs per chunk (default: 15)")
         public Integer spawnLimit_ambient = 15;
+        @Comment("SpawnLimits for animals per chunk (default: 15)")
         public Integer spawnLimit_animal = 15;
+        @Comment("SpawnLimits for monster per chunk (default: 70)")
         public Integer spawnLimit_monster = 70;
+        @Comment("SpawnLimits for water animals per chunk (default: 5)")
         public Integer spawnLimit_waterAnimal = 5;
 
+        @Comment("SpawnRates for Animals (default: 400 ticks)")
         public Integer spawnRate_animal = 400;
+        @Comment("SpawnRates for Monster (default: 1 ticks)")
         public Integer spawnRate_monster = 1;
     }
 
+    @Comment("Minecraft GameRules")
     public Map<String, String> gamerules = new HashMap<>();
+    @Comment("If false PvP is disabled in this world")
     public boolean pvp = true;
+    @Comment("If false the world will NOT SAVE automatically")
     public boolean autosave = true;
 
+    @Comment("This worlds gamemode")
     public GameMode gameMode = GameMode.SURVIVAL;
+    @Comment("This worlds difficulty")
     public Difficulty difficulty = Difficulty.NORMAL;
 
     public void applyToWorld(World world)
@@ -213,6 +242,8 @@ public class WorldConfig extends YamlConfiguration
         // TODO generator
     }
 
+    @Comment("The world where NetherPortals will lead to. (This won't work in an end world)")
     public String netherTarget;
+    @Comment("The world where EndPortals will lead to. (This won't work in a nether world)")
     public String endTarget;
 }

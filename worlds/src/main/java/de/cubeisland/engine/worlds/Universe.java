@@ -49,7 +49,8 @@ import static de.cubeisland.engine.worlds.WorldsPermissions.KEEP_GAMEMODE;
  */
 public class Universe
 {
-    private Worlds module;
+    private final Worlds module;
+    private final Multiverse multiverse;
 
     private UniverseConfig universeConfig;
     private WorldConfig defaults = null;
@@ -66,10 +67,12 @@ public class Universe
     private final File fileUniverse;
     private final File fileDefaults;
 
-    private Universe(File universeDir)
+    private Universe(File universeDir, Worlds module, Multiverse multiverse)
     {
         assert universeDir != null : "UniverseDirectory cannot be null!";
         assert universeDir.isDirectory() : "UniverseDirectory musst be a directory!";
+        this.module = module;
+        this.multiverse = multiverse;
         this.dirUniverse = universeDir;
         this.dirPlayers = new File(universeDir, "players");
         this.dirPlayers.mkdir();
@@ -78,10 +81,9 @@ public class Universe
     }
 
     // For Loading
-    public Universe(File universeDir, Worlds module)
+    public Universe(File universeDir, Multiverse multiverse, Worlds module)
     {
-        this(universeDir);
-        this.module = module;
+        this(universeDir, module, multiverse);
         if (!fileDefaults.exists())
         {
             module.getLog().warn("defaults.yml is missing for the universe {}! Regenerating...", universeDir.getName());
@@ -174,13 +176,13 @@ public class Universe
     {
         if (!this.universeConfig.freeAccess)
         {
-            this.universeAccessPerm = this.module.getUniverseRootPerm().createAbstractChild("access").createChild(dirUniverse.getName());
+            this.universeAccessPerm = this.multiverse.getUniverseRootPerm().createAbstractChild("access").createChild(dirUniverse.getName());
             this.module.getCore().getPermissionManager().registerPermission(module, this.universeAccessPerm);
         }
-        Permission worldAccess = this.module.getUniverseRootPerm().createAbstractChild("world-access");
+        Permission worldAccess = this.multiverse.getUniverseRootPerm().createAbstractChild("world-access");
         for (Entry<World, WorldConfig> entry : this.worldConfigs.entrySet())
         {
-            if (!entry.getValue().freeAccess)
+            if (!entry.getValue().access.free)
             {
                 Permission perm = worldAccess.createChild(entry.getKey().getName());
                 this.module.getCore().getPermissionManager().registerPermission(module, perm);
@@ -191,10 +193,9 @@ public class Universe
     }
 
     // For creating new Universe
-    public Universe(File universeDir, Worlds module, Set<World> worlds)
+    public Universe(Worlds module, Multiverse multiverse, File universeDir, Set<World> worlds)
     {
-        this(universeDir);
-        this.module = module;
+        this(universeDir, module, multiverse);
         this.universeConfig = this.module.getCore().getConfigFactory().create(UniverseConfig.class);
         this.universeConfig.setFile(this.fileUniverse);
 
@@ -341,7 +342,7 @@ public class Universe
     {
         WorldConfig fromConfig = this.worldConfigs.get(from.getWorld());
         World toWorld = this.module.getCore().getWorldManager().getWorld(fromConfig.netherTarget);
-        WorldConfig toConfig = this.module.getUniverse(toWorld).getWorldConfig(toWorld);
+        WorldConfig toConfig = this.multiverse.getUniverse(toWorld).getWorldConfig(toWorld);
         double factor = fromConfig.scale / toConfig.scale;
         agent.setSearchRadius((int)(128 / (factor * 8)));
         agent.setCreationRadius((int)(16 / (factor * 8)));

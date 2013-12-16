@@ -20,6 +20,9 @@ package de.cubeisland.engine.worlds.config;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+/**
+ * A Location in a world (without the world)
+ */
 public class WorldLocation
 {
     public final double x;

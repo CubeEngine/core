@@ -18,10 +18,12 @@
 package de.cubeisland.engine.worlds.config;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Comment;
 
-public class MultiverseConfig extends YamlConfiguration
+public class WorldsConfig extends YamlConfiguration
 {
+    @Comment("The main universe")
     public String mainUniverse;
+    @Comment("When joining the server for the first time teleport the player to the spawn of the main world in the main universe")
     public boolean adjustFirstSpawn = false;
-    // ? public List<String> universes = new ArrayList<>();
 }
