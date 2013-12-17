@@ -18,6 +18,7 @@
 package de.cubeisland.engine.worlds.commands;
 
 import org.bukkit.World;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -25,6 +26,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.worlds.Multiverse;
 import de.cubeisland.engine.worlds.Universe;
@@ -163,11 +165,48 @@ public class WorldCommands extends ContainerCommand
     }
     // move to other universe
 
-    @Command(desc = "Teleports to the spawn of a world")
+    @Command(desc = "Teleports to the spawn of a world", min = 1, max = 1,
+    usage = "<u:<universe>|<world>")
     public void spawn(CommandContext context)
     {
-        // TODO
+        if (context.getSender() instanceof User)
+        {
+            User user = (User)context.getSender();
+            String name = context.getString(0);
+            if (name.startsWith("u:"))
+            {
+                name = name.substring(2);
+                for (Universe universe : this.multiverse.getUniverses())
+                {
+                    if (universe.getName().equalsIgnoreCase(name))
+                    {
+                        World world = universe.getMainWorld();
+                        WorldConfig worldConfig = universe.getWorldConfig(world);
+                        if (user.safeTeleport(worldConfig.spawn.spawnLocation.getLocationIn(world), TeleportCause.COMMAND, false))
+                        {
+                            context.sendTranslated("&aYou are now at the spawn of &6%s&a (main world of the universe &6%s&a)", world.getName(), name);
+                            return;
+                        } // else tp failed
+                        return;
+                    }
+                }
+                context.sendTranslated("&cUniverse &6%s&c not found!", name);
+                return;
+            }
+            World world = this.getModule().getCore().getWorldManager().getWorld(name);
+            if (world == null)
+            {
+                context.sendTranslated("&cWorld &6%s&c not found!");
+                return;
+            }
+            WorldConfig worldConfig = this.multiverse.getUniverse(world).getWorldConfig(world);
+            if (user.safeTeleport(worldConfig.spawn.spawnLocation.getLocationIn(world), TeleportCause.COMMAND, false))
+            {
+                context.sendTranslated("&aYou are now at the spawn of &6%s&a!", name);
+                return;
+            } // else tp failed
+            return;
+        }
+        context.sendTranslated("&cThis command can only be used ingame!");
     }
-    // spawn to universe spawn
-    // spawn to world spawn
 }
