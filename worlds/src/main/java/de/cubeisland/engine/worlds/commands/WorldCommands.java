@@ -17,80 +17,141 @@
  */
 package de.cubeisland.engine.worlds.commands;
 
+import org.bukkit.World;
+
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.worlds.Multiverse;
+import de.cubeisland.engine.worlds.Universe;
+import de.cubeisland.engine.worlds.config.WorldConfig;
 
 public class WorldCommands extends ContainerCommand
 {
-    public WorldCommands(Module module)
+    private final Multiverse multiverse;
+
+    public WorldCommands(Module module, Multiverse multiverse)
     {
         super(module, "worlds", "Worlds commands");
+        this.multiverse = multiverse;
     }
 
     @Command(desc = "Creates and loads a new world")
     public void create(ParameterizedContext context)
     {
-
+        // TODO
     }
     // create name environement seed generator worldtype structures?
 
-    @Command(desc = "Loads a world from configuration")
+    @Command(desc = "Loads a world from configuration", usage = "<world>",
+    min = 1, max = 1)
     public void load(CommandContext context)
     {
-
+        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        if (world != null)
+        {
+            context.sendTranslated("&aThe world %s is already loaded!", world.getName());
+            return;
+        }
+        if (multiverse.hasWorld(context.getString(0)) != null)
+        {
+            world = multiverse.loadWorld(context.getString(0));
+            if (world != null)
+            {
+                context.sendTranslated("&aWorld &6%s&a loaded!" , world.getName());
+            }
+            else
+            {
+                context.sendTranslated("&cCould not load &6%s", context.getString(0));
+            }
+        }
+        else
+        {
+            context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
+        }
     }
-    // load (config file must exist)
 
-
-    @Command(desc = "Unload a loaded world")
-    public void unload(CommandContext context) // -f to tp players out of that world
+    @Command(desc = "Unload a loaded world",
+             flags = @Flag(longName = "force", name = "f")
+    )
+    public void unload(ParameterizedContext context) // -f to tp players out of that world
     {
-
+        // TODO force flag
+        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        if (world != null)
+        {
+            if (this.getModule().getCore().getWorldManager().unloadWorld(world, true))
+            {
+                context.sendTranslated("&aUnloaded the world &6%s&a!", world.getName());
+            }
+            else
+            {
+                context.sendTranslated("&cCould not unload &6%s", world.getName());
+            }
+            return;
+        }
+        context.sendTranslated("&aThe world does not exist");
     }
     // unload (-f teleports all players out of this world)
 
     @Command(desc = "Remove a world")
     public void remove(CommandContext context) // -f unload and tp players out
     {
-
+        // TODO
     }
     // remove/delete
 
     @Command(desc = "Lists all worls")
     public void list(CommandContext context)
     {
-
+        context.sendTranslated("&aThe following worlds do exist:");
+        for (Universe universe : this.multiverse.getUniverses())
+        {
+            for (Pair<String, WorldConfig> pair : universe.getAllWorlds())
+            {
+                World world = this.getModule().getCore().getWorldManager().getWorld(pair.getLeft());
+                if (world == null)
+                {
+                    context.sendTranslated("&6%s &9%s &c(not loaded)&a in the universe &6%s", pair.getLeft(), pair.getRight().generation.environment.name(), universe.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s &9%s&a in the universe &6%s", pair.getLeft(), pair.getRight().generation.environment.name(), universe.getName());
+                }
+            }
+        }
     }
     // list / list worlds that you can enter
 
     @Command(desc = "Show info about a world")
     public void info(CommandContext context)
     {
-
+        // TODO
     }
     // info
 
     @Command(desc = "Lists the players in a world")
     public void listplayers(CommandContext context)
     {
-
+        // TODO
     }
     // listplayers in world/universe
 
     @Command(desc = "Reloads the module")
     public void reload(CommandContext context)
     {
-
+        // TODO
     }
     // reload
 
     @Command(desc = "Sets the main world")
     public void setMainWorld(CommandContext context)
     {
-
+        // TODO
     }
     // set main world (of universe) (of universes)
     // set main universe
@@ -98,14 +159,14 @@ public class WorldCommands extends ContainerCommand
     @Command(desc = "Moves a world into another universe")
     public void move(CommandContext context)
     {
-
+        // TODO
     }
     // move to other universe
 
     @Command(desc = "Teleports to the spawn of a world")
     public void spawn(CommandContext context)
     {
-        
+        // TODO
     }
     // spawn to universe spawn
     // spawn to world spawn

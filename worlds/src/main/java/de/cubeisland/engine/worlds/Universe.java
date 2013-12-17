@@ -20,8 +20,10 @@ package de.cubeisland.engine.worlds;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,6 +38,7 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.worlds.config.UniverseConfig;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.config.WorldLocation;
@@ -55,6 +58,7 @@ public class Universe
     private UniverseConfig universeConfig;
     private WorldConfig defaults = null;
     private Map<World, WorldConfig> worldConfigs = new HashMap<>();
+    private Map<String, WorldConfig> worldConfigMap = new HashMap<>();
 
     private World mainWorld;
     private Set<World> worlds = new HashSet<>();
@@ -70,7 +74,7 @@ public class Universe
     private Universe(File universeDir, Worlds module, Multiverse multiverse)
     {
         assert universeDir != null : "UniverseDirectory cannot be null!";
-        assert universeDir.isDirectory() : "UniverseDirectory musst be a directory!";
+        assert universeDir.isDirectory() : "UniverseDirectory must be a directory!";
         this.module = module;
         this.multiverse = multiverse;
         this.dirUniverse = universeDir;
@@ -97,6 +101,10 @@ public class Universe
                 if (config.autoLoad)
                 {
                     this.loadOrCreateWorld(config, file.getName().substring(0, file.getName().indexOf(".yml")));
+                }
+                else
+                {
+                    this.worldConfigMap.put(file.getName().substring(0, file.getName().indexOf(".yml")), config);
                 }
             }
         }
@@ -134,7 +142,7 @@ public class Universe
         this.generatePermissions();
     }
 
-    private void loadOrCreateWorld(WorldConfig config, String name)
+    private World loadOrCreateWorld(WorldConfig config, String name)
     {
         World world = this.module.getCore().getWorldManager().getWorld(name);
         if (world == null) // world loaded?
@@ -142,7 +150,7 @@ public class Universe
             if (config.generation.environment == null || config.generation.seed == null)
             {
                 module.getLog().warn("Insufficient Generation Information to load {} in {}!", name, this.getName());
-                return;
+                return null;
             }
             if (new File(Bukkit.getServer().getWorldContainer(), name).exists()) // world is just not loaded yet
             {
@@ -170,6 +178,8 @@ public class Universe
         config.applyToWorld(world); // apply configured
         this.worlds.add(world);
         this.worldConfigs.put(world, config);
+        this.worldConfigMap.put(world.getName(), config);
+        return world;
     }
 
     private void generatePermissions()
@@ -265,6 +275,7 @@ public class Universe
             config.updateInheritance();
             config.save();
             this.worldConfigs.put(world, config);
+            this.worldConfigMap.put(world.getName(), config);
             this.worlds.add(world);
         }
     }
@@ -412,5 +423,26 @@ public class Universe
     public Location getSpawnLocation(World world)
     {
         return this.getWorldConfig(world).spawn.spawnLocation.getLocationIn(world);
+    }
+
+    public boolean hasWorld(String name)
+    {
+        WorldConfig worldConfig = this.worldConfigMap.get(name);
+        return worldConfig == null;
+    }
+
+    public World loadWorld(String name)
+    {
+        return this.loadOrCreateWorld(this.worldConfigMap.get(name), name);
+    }
+
+    public List<Pair<String, WorldConfig>> getAllWorlds()
+    {
+        ArrayList<Pair<String, WorldConfig>> list = new ArrayList<>();
+        for (Entry<String, WorldConfig> entry : this.worldConfigMap.entrySet())
+        {
+            list.add(new Pair<>(entry.getKey(), entry.getValue()));
+        }
+        return list;
     }
 }

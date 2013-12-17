@@ -28,6 +28,7 @@ import org.bukkit.potion.PotionEffect;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.worlds.commands.WorldCommands;
 import de.cubeisland.engine.worlds.config.WorldLocation;
 import de.cubeisland.engine.worlds.config.WorldsConfig;
 import de.cubeisland.engine.worlds.converter.DiffcultyConverter;
@@ -72,7 +73,7 @@ public class Worlds extends Module
     {
         this.config = this.loadConfig(WorldsConfig.class);
         Multiverse multiverse = new Multiverse(this);
-
+        this.getCore().getCommandManager().registerCommand(new WorldCommands(this, multiverse));
         new WorldsPermissions(this);
 
 
