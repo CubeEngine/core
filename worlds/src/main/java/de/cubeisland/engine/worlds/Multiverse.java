@@ -283,6 +283,7 @@ public class Multiverse implements Listener
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event)
     {
+        // TODO cancel changing universe if entity has inventory
         World world = event.getEntity().getWorld();
         Universe universe = this.getUniverse(world);
         TravelAgent agent = event.getPortalTravelAgent();

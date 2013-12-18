@@ -300,7 +300,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
-        if (this.config.commands.improveVanilla)
+        if (this.config.improveVanilla)
         {
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
