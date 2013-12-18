@@ -2451,6 +2451,16 @@ public class UserBase implements Player
     }
 
     @Override
+    public void setResourcePack(String string)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setResourcePack(string);
+        }
+    }
+
+    @Override
     public void resetMaxHealth()
     {
         Player player = this.getPlayer();
