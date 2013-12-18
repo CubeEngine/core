@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +46,9 @@ public class CoreConfiguration extends YamlConfiguration
 
         @Comment("The maximum number of offers given for a tab completion request (pressing tab).")
         public int maxTabCompleteOffers = 5;
+
+        @Comment("A List of commands CubeEngine will not try to override")
+        public List<String> noOverride = new ArrayList<>();
     }
 
     public ExecutorSection executor;
