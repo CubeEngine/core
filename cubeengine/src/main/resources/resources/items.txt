@@ -11,6 +11,10 @@ DIRT:0
   dirt
   earth
   land
+DIRT:1
+  grasslessdirt
+DIRT:2
+  podzol
 COBBLESTONE:0
   cobblestone
   cobble
@@ -31,6 +35,12 @@ WOOD:2
 WOOD:3
   junglewoodplanks
   jungleplanks
+WOOD:4
+  acaciawoodplanks
+  acaciaplanks
+WOOD:5
+  darkoakwoodplanks
+  darkoakplanks
 SAPLING:0
   sapling
   treesapling
@@ -53,6 +63,12 @@ SAPLING:2
 SAPLING:3
   junglesapling
   junglesap
+SAPLING:4
+  acaciasapling
+  acaciasap
+SAPLING:5
+  darkoaksapling
+  darkoaksap
 BEDROCK:0
   bedrock
   adminblock
@@ -69,6 +85,8 @@ STATIONARY_LAVA:0
   statlava
 SAND:0
   sand
+SAND:1
+  redsand
 GRAVEL:0
   gravel
 GOLD_ORE:0
@@ -262,9 +280,27 @@ YELLOW_FLOWER:0
   flower
   dandelion
 RED_ROSE:0
-  redrose
+  poppy
   redflower
-  rose
+RED_ROSE:1
+  blueorchid
+  orchid
+RED_ROSE:2
+  allium
+RED_ROSE:3
+  azurebluet
+  bluet
+RED_ROSE:4
+  redtulip
+  tulip
+RED_ROSE:5
+  orangetulip
+RED_ROSE:6
+  whitetulip
+RED_ROSE:7
+  pinktulip
+RED_ROSE:8
+  oxeyedaisy
 BROWN_MUSHROOM:0
   brownmushroom
   brownmush
@@ -306,8 +342,20 @@ DOUBLE_STEP:5
   stonebrickdoublestep
   stonebrickdoubleslab
 DOUBLE_STEP:6
+  netherbrickdoubleslab
+  netherbrickdoublestep
+DOUBLE_STEP:7
+  quartzdoubleslab
+  quartzdoublestep
+DOUBLE_STEP:8
   adminslab
   magicslab
+DOUBLE_STEP:9
+  smoothsandstoneslab
+  smoothsandstonestep
+DOUBLE_STEP:15
+  tilequartzslap
+  tilequartstep
 STEP:0
   slab
   stoneslab
@@ -334,6 +382,12 @@ STEP:4
 STEP:5
   stonebrickstep
   stonebrickslab
+STEP:6
+  netherbrickslab
+  netherbrickstep
+STEP:7
+  quartzslab
+  quartzstep
 BRICK:0
   brickblock
   blockbrick
@@ -489,10 +543,9 @@ DIODE_BLOCK_OFF:0
 DIODE_BLOCK_ON:0
   repeateron
   dioderon
-LOCKED_CHEST:0
-  lockedchest
-  aprilfoolschest
-  aprilchest
+STAINED_GLASS:0
+  stainedglass
+  coloredglass
 TRAP_DOOR:0
   trapdoor
   hatch
@@ -630,7 +683,13 @@ WOOD_DOUBLE_STEP:3
   doublejunglewoodplankstep
   doublejunglewoodplankslab
   doublejunglewoodstep
-  doublejunglewoodslab 
+  doublejunglewoodslab
+WOOD_DOUBLE_STEP:4
+  doubleacaciawoodstep
+  doubleacaciawoodslab
+WOOD_DOUBLE_STEP:5
+  doubledarkoakwoodstep
+  doubledarkoakwoodslab
 WOOD_STEP:0
   woodplankstep
   woodplankslab
@@ -655,6 +714,12 @@ WOOD_STEP:3
   junglewoodslab
   junglewoodplanksstep
   junglewoodplanksslab
+WOOD_STEP:4
+  acaciawoodstep
+  acaciawoodslab
+WOOD_STEP:5
+  darkoakwoodstep
+  darkoakwoodslab
 COCOA:0
   cocoaplant
   cocoafruit
@@ -760,8 +825,43 @@ CARPET:0
 HARD_CLAY:0
   hardclay
   hardenedclay
+STAINED_GLASS_PANE:0
+  stainedglasspane
+  coloredglasspane
+LEAVES_2:0
+  acacialeaves
+LEAVES_2:1
+  darkoakleaves
+LOG_2:0
+  acaciawood
+  acacialog
+LOG_2:1
+  darkoakwood
+  darkoaklog
+ACACIA_STAIRS:0
+  acaciastairs
+DARK_OAK_STAIRS:0
+  darkoakstairs
+HAY_BLOCK:0
+  hayblock
+CARPET:0
+  carpet
 COAL_BLOCK:0
   coalblock
+PACKED_ICE:0
+  packedice
+DOUBLE_PLANT:0
+  sunflower
+DOUBLE_PLANT:1
+  lilac
+DOUBLE_PLANT:2
+  doubletallgrass
+DOUBLE_PLANT:3
+  largefern
+DOUBLE_PLANT:4
+  rosebush
+DOUBLE_PLANT:5
+  peony
 IRON_SPADE:0
   ironshovel
   ironspade
