@@ -81,7 +81,7 @@ public class KitManager implements Listener
         KitConfiguration config = kitConfigMap.get(kit);
         if (config == null)
         {
-            config = new KitConfiguration();
+            config = this.module.getCore().getConfigFactory().create(KitConfiguration.class);
             kitConfigMap.put(kit, config);
             kitMap.put(kit.getKitName(), kit);
         }
@@ -93,7 +93,7 @@ public class KitManager implements Listener
     {
         try
         {
-            KitConfiguration config = this.module.getCore().getConfigurationFactory().load(KitConfiguration.class, file.toFile());
+            KitConfiguration config = this.module.getCore().getConfigFactory().load(KitConfiguration.class, file.toFile());
             config.kitName = StringUtils.stripFileExtension(file.getFileName().toString());
             Kit kit = config.getKit(module);
             kitConfigMap.put(kit, config);

@@ -269,9 +269,10 @@ public class PlayerCommands
                     context.sendTranslated("&cUser %s not found or offline!", name);
                     continue;
                 }
-                user.setFoodLevel(0);
-                user.setSaturation(0);
-                user.setExhaustion(4);
+                sender.setHealth(sender.getMaxHealth());
+                sender.setFoodLevel(20);
+                sender.setSaturation(20);
+                sender.setExhaustion(0);
                 healed.add(user.getName());
                 user.sendTranslated("&aYou got healed by &2%s&a!", context.getSender().getName());
             }
@@ -470,7 +471,7 @@ public class PlayerCommands
     {
         if (!force)
         {
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().isGodMode())
+            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().getGodmode())
             {
                 context.sendTranslated("&cYou cannot kill &2%s&c!", user.getDisplayName());
                 return false;
@@ -710,8 +711,8 @@ public class PlayerCommands
             return;
         }
         BasicsUserEntity bUser = module.getBasicsUser(user).getbUEntity();
-        bUser.setGodMode(!bUser.isGodMode());
-        if (bUser.isGodMode())
+        bUser.setGodmode(!bUser.getGodmode());
+        if (bUser.getGodmode())
         {
             if (other)
             {

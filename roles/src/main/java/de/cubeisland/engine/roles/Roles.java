@@ -20,6 +20,7 @@ package de.cubeisland.engine.roles;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.roles.commands.ManagementCommands;
 import de.cubeisland.engine.roles.commands.RoleCommands;
 import de.cubeisland.engine.roles.commands.RoleInformationCommands;
@@ -47,14 +48,15 @@ public class Roles extends Module
     @Override
     public void onEnable()
     {
-        ConverterManager cManager = this.getCore().getConfigurationFactory().getDefaultConverterManager();
+        ConverterManager cManager = this.getCore().getConfigFactory().getDefaultConverterManager();
         cManager.registerConverter(PermissionTree.class, new PermissionTreeConverter(this));
         cManager.registerConverter(Priority.class, new PriorityConverter());
         cManager.registerConverter(RoleMirror.class, new RoleMirrorConverter(this));
 
-        this.getCore().getDB().registerTable(TableRole.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TablePerm.initTable(this.getCore().getDB()));
-        this.getCore().getDB().registerTable(TableData.initTable(this.getCore().getDB()));
+        Database db = this.getCore().getDB();
+        db.registerTable(TableRole.class);
+        db.registerTable(TablePerm.class);
+        db.registerTable(TableData.class);
 
         this.rolesManager = new RolesManager(this);
 

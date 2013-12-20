@@ -34,8 +34,8 @@ public class Spawn extends Module
         this.config = this.loadConfig(SpawnConfig.class);
         this.getCore().getEventManager().registerListener(this,new SpawnListener(roles));
         CommandManager cm = this.getCore().getCommandManager();
-        cm.removeCommand("setSpawn", false); // unregister basics commands
-        cm.removeCommand("spawn", false); // unregister basics commands
+        cm.removeCommand("setSpawn", true); // unregister basics commands
+        cm.removeCommand("spawn", true); // unregister basics commands
         cm.registerCommands(this, new SpawnCommands(roles, this), ReflectedCommand.class);
         new SpawnPerms(this); // PermContainer registers itself
     }

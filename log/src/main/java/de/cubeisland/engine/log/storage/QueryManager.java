@@ -477,8 +477,7 @@ public class QueryManager
         }
         catch (Exception ex)
         {
-            module.getLog().error("Error while logging!");
-            module.getLog().debug(ex.getLocalizedMessage(), ex);
+            module.getLog().error(ex, "Error while logging!");
             this.queuedLogs.addAll(logs);
             if (latch.getCount() == 1)
             {

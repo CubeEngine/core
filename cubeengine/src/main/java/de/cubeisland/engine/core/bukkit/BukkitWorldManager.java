@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_6_R3.RegionFileCache;
+import net.minecraft.server.v1_7_R1.RegionFileCache;
 
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -113,7 +113,7 @@ public class BukkitWorldManager extends AbstractWorldManager
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
         if (!save)
         {
-            this.core.getLog().warn("This is unstable on CraftBukkit servers", new IllegalArgumentException());
+            this.core.getLog().warn(new IllegalArgumentException(), "This is unstable on CraftBukkit servers");
         }
         boolean success = this.server.unloadWorld(world, save);
         if (success && !save)

@@ -16,8 +16,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <minecraftVersion>1.6.4</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
+    <minecraftVersion>1.7.2</minecraftVersion>
+    <bukkitVersion>${minecraftVersion}-R0.1</bukkitVersion>
     <jdkVersion>1.7</jdkVersion>
     <projectBase>${basedir}/..</projectBase>
     <externalPackage>${project.groupId}.external</externalPackage>
@@ -162,12 +162,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Logback dependencies
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
-      </dependency>   -->
 
       <!-- Test dependencies -->
       <dependency>
@@ -211,9 +205,6 @@
         <targetPath>.</targetPath>
         <directory>${basedir}/src/main/resources/</directory>
         <filtering>false</filtering>
-        <includes>
-          <include>logback*.xml</include>
-        </includes>
       </resource>
       <resource>
         <targetPath>./resources</targetPath>

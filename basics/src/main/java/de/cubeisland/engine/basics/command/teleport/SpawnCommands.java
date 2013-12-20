@@ -20,14 +20,15 @@ package de.cubeisland.engine.basics.command.teleport;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 
 /**
  * Contains spawn-commands.
@@ -37,11 +38,11 @@ import de.cubeisland.engine.basics.BasicsPerm;
  */
 public class SpawnCommands
 {
-    private Basics basics;
+    private Basics module;
 
     public SpawnCommands(Basics basics)
     {
-        this.basics = basics;
+        this.module = basics;
     }
 
     @Command(desc = "Changes the global respawnpoint", usage = "[world] [<x> <y> <z>]", max = 4)
@@ -85,6 +86,7 @@ public class SpawnCommands
                 context.sendTranslated("&cCoordinates are invalid!");
                 return;
             }
+            this.module.getCore().getEventManager().fireEvent(new WorldSetSpawnEvent(this.module.getCore(), world, new Location(world, x,y,z)));
         }
         else
         {
@@ -94,6 +96,7 @@ public class SpawnCommands
                 return;
             }
             final Location loc = sender.getLocation();
+            this.module.getCore().getEventManager().fireEvent(new WorldSetSpawnEvent(this.module.getCore(), world, loc));
             x = loc.getBlockX();
             y = loc.getBlockY();
             z = loc.getBlockZ();
@@ -115,7 +118,7 @@ public class SpawnCommands
         {
             user = (User)context.getSender();
         }
-        World world = basics.getConfiguration().mainWorld;
+        World world = module.getConfiguration().mainWorld;
         if (world == null && user != null)
         {
             world = user.getWorld();
@@ -157,9 +160,11 @@ public class SpawnCommands
                     }
                 }
                 if (!TeleportCommands.teleport(player, loc, true, force, true))
+                {
                     return;
+                }
             }
-            this.basics.getCore().getUserManager().broadcastMessage("&aTeleported everyone to the spawn of %s!", world.getName());
+            this.module.getCore().getUserManager().broadcastMessage("&aTeleported everyone to the spawn of %s!", world.getName());
             return;
         }
         if (user == null && !context.hasArg(0))
@@ -190,7 +195,10 @@ public class SpawnCommands
         final Location userLocation = user.getLocation();
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
-        TeleportCommands.teleport(user, spawnLocation, true, force, true);
+        if (!TeleportCommands.teleport(user, spawnLocation, true, force, true))
+        {
+            context.sendTranslated("&cTeleport failed!");
+        }
     }
 
     @Command(desc = "Teleports you to the spawn of given world",
@@ -216,7 +224,9 @@ public class SpawnCommands
                 return;
             }
             if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
+            {
                 context.sendTranslated("&aTeleported to the spawn of world &6%s&a!", world.getName());
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");

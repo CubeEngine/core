@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit.packethook;
 
-import net.minecraft.server.v1_6_R3.Packet;
+import net.minecraft.server.v1_7_R1.Packet;
 
 import org.bukkit.entity.Player;
 
@@ -75,15 +75,5 @@ public abstract class PacketEvent
             throw new IllegalArgumentException("Must be of the same type!");
         }
         this.packet = newPacket;
-    }
-
-    /**
-     * Returns the ID of the packet
-     *
-     * @return the packet ID
-     */
-    public int getPacketId()
-    {
-        return this.getPacket().n();
     }
 }

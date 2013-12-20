@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.module;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -57,7 +56,7 @@ public class TestModuleManager implements ModuleManager
     {
         TestModule module = new TestModule();
         ModuleInfo info = new TestModuleInfo(this.core);
-        module.initialize(this.core, info, null, this.ldr, null, this.core.getLog());
+        module.initialize(this.core, info, null, this.ldr, null);
         return module;
     }
 

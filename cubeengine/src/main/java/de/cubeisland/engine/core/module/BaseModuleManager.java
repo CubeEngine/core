@@ -39,7 +39,6 @@ import javax.annotation.Nullable;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
@@ -53,6 +52,7 @@ import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.logging.Log;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -83,7 +83,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
-        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null, logger);
+        this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null);
         this.serviceManager = new ServiceManager(core);
     }
 
@@ -212,7 +212,7 @@ public abstract class BaseModuleManager implements ModuleManager
             catch (InvalidModuleException ex)
             {
                 this.moduleInfoMap.remove(moduleName);
-                this.logger.debug("ex, Failed to load the module '{}'", moduleName);
+                this.logger.debug(ex, "Failed to load the module '{}'", moduleName);
             }
             catch (ModuleException ex)
             {
@@ -516,7 +516,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             catch (ModuleException e)
             {
-                this.logger.warn("Failed to reload a module upon unloading a different module!", e);
+                this.logger.warn(e, "Failed to reload a module upon unloading a different module!");
             }
             finally
             {
@@ -584,7 +584,8 @@ public abstract class BaseModuleManager implements ModuleManager
         this.loader.unloadModule(module);
         this.modules.remove(module.getId());
         this.moduleInfoMap.remove(module.getId());
-        this.core.getLogFactory().shutdown(module.getLog());
+
+        // TODO this.core.getLogFactory().shutdown(module.getLog());
 
         // null all the fields referencing this module
         for (Module m : this.modules.values())

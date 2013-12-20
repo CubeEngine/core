@@ -25,6 +25,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
@@ -55,6 +56,11 @@ public class SimpleCommandBackend implements CommandBackend
         return this.knownCommands;
     }
 
+    protected final SimpleCommandMap getCommandMap()
+    {
+        return this.commandMap;
+    }
+
     @Override
     public void registerCommand(CubeCommand command)
     {
@@ -63,8 +69,12 @@ public class SimpleCommandBackend implements CommandBackend
         Command old = this.getCommand(command.getName());
         if (old != null && !(old instanceof CubeCommand))
         {
-            // CE commands are more important :P
-            this.removeCommand(old.getLabel(), false);
+            BukkitCoreConfiguration config = this.core.getConfiguration();
+            if (!config.commands.noOverride.contains(old.getLabel()))
+            {
+                // CE commands are more important :P
+                this.removeCommand(old.getLabel(), false);
+            }// sometimes they are not :(
         }
 
         this.commandMap.register(command.getModule().getId(), command);

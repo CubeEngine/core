@@ -30,10 +30,12 @@ import java.util.Stack;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.gettext.MessageCatalogFactory;
-import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.util.Cleanable;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -57,8 +59,11 @@ public class I18n implements Cleanable
     public I18n(Core core)
     {
         this.core = core;
-        this.logger = core.getLogFactory().getLog("language");
-        // TODO
+        this.logger = core.getLogFactory().getLog(Core.class, "Language");
+        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Language"),
+                                                  LoggingUtil.getFileFormat(false, false),
+                                                  true, LoggingUtil.getCycler(),
+                                                  core.getTaskManager().getThreadFactory()));
         this.languages = new THashMap<>();
         this.languageLookupMap = new THashMap<>();
         this.sourceLanguage = new SourceLanguage();
@@ -120,7 +125,7 @@ public class I18n implements Cleanable
         {
             for (Path file : directory)
             {
-                config = this.core.getConfigurationFactory().load(LocaleConfig.class, file.toFile(), false);
+                config = this.core.getConfigFactory().load(LocaleConfig.class, file.toFile(), false);
                 if (config.locale != null)
                 {
                     languages.put(config.locale, config);

@@ -52,11 +52,9 @@ public class TeleportCommands
 
     public static boolean teleport(User user, Location loc, boolean safe, boolean force, boolean keepDirection)
     {
-
         if (safe)
         {
-            user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND, keepDirection);
-            return true;
+            return user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND, keepDirection);
         }
         if (keepDirection)
         {
@@ -64,8 +62,7 @@ public class TeleportCommands
             loc.setYaw(userLocation.getYaw());
             loc.setPitch(userLocation.getPitch());
         }
-        user.teleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
-        return true;
+        return user.teleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
     }
 
     @Command(desc = "Teleport directly to a player.", usage = "<player> [player] [-unsafe]", min = 1, max = 2, flags = {
@@ -201,7 +198,10 @@ public class TeleportCommands
                 noTp.add(player.getName());
                 continue;
             }
-            teleport(user.getCore().getUserManager().getExactUser(player.getName()), user.getLocation(), safe, force, true);
+            if (!teleport(user.getCore().getUserManager().getExactUser(player.getName()), user.getLocation(), safe, force, true))
+            {
+                noTp.add(player.getName());
+            }
         }
         context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", user.getName());
         if (!noTp.isEmpty())
@@ -286,7 +286,10 @@ public class TeleportCommands
                 continue;
             }
             boolean safe = !context.hasFlag("u");
-            teleport(sender.getCore().getUserManager().getExactUser(player.getName()), sender.getLocation(), safe, force, true);
+            if (!teleport(sender.getCore().getUserManager().getExactUser(player.getName()), sender.getLocation(), safe, force, true))
+            {
+                noTp.add(player.getName());
+            }
         }
         context.sendTranslated("&aYou teleported everyone to you!");
         context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", sender.getName());
@@ -340,7 +343,9 @@ public class TeleportCommands
             boolean safe = !context.hasFlag("u");
             Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
             if (TeleportCommands.teleport(sender, loc, safe, false, true))
+            {
                 context.sendTranslated("&aTeleported to &eX:&6%d &eY:&6%d &eZ:&6%d &ain %s!", x, y, z, world.getName());
+            }
             return;
         }
         context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");

@@ -25,8 +25,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
+import de.cubeisland.engine.logging.Log;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -374,8 +374,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             }
             catch (JsonProcessingException e)
             {
-                this.log.error("Failed to generate the JSON code for a response!");
-                this.log.debug(e.getLocalizedMessage(), e);
+                this.log.error(e, "Failed to generate the JSON code for a response!");
                 return "null";
             }
         }

@@ -22,10 +22,13 @@ import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.math.BlockVector2;
 
@@ -96,6 +99,39 @@ public class BorderListener implements Listener
         if (!isChunkInRange(respawnChunk, this.module.getConfig(respawnChunk.getWorld())))
         {
             event.setRespawnLocation(respawnChunk.getWorld().getSpawnLocation());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPortalEvent(EntityPortalEvent event)
+    {
+        if (event.getTo() == null)
+        {
+            return;
+        }
+        if (!isChunkInRange(event.getTo().getChunk(), this.module.getConfig(event.getTo().getWorld())))
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerPortalEvent(PlayerPortalEvent event)
+    {
+        if (event.getTo() == null)
+        {
+            return;
+        }
+        BorderConfig config = this.module.getConfig(event.getTo().getWorld());
+        if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
+        {
+            return;
+        }
+        if (!isChunkInRange(event.getTo().getChunk(),config))
+        {
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            user.sendTranslated("&cThis portal would teleport you behind the border!");
+            event.setCancelled(true);
         }
     }
 

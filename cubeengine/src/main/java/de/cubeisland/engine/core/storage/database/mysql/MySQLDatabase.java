@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
+import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -31,6 +32,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
+import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.task.ListenableExecutorService;
@@ -42,8 +44,11 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
+import org.jooq.conf.Settings;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
+import org.jooq.impl.DataSourceConnectionProvider;
+import org.jooq.impl.DefaultConfiguration;
 
 public class MySQLDatabase extends AbstractPooledDatabase
 {
@@ -56,12 +61,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private final ListenableExecutorService fetchExecutorService;
     private final ComboPooledDataSource cpds;
 
+    private final Settings settings;
+
     private DatabaseSchema schema;
 
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
         super(core);
         this.fetchExecutorService = new ListenableExecutorService();
+
         try
         {
             Class.forName("com.mysql.jdbc.Driver");
@@ -71,6 +79,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException(e);
         }
         this.config = config;
+
 
         cpds = new ComboPooledDataSource();
         cpds.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
@@ -97,11 +106,14 @@ public class MySQLDatabase extends AbstractPooledDatabase
         connection.close();
         this.schema = new DatabaseSchema(config.database);
         tableprefix = this.config.tablePrefix;
+
+        settings = new Settings();
+        settings.setExecuteLogging(false);
     }
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
     {
-        MySQLDatabaseConfiguration config = core.getConfigurationFactory().load(MySQLDatabaseConfiguration.class, file.toFile());
+        MySQLDatabaseConfiguration config = core.getConfigFactory().load(MySQLDatabaseConfiguration.class, file.toFile());
         try
         {
             return new MySQLDatabase(core, config);
@@ -167,7 +179,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
      */
     public <T extends TableCreator> void registerTable(T table)
     {
-        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table)) return;
+        if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table))
+        {
+            return;
+        }
         try
         {
             Connection connection = this.getConnection();
@@ -179,7 +194,22 @@ public class MySQLDatabase extends AbstractPooledDatabase
             throw new IllegalStateException("Cannot create table " + table.getName(), ex);
         }
         this.schema.addTable(table);
-        this.core.getLog().debug("Database-Table {} registered!", table.getName());
+        this.core.getLog().debug("Database-Table {0} registered!", table.getName());
+    }
+
+    @Override
+    public <T extends Table> void registerTable(Class<T> clazz)
+    {
+        try
+        {
+            Constructor<T> constructor = clazz.getDeclaredConstructor(String.class);
+            T table = constructor.newInstance(this.config.tablePrefix);
+            this.registerTable(table);
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalStateException("Unable to instantiate Table!", e);
+        }
     }
 
     @Override
@@ -197,7 +227,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public DSLContext getDSL()
     {
-        return DSL.using(this.cpds, SQLDialect.MYSQL);
+        return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL)
+                                                   .set(new DataSourceConnectionProvider(this.cpds))
+                                                   .set(new JooqLogger())
+                                                   .set(settings));
     }
 
     public <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query)
@@ -309,5 +342,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public DatabaseConfiguration getDatabaseConfig()
     {
         return this.config;
+    }
+
+    @Override
+    public String getTablePrefix()
+    {
+        return this.config.tablePrefix;
     }
 }

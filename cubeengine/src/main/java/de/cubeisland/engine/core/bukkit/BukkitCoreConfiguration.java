@@ -26,13 +26,9 @@ public class BukkitCoreConfiguration extends CoreConfiguration
     @Comment("Whether to prevent Bukkit from kicking players for spamming")
     public boolean preventSpamKick = false;
 
-    public BukkitCommandsSection commands;
-
-    public class BukkitCommandsSection extends CommandsSection
-    {
-        @Comment("Whether to replace the vanilla standard commands with improved ones")
-        public boolean improveVanilla = true;
-    }
+    @Comment("Whether to replace the vanilla standard commands with improved ones")
+    @Name("commands.improve-vanilla")
+    public boolean improveVanilla = true;
 
     @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
     public boolean catchSystemSignals = true;

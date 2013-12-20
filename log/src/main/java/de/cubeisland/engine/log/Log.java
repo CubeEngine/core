@@ -48,11 +48,11 @@ public class Log extends Module implements Listener
     @Override
     public void onEnable()
     {
-        this.getCore().getDB().registerTable(TableActionTypes.initTable(this.getCore().getDB()));
+        this.getCore().getDB().registerTable(TableActionTypes.class);
         this.getCore().getDB().registerTable(TableLogEntry.initTable(this.getCore().getDB()));
 
         this.config = this.loadConfig(LogConfiguration.class);
-        this.getCore().getConfigurationFactory().getDefaultConverterManager().
+        this.getCore().getConfigFactory().getDefaultConverterManager().
             registerConverter(ContainerType.class, new ContainerTypeConverter());
         this.logManager = new LogManager(this);
         this.actionTypeManager = new ActionTypeManager(this);

@@ -31,11 +31,13 @@ import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.ConomyConfiguration;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.conomy.account.storage.BankAccessModel;
-import de.cubeisland.engine.core.logging.Level;
-import de.cubeisland.engine.core.logging.Log;
+import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -69,11 +71,14 @@ public class ConomyManager
 
         this.dsl = this.module.getCore().getDB().getDSL();
 
-
-        this.logger = module.getCore().getLogFactory().getLog("conomy.transactions");
+        this.logger = module.getCore().getLogFactory().getLog(Conomy.class, "Conomy-Transactions");
+        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(module.getCore(), "Conomy-Transactions"),
+                                                  LoggingUtil.getFileFormat(false, false),
+                                                  false, LoggingUtil.getCycler(),
+                                                  module.getCore().getTaskManager().getThreadFactory()));
         if (!this.module.getConfig().enableLogging)
         {
-            logger.setLevel(Level.OFF);
+            logger.setLevel(LogLevel.NONE);
         }
 
         this.um = this.module.getCore().getUserManager();
@@ -212,10 +217,9 @@ public class ConomyManager
     public void setAll(boolean userAcc, boolean bankAcc, double value)
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
-        this.dsl.update(TABLE_ACCOUNT).set(DSL.row(TABLE_ACCOUNT.VALUE),DSL.row(longValue)).
-            where(DSL.condition(TABLE_ACCOUNT.NAME.getName() + " IS NULL = ?"))
-            .or(DSL.condition(TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?"))
-            .bind(1, userAcc).bind(2, bankAcc).execute();
+        this.dsl.update(TABLE_ACCOUNT).set(TABLE_ACCOUNT.VALUE,longValue).
+            where(DSL.condition(TABLE_ACCOUNT.NAME.getName() + " IS NULL = ?", userAcc))
+            .or(DSL.condition(TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", bankAcc)).execute();
         this.logger.info("SET-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
@@ -241,8 +245,8 @@ public class ConomyManager
     public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
     {
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? * " + TABLE_ACCOUNT.VALUE.getName() +
-                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?")
-                         .bind(1, factor).bind(2, userAcc).bind(3, bankAcc).execute();
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
+                       factor, userAcc, bankAcc).execute();
         this.logger.info("SCALE-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), factor);
         // update all loaded accounts...
         if (userAcc)
@@ -269,8 +273,8 @@ public class ConomyManager
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? + " + TABLE_ACCOUNT.VALUE.getName() +
-                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?")
-                .bind(1, value).bind(2, userAcc).bind(3, bankAcc).execute();
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
+                       value, userAcc, bankAcc).execute();
         this.logger.info("TRANSACTION-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
@@ -334,8 +338,8 @@ public class ConomyManager
     public void hideAll(boolean userAcc, boolean bankAcc)
     {
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 | " + TABLE_ACCOUNT.MASK.getName() +
-                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?").
-                        bind(1, userAcc).bind(2, bankAcc).execute();
+                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
+                       userAcc, bankAcc).execute();
         if (userAcc)
         {
             for (User user : this.um.getOnlineUsers())
@@ -359,8 +363,8 @@ public class ConomyManager
     public void unhideAll(boolean userAcc, boolean bankAcc)
     {
         this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 & ~" + TABLE_ACCOUNT.MASK.getName() +
-                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?").
-                        bind(1, userAcc).bind(2, bankAcc).execute();
+                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?"
+                      ,userAcc, bankAcc).execute();
         if (userAcc)
         {
             for (User user : this.um.getOnlineUsers())

@@ -31,8 +31,8 @@ public class Itemrepair extends Module
     @Override
     public void onEnable()
     {
-        this.getCore().getDB().registerTable(TableRepairBlock.initTable(this.getCore().getDB()));
-        this.getCore().getConfigurationFactory().getDefaultConverterManager().
+        this.getCore().getDB().registerTable(TableRepairBlock.class);
+        this.getCore().getConfigFactory().getDefaultConverterManager().
             registerConverter(BaseMaterialContainer.class, new BaseMaterialContainerConverter());
         this.config = this.loadConfig(ItemrepairConfig.class);
         this.repairBlockManager = new RepairBlockManager(this);

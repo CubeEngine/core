@@ -64,10 +64,7 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.logging.Level;
-import de.cubeisland.engine.core.logging.Log;
 import de.cubeisland.engine.core.logging.LogFactory;
-import de.cubeisland.engine.core.logging.logback.LogBackLogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
@@ -93,6 +90,8 @@ import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
+import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogLevel;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
@@ -163,7 +162,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.configFactory = new ConfigurationFactory();
         ConverterManager manager = this.configFactory.getDefaultConverterManager();
-        manager.registerConverter(Level.class, new LevelConverter());
+        manager.registerConverter(LogLevel.class, new LevelConverter());
         manager.registerConverter(ItemStack.class, new ItemStackConverter());
         manager.registerConverter(Material.class, new MaterialConverter());
         manager.registerConverter(Enchantment.class, new EnchantmentConverter());
@@ -196,24 +195,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
         this.fileManager.dropResources(CoreResource.values());
 
-        try
-        {
-            System.setProperty("cubeengine.logging.default-path", System.getProperty("cubeengine.log", fileManager.getLogPath().toRealPath().toString()));
-            System.setProperty("cubeengine.logging.max-size", System.getProperty("cubeengine.log.max-size", "10MB"));
-            System.setProperty("cubeengine.logging.max-file-count", System.getProperty("cubeengine.log.max-file-count", "10"));
-        }
-        catch (IOException e)
-        {
-            this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to set the system property for the log folder", e);
-        }
-
         // depends on: file manager
-        this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath()
-                                                                                        .resolve("core.yml").toFile());
-
-        this.logFactory = new LogBackLogFactory(this, this.getLogger(), BukkitUtils.isAnsiSupported(server));
-
-        this.logger = logFactory.getCoreLog();
+        this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
 
         this.fileManager.clearTempDir();
 
@@ -224,19 +207,26 @@ public final class BukkitCore extends JavaPlugin implements Core
             BukkitUtils.disableCommandLogging();
         }
 
+        // depends on: core config, server
+        this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
+
+        // depends on: taskmanager
+        this.logFactory = new LogFactory(this, this.getLogger()); // , BukkitUtils.isAnsiSupported(server)
+
+        // depends on: taskmanager
+        this.logger = logFactory.getCoreLog();
+
+        // depends on: object mapper, logger
+        this.apiServer = new ApiServer(this);
+        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
+
+        // depends on: logger
         if (this.config.catchSystemSignals)
         {
             BukkitUtils.setSignalHandlers(this);
         }
-
+        // depends on: logger
         this.packetEventManager = new PacketEventManager(this.logger);
-
-        // depends on: object mapper
-        this.apiServer = new ApiServer(this);
-        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
-
-        // depends on: core config, server
-        this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
 
         if (this.config.useWebapi)
         {
@@ -258,8 +248,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: database
-        this.database.registerTable(TableUser.initTable(this.database));
-        this.database.registerTable(TableWorld.initTable(this.database));
+        this.database.registerTable(TableUser.class);
+        this.database.registerTable(TableWorld.class);
 
         // depends on: plugin manager
         this.eventRegistration = new EventManager(this);
@@ -277,19 +267,22 @@ public final class BukkitCore extends JavaPlugin implements Core
         ArgumentReader.init(this);
 
         // depends on: server
-        SimpleCommandMap commandMap = getFieldValue(server, findFirstField(server, CommandMap.class), SimpleCommandMap.class);
-        CommandBackend commandBackend;
-        if (commandMap.getClass() == SimpleCommandMap.class)
+        CommandMap commandMap = getFieldValue(server, findFirstField(server, CommandMap.class), CommandMap.class);
+        CommandBackend commandBackend = null;
+        if (commandMap != null)
         {
-            commandBackend = new CubeCommandBackend(this);
+            if (commandMap.getClass() == SimpleCommandMap.class)
+            {
+                commandBackend = new CubeCommandBackend(this);
+            }
+            else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
+            {
+                this.getLog().warn("The server you are using is not fully compatible, some advanced command features will be disabled.");
+                this.getLog().debug("The type of the command map: {}", commandMap.getClass().getName());
+                commandBackend = new SimpleCommandBackend(this, SimpleCommandMap.class.cast(commandMap));
+            }
         }
-        else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
-        {
-            this.getLog().warn("The server you are using is not fully compatible, some advanced command features will be disabled.");
-            this.getLog().debug("The type of the command map: {}", commandMap.getClass().getName());
-            commandBackend = new SimpleCommandBackend(this, commandMap);
-        }
-        else
+        if (commandBackend == null)
         {
             this.getLog().warn("We encountered a serious compatibility issue, however basic command features should still work. Please report this issue to the developers!");
             commandBackend = new FallbackCommandBackend(this);
@@ -307,7 +300,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: server, module manager
         this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.registerCommand(new CoreCommands(this));
-        if (this.config.commands.improveVanilla)
+        if (this.config.improveVanilla)
         {
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
@@ -677,7 +670,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public ConfigurationFactory getConfigurationFactory()
+    public ConfigurationFactory getConfigFactory()
     {
         return configFactory;
     }

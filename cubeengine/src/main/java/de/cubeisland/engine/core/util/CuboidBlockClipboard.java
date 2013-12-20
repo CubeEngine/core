@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_6_R3.NBTTagCompound;
-import net.minecraft.server.v1_6_R3.NBTTagInt;
+import net.minecraft.server.v1_7_R1.NBTTagCompound;
+import net.minecraft.server.v1_7_R1.NBTTagInt;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -53,7 +53,7 @@ public class CuboidBlockClipboard
 {
     static
     {
-        new CuboidBlockClipboardConverter(CubeEngine.getCore().getConfigurationFactory());
+        new CuboidBlockClipboardConverter(CubeEngine.getCore().getConfigFactory());
     }
 
     private final BlockData[][][] data;
@@ -139,18 +139,18 @@ public class CuboidBlockClipboard
             this.nbt = NBTUtils.getTileEntityNBTAt(block.getLocation());
             if (nbt != null)
             {
-                nbt.set("x",new NBTTagInt("x",block.getX() - relative.x));
-                nbt.set("y",new NBTTagInt("y",block.getY() - relative.y));
-                nbt.set("z",new NBTTagInt("z",block.getZ() - relative.z));
+                nbt.set("x",new NBTTagInt(block.getX() - relative.x));
+                nbt.set("y",new NBTTagInt(block.getY() - relative.y));
+                nbt.set("z",new NBTTagInt(block.getZ() - relative.z));
             }
         }
 
         public NBTTagCompound getRelativeNbtData(BlockVector3 relative)
         {
             NBTTagCompound clone = (NBTTagCompound)this.nbt.clone();
-            clone.set("x",new NBTTagInt("x",clone.getInt("x") + relative.x));
-            clone.set("y",new NBTTagInt("y",clone.getInt("y") + relative.y));
-            clone.set("z",new NBTTagInt("z",clone.getInt("z") + relative.z));
+            clone.set("x",new NBTTagInt(clone.getInt("x") + relative.x));
+            clone.set("y",new NBTTagInt(clone.getInt("y") + relative.y));
+            clone.set("z",new NBTTagInt(clone.getInt("z") + relative.z));
             return clone;
         }
 
@@ -249,7 +249,7 @@ public class CuboidBlockClipboard
                                 BlockVector3 vector = new BlockVector3(((IntNode)teData.get("x")).getValue(),
                                                                        ((IntNode)teData.get("y")).getValue(),
                                                                        ((IntNode)teData.get("z")).getValue());
-                                NBTTagCompound tileTag = (NBTTagCompound)NBTUtils.convertNodeToNBT("", listedNode);
+                                NBTTagCompound tileTag = (NBTTagCompound)NBTUtils.convertNodeToNBT(listedNode);
                                 tileEntities.put(vector,tileTag);
 
                             }

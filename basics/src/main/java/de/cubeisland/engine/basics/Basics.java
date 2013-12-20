@@ -76,10 +76,10 @@ public class Basics extends Module
 
         this.config = this.loadConfig(BasicsConfiguration.class);
 		final Database db = this.getCore().getDB();
-        db.registerTable(TableBasicsUser.initTable(db));
-        db.registerTable(TableIgnorelist.initTable(db));
-        db.registerTable(TableMail.initTable(db));
-        db.registerTable(TableKitsGiven.initTable(db));
+        db.registerTable(TableBasicsUser.class);
+        db.registerTable(TableIgnorelist.class);
+        db.registerTable(TableMail.class);
+        db.registerTable(TableKitsGiven.class);
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
         this.getLog().trace("{} ms - Basics.Permission", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
@@ -126,7 +126,7 @@ public class Basics extends Module
         em.registerListener(this, new PaintingListener(this));
 
         this.getLog().trace("{} ms - Kits", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.getCore().getConfigurationFactory().getDefaultConverterManager().
+        this.getCore().getConfigFactory().getDefaultConverterManager().
             registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);

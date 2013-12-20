@@ -59,7 +59,7 @@ public class GeneralsListener implements Listener
         if (event.getEntity() instanceof Player)
         {
             BasicsUserEntity bUser = this.module.getBasicsUser((Player)event.getEntity()).getbUEntity();
-            if (bUser.isGodMode())
+            if (bUser.getGodmode())
             {
                 event.setCancelled(true);
             }
@@ -83,7 +83,7 @@ public class GeneralsListener implements Listener
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
-            bUser.setGodMode(false);
+            bUser.setGodmode(false);
         }
         bUser.update();
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
@@ -98,7 +98,7 @@ public class GeneralsListener implements Listener
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
         if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
-            bUser.setGodMode(false);
+            bUser.setGodmode(false);
         }
         bUser.update();
         if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
@@ -118,7 +118,7 @@ public class GeneralsListener implements Listener
             user.sendTranslated("&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
         // TODO move this to PlayerJoin
-        if (bUser.getbUEntity().isGodMode())
+        if (bUser.getbUEntity().getGodmode())
         {
             user.setInvulnerable(true);
         }

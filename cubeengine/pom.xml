@@ -34,7 +34,12 @@
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>configuration</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.cubeisland.engine</groupId>
+      <artifactId>logging</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
@@ -102,17 +107,6 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
-    <!-- Logback dependencies-->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.0.13</version>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.13</version>
-    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -163,9 +157,6 @@
         <targetPath>.</targetPath>
         <directory>${basedir}/src/main/resources/</directory>
         <filtering>false</filtering>
-        <includes>
-          <include>logback*.xml</include>
-        </includes>
       </resource>
       <resource>
         <targetPath>./resources</targetPath>

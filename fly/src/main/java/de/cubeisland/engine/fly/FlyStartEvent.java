@@ -28,11 +28,6 @@ public class FlyStartEvent extends UserEvent implements Cancellable
 {
     private static final HandlerList handlers = new HandlerList();
 
-    public FlyStartEvent(Core core, User user)
-    {
-        super(core, user);
-    }
-
     public HandlerList getHandlers()
     {
         return handlers;
@@ -41,5 +36,24 @@ public class FlyStartEvent extends UserEvent implements Cancellable
     public static HandlerList getHandlerList()
     {
         return handlers;
+    }
+
+    public FlyStartEvent(Core core, User user)
+    {
+        super(core, user);
+    }
+
+    private boolean cancelled;
+
+    @Override
+    public boolean isCancelled()
+    {
+        return this.cancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean bln)
+    {
+        this.cancelled = bln;
     }
 }

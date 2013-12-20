@@ -44,7 +44,7 @@ public class LoggerTest extends Test
         module.getLog().error("Error log on test's logging");
 
         Exception ex = new Exception("Nothing dangerous!");
-        module.getLog().debug(ex.getLocalizedMessage(), ex);
+        module.getLog().debug(ex, ex.getLocalizedMessage());
         this.setSuccess(true);
     }
 }

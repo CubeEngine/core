@@ -38,7 +38,7 @@ public class Border extends Module
     public void onEnable()
     {
         wm = this.getCore().getWorldManager();
-        this.globalConfig = this.getCore().getConfigurationFactory().load(BorderConfig.class, this.getFolder().resolve("globalconfig.yml").toFile());
+        this.globalConfig = this.getCore().getConfigFactory().load(BorderConfig.class, this.getFolder().resolve("globalconfig.yml").toFile());
         folder = this.getFolder().resolve("worlds").toFile();
         folder.mkdir();
         this.worldConfigs = new HashMap<>();

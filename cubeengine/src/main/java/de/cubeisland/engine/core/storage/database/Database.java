@@ -129,6 +129,8 @@ public interface Database
 
     public <T extends TableCreator> void registerTable(T table);
 
+    public <T extends Table> void registerTable(Class<T> table);
+
     public DatabaseConfiguration getDatabaseConfig();
 
     DSLContext getDSL();
@@ -136,4 +138,6 @@ public interface Database
     ListenableFuture<Integer> executeLater(Query query);
 
     <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query);
+
+    String getTablePrefix();
 }

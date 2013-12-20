@@ -17,85 +17,27 @@
  */
 package de.cubeisland.engine.log.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-
-import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.storage.database.TableCreator;
-import de.cubeisland.engine.core.storage.database.mysql.Keys;
-import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
+import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.util.Version;
-import org.jooq.Identity;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.jooq.types.UInteger;
 
-public class TableActionTypes extends TableImpl<ActionTypeModel> implements TableCreator<ActionTypeModel>
+public class TableActionTypes extends AutoIncrementTable<ActionTypeModel, UInteger>
 {
     public static TableActionTypes TABLE_ACTION_TYPE;
 
-    private TableActionTypes(String prefix)
+    public TableActionTypes(String prefix)
     {
-        super(prefix + "log_actiontypes");
-        IDENTITY = Keys.identity(this, this.ID);
-        PRIMARY_KEY = Keys.uniqueKey(this, this.ID);
-        UNIQUE_NAME = Keys.uniqueKey(this, this.NAME);
+        super(prefix + "log_actiontypes", new Version(1));
+        this.setAIKey(ID);
+        this.addUniqueKey(NAME);
+        this.addFields(ID, NAME);
+        TABLE_ACTION_TYPE = this;
     }
 
-    public static TableActionTypes initTable(Database database)
-    {
-        MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-        TABLE_ACTION_TYPE = new TableActionTypes(config.tablePrefix);
-        return TABLE_ACTION_TYPE;
-    }
-
-    @Override
-    public void createTable(Connection connection) throws SQLException
-    {
-        connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.getName()+ " (\n" +
-                                        "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,\n" +
-                                        "`name` varchar(32) UNIQUE NOT NULL,\n" +
-                                        "PRIMARY KEY (`id`))\n" +
-                                        "ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n" +
-                                        "COMMENT='1.0.0'").execute();
-    }
-
-    private static final Version version = new Version(1);
-
-    @Override
-    public Version getTableVersion()
-    {
-        return version;
-    }
-
-    public final Identity<ActionTypeModel, UInteger> IDENTITY;
-    public final UniqueKey<ActionTypeModel> PRIMARY_KEY;
-    public final UniqueKey<ActionTypeModel> UNIQUE_NAME;
-
-    public final TableField<ActionTypeModel, UInteger> ID = createField("id", SQLDataType.INTEGERUNSIGNED, this);
-    public final TableField<ActionTypeModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32), this);
-
-    @Override
-    public Identity<ActionTypeModel, UInteger> getIdentity()
-    {
-        return IDENTITY;
-    }
-
-    @Override
-    public UniqueKey<ActionTypeModel> getPrimaryKey()
-    {
-        return PRIMARY_KEY;
-    }
-
-    @Override
-    public List<UniqueKey<ActionTypeModel>> getKeys()
-    {
-        return Arrays.asList(PRIMARY_KEY, UNIQUE_NAME);
-    }
+    public final TableField<ActionTypeModel, UInteger> ID = createField("id", U_INTEGER.nullable(false), this);
+    public final TableField<ActionTypeModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32).nullable(false), this);
 
     @Override
     public Class<ActionTypeModel> getRecordType() {
