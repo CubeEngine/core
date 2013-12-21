@@ -9,6 +9,6 @@ public class Portals extends Module
     @Override
     public void onEnable()
     {
-        this.config = Configuration.load(PortalsConfig.class, this);
+        this.config = this.loadConfig(PortalsConfig.class);
     }
 }
