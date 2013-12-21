@@ -261,12 +261,12 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: user manager, world manager
         ArgumentReader.init(this);
 
-        // depends on: server
+        // depends on: server, config
         CommandMap commandMap = getFieldValue(server, findFirstField(server, CommandMap.class), CommandMap.class);
         CommandBackend commandBackend = null;
         if (commandMap != null)
         {
-            if (commandMap.getClass() == SimpleCommandMap.class)
+            if (commandMap.getClass() == SimpleCommandMap.class && this.config.useEnhancedSystem)
             {
                 commandBackend = new CubeCommandBackend(this);
             }
