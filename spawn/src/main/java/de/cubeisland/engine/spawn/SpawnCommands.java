@@ -128,9 +128,9 @@ public class SpawnCommands
             else
             {
                 String[] locStrings = new String[6];
-                locStrings[0] = x.toString();
-                locStrings[1] = y.toString();
-                locStrings[2] = z.toString();
+                locStrings[0] = String.valueOf(x.intValue());
+                locStrings[1] = String.valueOf(y.intValue());
+                locStrings[2] = String.valueOf(z.intValue());
                 locStrings[3] = String.valueOf(yaw);
                 locStrings[4] = String.valueOf(pitch);
                 locStrings[5] = world.getName();
