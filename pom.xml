@@ -53,6 +53,7 @@
     <module>stats</module>
     <module>reputation</module>
     <module>worlds</module>
+    <module>portals</module>
   </modules>
 
   <build>
