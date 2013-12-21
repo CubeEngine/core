@@ -17,10 +17,6 @@
  */
 package de.cubeisland.engine.test.tests.listener;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
-import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.engine.test.tests.Test;
 
 public class ListenerTest extends Test
@@ -36,14 +32,6 @@ public class ListenerTest extends Test
     public void onEnable()
     {
         module.getCore().getEventManager().registerListener(module, new TestListener(module));
-        module.getCore().getEventManager().registerListener(module, new Listener()
-        {
-            @EventHandler
-            public void onLanguageReceived(PlayerLanguageReceivedEvent event)
-            {
-                module.getLog().debug("Player: {} Lang: {}", event.getPlayer().getName(), event.getLanguage());
-            }
-        });
         this.setSuccess(true);
     }
 

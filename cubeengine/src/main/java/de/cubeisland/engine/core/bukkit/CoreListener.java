@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -41,12 +42,13 @@ public class CoreListener implements Listener
     @EventHandler
     public void onJoin(final PlayerJoinEvent event)
     {
+        final Player player = event.getPlayer();
         this.scheduler.scheduleSyncDelayedTask(this.bukkitCore, new Runnable()
         {
             @Override
             public void run()
             {
-                AfterJoinEvent afterJoinEvent = new AfterJoinEvent(event.getPlayer(), event.getJoinMessage());
+                AfterJoinEvent afterJoinEvent = new AfterJoinEvent(player, event.getJoinMessage());
                 bukkitCore.getEventManager().fireEvent(afterJoinEvent);
             }
         }, config.usermanager.afterJoinEventDelay);

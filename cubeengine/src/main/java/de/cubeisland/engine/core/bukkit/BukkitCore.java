@@ -55,8 +55,6 @@ import de.cubeisland.engine.core.bukkit.command.CommandBackend;
 import de.cubeisland.engine.core.bukkit.command.CubeCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.FallbackCommandBackend;
 import de.cubeisland.engine.core.bukkit.command.SimpleCommandBackend;
-import de.cubeisland.engine.core.bukkit.packethook.PacketEventManager;
-import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.commands.CoreCommands;
 import de.cubeisland.engine.core.command.commands.ModuleCommands;
@@ -118,7 +116,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitWorldManager worldManager;
     private Match matcherManager;
     private InventoryGuardFactory inventoryGuard;
-    private PacketEventManager packetEventManager;
     private CorePerms corePerms;
     private BukkitBanManager banManager;
     private LogFactory logFactory;
@@ -225,8 +222,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             BukkitUtils.setSignalHandlers(this);
         }
-        // depends on: logger
-        this.packetEventManager = new PacketEventManager(this.logger);
 
         if (this.config.useWebapi)
         {
@@ -331,10 +326,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             this.onLoad();
         }
-        if (!PacketHookInjector.register(this))
-        {
-            this.logger.warn("Failed to register the packet hook, some features might not work.");
-        }
         Iterator< Runnable > it = this.initHooks.iterator();
         while (it.hasNext())
         {
@@ -382,12 +373,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         {
             this.freezeDetection.shutdown();
             this.freezeDetection = null;
-        }
-
-        if (this.packetEventManager != null)
-        {
-            this.packetEventManager.clean();
-            this.packetEventManager = null;
         }
 
         if (this.moduleManager != null)
@@ -651,11 +636,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     public InventoryGuardFactory getInventoryGuard()
     {
         return this.inventoryGuard;
-    }
-
-    public PacketEventManager getPacketEventManager()
-    {
-        return this.packetEventManager;
     }
 
     @Override

@@ -19,12 +19,12 @@ package de.cubeisland.engine.rulebook;
 
 import java.util.Locale;
 
+import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.core.bukkit.PlayerLanguageReceivedEvent;
 import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.rulebook.bookManagement.RulebookManager;
@@ -42,25 +42,19 @@ class RulebookListener implements Listener
     }
 
     @EventHandler
-    public void onPlayerLanguageReceived(PlayerLanguageReceivedEvent event)
+    public void onPlayerLanguageReceived(AfterJoinEvent event)
     {
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if(!user.hasPlayedBefore() && !this.rulebookManager.getLocales().isEmpty())
         {
-            Language language = this.rulebookManager.getLanguage(event.getLanguage());
-            Locale locale;
-            
-            if(language == null || !this.rulebookManager.contains(language.getLocale()))
+            Locale locale = user.getLocale();
+            if (!this.rulebookManager.contains(locale))
             {
                 locale = this.module.getCore().getI18n().getDefaultLanguage().getLocale();
-                if(!this.rulebookManager.contains(locale))
+                if (!this.rulebookManager.contains(locale))
                 {
                     locale = this.rulebookManager.getLocales().iterator().next();
                 }
-            }
-            else
-            {
-                locale = language.getLocale();
             }
             
             ItemStack hand = user.getItemInHand();
