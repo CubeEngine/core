@@ -223,7 +223,6 @@ public class LockManager implements Listener
         {
             Location firstLoc = lock.getFirstLocation();
             this.locksById.remove(lock.getId());
-
             Chunk c1 = firstLoc.getChunk();
             for (Location location : lock.getLocations())
             {
@@ -739,7 +738,7 @@ public class LockManager implements Listener
 
     public static long getChunkKey(int chunkX, int chunkZ)
     {
-        return ((long)chunkX << 32) | (long)chunkZ;
+        return ((long)chunkX << 32) | chunkZ & 0xFFFFFFFFL;
     }
 
 }
