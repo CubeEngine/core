@@ -216,15 +216,6 @@ public class Multiverse implements Listener
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event)
-    {
-        if (event.getMessage().equals("load"))
-        {
-            this.getUniverse(event.getPlayer().getWorld()).loadPlayer(event.getPlayer());
-        }
-    }
-
-    @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
         Universe oldUniverse = this.getUniverse(event.getFrom());
