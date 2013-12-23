@@ -22,14 +22,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.UserAttachment;
 
 public class BackpackAttachment extends UserAttachment
 {
-    protected Map<World, Map<String, BackpackData>> backpacks = new HashMap<>();
-    protected Map<World, Map<String, BackpackData>> groupedBackpacks = new HashMap<>();
-    protected Map<String, BackpackData> globalBackpacks = new HashMap<>();
+    protected Map<World, Map<String, BackpackInventory>> backpacks = new HashMap<>();
+    protected Map<World, Map<String, BackpackInventory>> groupedBackpacks = new HashMap<>();
+    protected Map<String, BackpackInventory> globalBackpacks = new HashMap<>();
 
     public void loadGlobalBackpacks()
     {
@@ -44,11 +45,12 @@ public class BackpackAttachment extends UserAttachment
     // without worlds module groups work as default universe would build world world_nether & world_the_end are grouped
     public void loadBackpacks(World world)
     {
+        this.loadGlobalBackpacks();
         Backpack module = (Backpack)this.getModule();
         File dir = new File(module.singleDir, world.getName());
         if (dir.exists() && dir.isDirectory())
         {
-            Map<String, BackpackData> map = this.backpacks.get(world);
+            Map<String, BackpackInventory> map = this.backpacks.get(world);
             if (map == null)
             {
                 map = new HashMap<>();
@@ -59,7 +61,7 @@ public class BackpackAttachment extends UserAttachment
         dir = new File(module.groupedDir, world.getName());
         if (dir.exists())
         {
-            Map<String, BackpackData> map = this.groupedBackpacks.get(world);
+            Map<String, BackpackInventory> map = this.groupedBackpacks.get(world);
             if (map == null)
             {
                 map = new HashMap<>();
@@ -97,7 +99,7 @@ public class BackpackAttachment extends UserAttachment
         return new File(dir, name);
     }
 
-    protected void loadBackpacks(File dir, Map<String, BackpackData> map)
+    protected void loadBackpacks(File dir, Map<String, BackpackInventory> map)
     {
         File playerDir = new File(dir, this.getHolder().getName());
         if (playerDir.exists() && playerDir.isDirectory())
@@ -107,60 +109,76 @@ public class BackpackAttachment extends UserAttachment
                 if (!file.isDirectory() && file.getName().endsWith(".dat"))
                 {
                     BackpackData load = this.getModule().getCore().getConfigFactory().load(BackpackData.class, file);
-                    map.put(file.getName().substring(0, file.getName().lastIndexOf(".dat")), load);
+                    map.put(file.getName().substring(0, file.getName().lastIndexOf(".dat")),
+                            new BackpackInventory((Backpack)this.getModule(), load));
                 }
             }
         }
     }
 
-    public BackpackData getBackPack(String name, World world, boolean global)
+    public BackpackInventory getBackPack(String name, World world)
     {
-        if (global)
+        BackpackInventory backpack = this.globalBackpacks.get(name);
+        if (backpack != null)
         {
-            return this.globalBackpacks.get(name);
+            return backpack;
         }
-        Map<String, BackpackData> map = this.backpacks.get(world);
-        BackpackData backpackData = null;
+        Map<String, BackpackInventory> map = this.backpacks.get(world);
         if (map != null)
         {
-             backpackData = map.get(name);
+             backpack = map.get(name);
         }
-        if (backpackData != null)
+        if (backpack != null)
         {
-            return backpackData;
+            return backpack;
         }
         map = this.groupedBackpacks.get(world);
         if (map != null)
         {
-            backpackData = map.get(name);
+            backpack = map.get(name);
         }
-        return backpackData;
+        return backpack;
     }
 
-    public BackpackData createBackpack(String name, World forWorld)
+    public void createBackpack(String name, World forWorld, boolean blockIn)
     {
         File file = this.getSingleBackpack(name, forWorld.getName());
-        BackpackData result = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
-        result.setFile(file);
-        result.save();
-        return result;
+        BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
+        data.allowItemsIn = !blockIn;
+        data.setFile(file);
+        data.save();
+        Map<String, BackpackInventory> backpacks = this.backpacks.get(forWorld);
+        if (backpacks == null)
+        {
+            backpacks = new HashMap<>();
+            this.backpacks.put(forWorld, backpacks);
+        }
+        backpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
     }
 
-    public BackpackData createGroupedBackpack(String name, World forWorld)
+    public void createGroupedBackpack(String name, World forWorld, boolean blockIn)
     {
         File file = this.getGroupedBackpack(name, forWorld.getName());
-        BackpackData result = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
-        result.setFile(file);
-        result.save();
-        return result;
+        BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
+        data.allowItemsIn = !blockIn;
+        data.setFile(file);
+        data.save();
+        Map<String, BackpackInventory> backpacks = this.backpacks.get(forWorld);
+        if (backpacks == null)
+        {
+            backpacks = new HashMap<>();
+            this.backpacks.put(forWorld, backpacks);
+        }
+        backpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
     }
 
-    public BackpackData createGlobalBackpack(String name)
+    public void createGlobalBackpack(String name, boolean blockIn)
     {
         File file = this.getGlobalBackpack(name);
-        BackpackData result = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
-        result.setFile(file);
-        result.save();
-        return result;
+        BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
+        data.allowItemsIn = !blockIn;
+        data.setFile(file);
+        data.save();
+        globalBackpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
     }
 }

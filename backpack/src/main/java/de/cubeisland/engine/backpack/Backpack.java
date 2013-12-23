@@ -19,7 +19,12 @@ package de.cubeisland.engine.backpack;
 
 import java.io.File;
 
+import org.bukkit.inventory.ItemStack;
+
+import de.cubeisland.engine.backpack.converter.NBTItemStackConverter;
+import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.converter.ItemStackConverter;
 
 public class Backpack extends Module
 {
@@ -33,6 +38,8 @@ public class Backpack extends Module
     @Override
     public void onEnable()
     {
+        this.getCore().getConfigFactory().getCodecManager().getCodec(NBTCodec.class).getConverterManager().
+            registerConverter(ItemStack.class, new NBTItemStackConverter());
         this.config = this.loadConfig(BackpackConfig.class);
         this.singleDir = this.getFolder().resolve("single").toFile();
         this.groupedDir = this.getFolder().resolve("grouped").toFile();

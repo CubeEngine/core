@@ -42,23 +42,25 @@ public class BackpackCommands extends ContainerCommand
     }
 
     @Alias(names = "openbp")
-    @Command(desc = "opens a backpack", usage = "<name> [-global]",
-    flags = @Flag(name = "g", longName = "global"), min = 1, max = 1)
+    @Command(desc = "opens a backpack", usage = "<name>", min = 1, max = 1)
     public void open(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
-            manager.openBackpack((User)context.getSender(), context.getString(0), context.hasFlag("g"));
+            User forUser = (User)context.getSender(); // TODO user param
+            World forWorld = forUser.getWorld(); // TODO world param
+            manager.openBackpack((User)context.getSender(), forUser, forWorld, context.getString(0));
             return;
         }
-                // TODO consolemsg
+        // TODO consolemsg
     }
 
     @Alias(names = "createbp")
-    @Command(desc = "creates a new backpack", usage = "<name> [user] [-global]|[-single] [for <world>]",
+    @Command(desc = "creates a new backpack", usage = "<name> [user] [-global]|[-single] [-blockinput] [for <world>]",
              flags = {
                  @Flag(name = "g", longName = "global"),
-                 @Flag(name = "s", longName = "single")
+                 @Flag(name = "s", longName = "single"),
+                 @Flag(name = "b", longName = "blockinput")
                  // TODO named param world
              }, min = 1, max = 2)
     public void create(ParameterizedContext context)
@@ -88,6 +90,7 @@ public class BackpackCommands extends ContainerCommand
             // TODO  console msg need user
             return;
         }
-        manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld, context.hasFlag("g"), context.hasFlag("s"));
+        manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld, context
+            .hasFlag("g"), context.hasFlag("s"), context.hasFlag("b"));
     }
 }

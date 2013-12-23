@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.backpack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -28,5 +28,18 @@ import de.cubeisland.engine.core.config.codec.NBTCodec;
 public class BackpackData extends Configuration<NBTCodec>
 {
     public boolean allowItemsIn = true;
-    public List<ItemStack> contents = new ArrayList<>(); // TODO register converter for nbt codec
+    public int pages = 1;
+    public Map<Integer, ItemStack> contents = new HashMap<>(); // TODO register converter for nbt codec
+
+    @Override
+    public void onSave()
+    {
+        for (Integer next : contents.keySet())
+        {
+            if (contents.get(next) == null)
+            {
+                contents.remove(next);
+            }
+        }
+    }
 }

@@ -18,11 +18,17 @@
 package de.cubeisland.engine.backpack;
 
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 
-public class BackpackManager
+public class BackpackManager implements Listener
 {
     private final Backpack module;
 
@@ -30,41 +36,43 @@ public class BackpackManager
     {
         this.module = module;
         this.module.getCore().getCommandManager().registerCommand(new BackpackCommands(module, this));
+        this.module.getCore().getEventManager().registerListener(module, this);
     }
 
-    public void openBackpack(User sender, String name, boolean global)
+    public void openBackpack(User sender, User forUser, World forWorld, String name)
     {
-        BackpackAttachment attachment = sender.attachOrGet(BackpackAttachment.class, module);
-        attachment.loadBackpacks(sender.getWorld());
-        BackpackData backPack = attachment.getBackPack(name, sender.getWorld(), global);
+        // TODO backpacks of other players
+        BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
+        attachment.loadBackpacks(forWorld);
+        BackpackInventory backPack = attachment.getBackPack(name, forWorld);
         if (backPack == null)
         {
             sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
             return;
         }
-        // TODO open backpack
+        backPack.openInventory(sender);
     }
 
-    public void createBackpack(CommandSender sender, User forUser, String name, World forWorld, boolean global, boolean single)
+    public void createBackpack(CommandSender sender, User forUser, String name, World forWorld, boolean global, boolean single, boolean blockInput)
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackData backPack = attachment.getBackPack(name, forWorld, global);
+        BackpackInventory backPack = attachment.getBackPack(name, forWorld);
         if (backPack == null)
         {
             if (global)
             {
-                attachment.createGlobalBackpack(name);
+                attachment.createGlobalBackpack(name, blockInput);
                 sender.sendTranslated("&aCreated global backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else if (single)
             {
-                attachment.createBackpack(name, forWorld);
+                attachment.createBackpack(name, forWorld, blockInput);
                 sender.sendTranslated("&aCreated singleworld backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else
             {
-                attachment.createGroupedBackpack(name, forWorld);
+                attachment.createGroupedBackpack(name, forWorld, blockInput);
                 sender.sendTranslated("&aCreated grouped backpack &6%s&a in &6%s&a for &2%s", name, forWorld.getName(), forUser.getName());
             }
         }
@@ -78,6 +86,36 @@ public class BackpackManager
             {
                 sender.sendTranslated("&2%s&c already had a backpack named &6%s&c in &6%s", forUser.getName(), name, forWorld.getName());
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event)
+    {
+        if (event.getWhoClicked() instanceof Player
+            && event.getInventory().getHolder() instanceof BackpackInventory)
+        {
+            if (event.getSlotType() == SlotType.OUTSIDE)
+            {
+                if (event.isLeftClick())
+                {
+                    ((BackpackInventory)event.getInventory().getHolder()).showNextPage((Player)event.getWhoClicked());
+                }
+                else if (event.isRightClick())
+                {
+                    ((BackpackInventory)event.getInventory().getHolder()).showPrevPage((Player)event.getWhoClicked());
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event)
+    {
+        if (event.getPlayer() instanceof Player
+            && event.getInventory().getHolder() instanceof BackpackInventory)
+        {
+            ((BackpackInventory)event.getInventory().getHolder()).closeInventory((Player)event.getPlayer());
         }
     }
 }
