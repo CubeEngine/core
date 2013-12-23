@@ -72,13 +72,18 @@ public class BackpackAttachment extends UserAttachment
     private File getGlobalBackpack(String name)
     {
         Backpack module = (Backpack)this.getModule();
-        return new File(module.globalDir, name);
+        File dir = new File(module.globalDir, this.getHolder().getName());
+        dir.mkdir();
+        return new File(dir, name + ".dat");
     }
 
     private File getSingleBackpack(String name, String worldName)
     {
         Backpack module = (Backpack)this.getModule();
         File dir = new File(module.singleDir, worldName);
+        dir.mkdir();
+        dir = new File(dir, this.getHolder().getName());
+        dir.mkdir();
         return new File(dir, name);
     }
 
@@ -86,6 +91,9 @@ public class BackpackAttachment extends UserAttachment
     {
         Backpack module = (Backpack)this.getModule();
         File dir = new File(module.groupedDir, worldName);
+        dir.mkdir();
+        dir = new File(dir, this.getHolder().getName());
+        dir.mkdir();
         return new File(dir, name);
     }
 

@@ -27,7 +27,6 @@ import de.cubeisland.engine.core.config.codec.NBTCodec;
 
 public class BackpackData extends Configuration<NBTCodec>
 {
-    public String name;
     public boolean allowItemsIn = true;
     public List<ItemStack> contents = new ArrayList<>(); // TODO register converter for nbt codec
 }

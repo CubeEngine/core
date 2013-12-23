@@ -29,6 +29,7 @@ public class BackpackManager
     public BackpackManager(Backpack module)
     {
         this.module = module;
+        this.module.getCore().getCommandManager().registerCommand(new BackpackCommands(module, this));
     }
 
     public void openBackpack(User sender, String name, boolean global)

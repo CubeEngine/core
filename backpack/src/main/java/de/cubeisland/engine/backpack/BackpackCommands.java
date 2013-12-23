@@ -89,6 +89,5 @@ public class BackpackCommands extends ContainerCommand
             return;
         }
         manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld, context.hasFlag("g"), context.hasFlag("s"));
-        // TODO consolemsg
     }
 }

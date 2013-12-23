@@ -28,6 +28,7 @@ public class Backpack extends Module
     protected File singleDir;
     protected File groupedDir;
     protected File globalDir;
+    private BackpackManager manager;
 
     @Override
     public void onEnable()
@@ -36,5 +37,9 @@ public class Backpack extends Module
         this.singleDir = this.getFolder().resolve("single").toFile();
         this.groupedDir = this.getFolder().resolve("grouped").toFile();
         this.globalDir = this.getFolder().resolve("global").toFile();
+        this.singleDir.mkdir();
+        this.groupedDir.mkdir();
+        this.globalDir.mkdir();
+        manager = new BackpackManager(this);
     }
 }
