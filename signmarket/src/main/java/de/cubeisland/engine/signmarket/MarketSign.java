@@ -372,13 +372,13 @@ public class MarketSign
                 else
                 // no sneak -> empty & break signs
                 {
-                    if (!this.getInventory().getViewers().isEmpty())
-                    {
-                        user.sendTranslated("&cThis signs inventory is being edited right now!");
-                        return;
-                    }
                     if (this.isValidSign(null))
                     {
+                        if (!this.getInventory().getViewers().isEmpty())
+                        {
+                            user.sendTranslated("&cThis signs inventory is being edited right now!");
+                            return;
+                        }
                         if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                         {
                             if (!this.isInEditMode() && this.hasType() && this.isTypeBuy() && this.hasStock() && this.itemInfo.matchesItem(itemInHand))
@@ -1106,7 +1106,7 @@ public class MarketSign
                 else if (this.hasStock())
                 {
                     if (this.isAdminSign() || (this.canAfford(this.getOwner()) &&
-                        !this.isFull() && !(this.hasDemand() && this.isSatisfied())))
+                        !(this.getItem() != null && this.isFull()) && !(this.hasDemand() && this.isSatisfied())))
                     {
                         if (this.hasDemand())
                         {
