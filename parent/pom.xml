@@ -17,7 +17,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <minecraftVersion>1.7.2</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.1</bukkitVersion>
+    <bukkitVersion>${minecraftVersion}-R0.2</bukkitVersion>
     <jdkVersion>1.7</jdkVersion>
     <projectBase>${basedir}/..</projectBase>
     <externalPackage>${project.groupId}.external</externalPackage>

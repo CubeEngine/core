@@ -34,6 +34,10 @@ public class BukkitCoreConfiguration extends CoreConfiguration
     @Name("commands.use-enhanced-system")
     public boolean useEnhancedSystem = false;
 
+    @Comment("This the string that will be prepended to commands that get overridden by one of our commands")
+    @Name("commands.default-fallback")
+    public String defaultFallback = "fallback";
+
     @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
     public boolean catchSystemSignals = true;
 }

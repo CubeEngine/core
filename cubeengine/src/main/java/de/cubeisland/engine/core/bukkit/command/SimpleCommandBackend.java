@@ -18,11 +18,14 @@
 package de.cubeisland.engine.core.bukkit.command;
 
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.VanillaCommand;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
@@ -70,10 +73,20 @@ public class SimpleCommandBackend implements CommandBackend
         if (old != null && !(old instanceof CubeCommand))
         {
             BukkitCoreConfiguration config = this.core.getConfiguration();
-            if (!config.commands.noOverride.contains(old.getLabel()))
+            if (!config.commands.noOverride.contains(old.getLabel().toLowerCase(Locale.ENGLISH)))
             {
                 // CE commands are more important :P
                 this.removeCommand(old.getLabel(), false);
+                String fallbackPrefix = core.getConfiguration().defaultFallback;
+                if (old instanceof PluginCommand)
+                {
+                    fallbackPrefix = ((PluginCommand)old).getPlugin().getName();
+                }
+                else if (old instanceof VanillaCommand)
+                {
+                    fallbackPrefix = "vanilla";
+                }
+                this.commandMap.register(fallbackPrefix, old);
             }// sometimes they are not :(
         }
 
