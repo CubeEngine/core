@@ -107,7 +107,7 @@ public class QueryManager
                 try {
                     doEmptyLogs(batchSize);
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().error(ex, "Error while logging!");
+                    QueryManager.this.module.getLog().error(ex, "Fatal Error while logging!");
                 }
             }
         };
@@ -493,16 +493,19 @@ public class QueryManager
             }
             else
             {
-                try
+                if (insertConnection != null)
                 {
-                    this.insertConnection.setAutoCommit(true);
-                    this.insertConnection.close();
+                    try
+                    {
+                        this.insertConnection.setAutoCommit(true);
+                        this.insertConnection.close();
+                    }
+                    catch (SQLException e)
+                    {
+                        module.getLog().error(e, "Error when closing connection!");
+                    }
+                    this.insertConnection = null;
                 }
-                catch (SQLException e)
-                {
-                    module.getLog().error(e, "Error when closing connection!");
-                }
-                this.insertConnection = null;
                 if (shutDownLatch != null)
                 {
                     this.shutDownLatch.countDown();
