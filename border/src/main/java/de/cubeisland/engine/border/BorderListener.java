@@ -19,28 +19,53 @@ package de.cubeisland.engine.border;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.math.BlockVector2;
+import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class BorderListener implements Listener
 {
     private final UserManager um;
     private Border module;
+    private final TObjectLongMap<String> lastNotice;
+    private static final long NOTICE_DELAY = 1000 * 3;
 
     public BorderListener(Border module)
     {
         this.module = module;
         this.um = module.getCore().getUserManager();
+        this.lastNotice = new TObjectLongHashMap<>();
+    }
+
+    private boolean mayNotice(Player player)
+    {
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime - this.lastNotice.get(player.getName()) > NOTICE_DELAY)
+        {
+            this.lastNotice.put(player.getName(), currentTime);
+            return true;
+        }
+        return false;
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        this.lastNotice.remove(event.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -77,7 +102,10 @@ public class BorderListener implements Listener
             else
             {
                 event.setTo(event.getFrom()); // no movement!
-                this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
+                if (mayNotice(event.getPlayer()))
+                {
+                    this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
+                }
             }
         }
         else if (!(event instanceof PlayerTeleportEvent) && isChunkAlmostOutOfRange(event.getTo().getChunk(), config))
