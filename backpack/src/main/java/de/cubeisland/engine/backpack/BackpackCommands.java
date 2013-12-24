@@ -25,7 +25,9 @@ import org.bukkit.event.EventHandler;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.Module;
@@ -42,27 +44,53 @@ public class BackpackCommands extends ContainerCommand
     }
 
     @Alias(names = "openbp")
-    @Command(desc = "opens a backpack", usage = "<name>", min = 1, max = 1)
+    @Command(desc = "opens a backpack", usage = "<name> [user] [w <world>]",
+             params = @Param(names = {"w", "world", "for", "in"},
+                              completer = WorldCompleter.class, type = World.class),
+             min = 1, max = 1)
     public void open(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
-            User forUser = (User)context.getSender(); // TODO user param
-            World forWorld = forUser.getWorld(); // TODO world param
+            User forUser = (User)context.getSender();
+            if (context.hasArg(1))
+            {
+                forUser = context.getUser(1);
+                if (forUser == null)
+                {
+                    context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                    return;
+                }
+            }
+            World forWorld = forUser.getWorld();
+            if (context.hasParam("w"))
+            {
+                forWorld = context.getParam("w", null);
+                if (forWorld == null)
+                {
+                    context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                    return;
+                }
+            }
+            // TODO perm to open other world / other user
             manager.openBackpack((User)context.getSender(), forUser, forWorld, context.getString(0));
             return;
         }
-        // TODO consolemsg
+        context.sendTranslated("&cYou cannot open a inventory in console!"); // TODO perhaps save inventory to yml
     }
 
     @Alias(names = "createbp")
-    @Command(desc = "creates a new backpack", usage = "<name> [user] [-global]|[-single] [-blockinput] [for <world>]",
+    @Command(desc = "creates a new backpack",
+             usage = "<name> [user] [-global]|[-single] [-blockinput] [w <world>] [p <pages>]",
              flags = {
                  @Flag(name = "g", longName = "global"),
                  @Flag(name = "s", longName = "single"),
                  @Flag(name = "b", longName = "blockinput")
-                 // TODO named param world
-             }, min = 1, max = 2)
+             }
+        , params = {@Param(names = {"w", "world", "for", "in"},
+                  completer = WorldCompleter.class, type = World.class)
+        ,@Param(names = {"p", "pages"}, type = Integer.class)},
+             min = 1, max = 2)
     public void create(ParameterizedContext context)
     {
         User forUser = null;
@@ -72,9 +100,19 @@ public class BackpackCommands extends ContainerCommand
             forUser = (User)context.getSender();
             forWorld = ((User)context.getSender()).getWorld();
         }
-        else
+        else if (context.hasParam("w"))
         {
-            // TODO world
+            forWorld = context.getParam("w", null);
+            if (forWorld == null)
+            {
+                context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                return;
+            }
+        }
+        else if (!context.hasFlag("g"))
+        {
+            context.sendTranslated("&aYou have to specify a world for non global backpacks!");
+            return;
         }
         if (context.hasArg(1))
         {
@@ -87,10 +125,10 @@ public class BackpackCommands extends ContainerCommand
         }
         else if (!(context.getSender() instanceof User))
         {
-            // TODO  console msg need user
+            context.sendTranslated("&cYou need to specify a User");
             return;
         }
         manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld, context
-            .hasFlag("g"), context.hasFlag("s"), context.hasFlag("b"));
+            .hasFlag("g"), context.hasFlag("s"), context.hasFlag("b"), context.getParam("p", 1));
     }
 }

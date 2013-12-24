@@ -53,7 +53,7 @@ public class BackpackManager implements Listener
         backPack.openInventory(sender);
     }
 
-    public void createBackpack(CommandSender sender, User forUser, String name, World forWorld, boolean global, boolean single, boolean blockInput)
+    public void createBackpack(CommandSender sender, User forUser, String name, World forWorld, boolean global, boolean single, boolean blockInput, Integer pages)
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
@@ -62,17 +62,17 @@ public class BackpackManager implements Listener
         {
             if (global)
             {
-                attachment.createGlobalBackpack(name, blockInput);
+                attachment.createGlobalBackpack(name, blockInput, pages);
                 sender.sendTranslated("&aCreated global backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else if (single)
             {
-                attachment.createBackpack(name, forWorld, blockInput);
+                attachment.createBackpack(name, forWorld, blockInput, pages);
                 sender.sendTranslated("&aCreated singleworld backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else
             {
-                attachment.createGroupedBackpack(name, forWorld, blockInput);
+                attachment.createGroupedBackpack(name, forWorld, blockInput, pages);
                 sender.sendTranslated("&aCreated grouped backpack &6%s&a in &6%s&a for &2%s", name, forWorld.getName(), forUser.getName());
             }
         }
