@@ -175,7 +175,10 @@ public class BukkitUserManager extends AbstractUserManager
                 @Override
                 public void run()
                 {
-                    onlineUsers.remove(user);
+                    if (!user.isOnline())
+                    {
+                        onlineUsers.remove(user);
+                    }
                 }
             });
 
@@ -187,11 +190,10 @@ public class BukkitUserManager extends AbstractUserManager
                     scheduledForRemoval.remove(user.getName());
                     user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
                     user.getEntity().update();
-                    if (!user.isOnline())
+                    if (user.isOnline())
                     {
-                        return;
+                        removeCachedUser(user);
                     }
-                    removeCachedUser(user);
                 }
             }, core.getConfiguration().usermanager.keepInMemory);
 
