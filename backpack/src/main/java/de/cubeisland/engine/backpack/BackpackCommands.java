@@ -214,7 +214,7 @@ public class BackpackCommands extends ContainerCommand
                         context.sendTranslated("&cUnknown Enchantment &6%s", ench);
                         return;
                     }
-                    power = Integer.parseInt(ench.substring(ench.indexOf(":"+1)));
+                    power = Integer.parseInt(ench.substring(ench.indexOf(":")+1));
                 }
                 else
                 {
