@@ -21,12 +21,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.command.CommandBackend;
+import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.CommandFactory;
 import de.cubeisland.engine.core.command.CommandHolder;
@@ -42,18 +41,14 @@ import gnu.trove.map.hash.THashMap;
 
 public class BukkitCommandManager implements CommandManager
 {
-    private final Server server;
-    private final BukkitCore core;
-    private final CommandBackend commandBackend;
+    private final CommandInjector commandBackend;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
     private final ConsoleCommandSender consoleSender;
     private final Log commandLogger;
     private final ConfirmManager confirmManager;
 
-    public BukkitCommandManager(BukkitCore core, CommandBackend commandBackend)
+    public BukkitCommandManager(BukkitCore core, CommandInjector commandBackend)
     {
-        this.core = core;
-        this.server = core.getServer();
         this.consoleSender = new ConsoleCommandSender(core);
         this.commandBackend = commandBackend;
         this.commandFactories = new THashMap<>();

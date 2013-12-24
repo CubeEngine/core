@@ -37,8 +37,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
@@ -51,10 +49,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.command.CommandBackend;
-import de.cubeisland.engine.core.bukkit.command.CubeCommandBackend;
-import de.cubeisland.engine.core.bukkit.command.FallbackCommandBackend;
-import de.cubeisland.engine.core.bukkit.command.SimpleCommandBackend;
+import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.commands.CoreCommands;
 import de.cubeisland.engine.core.command.commands.ModuleCommands;
@@ -262,28 +257,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         ArgumentReader.init(this);
 
         // depends on: server, config
-        CommandMap commandMap = getFieldValue(server, findFirstField(server, CommandMap.class), CommandMap.class);
-        CommandBackend commandBackend = null;
-        if (commandMap != null)
-        {
-            if (commandMap.getClass() == SimpleCommandMap.class && this.config.useEnhancedSystem)
-            {
-                commandBackend = new CubeCommandBackend(this);
-            }
-            else if (SimpleCommandMap.class.isAssignableFrom(commandMap.getClass()))
-            {
-                this.getLog().warn("The server you are using is not fully compatible, some advanced command features will be disabled.");
-                this.getLog().debug("The type of the command map: {}", commandMap.getClass().getName());
-                commandBackend = new SimpleCommandBackend(this, SimpleCommandMap.class.cast(commandMap));
-            }
-        }
-        if (commandBackend == null)
-        {
-            this.getLog().warn("We encountered a serious compatibility issue, however basic command features should still work. Please report this issue to the developers!");
-            commandBackend = new FallbackCommandBackend(this);
-        }
-        this.getLog().debug("Chosen command backend: {}", commandBackend.getClass().getName());
-        this.commandManager = new BukkitCommandManager(this, commandBackend);
+        this.commandManager = new BukkitCommandManager(this, new CommandInjector(this));
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
 
         // depends on: plugin manager, module manager
@@ -298,7 +272,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         if (this.config.improveVanilla)
         {
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
-           // TODO fix it! this.commandManager.registerCommand(new WhitelistCommand(this));
+            this.commandManager.registerCommand(new WhitelistCommand(this));
         }
 
         this.matcherManager = new Match();
