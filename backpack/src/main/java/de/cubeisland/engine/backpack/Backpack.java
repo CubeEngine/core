@@ -19,12 +19,15 @@ package de.cubeisland.engine.backpack;
 
 import java.io.File;
 
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.backpack.converter.NBTItemStackConverter;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.converter.ItemStackConverter;
+import de.cubeisland.engine.worlds.Multiverse;
+import de.cubeisland.engine.worlds.Worlds;
 
 public class Backpack extends Module
 {
@@ -48,5 +51,30 @@ public class Backpack extends Module
         this.groupedDir.mkdir();
         this.globalDir.mkdir();
         manager = new BackpackManager(this);
+    }
+
+    public World getMainWorld(World world)
+    {
+        Module worlds = this.getCore().getModuleManager().getModule("worlds");
+        if (worlds != null && worlds instanceof Worlds)
+        {
+            Multiverse multiverse = ((Worlds)worlds).getMultiverse();
+            return multiverse.getUniverse(world).getMainWorld();
+        }
+        else
+        {
+            if (world.getName().contains("_"))
+            {
+                String pre = world.getName().substring(0, world.getName().indexOf("_"));
+                for (World aWorld : this.getCore().getWorldManager().getWorlds())
+                {
+                    if (aWorld.getName().equals(pre))
+                    {
+                        return aWorld;
+                    }
+                }
+            }
+            return world;
+        }
     }
 }

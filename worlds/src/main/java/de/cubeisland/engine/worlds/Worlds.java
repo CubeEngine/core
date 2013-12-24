@@ -41,6 +41,13 @@ import de.cubeisland.engine.worlds.converter.WorldTypeConverter;
 
 public class Worlds extends Module
 {
+    public Multiverse getMultiverse()
+    {
+        return multiverse;
+    }
+
+    private Multiverse multiverse;
+
     public WorldsConfig getConfig()
     {
         return config;
@@ -72,7 +79,7 @@ public class Worlds extends Module
     public void onEnable()
     {
         this.config = this.loadConfig(WorldsConfig.class);
-        Multiverse multiverse = new Multiverse(this);
+        multiverse = new Multiverse(this);
         this.getCore().getCommandManager().registerCommand(new WorldCommands(this, multiverse));
         new WorldsPermissions(this);
 

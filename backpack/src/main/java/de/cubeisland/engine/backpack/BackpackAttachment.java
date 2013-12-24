@@ -86,7 +86,7 @@ public class BackpackAttachment extends UserAttachment
         dir.mkdir();
         dir = new File(dir, this.getHolder().getName());
         dir.mkdir();
-        return new File(dir, name);
+        return new File(dir, name + ".dat");
     }
 
     private File getGroupedBackpack(String name, String worldName)
@@ -96,7 +96,7 @@ public class BackpackAttachment extends UserAttachment
         dir.mkdir();
         dir = new File(dir, this.getHolder().getName());
         dir.mkdir();
-        return new File(dir, name);
+        return new File(dir, name + ".dat");
     }
 
     protected void loadBackpacks(File dir, Map<String, BackpackInventory> map)
@@ -116,7 +116,7 @@ public class BackpackAttachment extends UserAttachment
         }
     }
 
-    public BackpackInventory getBackPack(String name, World world)
+    public BackpackInventory getBackpack(String name, World world)
     {
         BackpackInventory backpack = this.globalBackpacks.get(name);
         if (backpack != null)
@@ -132,7 +132,7 @@ public class BackpackAttachment extends UserAttachment
         {
             return backpack;
         }
-        map = this.groupedBackpacks.get(world);
+        map = this.groupedBackpacks.get(((Backpack)this.getModule()).getMainWorld(world));
         if (map != null)
         {
             backpack = map.get(name);

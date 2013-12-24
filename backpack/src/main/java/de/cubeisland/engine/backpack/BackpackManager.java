@@ -44,7 +44,7 @@ public class BackpackManager implements Listener
         // TODO backpacks of other players
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackPack(name, forWorld);
+        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
@@ -57,7 +57,7 @@ public class BackpackManager implements Listener
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackPack(name, forWorld);
+        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             if (global)
