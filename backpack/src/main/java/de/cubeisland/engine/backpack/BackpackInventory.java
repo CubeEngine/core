@@ -17,7 +17,9 @@
  */
 package de.cubeisland.engine.backpack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -170,7 +172,7 @@ public class BackpackInventory implements InventoryHolder
             return;
         }
         this.saveData(index, inv);
-        if (inv.getViewers().isEmpty())
+        if (inv.getViewers().isEmpty() || (inv.getViewers().size() == 1 && inv.getViewers().get(0) == player))
         {
             this.views.remove(index);
         }
@@ -178,18 +180,15 @@ public class BackpackInventory implements InventoryHolder
 
     public void addItem(ItemStack toGive)
     {
-        for (Iterator<Inventory> invIt = this.views.values().iterator(); invIt.hasNext(); )
+        for (Inventory inventory : new ArrayList<>(this.views.values()))
         {
-            Inventory inventory = invIt.next();
-            invIt.remove();
-            for (Iterator<HumanEntity> viewerIt = inventory.getViewers().iterator(); viewerIt.hasNext(); )
+            for (HumanEntity humanEntity : new ArrayList<>(inventory.getViewers()))
             {
-                HumanEntity humanEntity = viewerIt.next();
-                viewerIt.remove();
                 this.saveData(this.viewers.remove((Player)humanEntity), inventory);
                 humanEntity.closeInventory();
             }
         }
+
         LinkedList<ItemStack> itemStacks = new LinkedList<>(Arrays.asList(InventoryUtil.splitIntoMaxItems(toGive, toGive.getMaxStackSize())));
         for (int i = 0 ; itemStacks.size() > 0; i++)
         {

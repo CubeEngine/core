@@ -130,5 +130,10 @@ public class BackpackManager implements Listener
             return;
         }
         backPack.addItem(itemToGive);
+        sender.sendTranslated("&aItem added to backpack!");
+        if (sender != forUser && forUser.isOnline())
+        {
+            forUser.sendTranslated("&aYou received items in your backpack &6%s", name);
+        }
     }
 }
