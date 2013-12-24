@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
+import static de.cubeisland.engine.core.util.StringUtils.explode;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 
 public class PreCommandListener implements Listener
@@ -60,7 +61,7 @@ public class PreCommandListener implements Listener
 
     private boolean isCommandMissing(CommandSender sender, String message)
     {
-        String label = message.split(" ")[0].toLowerCase(Locale.ENGLISH);
+        String label = explode(" ", message.trim())[0].toLowerCase(Locale.ENGLISH);
         if (this.injector.getCommand(label) == null)
         {
             final Locale language = BukkitUtils.getLocaleFromSender(sender);
