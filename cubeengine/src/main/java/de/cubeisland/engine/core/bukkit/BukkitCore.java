@@ -50,6 +50,7 @@ import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
+import de.cubeisland.engine.core.bukkit.command.PreCommandListener;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.commands.CoreCommands;
 import de.cubeisland.engine.core.command.commands.ModuleCommands;
@@ -104,7 +105,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private I18n i18n;
     private BukkitCoreConfiguration config;
     private Log logger;
-    private EventManager eventRegistration;
+    private EventManager eventManager;
     private BukkitCommandManager commandManager;
     private BukkitTaskManager taskManager;
     private ApiServer apiServer;
@@ -242,7 +243,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.database.registerTable(TableWorld.class);
 
         // depends on: plugin manager
-        this.eventRegistration = new EventManager(this);
+        this.eventManager = new EventManager(this);
 
         // depends on: executor, database, Server, core config and event registration
         this.userManager = new BukkitUserManager(this);
@@ -258,6 +259,13 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: server, config
         this.commandManager = new BukkitCommandManager(this, new CommandInjector(this));
+        this.addInitHook(new Runnable() {
+            @Override
+            public void run()
+            {
+                pm.registerEvents(new PreCommandListener(BukkitCore.this), BukkitCore.this);
+            }
+        });
         this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
 
         // depends on: plugin manager, module manager
@@ -567,7 +575,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public EventManager getEventManager()
     {
-        return this.eventRegistration;
+        return this.eventManager;
     }
 
     @Override
