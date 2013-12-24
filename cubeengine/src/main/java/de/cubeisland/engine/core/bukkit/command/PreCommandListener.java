@@ -29,7 +29,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-import de.cubeisland.engine.core.bukkit.BukkitCommandManager;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -39,14 +38,12 @@ import static de.cubeisland.engine.core.util.StringUtils.implode;
 public class PreCommandListener implements Listener
 {
     private final BukkitCore core;
-    private final BukkitCommandManager manager;
     private final CommandInjector injector;
 
     public PreCommandListener(BukkitCore core)
     {
         this.core = core;
-        this.manager = core.getCommandManager();
-        this.injector = this.manager.getInjector();
+        this.injector = core.getCommandManager().getInjector();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -64,7 +61,7 @@ public class PreCommandListener implements Listener
     private boolean isCommandMissing(CommandSender sender, String message)
     {
         String label = message.split(" ")[0].toLowerCase(Locale.ENGLISH);
-        if (this.manager.getCommand(label) == null)
+        if (this.injector.getCommand(label) == null)
         {
             final Locale language = BukkitUtils.getLocaleFromSender(sender);
             List<String> matches = new LinkedList<>(Match.string().getBestMatches(label, injector.getKnownCommands().keySet(), 1));
