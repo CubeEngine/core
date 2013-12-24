@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -140,10 +141,12 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "givebp")
     @Command(desc = "Puts items into a backpack",
-             usage = "<name> [user] [w <world>] <item <item>[:data]> [name <name>] [lore <loreline>[,<loreline>]]",
+             usage = "<name> [user] [w <world>] <item <item>[:data]> [name <name>] [lore <loreline>[,<loreline>]] [ench <enchs...>] [amount <amount>]",
     params = {@Param(names = {"i","item"}, required = true),
               @Param(names = {"n","name"}),
               @Param(names = {"l","lore"}),
+              @Param(names = {"l","lore"}),
+              @Param(names = {"a", "amount"}, type = Integer.class),
               @Param(names = {"e","ench", "enchantments"}),
               @Param(names = {"w", "world", "for", "in"},
                      completer = WorldCompleter.class, type = World.class)
@@ -182,6 +185,11 @@ public class BackpackCommands extends ContainerCommand
             return;
         }
         ItemStack matchedItem = Match.material().itemStack(context.getString("i"));
+        if (matchedItem == null)
+        {
+            context.sendTranslated("&cCould not match item &6%s", context.getString("i"));
+            return;
+        }
         ItemMeta itemMeta = matchedItem.getItemMeta();
         if (context.hasParam("n"))
         {
@@ -193,9 +201,46 @@ public class BackpackCommands extends ContainerCommand
         }
         if (context.hasParam("e"))
         {
-            // TODO enchantments
+            String[] enchs = StringUtils.explode(",", context.getString("e"));
+            for (String ench : enchs)
+            {
+                Enchantment enchantment;
+                int power;
+                if (ench.contains(":"))
+                {
+                    enchantment = Match.enchant().enchantment(ench.substring(0, ench.indexOf(":")));
+                    if (enchantment == null)
+                    {
+                        context.sendTranslated("&cUnknown Enchantment &6%s", ench);
+                        return;
+                    }
+                    power = Integer.parseInt(ench.substring(ench.indexOf(":"+1)));
+                }
+                else
+                {
+                    enchantment = Match.enchant().enchantment(ench.substring(0, ench.indexOf(":")));
+                    if (enchantment == null)
+                    {
+                        context.sendTranslated("&cUnknown Enchantment &6%s", ench);
+                        return;
+                    }
+                    power = enchantment.getMaxLevel();
+                }
+                itemMeta.addEnchant(enchantment, power, true);
+            }
         }
         matchedItem.setItemMeta(itemMeta);
+        Integer amount = matchedItem.getMaxStackSize();
+        if (context.hasParam("a"))
+        {
+            amount = context.getParam("a", null);
+            if (amount == null)
+            {
+                context.sendTranslated("&cInvalid amount &6%s", context.getString("a"));
+                return;
+            }
+        }
+        matchedItem.setAmount(amount);
         this.manager.giveItem(context.getSender(), forUser, forWorld, context.getString(0), matchedItem);
     }
 }
