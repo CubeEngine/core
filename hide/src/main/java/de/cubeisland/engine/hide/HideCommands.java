@@ -22,6 +22,7 @@ import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.engine.core.user.User;
 
 public class HideCommands implements CommandHolder
 {
@@ -38,22 +39,35 @@ public class HideCommands implements CommandHolder
         return ReflectedCommand.class;
     }
 
-    @Command(desc = "Hides a player.", usage = "{player}")
+    @Command(desc = "Hides a player.", usage = "{player}", max = 1)
     public void hide(CommandContext context)
     {
-
+        User target = getTargetUser(context);
+        if (target == null)
+        {
+            return;
+        }
+        this.module.hidePlayer(target, true);
     }
 
-    @Command(desc = "Unhides a player.", usage = "{player}")
+    @Command(desc = "Unhides a player.", usage = "{player}", max = 1)
     public void unhide(CommandContext context)
     {
-
+        User target = getTargetUser(context);
+        if (target == null)
+        {
+            return;
+        }
     }
 
-    @Command(desc = "Checks whether a player is hidden.", usage = "{player}")
+    @Command(desc = "Checks whether a player is hidden.", usage = "{player}", max = 1)
     public void hidden(CommandContext context)
     {
-
+        User target = getTargetUser(context);
+        if (target == null)
+        {
+            return;
+        }
     }
 
     @Command(desc = "Lists all hidden players.")
@@ -62,21 +76,56 @@ public class HideCommands implements CommandHolder
 
     }
 
-    @Command(desc = "Toggles the ability to see hidden players.", usage = "{player}")
+    @Command(desc = "Toggles the ability to see hidden players.", usage = "{player}", max = 1)
     public void seehiddens(CommandContext context)
     {
-
+        User target = getTargetUser(context);
+        if (target == null)
+        {
+            return;
+        }
     }
 
-    @Command(desc = "Checks whether a player can see hidden players.", usage = "{player}")
+    @Command(desc = "Checks whether a player can see hidden players.", usage = "{player}", max = 1)
     public void canseehiddens(CommandContext context)
     {
-
+        User target = getTargetUser(context);
+        if (target == null)
+        {
+            return;
+        }
     }
 
     @Command(desc = "Lists all players who can see hidden players.")
     public void listcanseehiddens(CommandContext context)
     {
+        context.sendTranslated("&aThe following players can see hidden players:");
+        for (User user : this.module.getCanSeeHiddens())
+        {
+            context.sendMessage(" - &e" + user.getDisplayName());
+        }
+    }
 
+    private static User getTargetUser(CommandContext context)
+    {
+        if (context.getArgCount() > 0)
+        {
+            User target = context.getUser(0);
+            if (target == null)
+            {
+                context.sendTranslated("&cCouldn't find the user &e%s&c...", context.getString(0));
+                return null;
+            }
+            return target;
+        }
+        else if (context.getSender() instanceof User)
+        {
+            return (User)context.getSender();
+        }
+        else
+        {
+            context.sendTranslated("&cNo user specified!");
+            return null;
+        }
     }
 }
