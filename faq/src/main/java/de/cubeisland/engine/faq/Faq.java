@@ -20,6 +20,8 @@ package de.cubeisland.engine.faq;
 import java.util.PriorityQueue;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -36,8 +38,10 @@ public class Faq extends Module implements Listener
 
         FaqConfig config = this.loadConfig(FaqConfig.class);
         this.questions.addAll(config.questions);
+        this.getCore().getEventManager().registerListener(this, this);
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
         String question = event.getMessage();
