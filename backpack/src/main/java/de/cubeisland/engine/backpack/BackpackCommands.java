@@ -40,6 +40,9 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
+import static de.cubeisland.engine.backpack.BackpackPermissions.OPEN_OTHER_USER;
+import static de.cubeisland.engine.backpack.BackpackPermissions.OPEN_OTHER_WORLDS;
+
 public class BackpackCommands extends ContainerCommand
 {
     private BackpackManager manager;
@@ -79,7 +82,16 @@ public class BackpackCommands extends ContainerCommand
                     return;
                 }
             }
-            // TODO perm to open other world / other user
+            if (context.getSender() != forUser && !OPEN_OTHER_USER.isAuthorized(context.getSender()))
+            {
+                context.sendTranslated("&cYou are not allowed to open the backpacks of other users!");
+                return;
+            }
+            if (forUser.getWorld() != forWorld && ! OPEN_OTHER_WORLDS.isAuthorized(context.getSender()))
+            {
+                context.sendTranslated("&cYou are not allowed to open backpacks from an other world!");
+                return;
+            }
             manager.openBackpack((User)context.getSender(), forUser, forWorld, context.getString(0));
             return;
         }

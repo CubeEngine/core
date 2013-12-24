@@ -17,29 +17,20 @@
  */
 package de.cubeisland.engine.backpack;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.PermissionContainer;
 
-import org.bukkit.inventory.ItemStack;
-
-import de.cubeisland.engine.configuration.Configuration;
-import de.cubeisland.engine.core.config.codec.NBTCodec;
-
-public class BackpackData extends Configuration<NBTCodec>
+public class BackpackPermissions extends PermissionContainer<Backpack>
 {
-    public boolean allowItemsIn = true;
-    public int pages = 1;
-    public Map<Integer, ItemStack> contents = new HashMap<>();
-
-    @Override
-    public void onSave()
+    public BackpackPermissions(Backpack module)
     {
-        for (Integer next : contents.keySet())
-        {
-            if (contents.get(next) == null)
-            {
-                contents.remove(next);
-            }
-        }
+        super(module);
+        this.bindToModule(OPEN_OTHER_USER, OPEN_OTHER_WORLDS);
+        this.registerAllPermissions();
     }
+
+    private static final Permission COMMAND = Permission.createAbstractPermission("command");
+    private static final Permission COMMAND_OPEN = COMMAND.createAbstractChild("open");
+    public static final Permission OPEN_OTHER_USER = COMMAND_OPEN.createChild("other-user");
+    public static final Permission OPEN_OTHER_WORLDS = COMMAND_OPEN.createChild("other-worlds");
 }

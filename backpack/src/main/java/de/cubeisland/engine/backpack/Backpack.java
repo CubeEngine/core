@@ -40,6 +40,7 @@ public class Backpack extends Module
     @Override
     public void onEnable()
     {
+        new BackpackPermissions(this);
         this.getCore().getConfigFactory().getCodecManager().getCodec(NBTCodec.class).getConverterManager().
             registerConverter(ItemStack.class, new NBTItemStackConverter());
         this.config = this.loadConfig(BackpackConfig.class);
