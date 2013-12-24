@@ -23,20 +23,21 @@ import java.util.Map;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.ListNode;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.configuration.node.StringNode;
 
 public class QuestionConverter implements Converter<Question>
 {
     @Override
     public Node toNode(Question object, ConverterManager manager) throws ConversionException
     {
-        Map<String, Object> data = new HashMap<>();
-        data.put("question", object.getQuestion());
-        data.put("answer", object.getAnswer());
-        data.put("keywords", object.getKeywords());
-
-        return new MapNode(data);
+        MapNode node = MapNode.emptyMap();
+        node.setExactNode("question", new StringNode(object.getQuestion()));
+        node.setExactNode("answer", new StringNode(object.getAnswer()));
+        node.setExactNode("keywords", new ListNode(object.getKeywords()));
+        return node;
     }
 
     @Override
@@ -47,13 +48,13 @@ public class QuestionConverter implements Converter<Question>
             Map<String, Node> content = ((MapNode)node).getMappedNodes();
             if (!content.containsKey("question") || !content.containsKey("answer") ||!content.containsKey("keywords"))
             {
-                return null;
+                throw ConversionException.of(this, node, "Missing keys, required: question, answer, keywords!");
             }
             return new Question(
-                content.get("question").toString(),
-                content.get("answer").toString(),
+                content.get("question").asText(),
+                content.get("answer").asText(),
                 manager.<String[]>convertFromNode(content.get("keywords"), String[].class));
         }
-        return null;
+        throw ConversionException.of(this, node, "Incompatible node!");
     }
 }
