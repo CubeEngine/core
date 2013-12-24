@@ -49,12 +49,12 @@ public class Hide extends Module
     {
         this.hiddenUsers.add(user);
 
-        final PlayerQuitEvent event = new FakePlayerQuitEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " left the game.");
-        getCore().getEventManager().fireEvent(event);
-        if (message)
-        {
-            getCore().getUserManager().broadcastMessage(String.valueOf(event.getQuitMessage()));
-        }
+//        final PlayerQuitEvent event = new FakePlayerQuitEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " left the game.");
+//        getCore().getEventManager().fireEvent(event);
+//        if (message)
+//        {
+//            getCore().getUserManager().broadcastMessage(String.valueOf(event.getQuitMessage()));
+//        }
 
         for (User onlineUser : getCore().getUserManager().getOnlineUsers())
         {
@@ -77,13 +77,13 @@ public class Hide extends Module
     {
         this.hiddenUsers.remove(user);
 
-        final PlayerJoinEvent event = new FakePlayerJoinEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " joined the game.");
-        getCore().getEventManager().fireEvent(event);
-        final String msg = event.getJoinMessage();
-        if (msg != null)
-        {
-            getCore().getUserManager().broadcastMessage(msg);
-        }
+//        final PlayerJoinEvent event = new FakePlayerJoinEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " joined the game.");
+//        getCore().getEventManager().fireEvent(event);
+//        final String msg = event.getJoinMessage();
+//        if (msg != null)
+//        {
+//            getCore().getUserManager().broadcastMessage(msg);
+//        }
 
         for (User onlineUser : getCore().getUserManager().getOnlineUsers())
         {
