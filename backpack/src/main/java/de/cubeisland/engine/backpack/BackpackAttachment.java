@@ -46,6 +46,10 @@ public class BackpackAttachment extends UserAttachment
     public void loadBackpacks(World world)
     {
         this.loadGlobalBackpacks();
+        if (world == null)
+        {
+            return;
+        }
         Backpack module = (Backpack)this.getModule();
         File dir = new File(module.singleDir, world.getName());
         if (dir.exists() && dir.isDirectory())
@@ -108,9 +112,17 @@ public class BackpackAttachment extends UserAttachment
             {
                 if (!file.isDirectory() && file.getName().endsWith(".dat"))
                 {
+                    String name = file.getName().substring(0, file.getName().lastIndexOf(".dat"));
                     BackpackData load = this.getModule().getCore().getConfigFactory().load(BackpackData.class, file);
-                    map.put(file.getName().substring(0, file.getName().lastIndexOf(".dat")),
-                            new BackpackInventory((Backpack)this.getModule(), load));
+                    BackpackInventory bpInv = map.get(name);
+                    if (bpInv == null)
+                    {
+                        map.put(name, new BackpackInventory((Backpack)this.getModule(), load));
+                    }
+                    else
+                    {
+                        bpInv.data = load;
+                    }
                 }
             }
         }

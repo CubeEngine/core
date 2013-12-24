@@ -18,9 +18,11 @@
 package de.cubeisland.engine.backpack;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -33,7 +35,7 @@ import de.cubeisland.engine.core.util.InventoryGuardFactory;
 public class BackpackInventory implements InventoryHolder
 {
     private final Backpack module;
-    private final BackpackData data;
+    protected BackpackData data;
 
     private Map<Player, Integer> viewers = new HashMap<>();
     private Map<Integer, Inventory> views = new HashMap<>();
@@ -66,7 +68,7 @@ public class BackpackInventory implements InventoryHolder
         Inventory inventory = this.views.get(index);
         if (inventory == null)
         {
-            inventory = Bukkit.createInventory(this, SIZE, pageString + (index + 1));
+            inventory = Bukkit.createInventory(this, SIZE, pageString + (index + 1) + "/" + this.data.pages);
             this.views.put(index, inventory);
         }
         ItemStack[] contents = new ItemStack[SIZE];
@@ -160,10 +162,43 @@ public class BackpackInventory implements InventoryHolder
     {
         Integer index = viewers.remove(player);
         Inventory inv = views.get(index);
+        if (index == null || inv == null)
+        {
+            return;
+        }
         this.saveData(index, inv);
         if (inv.getViewers().isEmpty())
         {
             this.views.remove(index);
+        }
+    }
+
+    public void addItem(ItemStack toGive)
+    {
+        for (Iterator<Inventory> invIt = this.views.values().iterator(); invIt.hasNext(); )
+        {
+            Inventory inventory = invIt.next();
+            invIt.remove();
+            for (Iterator<HumanEntity> viewerIt = inventory.getViewers().iterator(); viewerIt.hasNext(); )
+            {
+                HumanEntity humanEntity = viewerIt.next();
+                viewerIt.remove();
+                this.saveData(this.viewers.remove((Player)humanEntity), inventory);
+                humanEntity.closeInventory();
+            }
+        }
+        for (int i = 0 ;; i++)
+        {
+            if (this.data.contents.get(i) == null)
+            {
+                this.data.contents.put(i, toGive);
+                if (i > this.data.pages * SIZE)
+                {
+                    this.data.pages = this.data.pages + 1;
+                }
+                this.data.save();
+                return;
+            }
         }
     }
 }

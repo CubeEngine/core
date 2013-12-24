@@ -19,8 +19,11 @@ package de.cubeisland.engine.backpack;
 
 import java.util.Arrays;
 
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -32,6 +35,9 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.matcher.Match;
 
 public class BackpackCommands extends ContainerCommand
 {
@@ -130,5 +136,66 @@ public class BackpackCommands extends ContainerCommand
         }
         manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld, context
             .hasFlag("g"), context.hasFlag("s"), context.hasFlag("b"), context.getParam("p", 1));
+    }
+
+    @Alias(names = "givebp")
+    @Command(desc = "Puts items into a backpack",
+             usage = "<name> [user] [w <world>] <item <item>[:data]> [name <name>] [lore <loreline>[,<loreline>]]",
+    params = {@Param(names = {"i","item"}, required = true),
+              @Param(names = {"n","name"}),
+              @Param(names = {"l","lore"}),
+              @Param(names = {"e","ench", "enchantments"}),
+              @Param(names = {"w", "world", "for", "in"},
+                     completer = WorldCompleter.class, type = World.class)
+    }, max = 2, min = 1)
+    // /givebp premium Faithcaio item diamondpick:1500 name "broken pick" lore "A broken\npick" "ench unbreaking:1,effi:3"
+    public void give(ParameterizedContext context)
+    {
+        User forUser = null;
+        World forWorld = null;
+        if (context.getSender() instanceof User)
+        {
+            forUser = (User)context.getSender();
+            forWorld = ((User)context.getSender()).getWorld();
+        }
+        else if (context.hasParam("w"))
+        {
+            forWorld = context.getParam("w", null);
+            if (forWorld == null)
+            {
+                context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                return;
+            }
+        }
+        if (context.hasArg(1))
+        {
+            forUser = context.getUser(1);
+            if (forUser == null)
+            {
+                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                return;
+            }
+        }
+        else if (!(context.getSender() instanceof User))
+        {
+            context.sendTranslated("&cYou need to specify a User");
+            return;
+        }
+        ItemStack matchedItem = Match.material().itemStack(context.getString("i"));
+        ItemMeta itemMeta = matchedItem.getItemMeta();
+        if (context.hasParam("n"))
+        {
+            itemMeta.setDisplayName(ChatFormat.parseFormats(context.getString("n")));
+        }
+        if (context.hasParam("l"))
+        {
+            itemMeta.setLore(Arrays.asList(StringUtils.explode("\\n", ChatFormat.parseFormats(context.getString("l")))));
+        }
+        if (context.hasParam("e"))
+        {
+            // TODO enchantments
+        }
+        matchedItem.setItemMeta(itemMeta);
+        this.manager.giveItem(context.getSender(), forUser, forWorld, context.getString(0), matchedItem);
     }
 }

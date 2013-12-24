@@ -25,7 +25,6 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.backpack.converter.NBTItemStackConverter;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.converter.ItemStackConverter;
 import de.cubeisland.engine.worlds.Multiverse;
 import de.cubeisland.engine.worlds.Worlds;
 

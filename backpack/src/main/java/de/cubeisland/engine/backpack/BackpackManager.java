@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
@@ -41,13 +42,12 @@ public class BackpackManager implements Listener
 
     public void openBackpack(User sender, User forUser, World forWorld, String name)
     {
-        // TODO backpacks of other players
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
         BackpackInventory backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
+            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
             return;
         }
         backPack.openInventory(sender);
@@ -117,5 +117,18 @@ public class BackpackManager implements Listener
         {
             ((BackpackInventory)event.getInventory().getHolder()).closeInventory((Player)event.getPlayer());
         }
+    }
+
+    public void giveItem(CommandSender sender, User forUser, World forWorld, String name, ItemStack itemToGive)
+    {
+        BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
+        attachment.loadBackpacks(forWorld);
+        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        if (backPack == null)
+        {
+            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
+            return;
+        }
+        backPack.addItem(itemToGive);
     }
 }
