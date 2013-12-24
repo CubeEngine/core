@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.backpack;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -31,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
+import de.cubeisland.engine.core.util.InventoryUtil;
 
 public class BackpackInventory implements InventoryHolder
 {
@@ -187,18 +190,18 @@ public class BackpackInventory implements InventoryHolder
                 humanEntity.closeInventory();
             }
         }
-        for (int i = 0 ;; i++)
+        LinkedList<ItemStack> itemStacks = new LinkedList<>(Arrays.asList(InventoryUtil.splitIntoMaxItems(toGive, toGive.getMaxStackSize())));
+        for (int i = 0 ; itemStacks.size() > 0; i++)
         {
             if (this.data.contents.get(i) == null)
             {
-                this.data.contents.put(i, toGive);
+                this.data.contents.put(i, itemStacks.poll());
                 if (i > this.data.pages * SIZE)
                 {
                     this.data.pages = this.data.pages + 1;
                 }
-                this.data.save();
-                return;
             }
         }
+        this.data.save();
     }
 }
