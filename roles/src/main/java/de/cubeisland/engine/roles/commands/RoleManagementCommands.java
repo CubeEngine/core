@@ -48,9 +48,9 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "setrperm")
     @Command(names = {"setperm", "setpermission"},
              desc = "Sets the permission for given role [in world]",
-             usage = "<[g:]role> <permission> <true|false|reset> [in <world>]",
+             usage = "<[g:]role> <permission> [true|false|reset] [in <world>]",
              params = @Param(names = "in", type = World.class),
-             max = 3, min = 3)
+             max = 3, min = 2)
     public void setpermission(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -62,7 +62,11 @@ public class RoleManagementCommands extends RoleCommandHelper
         if (role == null) return;
         String permission = context.getString(1);
         Boolean set;
-        String setTo = context.getString(2);
+        String setTo = "true";
+        if (context.getArgCount() > 2)
+        {
+            setTo = context.getString(2);
+        }
         if (setTo.equalsIgnoreCase("true"))
         {
             set = true;
