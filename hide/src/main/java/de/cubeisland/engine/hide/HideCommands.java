@@ -47,7 +47,7 @@ public class HideCommands implements CommandHolder
         {
             return;
         }
-        this.module.hidePlayer(target, true);
+        this.module.hidePlayer(target);
     }
 
     @Command(desc = "Unhides a player.", usage = "{player}", max = 1)
@@ -58,6 +58,7 @@ public class HideCommands implements CommandHolder
         {
             return;
         }
+        this.module.showPlayer(target);
     }
 
     @Command(desc = "Checks whether a player is hidden.", usage = "{player}", max = 1)
@@ -68,6 +69,7 @@ public class HideCommands implements CommandHolder
         {
             return;
         }
+        this.module.getHiddenUsers().contains(target.getName());
     }
 
     @Command(desc = "Lists all hidden players.")
@@ -100,9 +102,9 @@ public class HideCommands implements CommandHolder
     public void listcanseehiddens(CommandContext context)
     {
         context.sendTranslated("&aThe following players can see hidden players:");
-        for (User user : this.module.getCanSeeHiddens())
+        for (String user : this.module.getCanSeeHiddens())
         {
-            context.sendMessage(" - &e" + user.getDisplayName());
+            context.sendMessage(" - &e" + context.getCore().getUserManager().getExactUser(user).getDisplayName());
         }
     }
 

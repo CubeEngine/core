@@ -17,17 +17,32 @@
  */
 package de.cubeisland.engine.hide.event;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.HandlerList;
+
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserEvent;
 
 /**
  *
  * @author CodeInfection
  */
-public class FakePlayerQuitEvent extends PlayerQuitEvent
+public class UserHideEvent extends UserEvent
 {
-    public FakePlayerQuitEvent(Player who, String quitMessage)
+    private static final HandlerList handlers = new HandlerList();
+
+    public HandlerList getHandlers()
     {
-        super(who, quitMessage);
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
+
+    public UserHideEvent(Core core, User user)
+    {
+        super(core, user);
     }
 }

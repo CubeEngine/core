@@ -20,53 +20,48 @@ package de.cubeisland.engine.hide;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.hide.event.FakePlayerJoinEvent;
-import de.cubeisland.engine.hide.event.FakePlayerQuitEvent;
+import de.cubeisland.engine.hide.event.UserHideEvent;
+import de.cubeisland.engine.hide.event.UserShowEvent;
 
 public class Hide extends Module
 {
     private HideConfig config;
-    private Set<User> hiddenUsers;
-    private Set<User> canSeeHiddens;
+    private Set<String> hiddenUsers;
+    private Set<String> canSeeHiddens;
+    private HidePerm perm;
 
     @Override
     public void onEnable()
     {
-        this.getCore().getCommandManager().registerCommands(this, new HideCommands(this));
-        this.getCore().getEventManager().registerListener(this, new HideListener(this));
         hiddenUsers = new HashSet<>();
         canSeeHiddens = new HashSet<>();
+        this.getCore().getCommandManager().registerCommands(this, new HideCommands(this));
+        this.getCore().getEventManager().registerListener(this, new HideListener(this));
+
+        this.perm = new HidePerm(this);
         // TODO player listing in basics?
     }
 
-    public void hidePlayer(final User user, final boolean message)
+    public void hidePlayer(final User user)
     {
-        this.hiddenUsers.add(user);
+        this.hiddenUsers.add(user.getName());
 
-//        final PlayerQuitEvent event = new FakePlayerQuitEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " left the game.");
-//        getCore().getEventManager().fireEvent(event);
-//        if (message)
-//        {
-//            getCore().getUserManager().broadcastMessage(String.valueOf(event.getQuitMessage()));
-//        }
+        getCore().getEventManager().fireEvent(new UserHideEvent(user.getCore(), user));
 
         for (User onlineUser : getCore().getUserManager().getOnlineUsers())
         {
-            if (!this.canSeeHiddens.contains(onlineUser))
+            if (!this.canSeeHiddens.contains(onlineUser.getName()))
             {
                 onlineUser.hidePlayer(user);
             }
         }
 
-        for (User hiddenUser : this.hiddenUsers)
+        for (String hiddenUserName : this.hiddenUsers)
         {
-            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenUser))
+            User hiddenUser = getCore().getUserManager().getExactUser(hiddenUserName);
+            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenUserName))
             {
                 hiddenUser.hidePlayer(user);
             }
@@ -75,29 +70,24 @@ public class Hide extends Module
 
     public void showPlayer(final User user)
     {
-        this.hiddenUsers.remove(user);
+        this.hiddenUsers.remove(user.getName());
 
-//        final PlayerJoinEvent event = new FakePlayerJoinEvent(user.getPlayer(), ChatFormat.YELLOW + user.getName() + " joined the game.");
-//        getCore().getEventManager().fireEvent(event);
-//        final String msg = event.getJoinMessage();
-//        if (msg != null)
-//        {
-//            getCore().getUserManager().broadcastMessage(msg);
-//        }
+        getCore().getEventManager().fireEvent(new UserShowEvent(user.getCore(), user));
 
         for (User onlineUser : getCore().getUserManager().getOnlineUsers())
         {
-            if (!this.canSeeHiddens.contains(onlineUser))
+            if (!this.canSeeHiddens.contains(onlineUser.getName()))
             {
                 onlineUser.showPlayer(user);
             }
         }
 
-        for (User hiddenUsers : this.hiddenUsers)
+        for (String hiddenUserName : this.hiddenUsers)
         {
-            if (hiddenUsers != user && !this.canSeeHiddens.contains(hiddenUsers))
+            User hiddenUser = getCore().getUserManager().getExactUser(hiddenUserName);
+            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenUserName))
             {
-                hiddenUsers.showPlayer(user);
+                hiddenUser.showPlayer(user);
             }
         }
     }
@@ -107,12 +97,12 @@ public class Hide extends Module
         return config;
     }
 
-    public Set<User> getHiddenUsers()
+    public Set<String> getHiddenUsers()
     {
         return hiddenUsers;
     }
 
-    public Set<User> getCanSeeHiddens()
+    public Set<String> getCanSeeHiddens()
     {
         return canSeeHiddens;
     }
