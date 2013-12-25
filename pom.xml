@@ -53,6 +53,9 @@
     <module>stats</module>
     <module>reputation</module>
     <module>worlds</module>
+    <module>portals</module>
+    <module>backpack</module>
+    <module>faq</module>
   </modules>
 
   <build>

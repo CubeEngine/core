@@ -15,24 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test.tests.listener;
+package de.cubeisland.engine.backpack;
 
-import de.cubeisland.engine.test.tests.Test;
+import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.PermissionContainer;
 
-public class ListenerTest extends Test
+public class BackpackPermissions extends PermissionContainer<Backpack>
 {
-    private final de.cubeisland.engine.test.Test module;
-
-    public ListenerTest(de.cubeisland.engine.test.Test module)
+    public BackpackPermissions(Backpack module)
     {
-        this.module = module;
+        super(module);
+        this.bindToModule(OPEN_OTHER_USER, OPEN_OTHER_WORLDS);
+        this.registerAllPermissions();
     }
 
-    @Override
-    public void onEnable()
-    {
-        module.getCore().getEventManager().registerListener(module, new TestListener(module));
-        this.setSuccess(true);
-    }
-
+    private static final Permission COMMAND = Permission.createAbstractPermission("command");
+    private static final Permission COMMAND_OPEN = COMMAND.createAbstractChild("open");
+    public static final Permission OPEN_OTHER_USER = COMMAND_OPEN.createChild("other-user");
+    public static final Permission OPEN_OTHER_WORLDS = COMMAND_OPEN.createChild("other-worlds");
 }

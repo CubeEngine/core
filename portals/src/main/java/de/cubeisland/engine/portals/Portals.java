@@ -15,24 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test.tests.listener;
+package de.cubeisland.engine.portals;
 
-import de.cubeisland.engine.test.tests.Test;
+import de.cubeisland.engine.core.module.Module;
 
-public class ListenerTest extends Test
+public class Portals extends Module
 {
-    private final de.cubeisland.engine.test.Test module;
-
-    public ListenerTest(de.cubeisland.engine.test.Test module)
-    {
-        this.module = module;
-    }
-
+    private PortalsConfig config;
+    
     @Override
     public void onEnable()
     {
-        module.getCore().getEventManager().registerListener(module, new TestListener(module));
-        this.setSuccess(true);
+        this.config = this.loadConfig(PortalsConfig.class);
     }
-
 }

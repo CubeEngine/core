@@ -15,16 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.packethook;
+package de.cubeisland.engine.portals.config;
 
-import net.minecraft.server.v1_7_R1.Packet;
-
-import org.bukkit.entity.Player;
-
-public class PacketReceivedEvent extends PacketEvent
+public class Destination
 {
-    public PacketReceivedEvent(Player player, Packet packet)
+    private Type type;
+
+
+    public enum Type
     {
-        super(player, packet);
+        PORTAL, WORLD, LOCATION;
     }
+    // TODO portal | loc /w world | worldspawn
 }

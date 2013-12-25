@@ -17,7 +17,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <minecraftVersion>1.7.2</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.1</bukkitVersion>
+    <bukkitVersion>${minecraftVersion}-R0.2</bukkitVersion>
     <jdkVersion>1.7</jdkVersion>
     <projectBase>${basedir}/..</projectBase>
     <externalPackage>${project.groupId}.external</externalPackage>
@@ -319,7 +319,7 @@
         <plugin>
           <groupId>de.cubeisland.maven.plugins</groupId>
           <artifactId>githead-maven-plugin</artifactId>
-          <version>1.0.0-SNAPSHOT</version>
+          <version>1.0.1</version>
           <executions>
             <execution>
               <goals>
@@ -370,7 +370,7 @@
           <artifactId>maven-license-plugin</artifactId>
           <version>1.10.b1</version>
           <configuration>
-            <header>../header.txt</header>
+            <header>http://git.cubeisland.de/cubeengine/cubeengine/raw/master/header.txt</header>
             <strictCheck>true</strictCheck>
             <includes>
               <include>**/*.java</include>

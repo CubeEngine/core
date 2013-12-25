@@ -21,12 +21,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.command.CommandBackend;
+import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.CommandFactory;
 import de.cubeisland.engine.core.command.CommandHolder;
@@ -42,20 +41,16 @@ import gnu.trove.map.hash.THashMap;
 
 public class BukkitCommandManager implements CommandManager
 {
-    private final Server server;
-    private final BukkitCore core;
-    private final CommandBackend commandBackend;
+    private final CommandInjector injector;
     private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
     private final ConsoleCommandSender consoleSender;
     private final Log commandLogger;
     private final ConfirmManager confirmManager;
 
-    public BukkitCommandManager(BukkitCore core, CommandBackend commandBackend)
+    public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
-        this.core = core;
-        this.server = core.getServer();
         this.consoleSender = new ConsoleCommandSender(core);
-        this.commandBackend = commandBackend;
+        this.injector = injector;
         this.commandFactories = new THashMap<>();
 
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
@@ -63,24 +58,29 @@ public class BukkitCommandManager implements CommandManager
         this.confirmManager = new ConfirmManager(this, core);
     }
 
+    public CommandInjector getInjector()
+    {
+        return injector;
+    }
+
     public void removeCommand(String name, boolean completely)
     {
-        this.commandBackend.removeCommand(name, completely);
+        this.injector.removeCommand(name, completely);
     }
 
     public void removeCommands(Module module)
     {
-        this.commandBackend.removeCommands(module);
+        this.injector.removeCommands(module);
     }
 
     public void removeCommands()
     {
-        this.commandBackend.removeCommands();
+        this.injector.removeCommands();
     }
 
     public void clean()
     {
-        this.commandBackend.shutdown();
+        this.injector.shutdown();
         this.commandFactories.clear();
     }
 
@@ -109,7 +109,7 @@ public class BukkitCommandManager implements CommandManager
 
         if (parentCommand == null)
         {
-            this.commandBackend.registerCommand(command);
+            this.injector.registerCommand(command);
         }
         else
         {
@@ -176,7 +176,7 @@ public class BukkitCommandManager implements CommandManager
 
     public CubeCommand getCommand(String name)
     {
-        Command command = this.commandBackend.getCommand(name);
+        Command command = this.injector.getCommand(name);
         if (command != null && command instanceof CubeCommand)
         {
             return (CubeCommand)command;
@@ -188,7 +188,7 @@ public class BukkitCommandManager implements CommandManager
     {
         assert CubeEngine.isMainThread(): "Commands may only be called synchronously!";
 
-        return this.commandBackend.dispatchCommand(sender, commandLine);
+        return this.injector.dispatchCommand(sender, commandLine);
     }
 
     @Override

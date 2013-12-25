@@ -15,9 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.packethook;
+package de.cubeisland.engine.portals.config;
 
-public interface PacketReceivedListener
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+
+import de.cubeisland.engine.configuration.Section;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.core.util.math.BlockVector3;
+
+public class PortalConfig extends YamlConfiguration
 {
-    void handle(PacketReceivedEvent event);
+    public boolean safeTeleport = true;
+    public boolean teleportNonPlayers = false;
+    public OfflinePlayer owner;
+    public World world;
+
+    public PortalRegion location;
+
+    public class PortalRegion implements Section
+    {
+        public BlockVector3 from;
+        public BlockVector3 to;
+    }
+
+    public Destination destination;
 }

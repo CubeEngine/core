@@ -15,24 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test.tests.listener;
+package de.cubeisland.engine.backpack;
 
-import de.cubeisland.engine.test.tests.Test;
+import de.cubeisland.engine.configuration.YamlConfiguration;
 
-public class ListenerTest extends Test
-{
-    private final de.cubeisland.engine.test.Test module;
-
-    public ListenerTest(de.cubeisland.engine.test.Test module)
-    {
-        this.module = module;
-    }
-
-    @Override
-    public void onEnable()
-    {
-        module.getCore().getEventManager().registerListener(module, new TestListener(module));
-        this.setSuccess(true);
-    }
-
-}
+public class BackpackConfig extends YamlConfiguration
+{}

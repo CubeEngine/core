@@ -15,24 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.test.tests.listener;
+package de.cubeisland.engine.backpack;
 
-import de.cubeisland.engine.test.tests.Test;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ListenerTest extends Test
+import org.bukkit.inventory.ItemStack;
+
+import de.cubeisland.engine.configuration.Configuration;
+import de.cubeisland.engine.core.config.codec.NBTCodec;
+
+public class BackpackData extends Configuration<NBTCodec>
 {
-    private final de.cubeisland.engine.test.Test module;
-
-    public ListenerTest(de.cubeisland.engine.test.Test module)
-    {
-        this.module = module;
-    }
+    public boolean allowItemsIn = true;
+    public int pages = 1;
+    public Map<Integer, ItemStack> contents = new HashMap<>();
 
     @Override
-    public void onEnable()
+    public void onSave()
     {
-        module.getCore().getEventManager().registerListener(module, new TestListener(module));
-        this.setSuccess(true);
+        for (Integer next : contents.keySet())
+        {
+            if (contents.get(next) == null)
+            {
+                contents.remove(next);
+            }
+        }
     }
-
 }

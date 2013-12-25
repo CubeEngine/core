@@ -15,21 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.command;
+package de.cubeisland.engine.portals;
 
-import org.bukkit.command.Command;
+import de.cubeisland.engine.configuration.YamlConfiguration;
 
-import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.module.Module;
-
-public interface CommandBackend
-{
-    void registerCommand(CubeCommand command);
-    Command getCommand(String name);
-    boolean dispatchCommand(CommandSender sender, String commandLine);
-    void removeCommand(String name, boolean completely);
-    void removeCommands(Module module);
-    void removeCommands();
-    void shutdown();
-}
+public class PortalsConfig extends YamlConfiguration
+{}

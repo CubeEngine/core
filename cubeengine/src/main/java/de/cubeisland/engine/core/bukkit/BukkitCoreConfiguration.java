@@ -30,6 +30,14 @@ public class BukkitCoreConfiguration extends CoreConfiguration
     @Name("commands.improve-vanilla")
     public boolean improveVanilla = true;
 
+    @Comment({"The enhanced system introduces a few user experience improvements,", "but my cause problems with different plugins that inject commands (ex. MCore)"})
+    @Name("commands.use-enhanced-system")
+    public boolean useEnhancedSystem = false;
+
+    @Comment("This the string that will be prepended to commands that get overridden by one of our commands")
+    @Name("commands.default-fallback")
+    public String defaultFallback = "fallback";
+
     @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
     public boolean catchSystemSignals = true;
 }

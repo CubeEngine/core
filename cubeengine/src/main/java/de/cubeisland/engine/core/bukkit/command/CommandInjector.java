@@ -17,83 +17,99 @@
  */
 package de.cubeisland.engine.core.bukkit.command;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.VanillaCommand;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.ReflectionUtils;
 
 import gnu.trove.set.hash.THashSet;
 
-public class SimpleCommandBackend implements CommandBackend
+import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
+import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
+
+public class CommandInjector
 {
     protected final BukkitCore core;
-    private final SimpleCommandMap commandMap;
-    private Map<String, Command> knownCommands;
+    private final Field commandMapField;
+    private SimpleCommandMap commandMap;
+    private Field knownCommandField;
 
-    public SimpleCommandBackend(BukkitCore core, SimpleCommandMap commandMap)
+    public CommandInjector(BukkitCore core)
     {
         this.core = core;
-        this.commandMap = commandMap;
-        this.knownCommands = null;
+        this.commandMapField = findFirstField(core.getServer(), SimpleCommandMap.class);
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, Command> getKnownCommands()
+    protected synchronized Map<String, Command> getKnownCommands()
     {
-        if (this.knownCommands == null)
-        {
-            this.knownCommands = ReflectionUtils.getFieldValue(commandMap, ReflectionUtils.findFirstField(commandMap, Map.class, 1), Map.class);
-        }
-        return this.knownCommands;
+        return getFieldValue(getCommandMap(), knownCommandField, Map.class);
     }
 
     protected final SimpleCommandMap getCommandMap()
     {
-        return this.commandMap;
+        SimpleCommandMap map = getFieldValue(this.core.getServer(), commandMapField, SimpleCommandMap.class);
+        if (this.commandMap != map)
+        {
+            this.knownCommandField = findFirstField(map, Map.class, 1);
+        }
+        this.commandMap = map;
+        return map;
     }
 
-    @Override
-    public void registerCommand(CubeCommand command)
+    public synchronized void registerCommand(CubeCommand command)
     {
         assert command.getDescription() != null && !command.getDescription().isEmpty(): command.getName() + " doesn't have a description!";
 
+        SimpleCommandMap commandMap = getCommandMap();
         Command old = this.getCommand(command.getName());
         if (old != null && !(old instanceof CubeCommand))
         {
             BukkitCoreConfiguration config = this.core.getConfiguration();
-            if (!config.commands.noOverride.contains(old.getLabel()))
+            if (!config.commands.noOverride.contains(old.getLabel().toLowerCase(Locale.ENGLISH)))
             {
                 // CE commands are more important :P
                 this.removeCommand(old.getLabel(), false);
+                String fallbackPrefix = core.getConfiguration().defaultFallback;
+                if (old instanceof PluginCommand)
+                {
+                    fallbackPrefix = ((PluginCommand)old).getPlugin().getName();
+                }
+                else if (old instanceof VanillaCommand)
+                {
+                    fallbackPrefix = "vanilla";
+                }
+                getKnownCommands().put(fallbackPrefix + ":" + command.getLabel(), command);
+                command.register(commandMap);
             }// sometimes they are not :(
         }
 
-        this.commandMap.register(command.getModule().getId(), command);
+        commandMap.register(command.getModule().getId(), command);
         command.onRegister();
     }
 
-    @Override
     public Command getCommand(String name)
     {
-        return this.commandMap.getCommand(name);
+        return getCommandMap().getCommand(name);
     }
 
-    @Override
     public boolean dispatchCommand(CommandSender sender, String commandLine)
     {
-        return this.commandMap.dispatch(sender, commandLine);
+        return getCommandMap().dispatch(sender, commandLine);
     }
 
-    @Override
     public void removeCommand(String name, boolean completely)
     {
         Map<String, Command> knownCommands = this.getKnownCommands();
@@ -117,7 +133,7 @@ public class SimpleCommandBackend implements CommandBackend
             }
             if (hasAliases)
             {
-                removed.unregister(this.commandMap);
+                removed.unregister(getCommandMap());
                 if (removed instanceof CubeCommand)
                 {
                     ((CubeCommand)removed).onRemove();
@@ -126,11 +142,10 @@ public class SimpleCommandBackend implements CommandBackend
         }
     }
 
-    @Override
     public void removeCommands(Module module)
     {
         CubeCommand cubeCommand;
-        for (Command command : new THashSet<>(this.commandMap.getCommands()))
+        for (Command command : new THashSet<>(getCommandMap().getCommands()))
         {
             if (command instanceof CubeCommand)
             {
@@ -170,10 +185,9 @@ public class SimpleCommandBackend implements CommandBackend
         }
     }
 
-    @Override
     public void removeCommands()
     {
-        for (Command command : new THashSet<>(this.commandMap.getCommands()))
+        for (Command command : new THashSet<>(getCommandMap().getCommands()))
         {
             if (command instanceof CubeCommand)
             {
@@ -182,10 +196,10 @@ public class SimpleCommandBackend implements CommandBackend
         }
     }
 
-    @Override
     public void shutdown()
     {
         this.removeCommands();
-        this.knownCommands = null;
+        this.commandMap = null;
+        this.knownCommandField = null;
     }
 }

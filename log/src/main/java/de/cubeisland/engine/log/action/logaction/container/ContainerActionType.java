@@ -121,7 +121,7 @@ public class ContainerActionType extends ActionTypeContainer
         }
         if (holder != null)
         {
-            this.logModule.getLog().debug("Unknown InventoryHolder: {}", holder.toString());
+            this.logModule.getLog().debug("Unknown InventoryHolder: {}", holder.getClass().getName());
         }
         return null;
     }

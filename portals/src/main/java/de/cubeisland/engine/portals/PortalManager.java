@@ -15,16 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.packethook;
+package de.cubeisland.engine.portals;
 
-import net.minecraft.server.v1_7_R1.Packet;
-
-import org.bukkit.entity.Player;
-
-public class PacketSentEvent extends PacketEvent
+public class PortalManager
 {
-    public PacketSentEvent(Player player, Packet packet)
-    {
-        super(player, packet);
-    }
 }

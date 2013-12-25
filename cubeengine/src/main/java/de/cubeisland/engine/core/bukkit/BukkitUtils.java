@@ -49,7 +49,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
@@ -194,8 +193,6 @@ public class BukkitUtils
 
     public static synchronized void cleanup()
     {
-        PacketHookInjector.shutdown();
-
         dragonTarget = null;
         ghastTarget = null;
         resetCommandLogging();

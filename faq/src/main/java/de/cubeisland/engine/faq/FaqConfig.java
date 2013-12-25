@@ -15,9 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.packethook;
+package de.cubeisland.engine.faq;
 
-public interface PacketSentListener
+import java.util.ArrayList;
+import java.util.List;
+
+import de.cubeisland.engine.configuration.YamlConfiguration;
+
+public class FaqConfig extends YamlConfiguration
 {
-    void handle(PacketSentEvent event);
+    public List<Question> questions = new ArrayList<>();
+
+    {
+        questions.add(new Question("Can I get OP?", "Nope!", new String[] {"get", "OP"}));
+    }
 }
