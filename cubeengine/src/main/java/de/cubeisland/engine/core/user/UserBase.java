@@ -784,9 +784,13 @@ public class UserBase implements Player
     @Override
     public void hidePlayer(Player playerToHide)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
+        final Player player = this.getPlayer();
         if (player != null)
         {
+            if (playerToHide instanceof User)
+            {
+                playerToHide = playerToHide.getPlayer();
+            }
             player.hidePlayer(playerToHide);
         }
     }
@@ -794,9 +798,13 @@ public class UserBase implements Player
     @Override
     public void showPlayer(Player playerToShow)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
+        final Player player = this.getPlayer();
         if (player != null)
         {
+            if (playerToShow instanceof User)
+            {
+                playerToShow = playerToShow.getPlayer();
+            }
             player.showPlayer(playerToShow);
         }
     }

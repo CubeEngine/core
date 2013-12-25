@@ -18,16 +18,33 @@
 package de.cubeisland.engine.hide.event;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserEvent;
 
 /**
  *
  * @author CodeInfection
  */
-public class FakePlayerJoinEvent extends PlayerJoinEvent
+public class UserShowEvent extends UserEvent
 {
-    public FakePlayerJoinEvent(Player who, String quitMessage)
+    private static final HandlerList handlers = new HandlerList();
+
+    public HandlerList getHandlers()
     {
-        super(who, quitMessage);
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
+
+    public UserShowEvent(Core core, User user)
+    {
+        super(core, user);
     }
 }
