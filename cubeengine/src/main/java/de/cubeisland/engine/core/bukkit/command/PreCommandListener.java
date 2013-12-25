@@ -61,7 +61,12 @@ public class PreCommandListener implements Listener
 
     private boolean isCommandMissing(CommandSender sender, String message)
     {
-        String label = explode(" ", message.trim())[0].toLowerCase(Locale.ENGLISH);
+        message = message.trim();
+        if (message.isEmpty())
+        {
+            return false;
+        }
+        String label = explode(" ", message)[0].toLowerCase(Locale.ENGLISH);
         if (this.injector.getCommand(label) == null)
         {
             final Locale language = BukkitUtils.getLocaleFromSender(sender);
