@@ -17,8 +17,11 @@
  */
 package de.cubeisland.engine.hide;
 
+import java.util.Set;
+
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
@@ -42,32 +45,103 @@ public class HideCommands implements CommandHolder
     @Command(desc = "Hides a player.", usage = "{player}", max = 1)
     public void hide(CommandContext context)
     {
+        CommandSender sender = context.getSender();
         User target = getTargetUser(context);
         if (target == null)
         {
             return;
         }
-        this.module.hidePlayer(target);
+        if (!this.module.isHidden(target))
+        {
+            this.module.hidePlayer(target);
+            if (target == sender)
+            {
+                target.sendTranslated("&aYou are now hidden!");
+            }
+            else
+            {
+                target.sendTranslated("&aYou were hidden by &e%s&a!", sender.getDisplayName());
+                sender.sendTranslated("&a%s&a is now hidden!", target.getDisplayName());
+            }
+        }
+        else
+        {
+            if (target == sender)
+            {
+                target.sendTranslated("&eYou are already hidden!");
+            }
+            else
+            {
+                sender.sendTranslated("&e%s&a is already hidden!", target.getDisplayName());
+            }
+        }
     }
 
     @Command(desc = "Unhides a player.", usage = "{player}", max = 1)
     public void unhide(CommandContext context)
     {
+        CommandSender sender = context.getSender();
         User target = getTargetUser(context);
         if (target == null)
         {
             return;
         }
-        this.module.showPlayer(target);
+        if (this.module.isHidden(target))
+        {
+            this.module.showPlayer(target);
+            if (target == sender)
+            {
+                target.sendTranslated("&aYou are now visible!");
+            }
+            else
+            {
+                target.sendTranslated("&aYou were unhidden by &e%s&a!", sender.getDisplayName());
+                sender.sendTranslated("&a%s&a is now visible!", target.getDisplayName());
+            }
+        }
+        else
+        {
+            if (target == sender)
+            {
+                target.sendTranslated("&eYou are already visible!");
+            }
+            else
+            {
+                sender.sendTranslated("&e%s&a is already visible!", target.getDisplayName());
+            }
+        }
     }
 
     @Command(desc = "Checks whether a player is hidden.", usage = "{player}", max = 1)
     public void hidden(CommandContext context)
     {
+        CommandSender sender = context.getSender();
         User target = getTargetUser(context);
         if (target == null)
         {
             return;
+        }
+        if (this.module.isHidden(target))
+        {
+            if (target == sender)
+            {
+                context.sendTranslated("&aYou are hidden right now!");
+            }
+            else
+            {
+                context.sendTranslated("&a%s&a is hidden right now!", target.getDisplayName());
+            }
+        }
+        else
+        {
+            if (target == sender)
+            {
+                context.sendTranslated("&eYou are visible right now!");
+            }
+            else
+            {
+                context.sendTranslated("&e%s&a is visible right now!", target.getDisplayName());
+            }
         }
         this.module.getHiddenUsers().contains(target.getName());
     }
@@ -75,34 +149,99 @@ public class HideCommands implements CommandHolder
     @Command(desc = "Lists all hidden players.")
     public void listhiddens(CommandContext context)
     {
-
+        Set<String> hiddens = this.module.getHiddenUsers();
+        if (hiddens.isEmpty())
+        {
+            context.sendTranslated("&eThere are no hidden users!");
+            return;
+        }
+        context.sendTranslated("&aThe following users are hidden:");
+        for (String name : hiddens)
+        {
+            context.sendMessage(" - &e" + context.getCore().getUserManager().getExactUser(name).getDisplayName());
+        }
     }
 
     @Command(desc = "Toggles the ability to see hidden players.", usage = "{player}", max = 1)
     public void seehiddens(CommandContext context)
     {
+        CommandSender sender = context.getSender();
         User target = getTargetUser(context);
         if (target == null)
         {
             return;
+        }
+
+        if (this.module.toggleCanSeeHiddens(target))
+        {
+            if (target == sender)
+            {
+                context.sendTranslated("&aYou can now see hidden users!");
+            }
+            else
+            {
+                target.sendTranslated("&aYou can now see hidden users! (Enabled by &e%s&a)", sender.getDisplayName());
+                context.sendTranslated("&e%s&a can now see hidden users!", target.getDisplayName());
+            }
+        }
+        else
+        {
+            if (target == sender)
+            {
+                context.sendTranslated("&aYou can no longer see hidden users!");
+            }
+            else
+            {
+                target.sendTranslated("&aYou can no longer see hidden users! (Disabled by &e%s&a)", sender.getDisplayName());
+                context.sendTranslated("&e%s&a can no longer see hidden users!", target.getDisplayName());
+            }
         }
     }
 
     @Command(desc = "Checks whether a player can see hidden players.", usage = "{player}", max = 1)
     public void canseehiddens(CommandContext context)
     {
+        CommandSender sender = context.getSender();
         User target = getTargetUser(context);
         if (target == null)
         {
             return;
+        }
+        if (this.module.canSeeHiddens(target))
+        {
+            if (target == sender)
+            {
+                context.sendTranslated("&aYou can currently see hidden users!");
+            }
+            else
+            {
+                context.sendTranslated("&a%s&a can currently see hidden users!", target.getDisplayName());
+            }
+        }
+        else
+        {
+            if (target == sender)
+            {
+                context.sendTranslated("&eYou can't see hidden players!");
+            }
+            else
+            {
+                context.sendTranslated("&e%s&a can't see hidden players!", target.getDisplayName());
+            }
         }
     }
 
     @Command(desc = "Lists all players who can see hidden players.")
     public void listcanseehiddens(CommandContext context)
     {
+        Set<String> canSeeHiddens = this.module.getCanSeeHiddens();
+        if (canSeeHiddens.isEmpty())
+        {
+            context.sendTranslated("&eNo users can currently see hidden users!");
+            return;
+        }
         context.sendTranslated("&aThe following players can see hidden players:");
-        for (String user : this.module.getCanSeeHiddens())
+        for (String user : canSeeHiddens)
         {
             context.sendMessage(" - &e" + context.getCore().getUserManager().getExactUser(user).getDisplayName());
         }

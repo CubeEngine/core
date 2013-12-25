@@ -129,6 +129,7 @@ public class HideListener implements Listener
         }
     }
 
+    @EventHandler
     public void onHide(UserHideEvent event)
     {
         final String user = event.getUser().getName();
@@ -144,7 +145,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event)
     {
-        if (event.getAction() != Action.PHYSICAL && hiddens.contains(event.getPlayer().getName()))
+        if (event.getAction() != Action.PHYSICAL && hiddens.contains(event.getPlayer().getName()) && !HidePerm.INTERACT.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
             event.setUseInteractedBlock(Result.DENY);
@@ -164,7 +165,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event)
     {
-        if (hiddens.contains(event.getPlayer().getName()))
+        if (hiddens.contains(event.getPlayer().getName()) && !HidePerm.CHAT.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
         }

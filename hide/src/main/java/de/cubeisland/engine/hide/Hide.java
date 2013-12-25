@@ -19,13 +19,13 @@ package de.cubeisland.engine.hide;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.Reloadable;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.hide.event.UserHideEvent;
 import de.cubeisland.engine.hide.event.UserShowEvent;
 
-public class Hide extends Module
+public class Hide extends Module implements Reloadable
 {
     private HideConfig config;
     private Set<String> hiddenUsers;
@@ -42,6 +42,28 @@ public class Hide extends Module
 
         this.perm = new HidePerm(this);
         // TODO player listing in basics?
+    }
+
+    @Override
+    public void onDisable()
+    {
+        this.canSeeHiddens.clear();
+        Set<User> onlineUsers = getCore().getUserManager().getOnlineUsers();
+        for (String hiddenName : hiddenUsers)
+        {
+            User hidden = getCore().getUserManager().getExactUser(hiddenName);
+            for (User user : onlineUsers)
+            {
+                user.showPlayer(hidden);
+            }
+        }
+        this.hiddenUsers.clear();
+    }
+
+    @Override
+    public void reload()
+    {
+        this.onDisable();
     }
 
     public void hidePlayer(final User user)
@@ -105,5 +127,37 @@ public class Hide extends Module
     public Set<String> getCanSeeHiddens()
     {
         return canSeeHiddens;
+    }
+
+    public boolean isHidden(User user)
+    {
+        return this.hiddenUsers.contains(user.getName());
+    }
+
+    public boolean canSeeHiddens(User user)
+    {
+        return this.canSeeHiddens.contains(user.getName());
+    }
+
+    public boolean toggleCanSeeHiddens(User user)
+    {
+        if (canSeeHiddens(user))
+        {
+            for (String hiddenName : hiddenUsers)
+            {
+                user.hidePlayer(getCore().getUserManager().getExactUser(hiddenName));
+            }
+            canSeeHiddens.remove(user.getName());
+            return false;
+        }
+        else
+        {
+            for (String hiddenName : hiddenUsers)
+            {
+                user.showPlayer(getCore().getUserManager().getExactUser(hiddenName));
+            }
+            canSeeHiddens.add(user.getName());
+            return true;
+        }
     }
 }

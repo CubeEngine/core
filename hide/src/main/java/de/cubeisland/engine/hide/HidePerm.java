@@ -26,6 +26,9 @@ public class HidePerm extends PermissionContainer<Hide>
     public HidePerm(Hide module)
     {
         super(module);
+
+        this.bindToModule(AUTO_HIDE, AUTO_SEEHIDDENS, INTERACT, DROP, CHAT);
+
         this.registerAllPermissions();
     }
 
@@ -33,7 +36,7 @@ public class HidePerm extends PermissionContainer<Hide>
     public static final Permission AUTO_HIDE = AUTO.createChild("hide", PermDefault.FALSE);
     public static final Permission AUTO_SEEHIDDENS = AUTO.createChild("seehiddens", PermDefault.FALSE);
 
-    public static final Permission INTERACT = Permission.createAbstractPermission("interact", PermDefault.FALSE);
+    public static final Permission INTERACT = Permission.createPermission("interact", PermDefault.FALSE);
     public static final Permission DROP = Permission.createPermission("drop", PermDefault.FALSE);
     public static final Permission CHAT = Permission.createPermission("chat", PermDefault.FALSE);
 }
