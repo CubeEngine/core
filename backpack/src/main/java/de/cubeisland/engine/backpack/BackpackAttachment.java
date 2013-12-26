@@ -152,12 +152,13 @@ public class BackpackAttachment extends UserAttachment
         return backpack;
     }
 
-    public void createBackpack(String name, World forWorld, boolean blockIn, Integer pages)
+    public void createBackpack(String name, World forWorld, boolean blockIn, Integer pages, Integer size)
     {
         File file = this.getSingleBackpack(name, forWorld.getName());
         BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
         data.allowItemsIn = !blockIn;
         data.pages = pages;
+        data.size = size;
         data.setFile(file);
         data.save();
         Map<String, BackpackInventory> backpacks = this.backpacks.get(forWorld);
@@ -169,12 +170,13 @@ public class BackpackAttachment extends UserAttachment
         backpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
     }
 
-    public void createGroupedBackpack(String name, World forWorld, boolean blockIn, Integer pages)
+    public void createGroupedBackpack(String name, World forWorld, boolean blockIn, Integer pages, Integer size)
     {
         File file = this.getGroupedBackpack(name, forWorld.getName());
         BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
         data.allowItemsIn = !blockIn;
         data.pages = pages;
+        data.size = size;
         data.setFile(file);
         data.save();
         Map<String, BackpackInventory> backpacks = this.backpacks.get(forWorld);
@@ -186,12 +188,13 @@ public class BackpackAttachment extends UserAttachment
         backpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
     }
 
-    public void createGlobalBackpack(String name, boolean blockIn, Integer pages)
+    public void createGlobalBackpack(String name, boolean blockIn, Integer pages, Integer size)
     {
         File file = this.getGlobalBackpack(name);
         BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
         data.allowItemsIn = !blockIn;
         data.pages = pages;
+        data.size = size;
         data.setFile(file);
         data.save();
         globalBackpacks.put(name, new BackpackInventory((Backpack)getModule(), data));

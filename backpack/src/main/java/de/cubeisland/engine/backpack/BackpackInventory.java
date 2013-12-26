@@ -45,7 +45,6 @@ public class BackpackInventory implements InventoryHolder
     private Map<Player, Integer> viewers = new HashMap<>();
     private Map<Integer, Inventory> views = new HashMap<>();
     
-    public static final int SIZE = 9*6;
     private static final String pageString = ChatFormat.parseFormats("&6Page ");
 
     public BackpackInventory(Backpack module, BackpackData data)
@@ -73,12 +72,12 @@ public class BackpackInventory implements InventoryHolder
         Inventory inventory = this.views.get(index);
         if (inventory == null)
         {
-            inventory = Bukkit.createInventory(this, SIZE, pageString + (index + 1) + "/" + this.data.pages);
+            inventory = Bukkit.createInventory(this, data.size * 9, pageString + (index + 1) + "/" + this.data.pages);
             this.views.put(index, inventory);
         }
-        ItemStack[] contents = new ItemStack[SIZE];
-        int offset = index * SIZE;
-        for (int i = 0; i < SIZE; i++)
+        ItemStack[] contents = new ItemStack[data.size * 9];
+        int offset = index * data.size * 9;
+        for (int i = 0; i < data.size * 9; i++)
         {
             contents[i] = data.contents.get(i + offset);
         }
@@ -89,8 +88,8 @@ public class BackpackInventory implements InventoryHolder
     private void saveData(int index, Inventory inventory)
     {
         ItemStack[] contents = inventory.getContents();
-        int offset = index * SIZE;
-        for (int i = 0; i < SIZE; i++)
+        int offset = index * data.size * 9;
+        for (int i = 0; i < data.size * 9; i++)
         {
             if (contents[i] == null)
             {
@@ -195,7 +194,7 @@ public class BackpackInventory implements InventoryHolder
             if (this.data.contents.get(i) == null)
             {
                 this.data.contents.put(i, itemStacks.poll());
-                if (i > this.data.pages * SIZE)
+                if (i > this.data.pages * data.size * 9)
                 {
                     this.data.pages = this.data.pages + 1;
                 }

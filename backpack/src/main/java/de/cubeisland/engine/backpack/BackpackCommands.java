@@ -100,7 +100,7 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "createbp")
     @Command(desc = "creates a new backpack",
-             usage = "<name> [user] [-global]|[-single] [-blockinput] [w <world>] [p <pages>]",
+             usage = "<name> [user] [-global]|[-single] [-blockinput] [w <world>] [p <pages>] [s <size>]",
              flags = {
                  @Flag(name = "g", longName = "global"),
                  @Flag(name = "s", longName = "single"),
@@ -108,7 +108,8 @@ public class BackpackCommands extends ContainerCommand
              }
         , params = {@Param(names = {"w", "world", "for", "in"},
                   completer = WorldCompleter.class, type = World.class)
-        ,@Param(names = {"p", "pages"}, type = Integer.class)},
+        ,@Param(names = {"p", "pages"}, type = Integer.class),
+        @Param(names = {"s","size"}, type = Integer.class)},
              min = 1, max = 2)
     public void create(ParameterizedContext context)
     {
@@ -148,7 +149,60 @@ public class BackpackCommands extends ContainerCommand
             return;
         }
         manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld, context
-            .hasFlag("g"), context.hasFlag("s"), context.hasFlag("b"), context.getParam("p", 1));
+            .hasFlag("g"), context.hasFlag("s"), context.hasFlag("b"), context.getParam("p", 1), context.getParam("s", 6));
+    }
+
+    @Alias(names = "modifybp")
+    @Command(desc = "modifies a backpack",
+             usage = "<name> [user] [w <world>] [pages <pages>] [blockinput <true|false>]",
+    params = {
+        @Param(names = {"p","pages"}, type = Integer.class),
+        @Param(names = {"s","size"}, type = Integer.class),
+        @Param(names = {"b","blockinput"}, type = Boolean.class),
+        @Param(names = {"w", "world", "for", "in"},
+               completer = WorldCompleter.class, type = World.class),
+    })
+    public void modify(ParameterizedContext context)
+    {
+        User forUser = null;
+        World forWorld = null;
+        if (context.getSender() instanceof User)
+        {
+            forUser = (User)context.getSender();
+            forWorld = ((User)context.getSender()).getWorld();
+        }
+        else if (context.hasParam("w"))
+        {
+            forWorld = context.getParam("w", null);
+            if (forWorld == null)
+            {
+                context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                return;
+            }
+        }
+        else if (!context.hasFlag("g"))
+        {
+            context.sendTranslated("&aYou have to specify a world for non global backpacks!");
+            return;
+        }
+        if (context.hasArg(1))
+        {
+            forUser = context.getUser(1);
+            if (forUser == null)
+            {
+                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                return;
+            }
+        }
+        else if (!(context.getSender() instanceof User))
+        {
+            context.sendTranslated("&cYou need to specify a User");
+            return;
+        }
+        manager.modifyBackpack(context.getSender(), forUser, context.getString(0), forWorld,
+                               (Integer)context.getParam("p", null),
+                               (Boolean)context.getParam("b", null),
+                               (Integer)context.getParam("s", null));
     }
 
     @Alias(names = "givebp")

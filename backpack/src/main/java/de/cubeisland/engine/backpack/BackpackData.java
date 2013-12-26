@@ -29,6 +29,7 @@ public class BackpackData extends Configuration<NBTCodec>
 {
     public boolean allowItemsIn = true;
     public int pages = 1;
+    public int size = 6;
     public Map<Integer, ItemStack> contents = new HashMap<>();
 
     @Override
