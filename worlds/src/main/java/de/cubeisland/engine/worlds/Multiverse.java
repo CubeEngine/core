@@ -36,7 +36,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -47,9 +46,9 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.worlds.config.WorldConfig;
-import de.cubeisland.engine.worlds.config.WorldLocation;
 import de.cubeisland.engine.worlds.player.PlayerConfig;
 import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 

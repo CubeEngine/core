@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.worlds.converter;
+package de.cubeisland.engine.core.util.converter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.exception.ConversionException;
 import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.worlds.config.WorldLocation;
+import de.cubeisland.engine.core.util.WorldLocation;
 
 public class WorldLocationConverter implements Converter<WorldLocation>
 {

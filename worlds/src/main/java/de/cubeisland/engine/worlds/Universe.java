@@ -39,9 +39,9 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.worlds.config.UniverseConfig;
 import de.cubeisland.engine.worlds.config.WorldConfig;
-import de.cubeisland.engine.worlds.config.WorldLocation;
 import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 
 import static de.cubeisland.engine.worlds.WorldsPermissions.KEEP_FLYMODE;

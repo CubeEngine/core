@@ -17,14 +17,19 @@
  */
 package de.cubeisland.engine.portals.config;
 
+import org.bukkit.World;
+
+import de.cubeisland.engine.core.util.WorldLocation;
+
 public class Destination
 {
-    private Type type;
-
+    public Type type;
+    public World world;
+    public WorldLocation location;
+    public String portal;
 
     public enum Type
     {
         PORTAL, WORLD, LOCATION;
     }
-    // TODO portal | loc /w world | worldspawn
 }

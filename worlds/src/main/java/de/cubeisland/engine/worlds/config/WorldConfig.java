@@ -34,6 +34,7 @@ import org.bukkit.WorldType;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.core.util.WorldLocation;
 
 public class WorldConfig extends YamlConfiguration
 {
