@@ -105,4 +105,25 @@ public class LocationUtil
             }
         }
     }
+
+
+    public static long getChunkKey(Location loc)
+    {
+        int chunkX = loc.getBlockX() >> 4;
+        int chunkZ = loc.getBlockZ() >> 4;
+        return getChunkKey(chunkX, chunkZ);
+    }
+
+    public static long getLocationKey(Location loc)
+    {
+        int x = loc.getBlockX() & 0x3FFFFFF;
+        int y = loc.getBlockY() & 0x1FF;
+        int z = loc.getBlockZ() & 0x3FFFFFF;
+        return ((((long)x << 26) | z) << 26) | y;
+    }
+
+    public static long getChunkKey(int chunkX, int chunkZ)
+    {
+        return ((long)chunkX << 32) | chunkZ & 0xFFFFFFFFL;
+    }
 }
