@@ -105,7 +105,7 @@ public class BorderCommands extends ContainerCommand
     }
 
     @Alias(names = "generateBorder")
-    @Command(desc = "Generates the chunks located in the border", min = 1, max = 1)
+    @Command(desc = "Generates the chunks located in the border", min = 1, max = 1, usage = "<world>")
     public void generate(ParameterizedContext context)
     {
         if (running)
