@@ -488,15 +488,18 @@ public class MarketSign
                         user.sendTranslated("&cThis sign is being edited right now!");
                         return;
                     }
-                    if (!this.getInventory().getViewers().isEmpty())
+                    if (this.isValidSign(null))
                     {
-                        user.sendTranslated("&cThis signs inventory is being edited right now!");
-                        return;
-                    }
-                    if (this.isOwner(user))
-                    {
-                        this.takeItems(user);
-                        return;
+                        if (!this.getInventory().getViewers().isEmpty())
+                        {
+                            user.sendTranslated("&cThis signs inventory is being edited right now!");
+                            return;
+                        }
+                        if (this.isOwner(user))
+                        {
+                            this.takeItems(user);
+                            return;
+                        }
                     }
                     this.useSign(user);
                 }
