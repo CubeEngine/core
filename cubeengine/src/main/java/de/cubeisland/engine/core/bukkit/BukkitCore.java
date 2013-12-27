@@ -68,6 +68,8 @@ import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.util.converter.BlockVector3Converter;
 import de.cubeisland.engine.core.util.converter.DurationConverter;
 import de.cubeisland.engine.core.util.converter.EnchantmentConverter;
 import de.cubeisland.engine.core.util.converter.ItemStackConverter;
@@ -78,7 +80,9 @@ import de.cubeisland.engine.core.util.converter.PlayerConverter;
 import de.cubeisland.engine.core.util.converter.UserConverter;
 import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.converter.WorldConverter;
+import de.cubeisland.engine.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
@@ -165,6 +169,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         manager.registerConverter(Version.class, new VersionConverter());
         manager.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
         manager.registerConverter(Location.class, new LocationConverter(this));
+        manager.registerConverter(WorldLocation.class, new WorldLocationConverter());
+        manager.registerConverter(BlockVector3.class, new BlockVector3Converter());
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
