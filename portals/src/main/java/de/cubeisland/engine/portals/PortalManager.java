@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -93,6 +94,7 @@ public class PortalManager implements Listener
         this.module.getLog().debug("{} chunks checked", this.chunksWithPortals.size());
     }
 
+    @EventHandler
     public void onMove(PlayerMoveEvent event)
     {
         if (event.getFrom().getWorld() != event.getTo().getWorld())
