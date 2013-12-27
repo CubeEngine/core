@@ -106,7 +106,6 @@ public class LocationUtil
         }
     }
 
-
     public static long getChunkKey(Location loc)
     {
         int chunkX = loc.getBlockX() >> 4;
