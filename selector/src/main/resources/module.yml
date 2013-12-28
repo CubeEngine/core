@@ -1,6 +1,6 @@
 name: ${project.name}
-description: ${project.description}
 version: ${project.version}
+description: ${project.description}
 source-version: ${githead.branch}-${githead.commit}
-services:
+provided-services:
 - de.cubeisland.engine.core.module.service.Selector

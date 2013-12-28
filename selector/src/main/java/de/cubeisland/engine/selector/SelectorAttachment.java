@@ -15,15 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.module.service.selector;
-
-import java.util.ArrayList;
-import java.util.List;
+package de.cubeisland.engine.selector;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.UserAttachment;
+import de.cubeisland.engine.core.util.math.Vector3;
 import de.cubeisland.engine.core.util.math.shape.Cuboid;
 import de.cubeisland.engine.core.util.math.shape.Shape;
 
@@ -49,24 +47,27 @@ public class SelectorAttachment extends UserAttachment
 
     private World lastPointWorld;
 
-    private List<Location> points = new ArrayList<>(mode.initialSize());
+    private Location[] points = new Location[mode.initialSize];
 
     public void setPoint(int index, Location location)
     {
-        this.points.set(index, location);
+        this.points[index] = location;
         this.lastPointWorld = location.getWorld();
     }
 
     public int addPoint(Location location)
     {
+        /*
         this.points.add(location);
         this.lastPointWorld = location.getWorld();
         return this.points.size();
+        */
+        throw new UnsupportedOperationException("Not supported yet!");
     }
 
     public Location getPoint(int index)
     {
-        return this.points.get(index);
+        return this.points[index];
     }
 
     public Shape getSelection()
@@ -82,6 +83,12 @@ public class SelectorAttachment extends UserAttachment
                 return null;
             }
         }
-        return null; // TODO !!!!
+        if (this.getPoint(0) == null || this.getPoint(1) == null)
+        {
+            return null;
+        }
+        Vector3 v1 = new Vector3(this.getPoint(0).getX(), this.getPoint(0).getY(), this.getPoint(0).getZ());
+        Vector3 v2 = new Vector3(this.getPoint(1).getX(), this.getPoint(1).getY(), this.getPoint(1).getZ());
+        return new Cuboid(v1.midpoint(v2), v1.distanceVector(v2));
     }
 }

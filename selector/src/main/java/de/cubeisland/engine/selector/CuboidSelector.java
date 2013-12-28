@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.module.service.selector;
+package de.cubeisland.engine.selector;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event.Result;
@@ -38,8 +38,8 @@ public class CuboidSelector implements Selector, Listener
     public CuboidSelector(Module module)
     {
         this.module = module;
-
         this.module.getCore().getEventManager().registerListener(module, this);
+        this.module.getCore().getCommandManager().registerCommand(new SelectorCommand(module));
     }
 
     @Override
@@ -64,13 +64,13 @@ public class CuboidSelector implements Selector, Listener
     @Override
     public Location getFirstPoint(User user)
     {
-        return this.getPoint(user, 1);
+        return this.getPoint(user, 0);
     }
 
     @Override
     public Location getSecondPoint(User user)
     {
-        return this.getPoint(user, 2);
+        return this.getPoint(user, 1);
     }
 
     @Override
@@ -85,25 +85,30 @@ public class CuboidSelector implements Selector, Listener
     @EventHandler
     public void onInteract(PlayerInteractEvent event)
     {
-        if (event.getPlayer().getItemInHand().hasItemMeta()
-            && event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName()
-            && event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equals(SELECTOR_TOOL_NAME))
+        if (event.getAction().equals(Action.PHYSICAL)) return;
+        // TODO perm
+        if (event.getClickedBlock() != null)
         {
-            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
-            SelectorAttachment logAttachment = user.attachOrGet(SelectorAttachment.class, this.module);
-            Location clicked = event.getClickedBlock().getLocation();
-            if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+            if (event.getPlayer().getItemInHand().hasItemMeta()
+                && event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName()
+                && event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equals(SELECTOR_TOOL_NAME))
             {
-                logAttachment.setPoint(0, clicked);
-                user.sendTranslated("&aFirst Position selected!");
+                User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
+                SelectorAttachment logAttachment = user.attachOrGet(SelectorAttachment.class, this.module);
+                Location clicked = event.getClickedBlock().getLocation();
+                if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+                {
+                    logAttachment.setPoint(0, clicked);
+                    user.sendTranslated("&aFirst Position selected!");
+                }
+                else
+                {
+                    logAttachment.setPoint(1, clicked);
+                    user.sendTranslated("&aSecond Position selected!");
+                }
+                event.setCancelled(true);
+                event.setUseItemInHand(Result.DENY);
             }
-            else
-            {
-                logAttachment.setPoint(0, clicked);
-                user.sendTranslated("&aSecond Position selected!");
-            }
-            event.setCancelled(true);
-            event.setUseItemInHand(Result.DENY);
         }
     }
 }

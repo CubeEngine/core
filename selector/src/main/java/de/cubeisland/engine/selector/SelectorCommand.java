@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.module.service.selector;
+package de.cubeisland.engine.selector;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 
-import static de.cubeisland.engine.core.module.service.selector.CuboidSelector.SELECTOR_TOOL_NAME;
+import static de.cubeisland.engine.selector.CuboidSelector.SELECTOR_TOOL_NAME;
 
 public class SelectorCommand extends CubeCommand
 {

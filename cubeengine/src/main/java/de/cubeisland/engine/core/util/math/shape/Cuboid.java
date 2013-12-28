@@ -55,6 +55,11 @@ public class Cuboid implements Shape
         this.rotationAngle = rotationAngle;
     }
 
+    public Cuboid(Vector3 point, Vector3 size)
+    {
+        this(point, size.x, size.y, size.z);
+    }
+
     @Override
     public Shape setPoint( Vector3 point )
     {

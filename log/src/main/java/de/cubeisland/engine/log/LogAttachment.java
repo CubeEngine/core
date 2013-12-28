@@ -20,21 +20,16 @@ package de.cubeisland.engine.log;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
+import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.UserAttachment;
+import de.cubeisland.engine.core.util.math.shape.Cuboid;
+import de.cubeisland.engine.core.util.math.shape.Shape;
 import de.cubeisland.engine.log.storage.Lookup;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.ShowParameter;
-
-import com.sk89q.worldedit.LocalSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.RegionSelector;
 
 public class LogAttachment extends UserAttachment
 {
@@ -161,7 +156,6 @@ public class LogAttachment extends UserAttachment
         return lookup;
     }
 
-
     public void setLastLookup(Lookup lastLookup)
     {
         this.lastLookup = lastLookup;
@@ -169,41 +163,36 @@ public class LogAttachment extends UserAttachment
 
     private Log module;
 
-    private Location location1;
-    private Location location2;
-
     public boolean hasSelection()
     {
-        if (this.module.hasWorldEdit())
+        Selector selector = this.module.getCore().getModuleManager().getServiceManager().getServiceProvider(Selector.class);
+        Shape selection = selector.getSelection(this.getHolder());
+        return selection != null && selection instanceof Cuboid;
+        /* TODO WorldEdit support in SelectorServiceProvider
+        LocalSession session = WorldEdit.getInstance().getSession(this.getHolder().getName());
+        RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(this.getHolder().getWorld()));
+        try
         {
-            LocalSession session = WorldEdit.getInstance().getSession(this.getHolder().getName());
-            RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(this.getHolder().getWorld()));
-            try
+            if (selector.getRegion() instanceof CuboidRegion)
             {
-                if (selector.getRegion() instanceof CuboidRegion)
-                {
-                    Vector pos1 = ((CuboidRegion)selector.getRegion()).getPos1();
-                    Vector pos2 = ((CuboidRegion)selector.getRegion()).getPos2();
-                    this.location1 = new Location(this.getHolder().getWorld(), pos1.getX(), pos1.getY(), pos1.getZ());
-                    this.location2 = new Location(this.getHolder().getWorld(), pos2.getX(), pos2.getY(), pos2.getZ());
-                    return true;
-                }
+                Vector pos1 = ((CuboidRegion)selector.getRegion()).getPos1();
+                Vector pos2 = ((CuboidRegion)selector.getRegion()).getPos2();
+                this.location1 = new Location(this.getHolder().getWorld(), pos1.getX(), pos1.getY(), pos1.getZ());
+                this.location2 = new Location(this.getHolder().getWorld(), pos2.getX(), pos2.getY(), pos2.getZ());
+                return true;
             }
-            catch (Exception ignored)
-            {}
-            return false;
         }
-        else
-        {
-            return location1 != null && location2 != null && location1.getWorld() == location2.getWorld();
-        }
+        catch (Exception ignored)
+        {}
+        */
     }
 
     public boolean applySelection(QueryParameter parameter)
     {
         if (hasSelection())
         {
-            parameter.setLocationRange(location1, location2);
+            Selector selector = this.module.getCore().getModuleManager().getServiceManager().getServiceProvider(Selector.class);
+            parameter.setLocationRange(selector.getFirstPoint(this.getHolder()), selector.getSecondPoint(this.getHolder()));
             return true;
         }
         return false;
@@ -218,16 +207,6 @@ public class LogAttachment extends UserAttachment
             return;
         }
         throw new IllegalArgumentException("Only Log is allowed as module for LogAttachments!");
-    }
-
-    public void setSelectionPos1(Location clicked)
-    {
-        this.location1 = clicked;
-    }
-
-    public void setSelectionPos2(Location clicked)
-    {
-        this.location2 = clicked;
     }
 
     private Preview preview;
