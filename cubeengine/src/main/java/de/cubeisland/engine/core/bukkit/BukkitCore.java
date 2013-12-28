@@ -91,9 +91,6 @@ import de.cubeisland.engine.core.world.TableWorld;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 
-import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
-import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
-
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
@@ -125,7 +122,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private List<Runnable> initHooks;
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
-    private boolean loadSucceeded;
     private boolean loaded = false;
     private boolean isStartupFinished = false;
 
@@ -143,7 +139,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onLoad()
     {
-        this.loadSucceeded = false;
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
@@ -298,23 +293,22 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
-        this.loadSucceeded = true;
         this.loaded = true;
     }
 
     @Override
     public void onEnable()
     {
-        if (!this.loadSucceeded)
-        {
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
         if (!this.loaded)
         {
             this.onLoad();
+            if (!this.loaded)
+            {
+                this.getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
         }
-        Iterator< Runnable > it = this.initHooks.iterator();
+        Iterator<Runnable> it = this.initHooks.iterator();
         while (it.hasNext())
         {
             try
