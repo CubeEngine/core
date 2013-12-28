@@ -69,20 +69,13 @@ public class KickBanCommands
     }
 
     @Command(desc = "Kicks a player from the server",
-             usage = "<player or *> [reason]",
-             flags = @Flag(longName = "all", name = "a"),min = 1, max = 2)
+             usage = "<*|<player>> [reason]", min = 1, max = 2)
     public void kick(ParameterizedContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
-            return;
-        }
         String reason;
         reason = this.getReasonFrom(context, 1, BasicsPerm.COMMAND_KICK_NOREASON);
         if (reason == null) return;
-        if (context.hasFlag("a"))
+        if (context.getString(0).equals("*"))
         {
             if (!BasicsPerm.COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {
@@ -99,9 +92,10 @@ public class KickBanCommands
             }
             return;
         }
-        if (!context.hasArg(0))
+        User user = context.getUser(0);
+        if (user == null)
         {
-            context.sendTranslated("&cYou need to specify a player!");
+            context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
             return;
         }
         user.kickPlayer(user.translate(kickMessage) + "\n" +  reason);
