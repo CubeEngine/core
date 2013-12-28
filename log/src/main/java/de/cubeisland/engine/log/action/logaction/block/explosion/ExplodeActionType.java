@@ -17,7 +17,10 @@
  */
 package de.cubeisland.engine.log.action.logaction.block.explosion;
 
+import java.util.List;
+
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderDragon;
@@ -60,11 +63,23 @@ public class ExplodeActionType extends ActionTypeContainer
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event)
     {
-        Entity entity = event.getEntity();
-        if (entity == null)
+        final List<Block> blocks = event.blockList();
+        if (blocks.isEmpty())
         {
             return;
         }
+
+        final Entity entity = event.getEntity();
+        final World world;
+        if (entity != null)
+        {
+            world = entity.getWorld();
+        }
+        else
+        {
+            world = blocks.get(0).getWorld();
+        }
+
         BlockActionType actionType;
         Player player = null;
         if (entity instanceof TNTPrimed)
@@ -81,6 +96,18 @@ public class ExplodeActionType extends ActionTypeContainer
             actionType = this.manager.getActionType(CreeperExplode.class);
             Entity target = ((Creeper)entity).getTarget();
             player = target instanceof Player ? ((Player)target) : null;
+        }
+        else if (entity instanceof WitherSkull)
+        {
+            actionType = this.manager.getActionType(WitherExplode.class);
+            if (((WitherSkull)entity).getShooter() instanceof Wither)
+            {
+                LivingEntity target = ((Wither)((WitherSkull)entity).getShooter()).getTarget();
+                if (target instanceof Player)
+                {
+                    player = (Player)target;
+                }
+            }
         }
         else if (entity instanceof Fireball)
         {
@@ -102,25 +129,13 @@ public class ExplodeActionType extends ActionTypeContainer
                 player = (Player)target;
             }
         }
-        else if (entity instanceof WitherSkull)
-        {
-            actionType = this.manager.getActionType(WitherExplode.class);
-            if (((WitherSkull)entity).getShooter() instanceof Wither)
-            {
-                LivingEntity target = ((Wither)((WitherSkull)entity).getShooter()).getTarget();
-                if (target instanceof Player)
-                {
-                    player = (Player)target;
-                }
-            }
-        }
         else
         {
             actionType = this.manager.getActionType(EntityExplode.class);
         }
-        if (actionType.isActive(entity.getWorld()))
+        if (actionType.isActive(world))
         {
-            for (Block block : event.blockList())
+            for (Block block : blocks)
             {
                 if ((block.getType().equals(Material.WOODEN_DOOR)
                     || block.getType().equals(Material.IRON_DOOR_BLOCK))
