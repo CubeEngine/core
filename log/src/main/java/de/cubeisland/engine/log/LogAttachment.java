@@ -168,23 +168,6 @@ public class LogAttachment extends UserAttachment
         Selector selector = this.module.getCore().getModuleManager().getServiceManager().getServiceProvider(Selector.class);
         Shape selection = selector.getSelection(this.getHolder());
         return selection != null && selection instanceof Cuboid;
-        /* TODO WorldEdit support in SelectorServiceProvider
-        LocalSession session = WorldEdit.getInstance().getSession(this.getHolder().getName());
-        RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(this.getHolder().getWorld()));
-        try
-        {
-            if (selector.getRegion() instanceof CuboidRegion)
-            {
-                Vector pos1 = ((CuboidRegion)selector.getRegion()).getPos1();
-                Vector pos2 = ((CuboidRegion)selector.getRegion()).getPos2();
-                this.location1 = new Location(this.getHolder().getWorld(), pos1.getX(), pos1.getY(), pos1.getZ());
-                this.location2 = new Location(this.getHolder().getWorld(), pos2.getX(), pos2.getY(), pos2.getZ());
-                return true;
-            }
-        }
-        catch (Exception ignored)
-        {}
-        */
     }
 
     public boolean applySelection(QueryParameter parameter)

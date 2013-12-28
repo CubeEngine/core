@@ -24,8 +24,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -33,9 +31,9 @@ import de.cubeisland.engine.core.util.math.shape.Shape;
 // TODO make a module out of it (integrate WE if found)
 public class CuboidSelector implements Selector, Listener
 {
-    private Module module;
+    private de.cubeisland.engine.selector.Selector module;
 
-    public CuboidSelector(Module module)
+    public CuboidSelector(de.cubeisland.engine.selector.Selector module)
     {
         this.module = module;
         this.module.getCore().getEventManager().registerListener(module, this);
@@ -45,7 +43,7 @@ public class CuboidSelector implements Selector, Listener
     @Override
     public Shape getSelection(User user)
     {
-        SelectorAttachment attachment = user.attachOrGet(SelectorAttachment.class, CubeEngine.getCore().getModuleManager().getCoreModule());
+        SelectorAttachment attachment = user.attachOrGet(SelectorAttachment.class, this.module);
         return attachment.getSelection();
     }
 
@@ -76,7 +74,7 @@ public class CuboidSelector implements Selector, Listener
     @Override
     public Location getPoint(User user, int index)
     {
-        SelectorAttachment attachment = user.attachOrGet(SelectorAttachment.class, CubeEngine.getCore().getModuleManager().getCoreModule());
+        SelectorAttachment attachment = user.attachOrGet(SelectorAttachment.class, this.module);
         return attachment.getPoint(index);
     }
 
@@ -85,6 +83,7 @@ public class CuboidSelector implements Selector, Listener
     @EventHandler
     public void onInteract(PlayerInteractEvent event)
     {
+        if (module.hasWorldEdit()) return;
         if (event.getAction().equals(Action.PHYSICAL)) return;
         // TODO perm
         if (event.getClickedBlock() != null)

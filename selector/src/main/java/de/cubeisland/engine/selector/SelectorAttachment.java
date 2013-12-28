@@ -20,6 +20,12 @@ package de.cubeisland.engine.selector;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.RegionSelector;
 import de.cubeisland.engine.core.user.UserAttachment;
 import de.cubeisland.engine.core.util.math.Vector3;
 import de.cubeisland.engine.core.util.math.shape.Cuboid;
@@ -72,6 +78,10 @@ public class SelectorAttachment extends UserAttachment
 
     public Shape getSelection()
     {
+        if (((Selector)this.getModule()).hasWorldEdit())
+        {
+            return this.getWESelection();
+        }
         for (Location point : this.points)
         {
             if (point == null) // missing point
@@ -87,6 +97,31 @@ public class SelectorAttachment extends UserAttachment
         {
             return null;
         }
+        return this.getSelection0();
+    }
+
+    private Shape getWESelection()
+    {
+        LocalSession session = WorldEdit.getInstance().getSession(this.getHolder().getName());
+        RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(this.getHolder().getWorld()));
+        try
+        {
+            if (selector.getRegion() instanceof CuboidRegion)
+            {
+                Vector pos1 = ((CuboidRegion)selector.getRegion()).getPos1();
+                Vector pos2 = ((CuboidRegion)selector.getRegion()).getPos2();
+                this.points[0] = new Location(this.getHolder().getWorld(), pos1.getX(), pos1.getY(), pos1.getZ());
+                this.points[1] = new Location(this.getHolder().getWorld(), pos2.getX(), pos2.getY(), pos2.getZ());
+                return this.getSelection0();
+            }
+        }
+        catch (Exception ignored)
+        {}
+        return null;
+    }
+
+    private Shape getSelection0()
+    {
         Vector3 v1 = new Vector3(this.getPoint(0).getX(), this.getPoint(0).getY(), this.getPoint(0).getZ());
         Vector3 v2 = new Vector3(this.getPoint(1).getX(), this.getPoint(1).getY(), this.getPoint(1).getZ());
         return new Cuboid(v1.midpoint(v2), v1.distanceVector(v2));

@@ -28,17 +28,19 @@ import de.cubeisland.engine.core.command.BasicContextFactory;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.selector.CuboidSelector.SELECTOR_TOOL_NAME;
 
 public class SelectorCommand extends CubeCommand
 {
-    public SelectorCommand(Module module)
+    public SelectorCommand(Selector module)
     {
-        super(module, "/wand", "Provides you with a wand to select a cuboid", new BasicContextFactory());
-        this.setAliases(Arrays.asList("selectiontool"));
+        super(module, "selectiontool", "Provides you with a wand to select a cuboid", new BasicContextFactory());
+        if (!module.hasWorldEdit())
+        {
+            this.setAliases(Arrays.asList("/wand"));
+        }
     }
 
     @Override
