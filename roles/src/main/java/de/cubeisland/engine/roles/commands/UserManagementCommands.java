@@ -191,7 +191,7 @@ public class UserManagementCommands extends UserCommandHelper
         attachment.apply();
         if (set == null)
         {
-            context.sendTranslated("&ePermission &6%s&e of &2%s&e resetted!", perm, user.getName());
+            context.sendTranslated("&ePermission &6%s&e of &2%s&e reset!", perm, user.getName());
             return;
         }
         if (set)

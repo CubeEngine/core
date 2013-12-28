@@ -160,7 +160,7 @@ public class RolesManager
 
     private void createMissingWorldRoleProviders()
     {
-        for (long worldId : this.module.getCore().getWorldManager().getAllWorldIds().toArray())
+        for (long worldId : this.module.getCore().getWorldManager().getAllWorldIds())
         {
             if (this.worldRoleProviders.get(worldId) == null)
             {

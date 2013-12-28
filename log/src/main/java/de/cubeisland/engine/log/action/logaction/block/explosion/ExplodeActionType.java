@@ -141,7 +141,7 @@ public class ExplodeActionType extends ActionTypeContainer
                     || block.getType().equals(Material.IRON_DOOR_BLOCK))
                     && block.getData() >= 8)
                 {
-                    continue; // ignore upper door_halfs
+                    continue; // ignore upper door halves
                 }
                 actionType.logBlockChange(block.getLocation(),player, BlockData.of(block.getState()),AIR,null);
                 actionType.logAttachedBlocks(block.getState(), player);

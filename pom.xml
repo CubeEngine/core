@@ -57,6 +57,7 @@
     <module>backpack</module>
     <module>faq</module>
     <module>selector</module>
+    <module>vaultlink</module>
   </modules>
 
   <build>

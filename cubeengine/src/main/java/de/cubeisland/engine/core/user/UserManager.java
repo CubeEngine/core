@@ -41,6 +41,13 @@ public interface UserManager extends Cleanable
      * @return fluent interface
      */
     void removeUser(User user);
+
+    /**
+     * Gets a user by CommandSender (creates new user if not found)
+     *
+     * @param name the sender
+     * @return the User OR null if sender is not a Player
+     */
     User getExactUser(String name);
 
     /**
@@ -52,13 +59,28 @@ public interface UserManager extends Cleanable
     User getExactUser(CommandSender sender);
 
     /**
-     * Gets a User by Key in DB
+     * Gets a user by his database ID
      *
-     * @param key the key to get the user by
+     * @param id the ID to get the user by
      * @return the user or null if not found
      */
-    User getUser(long key);
+    User getUser(long id);
+
+    /**
+     * Gets a user by his name
+     *
+     * @param name the name to get the user by
+     * @return the user or null if not found
+     */
     User getUser(String name);
+
+    /**
+     * Gets a user by his name
+     *
+     * @param name the name to get the user by
+     * @param create whether to create the user if not found
+     * @return the user or null if not found and create is false
+     */
     User getUser(String name, boolean create);
 
     /**

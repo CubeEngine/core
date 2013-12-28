@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -242,10 +243,10 @@ public class QueryManager
         if (this.module.getConfiguration().cleanup.deletedWorlds)
         {
             this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of deleted worlds");
-            TLongCollection loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
+            long[] loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
             for (UInteger dbWorld : cleanUpDsl.select(TABLE_WORLD.KEY).from(TABLE_WORLD).fetch().getValues(TABLE_WORLD.KEY))
             {
-                if (loadedworlds.contains(dbWorld.longValue()))
+                if (Arrays.binarySearch(loadedworlds, dbWorld.longValue()) >= 0)
                 {
                     continue;
                 }
