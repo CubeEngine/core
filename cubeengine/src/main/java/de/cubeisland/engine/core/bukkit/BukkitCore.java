@@ -60,6 +60,8 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.service.Selector;
+import de.cubeisland.engine.core.module.service.selector.CuboidSelector;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
@@ -321,6 +323,10 @@ public final class BukkitCore extends JavaPlugin implements Core
             }
             it.remove();
         }
+
+        this.moduleManager.getServiceManager().registerService(Selector.class, new CuboidSelector(this.getModuleManager()
+                                                                                                      .getCoreModule()), this
+                                                                   .getModuleManager().getCoreModule()); // TODO move to own plugin
 
         if (this.config.preventSpamKick)
         {

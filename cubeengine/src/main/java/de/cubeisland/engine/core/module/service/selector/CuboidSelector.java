@@ -18,15 +18,30 @@
 package de.cubeisland.engine.core.module.service.selector;
 
 import org.bukkit.Location;
+import org.bukkit.event.Event.Result;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.math.shape.Shape;
 // TODO make a module out of it (integrate WE if found)
 public class CuboidSelector implements Selector, Listener
 {
+    private Module module;
+
+    public CuboidSelector(Module module)
+    {
+        this.module = module;
+
+        this.module.getCore().getEventManager().registerListener(module, this);
+    }
+
     @Override
     public Shape getSelection(User user)
     {
@@ -37,14 +52,13 @@ public class CuboidSelector implements Selector, Listener
     @Override
     public Shape get2DProjection(User user)
     {
-
-       return null; // TODO Shape.projectOnto(Plane)
+        throw new UnsupportedOperationException("Not supported yet!"); // TODO Shape.projectOnto(Plane)
     }
 
     @Override
     public <T extends Shape> T getSelection(User user, Class<T> shape)
     {
-        return null; // TODO
+        throw new UnsupportedOperationException("Not supported yet!");
     }
 
     @Override
@@ -64,5 +78,32 @@ public class CuboidSelector implements Selector, Listener
     {
         SelectorAttachment attachment = user.attachOrGet(SelectorAttachment.class, CubeEngine.getCore().getModuleManager().getCoreModule());
         return attachment.getPoint(index);
+    }
+
+    public static final String SELECTOR_TOOL_NAME = ChatFormat.parseFormats("&9Selector-Tool");
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event)
+    {
+        if (event.getPlayer().getItemInHand().hasItemMeta()
+            && event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName()
+            && event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equals(SELECTOR_TOOL_NAME))
+        {
+            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
+            SelectorAttachment logAttachment = user.attachOrGet(SelectorAttachment.class, this.module);
+            Location clicked = event.getClickedBlock().getLocation();
+            if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+            {
+                logAttachment.setPoint(0, clicked);
+                user.sendTranslated("&aFirst Position selected!");
+            }
+            else
+            {
+                logAttachment.setPoint(0, clicked);
+                user.sendTranslated("&aSecond Position selected!");
+            }
+            event.setCancelled(true);
+            event.setUseItemInHand(Result.DENY);
+        }
     }
 }
