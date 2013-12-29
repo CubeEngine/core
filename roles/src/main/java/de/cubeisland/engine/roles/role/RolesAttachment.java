@@ -18,11 +18,13 @@
 package de.cubeisland.engine.roles.role;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.bukkit.Bukkit;
-
+import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
@@ -32,188 +34,53 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
-
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 import org.jooq.types.UInteger;
 
 public class RolesAttachment extends UserAttachment
 {
-    private TLongObjectHashMap<UserDatabaseStore> rawUserData = new TLongObjectHashMap<>();
-    // roleMirrors
-    // assignedRoleMirrors
-    // userMirrors
+    private Map<World, UserDatabaseStore> dataStores = new HashMap<>();
 
-    // mirrors are NOT active for temporary Roles
-    private TLongObjectHashMap<UserDataStore> temporaryData = new TLongObjectHashMap<>();
-
-    private TLongObjectHashMap<ResolvedData_old> resolvedDataStores = new TLongObjectHashMap<>();
-
-    private Map<String, String> currentMetaData;
-
-    private Long workingWorldID = null;
     protected RolesManager manager;
     protected RolesConfig config;
 
-    /**
-     * Gets the resolved data-store.
-     * If not yet calculated or dirty the data-store gets calculated.
-     *
-     * @return
-     */
-    protected ResolvedData_old getCurrentResolvedData()
+    public ResolvedDataHolder getCurrentDataHolder()
     {
-        return this.getResolvedData(this.getHolder().getWorldId());
+        return this.getDataHolder(this.getHolder().getWorld());
     }
 
-    /**
-     * Gets the resolved data-store.
-     * If not yet calculated or dirty the data-store gets calculated.
-     *
-     * @param worldID
-     * @return
-     */
-    protected ResolvedData_old getResolvedData(long worldID)
+    public ResolvedDataHolder getDataHolder(World world)
     {
-        ResolvedData_old dataStore = resolvedDataStores.get(worldID);
-        if (dataStore == null || dataStore.isDirty())
+        UserDatabaseStore store = this.dataStores.get(world);
+        if (store == null)
         {
-            Set<Role_old> assignedRoles = new THashSet<>();
-            WorldRoleProvider provider = ((Roles)this.getModule()).getRolesManager().getProvider(worldID);
-            for (String roleName : this.getRawData(worldID).getRawRoles())
-            {
-                Role_old role = provider.getRole(roleName);
-                if (role == null)
-                {
-                    this.getModule().getLog().warn("The role {} is not available in {}", roleName, provider.getMainWorld());
-                    this.getHolder().sendTranslated("&cYour role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
-                    this.getHolder().sendTranslated("&4You should report this to an administrator!");
-                    continue;
-                }
-                assignedRoles.add(role);
-            }
-            dataStore = new ResolvedData_old(this.getRawData(worldID));
-            UserDataStore tempStore = this.temporaryData.get(worldID);
-            if (tempStore != null)
-            {
-                for (String roleName : this.temporaryData.get(worldID).getRawRoles())
-                {
-                    Role_old role = provider.getRole(roleName);
-                    if (role == null)
-                    {
-                        this.getModule().getLog().warn("The temporary role {} is not available in {}", roleName, provider.getMainWorld());
-                        this.getHolder().sendTranslated("&cYour temporary role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
-                        this.getHolder().sendTranslated("&4You should report this to an administrator!");
-                        continue;
-                    }
-                    assignedRoles.add(role);
-                }
-                dataStore.calculate(tempStore,assignedRoles);
-            }
-            else
-            {
-                dataStore.calculate(assignedRoles);
-            }
-            resolvedDataStores.put(worldID,dataStore);
-            TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> worldMirrors = provider.getWorldMirrors();
-            for (long world : worldMirrors.keys()) // Apply to fully mirrored too!
-            {
-                if (worldMirrors.get(world).getSecond() && worldMirrors.get(world).getThird())
-                {
-                    resolvedDataStores.put(world,dataStore);
-                }
-            }
+            store = new UserDatabaseStore(this, this.manager.getProvider(world), manager, world);
+            this.dataStores.put(world, store);
         }
-        return dataStore;
-    }
-
-    /**
-     * Gets the currently assigned metadatavalue for given key
-     *
-     * @param key
-     * @return
-     */
-    public String getCurrentMetadata(String key)
-    {
-        if (currentMetaData == null)
+        if (store.isDirty())
         {
-            if (this.getHolder().isOnline())
-            {
-                this.apply();
-            }
-            else
-            {
-                return null;
-            }
+            store.calculate(new Stack<String>());
         }
-        return currentMetaData.get(key);
+        return store;
     }
 
-    /**
-     * Removes all currently calculated data forcing to recalculate the resolved data stores when needed.
-     */
-    public void flushResolvedData()
+    public ResolvedMetadata getCurrentMetadata(String key)
     {
-        this.resolvedDataStores = new TLongObjectHashMap<>();
-        this.currentMetaData = null;
+        return this.getCurrentDataHolder().getMetadata().get(key);
     }
 
-    /**
-     * Removes all currently set temporary data invalidates all current data and reloads from database
-     */
     public void reload()
     {
-        this.temporaryData = new TLongObjectHashMap<>();
-        this.flushResolvedData();
-        this.reloadFromDatabase();
-    }
-
-    public void reloadFromDatabase()
-    {
-        for (UserDatabaseStore userDatabaseStore : this.rawUserData.valueCollection())
+        for (UserDatabaseStore userDatabaseStore : this.dataStores.values())
         {
             userDatabaseStore.loadFromDatabase();
         }
-        this.resolvedDataStores.clear(); // Assume they are all dirty
-    }
-
-    /**
-     * Gets the DataStore containing the data saved in database for the holder in given world.
-     *
-     * @param worldID
-     * @return
-     */
-    public DataStore getRawData(long worldID)
-    {
-        UserDatabaseStore rawDataStore = this.rawUserData.get(worldID);
-        if (rawDataStore == null)
-        {
-            rawDataStore = new UserDatabaseStore(this, worldID, manager);
-            this.rawUserData.put(worldID, rawDataStore);
-        }
-        return rawDataStore;
-    }
-
-    /**
-     * Gets the DataStore containing only temporary data that will automatically be removed when disconnection or reloading
-     *
-     * @param worldID
-     * @return
-     */
-    public DataStore getTemporaryRawData(long worldID)
-    {
-        UserDataStore rawDataStore = this.temporaryData.get(worldID);
-        if (rawDataStore == null)
-        {
-            rawDataStore = new UserDataStore(this, worldID, UInteger.valueOf(this.manager.assignedRolesMirrors.get(worldID)));
-            this.temporaryData.put(worldID,rawDataStore);
-        }
-        return rawDataStore;
     }
 
     public WorldRoleProvider getCurrentWorldProvider()
     {
-        return this.manager.getProvider(this.getHolder().getWorldId());
+        return this.manager.getProvider(this.getHolder().getWorld());
     }
 
     private boolean offlineMsgReceived = false;
@@ -226,13 +93,16 @@ public class RolesAttachment extends UserAttachment
         User user = this.getHolder();
         if (user.isOnline())
         {
-            if (this.getRawData(user.getWorldId()).getRawRoles().isEmpty())
+            this.getModule().getLog().debug("Calculating Roles of Player {}...", user.getName());
+            ResolvedDataHolder dataHolder = this.getDataHolder(user.getWorld());
+            if (dataHolder.getRawRoles().isEmpty())
             {
-                Set<Role_old> defaultRoles = this.getCurrentWorldProvider().getDefaultRoles();
-                this.getTemporaryRawData(user.getWorldId()).setRawRoles(defaultRoles);
+                for (Role role : this.getCurrentWorldProvider().getDefaultRoles())
+                {
+                    dataHolder.assignTempRole(role);
+                }
             }
-            ResolvedData_old resolvedData = this.getCurrentResolvedData();
-            this.currentMetaData = resolvedData.getResolvedMetadata();
+            dataHolder.calculate(new Stack<String>());
             if (!Bukkit.getServer().getOnlineMode() && this.config.doNotAssignPermIfOffline && !user.isLoggedIn())
             {
                 if (!offlineMsgReceived)
@@ -243,9 +113,8 @@ public class RolesAttachment extends UserAttachment
                 this.getModule().getLog().warn("Role-permissions not applied! Server is running in unsecured offline-mode!");
                 return;
             }
-            user.setPermission(resolvedData.getResolvedPermissions());
-            this.getModule().getLog().debug("Calculating Roles of Player {}...", user.getName());
-            for (Role_old assignedRole : resolvedData.assignedRoles)
+            user.setPermission(dataHolder.getResolvedPermissions());
+            for (Role assignedRole : dataHolder.getRoles())
             {
                 this.getModule().getLog().debug(" - {}", assignedRole.getName());
             }
@@ -318,7 +187,7 @@ public class RolesAttachment extends UserAttachment
         {
             this.currentMetaData = null;
         }
-        this.resolvedDataStores.remove(worldID);
+        this.dataStores.remove(worldID);
     }
 
     @Override

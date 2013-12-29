@@ -87,6 +87,12 @@ public class UserDatabaseStore extends ResolvedDataHolder
         {
             this.metadata.put(meta.value1(), meta.value1());
         }
+
+        this.clearTempMetadata();
+        this.clearTempPermissions();
+        this.clearTempRoles();
+
+        this.makeDirty();
     }
 
     private UInteger getUserID()
@@ -128,9 +134,9 @@ public class UserDatabaseStore extends ResolvedDataHolder
     @Override
     public boolean removeMetadata(String key)
     {
-        manager.dsl.delete(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()),
-                                             TABLE_META.WORLDID.eq(this.getMirrorWorldId()),
-                                             TABLE_META.KEY.eq(key)).execute();
+        manager.dsl.delete(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()), TABLE_META.WORLDID
+                                                                                               .eq(this.getMirrorWorldId()), TABLE_META
+                                                 .KEY.eq(key)).execute();
         this.makeDirty();
         return this.metadata.remove(key) != null;
     }

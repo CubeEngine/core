@@ -55,7 +55,7 @@ public abstract class ResolvedDataHolder extends TempDataStore
     @Override
     public void calculate(Stack<String> roleStack)
     {
-        if (this.isDirty())
+        if (!this.isDirty())
         {
             return;
         }
@@ -303,6 +303,16 @@ public abstract class ResolvedDataHolder extends TempDataStore
             result.putAll(assignedRole.getAllRawMetadata());
         }
         result.putAll(this.getRawMetadata());
+        return result;
+    }
+
+    protected Map<String, Boolean> getResolvedPermissions()
+    {
+        Map<String, Boolean> result = new HashMap<>();
+        for (Entry<String, ResolvedPermission> entry : this.getPermissions().entrySet())
+        {
+            result.put(entry.getKey(), entry.getValue().isSet());
+        }
         return result;
     }
 }
