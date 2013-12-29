@@ -34,26 +34,26 @@ import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
 
 import gnu.trove.map.hash.THashMap;
 
-public class ResolvedDataStore
+public class ResolvedData_old
 {
     protected Map<String,ResolvedPermission> permissions;
     protected Map<String,ResolvedMetadata> metadata;
-    protected TreeSet<Role> assignedRoles;
+    protected TreeSet<Role_old> assignedRoles;
 
-    protected Set<ResolvedDataStore> dependentData;
-    protected RawDataStore rawDataStore;
+    protected Set<ResolvedData_old> dependentData;
+    protected DataStore rawDataStore;
     private boolean dirty = true;
 
-    public ResolvedDataStore(RawDataStore store)
+    public ResolvedData_old(DataStore store)
     {
         this.rawDataStore = store;
     }
 
-    private void inheritFrom(Set<Role> assignedRoles)
+    private void inheritFrom(Set<Role_old> assignedRoles)
     {
         this.assignedRoles = new TreeSet<>(assignedRoles);
         this.dependentData = new HashSet<>();
-        for (Role role : assignedRoles)
+        for (Role_old role : assignedRoles)
         {
              if (role.isDirty())
             {
@@ -74,7 +74,7 @@ public class ResolvedDataStore
         this.makeChildsDirty();
     }
 
-    private void doCalculate(Map<String, Boolean> perms, Map<String, String> metadata, Set<Role> assignedRoles)
+    private void doCalculate(Map<String, Boolean> perms, Map<String, String> metadata, Set<Role_old> assignedRoles)
     {
         this.inheritFrom(assignedRoles);
         // First calculate/apply direct Perm & Metadata
@@ -99,7 +99,7 @@ public class ResolvedDataStore
         {
             Map<String, ResolvedPermission> mergePerm = new HashMap<>();
             Map<String, ResolvedMetadata> mergeMeta = new HashMap<>();
-            for (Role toMerge : assignedRoles)
+            for (Role_old toMerge : assignedRoles)
             {
                 for (Entry<String, ResolvedPermission> entry : toMerge.resolvedData.permissions.entrySet())
                 {
@@ -139,7 +139,7 @@ public class ResolvedDataStore
         this.dirty = false;
     }
 
-    protected void calculate(RawDataStore temporary, Set<Role> assignedRoles)
+    protected void calculate(DataStore temporary, Set<Role_old> assignedRoles)
     {
         this.calculate(assignedRoles);
         for (Entry<String, Boolean> entry : temporary.getRawPermissions().entrySet())
@@ -158,54 +158,27 @@ public class ResolvedDataStore
         }
     }
 
-    protected void calculate(Set<Role> assignedRoles)
+    protected void calculate(Set<Role_old> assignedRoles)
     {
         this.doCalculate(this.rawDataStore.getRawPermissions(),this.rawDataStore.getRawMetadata(),assignedRoles);
     }
 
-    private void resolveBukkitPermission(String name, boolean set, Map<String, Boolean> resolvedPermissions)
-    {
-        Permission bukkitPerm = Bukkit.getPluginManager().getPermission(name);
-        if (bukkitPerm == null) // not registered permission (probably a cubeengine * perm)
-        {
-            if (name.endsWith(".*"))
-            {
-                // manually search for child-perms...
-                String baseName = name.substring(0, name.indexOf(".*"));
-                for (Permission permission : Bukkit.getPluginManager().getPermissions())
-                {
-                    if (permission.getName().startsWith(baseName))
-                    {
-                        resolvedPermissions.put(permission.getName(), set);
-                    }
-                }
-                resolvedPermissions.put(name, set);
-            }
-            return;
-        }
-        Map<String, Boolean> childPerm = bukkitPerm.getChildren();
-        for (String permKey : childPerm.keySet())
-        {
-            this.resolveBukkitPermission(permKey, set, resolvedPermissions);
-            resolvedPermissions.put(permKey, set && childPerm.get(permKey));
-        }
-    }
 
     private void makeChildsDirty()
     {
-        for (ResolvedDataStore resolvedData : this.dependentData)
+        for (ResolvedData_old resolvedData : this.dependentData)
         {
             resolvedData.makeDirty();
         }
     }
 
-    public boolean inheritsFrom(Role other)
+    public boolean inheritsFrom(Role_old other)
     {
         if (this.assignedRoles.contains(other))
         {
             return true;
         }
-        for (Role role : assignedRoles)
+        for (Role_old role : assignedRoles)
         {
             if (role.inheritsFrom(other))
             {
@@ -217,17 +190,17 @@ public class ResolvedDataStore
 
     protected void performDeleteRole()
     {
-        if (this.rawDataStore instanceof Role)
+        if (this.rawDataStore instanceof Role_old)
         {
             // remove instances in parents
-            for (Role parentRole : this.assignedRoles)
+            for (Role_old parentRole : this.assignedRoles)
             {
-                parentRole.resolvedData.dependentData.remove(((Role)this.rawDataStore).resolvedData);
+                parentRole.resolvedData.dependentData.remove(((Role_old)this.rawDataStore).resolvedData);
             }
             // remove from config in children
-            for (ResolvedDataStore subData : this.dependentData)
+            for (ResolvedData_old subData : this.dependentData)
             {
-                subData.rawDataStore.removeRole((Role)this.rawDataStore);
+                subData.rawDataStore.removeRole((Role_old)this.rawDataStore);
             }
         }
         else

@@ -33,7 +33,8 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.config.PriorityConverter;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
-import de.cubeisland.engine.roles.role.Role;
+import de.cubeisland.engine.roles.role.RawDataStore.PermissionType;
+import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
 
@@ -58,65 +59,59 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String permission = context.getString(1);
-        Boolean set;
         String setTo = "true";
         if (context.getArgCount() > 2)
         {
             setTo = context.getString(2);
         }
-        if (setTo.equalsIgnoreCase("true"))
+        try
         {
-            set = true;
-            if (global)
+            PermissionType type = PermissionType.valueOf(setTo.toUpperCase());
+            if (type == PermissionType.NOT_SET)
             {
-                context.sendTranslated("&6%s&a is now set to &2true &afor the global role &6%s&a!",
-                                       permission, role.getName());
+                if (global)
+                {
+                    context.sendTranslated("&6%s&e is now reset for the global role &6%s&e!", permission, role.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&e is now reset for the role &6%s&e in &6%s&e!", permission, role.getName(), world.getName());
+                }
             }
-            else
+            else if (type == PermissionType.TRUE)
             {
-                context.sendTranslated("&6%s&a is now set to &2true &afor the role &6%s&a in &6%s&a!",
-                                       permission, role.getName(), world.getName());
+                if (global)
+                {
+                    context.sendTranslated("&6%s&a is now set to &2true &afor the global role &6%s&a!", permission, role.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&a is now set to &2true &afor the role &6%s&a in &6%s&a!", permission, role.getName(), world.getName());
+                }
+                return;
             }
+            else if (type == PermissionType.FALSE)
+            {
+                if (global)
+                {
+                    context.sendTranslated("&6%s&c is now set to &4false &cfor the global role &6%s&c!", permission, role.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&c is now set to &4false &cfor the role &6%s&c in &6%s&c!", permission, role.getName(), world.getName());
+                }
+            }
+            role.setPermission(permission, type);
+            role.saveToConfig();
+            this.manager.recalculateAllRoles();
         }
-        else if (setTo.equalsIgnoreCase("false"))
-        {
-            set = false;
-            if (global)
-            {
-                context.sendTranslated("&6%s&c is now set to &4false &cfor the global role &6%s&c!",
-                                       permission, role.getName());
-            }
-            else
-            {
-                context.sendTranslated("&6%s&c is now set to &4false &cfor the role &6%s &cin &6%s&c!",
-                                       permission, role.getName(), world.getName());
-            }
-        }
-        else if (setTo.equalsIgnoreCase("reset"))
-        {
-            set = null;
-            if (global)
-            {
-                context.sendTranslated("&6%s&e is now resetted for the global role &6%s&e!",
-                                       permission, role.getName());
-            }
-            else
-            {
-                context.sendTranslated("&6%s&e is now resetted for the role &6%s &ein &6%s&e!",
-                                       permission, role.getName(), world.getName());
-            }
-        }
-        else
+        catch (IllegalArgumentException e)
         {
             context.sendTranslated("&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
-            return;
         }
-        role.setPermission(permission, set);
-        role.saveToConfig();
-        this.manager.recalculateAllRoles();
     }
 
     @Alias(names = "setrdata")
@@ -132,7 +127,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String key = context.getString(1);
         String value = context.getString(2);
@@ -173,7 +168,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String key = context.getString(1);
         role.setMetadata(key,null);
@@ -204,7 +199,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         role.clearMetadata();
         role.saveToConfig();
@@ -229,9 +224,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Role pRole = provider.getRole(context.getString(1));
+        Role_old pRole = provider.getRole(context.getString(1));
         if (pRole == null)
         {
             if (global)
@@ -287,9 +282,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Role pRole = provider.getRole(context.getString(1));
+        Role_old pRole = provider.getRole(context.getString(1));
         if (pRole == null)
         {
             if (global)
@@ -334,8 +329,8 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
-        role.clearAssignedRoles();
+        Role_old role = this.getRole(context, provider, roleName, world);
+        role.clearRoles();
         role.saveToConfig();
         this.manager.recalculateAllRoles();
         if (global)
@@ -358,7 +353,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         Converter<Priority> converter = new PriorityConverter();
         Priority priority;
@@ -395,7 +390,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String newName = context.getString(1);
         String oldName = role.getName();
@@ -465,7 +460,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         this.manager.recalculateAllRoles();
         try
@@ -497,7 +492,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         WorldRoleProvider provider = this.manager.getProvider(world);
-        Role role = this.getRole(context, provider, roleName, world);
+        Role_old role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         role.setDefaultRole(!role.isDefaultRole());
         this.manager.recalculateAllRoles();

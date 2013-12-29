@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
+import org.bukkit.World;
+
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -66,12 +68,7 @@ public abstract class RoleProvider
      */
     public Role getRole(String name)
     {
-        Role role = this.roles.get(name.toLowerCase());
-        if (role != null && role.isDirty())
-        {
-            this.calculateRole(role,new Stack<String>());
-        }
-        return role;
+        return this.roles.get(name.toLowerCase());
     }
 
     /**
@@ -149,67 +146,10 @@ public abstract class RoleProvider
         Stack<String> roleStack = new Stack<>(); // stack for detecting circular dependencies
         for (Role role : this.roles.values())
         {
-            this.calculateRole(role, roleStack);
+            role.calculate(roleStack);
         }
     }
 
-    /**
-     * Calculates a single role, resolving/calculating its dependencies
-     *
-     * @param role
-     * @param roleStack
-     * @return
-     */
-    protected Role calculateRole(Role role, Stack<String> roleStack)
-    {
-        if (role.isDirty())
-        {
-            try
-            {
-                roleStack.push(role.getName());
-                for (String parentName : role.getRawAssignedRoles())
-                {
-                    if (roleStack.contains(parentName)) // Circular Dependency?
-                    {
-                        throw new CircularRoleDependencyException("Cannot load role! Circular Dependency detected in " + role.getName() + "\n" + StringUtils
-                            .implode(", ", roleStack));
-                    }
-                    Role parentRole = this.getRole(parentName);
-                    if (parentRole == null) // Dependency Missing?
-                    {
-                        this.module.getLog().warn("ParentRole missing for \"{}\"\nUnknown role: {}", role.getName(),
-                                                  parentName);
-                    }
-                    this.calculateRole(parentRole,roleStack);
-                }
-                // now all parent roles should be loaded
-                Set<Role> parentRoles = new HashSet<>();
-                for (String parentName : role.getRawAssignedRoles())
-                {
-                    Role parentRole = this.getRole(parentName);
-                    if (parentRole == null)
-                    {
-                        continue; // In case parent role was missing ignore it
-                    }
-                    parentRoles.add(parentRole);
-                }
-                Permission perm = this.basePerm.createChild(role.getName());
-                this.module.getCore().getPermissionManager().registerPermission(this.module,perm);
-                ResolvedDataStore data = new ResolvedDataStore(role);
-                data.calculate(parentRoles);
-                role.resolvedData = data;
-                roleStack.pop();
-                this.module.getLog().debug("   - {} calculated!", role.getName());
-                return role;
-            }
-            catch (CircularRoleDependencyException ex)
-            {
-                this.module.getLog().warn(ex, "A CircularRoleDependencyException occurred");
-                return null;
-            }
-        }
-        return role;
-    }
 
     /**
      * Returns the ID of the main world of this RoleProvider.
@@ -227,7 +167,7 @@ public abstract class RoleProvider
      * @param roleName
      * @return
      */
-    public Role createRole(String roleName)
+    public Role_old createRole(String roleName)
     {
         if (roleName.length() > 255)
         {
@@ -244,7 +184,7 @@ public abstract class RoleProvider
         config.onLoaded(null);
         config.setFile(this.folder.resolve(roleName + ".yml").toFile()); // TODO it's not guaranteed implementations set the folder
         config.save();
-        Role role = new Role(this, config);
+        Role_old role = new Role_old(this, config);
         this.roles.put(roleName,role);
         this.calculateRole(role, new Stack<String>());
         return role;
@@ -255,9 +195,9 @@ public abstract class RoleProvider
      *
      * @param role
      */
-    protected void deleteRole(Role role)
+    protected void deleteRole(Role_old role)
     {
-        for (ResolvedDataStore dataStore : role.resolvedData.dependentData)
+        for (ResolvedData_old dataStore : role.resolvedData.dependentData)
         {
             dataStore.rawDataStore.removeRole(role);
         }
@@ -275,13 +215,13 @@ public abstract class RoleProvider
      * @param newName
      * @return
      */
-    protected boolean renameRole(Role role, String newName)
+    protected boolean renameRole(Role_old role, String newName)
     {
         if (this.getRole(newName) != null)
         {
             return false;
         }
-        for (ResolvedDataStore resolvedDataStore : role.resolvedData.dependentData)
+        for (ResolvedData_old resolvedDataStore : role.resolvedData.dependentData)
         {
             resolvedDataStore.rawDataStore.removeRole(role);
         }
@@ -290,7 +230,7 @@ public abstract class RoleProvider
         role.config.roleName = newName;
         this.configs.put(role.getName(),role.config);
         this.roles.put(role.getName(),role);
-        for (ResolvedDataStore resolvedDataStore : role.resolvedData.dependentData)
+        for (ResolvedData_old resolvedDataStore : role.resolvedData.dependentData)
         {
             resolvedDataStore.rawDataStore.assignRole(role);
         }
@@ -305,5 +245,10 @@ public abstract class RoleProvider
         }
 
         return true;
+    }
+
+    public World getMainWorld()
+    {
+        return mainWorld;
     }
 }

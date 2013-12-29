@@ -47,7 +47,7 @@ public class RolesAttachment extends UserAttachment
     // mirrors are NOT active for temporary Roles
     private TLongObjectHashMap<UserDataStore> temporaryData = new TLongObjectHashMap<>();
 
-    private TLongObjectHashMap<ResolvedDataStore> resolvedDataStores = new TLongObjectHashMap<>();
+    private TLongObjectHashMap<ResolvedData_old> resolvedDataStores = new TLongObjectHashMap<>();
 
     private Map<String, String> currentMetaData;
 
@@ -61,7 +61,7 @@ public class RolesAttachment extends UserAttachment
      *
      * @return
      */
-    protected ResolvedDataStore getCurrentResolvedData()
+    protected ResolvedData_old getCurrentResolvedData()
     {
         return this.getResolvedData(this.getHolder().getWorldId());
     }
@@ -73,16 +73,16 @@ public class RolesAttachment extends UserAttachment
      * @param worldID
      * @return
      */
-    protected ResolvedDataStore getResolvedData(long worldID)
+    protected ResolvedData_old getResolvedData(long worldID)
     {
-        ResolvedDataStore dataStore = resolvedDataStores.get(worldID);
+        ResolvedData_old dataStore = resolvedDataStores.get(worldID);
         if (dataStore == null || dataStore.isDirty())
         {
-            Set<Role> assignedRoles = new THashSet<>();
+            Set<Role_old> assignedRoles = new THashSet<>();
             WorldRoleProvider provider = ((Roles)this.getModule()).getRolesManager().getProvider(worldID);
-            for (String roleName : this.getRawData(worldID).getRawAssignedRoles())
+            for (String roleName : this.getRawData(worldID).getRawRoles())
             {
-                Role role = provider.getRole(roleName);
+                Role_old role = provider.getRole(roleName);
                 if (role == null)
                 {
                     this.getModule().getLog().warn("The role {} is not available in {}", roleName, provider.getMainWorld());
@@ -92,13 +92,13 @@ public class RolesAttachment extends UserAttachment
                 }
                 assignedRoles.add(role);
             }
-            dataStore = new ResolvedDataStore(this.getRawData(worldID));
+            dataStore = new ResolvedData_old(this.getRawData(worldID));
             UserDataStore tempStore = this.temporaryData.get(worldID);
             if (tempStore != null)
             {
-                for (String roleName : this.temporaryData.get(worldID).getRawAssignedRoles())
+                for (String roleName : this.temporaryData.get(worldID).getRawRoles())
                 {
-                    Role role = provider.getRole(roleName);
+                    Role_old role = provider.getRole(roleName);
                     if (role == null)
                     {
                         this.getModule().getLog().warn("The temporary role {} is not available in {}", roleName, provider.getMainWorld());
@@ -183,7 +183,7 @@ public class RolesAttachment extends UserAttachment
      * @param worldID
      * @return
      */
-    public RawDataStore getRawData(long worldID)
+    public DataStore getRawData(long worldID)
     {
         UserDatabaseStore rawDataStore = this.rawUserData.get(worldID);
         if (rawDataStore == null)
@@ -200,7 +200,7 @@ public class RolesAttachment extends UserAttachment
      * @param worldID
      * @return
      */
-    public RawDataStore getTemporaryRawData(long worldID)
+    public DataStore getTemporaryRawData(long worldID)
     {
         UserDataStore rawDataStore = this.temporaryData.get(worldID);
         if (rawDataStore == null)
@@ -226,12 +226,12 @@ public class RolesAttachment extends UserAttachment
         User user = this.getHolder();
         if (user.isOnline())
         {
-            if (this.getRawData(user.getWorldId()).getRawAssignedRoles().isEmpty())
+            if (this.getRawData(user.getWorldId()).getRawRoles().isEmpty())
             {
-                Set<Role> defaultRoles = this.getCurrentWorldProvider().getDefaultRoles();
-                this.getTemporaryRawData(user.getWorldId()).setAssignedRoles(defaultRoles);
+                Set<Role_old> defaultRoles = this.getCurrentWorldProvider().getDefaultRoles();
+                this.getTemporaryRawData(user.getWorldId()).setRawRoles(defaultRoles);
             }
-            ResolvedDataStore resolvedData = this.getCurrentResolvedData();
+            ResolvedData_old resolvedData = this.getCurrentResolvedData();
             this.currentMetaData = resolvedData.getResolvedMetadata();
             if (!Bukkit.getServer().getOnlineMode() && this.config.doNotAssignPermIfOffline && !user.isLoggedIn())
             {
@@ -245,7 +245,7 @@ public class RolesAttachment extends UserAttachment
             }
             user.setPermission(resolvedData.getResolvedPermissions());
             this.getModule().getLog().debug("Calculating Roles of Player {}...", user.getName());
-            for (Role assignedRole : resolvedData.assignedRoles)
+            for (Role_old assignedRole : resolvedData.assignedRoles)
             {
                 this.getModule().getLog().debug(" - {}", assignedRole.getName());
             }
@@ -259,7 +259,7 @@ public class RolesAttachment extends UserAttachment
      *
      * @return
      */
-    public Role getDominantRole()
+    public Role_old getDominantRole()
     {
        return this.getDominantRole(this.getHolder().getWorldId());
     }
@@ -270,10 +270,10 @@ public class RolesAttachment extends UserAttachment
      * @param worldID
      * @return
      */
-    public Role getDominantRole(long worldID)
+    public Role_old getDominantRole(long worldID)
     {
-        Role dominantRole = null;
-        for (Role role : this.getResolvedData(worldID).assignedRoles)
+        Role_old dominantRole = null;
+        for (Role_old role : this.getResolvedData(worldID).assignedRoles)
         {
             if (dominantRole == null)
             {
@@ -294,8 +294,8 @@ public class RolesAttachment extends UserAttachment
      */
     public void removeDefaultRoles(long worldId)
     {
-        RawDataStore temporaryRawData = this.getTemporaryRawData(worldId);
-        for (Role role : this.manager.getProvider(worldId).getDefaultRoles())
+        DataStore temporaryRawData = this.getTemporaryRawData(worldId);
+        for (Role_old role : this.manager.getProvider(worldId).getDefaultRoles())
         {
             temporaryRawData.removeRole(role);
         }
@@ -311,7 +311,7 @@ public class RolesAttachment extends UserAttachment
         return workingWorldID;
     }
 
-    public Set<Role> getAssignedRoles(long worldID)
+    public Set<Role_old> getAssignedRoles(long worldID)
     {
         return Collections.unmodifiableSet(this.getResolvedData(worldID).assignedRoles);
     }

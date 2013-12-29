@@ -37,7 +37,7 @@ import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 public class WorldRoleProvider extends RoleProvider
 {
     private RoleMirror mirrorConfig;
-    private Set<Role> defaultRoles = new HashSet<>();
+    private Set<Role_old> defaultRoles = new HashSet<>();
 
     public WorldRoleProvider(Roles module, RolesManager manager, RoleMirror mirror, long mainWorldId)
     {
@@ -60,7 +60,7 @@ public class WorldRoleProvider extends RoleProvider
         }
         for (RoleConfig config : this.configs.values())
         {
-            Role role = new Role(this, config);
+            Role_old role = new Role_old(this, config);
             if (defaultRoles.contains(config.roleName))
             {
                 role.isDefaultRole = true;
@@ -80,7 +80,7 @@ public class WorldRoleProvider extends RoleProvider
         return this.mirrorConfig.getWorldMirrors();
     }
 
-    public Set<Role> getDefaultRoles()
+    public Set<Role_old> getDefaultRoles()
     {
         return this.defaultRoles;
     }
@@ -124,7 +124,7 @@ public class WorldRoleProvider extends RoleProvider
         return super.getRole(name);
     }
 
-    protected void setDefaultRole(Role role, boolean set)
+    protected void setDefaultRole(Role_old role, boolean set)
     {
         if (set)
         {
@@ -143,7 +143,7 @@ public class WorldRoleProvider extends RoleProvider
     }
 
     @Override
-    protected void deleteRole(final Role role)
+    protected void deleteRole(final Role_old role)
     {
         super.deleteRole(role);
         // Also delete possible mirrors
@@ -163,7 +163,7 @@ public class WorldRoleProvider extends RoleProvider
     }
 
     @Override
-    protected boolean renameRole(Role role, String newName)
+    protected boolean renameRole(Role_old role, String newName)
     {
         if (super.renameRole(role,newName))
         {

@@ -75,7 +75,7 @@ public class UserDatabaseStore extends UserDataStore
     }
 
     @Override
-    public void setPermission(String perm, Boolean set)
+    public boolean setPermission(String perm, Boolean set)
     {
         if (set == null)
         {
@@ -109,7 +109,7 @@ public class UserDatabaseStore extends UserDataStore
     }
 
     @Override
-    public boolean assignRole(Role role)
+    public boolean assignRole(Role_old role)
     {
         String roleName = role.getName();
         if (role.isGlobal())
@@ -121,7 +121,7 @@ public class UserDatabaseStore extends UserDataStore
             return false;
         }
         manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(), this.getMirrorWorldId(), roleName).insert();
-        this.removeAssignedRoles(role.getAssignedRoles());
+        this.removeAssignedRoles(role.getRoles());
         if (this.roles.isEmpty())
         {
             attachment.removeDefaultRoles(this.getMirrorWorldId().longValue());
@@ -130,17 +130,17 @@ public class UserDatabaseStore extends UserDataStore
     }
 
 
-    private void removeAssignedRoles(Set<Role> roles)
+    private void removeAssignedRoles(Set<Role_old> roles)
     {
-        for (Role role : roles)
+        for (Role_old role : roles)
         {
-            this.removeAssignedRoles(role.getAssignedRoles());
+            this.removeAssignedRoles(role.getRoles());
             this.removeRole(role);
         }
     }
 
     @Override
-    public boolean removeRole(Role role)
+    public boolean removeRole(Role_old role)
     {
         String roleName = role.getName();
         if (role.isGlobal())
@@ -177,15 +177,15 @@ public class UserDatabaseStore extends UserDataStore
     }
 
     @Override
-    public void clearAssignedRoles()
+    public void clearRoles()
     {
         manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.USERID.eq(this.getUserID()),
                                              TABLE_ROLE.WORLDID.eq(this.getMirrorWorldId())).execute();
-        super.clearAssignedRoles();
+        super.clearRoles();
     }
 
     @Override
-    public void setPermissions(Map<String, Boolean> perms)
+    public void setRawPermissions(Map<String, Boolean> perms)
     {
         this.clearPermissions();
         Set<UserPermission> toInsert = new HashSet<>();
@@ -195,11 +195,11 @@ public class UserDatabaseStore extends UserDataStore
                                 .newPerm(this.getUserID(), this.getMirrorWorldId(), entry.getKey(), entry.getValue()));
         }
         manager.dsl.batchInsert(toInsert).execute();
-        super.setPermissions(perms);
+        super.setRawPermissions(perms);
     }
 
     @Override
-    public void setMetadata(Map<String, String> metadata)
+    public void setRawMetadata(Map<String, String> metadata)
     {
         this.clearMetadata();
         Set<UserMetaData> toInsert = new HashSet<>();
@@ -209,27 +209,27 @@ public class UserDatabaseStore extends UserDataStore
                 .getValue()));
         }
         manager.dsl.batchInsert(toInsert).execute();
-        super.setMetadata(metadata);
+        super.setRawMetadata(metadata);
     }
 
     @Override
-    public void setAssignedRoles(Set<Role> roles)
+    public void setRawRoles(Set<Role_old> roles)
     {
-        this.clearAssignedRoles();
+        this.clearRoles();
         Set<AssignedRole> toInsert = new HashSet<>();
-        for (Role role : roles)
+        for (Role_old role : roles)
         {
             toInsert.add(manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(), this.getMirrorWorldId(), role.getName()));
         }
         manager.dsl.batchInsert(toInsert).execute();
-        super.setAssignedRoles(roles);
+        super.setRawRoles(roles);
     }
 
     @Override
     public Map<String, Boolean> getAllRawPermissions()
     {
         Map<String,Boolean> result = new THashMap<>();
-        for (Role assignedRole : this.attachment.getResolvedData(this.getMainWorldID()).assignedRoles)
+        for (Role_old assignedRole : this.attachment.getResolvedData(this.getMainWorldID()).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawPermissions());
         }
@@ -241,7 +241,7 @@ public class UserDatabaseStore extends UserDataStore
     public Map<String, String> getAllRawMetadata()
     {
         Map<String,String> result = new THashMap<>();
-        for (Role assignedRole : this.attachment.getResolvedData(this.getMainWorldID()).assignedRoles)
+        for (Role_old assignedRole : this.attachment.getResolvedData(this.getMainWorldID()).assignedRoles)
         {
             result.putAll(assignedRole.getAllRawMetadata());
         }

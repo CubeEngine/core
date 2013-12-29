@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.role.Role;
+import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesManager;
@@ -94,9 +94,9 @@ public abstract class RoleCommandHelper extends ContainerCommand
         return world;
     }
 
-    protected Role getRole(CommandContext context, RoleProvider provider, String name, World world)
+    protected Role_old getRole(CommandContext context, RoleProvider provider, String name, World world)
     {
-        Role role = provider.getRole(name);
+        Role_old role = provider.getRole(name);
         if (role == null)
         {
             if (world == null)

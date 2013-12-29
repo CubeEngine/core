@@ -29,7 +29,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 import org.jooq.types.UInteger;
 
-public class UserDataStore implements RawDataStore
+public class UserDataStore implements DataStore
 {
     protected Set<String> roles;
     protected Map<String,Boolean> permissions;
@@ -63,13 +63,13 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public Set<String> getRawAssignedRoles()
+    public Set<String> getRawRoles()
     {
        return this.roles;
     }
 
     @Override
-    public Set<Role> getAssignedRoles()
+    public Set<Role_old> getRoles()
     {
         return Collections.unmodifiableSet(this.attachment.getResolvedData(this.worldID).assignedRoles);
     }
@@ -81,35 +81,35 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public void setPermission(String perm, Boolean set)
+    public PermissionType setPermission(String perm, PermissionType set)
     {
-        if (set == null)
+        this.makeDirty();
+        if (set == PermissionType.NOT_SET)
         {
-            this.permissions.remove(perm);
+            return PermissionType.of(this.permissions.remove(perm));
         }
         else
         {
-            this.permissions.put(perm,set);
+            return PermissionType.of(this.permissions.put(perm, set == PermissionType.TRUE));
         }
-        this.makeDirty();
     }
 
     @Override
-    public void setMetadata(String key, String value)
+    public String setMetadata(String key, String value)
     {
+        this.makeDirty();
         if (value == null)
         {
-            this.metadata.remove(key);
+            return this.metadata.remove(key);
         }
         else
         {
-            this.metadata.put(key,value);
+            return this.metadata.put(key,value);
         }
-        this.makeDirty();
     }
 
     @Override
-    public boolean assignRole(Role role)
+    public boolean assignRole(Role_old role)
     {
         String roleName = role.getName();
         if (role.isGlobal())
@@ -125,7 +125,7 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public boolean removeRole(Role role)
+    public boolean removeRole(Role_old role)
     {
         String roleName = role.getName();
         if (role.isGlobal())
@@ -155,41 +155,35 @@ public class UserDataStore implements RawDataStore
     }
 
     @Override
-    public void clearAssignedRoles()
+    public void clearRoles()
     {
         this.roles = new THashSet<>();
         this.makeDirty();
     }
 
     @Override
-    public void setPermissions(Map<String, Boolean> perms)
+    public void setRawPermissions(Map<String, Boolean> perms)
     {
        this.permissions = new THashMap<>(perms);
         this.makeDirty();
     }
 
     @Override
-    public void setMetadata(Map<String, String> metadata)
+    public void setRawMetadata(Map<String, String> metadata)
     {
         this.metadata = new THashMap<>(metadata);
         this.makeDirty();
     }
 
     @Override
-    public void setAssignedRoles(Set<Role> roles)
+    public void setRawRoles(Set<Role_old> roles)
     {
-        this.clearAssignedRoles();
-        for (Role role : roles)
+        this.clearRoles();
+        for (Role_old role : roles)
         {
             this.roles.add(role.getName());
         }
         this.makeDirty();
-    }
-
-    @Override
-    public long getWorldID()
-    {
-        return this.worldID;
     }
 
     protected UInteger getMirrorWorldId()

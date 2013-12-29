@@ -26,13 +26,13 @@ import java.util.TreeMap;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.roles.role.Role;
+import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import gnu.trove.set.hash.THashSet;
 
 public class RolesListCommand extends ListCommand
 {
-    private static final Comparator<Role> ROLE_COMPARATOR = new RoleComparator();
+    private static final Comparator<Role_old> ROLE_COMPARATOR = new RoleComparator();
 
     public RolesListCommand(Basics basics)
     {
@@ -44,7 +44,7 @@ public class RolesListCommand extends ListCommand
     protected SortedMap<String, Set<User>> groupUsers(Set<User> users)
     {
         Set<User> noRoleSet = new THashSet<>();
-        TreeMap<Role, Set<User>> groupedRoles = new TreeMap<>(ROLE_COMPARATOR);
+        TreeMap<Role_old, Set<User>> groupedRoles = new TreeMap<>(ROLE_COMPARATOR);
         for (User user : users)
         {
             RolesAttachment attachment = user.get(RolesAttachment.class);
@@ -54,7 +54,7 @@ public class RolesListCommand extends ListCommand
             }
             else
             {
-                Role role = attachment.getDominantRole();
+                Role_old role = attachment.getDominantRole();
                 Set<User> list = groupedRoles.get(role);
                 if (list == null)
                 {
@@ -65,8 +65,8 @@ public class RolesListCommand extends ListCommand
         }
 
         SortedMap<String, Set<User>> grouped = new TreeMap<>();
-        Role role;
-        for (Entry<Role, Set<User>> entry : groupedRoles.entrySet())
+        Role_old role;
+        for (Entry<Role_old, Set<User>> entry : groupedRoles.entrySet())
         {
             role = entry.getKey();
             String display;
@@ -86,10 +86,10 @@ public class RolesListCommand extends ListCommand
         return grouped;
     }
 
-    private static final class RoleComparator implements Comparator<Role>
+    private static final class RoleComparator implements Comparator<Role_old>
     {
         @Override
-        public int compare(Role o1, Role o2)
+        public int compare(Role_old o1, Role_old o2)
         {
             return o2.getPriorityValue() - o1.getPriorityValue();
         }

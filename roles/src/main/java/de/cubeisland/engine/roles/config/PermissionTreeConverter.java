@@ -99,7 +99,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
         return result;
     }
 
-    private void easyMapValue(Map<String, Object> map, String path, boolean value)
+    private void easyMapValue(Map<String, Object> map, String path, Boolean value)
     {
         String base = this.getBasePath(path);
         if (base.isEmpty())

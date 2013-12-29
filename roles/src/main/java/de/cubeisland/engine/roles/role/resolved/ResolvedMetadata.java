@@ -17,13 +17,13 @@
  */
 package de.cubeisland.engine.roles.role.resolved;
 
-import de.cubeisland.engine.roles.role.RawDataStore;
+import de.cubeisland.engine.roles.role.ResolvedDataHolder;
 
 public class ResolvedMetadata extends ResolvedData
 {
     private String value;
 
-    public ResolvedMetadata(RawDataStore origin, String key, String value)
+    public ResolvedMetadata(ResolvedDataHolder origin, String key, String value)
     {
         super(origin,key);
         this.value = value;

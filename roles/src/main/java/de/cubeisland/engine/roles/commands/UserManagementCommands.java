@@ -28,7 +28,8 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.role.Role;
+import de.cubeisland.engine.roles.role.RawDataStore.PermissionType;
+import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 
 public class UserManagementCommands extends UserCommandHelper
@@ -54,7 +55,7 @@ public class UserManagementCommands extends UserCommandHelper
         if (world == null) return;
         long worldId = this.worldManager.getWorldId(world);
         String roleName = context.getString(1);
-        Role role = this.manager.getProvider(world).getRole(roleName);
+        Role_old role = this.manager.getProvider(world).getRole(roleName);
         if (role == null)
         {
             context.sendTranslated("&eCould not find the role &6%s&e in &6%s&e.", roleName, world.getName());
@@ -105,7 +106,7 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
-        Role role = this.manager.getProvider(world).getRole(context.getString(1));
+        Role_old role = this.manager.getProvider(world).getRole(context.getString(1));
         if (role == null)
         {
             context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(1), world.getName());
@@ -140,15 +141,15 @@ public class UserManagementCommands extends UserCommandHelper
         if (world == null) return;
         long worldId = this.getModule().getCore().getWorldManager().getWorldId(world);
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
-        attachment.getRawData(worldId).clearAssignedRoles();
-        Set<Role> defaultRoles = this.manager.getProvider(worldId).getDefaultRoles();
-        attachment.getTemporaryRawData(worldId).setAssignedRoles(defaultRoles);
+        attachment.getRawData(worldId).clearRoles();
+        Set<Role_old> defaultRoles = this.manager.getProvider(worldId).getDefaultRoles();
+        attachment.getTemporaryRawData(worldId).setRawRoles(defaultRoles);
         attachment.apply();
         context.sendTranslated("&eCleared the roles of &2%s&e in &6%s&e.", user.getName(), world.getName());
         if (!defaultRoles.isEmpty())
         {
             context.sendTranslated("&eDefault roles assigned:");
-            for (Role role : defaultRoles)
+            for (Role_old role : defaultRoles)
             {
                 context.sendMessage(String.format(this.LISTELEM,role.getName()));
             }
@@ -165,41 +166,31 @@ public class UserManagementCommands extends UserCommandHelper
         User user = this.getUser(context, 0);
         if (user == null) return;
         String perm = context.getString(1);
-        Boolean set;
         String setTo = context.getString(2);
-        if (setTo.equalsIgnoreCase("true"))
+        try
         {
-            set = true;
+            PermissionType type = PermissionType.valueOf(setTo.toUpperCase());
+            World world = this.getWorld(context);
+            if (world == null) return;
+            RolesAttachment attachment = this.manager.getRolesAttachment(user);
+            attachment.getRawData(this.worldManager.getWorldId(world)).setPermission(perm, type);
+            attachment.apply();
+            if (type == PermissionType.NOT_SET)
+            {
+                context.sendTranslated("&ePermission &6%s&e of &2%s&e reset!", perm, user.getName());
+                return;
+            }
+            if (type == PermissionType.TRUE)
+            {
+                context.sendTranslated("&aPermission &6%s&a of &2%s&a set to true!", perm, user.getName());
+                return;
+            }
+            context.sendTranslated("&cPermission &6%s&c of &2%s&c set to false!", perm, user.getName());
         }
-        else if (setTo.equalsIgnoreCase("false"))
-        {
-            set = false;
-        }
-        else if (setTo.equalsIgnoreCase("reset"))
-        {
-            set = null;
-        }
-        else
+        catch (IllegalArgumentException e)
         {
             context.sendTranslated("&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
-            return;
         }
-        World world = this.getWorld(context);
-        if (world == null) return;
-        RolesAttachment attachment = this.manager.getRolesAttachment(user);
-        attachment.getRawData(this.worldManager.getWorldId(world)).setPermission(perm,set);
-        attachment.apply();
-        if (set == null)
-        {
-            context.sendTranslated("&ePermission &6%s&e of &2%s&e resetted!", perm, user.getName());
-            return;
-        }
-        if (set)
-        {
-            context.sendTranslated("&aPermission &6%s&a of &2%s&a set to true!", perm, user.getName());
-            return;
-        }
-        context.sendTranslated("&cPermission &6%s&c of &2%s&c set to false!", perm, user.getName());
     }
 
     @Command(names = {"resetperm", "resetpermission"},
@@ -215,7 +206,7 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
-        attachment.getRawData(this.worldManager.getWorldId(world)).setPermission(perm,null);
+        attachment.getRawData(this.worldManager.getWorldId(world)).setPermission(perm, null);
         attachment.apply();
         context.sendTranslated("&ePermission &6%s&e of &2%s&e resetted!", perm, user.getName());
     }
@@ -238,7 +229,7 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
-        attachment.getRawData(this.worldManager.getWorldId(world)).setMetadata(metaKey,metaVal);
+        attachment.getRawData(this.worldManager.getWorldId(world)).setMetadata(metaKey, metaVal);
         attachment.apply();
         context.sendTranslated("&aMetadata &6%s&a of &2%s&a set to &6%s&a in &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
@@ -260,7 +251,7 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
-        attachment.getRawData(this.worldManager.getWorldId(world)).setMetadata(metaKey,null);
+        attachment.getRawData(this.worldManager.getWorldId(world)).setMetadata(metaKey, null);
         attachment.apply();
         context.sendTranslated("&eMetadata &6%s&e of &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
     }

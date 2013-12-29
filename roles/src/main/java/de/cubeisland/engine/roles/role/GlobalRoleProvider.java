@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.roles.Roles;
@@ -51,7 +50,7 @@ public class GlobalRoleProvider extends RoleProvider
     }
 
     @Override
-    protected boolean renameRole(Role role, String newName)
+    protected boolean renameRole(Role_old role, String newName)
     {
         if (super.renameRole(role,newName))
         {

@@ -17,14 +17,15 @@
  */
 package de.cubeisland.engine.roles.role.resolved;
 
-import de.cubeisland.engine.roles.role.RawDataStore;
+
+import de.cubeisland.engine.roles.role.ResolvedDataHolder;
 
 public class ResolvedPermission extends ResolvedData
 {
     private boolean value;
     private String originPerm;
 
-    public ResolvedPermission(RawDataStore origin, String key, boolean value, String originPerm)
+    public ResolvedPermission(ResolvedDataHolder origin, String key, boolean value, String originPerm)
     {
         super(origin, key);
         this.value = value;

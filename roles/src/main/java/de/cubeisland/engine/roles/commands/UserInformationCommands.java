@@ -30,7 +30,7 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RawDataStore;
-import de.cubeisland.engine.roles.role.Role;
+import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
@@ -56,7 +56,7 @@ public class UserInformationCommands extends UserCommandHelper
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // List all assigned roles
         context.sendTranslated("&eRoles of &2%s&e in &6%s&e:", user.getName(), world.getName());
-        for (Role pRole : rolesAttachment.getAssignedRoles(this.worldManager.getWorldId(world)))
+        for (Role_old pRole : rolesAttachment.getAssignedRoles(this.worldManager.getWorldId(world)))
         {
             if (pRole.isGlobal())
             {
