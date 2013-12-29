@@ -24,7 +24,7 @@ import java.util.PriorityQueue;
 
 import de.cubeisland.engine.core.module.service.Service.Implementation;
 
-public class ServiceInvokationHandler implements InvocationHandler
+class ServiceInvokationHandler implements InvocationHandler
 {
     private final Service<?> service;
     private final PriorityQueue<Implementation> implementations;
@@ -40,14 +40,16 @@ public class ServiceInvokationHandler implements InvocationHandler
     {
         synchronized (this.implementations)
         {
-            if (this.implementations.isEmpty())
+            final Implementation impl = this.implementations.peek();
+            if (impl == null)
             {
                 this.service.getModule().getLog().warn("The service <{}> was invoked, but has no implementations!", this.service.getInterface().getName());
+                return null;
             }
 
             try
             {
-                return method.invoke(this.implementations.peek().getTarget(), args);
+                return method.invoke(impl.getTarget(), args);
             }
             catch (InvocationTargetException e)
             {

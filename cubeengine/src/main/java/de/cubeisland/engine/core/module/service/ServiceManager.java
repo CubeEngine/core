@@ -62,7 +62,7 @@ public class ServiceManager
     public <S> Service<S> registerService(Module module, Class<S> interfaceClass, S implementation, Priority priority)
     {
         assert interfaceClass.isInterface(): "Services have to be interfaces!";
-        
+
         synchronized (this.services)
         {
             Service<S> service = (Service<S>)this.services.get(interfaceClass);
