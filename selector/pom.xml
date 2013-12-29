@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>selector</artifactId>
-  <name>selector</name>
+  <name>Selector</name>
   <version>1.0.0-SNAPSHOT</version>
   <description>Provides tools to select shapes</description>
 
