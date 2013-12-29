@@ -52,11 +52,11 @@ public class Vaultlink extends Module implements Listener
         {
             Roles roles = (Roles)module;
             Permission service = new CubePermissionService(this, roles);
-            Bukkit.getServicesManager().register(Permission.class, service, (BukkitCore)getCore(), ServicePriority.Highest);
-            Bukkit.getServicesManager().register(Chat.class, new CubeChatService(this, roles, service), (BukkitCore)getCore(), ServicePriority.Highest);
+            Bukkit.getServicesManager().register(Permission.class, service, (BukkitCore)getCore(), ServicePriority.Normal);
+            Bukkit.getServicesManager().register(Chat.class, new CubeChatService(this, roles, service), (BukkitCore)getCore(), ServicePriority.Normal);
         }
 
-        Bukkit.getServicesManager().register(Economy.class, new CubeEconomyService(this, economyReference), (BukkitCore)getCore(), ServicePriority.Highest);
+        Bukkit.getServicesManager().register(Economy.class, new CubeEconomyService(this, economyReference), (BukkitCore)getCore(), ServicePriority.Normal);
     }
 
     @Override
