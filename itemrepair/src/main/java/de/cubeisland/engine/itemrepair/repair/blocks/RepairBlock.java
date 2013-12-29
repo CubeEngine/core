@@ -72,7 +72,7 @@ public class RepairBlock
         this.inventoryMap = new HashMap<>();
         this.rand = new Random(System.currentTimeMillis());
         this.config = config;
-        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
     }
 
     public final String getName()

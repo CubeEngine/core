@@ -83,7 +83,7 @@ public class MarketSign
     {
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
         this.blockInfo = this.dsl.newRecord(TABLE_SIGN_BLOCK).newBlockModel(location);
         this.setItemInfo(this.dsl.newRecord(TABLE_SIGN_ITEM));
         this.msFactory = module.getMarketSignFactory();
@@ -98,7 +98,7 @@ public class MarketSign
     public MarketSign(Signmarket module, SignMarketItemModel itemModel, SignMarketBlockModel blockModel)
     {
         this.module = module;
-        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
         this.blockInfo = blockModel;
         this.setItemInfo(itemModel);
         this.msFactory = module.getMarketSignFactory();

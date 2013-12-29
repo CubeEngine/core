@@ -165,7 +165,7 @@ public class LogAttachment extends UserAttachment
 
     public boolean hasSelection()
     {
-        Selector selector = this.module.getCore().getModuleManager().getServiceManager().getServiceProvider(Selector.class);
+        Selector selector = this.module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Selector.class);
         Shape selection = selector.getSelection(this.getHolder());
         return selection != null && selection instanceof Cuboid;
     }
@@ -174,7 +174,7 @@ public class LogAttachment extends UserAttachment
     {
         if (hasSelection())
         {
-            Selector selector = this.module.getCore().getModuleManager().getServiceManager().getServiceProvider(Selector.class);
+            Selector selector = this.module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Selector.class);
             parameter.setLocationRange(selector.getFirstPoint(this.getHolder()), selector.getSecondPoint(this.getHolder()));
             return true;
         }

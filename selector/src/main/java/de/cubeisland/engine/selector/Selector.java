@@ -29,7 +29,7 @@ public class Selector extends Module implements Listener
     @Override
     public void onEnable()
     {
-        this.getCore().getModuleManager().getServiceManager().registerService(de.cubeisland.engine.core.module.service.Selector.class, new CuboidSelector(this), this);
+        this.getCore().getModuleManager().getServiceManager().registerService(this, de.cubeisland.engine.core.module.service.Selector.class, new CuboidSelector(this));
         try
         {
             Class.forName("com.sk89q.worldedit.WorldEdit");

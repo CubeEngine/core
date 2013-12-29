@@ -98,6 +98,11 @@ public class ModuleClassLoader extends URLClassLoader
         return url;
     }
 
+    public ModuleInfo getModuleInfo()
+    {
+        return moduleInfo;
+    }
+
     void shutdown()
     {
         Class clazz;
