@@ -19,11 +19,16 @@ package de.cubeisland.engine.hide;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.Reloadable;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.hide.event.UserHideEvent;
 import de.cubeisland.engine.hide.event.UserShowEvent;
+import org.dynmap.DynmapAPI;
 
 public class Hide extends Module implements Reloadable
 {
@@ -41,7 +46,12 @@ public class Hide extends Module implements Reloadable
         this.getCore().getEventManager().registerListener(this, new HideListener(this));
 
         this.perm = new HidePerm(this);
-        // TODO player listing in basics?
+
+        Plugin p = Bukkit.getPluginManager().getPlugin("dynmap");
+        if (p != null && p.isEnabled() && p instanceof DynmapAPI)
+        {
+            getCore().getEventManager().registerListener(this, new DynmapListener((DynmapAPI)p));
+        }
     }
 
     @Override
