@@ -1,5 +1,6 @@
 package de.cubeisland.engine.roles.role;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -7,79 +8,87 @@ import java.util.Set;
 
 public abstract class TempDataStore implements DataStore
 {
-    private Map<String, Boolean> tempPermissions = new HashMap<>();
-    private Map<String, String> tempMetaData = new HashMap<>();
-    private Set<String> tempRoles = new HashSet<>();
+    // Temporary:
+
+    protected Map<String, Boolean> tempPermissions = new HashMap<>();
+    protected Map<String, String> tempMetadata = new HashMap<>();
+    protected Set<String> tempRoles = new HashSet<>();
 
     public Map<String, Boolean> getRawTempPermissions()
     {
-        return tempPermissions;
+        return Collections.unmodifiableMap(tempPermissions);
     }
 
     public Map<String, String> getRawTempMetaData()
     {
-        return tempMetaData;
+        return Collections.unmodifiableMap(tempMetadata);
     }
 
     public Set<String> getRawTempRoles()
     {
-        return tempRoles;
+        return Collections.unmodifiableSet(tempRoles);
     }
 
     @Override
     public PermissionType setTempPermission(String perm, PermissionType set)
     {
-        Boolean replaced;
+        this.makeDirty();
         if (set == PermissionType.NOT_SET)
         {
-            replaced = this.tempPermissions.remove(perm);
+            return PermissionType.of(this.tempPermissions.remove(perm));
         }
         else
         {
-            replaced = this.tempPermissions.put(perm, set == PermissionType.TRUE);
+            return PermissionType.of(this.tempPermissions.put(perm, set == PermissionType.TRUE));
         }
-        return PermissionType.of(replaced);
     }
 
     @Override
     public String setTempMetadata(String key, String value)
     {
-        return this.tempMetaData.put(key, value);
+        this.makeDirty();
+        return this.tempMetadata.put(key, value);
     }
 
     @Override
     public boolean removeTempMetadata(String key)
     {
-        return this.tempMetaData.remove(key) != null;
+        this.makeDirty();
+        return this.tempMetadata.remove(key) != null;
     }
 
     @Override
     public boolean assignTempRole(Role role)
     {
+        this.makeDirty();
         return this.tempRoles.add(role.getName());
     }
 
     @Override
     public boolean removeTempRole(Role role)
     {
+        this.makeDirty();
         return this.tempRoles.remove(role.getName());
     }
 
     @Override
     public void clearTempPermissions()
     {
+        this.makeDirty();
         this.tempPermissions = new HashMap<>();
     }
 
     @Override
     public void clearTempMetadata()
     {
-        this.tempMetaData = new HashMap<>();
+        this.makeDirty();
+        this.tempMetadata = new HashMap<>();
     }
 
     @Override
     public void clearTempRoles()
     {
+        this.makeDirty();
         this.tempRoles = new HashSet<>();
     }
 }

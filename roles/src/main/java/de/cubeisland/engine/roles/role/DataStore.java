@@ -24,13 +24,15 @@ import java.util.Stack;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
 
-interface DataStore
+public interface DataStore
 {
     String getName();
 
     Map<String,Boolean> getRawPermissions();
     Map<String,String> getRawMetadata();
     Set<String> getRawRoles();
+
+    // TODO setRawPerms(Map) etc.
 
     PermissionType setPermission(String perm, PermissionType set);
     String setMetadata(String key, String value);
@@ -60,17 +62,20 @@ interface DataStore
     Map<String, String> getAllRawMetadata();
 
     void calculate(Stack<String> roleStack);
+    void makeDirty();
 
     Map<String, ResolvedPermission> getPermissions();
     Map<String, ResolvedMetadata> getMetadata();
+    Set<Role> getRoles();
 
+    boolean inheritsFrom(Role other);
 
     public enum PermissionType
     {
         TRUE, FALSE,
         NOT_SET;
 
-        static PermissionType of(Boolean set)
+        public static PermissionType of(Boolean set)
         {
             return set == null ? NOT_SET : set ? TRUE : FALSE;
         }

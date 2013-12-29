@@ -20,9 +20,6 @@ package de.cubeisland.engine.roles.role;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.roles.Roles;
-import org.jooq.impl.DSL;
-
-import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 public class GlobalRoleProvider extends RoleProvider
 {
@@ -50,20 +47,9 @@ public class GlobalRoleProvider extends RoleProvider
     }
 
     @Override
-    protected boolean renameRole(Role_old role, String newName)
-    {
-        if (super.renameRole(role,newName))
-        {
-            this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row("g:" + newName)).
-                where(TABLE_ROLE.ROLENAME.eq("g:" + role.getName())).execute();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public Role getRole(String name)
     {
+        name = name.toLowerCase();
         if (name.startsWith("g:"))
         {
             return super.getRole(name.substring(2));

@@ -22,19 +22,15 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 import java.util.Stack;
 
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.RoleConfig;
-import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.types.UInteger;
 
@@ -133,7 +129,7 @@ public abstract class RoleProvider
     {
         for (RoleConfig config : this.configs.values())
         {
-            Role role = new Role(this, config);
+            Role role = new Role(this.manager, this, config);
             this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
         }
     }
@@ -167,7 +163,7 @@ public abstract class RoleProvider
      * @param roleName
      * @return
      */
-    public Role_old createRole(String roleName)
+    public Role createRole(String roleName)
     {
         if (roleName.length() > 255)
         {
@@ -191,60 +187,25 @@ public abstract class RoleProvider
     }
 
     /**
-     * Deletes a role forever.
+     * Removes a managed role
      *
      * @param role
      */
-    protected void deleteRole(Role_old role)
+    protected void removeRole(Role role)
     {
-        for (ResolvedData_old dataStore : role.resolvedData.dependentData)
-        {
-            dataStore.rawDataStore.removeRole(role);
-        }
         this.roles.remove(role.getName());
         this.configs.remove(role.getName());
-
-        this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.WORLDID.eq(UInteger.valueOf(mainWorldId)),
-                                                  TABLE_ROLE.ROLENAME.eq(role.getName())).execute();
     }
 
     /**
-     * Renames a role
+     * Adds a managed role
      *
      * @param role
-     * @param newName
-     * @return
      */
-    protected boolean renameRole(Role_old role, String newName)
+    protected void addRole(Role role)
     {
-        if (this.getRole(newName) != null)
-        {
-            return false;
-        }
-        for (ResolvedData_old resolvedDataStore : role.resolvedData.dependentData)
-        {
-            resolvedDataStore.rawDataStore.removeRole(role);
-        }
-        this.configs.remove(role.getName());
-        this.roles.remove(role.getName());
-        role.config.roleName = newName;
-        this.configs.put(role.getName(),role.config);
-        this.roles.put(role.getName(),role);
-        for (ResolvedData_old resolvedDataStore : role.resolvedData.dependentData)
-        {
-            resolvedDataStore.rawDataStore.assignRole(role);
-        }
-        try
-        {
-            role.saveConfigToNewFile();
-        }
-        catch (IOException ex)
-        {
-            this.module.getLog().warn(ex, "Failed to save the the config after renaming for {}!", role.getName());
-            return false;
-        }
-
-        return true;
+        this.roles.put(role.getName(), role);
+        this.configs.put(role.getName(), role.config);
     }
 
     public World getMainWorld()

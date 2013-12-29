@@ -28,8 +28,7 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.role.RawDataStore.PermissionType;
-import de.cubeisland.engine.roles.role.Role_old;
+import de.cubeisland.engine.roles.role.TempDataStore.PermissionType;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 
 public class UserManagementCommands extends UserCommandHelper

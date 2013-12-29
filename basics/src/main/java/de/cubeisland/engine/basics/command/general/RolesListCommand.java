@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import gnu.trove.set.hash.THashSet;
 

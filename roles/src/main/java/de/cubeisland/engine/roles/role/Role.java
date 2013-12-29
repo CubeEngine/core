@@ -1,10 +1,22 @@
 package de.cubeisland.engine.roles.role;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+
+import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.config.RoleConfig;
+import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
+import org.jooq.impl.DSL;
+import org.jooq.types.UInteger;
+
+import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 public class Role extends ResolvedDataHolder implements Comparable<Role>
 {
@@ -12,9 +24,11 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     protected RoleProvider roleProvider;
     protected Permission rolePermission;
 
-    public Role(RoleProvider roleProvider, RoleConfig config)
+    private boolean isDefaultRole = false;
+
+    public Role(RolesManager manager, RoleProvider roleProvider, RoleConfig config)
     {
-        super(roleProvider);
+        super(manager, roleProvider);
         this.config = config;
         this.roleProvider = roleProvider;
         this.rolePermission = roleProvider.basePerm.createChild(config.roleName);
@@ -31,6 +45,70 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
         }
     }
 
+    public boolean rename(String newName)
+    {
+        if (this.provider.getRole(newName) != null)
+        {
+            return false;
+        }
+        this.makeDirty();
+        if (this.isGlobal())
+        {
+            this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row("g:" + newName)).
+                where(TABLE_ROLE.ROLENAME.eq("g:" + this.getName())).execute();
+        }
+        else
+        {
+            Set<UInteger> worldMirrors = new HashSet<>();
+            // TODO fill worldMirrors from provider
+            this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row(newName)).
+                where(TABLE_ROLE.ROLENAME.eq(this.getName()),
+                      TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
+        }
+        this.delete();
+        this.config.roleName = newName;
+        this.provider.addRole(this);
+        for (Role role : this.resolvedRoles)
+        {
+            role.dependentRoles.add(this);
+        }
+        for (ResolvedDataHolder dataHolder : this.dependentRoles)
+        {
+            dataHolder.assignRole(this);
+        }
+        this.config.setFile(new File(this.config.getFile().getParent(), this.config.roleName + ".yml"));
+        this.save();
+        return true;
+    }
+
+    public void delete()
+    {
+        for (Role role : this.resolvedRoles)
+        {
+            role.dependentRoles.remove(this);
+        }
+        for (ResolvedDataHolder dataHolder : this.dependentRoles)
+        {
+            dataHolder.removeRole(this);
+        }
+        if (this.isGlobal())
+        {
+            this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.ROLENAME.eq("g:" + this.getName())).execute();
+        }
+        else
+        {
+            Set<UInteger> worldMirrors = new HashSet<>();
+            // TODO fill worldMirrors from provider
+            this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.ROLENAME.eq(this.getName()),
+                                                      TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
+        }
+        this.provider.removeRole(this);
+        if (!this.config.getFile().delete())
+        {
+            this.module.getLog().error("Could not delete role {}!", this.config.getFile().getName());
+        }
+    }
+
     @Override
     public String getName()
     {
@@ -43,8 +121,6 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
             return this.config.roleName;
         }
     }
-
-
 
     public boolean isGlobal()
     {
@@ -60,6 +136,18 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     {
         this.makeDirty();
         this.config.priority = Priority.getByValue(value);
+    }
+
+    public void save()
+    {
+        this.config.save();
+        for (ResolvedDataHolder dataHolder : this.dependentRoles)
+        {
+            if (dataHolder instanceof Role)
+            {
+                ((Role)dataHolder).save();
+            }
+        }
     }
 
     @Override
@@ -94,5 +182,115 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     public int compareTo(Role o)
     {
         return this.getPriorityValue() - o.getPriorityValue();
+    }
+
+    // Persistent:
+
+    @Override
+    public Map<String, Boolean> getRawPermissions()
+    {
+        return Collections.unmodifiableMap(this.config.perms.getPermissions());
+    }
+
+    @Override
+    public Map<String, String> getRawMetadata()
+    {
+        return Collections.unmodifiableMap(this.config.metadata);
+    }
+
+    @Override
+    public Set<String> getRawRoles()
+    {
+        return Collections.unmodifiableSet(this.config.parents);
+    }
+
+    @Override
+    public PermissionType setPermission(String perm, PermissionType set)
+    {
+        this.makeDirty();
+        return this.config.perms.setPermission(perm, set);
+    }
+
+    @Override
+    public String setMetadata(String key, String value)
+    {
+        this.makeDirty();
+        return this.config.metadata.put(key, value);
+    }
+
+    @Override
+    public boolean removeMetadata(String key)
+    {
+        this.makeDirty();
+        return this.config.metadata.remove(key) != null;
+    }
+
+    @Override
+    public boolean assignRole(Role role)
+    {
+        if (this.inheritsFrom(role))
+        {
+            throw new CircularRoleDependencyException("Cannot add parentrole!");
+        }
+        this.makeDirty();
+        return this.config.parents.add(role.getName());
+    }
+
+    @Override
+    public boolean removeRole(Role role)
+    {
+        this.makeDirty();
+        return this.config.parents.remove(role.getName());
+    }
+
+    @Override
+    public void clearPermissions()
+    {
+        this.makeDirty();
+        this.config.perms.getPermissions().clear();
+    }
+
+    @Override
+    public void clearMetadata()
+    {
+        this.makeDirty();
+        this.config.metadata.clear();;
+    }
+
+    @Override
+    public void clearRoles()
+    {
+        this.makeDirty();
+        this.config.parents.clear();
+    }
+
+    public void reload()
+    {
+        this.config.reload();
+        this.makeDirty();
+    }
+
+    public boolean isDefaultRole()
+    {
+        return this.isDefaultRole;
+    }
+
+    public boolean setDefaultRole(boolean set)
+    {
+        if (!this.isGlobal())
+        {
+            if (this.isDefaultRole != set)
+            {
+                this.isDefaultRole = set;
+                ((WorldRoleProvider)this.roleProvider).setDefaultRole(this, set);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canAssignAndRemove(Permissible permissible)
+    {
+        return this.rolePermission.isAuthorized(permissible);
     }
 }

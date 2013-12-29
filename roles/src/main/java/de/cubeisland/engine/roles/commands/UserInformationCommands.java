@@ -29,8 +29,7 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.role.RawDataStore;
-import de.cubeisland.engine.roles.role.Role_old;
+import de.cubeisland.engine.roles.role.TempDataStore;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
@@ -117,7 +116,7 @@ public class UserInformationCommands extends UserCommandHelper
                                    + " in &6%s", user.getName(), permission, world.getName());
 
         // Display origin
-        RawDataStore store = resolvedPermission.getOrigin();
+        TempDataStore store = resolvedPermission.getOrigin();
         if (resolvedPermission.getOriginPermission() != null) // indirect permission
         {
             permission = resolvedPermission.getOriginPermission();
@@ -145,7 +144,7 @@ public class UserInformationCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
-        RawDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
+        TempDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
         Map<String,Boolean> perms = context.hasFlag("a") ? rawData.getAllRawPermissions() : rawData.getRawPermissions();
         if (perms.isEmpty())
         {
@@ -205,7 +204,7 @@ public class UserInformationCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
-        RawDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
+        TempDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
         Map<String, String> metadata = context.hasFlag("a") ? rawData.getAllRawMetadata() : rawData.getRawMetadata();
         // List all metadata
         context.sendTranslated("&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());

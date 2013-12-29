@@ -36,7 +36,6 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.commands.ManagementCommands;
-import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesManager;
 

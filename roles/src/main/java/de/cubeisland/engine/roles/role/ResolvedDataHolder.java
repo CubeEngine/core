@@ -1,6 +1,7 @@
 package de.cubeisland.engine.roles.role;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,14 +24,14 @@ import gnu.trove.map.hash.THashMap;
 public abstract class ResolvedDataHolder extends TempDataStore
 {
     protected final Roles module;
+    protected final RolesManager manager;
+    protected final RoleProvider provider;
 
-    private Map<String, ResolvedPermission> resolvedPermissions;
-    private Map<String, ResolvedMetadata> resolvedMetadata;
-    private TreeSet<Role> resolvedRoles;
+    protected Map<String, ResolvedPermission> resolvedPermissions;
+    protected Map<String, ResolvedMetadata> resolvedMetadata;
+    protected TreeSet<Role> resolvedRoles;
 
-    protected Set<Role> dependentRoles;
-
-    protected RoleProvider provider;
+    protected Set<ResolvedDataHolder> dependentRoles;
 
     private boolean dirty = true;
 
@@ -39,17 +40,14 @@ public abstract class ResolvedDataHolder extends TempDataStore
         return dirty;
     }
 
-    protected void makeDirty()
+    public void makeDirty()
     {
         this.dirty = true;
-        for (Role role : this.dependentRoles)
-        {
-            role.makeDirty();
-        }
     }
 
-    protected ResolvedDataHolder(RoleProvider provider)
+    protected ResolvedDataHolder(RolesManager manager, RoleProvider provider)
     {
+        this.manager = manager;
         this.provider = provider;
         this.module = provider.module;
     }
@@ -242,5 +240,69 @@ public abstract class ResolvedDataHolder extends TempDataStore
 
         //this.getHolder().sendTranslated("&cYour temporary role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
         //this.getHolder().sendTranslated("&4You should report this to an administrator!");
+    }
+
+    @Override
+    public Map<String, ResolvedPermission> getPermissions()
+    {
+        return Collections.unmodifiableMap(this.resolvedPermissions);
+    }
+
+    @Override
+    public Map<String, ResolvedMetadata> getMetadata()
+    {
+        return Collections.unmodifiableMap(this.resolvedMetadata);
+    }
+
+    @Override
+    public Set<Role> getRoles()
+    {
+        return Collections.unmodifiableSet(this.resolvedRoles);
+    }
+
+    @Override
+    public boolean inheritsFrom(Role other)
+    {
+        if (this.inheritsDirectlyFrom(other))
+        {
+            return true;
+        }
+        for (Role role : this.resolvedRoles)
+        {
+            if (role.inheritsFrom(other))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean inheritsDirectlyFrom(Role other)
+    {
+        return this.resolvedRoles.contains(other);
+    }
+
+    @Override
+    public Map<String, Boolean> getAllRawPermissions()
+    {
+        Map<String,Boolean> result = new THashMap<>();
+        for (Role assignedRole : this.resolvedRoles)
+        {
+            result.putAll(assignedRole.getAllRawPermissions());
+        }
+        result.putAll(this.getRawPermissions());
+        return result;
+    }
+
+    @Override
+    public Map<String, String> getAllRawMetadata()
+    {
+        Map<String,String> result = new THashMap<>();
+        for (Role assignedRole : this.resolvedRoles)
+        {
+            result.putAll(assignedRole.getAllRawMetadata());
+        }
+        result.putAll(this.getRawMetadata());
+        return result;
     }
 }

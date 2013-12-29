@@ -287,20 +287,6 @@ public class RolesAttachment extends UserAttachment
         return dominantRole;
     }
 
-    /**
-     * Removes the assigned default roles from the temporary roles
-     *
-     * @param worldId
-     */
-    public void removeDefaultRoles(long worldId)
-    {
-        DataStore temporaryRawData = this.getTemporaryRawData(worldId);
-        for (Role_old role : this.manager.getProvider(worldId).getDefaultRoles())
-        {
-            temporaryRawData.removeRole(role);
-        }
-    }
-
     public void setWorkingWorldId(Long workingWorldId)
     {
         this.workingWorldID = workingWorldId;

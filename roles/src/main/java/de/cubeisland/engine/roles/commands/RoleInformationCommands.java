@@ -30,7 +30,6 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.role.Role_old;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
