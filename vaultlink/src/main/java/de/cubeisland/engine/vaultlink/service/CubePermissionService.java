@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -32,17 +33,20 @@ import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
+import de.cubeisland.engine.vaultlink.Vaultlink;
 import net.milkbowl.vault.permission.Permission;
 
 public class CubePermissionService extends Permission
 {
+    private final Vaultlink module;
     private final Roles roles;
     private final UserManager um;
     private final WorldManager wm;
     private final PermissionManager pm;
 
-    public CubePermissionService(Roles roles)
+    public CubePermissionService(Vaultlink module, Roles roles)
     {
+        this.module = module;
         this.roles = roles;
         this.um = roles.getCore().getUserManager();
         this.wm = roles.getCore().getWorldManager();
@@ -52,7 +56,7 @@ public class CubePermissionService extends Permission
     @Override
     public String getName()
     {
-        return "CubeEngine:" + roles.getName();
+        return CubeEngine.class.getSimpleName() + ":" + module.getName();
     }
 
     @Override

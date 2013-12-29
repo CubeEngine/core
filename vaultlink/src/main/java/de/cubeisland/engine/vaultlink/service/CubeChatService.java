@@ -17,23 +17,27 @@
  */
 package de.cubeisland.engine.vaultlink.service;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RawDataStore;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RolesAttachment;
+import de.cubeisland.engine.vaultlink.Vaultlink;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 
 public class CubeChatService extends Chat
 {
+    private final Vaultlink module;
     private final Roles roles;
     private final WorldManager wm;
 
-    public CubeChatService(Roles roles, Permission perms)
+    public CubeChatService(Vaultlink module, Roles roles, Permission perms)
     {
         super(perms);
+        this.module = module;
         this.roles = roles;
         this.wm = roles.getCore().getWorldManager();
     }
@@ -41,7 +45,7 @@ public class CubeChatService extends Chat
     @Override
     public String getName()
     {
-        return "CubeEngine:" + roles.getName();
+        return CubeEngine.class.getSimpleName() + ":" + module.getName();
     }
 
     @Override

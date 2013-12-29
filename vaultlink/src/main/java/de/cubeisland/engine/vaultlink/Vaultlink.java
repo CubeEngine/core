@@ -17,11 +17,14 @@
  */
 package de.cubeisland.engine.vaultlink;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServiceRegisterEvent;
 import org.bukkit.event.server.ServiceUnregisterEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
@@ -32,12 +35,15 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.vaultlink.service.CubeChatService;
 import de.cubeisland.engine.vaultlink.service.CubeEconomyService;
 import de.cubeisland.engine.vaultlink.service.CubePermissionService;
+import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 public class Vaultlink extends Module implements Listener
 {
+    private final AtomicReference<de.cubeisland.engine.core.module.service.Economy> economyReference = new AtomicReference<>();
+
     @Override
     public void onLoad()
     {
@@ -45,19 +51,19 @@ public class Vaultlink extends Module implements Listener
         if (module != null && module instanceof Roles)
         {
             Roles roles = (Roles)module;
-            Permission service = new CubePermissionService(roles);
+            Permission service = new CubePermissionService(this, roles);
             Bukkit.getServicesManager().register(Permission.class, service, (BukkitCore)getCore(), ServicePriority.Highest);
-            Bukkit.getServicesManager().register(Chat.class, new CubeChatService(roles, service), (BukkitCore)getCore(), ServicePriority.Highest);
+            Bukkit.getServicesManager().register(Chat.class, new CubeChatService(this, roles, service), (BukkitCore)getCore(), ServicePriority.Highest);
         }
 
-        de.cubeisland.engine.core.module.service.Economy provider = getCore().getModuleManager().getServiceManager().getServiceProvider(de.cubeisland.engine.core.module.service.Economy.class);
-        Bukkit.getServicesManager().register(Economy.class, new CubeEconomyService(this, provider), (BukkitCore)getCore(), ServicePriority.Highest);
+        Bukkit.getServicesManager().register(Economy.class, new CubeEconomyService(this, economyReference), (BukkitCore)getCore(), ServicePriority.Highest);
     }
 
     @Override
     public void onEnable()
     {
         this.getCore().getEventManager().registerListener(this, this);
+        this.economyReference.set(getCore().getModuleManager().getServiceManager().getServiceProvider(de.cubeisland.engine.core.module.service.Economy.class));
     }
 
     @Override
