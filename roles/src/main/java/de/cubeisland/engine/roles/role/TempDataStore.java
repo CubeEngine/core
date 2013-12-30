@@ -8,8 +8,6 @@ import java.util.Set;
 
 public abstract class TempDataStore implements DataStore
 {
-    // Temporary:
-
     protected Map<String, Boolean> tempPermissions = new HashMap<>();
     protected Map<String, String> tempMetadata = new HashMap<>();
     protected Set<String> tempRoles = new HashSet<>();

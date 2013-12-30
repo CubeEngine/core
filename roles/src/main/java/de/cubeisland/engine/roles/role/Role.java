@@ -4,12 +4,15 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
+import org.bukkit.World;
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
@@ -20,18 +23,16 @@ import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
 
 public class Role extends ResolvedDataHolder implements Comparable<Role>
 {
-    protected RoleConfig config;
-    protected RoleProvider roleProvider;
-    protected Permission rolePermission;
+    protected final RoleConfig config;
+    protected final Permission rolePermission;
 
     private boolean isDefaultRole = false;
 
-    public Role(RolesManager manager, RoleProvider roleProvider, RoleConfig config)
+    public Role(RolesManager manager, RoleProvider provider, RoleConfig config)
     {
-        super(manager, roleProvider);
+        super(manager, provider);
         this.config = config;
-        this.roleProvider = roleProvider;
-        this.rolePermission = roleProvider.basePerm.createChild(config.roleName);
+        this.rolePermission = provider.basePerm.createChild(config.roleName);
         this.module.getCore().getPermissionManager().registerPermission(this.module, this.rolePermission);
     }
 
@@ -55,15 +56,20 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
         if (this.isGlobal())
         {
             this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row("g:" + newName)).
-                where(TABLE_ROLE.ROLENAME.eq("g:" + this.getName())).execute();
+                where(TABLE_ROLE.ROLENAME.eq(this.getName())).execute();
         }
         else
         {
             Set<UInteger> worldMirrors = new HashSet<>();
-            // TODO fill worldMirrors from provider
+            for (Entry<World, Triplet<Boolean, Boolean, Boolean>> entry : ((WorldRoleProvider)provider).getWorldMirrors().entrySet())
+            {
+                if (entry.getValue().getSecond())
+                {
+                    worldMirrors.add(UInteger.valueOf(this.module.getCore().getWorldManager().getWorldId(entry.getKey())));
+                }
+            }
             this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row(newName)).
-                where(TABLE_ROLE.ROLENAME.eq(this.getName()),
-                      TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
+                where(TABLE_ROLE.ROLENAME.eq(this.getName()), TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
         }
         this.delete();
         this.config.roleName = newName;
@@ -93,12 +99,18 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
         }
         if (this.isGlobal())
         {
-            this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.ROLENAME.eq("g:" + this.getName())).execute();
+            this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.ROLENAME.eq(this.getName())).execute();
         }
         else
         {
             Set<UInteger> worldMirrors = new HashSet<>();
-            // TODO fill worldMirrors from provider
+            for (Entry<World, Triplet<Boolean, Boolean, Boolean>> entry : ((WorldRoleProvider)provider).getWorldMirrors().entrySet())
+            {
+                if (entry.getValue().getSecond())
+                {
+                    worldMirrors.add(UInteger.valueOf(this.module.getCore().getWorldManager().getWorldId(entry.getKey())));
+                }
+            }
             this.manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.ROLENAME.eq(this.getName()),
                                                       TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
         }
@@ -124,7 +136,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
 
     public boolean isGlobal()
     {
-        return this.roleProvider instanceof GlobalRoleProvider;
+        return this.provider instanceof GlobalRoleProvider;
     }
 
     public int getPriorityValue()
@@ -132,10 +144,11 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
         return this.config.priority.value;
     }
 
-    public void setPriorityValue(int value)
+    public Role setPriorityValue(int value)
     {
         this.makeDirty();
         this.config.priority = Priority.getByValue(value);
+        return this;
     }
 
     public void save()
@@ -149,42 +162,6 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
             }
         }
     }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass())
-        {
-            return false;
-        }
-
-        Role role = (Role)o;
-
-        if (getName() != null ? !getName().equals(role.getName()) : role.getName() != null)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return getName() != null ? getName().hashCode() : 0;
-    }
-
-    @Override
-    public int compareTo(Role o)
-    {
-        return this.getPriorityValue() - o.getPriorityValue();
-    }
-
-    // Persistent:
 
     @Override
     public Map<String, Boolean> getRawPermissions()
@@ -282,7 +259,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
             if (this.isDefaultRole != set)
             {
                 this.isDefaultRole = set;
-                ((WorldRoleProvider)this.roleProvider).setDefaultRole(this, set);
+                ((WorldRoleProvider)this.provider).setDefaultRole(this, set);
                 return true;
             }
         }
@@ -292,5 +269,39 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     public boolean canAssignAndRemove(Permissible permissible)
     {
         return this.rolePermission.isAuthorized(permissible);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        Role role = (Role)o;
+
+        if (getName() != null ? !getName().equals(role.getName()) : role.getName() != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getName() != null ? getName().hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(Role o)
+    {
+        return this.getPriorityValue() - o.getPriorityValue();
     }
 }

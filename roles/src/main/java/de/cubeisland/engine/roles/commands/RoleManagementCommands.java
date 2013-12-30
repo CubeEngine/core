@@ -33,7 +33,6 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.config.PriorityConverter;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
-import de.cubeisland.engine.roles.role.TempDataStore.PermissionType;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
 

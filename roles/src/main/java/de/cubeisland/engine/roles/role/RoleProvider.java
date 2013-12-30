@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.roles.role;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -32,28 +33,24 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import gnu.trove.map.hash.THashMap;
-import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
-import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
-
 
 public abstract class RoleProvider
 {
-    protected Roles module;
-    protected RolesManager manager;
+    protected final Roles module;
+    protected final RolesManager manager;
+    protected final Permission basePerm;
 
     protected THashMap<String, RoleConfig> configs;
     protected THashMap<String, Role> roles;
-    protected Permission basePerm;
     protected Path folder;
-    protected final long mainWorldId;
 
-    protected RoleProvider(Roles module, RolesManager manager, long mainWorldId)
+    protected RoleProvider(RolesManager manager, Permission basePerm)
     {
-        this.module = module;
+        this.module = manager.module;
         this.manager = manager;
-        this.mainWorldId = mainWorldId;
+        this.basePerm = basePerm;
     }
 
     /**
@@ -96,7 +93,7 @@ public abstract class RoleProvider
             RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
             if (rolesAttachment != null)
             {
-                rolesAttachment.flushResolvedData();
+                rolesAttachment.flushData();
             }
         }
 
@@ -146,17 +143,6 @@ public abstract class RoleProvider
         }
     }
 
-
-    /**
-     * Returns the ID of the main world of this RoleProvider.
-     *
-     * @return the main-worldID or 0 if GlobalProvider
-     */
-    public long getMainWorldId()
-    {
-        return mainWorldId;
-    }
-
     /**
      * Creates a new Role with given name
      *
@@ -180,9 +166,9 @@ public abstract class RoleProvider
         config.onLoaded(null);
         config.setFile(this.folder.resolve(roleName + ".yml").toFile()); // TODO it's not guaranteed implementations set the folder
         config.save();
-        Role_old role = new Role_old(this, config);
-        this.roles.put(roleName,role);
-        this.calculateRole(role, new Stack<String>());
+        Role role = new Role(manager, this, config);
+        this.roles.put(roleName, role);
+        role.calculate(new Stack<String>());
         return role;
     }
 
@@ -208,8 +194,5 @@ public abstract class RoleProvider
         this.configs.put(role.getName(), role.config);
     }
 
-    public World getMainWorld()
-    {
-        return mainWorld;
-    }
+    public abstract World getMainWorld();
 }

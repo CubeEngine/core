@@ -27,6 +27,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
+import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesManager;
@@ -58,14 +59,13 @@ public abstract class RoleCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                Long worldId = user.attachOrGet(RolesAttachment.class,this.module).getWorkingWorldId();
-                if (worldId == null)
+                world = user.attachOrGet(RolesAttachment.class,this.module).getWorkingWorld();
+                if (world == null)
                 {
                     world = user.getWorld();
                 }
                 else
                 {
-                    world = this.worldManager.getWorld(worldId);
                     context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
                 }
             }
@@ -93,9 +93,9 @@ public abstract class RoleCommandHelper extends ContainerCommand
         return world;
     }
 
-    protected Role_old getRole(CommandContext context, RoleProvider provider, String name, World world)
+    protected Role getRole(CommandContext context, RoleProvider provider, String name, World world)
     {
-        Role_old role = provider.getRole(name);
+        Role role = provider.getRole(name);
         if (role == null)
         {
             if (world == null)

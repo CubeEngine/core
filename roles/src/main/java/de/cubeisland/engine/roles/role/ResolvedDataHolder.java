@@ -35,6 +35,13 @@ public abstract class ResolvedDataHolder extends TempDataStore
 
     private boolean dirty = true;
 
+    protected ResolvedDataHolder(RolesManager manager, RoleProvider provider)
+    {
+        this.manager = manager;
+        this.module = manager.module;
+        this.provider = provider;
+    }
+
     public boolean isDirty()
     {
         return dirty;
@@ -43,13 +50,6 @@ public abstract class ResolvedDataHolder extends TempDataStore
     public void makeDirty()
     {
         this.dirty = true;
-    }
-
-    protected ResolvedDataHolder(RolesManager manager, RoleProvider provider)
-    {
-        this.manager = manager;
-        this.provider = provider;
-        this.module = provider.module;
     }
 
     @Override
@@ -61,7 +61,8 @@ public abstract class ResolvedDataHolder extends TempDataStore
         }
         if (roleStack.contains(this.getName()))
         {
-            throw new CircularRoleDependencyException("Cannot load role! Circular Dependency detected in " + this.getName() + "\n" + StringUtils.implode(", ", roleStack));
+            throw new CircularRoleDependencyException("Cannot load role! Circular Dependency detected in " +
+                  this.getName() + "\n" + StringUtils.implode(", ", roleStack));
         }
         roleStack.push(this.getName());
         this.resolveRoles(roleStack);
@@ -168,7 +169,6 @@ public abstract class ResolvedDataHolder extends TempDataStore
         }
     }
 
-
     private void resolveRoles(Stack<String> roleStack)
     {
         List<Role> roles = new ArrayList<>();
@@ -263,7 +263,7 @@ public abstract class ResolvedDataHolder extends TempDataStore
     @Override
     public boolean inheritsFrom(Role other)
     {
-        if (this.inheritsDirectlyFrom(other))
+        if (this.resolvedRoles.contains(other))
         {
             return true;
         }
@@ -275,11 +275,6 @@ public abstract class ResolvedDataHolder extends TempDataStore
             }
         }
         return false;
-    }
-
-    public boolean inheritsDirectlyFrom(Role other)
-    {
-        return this.resolvedRoles.contains(other);
     }
 
     @Override

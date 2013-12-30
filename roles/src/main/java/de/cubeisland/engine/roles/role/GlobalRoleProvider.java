@@ -19,18 +19,17 @@ package de.cubeisland.engine.roles.role;
 
 import java.nio.file.Path;
 
-import de.cubeisland.engine.roles.Roles;
+import org.bukkit.World;
 
 public class GlobalRoleProvider extends RoleProvider
 {
-    public GlobalRoleProvider(Roles module, RolesManager manager)
+    public GlobalRoleProvider(RolesManager manager)
     {
-        super(module, manager, 0);
-        this.basePerm = module.getBasePermission().createAbstractChild("global");
+        super(manager, manager.module.getBasePermission().createAbstractChild("global"));
     }
 
     @Override
-    public Path getFolder()
+    protected Path getFolder()
     {
         return this.manager.getRolesFolder();
     }
@@ -55,5 +54,11 @@ public class GlobalRoleProvider extends RoleProvider
             return super.getRole(name.substring(2));
         }
         return super.getRole(name);
+    }
+
+    @Override
+    public World getMainWorld()
+    {
+        return null;
     }
 }

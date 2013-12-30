@@ -22,9 +22,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.roles.RoleAppliedEvent;
+import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.storage.UserMetaData;
 import de.cubeisland.engine.roles.storage.UserPermission;
 import org.jooq.Record1;
@@ -42,7 +47,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
     private final RolesManager manager;
     private final RolesAttachment attachment;
 
-    public UserDatabaseStore(RolesAttachment attachment, RoleProvider provider, RolesManager manager, World world)
+    public UserDatabaseStore(RolesAttachment attachment, WorldRoleProvider provider, RolesManager manager, World world)
     {
         super(manager, provider);
         this.attachment = attachment;
@@ -64,24 +69,20 @@ public class UserDatabaseStore extends ResolvedDataHolder
 
     protected void loadFromDatabase()
     {
-        UInteger assignedRolesMirror = UInteger.valueOf(this.manager.assignedRolesMirrors.get(this.getMainWorldID()));
-        Result<Record1<String>> roleFetch = manager.dsl.select(TABLE_ROLE.ROLENAME).from(TABLE_ROLE)
-                    .where(TABLE_ROLE.USERID.eq(this.getUserID()),
-                           TABLE_ROLE.WORLDID.eq(assignedRolesMirror)).fetch();
+        UInteger assignedRolesMirror = getDBWorldId(this.manager.assignedRolesMirrors.get(this.world));
+        Result<Record1<String>> roleFetch = manager.dsl.select(TABLE_ROLE.ROLENAME).
+            from(TABLE_ROLE).where(TABLE_ROLE.USERID.eq(this.getUserID()), TABLE_ROLE.WORLDID.eq(assignedRolesMirror)).fetch();
         this.roles = new HashSet<>(roleFetch.getValues(TABLE_ROLE.ROLENAME, String.class));
-        UInteger userDataMirror = UInteger.valueOf(this.manager.assignedUserDataMirrors.get(this.getMainWorldID()));
-
-        Result<Record2<String,Boolean>> permFetch = manager.dsl.select(TABLE_PERM.PERM, TABLE_PERM.ISSET).from(TABLE_PERM)
-               .where(TABLE_PERM.USERID.eq(this.getUserID()),
-                      TABLE_PERM.WORLDID.eq(userDataMirror)).fetch();
+        UInteger userDataMirror = getDBWorldId(this.manager.assignedUserDataMirrors.get(this.world));
+        Result<Record2<String,Boolean>> permFetch = manager.dsl.select(TABLE_PERM.PERM, TABLE_PERM.ISSET).
+            from(TABLE_PERM).where(TABLE_PERM.USERID.eq(this.getUserID()), TABLE_PERM.WORLDID.eq(userDataMirror)).fetch();
         this.permissions = new HashMap<>();
         for (Record2<String, Boolean> perm : permFetch)
         {
             this.permissions.put(perm.value1(), perm.value2());
         }
-        Result<Record2<String,String>> metaFetch = manager.dsl.select(TABLE_META.KEY, TABLE_META.VALUE).from(TABLE_META)
-                                                        .where(TABLE_META.USERID.eq(this.getUserID()),
-                                                               TABLE_META.WORLDID.eq(userDataMirror)).fetch();
+        Result<Record2<String,String>> metaFetch = manager.dsl.select(TABLE_META.KEY, TABLE_META.VALUE).
+           from(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()), TABLE_META.WORLDID.eq(userDataMirror)).fetch();
         this.metadata = new HashMap<>();
         for (Record2<String, String> meta : metaFetch)
         {
@@ -106,12 +107,13 @@ public class UserDatabaseStore extends ResolvedDataHolder
         if (set == PermissionType.NOT_SET)
         {
             manager.dsl.delete(TABLE_PERM).where(TABLE_PERM.USERID.eq(this.getUserID()),
-                                                 TABLE_PERM.WORLDID.eq(this.getMirrorWorldId()),
+                                                 TABLE_PERM.WORLDID.eq(getDBWorldId(this.manager.assignedUserDataMirrors.get(world))),
                                                  TABLE_PERM.PERM.eq(perm)).execute();
         }
         else
         {
-            UserPermission userPerm = manager.dsl.newRecord(TABLE_PERM).newPerm(this.getUserID(), this.getMirrorWorldId(), perm, set);
+            UserPermission userPerm = manager.dsl.newRecord(TABLE_PERM).newPerm(this.getUserID(),
+                getDBWorldId(this.manager.assignedUserDataMirrors.get(world)), perm, set);
             manager.dsl.insertInto(TABLE_PERM).set(userPerm).onDuplicateKeyUpdate().set(userPerm).execute();
         }
         this.makeDirty();
@@ -125,7 +127,8 @@ public class UserDatabaseStore extends ResolvedDataHolder
     @Override
     public String setMetadata(String key, String value)
     {
-        UserMetaData userMeta = manager.dsl.newRecord(TABLE_META).newMeta(this.getUserID(), this.getMirrorWorldId(), key, value);
+        UserMetaData userMeta = manager.dsl.newRecord(TABLE_META).newMeta(this.getUserID(),
+            getDBWorldId(this.manager.assignedUserDataMirrors.get(world)), key, value);
         manager.dsl.insertInto(TABLE_META).set(userMeta).onDuplicateKeyUpdate().set(userMeta).execute();
         this.makeDirty();
         return this.metadata.put(key, value);
@@ -134,9 +137,9 @@ public class UserDatabaseStore extends ResolvedDataHolder
     @Override
     public boolean removeMetadata(String key)
     {
-        manager.dsl.delete(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()), TABLE_META.WORLDID
-                                                                                               .eq(this.getMirrorWorldId()), TABLE_META
-                                                 .KEY.eq(key)).execute();
+        manager.dsl.delete(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()),
+                                             TABLE_META.WORLDID.eq(getDBWorldId(this.manager.assignedUserDataMirrors.get(world))),
+                                             TABLE_META.KEY.eq(key)).execute();
         this.makeDirty();
         return this.metadata.remove(key) != null;
     }
@@ -148,7 +151,8 @@ public class UserDatabaseStore extends ResolvedDataHolder
         {
             return false;
         }
-        manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(), this.getMirrorWorldId(), role.getName()).insert();
+        manager.dsl.newRecord(TABLE_ROLE).newAssignedRole(this.getUserID(),
+            getDBWorldId(this.manager.assignedUserDataMirrors.get(world)), role.getName()).insert();
         this.removeRoles(role.getRoles());
         if (this.roles.isEmpty())
         {
@@ -176,7 +180,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         if (this.roles.contains(role.getName()))
         {
             manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.USERID.eq(this.getUserID()),
-                                                 TABLE_ROLE.WORLDID.eq(this.getMirrorWorldId()),
+                                                 TABLE_ROLE.WORLDID.eq(getDBWorldId(this.manager.assignedRolesMirrors.get(world))),
                                                  TABLE_ROLE.ROLENAME.eq(role.getName())).execute();
             this.makeDirty();
             return this.roles.remove(role.getName());
@@ -190,7 +194,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         if (!this.permissions.isEmpty())
         {
             manager.dsl.delete(TABLE_PERM).where(TABLE_PERM.USERID.eq(this.getUserID()),
-                                 TABLE_PERM.WORLDID.eq(this.getMirrorWorldId())).execute();
+                TABLE_PERM.WORLDID.eq(getDBWorldId(this.manager.assignedUserDataMirrors.get(world)))).execute();
             this.makeDirty();
             this.permissions.clear();
         }
@@ -202,7 +206,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         if (!this.metadata.isEmpty())
         {
             manager.dsl.delete(TABLE_META).where(TABLE_META.USERID.eq(this.getUserID()),
-                                                 TABLE_META.WORLDID.eq(this.getMirrorWorldId())).execute();
+                TABLE_META.WORLDID.eq(getDBWorldId(this.manager.assignedUserDataMirrors.get(world)))).execute();
             this.makeDirty();
             this.metadata.clear();
         }
@@ -214,7 +218,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         if (!this.roles.isEmpty())
         {
             manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.USERID.eq(this.getUserID()),
-                                                 TABLE_ROLE.WORLDID.eq(this.getMirrorWorldId())).execute();
+                TABLE_ROLE.WORLDID.eq(getDBWorldId(this.manager.assignedUserDataMirrors.get(world)))).execute();
             this.makeDirty();
             this.roles.clear();
         }
@@ -238,7 +242,49 @@ public class UserDatabaseStore extends ResolvedDataHolder
         return Collections.unmodifiableSet(this.roles);
     }
 
-    /* TODO
+    private UInteger getDBWorldId(World world)
+    {
+        return UInteger.valueOf(this.module.getCore().getWorldManager().getWorldId(world));
+    }
+
+    /**
+     * Sets all permissions metadata and roles for the players world
+     */
+    public void apply()
+    {
+        User user = this.attachment.getHolder();
+        if (user.isOnline())
+        {
+            this.module.getLog().debug("Calculating Roles of Player {}...", user.getName());
+            if (this.getRawRoles().isEmpty())
+            {
+                for (Role role : ((WorldRoleProvider)this.provider).getDefaultRoles())
+                {
+                    this.assignTempRole(role);
+                }
+            }
+            this.calculate(new Stack<String>());
+            if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
+            {
+                if (!attachment.isOfflineMsgReceived())
+                {
+                    user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
+                    attachment.setOfflineMsgReceived(true);
+                }
+                this.module.getLog().warn("Role-permissions not applied! Server is running in unsecured offline-mode!");
+                return;
+            }
+            user.setPermission(this.getResolvedPermissions());
+            for (Role assignedRole : this.getRoles())
+            {
+                this.module.getLog().debug(" - {}", assignedRole.getName());
+            }
+        }
+        this.module.getCore().getEventManager().fireEvent(new RoleAppliedEvent(module, user, this.attachment));
+        // else user is offline ignore
+    }
+
+    /* TODO mass set
     @Override
     public void setRawPermissions(Map<String, Boolean> perms)
     {

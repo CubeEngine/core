@@ -17,10 +17,8 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import org.bukkit.Bukkit;
@@ -28,34 +26,37 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
-import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.roles.RoleAppliedEvent;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
-import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.hash.THashSet;
-import org.jooq.types.UInteger;
 
 public class RolesAttachment extends UserAttachment
 {
+    private Roles roles;
+
     private Map<World, UserDatabaseStore> dataStores = new HashMap<>();
 
-    protected RolesManager manager;
-    protected RolesConfig config;
+    private World workingWorld;
 
-    public ResolvedDataHolder getCurrentDataHolder()
+    private boolean offlineMsgReceived = false;
+
+
+    public UserDatabaseStore getCurrentDataHolder()
     {
         return this.getDataHolder(this.getHolder().getWorld());
     }
 
-    public ResolvedDataHolder getDataHolder(World world)
+    public UserDatabaseStore getDataHolder(World world)
     {
+        if (world == null)
+        {
+            return null;
+        }
         UserDatabaseStore store = this.dataStores.get(world);
         if (store == null)
         {
-            store = new UserDatabaseStore(this, this.manager.getProvider(world), manager, world);
+            store = new UserDatabaseStore(this, this.roles.getRolesManager().getProvider(world), this.roles.getRolesManager(), world);
             this.dataStores.put(world, store);
         }
         if (store.isDirty())
@@ -80,47 +81,11 @@ public class RolesAttachment extends UserAttachment
 
     public WorldRoleProvider getCurrentWorldProvider()
     {
-        return this.manager.getProvider(this.getHolder().getWorld());
-    }
-
-    private boolean offlineMsgReceived = false;
-
-    /**
-     * Sets all permissions metadata and roles for the players world
-     */
-    public void apply()
-    {
-        User user = this.getHolder();
-        if (user.isOnline())
+        if (this.getHolder().getWorld() == null)
         {
-            this.getModule().getLog().debug("Calculating Roles of Player {}...", user.getName());
-            ResolvedDataHolder dataHolder = this.getDataHolder(user.getWorld());
-            if (dataHolder.getRawRoles().isEmpty())
-            {
-                for (Role role : this.getCurrentWorldProvider().getDefaultRoles())
-                {
-                    dataHolder.assignTempRole(role);
-                }
-            }
-            dataHolder.calculate(new Stack<String>());
-            if (!Bukkit.getServer().getOnlineMode() && this.config.doNotAssignPermIfOffline && !user.isLoggedIn())
-            {
-                if (!offlineMsgReceived)
-                {
-                    user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
-                    offlineMsgReceived = true;
-                }
-                this.getModule().getLog().warn("Role-permissions not applied! Server is running in unsecured offline-mode!");
-                return;
-            }
-            user.setPermission(dataHolder.getResolvedPermissions());
-            for (Role assignedRole : dataHolder.getRoles())
-            {
-                this.getModule().getLog().debug(" - {}", assignedRole.getName());
-            }
+            return null;
         }
-        this.getModule().getCore().getEventManager().fireEvent(new RoleAppliedEvent((Roles)this.getModule(), user, this));
-        // else user is offline ignore
+        return this.roles.getRolesManager().getProvider(this.getHolder().getWorld());
     }
 
     /**
@@ -128,21 +93,15 @@ public class RolesAttachment extends UserAttachment
      *
      * @return
      */
-    public Role_old getDominantRole()
+    public Role getDominantRole()
     {
-       return this.getDominantRole(this.getHolder().getWorldId());
+       return this.getDominantRole(this.getHolder().getWorld());
     }
 
-    /**
-     * Returns the role with highest priority value assigned to the holder in the given world
-     *
-     * @param worldID
-     * @return
-     */
-    public Role_old getDominantRole(long worldID)
+    public Role getDominantRole(World world)
     {
-        Role_old dominantRole = null;
-        for (Role_old role : this.getResolvedData(worldID).assignedRoles)
+        Role dominantRole = null;
+        for (Role role : this.getDataHolder(world).getRoles())
         {
             if (dominantRole == null)
             {
@@ -156,38 +115,14 @@ public class RolesAttachment extends UserAttachment
         return dominantRole;
     }
 
-    public void setWorkingWorldId(Long workingWorldId)
+    public void setWorkingWorld(World world)
     {
-        this.workingWorldID = workingWorldId;
+        this.workingWorld = world;
     }
 
-    public Long getWorkingWorldId()
+    public World getWorkingWorld()
     {
-        return workingWorldID;
-    }
-
-    public Set<Role_old> getAssignedRoles(long worldID)
-    {
-        return Collections.unmodifiableSet(this.getResolvedData(worldID).assignedRoles);
-    }
-
-    public Map<String,ResolvedPermission> getPermissions(long worldID)
-    {
-        return Collections.unmodifiableMap(this.getResolvedData(worldID).permissions);
-    }
-
-    public Map<String,ResolvedMetadata> getMetadata(long worldID)
-    {
-        return Collections.unmodifiableMap(this.getResolvedData(worldID).metadata);
-    }
-
-    protected void makeDirty(long worldID)
-    {
-        if (this.getHolder().getWorld() != null && this.getHolder().getWorldId() == worldID)
-        {
-            this.currentMetaData = null;
-        }
-        this.dataStores.remove(worldID);
+        return this.workingWorld;
     }
 
     @Override
@@ -195,12 +130,26 @@ public class RolesAttachment extends UserAttachment
     {
         if (this.getModule() instanceof Roles)
         {
-            this.manager = ((Roles)this.getModule()).getRolesManager();
-            this.config = ((Roles)this.getModule()).getConfiguration();
+            this.roles = (Roles)this.getModule();
         }
         else
         {
             throw new IllegalArgumentException("The module has to be Roles");
         }
+    }
+
+    public void flushData()
+    {
+        this.dataStores = new HashMap<>();
+    }
+
+    public boolean isOfflineMsgReceived()
+    {
+        return offlineMsgReceived;
+    }
+
+    public void setOfflineMsgReceived(boolean offlineMsgReceived)
+    {
+        this.offlineMsgReceived = offlineMsgReceived;
     }
 }
