@@ -91,10 +91,10 @@ public class WorldRoleProvider extends RoleProvider
     {
         if (this.roles.isEmpty())
         {
-            this.module.getLog().warn("There are no roles for {}", mirrorConfig.mainWorld);
+            this.module.getLog().warn("There are no roles for {}", mirrorConfig.mainWorld.getName());
             return;
         }
-        this.module.getLog().debug("Calculating Roles of {}...", mirrorConfig.mainWorld);
+        this.module.getLog().debug("Calculating Roles of {}...", mirrorConfig.mainWorld.getName());
         super.recalculateRoles();
     }
 

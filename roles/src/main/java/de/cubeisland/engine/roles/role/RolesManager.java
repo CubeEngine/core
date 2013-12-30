@@ -112,13 +112,13 @@ public class RolesManager
     private void registerWorldRoleProvider(WorldRoleProvider provider)
     {
         Map<World, Triplet<Boolean, Boolean, Boolean>> worldMirrors = provider.getWorldMirrors();
-        this.module.getLog().debug("Loading role-provider for {}", provider.getMainWorld());
+        this.module.getLog().debug("Loading role-provider for {}", provider.getMainWorld().getName());
         for (World world : worldMirrors.keySet())
         {
             if (this.worldRoleProviders.containsKey(world))
             {
                 this.module.getLog().error("The world {} is mirrored multiple times! Check your configuration under mirrors.{}",
-                                           world.getName(), provider.getMainWorld());
+                                           world.getName(), provider.getMainWorld().getName());
                 continue;
             }
             this.module.getLog().debug("  {}:", world.getName());
