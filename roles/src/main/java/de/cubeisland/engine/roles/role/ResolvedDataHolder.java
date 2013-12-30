@@ -111,7 +111,6 @@ public abstract class ResolvedDataHolder extends TempDataStore
 
     private void calculateMetadata(Map<String, String> metadata)
     {
-        this.resolvedMetadata = new THashMap<>();
         for (Entry<String, String> entry : metadata.entrySet())
         {
             this.resolvedMetadata.put(entry.getKey(), new ResolvedMetadata(this, entry.getKey(), entry.getValue()));
@@ -217,13 +216,13 @@ public abstract class ResolvedDataHolder extends TempDataStore
                 try
                 {
                     role.calculate(roleStack);
-                    result.add(role);
                 }
                 catch (CircularRoleDependencyException e)
                 {
                     this.module.getLog().warn(e, "A CircularRoleDependencyException occurred");
                 }
             }
+            result.add(role);
         }
         this.inheritRoles(result);
     }
