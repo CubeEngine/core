@@ -17,13 +17,15 @@
  */
 package de.cubeisland.engine.vaultlink.service;
 
+import org.bukkit.World;
+
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.role.RawDataStore;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RolesAttachment;
+import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.vaultlink.Vaultlink;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
@@ -54,26 +56,35 @@ public class CubeChatService extends Chat
         return roles.isEnabled();
     }
 
-    private String getUserMetadata(String world, String username, String key)
+    private ResolvedMetadata getUserMetadata(String worldName, String username, String key)
     {
         User user = roles.getCore().getUserManager().getUser(username);
         if (user == null)
         {
             return null;
         }
-
+        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        if (world == null)
+        {
+            return null;
+        }
         RolesAttachment attachment = user.get(RolesAttachment.class);
-        return attachment.getRawData(wm.getWorldId(world)).getAllRawMetadata().get(key);
+        return attachment.getDataHolder(world).getMetadata().get(key);
     }
 
-    private String getRoleMetadata(String world, String roleName, String key)
+    private ResolvedMetadata getRoleMetadata(String worldName, String roleName, String key)
     {
-        Role role = roles.getRolesManager().getProvider(wm.getWorldId(world)).getRole(roleName);
+        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        if (world == null)
+        {
+            return null;
+        }
+        Role role = roles.getRolesManager().getProvider(world).getRole(roleName);
         if (role == null)
         {
             return null;
         }
-        return role.getAllRawMetadata().get(key);
+        return role.getMetadata().get(key);
     }
 
     @Override
@@ -127,12 +138,12 @@ public class CubeChatService extends Chat
     @Override
     public int getPlayerInfoInteger(String world, String player, String node, int defaultValue)
     {
-        String data = getUserMetadata(world, player, node);
+        ResolvedMetadata data = getUserMetadata(world, player, node);
         try
         {
             if (data != null)
             {
-                return Integer.parseInt(data);
+                return Integer.parseInt(data.getValue());
             }
         }
         catch (NumberFormatException ignore)
@@ -149,12 +160,12 @@ public class CubeChatService extends Chat
     @Override
     public int getGroupInfoInteger(String world, String group, String node, int defaultValue)
     {
-        String data = getRoleMetadata(world, group, node);
+        ResolvedMetadata data = getRoleMetadata(world, group, node);
         try
         {
             if (data != null)
             {
-                return Integer.parseInt(data);
+                return Integer.parseInt(data.getValue());
             }
         }
         catch (NumberFormatException ignore)
@@ -171,12 +182,12 @@ public class CubeChatService extends Chat
     @Override
     public double getPlayerInfoDouble(String world, String player, String node, double defaultValue)
     {
-        String data = getUserMetadata(world, player, node);
+        ResolvedMetadata data = getUserMetadata(world, player, node);
         try
         {
             if (data != null)
             {
-                return Double.parseDouble(data);
+                return Double.parseDouble(data.getValue());
             }
         }
         catch (NumberFormatException ignore)
@@ -193,12 +204,12 @@ public class CubeChatService extends Chat
     @Override
     public double getGroupInfoDouble(String world, String group, String node, double defaultValue)
     {
-        String data = getRoleMetadata(world, group, node);
+        ResolvedMetadata data = getRoleMetadata(world, group, node);
         try
         {
             if (data != null)
             {
-                return Double.parseDouble(data);
+                return Double.parseDouble(data.getValue());
             }
         }
         catch (NumberFormatException ignore)
@@ -215,12 +226,12 @@ public class CubeChatService extends Chat
     @Override
     public boolean getPlayerInfoBoolean(String world, String player, String node, boolean defaultValue)
     {
-        String data = getUserMetadata(world, player, node);
+        ResolvedMetadata data = getUserMetadata(world, player, node);
         try
         {
             if (data != null)
             {
-                return Boolean.parseBoolean(data);
+                return Boolean.parseBoolean(data.getValue());
             }
         }
         catch (NumberFormatException ignore)
@@ -237,12 +248,12 @@ public class CubeChatService extends Chat
     @Override
     public boolean getGroupInfoBoolean(String world, String group, String node, boolean defaultValue)
     {
-        String data = getRoleMetadata(world, group, node);
+        ResolvedMetadata data = getRoleMetadata(world, group, node);
         try
         {
             if (data != null)
             {
-                return Boolean.parseBoolean(data);
+                return Boolean.parseBoolean(data.getValue());
             }
         }
         catch (NumberFormatException ignore)
@@ -259,49 +270,58 @@ public class CubeChatService extends Chat
     @Override
     public String getPlayerInfoString(String world, String player, String node, String defaultValue)
     {
-        String data = getUserMetadata(world, player, node);
+        ResolvedMetadata data = getUserMetadata(world, player, node);
         if (data == null)
         {
             return defaultValue;
         }
-        return data;
+        return data.getValue();
     }
 
     @Override
-    public void setPlayerInfoString(String world, String player, String node, String value)
+    public void setPlayerInfoString(String worldName, String player, String node, String value)
     {
         User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
         {
             return;
         }
-
-        RolesAttachment attachment = user.get(RolesAttachment.class);
-        RawDataStore store = attachment.getRawData(wm.getWorldId(world));
-        store.setMetadata(node, value);
-        attachment.apply();
+        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        if (world == null)
+        {
+            return;
+        }
+        RolesAttachment attachment = user.attachOrGet(RolesAttachment.class, roles);
+        attachment.getDataHolder(world).setMetadata(node, value);
+        attachment.getCurrentDataHolder().apply();
     }
 
     @Override
     public String getGroupInfoString(String world, String group, String node, String defaultValue)
     {
-        String data = getRoleMetadata(world, group, node);
+        ResolvedMetadata data = getRoleMetadata(world, group, node);
         if (data == null)
         {
             return defaultValue;
         }
-        return data;
+        return data.getValue();
     }
 
     @Override
-    public void setGroupInfoString(String world, String group, String node, String value)
+    public void setGroupInfoString(String worldName, String group, String node, String value)
     {
-        Role role = roles.getRolesManager().getProvider(wm.getWorldId(world)).getRole(group);
+        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        if (world == null)
+        {
+            return;
+        }
+        Role role = roles.getRolesManager().getProvider(world).getRole(group);
         if (role == null)
         {
             return;
         }
         role.setMetadata(node, value);
+        role.save();
         roles.getRolesManager().recalculateAllRoles();
     }
 }
