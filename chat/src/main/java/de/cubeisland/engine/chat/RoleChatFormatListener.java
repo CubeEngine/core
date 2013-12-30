@@ -42,7 +42,7 @@ public class RoleChatFormatListener implements Listener
             return;
         }
 
-        event.setVariable("ROLE.PREFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadata("prefix")));
-        event.setVariable("ROLE.SUFFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadata("suffix")));
+        event.setVariable("ROLE.PREFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadataString("prefix")));
+        event.setVariable("ROLE.SUFFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadataString("suffix")));
     }
 }

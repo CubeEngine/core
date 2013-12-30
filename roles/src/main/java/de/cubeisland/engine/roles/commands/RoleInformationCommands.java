@@ -73,7 +73,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         }
         for (Role role : provider.getRoles())
         {
-            context.sendMessage(String.format(this.LISTELEM,role.getName()));
+            context.sendMessage(String.format(this.LISTELEM, role.getName()));
         }
     }
 
@@ -248,7 +248,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        if (role.getAssignedRoles().isEmpty())
+        if (role.getRoles().isEmpty())
         {
             if (global)
             {
@@ -266,7 +266,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             context.sendTranslated("&eThe role &6%s&e in &6%s &ehas following parent roles:", role.getName(), world.getName());
         }
-        for (Role parent : role.getAssignedRoles())
+        for (Role parent : role.getRoles())
         {
             context.sendMessage(String.format(this.LISTELEM,parent.getName()));
         }

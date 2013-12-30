@@ -17,21 +17,21 @@
  */
 package de.cubeisland.engine.roles.role.resolved;
 
-import de.cubeisland.engine.roles.role.RawDataStore;
+import de.cubeisland.engine.roles.role.ResolvedDataHolder;
 import de.cubeisland.engine.roles.role.Role;
 
 public class ResolvedData
 {
-    private final RawDataStore origin;
+    private final ResolvedDataHolder origin;
     private String key;
 
-    public ResolvedData(RawDataStore origin, String key)
+    public ResolvedData(ResolvedDataHolder origin, String key)
     {
         this.origin = origin;
         this.key = key;
     }
 
-    public RawDataStore getOrigin()
+    public ResolvedDataHolder getOrigin()
     {
         return origin;
     }

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.roles.storage;
 
+import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
 import org.jooq.Field;
 import org.jooq.Record3;
 import org.jooq.Record4;
@@ -33,12 +34,12 @@ public class UserPermission extends UpdatableRecordImpl<UserPermission> implemen
         super(TABLE_PERM);
     }
 
-    public UserPermission newPerm(UInteger userId, UInteger worldId, String perm, boolean isSet)
+    public UserPermission newPerm(UInteger userId, UInteger worldId, String perm, PermissionValue set)
     {
         this.setUserid(userId);
         this.setWorldid(worldId);
         this.setPerm(perm);
-        this.setIsset(isSet);
+        this.setIsset(set == PermissionValue.TRUE);
         return this;
     }
 

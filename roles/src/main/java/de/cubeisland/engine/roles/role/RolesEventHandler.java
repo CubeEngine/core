@@ -32,31 +32,29 @@ import de.cubeisland.engine.roles.Roles;
 
 public class RolesEventHandler implements Listener
 {
-    private Roles module;
-    private RolesManager rolesManager;
+    private final Roles module;
+    private final RolesManager rolesManager;
 
     public RolesEventHandler(Roles module)
     {
-        this.rolesManager = module.getRolesManager();
         this.module = module;
+        this.rolesManager = module.getRolesManager();
     }
 
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event)
     {
-        long worldFromId = this.module.getCore().getWorldManager().getWorldId(event.getFrom());
-        long worldToId = this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld());
-        WorldRoleProvider fromProvider = this.rolesManager.getProvider(worldFromId);
-        WorldRoleProvider toProvider = this.rolesManager.getProvider(worldToId);
+        WorldRoleProvider fromProvider = this.rolesManager.getProvider(event.getFrom());
+        WorldRoleProvider toProvider = this.rolesManager.getProvider(event.getPlayer().getWorld());
         if (fromProvider.equals(toProvider))
         {
-            if (toProvider.getWorldMirrors().get(worldToId).getSecond() && fromProvider.getWorldMirrors().get(worldFromId).getSecond())
+            if (toProvider.getWorldMirrors().get(event.getPlayer().getWorld()).getSecond()
+            && fromProvider.getWorldMirrors().get(event.getFrom()).getSecond())
             {
                 return;
             }
         }
-        RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
-        rolesAttachment.apply();
+        this.rolesManager.getRolesAttachment(event.getPlayer()).getCurrentDataHolder().apply();
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -67,7 +65,7 @@ public class RolesEventHandler implements Listener
         {
             if (user.getWorld() != null) // prevent NPE for players on deleted worlds
             {
-                user.attachOrGet(RolesAttachment.class, this.module).getResolvedData(user.getWorldId());
+                user.attachOrGet(RolesAttachment.class, this.module).getDataHolder(user.getWorld()); // Pre-calculate
             }
         }
     }
@@ -77,25 +75,21 @@ public class RolesEventHandler implements Listener
     {
         if (event.getResult().equals(Result.ALLOWED)) // only if allowed to join
         {
-            final RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
-            rolesAttachment.getResolvedData(this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld())); // Pre-calculate
+            this.rolesManager.getRolesAttachment(event.getPlayer()).getCurrentDataHolder(); // Pre-calculate
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event)
     {
-        final RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getPlayer());
-        rolesAttachment.getResolvedData(this.module.getCore().getWorldManager().getWorldId(event.getPlayer().getWorld())); // Pre-calculate
-        rolesAttachment.apply();
+        this.rolesManager.getRolesAttachment(event.getPlayer()).getCurrentDataHolder().apply(); // Pre-calculate + apply
     }
 
     @EventHandler
     public void onAuthorized(UserAuthorizedEvent event)
     {
         RolesAttachment rolesAttachment = this.rolesManager.getRolesAttachment(event.getUser());
-        rolesAttachment.flushResolvedData();
-        rolesAttachment.getCurrentResolvedData(); // Pre-calculate
-        rolesAttachment.apply();
+        rolesAttachment.flushData();
+        rolesAttachment.getCurrentDataHolder().apply(); // Pre-Calculate + apply
     }
 }

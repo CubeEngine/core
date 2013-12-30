@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.roles.commands;
 
-import java.io.IOException;
-
 import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.convert.Converter;
@@ -33,6 +31,7 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.config.PriorityConverter;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
+import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
@@ -61,62 +60,56 @@ public class RoleManagementCommands extends RoleCommandHelper
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String permission = context.getString(1);
-        Boolean set;
         String setTo = "true";
         if (context.getArgCount() > 2)
         {
             setTo = context.getString(2);
         }
-        if (setTo.equalsIgnoreCase("true"))
+        try
         {
-            set = true;
-            if (global)
+            PermissionValue type = PermissionValue.valueOf(setTo.toUpperCase());
+            if (type == PermissionValue.RESET)
             {
-                context.sendTranslated("&6%s&a is now set to &2true &afor the global role &6%s&a!",
-                                       permission, role.getName());
+                if (global)
+                {
+                    context.sendTranslated("&6%s&e is now reset for the global role &6%s&e!", permission, role.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&e is now reset for the role &6%s&e in &6%s&e!", permission, role.getName(), world.getName());
+                }
             }
-            else
+            else if (type == PermissionValue.TRUE)
             {
-                context.sendTranslated("&6%s&a is now set to &2true &afor the role &6%s&a in &6%s&a!",
-                                       permission, role.getName(), world.getName());
+                if (global)
+                {
+                    context.sendTranslated("&6%s&a is now set to &2true &afor the global role &6%s&a!", permission, role.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&a is now set to &2true &afor the role &6%s&a in &6%s&a!", permission, role.getName(), world.getName());
+                }
+                return;
             }
+            else if (type == PermissionValue.FALSE)
+            {
+                if (global)
+                {
+                    context.sendTranslated("&6%s&c is now set to &4false &cfor the global role &6%s&c!", permission, role.getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&c is now set to &4false &cfor the role &6%s&c in &6%s&c!", permission, role.getName(), world.getName());
+                }
+            }
+            role.setPermission(permission, type);
+            role.save();
+            this.manager.recalculateAllRoles();
         }
-        else if (setTo.equalsIgnoreCase("false"))
-        {
-            set = false;
-            if (global)
-            {
-                context.sendTranslated("&6%s&c is now set to &4false &cfor the global role &6%s&c!",
-                                       permission, role.getName());
-            }
-            else
-            {
-                context.sendTranslated("&6%s&c is now set to &4false &cfor the role &6%s &cin &6%s&c!",
-                                       permission, role.getName(), world.getName());
-            }
-        }
-        else if (setTo.equalsIgnoreCase("reset"))
-        {
-            set = null;
-            if (global)
-            {
-                context.sendTranslated("&6%s&e is now resetted for the global role &6%s&e!",
-                                       permission, role.getName());
-            }
-            else
-            {
-                context.sendTranslated("&6%s&e is now resetted for the role &6%s &ein &6%s&e!",
-                                       permission, role.getName(), world.getName());
-            }
-        }
-        else
+        catch (IllegalArgumentException e)
         {
             context.sendTranslated("&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
-            return;
         }
-        role.setPermission(permission, set);
-        role.saveToConfig();
-        this.manager.recalculateAllRoles();
     }
 
     @Alias(names = "setrdata")
@@ -137,7 +130,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         String key = context.getString(1);
         String value = context.getString(2);
         role.setMetadata(key, value);
-        role.saveToConfig();
+        role.save();
         this.manager.recalculateAllRoles();
         if (value == null)
         {
@@ -177,7 +170,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         if (role == null) return;
         String key = context.getString(1);
         role.setMetadata(key,null);
-        role.saveToConfig();
+        role.save();
         this.manager.recalculateAllRoles();
         if (global)
         {
@@ -207,7 +200,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         role.clearMetadata();
-        role.saveToConfig();
+        role.save();
         this.manager.recalculateAllRoles();
         if (global)
         {
@@ -246,7 +239,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         {
             if (role.assignRole(pRole))
             {
-                role.saveToConfig();
+                role.save();
                 this.manager.recalculateAllRoles();
                 if (global)
                 {
@@ -302,7 +295,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
         if (role.removeRole(pRole))
         {
-            role.saveToConfig();
+            role.save();
             this.manager.recalculateAllRoles();
             if (global)
             {
@@ -335,8 +328,8 @@ public class RoleManagementCommands extends RoleCommandHelper
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
-        role.clearAssignedRoles();
-        role.saveToConfig();
+        role.clearRoles();
+        role.save();
         this.manager.recalculateAllRoles();
         if (global)
         {
@@ -366,7 +359,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         {
             priority = converter.fromNode(new StringNode(context.getString(1)), null);
             role.setPriorityValue(priority.value);
-            role.saveToConfig();
+            role.save();
             this.manager.recalculateAllRoles();
             if (global)
             {
@@ -468,21 +461,13 @@ public class RoleManagementCommands extends RoleCommandHelper
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         this.manager.recalculateAllRoles();
-        try
+        role.delete();
+        if (global)
         {
-            role.deleteRole();
-            if (global)
-            {
-                context.sendTranslated("&aGlobal role &6%s &adeleted!", role.getName());
-                return;
-            }
-            context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
+            context.sendTranslated("&aGlobal role &6%s &adeleted!", role.getName());
+            return;
         }
-        catch (IOException ex)
-        {
-            context.getCommand().getModule().getLog().warn(ex, "Failed to delete the role configuration for {}!", role.getName());
-            context.sendTranslated("&eDeleted the role, however its configuration file could not be removed.");
-        }
+        context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
     }
 
 
