@@ -141,7 +141,7 @@ public class GeneralsListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(RoleAppliedEvent event)
     {
-        String meta = event.getAttachment().getCurrentMetadata("tablist-prefix");
+        String meta = event.getAttachment().getCurrentMetadataString("tablist-prefix");
         if (meta != null)
         {
             String colored = ChatFormat.parseFormats(meta) + event.getUser().getDisplayName();

@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.roles.commands;
 
+import org.bukkit.World;
+
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -56,17 +58,17 @@ public class ManagementCommands extends ContainerCommand
         context.sendTranslated("&f[&6Roles&f]&a all configurations saved!");
     }
 
-    public static Long curWorldIdOfConsole = null;
+    public static World curWorldOfConsole = null;
 
     @Command(desc = "Sets or resets the current default world",
              usage = "[world]", max = 1)
     public void defaultworld(CommandContext context)
     {
-        Long worldId = null;
+        World world = null;
         if (context.hasArg(0))
         {
-            worldId = this.getModule().getCore().getWorldManager().getWorldId(context.getString(0));
-            if (worldId == null)
+            world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+            if (world == null)
             {
                 context.sendTranslated("&cInvalid world! No world &6%s &cfound", context.getString(0));
                 return;
@@ -80,20 +82,20 @@ public class ManagementCommands extends ContainerCommand
         CommandSender sender = context.getSender();
         if (sender instanceof User)
         {
-            if (worldId == null)
+            if (world == null)
             {
-                ((User)sender).get(RolesAttachment.class).setWorkingWorldId(null);
+                ((User)sender).get(RolesAttachment.class).setWorkingWorld(null);
                 return;
             }
-            ((User)sender).get(RolesAttachment.class).setWorkingWorldId(worldId);
+            ((User)sender).get(RolesAttachment.class).setWorkingWorld(world);
             return;
         }
         if (context.hasArg(0))
         {
-            curWorldIdOfConsole = worldId;
+            curWorldOfConsole = world;
             return;
         }
-        curWorldIdOfConsole = null;
+        curWorldOfConsole = null;
     }
 
     // TODO lookup permissions

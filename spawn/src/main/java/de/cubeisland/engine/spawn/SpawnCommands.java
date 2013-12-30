@@ -36,6 +36,7 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.commands.ManagementCommands;
+import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesManager;
 
@@ -115,7 +116,7 @@ public class SpawnCommands
         }
         if (context.hasArg(0))
         {
-            Role_old role = manager.getProvider(world).getRole(context.getString(0));
+            Role role = manager.getProvider(world).getRole(context.getString(0));
             if (role == null)
             {
                 if (!context.getString(0).equalsIgnoreCase("global"))
@@ -134,7 +135,7 @@ public class SpawnCommands
                 locStrings[4] = String.valueOf(pitch);
                 locStrings[5] = world.getName();
                 role.setMetadata("rolespawn", StringUtils.implode(":", locStrings));
-                role.saveToConfig();
+                role.save();
                 manager.getProvider(world).recalculateRoles();
                 return;
             }
@@ -202,7 +203,7 @@ public class SpawnCommands
                     this.roles.getLog().warn("Missing RolesAttachment!");
                     return;
                 }
-                String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");
+                String rolespawn = rolesAttachment.getCurrentMetadataString("rolespawn");
                 if (rolespawn == null)
                 {
                     spawnLocation = this.getSpawnLocation(rolespawn);
@@ -259,7 +260,7 @@ public class SpawnCommands
         if (context.hasParam("role"))
         {
             String roleName = context.getString("role");
-            Role_old role = manager.getProvider(world).getRole(roleName);
+            Role role = manager.getProvider(world).getRole(roleName);
             if (role == null)
             {
                 context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c!",roleName,world.getName());
@@ -288,7 +289,7 @@ public class SpawnCommands
                 this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
-            String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");
+            String rolespawn = rolesAttachment.getCurrentMetadataString("rolespawn");
             if (rolespawn == null)
             {
                 spawnLocation = world.getSpawnLocation();
@@ -349,16 +350,16 @@ public class SpawnCommands
             List<String> roles = new ArrayList<>();
             if (sender instanceof User)
             {
-                if (((User)sender).get(RolesAttachment.class).getWorkingWorldId() != null)
+                if (((User)sender).get(RolesAttachment.class).getWorkingWorld() != null)
                 {
-                    for (Role_old role : manager.getProvider(((User)sender).get(RolesAttachment.class).getWorkingWorldId()).getRoles())
+                    for (Role role : manager.getProvider(((User)sender).get(RolesAttachment.class).getWorkingWorld()).getRoles())
                     {
                         roles.add(role.getName());
                     }
                 }
                 else
                 {
-                    for (Role_old role : manager.getProvider(((User)sender).getWorldId()).getRoles())
+                    for (Role role : manager.getProvider(((User)sender).getWorld()).getRoles())
                     {
                         roles.add(role.getName());
                     }
@@ -366,9 +367,9 @@ public class SpawnCommands
             }
             else
             {
-                if (ManagementCommands.curWorldIdOfConsole != null)
+                if (ManagementCommands.curWorldOfConsole != null)
                 {
-                    for (Role_old role : manager.getProvider(ManagementCommands.curWorldIdOfConsole).getRoles())
+                    for (Role role : manager.getProvider(ManagementCommands.curWorldOfConsole).getRoles())
                     {
                         roles.add(role.getName());
                     }

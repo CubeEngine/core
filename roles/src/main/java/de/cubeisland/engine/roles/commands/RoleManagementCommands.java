@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.roles.commands;
 
-import java.io.IOException;
-
 import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.convert.Converter;
@@ -33,6 +31,8 @@ import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.config.PriorityConverter;
 import de.cubeisland.engine.roles.exception.CircularRoleDependencyException;
+import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
+import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
 
@@ -57,7 +57,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String permission = context.getString(1);
         String setTo = "true";
@@ -67,8 +67,8 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
         try
         {
-            PermissionType type = PermissionType.valueOf(setTo.toUpperCase());
-            if (type == PermissionType.NOT_SET)
+            PermissionValue type = PermissionValue.valueOf(setTo.toUpperCase());
+            if (type == PermissionValue.NOT_SET)
             {
                 if (global)
                 {
@@ -79,7 +79,7 @@ public class RoleManagementCommands extends RoleCommandHelper
                     context.sendTranslated("&6%s&e is now reset for the role &6%s&e in &6%s&e!", permission, role.getName(), world.getName());
                 }
             }
-            else if (type == PermissionType.TRUE)
+            else if (type == PermissionValue.TRUE)
             {
                 if (global)
                 {
@@ -91,7 +91,7 @@ public class RoleManagementCommands extends RoleCommandHelper
                 }
                 return;
             }
-            else if (type == PermissionType.FALSE)
+            else if (type == PermissionValue.FALSE)
             {
                 if (global)
                 {
@@ -103,7 +103,7 @@ public class RoleManagementCommands extends RoleCommandHelper
                 }
             }
             role.setPermission(permission, type);
-            role.saveToConfig();
+            role.save();
             this.manager.recalculateAllRoles();
         }
         catch (IllegalArgumentException e)
@@ -125,12 +125,12 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String key = context.getString(1);
         String value = context.getString(2);
         role.setMetadata(key, value);
-        role.saveToConfig();
+        role.save();
         this.manager.recalculateAllRoles();
         if (value == null)
         {
@@ -166,11 +166,11 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String key = context.getString(1);
         role.setMetadata(key,null);
-        role.saveToConfig();
+        role.save();
         this.manager.recalculateAllRoles();
         if (global)
         {
@@ -197,10 +197,10 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         role.clearMetadata();
-        role.saveToConfig();
+        role.save();
         this.manager.recalculateAllRoles();
         if (global)
         {
@@ -222,9 +222,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Role_old pRole = provider.getRole(context.getString(1));
+        Role pRole = provider.getRole(context.getString(1));
         if (pRole == null)
         {
             if (global)
@@ -239,7 +239,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         {
             if (role.assignRole(pRole))
             {
-                role.saveToConfig();
+                role.save();
                 this.manager.recalculateAllRoles();
                 if (global)
                 {
@@ -280,9 +280,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Role_old pRole = provider.getRole(context.getString(1));
+        Role pRole = provider.getRole(context.getString(1));
         if (pRole == null)
         {
             if (global)
@@ -295,7 +295,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
         if (role.removeRole(pRole))
         {
-            role.saveToConfig();
+            role.save();
             this.manager.recalculateAllRoles();
             if (global)
             {
@@ -327,9 +327,9 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         role.clearRoles();
-        role.saveToConfig();
+        role.save();
         this.manager.recalculateAllRoles();
         if (global)
         {
@@ -351,7 +351,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         Converter<Priority> converter = new PriorityConverter();
         Priority priority;
@@ -359,7 +359,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         {
             priority = converter.fromNode(new StringNode(context.getString(1)), null);
             role.setPriorityValue(priority.value);
-            role.saveToConfig();
+            role.save();
             this.manager.recalculateAllRoles();
             if (global)
             {
@@ -388,7 +388,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String newName = context.getString(1);
         String oldName = role.getName();
@@ -458,24 +458,16 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         this.manager.recalculateAllRoles();
-        try
+        role.delete();
+        if (global)
         {
-            role.deleteRole();
-            if (global)
-            {
-                context.sendTranslated("&aGlobal role &6%s &adeleted!", role.getName());
-                return;
-            }
-            context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
+            context.sendTranslated("&aGlobal role &6%s &adeleted!", role.getName());
+            return;
         }
-        catch (IOException ex)
-        {
-            context.getCommand().getModule().getLog().warn(ex, "Failed to delete the role configuration for {}!", role.getName());
-            context.sendTranslated("&eDeleted the role, however its configuration file could not be removed.");
-        }
+        context.sendTranslated("&aDeleted the role &6%s&a in &6%s&a!", role.getName(), world.getName());
     }
 
 
@@ -490,7 +482,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         WorldRoleProvider provider = this.manager.getProvider(world);
-        Role_old role = this.getRole(context, provider, roleName, world);
+        Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         role.setDefaultRole(!role.isDefaultRole());
         this.manager.recalculateAllRoles();

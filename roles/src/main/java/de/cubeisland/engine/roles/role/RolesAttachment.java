@@ -71,6 +71,16 @@ public class RolesAttachment extends UserAttachment
         return this.getCurrentDataHolder().getMetadata().get(key);
     }
 
+    public String getCurrentMetadataString(String key)
+    {
+        ResolvedMetadata meta = this.getCurrentMetadata(key);
+        if (meta == null)
+        {
+            return null;
+        }
+        return meta.getValue();
+    }
+
     public void reload()
     {
         for (UserDatabaseStore userDatabaseStore : this.dataStores.values())

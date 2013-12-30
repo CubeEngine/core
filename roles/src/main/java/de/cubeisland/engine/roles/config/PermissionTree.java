@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import de.cubeisland.engine.roles.role.DataStore.PermissionType;
+import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
 
 public class PermissionTree
 {
@@ -86,12 +86,12 @@ public class PermissionTree
         return this.permissions;
     }
 
-    public PermissionType setPermission(String perm, PermissionType set)
+    public PermissionValue setPermission(String perm, PermissionValue set)
     {
-        if (set == PermissionType.NOT_SET)
+        if (set == PermissionValue.NOT_SET)
         {
-            return PermissionType.of(this.permissions.remove(perm));
+            return PermissionValue.of(this.permissions.remove(perm));
         }
-        return PermissionType.of(this.permissions.put(perm, set == PermissionType.TRUE));
+        return PermissionValue.of(this.permissions.put(perm, set == PermissionValue.TRUE));
     }
 }

@@ -1,6 +1,25 @@
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ *
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.cubeisland.engine.roles.role;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -65,7 +84,8 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
             {
                 if (entry.getValue().getSecond())
                 {
-                    worldMirrors.add(UInteger.valueOf(this.module.getCore().getWorldManager().getWorldId(entry.getKey())));
+                    worldMirrors.add(UInteger
+                                         .valueOf(this.module.getCore().getWorldManager().getWorldId(entry.getKey())));
                 }
             }
             this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row(newName)).
@@ -115,9 +135,13 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
                                                       TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
         }
         this.provider.removeRole(this);
-        if (!this.config.getFile().delete())
+        try
         {
-            this.module.getLog().error("Could not delete role {}!", this.config.getFile().getName());
+            Files.delete(this.config.getFile().toPath());
+        }
+        catch (IOException e)
+        {
+            this.module.getLog().error(e, "Could not delete role {}!", this.config.getFile().getName());
         }
     }
 
@@ -182,7 +206,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     }
 
     @Override
-    public PermissionType setPermission(String perm, PermissionType set)
+    public PermissionValue setPermission(String perm, PermissionValue set)
     {
         this.makeDirty();
         return this.config.perms.setPermission(perm, set);

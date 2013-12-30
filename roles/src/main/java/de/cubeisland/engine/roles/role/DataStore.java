@@ -34,7 +34,7 @@ public interface DataStore
 
     // TODO setRawPerms(Map) etc.
 
-    PermissionType setPermission(String perm, PermissionType set);
+    PermissionValue setPermission(String perm, PermissionValue set);
     String setMetadata(String key, String value);
     boolean removeMetadata(String key);
     boolean assignRole(Role role);
@@ -48,7 +48,7 @@ public interface DataStore
     Map<String, String> getRawTempMetaData();
     Set<String> getRawTempRoles();
 
-    PermissionType setTempPermission(String perm, PermissionType set);
+    PermissionValue setTempPermission(String perm, PermissionValue set);
     String setTempMetadata(String key, String value);
     boolean removeTempMetadata(String key);
     boolean assignTempRole(Role role);
@@ -70,12 +70,12 @@ public interface DataStore
 
     boolean inheritsFrom(Role other);
 
-    public enum PermissionType
+    public enum PermissionValue
     {
         TRUE, FALSE,
         NOT_SET;
 
-        public static PermissionType of(Boolean set)
+        public static PermissionValue of(Boolean set)
         {
             return set == null ? NOT_SET : set ? TRUE : FALSE;
         }

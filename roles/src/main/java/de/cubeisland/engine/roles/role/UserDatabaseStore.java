@@ -29,7 +29,6 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.RoleAppliedEvent;
-import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.storage.UserMetaData;
 import de.cubeisland.engine.roles.storage.UserPermission;
 import org.jooq.Record1;
@@ -102,9 +101,9 @@ public class UserDatabaseStore extends ResolvedDataHolder
     }
 
     @Override
-    public PermissionType setPermission(String perm, PermissionType set)
+    public PermissionValue setPermission(String perm, PermissionValue set)
     {
-        if (set == PermissionType.NOT_SET)
+        if (set == PermissionValue.NOT_SET)
         {
             manager.dsl.delete(TABLE_PERM).where(TABLE_PERM.USERID.eq(this.getUserID()),
                                                  TABLE_PERM.WORLDID.eq(getDBWorldId(this.manager.assignedUserDataMirrors.get(world))),
@@ -117,11 +116,11 @@ public class UserDatabaseStore extends ResolvedDataHolder
             manager.dsl.insertInto(TABLE_PERM).set(userPerm).onDuplicateKeyUpdate().set(userPerm).execute();
         }
         this.makeDirty();
-        if (set == PermissionType.NOT_SET)
+        if (set == PermissionValue.NOT_SET)
         {
-            return PermissionType.of(this.permissions.remove(perm));
+            return PermissionValue.of(this.permissions.remove(perm));
         }
-        return PermissionType.of(this.permissions.put(perm, set == PermissionType.TRUE));
+        return PermissionValue.of(this.permissions.put(perm, set == PermissionValue.TRUE));
     }
 
     @Override
