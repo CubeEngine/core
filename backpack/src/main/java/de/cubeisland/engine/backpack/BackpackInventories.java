@@ -19,9 +19,7 @@ package de.cubeisland.engine.backpack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -37,29 +35,20 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.InventoryUtil;
 
-public class BackpackInventory implements InventoryHolder
+public class BackpackInventories
 {
     private final Backpack module;
     protected BackpackData data;
 
     private Map<Player, Integer> viewers = new HashMap<>();
-    private Map<Integer, Inventory> views = new HashMap<>();
+    private Map<Integer, BackpackHolder> views = new HashMap<>();
     
     private static final String pageString = ChatFormat.parseFormats("&6Page ");
 
-    public BackpackInventory(Backpack module, BackpackData data)
+    public BackpackInventories(Backpack module, BackpackData data)
     {
         this.module = module;
         this.data = data;
-    }
-
-    @Override
-    /**
-     * Always returns the first inventory page
-     */
-    public Inventory getInventory()
-    {
-        return this.getInventory(0);
     }
 
     public void openInventory(Player player)
@@ -69,20 +58,20 @@ public class BackpackInventory implements InventoryHolder
 
     private Inventory getInventory(int index)
     {
-        Inventory inventory = this.views.get(index);
-        if (inventory == null)
+        BackpackHolder holder = this.views.get(index);
+        if (holder == null)
         {
-            inventory = Bukkit.createInventory(this, data.size * 9, pageString + (index + 1) + "/" + this.data.pages);
-            this.views.put(index, inventory);
+            this.views.put(index, holder = new BackpackHolder(this, index, data.size * 9, pageString + (index + 1) + "/" + this.data.pages));
         }
         ItemStack[] contents = new ItemStack[data.size * 9];
         int offset = index * data.size * 9;
         for (int i = 0; i < data.size * 9; i++)
         {
-            contents[i] = data.contents.get(i + offset);
+            ItemStack itemStack = data.contents.get(i + offset);
+            contents[i] = itemStack == null ? null : itemStack.clone();
         }
-        inventory.setContents(contents);
-        return inventory;
+        holder.getInventory().setContents(contents);
+        return holder.getInventory();
     }
 
     private void saveData(int index, Inventory inventory)
@@ -97,7 +86,7 @@ public class BackpackInventory implements InventoryHolder
             }
             else
             {
-                data.contents.put(i + offset, contents[i]);
+                data.contents.put(i + offset, contents[i].clone());
             }
         }
         data.save();
@@ -165,13 +154,15 @@ public class BackpackInventory implements InventoryHolder
     public void closeInventory(Player player)
     {
         Integer index = viewers.remove(player);
-        Inventory inv = views.get(index);
-        if (index == null || inv == null)
+        BackpackHolder holder = views.get(index);
+        if (index == null || holder == null)
         {
             return;
         }
-        this.saveData(index, inv);
-        if (inv.getViewers().isEmpty() || (inv.getViewers().size() == 1 && inv.getViewers().get(0) == player))
+        this.saveData(index, holder.getInventory());
+        if (holder.getInventory().getViewers().isEmpty()
+            || (holder.getInventory().getViewers().size() == 1
+            && holder.getInventory().getViewers().get(0) == player))
         {
             this.views.remove(index);
         }
@@ -179,11 +170,11 @@ public class BackpackInventory implements InventoryHolder
 
     public void addItem(ItemStack toGive)
     {
-        for (Inventory inventory : new ArrayList<>(this.views.values()))
+        for (InventoryHolder holder : new ArrayList<>(this.views.values()))
         {
-            for (HumanEntity humanEntity : new ArrayList<>(inventory.getViewers()))
+            for (HumanEntity humanEntity : new ArrayList<>(holder.getInventory().getViewers()))
             {
-                this.saveData(this.viewers.remove((Player)humanEntity), inventory);
+                this.saveData(this.viewers.remove((Player)humanEntity), holder.getInventory());
                 humanEntity.closeInventory();
             }
         }
@@ -202,4 +193,6 @@ public class BackpackInventory implements InventoryHolder
         }
         this.data.save();
     }
+
+
 }

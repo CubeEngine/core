@@ -22,15 +22,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.World;
-import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.UserAttachment;
 
 public class BackpackAttachment extends UserAttachment
 {
-    protected Map<World, Map<String, BackpackInventory>> backpacks = new HashMap<>();
-    protected Map<World, Map<String, BackpackInventory>> groupedBackpacks = new HashMap<>();
-    protected Map<String, BackpackInventory> globalBackpacks = new HashMap<>();
+    protected Map<World, Map<String, BackpackInventories>> backpacks = new HashMap<>();
+    protected Map<World, Map<String, BackpackInventories>> groupedBackpacks = new HashMap<>();
+    protected Map<String, BackpackInventories> globalBackpacks = new HashMap<>();
 
     public void loadGlobalBackpacks()
     {
@@ -54,7 +53,7 @@ public class BackpackAttachment extends UserAttachment
         File dir = new File(module.singleDir, world.getName());
         if (dir.exists() && dir.isDirectory())
         {
-            Map<String, BackpackInventory> map = this.backpacks.get(world);
+            Map<String, BackpackInventories> map = this.backpacks.get(world);
             if (map == null)
             {
                 map = new HashMap<>();
@@ -65,7 +64,7 @@ public class BackpackAttachment extends UserAttachment
         dir = new File(module.groupedDir, world.getName());
         if (dir.exists())
         {
-            Map<String, BackpackInventory> map = this.groupedBackpacks.get(world);
+            Map<String, BackpackInventories> map = this.groupedBackpacks.get(world);
             if (map == null)
             {
                 map = new HashMap<>();
@@ -103,7 +102,7 @@ public class BackpackAttachment extends UserAttachment
         return new File(dir, name + ".dat");
     }
 
-    protected void loadBackpacks(File dir, Map<String, BackpackInventory> map)
+    protected void loadBackpacks(File dir, Map<String, BackpackInventories> map)
     {
         File playerDir = new File(dir, this.getHolder().getName());
         if (playerDir.exists() && playerDir.isDirectory())
@@ -114,10 +113,10 @@ public class BackpackAttachment extends UserAttachment
                 {
                     String name = file.getName().substring(0, file.getName().lastIndexOf(".dat"));
                     BackpackData load = this.getModule().getCore().getConfigFactory().load(BackpackData.class, file);
-                    BackpackInventory bpInv = map.get(name);
+                    BackpackInventories bpInv = map.get(name);
                     if (bpInv == null)
                     {
-                        map.put(name, new BackpackInventory((Backpack)this.getModule(), load));
+                        map.put(name, new BackpackInventories((Backpack)this.getModule(), load));
                     }
                     else
                     {
@@ -128,14 +127,14 @@ public class BackpackAttachment extends UserAttachment
         }
     }
 
-    public BackpackInventory getBackpack(String name, World world)
+    public BackpackInventories getBackpack(String name, World world)
     {
-        BackpackInventory backpack = this.globalBackpacks.get(name);
+        BackpackInventories backpack = this.globalBackpacks.get(name);
         if (backpack != null)
         {
             return backpack;
         }
-        Map<String, BackpackInventory> map = this.backpacks.get(world);
+        Map<String, BackpackInventories> map = this.backpacks.get(world);
         if (map != null)
         {
              backpack = map.get(name);
@@ -161,13 +160,13 @@ public class BackpackAttachment extends UserAttachment
         data.size = size;
         data.setFile(file);
         data.save();
-        Map<String, BackpackInventory> backpacks = this.backpacks.get(forWorld);
+        Map<String, BackpackInventories> backpacks = this.backpacks.get(forWorld);
         if (backpacks == null)
         {
             backpacks = new HashMap<>();
             this.backpacks.put(forWorld, backpacks);
         }
-        backpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
+        backpacks.put(name, new BackpackInventories((Backpack)getModule(), data));
     }
 
     public void createGroupedBackpack(String name, World forWorld, boolean blockIn, Integer pages, Integer size)
@@ -179,13 +178,13 @@ public class BackpackAttachment extends UserAttachment
         data.size = size;
         data.setFile(file);
         data.save();
-        Map<String, BackpackInventory> backpacks = this.backpacks.get(forWorld);
+        Map<String, BackpackInventories> backpacks = this.backpacks.get(forWorld);
         if (backpacks == null)
         {
             backpacks = new HashMap<>();
             this.backpacks.put(forWorld, backpacks);
         }
-        backpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
+        backpacks.put(name, new BackpackInventories((Backpack)getModule(), data));
     }
 
     public void createGlobalBackpack(String name, boolean blockIn, Integer pages, Integer size)
@@ -197,6 +196,6 @@ public class BackpackAttachment extends UserAttachment
         data.size = size;
         data.setFile(file);
         data.save();
-        globalBackpacks.put(name, new BackpackInventory((Backpack)getModule(), data));
+        globalBackpacks.put(name, new BackpackInventories((Backpack)getModule(), data));
     }
 }

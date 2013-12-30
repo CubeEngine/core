@@ -47,7 +47,7 @@ public class BackpackManager implements Listener
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
@@ -60,7 +60,7 @@ public class BackpackManager implements Listener
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             if (global)
@@ -96,17 +96,17 @@ public class BackpackManager implements Listener
     public void onInventoryClick(InventoryClickEvent event)
     {
         if (event.getWhoClicked() instanceof Player
-            && event.getInventory().getHolder() instanceof BackpackInventory)
+            && event.getInventory().getHolder() instanceof BackpackHolder)
         {
             if (event.getSlotType() == SlotType.OUTSIDE)
             {
                 if (event.isLeftClick())
                 {
-                    ((BackpackInventory)event.getInventory().getHolder()).showNextPage((Player)event.getWhoClicked());
+                    ((BackpackHolder)event.getInventory().getHolder()).getBackpack().showNextPage((Player)event.getWhoClicked());
                 }
                 else if (event.isRightClick())
                 {
-                    ((BackpackInventory)event.getInventory().getHolder()).showPrevPage((Player)event.getWhoClicked());
+                    ((BackpackHolder)event.getInventory().getHolder()).getBackpack().showPrevPage((Player)event.getWhoClicked());
                 }
             }
         }
@@ -116,9 +116,9 @@ public class BackpackManager implements Listener
     public void onInventoryClose(InventoryCloseEvent event)
     {
         if (event.getPlayer() instanceof Player
-            && event.getInventory().getHolder() instanceof BackpackInventory)
+            && event.getInventory().getHolder() instanceof BackpackHolder)
         {
-            ((BackpackInventory)event.getInventory().getHolder()).closeInventory((Player)event.getPlayer());
+            ((BackpackHolder)event.getInventory().getHolder()).getBackpack().closeInventory((Player)event.getPlayer());
         }
     }
 
@@ -126,7 +126,7 @@ public class BackpackManager implements Listener
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
@@ -144,7 +144,7 @@ public class BackpackManager implements Listener
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
