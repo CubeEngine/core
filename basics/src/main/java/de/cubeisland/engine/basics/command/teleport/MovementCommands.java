@@ -28,6 +28,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.LocationUtil;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
@@ -93,7 +94,7 @@ public class MovementCommands
         {
             User sender = (User)context.getSender();
             Location loc = sender.getLocation();
-            loc.getWorld().getHighestBlockAt(loc).getLocation(loc);
+            BlockUtil.getHighestBlockAt(loc).getLocation(loc);
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
             {
                 context.sendTranslated("&aYou are now on top!");
