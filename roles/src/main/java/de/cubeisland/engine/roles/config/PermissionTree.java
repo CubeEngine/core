@@ -88,7 +88,7 @@ public class PermissionTree
 
     public PermissionValue setPermission(String perm, PermissionValue set)
     {
-        if (set == PermissionValue.NOT_SET)
+        if (set == PermissionValue.RESET)
         {
             return PermissionValue.of(this.permissions.remove(perm));
         }

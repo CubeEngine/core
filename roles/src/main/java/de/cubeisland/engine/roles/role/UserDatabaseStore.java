@@ -103,7 +103,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
     @Override
     public PermissionValue setPermission(String perm, PermissionValue set)
     {
-        if (set == PermissionValue.NOT_SET)
+        if (set == PermissionValue.RESET)
         {
             manager.dsl.delete(TABLE_PERM).where(TABLE_PERM.USERID.eq(this.getUserID()),
                                                  TABLE_PERM.WORLDID.eq(getDBWorldId(this.manager.assignedUserDataMirrors.get(world))),
@@ -116,7 +116,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
             manager.dsl.insertInto(TABLE_PERM).set(userPerm).onDuplicateKeyUpdate().set(userPerm).execute();
         }
         this.makeDirty();
-        if (set == PermissionValue.NOT_SET)
+        if (set == PermissionValue.RESET)
         {
             return PermissionValue.of(this.permissions.remove(perm));
         }

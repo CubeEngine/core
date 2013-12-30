@@ -48,7 +48,7 @@ public abstract class TempDataStore implements DataStore
     public PermissionValue setTempPermission(String perm, PermissionValue set)
     {
         this.makeDirty();
-        if (set == PermissionValue.NOT_SET)
+        if (set == PermissionValue.RESET)
         {
             return PermissionValue.of(this.tempPermissions.remove(perm));
         }

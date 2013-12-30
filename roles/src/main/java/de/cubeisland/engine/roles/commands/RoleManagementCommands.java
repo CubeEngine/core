@@ -68,7 +68,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         try
         {
             PermissionValue type = PermissionValue.valueOf(setTo.toUpperCase());
-            if (type == PermissionValue.NOT_SET)
+            if (type == PermissionValue.RESET)
             {
                 if (global)
                 {

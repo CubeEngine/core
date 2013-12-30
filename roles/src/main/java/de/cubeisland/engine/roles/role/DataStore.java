@@ -73,11 +73,11 @@ public interface DataStore
     public enum PermissionValue
     {
         TRUE, FALSE,
-        NOT_SET;
+        RESET;
 
         public static PermissionValue of(Boolean set)
         {
-            return set == null ? NOT_SET : set ? TRUE : FALSE;
+            return set == null ? RESET : set ? TRUE : FALSE;
         }
     }
 }

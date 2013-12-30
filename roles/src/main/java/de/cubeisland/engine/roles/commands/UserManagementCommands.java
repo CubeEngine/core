@@ -163,15 +163,19 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Command(names = {"setperm", "setpermission"},
              desc = "Sets a permission for this user [in world]",
-             usage = " <player> <permission> <true|false|reset> [in <world>]",
+             usage = " <player> <permission> [true|false|reset] [in <world>]",
              params = @Param(names = "in", type = World.class),
-             max = 3, min = 3)
+             max = 3, min = 2)
     public void setpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
         if (user == null) return;
         String perm = context.getString(1);
-        String setTo = context.getString(2);
+        String setTo = "true";
+        if (context.hasArg(2))
+        {
+            setTo = context.getString(2);
+        }
         try
         {
             PermissionValue value = PermissionValue.valueOf(setTo.toUpperCase());
@@ -180,7 +184,7 @@ public class UserManagementCommands extends UserCommandHelper
             RolesAttachment attachment = this.manager.getRolesAttachment(user);
             attachment.getDataHolder(world).setPermission(perm, value);
             attachment.getCurrentDataHolder().apply();
-            if (value == PermissionValue.NOT_SET)
+            if (value == PermissionValue.RESET)
             {
                 context.sendTranslated("&ePermission &6%s&e of &2%s&e reset!", perm, user.getName());
                 return;
@@ -211,7 +215,7 @@ public class UserManagementCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
-        attachment.getDataHolder(world).setPermission(perm, PermissionValue.NOT_SET);
+        attachment.getDataHolder(world).setPermission(perm, PermissionValue.RESET);
         attachment.getCurrentDataHolder().apply();
         context.sendTranslated("&ePermission &6%s&e of &2%s&e resetted!", perm, user.getName());
     }
