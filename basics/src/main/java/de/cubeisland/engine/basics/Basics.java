@@ -38,7 +38,6 @@ import de.cubeisland.engine.basics.command.moderation.InventoryCommands;
 import de.cubeisland.engine.basics.command.moderation.ItemCommands;
 import de.cubeisland.engine.basics.command.moderation.KickBanCommands;
 import de.cubeisland.engine.basics.command.moderation.PaintingListener;
-import de.cubeisland.engine.basics.command.moderation.PowerToolCommand;
 import de.cubeisland.engine.basics.command.moderation.TimeControlCommands;
 import de.cubeisland.engine.basics.command.moderation.WorldControlCommands;
 import de.cubeisland.engine.basics.command.moderation.kit.KitCommand;
@@ -107,9 +106,6 @@ public class Basics extends Module
         cm.registerCommands(this, new SpawnMobCommand(this), ReflectedCommand.class);
         cm.registerCommands(this, new TimeControlCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new WorldControlCommands(this), ReflectedCommand.class);
-        PowerToolCommand ptCommands = new PowerToolCommand(this);
-        cm.registerCommand(ptCommands);
-        em.registerListener(this, ptCommands);
         cm.registerCommand(new KitCommand(this));
 
         Module roles = getCore().getModuleManager().getModule("roles");

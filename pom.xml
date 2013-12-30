@@ -58,6 +58,7 @@
     <module>faq</module>
     <module>selector</module>
     <module>vaultlink</module>
+    <module>powertools</module>
   </modules>
 
   <build>

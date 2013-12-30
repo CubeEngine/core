@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.moderation;
+package de.cubeisland.engine.powertools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,6 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static java.util.Arrays.asList;
@@ -335,7 +334,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         {
             Player player = event.getPlayer();
             if (!player.getItemInHand().getType().equals(Material.AIR)
-                    && BasicsPerm.POWERTOOL_USE.isAuthorized(event.getPlayer()))
+                    && PowertoolsPerm.POWERTOOL_USE.isAuthorized(event.getPlayer()))
             {
                 List<String> powerTool = this.getPowerTools(player.getItemInHand());
                 for (String command : powerTool)
