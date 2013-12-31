@@ -22,6 +22,7 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 
 public class PortalConfig extends YamlConfiguration
@@ -32,6 +33,11 @@ public class PortalConfig extends YamlConfiguration
     public String world;
 
     public PortalRegion location = new PortalRegion();
+
+    public World getWorld()
+    {
+        return CubeEngine.getCore().getWorldManager().getWorld(world);
+    }
 
     public class PortalRegion implements Section
     {

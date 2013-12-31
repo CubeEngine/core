@@ -26,7 +26,9 @@ import java.util.Map;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.LocationUtil;
 import de.cubeisland.engine.portals.config.PortalConfig;
 
@@ -55,12 +57,33 @@ public class PortalManager implements Listener
             if (!file.isDirectory() && file.getName().endsWith(".yml"))
             {
                 PortalConfig load = this.module.getCore().getConfigFactory().load(PortalConfig.class, file);
-                Portal portal = new Portal(file.getName().substring(0, file.getName().lastIndexOf(".yml")), load);
+                Portal portal = new Portal(module, this, file.getName().substring(0, file.getName().lastIndexOf(".yml")), load);
                 this.addPortal(portal);
             }
         }
         this.module.getLog().info("{} portals loaded!", this.portals.size());
-        this.module.getLog().debug("{} chunks checked", this.chunksWithPortals.size());
+        this.module.getLog().debug("in {} chunks", this.chunksWithPortals.size());
+    }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent event)
+    {
+        List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getFrom()));
+        if (portals == null)
+        {
+            return;
+        }
+        for (Portal portal : portals)
+        {
+            if (portal.has(event.getTo()))
+            {
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                user.attachOrGet(PortalsAttachment.class, module).setInPortal(true);
+                user.sendMessage("TP INTO PORTAL"); // TODO remove
+                return;
+            }
+            // else ignore
+        }
     }
 
     @EventHandler
@@ -75,17 +98,25 @@ public class PortalManager implements Listener
          || event.getFrom().getBlockZ() != event.getTo().getBlockZ())
         {
             List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getFrom()));
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (portals != null)
             {
                 for (Portal portal : portals)
                 {
                     if (portal.has(event.getTo()))
                     {
-                        event.getPlayer().sendMessage("You stand in a portal: " + portal.getName());
+                        if (!user.attachOrGet(PortalsAttachment.class, module).isInPortal())
+                        {
+                            portal.teleport(user);
+                            return;
+                        }
+                        user.sendMessage("MOVE IN PORTAL"); // TODO remove
+                        return;
                     }
                     // else ignore
                 }
             }
+            user.attachOrGet(PortalsAttachment.class, module).setInPortal(false);
             // else movement is not in a chunk that has a portal
         }
     }

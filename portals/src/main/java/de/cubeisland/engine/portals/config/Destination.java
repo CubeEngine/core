@@ -17,9 +17,13 @@
  */
 package de.cubeisland.engine.portals.config;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.portals.Portal;
+import de.cubeisland.engine.portals.PortalManager;
 
 public class Destination
 {
@@ -27,6 +31,30 @@ public class Destination
     public World world;
     public WorldLocation location;
     public String portal;
+
+    public void teleport(User user, PortalManager manager)
+    {
+        Location loc = null;
+        switch (type)
+        {
+        case PORTAL:
+            Portal destPortal = manager.getPortal(portal);
+            if (destPortal == null)
+            {
+                user.sendTranslated("&cDestination portal &6%s&c does not exist!", portal);
+                return;
+            }
+            loc = destPortal.getPortalPos();
+            break;
+        case WORLD:
+            loc = world.getSpawnLocation();
+            break;
+        case LOCATION:
+            loc = location.getLocationIn(world);
+            break;
+        }
+        user.teleport(loc);
+    }
 
     public enum Type
     {

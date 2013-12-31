@@ -36,11 +36,13 @@ import de.cubeisland.engine.portals.config.PortalConfig;
 
 public class PortalCommands extends ContainerCommand
 {
+    private Portals module;
     private PortalManager manager;
 
-    public PortalCommands(Module module, PortalManager manager)
+    public PortalCommands(Portals module, PortalManager manager)
     {
         super(module, "portals", "The portal commands");
+        this.module = module;
         this.manager = manager;
     }
 
@@ -64,7 +66,7 @@ public class PortalCommands extends ContainerCommand
                     config.world = p1.getWorld().getName();
                     config.setFile(new File(manager.portalsDir, context.getString(0) + ".yml"));
                     config.save();
-                    Portal portal = new Portal(context.getString(0), config);
+                    Portal portal = new Portal(module, manager, context.getString(0), config);
                     this.manager.addPortal(portal);
                     context.sendTranslated("&aPortal created! Select a destination using TODO portal modify command");
                     return;
