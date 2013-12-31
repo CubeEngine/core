@@ -36,7 +36,6 @@ import de.cubeisland.engine.test.tests.AsyncCommandTest;
 import de.cubeisland.engine.test.tests.ClearChatTest;
 import de.cubeisland.engine.test.tests.CommandArgsTest;
 import de.cubeisland.engine.test.tests.DatabaseTest;
-import de.cubeisland.engine.test.tests.LoggerTest;
 import de.cubeisland.engine.test.tests.MatchTest;
 import de.cubeisland.engine.test.tests.ModuleTest;
 import de.cubeisland.engine.test.tests.ParseTimeTest;
@@ -61,7 +60,6 @@ public class Test extends Module
         this.registerTest("Clear chat test", new ClearChatTest(this));
         this.registerTest("Command args test", new CommandArgsTest(this));
         this.registerTest("Database test", new DatabaseTest(this));
-        this.registerTest("Log test", new LoggerTest(this));
         this.registerTest("Match test", new MatchTest(this));
         this.registerTest("Module test", new ModuleTest(this));
         this.registerTest("Parse time test", new ParseTimeTest(this));
