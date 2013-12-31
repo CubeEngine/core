@@ -331,7 +331,7 @@ public abstract class Module
      * @param clazz the configurations class
      * @return the loaded configuration
      */
-    public <T extends Configuration> T loadConfig(Class<T> clazz)
+    protected final <T extends Configuration> T loadConfig(Class<T> clazz)
     {
         T config = this.core.getConfigFactory().create(clazz);
         config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
