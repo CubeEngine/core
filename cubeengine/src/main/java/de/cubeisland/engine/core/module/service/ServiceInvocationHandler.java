@@ -24,12 +24,12 @@ import java.util.PriorityQueue;
 
 import de.cubeisland.engine.core.module.service.Service.Implementation;
 
-class ServiceInvokationHandler implements InvocationHandler
+class ServiceInvocationHandler implements InvocationHandler
 {
     private final Service<?> service;
     private final PriorityQueue<Implementation> implementations;
 
-    public ServiceInvokationHandler(Service<?> service, PriorityQueue<Implementation> implementations)
+    public ServiceInvocationHandler(Service<?> service, PriorityQueue<Implementation> implementations)
     {
         this.service = service;
         this.implementations = implementations;

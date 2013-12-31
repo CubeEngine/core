@@ -31,7 +31,7 @@ public class Service<T>
     private final Class<T> interfaceClass;
     private final PriorityQueue<Implementation> implementations;
     private final T proxy;
-    private final ServiceInvokationHandler invokationHandler;
+    private final ServiceInvocationHandler invocationHandler;
 
     @SuppressWarnings("unchecked")
     public Service(Module module, Class<T> interfaceClass)
@@ -39,8 +39,8 @@ public class Service<T>
         this.interfaceClass = interfaceClass;
         this.module = module;
         this.implementations = new PriorityQueue<>();
-        this.invokationHandler = new ServiceInvokationHandler(this, this.implementations);
-        this.proxy = (T)Proxy.newProxyInstance(module.getClassLoader(), new Class[] {interfaceClass}, this.invokationHandler);
+        this.invocationHandler = new ServiceInvocationHandler(this, this.implementations);
+        this.proxy = (T)Proxy.newProxyInstance(module.getClassLoader(), new Class[] {interfaceClass}, this.invocationHandler);
     }
 
     public Module getModule()
