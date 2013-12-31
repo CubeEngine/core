@@ -45,6 +45,7 @@ public class PortalManager implements Listener
         this.portalsDir.mkdir();
         this.module.getCore().getCommandManager().registerCommand(new PortalCommands(this.module, this));
         this.module.getCore().getEventManager().registerListener(this.module, this);
+        this.loadPortals();
     }
 
     private void loadPortals()
