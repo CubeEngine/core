@@ -85,7 +85,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         this.metadata = new HashMap<>();
         for (Record2<String, String> meta : metaFetch)
         {
-            this.metadata.put(meta.value1(), meta.value1());
+            this.metadata.put(meta.value1(), meta.value2());
         }
 
         this.clearTempMetadata();
