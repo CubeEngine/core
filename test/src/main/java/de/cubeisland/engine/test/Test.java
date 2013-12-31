@@ -41,7 +41,6 @@ import de.cubeisland.engine.test.tests.MatchTest;
 import de.cubeisland.engine.test.tests.ModuleTest;
 import de.cubeisland.engine.test.tests.ParseTimeTest;
 import de.cubeisland.engine.test.tests.UtilTest;
-import de.cubeisland.engine.test.tests.config.ConfigTest;
 import de.cubeisland.engine.test.tests.l18n.l18nTest;
 import de.cubeisland.engine.test.tests.listener.ListenerTest;
 import de.cubeisland.engine.test.tests.worldgenerator.WorldGeneratorTest;
@@ -55,7 +54,6 @@ public class Test extends Module
     {
         this.tests = new HashMap<>();
 
-        this.registerTest("Config test", new ConfigTest(this));
         this.registerTest("l18n test", new l18nTest(this));
         this.registerTest("Listener test", new ListenerTest(this));
         this.registerTest("World generator test", new WorldGeneratorTest(this));

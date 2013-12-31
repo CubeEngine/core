@@ -233,9 +233,11 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: core config, file manager, task manager
+        getLog().info("Connecting to the database...");
         this.database = MySQLDatabase.loadFromConfig(this, this.fileManager.getDataPath().resolve("database.yml"));
         if (this.database == null)
         {
+            getLog().error("Failed to connect tot the database, aborting...");
             return;
         }
 
