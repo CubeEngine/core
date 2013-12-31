@@ -133,8 +133,8 @@ public class UserInformationCommands extends UserCommandHelper
 
     @Alias(names = "listuperm")
     @Command(names = {"listperm", "listpermission"},
-             desc = "List permission of a user [in world]",
-             usage = "[player] [in <world>]",
+             desc = "List permission assigned to a user in a world",
+             usage = "[player] [in <world>] [-all]",
              params = @Param(names = "in", type = World.class),
              flags = @Flag(longName = "all", name = "a"),
              max = 1)
@@ -188,13 +188,17 @@ public class UserInformationCommands extends UserCommandHelper
         context.sendTranslated("&6%s&e: &6%s&e is set for &2%s&e in &6%s&e.", metaKey, metadata.get(metaKey).getValue(), user.getName(), world.getName());
         if (metadata.get(metaKey).getOrigin() != dataHolder)
         {
-            context.sendTranslated("&eOrigin: &6%s&e.", metadata.get(metaKey).getOrigin().getName());
+            context.sendTranslated("&eOrigin: &6%s&e", metadata.get(metaKey).getOrigin().getName());
+        }
+        else
+        {
+            context.sendTranslated("&eOrigin: &6directly assigned");
         }
     }
 
     @Alias(names = "listumeta")
     @Command(names = {"listdata", "listmeta", "listmetadata"},
-             desc = "List metadata of a user [in world]",
+             desc = "Lists assigned metadata from a user [in world]",
              usage = "[player] [in <world>]",
              params = @Param(names = "in", type = World.class),
              flags = @Flag(longName = "all", name = "a"),

@@ -211,6 +211,7 @@ public class RoleManagementCommands extends RoleCommandHelper
                                role.getName(), world.getName());
     }
 
+    @Alias(names = {"addrparent","manradd"})
     @Command(desc = "Adds a parent role to given role [in world]",
              usage = "<[g:]role> <[g:]parentrole> [in <world>]",
              params = @Param(names = "in", type = World.class),
@@ -269,6 +270,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         }
     }
 
+    @Alias(names = "remrparent")
     @Command(desc = "Removes a parent role from given role [in world]",
              usage = "<[g:]role> <[g:]parentrole> [in <world>]",
              params = @Param(names = "in", type = World.class),
@@ -316,6 +318,7 @@ public class RoleManagementCommands extends RoleCommandHelper
                                pRole.getName(), role.getName(), world.getName());
     }
 
+    @Alias(names = "clearrparent")
     @Command(desc = "Removes all parent roles from given role [in world]",
              usage = "<[g:]role> [in <world>]",
              params = @Param(names = "in", type = World.class),
@@ -339,6 +342,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         context.sendTranslated("&eAll parent-roles of the role &6%s &ein &6%s cleared!",  role.getName(), world.getName());
     }
 
+    @Alias(names = "setrolepriority")
     @Command(names = {"setprio", "setpriority"},
              desc = "Sets the priority of given role [in world]",
              usage = "<[g:]role> <priority> [in <world>]",
@@ -377,6 +381,7 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     }
 
+    @Alias(names = "renamerole")
     @Command(desc = "Renames given role [in world]",
              usage = "<[g:]role> <new name> [in <world>]|[-global]",
              params = @Param(names = "in", type = World.class),
@@ -416,6 +421,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         context.sendTranslated("&cRenaming failed! The role &6%s &calready exists in &6%s&c!", newName, world.getName());
     }
 
+    @Alias(names = "createrole")
     @Command(desc = "Creates a new role [in world]",
              usage = "<rolename> [in <world>]|[-global]",
              params = @Param(names = "in", type = World.class),
@@ -447,6 +453,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         context.sendTranslated("&eThere is already a role named &6%s&e in &6%s&e.", roleName, world.getName());
     }
 
+    @Alias(names = "deleteRole")
     @Command(desc = "Deletes a role [in world]",
              usage = "<[g:]rolename> [in <world>]",
              params = @Param(names = "in", type = World.class),

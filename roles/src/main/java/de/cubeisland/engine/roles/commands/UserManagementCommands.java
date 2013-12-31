@@ -161,6 +161,7 @@ public class UserManagementCommands extends UserCommandHelper
         }
     }
 
+    @Alias(names = "setuperm")
     @Command(names = {"setperm", "setpermission"},
              desc = "Sets a permission for this user [in world]",
              usage = " <player> <permission> [true|false|reset] [in <world>]",
@@ -202,6 +203,7 @@ public class UserManagementCommands extends UserCommandHelper
         }
     }
 
+    @Alias(names = "resetuperm")
     @Command(names = {"resetperm", "resetpermission"},
              desc = "Resets a permission for this user [in world]",
              usage = " <player> <permission> [in <world>]",
@@ -220,6 +222,7 @@ public class UserManagementCommands extends UserCommandHelper
         context.sendTranslated("&ePermission &6%s&e of &2%s&e resetted!", perm, user.getName());
     }
 
+    @Alias(names = {"setudata","setumeta","setumetadata"})
     @Command(names = {"setdata", "setmeta", "setmetadata"},
              desc = "Sets metadata for this user [in world]",
              usage = "<player> <metaKey> <metaValue> [in <world>]",
@@ -243,6 +246,7 @@ public class UserManagementCommands extends UserCommandHelper
         context.sendTranslated("&aMetadata &6%s&a of &2%s&a set to &6%s&a in &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
     }
 
+    @Alias(names = {"resetudata","resetumeta","resetumetadata"})
     @Command(names = {"resetdata", "resetmeta", "resetmetadata", "deletedata", "deletemetadata", "deletemeta"},
              desc = "Resets metadata for this user [in world]",
              usage = "<player> <metaKey> [in <world>]",
@@ -265,6 +269,7 @@ public class UserManagementCommands extends UserCommandHelper
         context.sendTranslated("&eMetadata &6%s&e of &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
     }
 
+    @Alias(names = {"clearudata","clearumeta","clearumetadata"})
     @Command(names = {"cleardata", "clearmeta", "clearmetadata"},
              desc = "Resets metadata for this user [in world]",
              usage = "<player> [in <world>]",
