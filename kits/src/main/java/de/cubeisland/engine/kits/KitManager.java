@@ -37,7 +37,7 @@ import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 public class KitManager implements Listener
 {
-   private final Kits module;
+    private final Kits module;
 
     public KitManager(Kits module)
     {
@@ -45,6 +45,7 @@ public class KitManager implements Listener
         this.module.getCore().getEventManager().registerListener(module, this);
     }
 
+    @SuppressWarnings("unused")
     @EventHandler(ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent event)
     {
@@ -66,8 +67,11 @@ public class KitManager implements Listener
 
     public Kit getKit(String name)
     {
-        if (name == null) return null;
-        Set <String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
+        if (name == null)
+        {
+            return null;
+        }
+        Set<String> match = Match.string().getBestMatches(name.toLowerCase(Locale.ENGLISH), kitMap.keySet(), 2);
         if (match.isEmpty())
         {
             return null;
@@ -99,7 +103,7 @@ public class KitManager implements Listener
             kitMap.put(config.kitName.toLowerCase(Locale.ENGLISH), kit);
             if (kit.getPermission() != null)
             {
-                this.module.getCore().getPermissionManager().registerPermission(this.module,kit.getPermission());
+                this.module.getCore().getPermissionManager().registerPermission(this.module, kit.getPermission());
             }
         }
         catch (Exception ex)
@@ -110,7 +114,7 @@ public class KitManager implements Listener
 
     public void loadKits()
     {
-        Path folder = this.module.getFolder().resolve("kits");
+        Path folder = this.module.getFolder();
         try
         {
             Files.createDirectories(folder);
