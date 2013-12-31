@@ -33,7 +33,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     {
         super(module);
         module.getLog().trace("{} ms - Basics.Permission-register", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.bindToModule(KITS,COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE, BAN_RECEIVEMESSAGE,
+        this.bindToModule(COMMAND,ITEM_BLACKLIST,TELEPORT,COMPASS_JUMPTO,SIGN_COLORED,CHANGEPAINTING,KICK_RECEIVEMESSAGE, BAN_RECEIVEMESSAGE,
                           COMMAND_KILL_PREVENT, COMMAND_CLEARINVENTORY_PREVENT, COMMAND_INVSEE_MODIFY_PREVENT,
                           COMMAND_INVSEE_ENDERCHEST, COMMAND_KICK_NOREASON, TELEPORT_PREVENT, COMMAND_AFK_PREVENT,
                           SIGN_COLORED_BLACK, SIGN_COLORED_DARK_BLUE, SIGN_COLORED_DARK_GREEN,
@@ -51,7 +51,6 @@ public class BasicsPerm extends PermissionContainer<Basics>
         new TpWorldPermissions(module); // per world permissions
     }
 
-    public static final Permission KITS = Permission.createAbstractPermission("kits");
     public static final Permission COMMAND = Permission.createAbstractPermission("command");
 
     public static final Permission COMMAND_ENCHANT_UNSAFE = COMMAND.createAbstractChild("enchant").createChild("unsafe");
@@ -276,7 +275,6 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission COMMAND_KICK_ALL = COMMAND_KICK.createChild("all");
     public static final Permission COMMAND_KICK_NOREASON = COMMAND_KICK.createNew("noreason");
 
-    public static final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.createChild("kit.give.force");
     public static final Permission COMMAND_STACK_FULLSTACK = COMMAND.createAbstractChild("stack").createChild("fullstack");
 
     public static final Permission COMMAND_BAN_NOREASON = COMMAND.createAbstractChild("ban").createChild("noreason");

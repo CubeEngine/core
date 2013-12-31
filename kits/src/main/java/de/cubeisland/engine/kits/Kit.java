@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.moderation.kit;
+package de.cubeisland.engine.kits;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,21 +29,17 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryUtil;
 import de.cubeisland.engine.core.util.time.Duration;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
-
-import static de.cubeisland.engine.basics.command.moderation.kit.TableKitsGiven.TABLE_KITS;
 
 /**
  * A Kit of Items a User can receive
@@ -64,20 +60,18 @@ public class Kit
     private Permission permission;
     private String customMessage;
     private List<String> commands;
-    private Basics module;
     private DSLContext dsl;
 
-    public Kit(Basics module, final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
+    public Kit(Database db, final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
     {
-        this.module = module;
-        this.dsl = module.getCore().getDB().getDSL();
+        this.dsl = db.getDSL();
         this.name = name;
         this.items = items;
         this.commands = commands;
         this.customMessage = customMessage;
         if (usePermission)
         {
-            this.permission = BasicsPerm.KITS.createChild(name);
+            this.permission = KitsPerm.KITS.createChild(name);
         }
         else
         {
@@ -102,8 +96,8 @@ public class Kit
         {
             if (limitUsagePerPlayer > 0)
             {
-                Record1<Integer> record1 = this.dsl.select(TABLE_KITS.AMOUNT).from(TABLE_KITS).
-                    where(TABLE_KITS.KITNAME.like(this.name), TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
+                Record1<Integer> record1 = this.dsl.select(TableKitsGiven.TABLE_KITS.AMOUNT).from(TableKitsGiven.TABLE_KITS).
+                    where(TableKitsGiven.TABLE_KITS.KITNAME.like(this.name), TableKitsGiven.TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
                 if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
                 {
                     sender.sendTranslated("&cKit-limit reached.");
@@ -112,7 +106,7 @@ public class Kit
             }
             if (limitUsageDelay != 0)
             {
-                Long lastUsage = user.get(BasicsAttachment.class).getKitUsage(this.name);
+                Long lastUsage = user.get(KitsAttachment.class).getKitUsage(this.name);
                 if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
                 {
                     sender.sendTranslated("&eThis kit not available at the moment. &aTry again later!");
@@ -123,12 +117,12 @@ public class Kit
         List<ItemStack> list = this.getItems();
         if (InventoryUtil.giveItemsToUser(user, list.toArray(new ItemStack[list.size()])))
         {
-            this.dsl.insertInto(TABLE_KITS,TABLE_KITS.KITNAME, TABLE_KITS.USERID, TABLE_KITS.AMOUNT).values(this.getKitName(), user.getEntity().getKey(), 1)
-                    .onDuplicateKeyUpdate().set(TABLE_KITS.AMOUNT, TABLE_KITS.AMOUNT.add(1)).execute();
+            this.dsl.insertInto(TableKitsGiven.TABLE_KITS, TableKitsGiven.TABLE_KITS.KITNAME, TableKitsGiven.TABLE_KITS.USERID, TableKitsGiven.TABLE_KITS.AMOUNT).values(this.getKitName(), user.getEntity().getKey(), 1)
+                    .onDuplicateKeyUpdate().set(TableKitsGiven.TABLE_KITS.AMOUNT, TableKitsGiven.TABLE_KITS.AMOUNT.add(1)).execute();
             this.executeCommands(user);
             if (limitUsageDelay != 0)
             {
-                user.get(BasicsAttachment.class).setKitUsage(this.name);
+                user.get(KitsAttachment.class).setKitUsage(this.name);
             }
             return true;
         }

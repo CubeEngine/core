@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.moderation.kit;
+package de.cubeisland.engine.kits;
 
 import java.util.HashMap;
 import java.util.Map;

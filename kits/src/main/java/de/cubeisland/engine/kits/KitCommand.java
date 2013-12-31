@@ -15,15 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.moderation.kit;
+package de.cubeisland.engine.kits;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -37,10 +35,12 @@ import de.cubeisland.engine.core.util.FileUtil;
 
 public class KitCommand extends ContainerCommand
 {
-    public KitCommand(Basics module)
+    private final KitManager manager;
+    
+    public KitCommand(Kits module)
     {
         super(module, "kit", "Manages item-kits");
-        this.module = module;
+        this.manager = module.getKitManager();
         this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
         this.delegateChild(new MultiContextFilter() {
             @Override
@@ -58,7 +58,6 @@ public class KitCommand extends ContainerCommand
             }
         });
     }
-    private Basics module;
 
     @Command(desc = "Creates a new kit with the items in your inventory.",
             flags = @Flag(longName = "toolbar", name = "t"),
@@ -109,16 +108,16 @@ public class KitCommand extends ContainerCommand
                             item.getEnchantments()));
             }
         }
-        Kit kit = new Kit(this.module,context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
+        Kit kit = new Kit(getModule().getCore().getDB(), context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
             context.sendTranslated("&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
             return;
         }
-        module.getKitManager().saveKit(kit);
+        manager.saveKit(kit);
         if (kit.getPermission() != null)
         {
-            module.getCore().getPermissionManager().registerPermission(module,kit.getPermission());
+            getModule().getCore().getPermissionManager().registerPermission(getModule(), kit.getPermission());
         }
         context.sendTranslated("&aCreated the &6%s &akit!", kit.getKitName());
     }
@@ -130,7 +129,7 @@ public class KitCommand extends ContainerCommand
     {
         context.sendTranslated("&aThe following kits are available:");
         String format = ChatFormat.parseFormats(" &f-&e %s");
-        for (String kitName : this.module.getKitManager().getKitsNames())
+        for (String kitName : manager.getKitsNames())
         {
             context.sendMessage(String.format(format, kitName));
         }
@@ -145,9 +144,9 @@ public class KitCommand extends ContainerCommand
     {
         String kitname = context.getString(0);
         User user;
-        Kit kit = module.getKitManager().getKit(kitname);
+        Kit kit = manager.getKit(kitname);
         boolean force = false;
-        if (context.hasFlag("f") && BasicsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
+        if (context.hasFlag("f") && KitsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
         {
             force = true;
         }
@@ -160,7 +159,7 @@ public class KitCommand extends ContainerCommand
         {
             boolean gaveKit = false;
             int kitNotreceived = 0;
-            for (User receiver : module.getCore().getUserManager().getOnlineUsers())
+            for (User receiver : getModule().getCore().getUserManager().getOnlineUsers())
             {
                 try
                 {

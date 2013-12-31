@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.moderation.kit;
+package de.cubeisland.engine.kits;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Transient;
 
-import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.time.Duration;
 
@@ -66,8 +66,8 @@ public class KitConfiguration extends YamlConfiguration
         }
     }
 
-    public Kit getKit(Basics module)
+    public Kit getKit(Module module)
     {
-        return new Kit(module, this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
+        return new Kit(module.getCore().getDB(), this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
     }
 }

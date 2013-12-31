@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.moderation.kit;
+package de.cubeisland.engine.kits;
 
 import org.jooq.Field;
 import org.jooq.Record2;
@@ -24,13 +24,11 @@ import org.jooq.Row3;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.basics.command.moderation.kit.TableKitsGiven.TABLE_KITS;
-
 public class KitsGiven extends UpdatableRecordImpl<KitsGiven> implements Record3<UInteger, String, Integer>
 {
     public KitsGiven()
     {
-        super(TABLE_KITS);
+        super(TableKitsGiven.TABLE_KITS);
     }
 
     public void setUserid(UInteger value) {
@@ -82,17 +80,17 @@ public class KitsGiven extends UpdatableRecordImpl<KitsGiven> implements Record3
 
     @Override
     public Field<UInteger> field1() {
-        return TABLE_KITS.USERID;
+        return TableKitsGiven.TABLE_KITS.USERID;
     }
 
     @Override
     public Field<String> field2() {
-        return TABLE_KITS.KITNAME;
+        return TableKitsGiven.TABLE_KITS.KITNAME;
     }
 
     @Override
     public Field<Integer> field3() {
-        return TABLE_KITS.AMOUNT;
+        return TableKitsGiven.TABLE_KITS.AMOUNT;
     }
 
     @Override

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.basics.command.moderation.kit;
+package de.cubeisland.engine.kits;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -28,7 +28,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -38,9 +37,9 @@ import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 public class KitManager implements Listener
 {
-   private final Basics module;
+   private final Kits module;
 
-    public KitManager(Basics module)
+    public KitManager(Kits module)
     {
         this.module = module;
         this.module.getCore().getEventManager().registerListener(module, this);

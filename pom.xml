@@ -59,6 +59,7 @@
     <module>selector</module>
     <module>vaultlink</module>
     <module>powertools</module>
+    <module>kits</module>
   </modules>
 
   <build>
