@@ -335,16 +335,9 @@ public abstract class Module
     {
         T config = this.core.getConfigFactory().create(clazz);
         config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
-        try
+        if (config.reload(true))
         {
-            if (config.reload(true))
-            {
-                this.getLog().info("Saved new configuration file! config.{}" , config.getCodec().getExtension());
-            }
-        }
-        catch (InvalidConfigurationException ex)
-        {
-            CubeEngine.getLog().error(ex, "Failed to load the configuration for {}", config.getFile().getAbsolutePath());
+            this.getLog().info("Saved new configuration file! config.{}" , config.getCodec().getExtension());
         }
         return config;
     }
