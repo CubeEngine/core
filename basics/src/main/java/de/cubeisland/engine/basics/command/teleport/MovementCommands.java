@@ -95,6 +95,7 @@ public class MovementCommands
             User sender = (User)context.getSender();
             Location loc = sender.getLocation();
             BlockUtil.getHighestBlockAt(loc).getLocation(loc);
+            loc.add(.5, 0, .5);
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
             {
                 context.sendTranslated("&aYou are now on top!");
