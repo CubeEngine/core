@@ -29,9 +29,9 @@ public class PortalConfig extends YamlConfiguration
     public boolean safeTeleport = true;
     public boolean teleportNonPlayers = false;
     public OfflinePlayer owner;
-    public World world;
+    public String world;
 
-    public PortalRegion location;
+    public PortalRegion location = new PortalRegion();
 
     public class PortalRegion implements Section
     {

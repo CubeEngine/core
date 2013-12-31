@@ -20,10 +20,8 @@ package de.cubeisland.engine.portals;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,10 +33,9 @@ import de.cubeisland.engine.portals.config.PortalConfig;
 public class PortalManager implements Listener
 {
     private final Portals module;
-    private final File portalsDir;
+    protected final File portalsDir;
 
-    private Map<String, Portal> configs = new HashMap<>();
-
+    private Map<String, Portal> portals = new HashMap<>();
     private Map<Long, List<Portal>> chunksWithPortals = new HashMap<>();
 
     public PortalManager(Portals module)
@@ -46,6 +43,8 @@ public class PortalManager implements Listener
         this.module = module;
         this.portalsDir = this.module.getFolder().resolve("portals").toFile();
         this.portalsDir.mkdir();
+        this.module.getCore().getCommandManager().registerCommand(new PortalCommands(this.module, this));
+        this.module.getCore().getEventManager().registerListener(this.module, this);
     }
 
     private void loadPortals()
@@ -56,41 +55,10 @@ public class PortalManager implements Listener
             {
                 PortalConfig load = this.module.getCore().getConfigFactory().load(PortalConfig.class, file);
                 Portal portal = new Portal(file.getName().substring(0, file.getName().lastIndexOf(".yml")), load);
-                this.configs.put(portal.getName(), portal);
-
-                int chunkXFrom = load.location.from.x >> 4;
-                int chunkZFrom =  load.location.from.z >> 4;
-                int chunkXTo =  load.location.to.x >> 4;
-                int chunkZTo = load.location.to.z >> 4;
-                if (chunkXFrom > chunkXTo) // if from is greater swap
-                {
-                    chunkXFrom = chunkXFrom + chunkXTo;
-                    chunkXTo = chunkXFrom - chunkXTo;
-                    chunkXFrom = chunkXFrom - chunkXTo;
-                }
-                if (chunkZFrom > chunkZTo) // if from is greater swap
-                {
-                    chunkZFrom = chunkZFrom + chunkZTo;
-                    chunkZTo = chunkZFrom - chunkZTo;
-                    chunkZFrom = chunkZFrom - chunkZTo;
-                }
-                for (int x = chunkXFrom; x <= chunkXTo; x++)
-                {
-                    for (int z = chunkZFrom; z <= chunkZTo; z++)
-                    {
-                        long chunkKey = LocationUtil.getChunkKey(x, z);
-                        List<Portal> list = this.chunksWithPortals.get(chunkKey);
-                        if (list == null)
-                        {
-                            list = new ArrayList<>();
-                            this.chunksWithPortals.put(chunkKey, list);
-                        }
-                        list.add(portal);
-                    }
-                }
+                this.addPortal(portal);
             }
         }
-        this.module.getLog().info("{} portals loaded!", this.configs.size());
+        this.module.getLog().info("{} portals loaded!", this.portals.size());
         this.module.getLog().debug("{} chunks checked", this.chunksWithPortals.size());
     }
 
@@ -118,6 +86,47 @@ public class PortalManager implements Listener
                 }
             }
             // else movement is not in a chunk that has a portal
+        }
+    }
+
+    public Portal getPortal(String name)
+    {
+        return this.portals.get(name.toLowerCase());
+    }
+
+    protected void addPortal(Portal portal)
+    {
+        this.portals.put(portal.getName().toLowerCase(), portal);
+
+        int chunkXFrom = portal.config.location.from.x >> 4;
+        int chunkZFrom =  portal.config.location.from.z >> 4;
+        int chunkXTo =  portal.config.location.to.x >> 4;
+        int chunkZTo = portal.config.location.to.z >> 4;
+        if (chunkXFrom > chunkXTo) // if from is greater swap
+        {
+            chunkXFrom = chunkXFrom + chunkXTo;
+            chunkXTo = chunkXFrom - chunkXTo;
+            chunkXFrom = chunkXFrom - chunkXTo;
+        }
+        if (chunkZFrom > chunkZTo) // if from is greater swap
+        {
+            chunkZFrom = chunkZFrom + chunkZTo;
+            chunkZTo = chunkZFrom - chunkZTo;
+            chunkZFrom = chunkZFrom - chunkZTo;
+        }
+        for (int x = chunkXFrom; x <= chunkXTo; x++)
+        {
+            for (int z = chunkZFrom; z <= chunkZTo; z++)
+            {
+                long chunkKey = LocationUtil.getChunkKey(x, z);
+                List<Portal> list = this.chunksWithPortals.get(chunkKey);
+                if (list == null)
+                {
+                    list = new ArrayList<>();
+                    this.chunksWithPortals.put(chunkKey, list);
+                }
+                list.add(portal);
+            }
         }
     }
 }

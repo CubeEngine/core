@@ -27,5 +27,6 @@ public class Portals extends Module
     public void onEnable()
     {
         this.config = this.loadConfig(PortalsConfig.class);
+        new PortalManager(this);
     }
 }

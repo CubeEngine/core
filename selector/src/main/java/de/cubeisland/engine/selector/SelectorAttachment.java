@@ -103,6 +103,10 @@ public class SelectorAttachment extends UserAttachment
     private Shape getWESelection()
     {
         LocalSession session = WorldEdit.getInstance().getSession(this.getHolder().getName());
+        if (session == null)
+        {
+            return null;
+        }
         RegionSelector selector = session.getRegionSelector(BukkitUtil.getLocalWorld(this.getHolder().getWorld()));
         try
         {
