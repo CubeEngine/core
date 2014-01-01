@@ -18,10 +18,13 @@
 package de.cubeisland.engine.core.util;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Step;
 import org.bukkit.material.WoodenStep;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.user.User;
@@ -30,80 +33,52 @@ public class LocationUtil
 {
     public static Location getBlockBehindWall(User user, int maxDistanceToWall, int maxThicknessOfWall)
     {
-        Location userLocation = user.getLocation();
-        double yaw = Math.toRadians(userLocation.getYaw() + 90);
-        double pitch = Math.toRadians(-userLocation.getPitch());
-
-        double x = 0.5 * Math.cos(yaw) * Math.cos(pitch);
-        double y = 0.5 * Math.sin(pitch);
-        double z = 0.5 * Math.sin(yaw) * Math.cos(pitch);
-        Vector v = new Vector(x, y, z);
-        Location loc = user.getEyeLocation();
-        Location originalLoc = user.getEyeLocation();
-        Location locBeginWall = null;
+        BlockIterator blockIterator = new BlockIterator(user, maxDistanceToWall + maxThicknessOfWall);
+        int curDist = 0;
         boolean passed = false;
-        while (true)
+        while (blockIterator.hasNext())
         {
-            loc.add(v);
-            if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall
-                || loc.getY() < 0 //below world
-                || loc.getY() > loc.getWorld().getMaxHeight()) //above world 
+            curDist++;
+            Block next = blockIterator.next();
+            Location loc = new Location(null, 0,0,0);
+            if (passed && !next.getType().isSolid())
             {
-                return null;
-            }
-            if (passed && (!loc.getBlock().getType().isSolid()))
-            {
-                if (loc.distanceSquared(locBeginWall) < 1.5) continue; // not yet behind wall
-                MaterialData topData = loc.getBlock().getRelative(BlockFace.UP).getState().getData();
+                MaterialData topData = next.getRelative(BlockFace.UP).getState().getData();
                 boolean onHalf = false;
+                next.getLocation(loc);
                 if (topData.getItemType().isSolid())
                 {
-                    MaterialData botData = loc.getBlock().getRelative(BlockFace.DOWN).getState().getData();
-                    if ((topData instanceof Step || topData instanceof WoodenStep) && (botData instanceof Step || botData instanceof WoodenStep) && BlockUtil.isInvertedStep(topData) && !BlockUtil.isInvertedStep(botData))
+                    MaterialData botData = next.getRelative(BlockFace.DOWN).getState().getData();
+                    if ((topData instanceof Step || topData instanceof WoodenStep) && (botData instanceof Step || botData instanceof WoodenStep)
+                        && BlockUtil.isInvertedStep(topData) && !BlockUtil.isInvertedStep(botData))
                     {
                         onHalf = true;
                     }
-                    else if (!loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid())
+                    else if (!next.getRelative(BlockFace.DOWN).getType().isSolid())
                     {
-                        loc.add(0, -1, 0);
+                        loc = loc.add(0, -1, 0);
                     }
                     else
                     {
                         continue;
                     }
                 }
-                loc.setX(loc.getBlockX() + 0.5);
-                loc.setY(loc.getBlockY() - (onHalf ? 1.5 : 1));
-                loc.setZ(loc.getBlockZ() + 0.5);
-                loc.setYaw(userLocation.getYaw());
-                loc.setPitch(userLocation.getPitch());
+                loc = loc.add(0.5, - (onHalf ? 1.5 : 1) ,0.5);
+                Location userLoc = user.getLocation();
+                loc.setYaw(userLoc.getYaw());
+                loc.setPitch(userLoc.getPitch());
                 return loc;
             }
-            else
+            if (curDist >= maxDistanceToWall)
             {
-                switch (loc.getBlock().getType())
-                {
-                    case AIR:
-                    case WATER:
-                    case STATIONARY_WATER:
-                        if (loc.distanceSquared(originalLoc) > maxDistanceToWall * maxDistanceToWall)
-                        {
-                            return null;
-                        }
-                        break;
-                    default:
-                        if (!passed)
-                        {
-                            passed = true;
-                            locBeginWall = loc.clone();
-                        }
-                        if (loc.distanceSquared(locBeginWall) > maxThicknessOfWall * maxThicknessOfWall)
-                        {
-                            return null;
-                        }
-                }
+                return null;
+            }
+            if (next.getType().isSolid() || next.getType() == Material.SUGAR_CANE_BLOCK)
+            {
+                passed = true;
             }
         }
+        return null;
     }
 
     public static long getChunkKey(Location loc)

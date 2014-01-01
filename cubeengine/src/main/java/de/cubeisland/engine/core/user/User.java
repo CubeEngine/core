@@ -18,11 +18,14 @@
 package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -622,5 +625,42 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     public UserEntity getEntity()
     {
         return entity;
+    }
+
+    public Iterator<Block> getLineOfSight(int maxDistance)
+    {
+        if (maxDistance > Bukkit.getServer().getViewDistance() * 16) {
+            maxDistance = Bukkit.getServer().getViewDistance() * 16;
+        }
+        return new BlockIterator(this, maxDistance);
+    }
+
+    public Block getTargetBlock(int maxDistance)
+    {
+        Iterator<Block> lineOfSight = this.getLineOfSight(maxDistance);
+        while (lineOfSight.hasNext())
+        {
+            Block next = lineOfSight.next();
+            if (next.getType().isSolid())
+            {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    public Block getTargetBlock(int maxDistance, Material... transparent)
+    {
+        Iterator<Block> lineOfSight = this.getLineOfSight(maxDistance);
+        List<Material> list = Arrays.asList(transparent);
+        while (lineOfSight.hasNext())
+        {
+            Block next = lineOfSight.next();
+            if (!list.contains(next.getType()))
+            {
+                return next;
+            }
+        }
+        return null;
     }
 }

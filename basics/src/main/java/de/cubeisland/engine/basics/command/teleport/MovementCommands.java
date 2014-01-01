@@ -190,7 +190,7 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().navigation.jumpToMaxRange).getLocation();
+            Location loc = sender.getTargetBlock(this.basics.getConfiguration().navigation.jumpToMaxRange).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
                 context.sendTranslated("&cNo block in sight!");
