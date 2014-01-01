@@ -28,6 +28,7 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -87,8 +88,7 @@ public class TimeControlCommands
             }
             else
             {
-                context.sendTranslated("&cYou have to specify a world when using this command from the console!");
-                return;
+                throw new IncorrectUsageException(context.getSender().translate("&cYou have to specify a world when using this command from the console!"));
             }
         }
         if (context.hasArg(0))
