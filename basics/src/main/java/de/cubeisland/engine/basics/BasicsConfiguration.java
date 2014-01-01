@@ -98,6 +98,18 @@ public class BasicsConfiguration extends YamlConfiguration
 
         @Name("door.max.radius")
         public int maxDoorRadius = 10;
+
+        public boolean containsBlackListed(ItemStack item)
+        {
+            for (ItemStack blItem : itemBlacklist)
+            {
+                if (blItem.getType() == item.getType() && blItem.getDurability() == item.getDurability())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     @Comment({"The world to teleport to when using /spawn",

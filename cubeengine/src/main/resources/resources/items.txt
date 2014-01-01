@@ -1102,6 +1102,7 @@ SIGN:0
   sign
 WOOD_DOOR:0
   wooddoor
+  woodendoor
 BUCKET:0
   bucket
 WATER_BUCKET:0
