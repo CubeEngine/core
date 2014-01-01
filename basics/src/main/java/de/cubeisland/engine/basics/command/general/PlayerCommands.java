@@ -519,7 +519,9 @@ public class PlayerCommands
                    new Duration(System.currentTimeMillis(), lastPlayed).format("%www%ddd%hhh%mmm%sss"));
     }
 
-    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, max = NO_MAX, flags = @Flag(longName = "chat", name = "c"))
+    @Command(desc = "Makes a player execute a command",
+             usage = "<player> </command>|<chat>",
+             min = 2, max = NO_MAX)
     public void sudo(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -528,18 +530,15 @@ public class PlayerCommands
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
-        StringBuilder sb = new StringBuilder();
-        int i = 1;
-        while (context.hasArg(i))
+        String s = context.getStrings(1);
+        if (s.startsWith("/"))
         {
-            sb.append(context.getString(i++)).append(" ");
-        }
-        if (context.hasFlag("c"))
-        {
-            user.chat(sb.toString());
+            this.module.getCore().getCommandManager().runCommand(user,s.substring(1));
+            context.sendTranslated("&aCommand &6%s &aexecuted as &2%s", s, user.getName());
             return;
         }
-        this.module.getCore().getCommandManager().runCommand(user,sb.toString());
+        user.chat(s);
+        context.sendTranslated("&aForced &2%s&a to chat: &6%s", user.getName());
     }
 
     @Command(desc = "Kills yourself", max = 0)
