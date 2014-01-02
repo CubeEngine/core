@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.basics.command.teleport;
 
-import java.util.HashSet;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,11 +27,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.LocationUtil;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.LocationUtil;
 
 public class TeleportListener implements Listener
 {
@@ -114,6 +112,7 @@ public class TeleportListener implements Listener
                             user.sendTranslated("&cNothing to pass through!");
                             return;
                         }
+                        loc.setY(loc.getY() + 1);
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
                         user.sendTranslated("&eYou passed the wall");
                         event.setCancelled(true);
