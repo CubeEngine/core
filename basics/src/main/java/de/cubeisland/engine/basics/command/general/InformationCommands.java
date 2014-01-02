@@ -69,8 +69,7 @@ public class InformationCommands
                                                      .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
                                                      .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
                                                      .appendMinutes().appendSuffix(" minute", " minutes").appendSeparator(" ")
-                                                     .appendSeconds().appendSuffix(" second", " seconds").appendSeparator(" ")
-                                                     .appendMillis().appendSuffix(" ms").toFormatter();
+                                                     .appendSeconds().appendSuffix(" second", " seconds").toFormatter();
     }
 
     @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z}", max = 3)

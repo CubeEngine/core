@@ -29,7 +29,6 @@ import org.joda.time.format.PeriodFormatterBuilder;
 
 public class DurationConverter implements Converter<Duration>
 {
-
     private final PeriodFormatter formatter;
 
     public DurationConverter()

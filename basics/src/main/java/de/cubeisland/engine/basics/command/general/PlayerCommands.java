@@ -48,6 +48,7 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
+import de.cubeisland.engine.core.util.TimeUtil;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -525,8 +526,8 @@ public class PlayerCommands
             context.sendTranslated("&2%s&e is offline since %s", user.getName(), format.format(date));
             return;
         }
-        context.sendTranslated("&2%s&e was last seen &6%s &eago.", user.getName(),
-                   this.formatter.print(new Duration(System.currentTimeMillis(), lastPlayed).toPeriod()));
+        context.sendTranslated("&2%s&e was last seen &6%s.", user.getName(),
+                   TimeUtil.format(context.getSender().getLocale(), new Date(lastPlayed)));
     }
 
     @Command(desc = "Makes a player send a message (including commands)",

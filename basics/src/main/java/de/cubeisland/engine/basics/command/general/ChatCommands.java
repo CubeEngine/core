@@ -24,21 +24,23 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
+import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.TimeUtil;
+import de.cubeisland.engine.core.util.converter.DurationConverter;
 import org.joda.time.Duration;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class ChatCommands
 {
-    private final PeriodFormatter formatter;
+    private final DurationConverter converter = new DurationConverter();
     private UserManager um;
     private String lastWhisperOfConsole = null;
     private Basics module;
@@ -47,12 +49,6 @@ public class ChatCommands
     {
         this.module = basics;
         this.um = basics.getCore().getUserManager();
-        this.formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week"," weeks").appendSeparator(" ")
-                                                      .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
-                                                      .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
-                                                      .appendMinutes().appendSuffix(" minute", " minutes").appendSeparator(" ")
-                                                      .appendSeconds().appendSuffix(" second", " seconds").appendSeparator(" ")
-                                                      .appendMillis().appendSuffix(" ms").toFormatter();
     }
 
     @Command(desc = "Changes your DisplayName", usage = "<name>|-r", min = 1, max = 1)
@@ -197,17 +193,18 @@ public class ChatCommands
         {
             try
             {
-                dura = formatter.parsePeriod(context.getStrings(1)).toStandardDuration();
+                dura = converter.fromNode(StringNode.of(context.getString(1)), null);
             }
-            catch (IllegalArgumentException e)
+            catch (ConversionException e)
             {
                 context.sendTranslated("&cInvalid duration format!");
                 return;
             }
         }
-        basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() + (dura.getMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
+        basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() +
+            (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
-        String timeString = dura.getMillis() == -1 ? "ever" : formatter.print(dura.toPeriod());
+        String timeString = dura.getMillis() == 0 ? user.translate("ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
         user.sendTranslated("&cYou are now muted for &6%s&c!", timeString);
         context.sendTranslated("&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
     }
