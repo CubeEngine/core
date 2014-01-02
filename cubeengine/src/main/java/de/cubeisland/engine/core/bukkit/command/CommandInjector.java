@@ -17,7 +17,9 @@
  */
 package de.cubeisland.engine.core.bukkit.command;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +29,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.VanillaCommand;
+import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
@@ -37,6 +40,7 @@ import de.cubeisland.engine.core.module.Module;
 import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
+import static de.cubeisland.engine.core.util.ReflectionUtils.getAccessibleConstructor;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
 public class CommandInjector
@@ -45,11 +49,13 @@ public class CommandInjector
     private final Field commandMapField;
     private SimpleCommandMap commandMap;
     private Field knownCommandField;
+    private final Constructor<PluginCommand> pluginCmdCtor;
 
     public CommandInjector(BukkitCore core)
     {
         this.core = core;
         this.commandMapField = findFirstField(core.getServer(), SimpleCommandMap.class);
+        this.pluginCmdCtor = getAccessibleConstructor(PluginCommand.class, String.class, Plugin.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -73,9 +79,10 @@ public class CommandInjector
     {
         assert command.getDescription() != null && !command.getDescription().isEmpty(): command.getName() + " doesn't have a description!";
 
+        Command newCommand = wrapCommand(command);
         SimpleCommandMap commandMap = getCommandMap();
         Command old = this.getCommand(command.getName());
-        if (old != null && !(old instanceof CubeCommand))
+        if (old != null)
         {
             BukkitCoreConfiguration config = this.core.getConfiguration();
             if (!config.commands.noOverride.contains(old.getLabel().toLowerCase(Locale.ENGLISH)))
@@ -91,13 +98,27 @@ public class CommandInjector
                 {
                     fallbackPrefix = "vanilla";
                 }
-                getKnownCommands().put(fallbackPrefix + ":" + command.getLabel(), command);
-                command.register(commandMap);
+                else if (old instanceof WrappedCubeCommand)
+                {
+                    fallbackPrefix = ((WrappedCubeCommand)old).getCommand().getModule().getId();
+                }
+                getKnownCommands().put(fallbackPrefix + ":" + command.getLabel(), newCommand);
+                newCommand.register(commandMap);
             }// sometimes they are not :(
         }
 
-        commandMap.register(command.getModule().getId(), command);
-        command.onRegister();
+        Command wrappedCommand = wrapCommand(command);
+        commandMap.register(command.getModule().getId(), wrappedCommand);
+    }
+
+    private Command wrapCommand(CubeCommand command)
+    {
+        Command cmd = new WrappedCubeCommand(command);
+        
+        cmd.setAliases(new ArrayList<>(command.getAliases()));
+        cmd.setUsage(command.getUsage());
+        cmd.setDescription(command.getDescription());
+        return cmd;
     }
 
     public Command getCommand(String name)
@@ -134,10 +155,6 @@ public class CommandInjector
             if (hasAliases)
             {
                 removed.unregister(getCommandMap());
-                if (removed instanceof CubeCommand)
-                {
-                    ((CubeCommand)removed).onRemove();
-                }
             }
         }
     }
@@ -147,9 +164,9 @@ public class CommandInjector
         CubeCommand cubeCommand;
         for (Command command : new THashSet<>(getCommandMap().getCommands()))
         {
-            if (command instanceof CubeCommand)
+            if (command instanceof WrappedCubeCommand)
             {
-                cubeCommand = (CubeCommand)command;
+                cubeCommand = ((WrappedCubeCommand)command).getCommand();
                 if (cubeCommand.getModule() == module)
                 {
                     this.removeCommand(cubeCommand.getLabel(), true);
@@ -175,7 +192,6 @@ public class CommandInjector
             child = it.next();
             if (child.getModule() == module)
             {
-                child.onRemove();
                 it.remove();
             }
             else
@@ -189,7 +205,7 @@ public class CommandInjector
     {
         for (Command command : new THashSet<>(getCommandMap().getCommands()))
         {
-            if (command instanceof CubeCommand)
+            if (command instanceof WrappedCubeCommand)
             {
                 this.removeCommand(command.getLabel(), true);
             }

@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command;
 
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
@@ -103,7 +103,7 @@ public interface CommandContext
      *
      * @return the arguments
      */
-    LinkedList<String> getArgs();
+    List<String> getArgs();
 
     /**
      * Checks whether the given index is available in the args list

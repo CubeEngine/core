@@ -23,13 +23,26 @@ package de.cubeisland.engine.core.command.exception;
  */
 public class IncorrectUsageException extends CommandException
 {
+    private final boolean displayUsage;
+    
     public IncorrectUsageException()
     {
-        super();
+        this(null, true);
     }
 
     public IncorrectUsageException(String message)
     {
+        this(message, true);
+    }
+
+    public IncorrectUsageException(String message, boolean displayUsage)
+    {
         super(message);
+        this.displayUsage = displayUsage;
+    }
+
+    public boolean getDisplayUsage()
+    {
+        return displayUsage;
     }
 }

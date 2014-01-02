@@ -20,6 +20,7 @@ package de.cubeisland.engine.shout.interactions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -44,13 +45,16 @@ import de.cubeisland.engine.shout.Shout;
 import de.cubeisland.engine.shout.announce.Announcement;
 import de.cubeisland.engine.shout.announce.MessageOfTheDay;
 
+import static java.util.Arrays.asList;
+
 public class ShoutCommand extends ContainerCommand
 {
     private Shout module;
 
     public ShoutCommand(Shout module)
     {
-        super(module, "shout", "Announce a message to players on the server", Arrays.asList("announce"));
+        super(module, "shout", "Announce a message to players on the server");
+        this.setAliases(new HashSet<>(asList("announce")));
         this.module = module;
 
         this.setUsage("<announcement>");
@@ -69,7 +73,7 @@ public class ShoutCommand extends ContainerCommand
 
         if (announcement.getFirstWorld().equals("*"))
         {
-            players = Arrays.asList(Bukkit.getOnlinePlayers());
+            players = asList(Bukkit.getOnlinePlayers());
         }
         else
         {

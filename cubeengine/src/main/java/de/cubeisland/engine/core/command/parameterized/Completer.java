@@ -23,5 +23,5 @@ import de.cubeisland.engine.core.command.CommandSender;
 
 public interface Completer
 {
-    List<String> complete(CommandSender sender, String token);
+    List<String> complete(ParameterizedContext context, String token);
 }

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.locker.commands;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -41,6 +42,8 @@ import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
+import static java.util.Arrays.asList;
+
 public class LockerCommands extends ContainerCommand
 {
     private Locker module;
@@ -50,7 +53,8 @@ public class LockerCommands extends ContainerCommand
 
     public LockerCommands(Locker module, LockManager manager)
     {
-        super(module, "locker", "Locker commands", Arrays.asList("l"));
+        super(module, "locker", "Locker commands");
+        this.setAliases(new HashSet<>(asList("l")));
         this.module = module;
         this.manager = manager;
     }
@@ -258,7 +262,7 @@ public class LockerCommands extends ContainerCommand
     public static class FlagCompleter implements Completer
     {
         @Override
-        public List<String> complete(CommandSender sender, String token)
+        public List<String> complete(ParameterizedContext context, String token)
         {
             String subToken = token;
             if (subToken.contains(","))

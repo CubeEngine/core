@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +39,7 @@ public class ParameterizedContext extends BasicContext
     private final int flagCount;
     private final int paramCount;
 
-    public ParameterizedContext(CubeCommand command, CommandSender sender, Stack<String> labels, LinkedList<String> args, Set<String> flags, Map<String, Object> params)
+    public ParameterizedContext(CubeCommand command, CommandSender sender, Stack<String> labels, List<String> args, Set<String> flags, Map<String, Object> params)
     {
         super(command, sender, labels, args);
         this.flags = flags;

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command.commands;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +57,8 @@ public class CoreCommands extends ContainerCommand
 
     public CoreCommands(Core core)
     {
-        super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.", asList("ce"));
+        super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.");
+        this.setAliases(new HashSet<>(asList("ce")));
         this.core = (BukkitCore)core;
         this.setGeneratePermission(true);
         this.banManager = core.getBanManager();

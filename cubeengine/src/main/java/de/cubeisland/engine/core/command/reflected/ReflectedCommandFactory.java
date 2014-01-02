@@ -80,7 +80,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         }
 
         String name = commandNames[0].trim().toLowerCase(Locale.ENGLISH);
-        List<String> aliases = new ArrayList<>(commandNames.length - 1);
+        Set<String> aliases = new HashSet<>(commandNames.length - 1);
         for (int i = 1; i < commandNames.length; ++i)
         {
             aliases.add(commandNames[i].toLowerCase(Locale.ENGLISH));
@@ -141,10 +141,10 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             method,
             name,
             annotation.desc(),
-            annotation.usage(),
-            aliases,
             this.createContextFactory(new ArgBounds(annotation.min(), annotation.max()), flags, params)
         );
+        cmd.setUsage(annotation.usage());
+        cmd.setAliases(aliases);
         cmd.setLoggable(annotation.loggable());
         if (annotation.checkPerm())
         {

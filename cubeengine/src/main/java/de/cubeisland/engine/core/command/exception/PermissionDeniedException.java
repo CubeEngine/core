@@ -17,9 +17,40 @@
  */
 package de.cubeisland.engine.core.command.exception;
 
+import de.cubeisland.engine.core.permission.Permission;
+
 /**
  * This exception is thrown when a user is not allowed to perform an action.
  * Use denyAccess to throw an exception insinde a command. The exception will be caught.
  */
 public class PermissionDeniedException extends CommandException
-{}
+{
+    private final String permission;
+
+    public PermissionDeniedException(String permission)
+    {
+        this.permission = permission;
+    }
+    
+    public PermissionDeniedException(String message, String permission)
+    {
+        super(message);
+        this.permission = permission;
+    }
+
+    public PermissionDeniedException(String message, Permission permission)
+    {
+        super(message);
+        this.permission = permission.getName();
+    }
+    
+    public PermissionDeniedException(Permission permission)
+    {
+        this(permission.getName());
+    }
+
+    public String getPermission()
+    {
+        return permission;
+    }
+}

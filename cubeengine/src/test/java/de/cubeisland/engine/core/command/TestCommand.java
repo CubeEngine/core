@@ -28,12 +28,12 @@ public class TestCommand extends CubeCommand
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(CommandContext context)
     {
         return null;
     }
 
     @Override
-    public void help(HelpContext context) throws Exception
+    public void help(HelpContext context)
     {}
 }

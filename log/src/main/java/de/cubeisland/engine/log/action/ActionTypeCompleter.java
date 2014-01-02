@@ -20,15 +20,15 @@ package de.cubeisland.engine.log.action;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 
 public class ActionTypeCompleter implements Completer
 {
     static ActionTypeManager manager;
 
     @Override
-    public List<String> complete(CommandSender sender, String token)
+    public List<String> complete(ParameterizedContext context, String token)
     {
         List<String> result = new ArrayList<>();
         String lastToken = token;

@@ -50,7 +50,7 @@ public class WarpAdminCommand extends ContainerCommand
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(CommandContext context)
     {
         context.sendMessage("&2This is not a command on it's own.");
         context.sendMessage("&eIf you want to teleport to a users warp: \"/warp <user>\"");

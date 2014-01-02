@@ -34,7 +34,7 @@ public class ConfirmCommand extends CubeCommand
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(CommandContext context)
     {
         int pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
         if (pendingConfirmations < 1)

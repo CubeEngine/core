@@ -20,12 +20,12 @@ package de.cubeisland.engine.spawn;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cubeisland.engine.core.command.CommandSender;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -204,7 +204,7 @@ public class SpawnCommands
                     return;
                 }
                 String rolespawn = rolesAttachment.getCurrentMetadataString("rolespawn");
-                if (rolespawn == null)
+                if (rolespawn != null)
                 {
                     spawnLocation = this.getSpawnLocation(rolespawn);
                     if (spawnLocation == null)
@@ -345,21 +345,23 @@ public class SpawnCommands
     public static class RoleCompleter implements Completer
     {
         @Override
-        public List<String> complete(CommandSender sender, String token)
+        public List<String> complete(ParameterizedContext context, String token)
         {
+            final CommandSender sender = context.getSender();
             List<String> roles = new ArrayList<>();
             if (sender instanceof User)
             {
-                if (((User)sender).get(RolesAttachment.class).getWorkingWorld() != null)
+                User user = (User)sender;
+                if (user.get(RolesAttachment.class).getWorkingWorld() != null)
                 {
-                    for (Role role : manager.getProvider(((User)sender).get(RolesAttachment.class).getWorkingWorld()).getRoles())
+                    for (Role role : manager.getProvider(user.get(RolesAttachment.class).getWorkingWorld()).getRoles())
                     {
                         roles.add(role.getName());
                     }
                 }
                 else
                 {
-                    for (Role role : manager.getProvider(((User)sender).getWorld()).getRoles())
+                    for (Role role : manager.getProvider(user.getWorld()).getRoles())
                     {
                         roles.add(role.getName());
                     }

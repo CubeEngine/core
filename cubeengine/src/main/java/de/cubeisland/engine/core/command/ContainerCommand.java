@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.command;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
@@ -34,7 +34,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
  */
 public abstract class ContainerCommand extends ParameterizedCommand implements CommandHolder
 {
-    private static final List<String> NO_ALIASES = Collections.emptyList();
+    private static final Set<String> NO_ALIASES = Collections.emptySet();
     private final Class<? extends CubeCommand> subCommandType;
     private ChildDelegation delegation;
 
@@ -48,14 +48,16 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         this(module, subCommandType, name, description, NO_ALIASES);
     }
 
-    public ContainerCommand(Module module, String name, String description, List<String> aliases)
+    public ContainerCommand(Module module, String name, String description, Set<String> aliases)
     {
         this(module, ReflectedCommand.class, name, description, aliases);
     }
 
-    public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, List<String> aliases)
+    public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
     {
-        super(module, name, description, "[action]", aliases, new ParameterizedContextFactory(new ArgBounds(0)));
+        super(module, name, description, new ParameterizedContextFactory(new ArgBounds(0)));
+        this.setUsage("[action]");
+        this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;
     }
@@ -81,7 +83,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(CommandContext context)
     {
         if (this.delegation != null)
         {
@@ -113,7 +115,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     }
 
     @Override
-    public void help(HelpContext context) throws Exception
+    public void help(HelpContext context)
     {
         CommandSender sender = context.getSender();
         context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
@@ -123,7 +125,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
-            if (command.testPermissionSilent(sender))
+            if (command.isAuthorized(sender))
             {
                 context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.translate(command.getDescription()));
             }

@@ -360,7 +360,7 @@ public class VanillaCommands implements CommandHolder
         {
             if (!CorePerms.COMMAND_VERSION_PLUGINS.isAuthorized(context.getSender()))
             {
-                throw new PermissionDeniedException();
+                throw new PermissionDeniedException(CorePerms.COMMAND_VERSION_PLUGINS);
             }
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)

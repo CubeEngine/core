@@ -21,7 +21,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -39,7 +43,7 @@ import de.cubeisland.engine.core.util.StringUtils;
 
 import gnu.trove.set.hash.TLongHashSet;
 
-public abstract class ConversationCommand extends CubeCommand implements Listener
+public abstract class ConversationCommand extends ParameterizedCommand implements Listener
 {
     private TLongHashSet usersInMode = new TLongHashSet();
 
@@ -67,7 +71,10 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         if (this.hasUser(user))
         {
             user.sendMessage(ChatFormat.parseFormats("&5[&fChatCommand&5]&f ") + event.getMessage());
-            this.execute(event.getPlayer(), "", StringUtils.explode(" ", event.getMessage()));
+            Stack<String> labels = new Stack<>();
+            labels.push(this.getLabel());
+            CommandContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
+            this.run(context);
             event.setCancelled(true);
         }
     }
@@ -79,16 +86,20 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         if (this.hasUser(user))
         {
             event.getTabCompletions().clear();
-            event.getTabCompletions().addAll(this.tabComplete(event.getPlayer(),"",StringUtils.explode(" ",event.getChatMessage())));
+
+            Stack<String> labels = new Stack<>();
+            labels.push(this.getLabel());
+            CommandContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getChatMessage()));
+            event.getTabCompletions().addAll(this.tabComplete(context));
         }
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String label, String[] args)
+    public List<String> tabComplete(ParameterizedContext context)
     {
         List<String> list = new ArrayList<>();
         Set<String> flags = new HashSet<>();
-        Set<String> params  = new HashSet<>();
+        Set<String> params = new HashSet<>();
         for (CommandFlag flag : this.getContextFactory().getFlags())
         {
             flags.add(flag.getLongName().toLowerCase());
@@ -97,21 +108,23 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         {
             params.add(param.getName().toLowerCase());
         }
-        if (args.length == 0)
+        List<String> args = context.getArgs();
+        if (args.isEmpty())
         {
             list.addAll(flags);
             list.addAll(params);
         }
         else
         {
-            String lastArg = args[args.length-1].toLowerCase();
-            String beforeLastArg = args.length-2 >= 0 ? args[args.length -2]: null;
+            final int argc = args.size();
+            String lastArg = args.get(argc - 1).toLowerCase();
+            String beforeLastArg = argc - 2 >= 0 ? args.get(argc - 2) : null;
             if (lastArg.isEmpty())
             {
                 //check for named
                 if (beforeLastArg != null && params.contains(beforeLastArg.toLowerCase()))
                 {
-                    return this.getContextFactory().getParameter(beforeLastArg).getCompleter().complete(sender, lastArg);
+                    return this.getContextFactory().getParameter(beforeLastArg).getCompleter().complete(context, lastArg);
                 }
                 else
                 {
@@ -124,7 +137,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
                 //check for named
                 if (beforeLastArg != null && params.contains(beforeLastArg.toLowerCase()))
                 {
-                    return this.getContextFactory().getParameter(beforeLastArg).getCompleter().complete(sender, lastArg);
+                    return this.getContextFactory().getParameter(beforeLastArg).getCompleter().complete(context, lastArg);
                 }
                 else // check starting
                 {
@@ -175,7 +188,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
     }
 
     @Override
-    public void help(HelpContext context) throws Exception
+    public void help(HelpContext context)
     {
         context.sendTranslated("&6Flags:");
         Set<String> flags = new HashSet<>();

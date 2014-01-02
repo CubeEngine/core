@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
-import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
 
@@ -33,11 +34,6 @@ public abstract class ParameterizedCommand extends CubeCommand
     protected ParameterizedCommand(Module module, String name, String description, ParameterizedContextFactory parser)
     {
         super(module, name, description, parser);
-    }
-
-    protected ParameterizedCommand(Module module, String name, String description, String usageMessage, List<String> aliases, ParameterizedContextFactory parser)
-    {
-        super(module, name, description, usageMessage, aliases, parser);
     }
 
     @Override
@@ -55,30 +51,28 @@ public abstract class ParameterizedCommand extends CubeCommand
     {
         this.getContextFactory().addFlag(flag);
     }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String label, String[] args)
+    
+    public List<String> tabComplete(ParameterizedContext context)
     {
-        List<String> result = super.tabComplete(sender, label, args);
-        if (result != null)
-        {
-            return result;
-        }
-        if (args.length == 0)
+        List<String> result = null;
+        List<String> args = context.getArgs();
+        if (args.isEmpty())
         {
             return null;
         }
-        String token = args[args.length - 1];
+        
+        final int argc = args.size();
+        String token = args.get(argc - 1);
         final ParameterizedContextFactory contextFactory = this.getContextFactory();
-        if (args.length >= 2)
+        if (argc >= 2)
         {
-            CommandParameter param = contextFactory.getParameter(args[args.length - 2]);
+            CommandParameter param = contextFactory.getParameter(args.get(argc - 2));
             if (param != null)
             {
                 Completer completer = param.getCompleter();
                 if (completer != null)
                 {
-                    result = completer.complete(sender, token);
+                    result = completer.complete(context, token);
                 }
             }
         }
@@ -126,5 +120,18 @@ public abstract class ParameterizedCommand extends CubeCommand
         }
 
         return result;
+    }
+
+    @Override
+    public final List<String> tabComplete(CommandContext context)
+    {
+        if (context instanceof ParameterizedContext)
+        {
+            return this.tabComplete((ParameterizedContext)context);
+        }
+        else
+        {
+            return super.tabComplete(context);
+        }
     }
 }

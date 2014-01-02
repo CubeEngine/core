@@ -17,7 +17,11 @@
  */
 package de.cubeisland.engine.core.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+
+import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.Plugin;
 
 public class ReflectionUtils
 {
@@ -103,5 +107,26 @@ public class ReflectionUtils
         while ((holder = holder.getSuperclass()) != null && superLevels-- > 0);
 
         return null;
+    }
+
+    public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... parameterTypes)
+    {
+        try
+        {
+            return clazz.getConstructor(parameterTypes);
+        }
+        catch (ReflectiveOperationException ignored)
+        {}
+        return null;
+    }
+    
+    public static <T> Constructor<T> getAccessibleConstructor(Class<T> clazz, Class<?>... parameterTypes)
+    {
+        Constructor<T> constructor = getConstructor(clazz, parameterTypes);
+        if (constructor != null)
+        {
+            constructor.setAccessible(true);
+        }
+        return constructor;
     }
 }

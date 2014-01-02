@@ -49,7 +49,7 @@ public class MoneyCommand extends ContainerCommand
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(CommandContext context)
     {
         if (context.hasArg(0))
         {

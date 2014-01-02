@@ -57,7 +57,7 @@ public class WarpCommand extends ContainerCommand
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(CommandContext context)
     {
         if (context.isSender(User.class) && context.getArgCount() > 0)
         {

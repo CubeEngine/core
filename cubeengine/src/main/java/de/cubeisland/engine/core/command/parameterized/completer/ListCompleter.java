@@ -21,9 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.Material;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.util.StringUtils;
 
@@ -41,7 +40,7 @@ public abstract class ListCompleter<T> implements Completer
     protected abstract String convertToString(T convertable);
 
     @Override
-    public List<String> complete(CommandSender sender, String token)
+    public List<String> complete(ParameterizedContext context, String token)
     {
         List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
         String lastToken = token.substring(token.lastIndexOf(",")+1,token.length()).toUpperCase();

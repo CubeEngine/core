@@ -48,20 +48,20 @@ public class ConversationContextFactory extends ParameterizedContextFactory
     }
 
     @Override
-    public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
+    public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
         final Set<String> flags = new THashSet<>();
         final Map<String, Object> params = new THashMap<>();
-        if (commandLine.length > 0)
+        if (rawArgs.length > 0)
         {
-            for (int offset = 0; offset < commandLine.length;)
+            for (int offset = 0; offset < rawArgs.length;)
             {
-                if (commandLine[offset].isEmpty())
+                if (rawArgs[offset].isEmpty())
                 {
                     offset++;
                     continue;
                 }
-                String flag = commandLine[offset].toLowerCase(Locale.ENGLISH); // lowercase flag
+                String flag = rawArgs[offset].toLowerCase(Locale.ENGLISH); // lowercase flag
                 CommandFlag cmdFlag = this.getFlag(flag);
                 if (cmdFlag != null) // has flag ?
                 {
@@ -69,15 +69,15 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                     offset++;
                     continue;
                 } //else named param
-                String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
+                String paramName = rawArgs[offset].toLowerCase(Locale.ENGLISH);
                 CommandParameter param = this.getParameter(paramName);
-                if (param != null && offset + 1 < commandLine.length)
+                if (param != null && offset + 1 < rawArgs.length)
                 {
                     StringBuilder paramValue = new StringBuilder();
                     try
                     {
                         offset++;
-                        offset += readString(paramValue, commandLine, offset);
+                        offset += readString(paramValue, rawArgs, offset);
                         params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString(), sender));
                     }
                     catch (InvalidArgumentException ex)

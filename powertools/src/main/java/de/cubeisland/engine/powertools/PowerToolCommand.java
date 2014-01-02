@@ -18,6 +18,7 @@
 package de.cubeisland.engine.powertools;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +57,8 @@ public class PowerToolCommand extends ContainerCommand implements Listener
 {
     public PowerToolCommand(Module module)
     {
-        super(module, "powertool", "Binding shortcuts to an item.", asList("pt"));
+        super(module, "powertool", "Binding shortcuts to an item.");
+        this.setAliases(new HashSet<>(asList("pt")));
         this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
 
         this.delegateChild(new MultiContextFilter() {

@@ -49,17 +49,17 @@ public class BasicContextFactory implements ContextFactory
     }
 
     @Override
-    public BasicContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
+    public BasicContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
-        if (commandLine.length < this.getArgBounds().getMin())
+        if (rawArgs.length < this.getArgBounds().getMin())
         {
             throw new IncorrectUsageException("You've given too few arguments.");
         }
-        if (this.getArgBounds().getMax() > ArgBounds.NO_MAX && commandLine.length > this.getArgBounds().getMax())
+        if (this.getArgBounds().getMax() > ArgBounds.NO_MAX && rawArgs.length > this.getArgBounds().getMax())
         {
             throw new IncorrectUsageException("You've given too many arguments.");
         }
-        return new BasicContext(command, sender, labels, new LinkedList<>(Arrays.asList(commandLine)));
+        return new BasicContext(command, sender, labels, new LinkedList<>(Arrays.asList(rawArgs)));
     }
 
     @Override

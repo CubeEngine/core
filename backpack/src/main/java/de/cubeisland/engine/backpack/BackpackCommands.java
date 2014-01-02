@@ -18,6 +18,7 @@
 package de.cubeisland.engine.backpack;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -42,6 +43,7 @@ import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.backpack.BackpackPermissions.OPEN_OTHER_USER;
 import static de.cubeisland.engine.backpack.BackpackPermissions.OPEN_OTHER_WORLDS;
+import static java.util.Arrays.asList;
 
 public class BackpackCommands extends ContainerCommand
 {
@@ -49,7 +51,8 @@ public class BackpackCommands extends ContainerCommand
 
     public BackpackCommands(Backpack module, BackpackManager manager)
     {
-        super(module, "backpack", "The Backpack commands", Arrays.asList("bp"));
+        super(module, "backpack", "The Backpack commands");
+        this.setAliases(new HashSet<>(asList("bp")));
         this.manager = manager;
     }
 
@@ -263,7 +266,7 @@ public class BackpackCommands extends ContainerCommand
         }
         if (context.hasParam("l"))
         {
-            itemMeta.setLore(Arrays.asList(StringUtils.explode("\\n", ChatFormat.parseFormats(context.getString("l")))));
+            itemMeta.setLore(asList(StringUtils.explode("\\n", ChatFormat.parseFormats(context.getString("l")))));
         }
         if (context.hasParam("e"))
         {

@@ -20,14 +20,14 @@ package de.cubeisland.engine.core.command.parameterized.completer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.user.User;
 
 public class PlayerListCompleter implements Completer
 {
     @Override
-    public List<String> complete(CommandSender sender, String token)
+    public List<String> complete(ParameterizedContext context, String token)
     {
         List<String> result = new ArrayList<>();
         String lastToken = token;
@@ -43,7 +43,7 @@ public class PlayerListCompleter implements Completer
             firstTokens += "!";
         }
 
-        for (User user : sender.getCore().getUserManager().getLoadedUsers())
+        for (User user : context.getCore().getUserManager().getLoadedUsers())
         {
             if (user.getName().startsWith(lastToken))
             {

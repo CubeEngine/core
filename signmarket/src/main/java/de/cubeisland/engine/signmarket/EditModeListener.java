@@ -35,7 +35,6 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.conversation.ConversationCommand;
 import de.cubeisland.engine.core.command.conversation.ConversationContextFactory;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
@@ -79,9 +78,9 @@ public class EditModeListener extends ConversationCommand
                 .addParameter(new CommandParameter("size",Integer.class).setCompleter(new Completer()
                 {
                     @Override
-                    public List<String> complete(CommandSender sender, String token)
+                    public List<String> complete(ParameterizedContext context, String token)
                     {
-                        if (MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(sender))
+                        if (MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(context.getSender()))
                         {
                             return Arrays.asList("6", "5", "4", "3", "2", "1", "-1");
                         }
@@ -161,7 +160,7 @@ public class EditModeListener extends ConversationCommand
         }
     }
 
-    public CommandResult run(CommandContext runContext) throws Exception
+    public CommandResult run(CommandContext runContext)
     {
         User user = (User)runContext.getSender();
         ParameterizedContext context = (ParameterizedContext) runContext;

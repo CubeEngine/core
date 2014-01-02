@@ -178,24 +178,24 @@ public class ParameterizedContextFactory implements ContextFactory
     }
 
     @Override
-    public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] commandLine)
+    public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
         final LinkedList<String> args = new LinkedList<>();
         final Set<String> flags = new THashSet<>();
         final Map<String, Object> params = new THashMap<>();
 
-        if (commandLine.length > 0)
+        if (rawArgs.length > 0)
         {
-            for (int offset = 0; offset < commandLine.length;)
+            for (int offset = 0; offset < rawArgs.length;)
             {
-                if (commandLine[offset].isEmpty())
+                if (rawArgs[offset].isEmpty())
                 {
                     offset++;
                     continue; // ignore empty args
                 }
-                if (commandLine[offset].length() >= 2 && commandLine[offset].charAt(0) == '-') // is flag?
+                if (rawArgs[offset].length() >= 2 && rawArgs[offset].charAt(0) == '-') // is flag?
                 {
-                    String flag = commandLine[offset].substring(1);
+                    String flag = rawArgs[offset].substring(1);
                     if (flag.charAt(0) == '-')
                     {
                         flag = flag.substring(1);
@@ -203,7 +203,7 @@ public class ParameterizedContextFactory implements ContextFactory
                     if (flag.isEmpty()) // is there still a name?
                     {
                         offset++;
-                        args.add(commandLine[offset]);
+                        args.add(rawArgs[offset]);
                         continue;
                     }
 
@@ -216,23 +216,23 @@ public class ParameterizedContextFactory implements ContextFactory
                     }
                     else
                     {
-                        args.add(commandLine[offset]); // flag not found, adding it as an indexed param
+                        args.add(rawArgs[offset]); // flag not found, adding it as an indexed param
                     }
                     offset++;
                 }
                 else //else named param or indexed param
                 {
-                    String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
+                    String paramName = rawArgs[offset].toLowerCase(Locale.ENGLISH);
                     // has alias named Param ?
                     CommandParameter param = paramMap.get(paramName);
                     // is named Param?
-                    if (param != null && offset + 1 < commandLine.length)
+                    if (param != null && offset + 1 < rawArgs.length)
                     {
                         StringBuilder paramValue = new StringBuilder();
                         try
                         {
                             offset++;
-                            offset += readString(paramValue, commandLine, offset);
+                            offset += readString(paramValue, rawArgs, offset);
                             //added named param
                             params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString(), sender));
                         }
@@ -244,7 +244,7 @@ public class ParameterizedContextFactory implements ContextFactory
                     else // else is indexed param
                     {
                         StringBuilder arg = new StringBuilder();
-                        offset += readString(arg, commandLine, offset);
+                        offset += readString(arg, rawArgs, offset);
                         args.add(arg.toString());// added indexed param
                     }
                 }

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
@@ -29,9 +30,11 @@ public final class AliasCommand extends CubeCommand
     private final String[] prefix;
     private final String[] suffix;
 
-    public AliasCommand(CubeCommand target, String name, List<String> aliases, String prefix, String suffix)
+    public AliasCommand(CubeCommand target, String name, Set<String> aliases, String prefix, String suffix)
     {
-        super(target.getModule(), name, target.getDescription(), target.getUsage(), aliases, target.getContextFactory());
+        super(target.getModule(), name, target.getDescription(), target.getContextFactory());
+        this.setUsage(target.getUsage());
+        this.setAliases(aliases);
         this.target = target;
         this.prefix = (prefix == null || prefix.isEmpty() ? NO_ADDITION : explode(" ", prefix));
         this.suffix = (suffix == null || suffix.isEmpty() ? NO_ADDITION : explode(" ", suffix));
@@ -53,35 +56,26 @@ public final class AliasCommand extends CubeCommand
     }
 
     @Override
-    protected boolean execute(CommandSender sender, String[] args, String label, Stack<String> labels)
+    public ContextFactory getContextFactory()
     {
-        String[] prefix = this.getPrefix();
-        String[] suffix = this.getSuffix();
-
-        String[] newArgs = new String[prefix.length + args.length + suffix.length];
-        System.arraycopy(prefix, 0, newArgs, 0, prefix.length);
-        System.arraycopy(args, 0, newArgs, prefix.length, args.length);
-        System.arraycopy(suffix, 0, newArgs, prefix.length + args.length, suffix.length);
-
-        args = newArgs;
-        return this.target.execute(sender, args, label, labels);
+        return super.getContextFactory();
     }
 
     @Override
-    public CommandResult run(CommandContext context) throws Exception
+    public CommandResult run(CommandContext context)
     {
         return this.target.run(context);
     }
 
     @Override
-    public void help(HelpContext context) throws Exception
+    public void help(HelpContext context) 
     {
         this.target.help(context);
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String label, String[] args)
+    public List<String> tabComplete(CommandContext context)
     {
-        return this.target.tabComplete(sender, label, args);
+        return this.target.tabComplete(context);
     }
 }

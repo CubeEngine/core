@@ -20,8 +20,8 @@ package de.cubeisland.engine.core.command.parameterized.completer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -35,7 +35,7 @@ public abstract class SimpleCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(CommandSender sender, String token)
+    public List<String> complete(ParameterizedContext context, String token)
     {
         List<String> offers = new ArrayList<>();
         for (String string : this.strings)
