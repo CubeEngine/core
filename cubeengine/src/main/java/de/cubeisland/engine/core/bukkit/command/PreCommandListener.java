@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -69,23 +70,24 @@ public class PreCommandListener implements Listener
         String label = explode(" ", message)[0].toLowerCase(Locale.ENGLISH);
         if (this.injector.getCommand(label) == null)
         {
+            final String prefix = (sender instanceof Player ? "/" : "");
             final Locale language = BukkitUtils.getLocaleFromSender(sender);
             List<String> matches = new LinkedList<>(Match.string().getBestMatches(label, injector.getKnownCommands().keySet(), 1));
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commands.maxCorrectionOffers)
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(this.core.getI18n().translate(language, "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?", label, matches.iterator().next()));
+                    sender.sendMessage(this.core.getI18n().translate(language, "&cCouldn't find &e%s&c. Did you mean &a%s&c?", prefix + label, prefix + matches.iterator().next()));
                 }
                 else
                 {
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
-                    sender.sendMessage(this.core.getI18n().translate(language, "&eDid you mean one of these: &a%s &e?", "/" + implode(", /", matches)));
+                    sender.sendMessage(this.core.getI18n().translate(language, "&eDid you mean one of these: &a%s &e?", prefix + implode(", " + prefix, matches)));
                 }
             }
             else
             {
-                sender.sendMessage(this.core.getI18n().translate(language, "&cI couldn't find any command for &e/%s &c...", label));
+                sender.sendMessage(this.core.getI18n().translate(language, "&cI couldn't find any command for &e%s &c...", label));
             }
             return true;
         }
