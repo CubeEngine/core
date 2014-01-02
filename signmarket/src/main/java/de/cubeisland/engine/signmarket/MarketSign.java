@@ -126,7 +126,11 @@ public class MarketSign
         {
             this.getLocation().getBlock().breakNaturally();
         }
-        this.dropContents();
+        this.msFactory.syncAndSaveSign(this);
+        if (!this.getItemInfo().sharesStock())
+        {
+            this.dropContents();
+        }
         this.msFactory.delete(this);
     }
 
@@ -614,7 +618,8 @@ public class MarketSign
      */
     public boolean canSync(MarketSign model)
     {
-        return this.hasStock() == model.hasStock()
+        return this.isValidSign(null)
+            && this.hasStock() == model.hasStock()
             && this.getItem().isSimilar(model.getItem())
             && this.itemInfo.getSize() == model.itemInfo.getSize()
             && this.module.getConfig().canSync(this.module.getCore().getWorldManager(), this.blockInfo.getWorld(), model.blockInfo.getWorld());
@@ -990,7 +995,11 @@ public class MarketSign
             else if (!isValid ||(this.isTypeBuy() && this.isSoldOut())
                 || (!this.isTypeBuy() && ((this.hasDemand() && this.isSatisfied()) || isFull())))
             {
-                lines[0] = "&4&l";
+                lines[0] = "&4";
+                if (this.isAdminSign())
+                {
+                    lines[0] += "Admin-";
+                }
             }
             else if (this.isAdminSign())
             {
