@@ -56,7 +56,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String permission = context.getString(1);
@@ -124,7 +124,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String key = context.getString(1);
@@ -165,7 +165,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String key = context.getString(1);
@@ -196,7 +196,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         role.clearMetadata();
@@ -222,7 +222,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         Role pRole = provider.getRole(context.getString(1));
@@ -281,7 +281,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         Role pRole = provider.getRole(context.getString(1));
@@ -329,7 +329,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         role.clearRoles();
         role.save();
@@ -354,7 +354,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         Converter<Priority> converter = new PriorityConverter();
@@ -392,7 +392,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String newName = context.getString(1);
@@ -433,7 +433,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = context.hasFlag("g");
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         if (provider.createRole(roleName) != null)
         {
             this.manager.recalculateAllRoles();
@@ -464,7 +464,7 @@ public class RoleManagementCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         this.manager.recalculateAllRoles();
