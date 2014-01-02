@@ -29,7 +29,7 @@ import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
 
 public class BasicsConfiguration extends YamlConfiguration
 {
@@ -50,7 +50,7 @@ public class BasicsConfiguration extends YamlConfiguration
         public int nearDefaultRadius = 20;
 
         @Name("mute.default-mute-time")
-        public Duration defaultMuteTime = new Duration(-1);
+        public Duration defaultMuteTime = new Duration(0);
 
         public Collection<ItemStack> itemBlacklist = new LinkedList<ItemStack>()
         {

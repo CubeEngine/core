@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.logging.LogLevel;
+import org.joda.time.Duration;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.

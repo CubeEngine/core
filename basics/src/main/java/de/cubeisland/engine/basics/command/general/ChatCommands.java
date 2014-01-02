@@ -30,12 +30,15 @@ import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class ChatCommands
 {
+    private final PeriodFormatter formatter;
     private UserManager um;
     private String lastWhisperOfConsole = null;
     private Basics module;
@@ -44,6 +47,12 @@ public class ChatCommands
     {
         this.module = basics;
         this.um = basics.getCore().getUserManager();
+        this.formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week"," weeks").appendSeparator(" ")
+                                                      .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
+                                                      .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
+                                                      .appendMinutes().appendSuffix(" minute", " minutes").appendSeparator(" ")
+                                                      .appendSeconds().appendSuffix(" second", " seconds").appendSeparator(" ")
+                                                      .appendMillis().appendSuffix(" ms").toFormatter();
     }
 
     @Command(desc = "Changes your DisplayName", usage = "<name>|-r", min = 1, max = 1)
@@ -188,7 +197,7 @@ public class ChatCommands
         {
             try
             {
-                dura = new Duration(context.getStrings(1));
+                dura = formatter.parsePeriod(context.getStrings(1)).toStandardDuration();
             }
             catch (IllegalArgumentException e)
             {
@@ -196,9 +205,9 @@ public class ChatCommands
                 return;
             }
         }
-        basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.toMillis())));
+        basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() + (dura.getMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
-        String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www%ddd%hhh%mmm%sss");
+        String timeString = dura.getMillis() == -1 ? "ever" : formatter.print(dura.toPeriod());
         user.sendTranslated("&cYou are now muted for &6%s&c!", timeString);
         context.sendTranslated("&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
     }

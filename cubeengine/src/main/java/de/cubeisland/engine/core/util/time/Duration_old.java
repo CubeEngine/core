@@ -26,8 +26,10 @@ import de.cubeisland.engine.core.util.matcher.Match;
 
 import gnu.trove.map.hash.TCharLongHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
-public class Duration
+public class Duration_old
 {
     private final static TObjectLongHashMap<String> longerNames = new TObjectLongHashMap<>();
     private final static TObjectLongHashMap<String> shortNames = new TObjectLongHashMap<>();
@@ -67,7 +69,7 @@ public class Duration
         longerNames.put("weeks", WEEK);
     }
 
-    public Duration(String[] timeStrings)
+   /* public Duration(String[] timeStrings)
     {
         this.time = parseDuration(timeStrings);
     }
@@ -85,7 +87,7 @@ public class Duration
     public Duration(String timeString)
     {
         this(StringUtils.explode(" ", timeString.trim()));
-    }
+    }*/
 
     public static long parseDuration(String[] timeStrings) throws IllegalArgumentException
     {

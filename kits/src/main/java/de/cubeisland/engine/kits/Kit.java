@@ -37,7 +37,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryUtil;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 

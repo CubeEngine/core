@@ -499,7 +499,7 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public void clean()
     {
-        Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().usermanager.garbageCollection.toMillis());
+        Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().usermanager.garbageCollection.getMillis());
         this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC.isFalse()).execute();
     }
 

@@ -38,7 +38,6 @@ import de.cubeisland.engine.test.tests.CommandArgsTest;
 import de.cubeisland.engine.test.tests.DatabaseTest;
 import de.cubeisland.engine.test.tests.MatchTest;
 import de.cubeisland.engine.test.tests.ModuleTest;
-import de.cubeisland.engine.test.tests.ParseTimeTest;
 import de.cubeisland.engine.test.tests.UtilTest;
 import de.cubeisland.engine.test.tests.l18n.l18nTest;
 import de.cubeisland.engine.test.tests.listener.ListenerTest;
@@ -62,7 +61,6 @@ public class Test extends Module
         this.registerTest("Database test", new DatabaseTest(this));
         this.registerTest("Match test", new MatchTest(this));
         this.registerTest("Module test", new ModuleTest(this));
-        this.registerTest("Parse time test", new ParseTimeTest(this));
         this.registerTest("Util test", new UtilTest(this));
     }
 

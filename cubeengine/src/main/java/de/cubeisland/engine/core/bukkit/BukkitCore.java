@@ -83,13 +83,13 @@ import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.math.BlockVector3;
-import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.TableWorld;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
+import org.joda.time.Duration;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core

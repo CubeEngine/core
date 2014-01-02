@@ -48,13 +48,16 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static java.text.DateFormat.SHORT;
 
 public class PlayerCommands
 {
+    private final PeriodFormatter formatter;
     private UserManager um;
     private Basics module;
     private AfkListener afkListener;
@@ -84,6 +87,13 @@ public class PlayerCommands
         {
             basics.getCore().getTaskManager().runTimer(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
+
+        this.formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week"," weeks").appendSeparator(" ")
+                                                     .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
+                                                     .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
+                                                     .appendMinutes().appendSuffix(" minute", " minutes").appendSeparator(" ")
+                                                     .appendSeconds().appendSuffix(" second", " seconds").appendSeparator(" ")
+                                                     .appendMillis().appendSuffix(" ms").toFormatter();
     }
 
     @Command(desc = "Refills your hunger bar", max = 1,
@@ -516,7 +526,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("&2%s&e was last seen &6%s &eago.", user.getName(),
-                   new Duration(System.currentTimeMillis(), lastPlayed).format("%www%ddd%hhh%mmm%sss"));
+                   this.formatter.print(new Duration(System.currentTimeMillis(), lastPlayed).toPeriod()));
     }
 
     @Command(desc = "Makes a player send a message (including commands)",

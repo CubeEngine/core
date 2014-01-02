@@ -27,7 +27,7 @@ import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
 
 public class KitConfiguration extends YamlConfiguration
 {
@@ -48,7 +48,7 @@ public class KitConfiguration extends YamlConfiguration
     public boolean usePerm = false;
     @Comment("The delay between each usage of this kit.")
     @Name("limit-usage-delay")
-    public Duration limitUsageDelay = new Duration("-1");
+    public Duration limitUsageDelay = null;
     @Comment("Limits the usage to x amount. Use 0 for infinite.")
     @Name("limit-usage")
     public int limitUsage = 0;
@@ -68,6 +68,8 @@ public class KitConfiguration extends YamlConfiguration
 
     public Kit getKit(Module module)
     {
-        return new Kit(module.getCore().getDB(), this.kitName, this.giveOnFirstJoin, this.limitUsage, this.limitUsageDelay.toMillis(), this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
+        return new Kit(module.getCore().getDB(), this.kitName, this.giveOnFirstJoin,
+           this.limitUsage, this.limitUsageDelay == null ? -1L : this.limitUsageDelay.getMillis(),
+           this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
     }
 }
