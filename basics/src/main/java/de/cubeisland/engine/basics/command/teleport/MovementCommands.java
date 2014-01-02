@@ -126,7 +126,7 @@ public class MovementCommands
             {
                 currentLocation.add(0, 1, 0);
             }
-            if (currentLocation.getY() > currentLocation.getWorld().getMaxHeight() // currentLocation is higher than the world
+            if (currentLocation.getY() >= currentLocation.getWorld().getMaxHeight() // currentLocation is higher than the world
                 && currentLocation.getWorld().getHighestBlockYAt(currentLocation) < currentLocation.getBlockY())
             {
                 currentLocation.setY(currentLocation.getWorld().getHighestBlockYAt(currentLocation)); // set to highest point
