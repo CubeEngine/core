@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.bukkit.command;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,10 +28,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.VanillaCommand;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.help.HelpTopic;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
+import de.cubeisland.engine.core.bukkit.command.WrappedCubeCommandHelpTopic.Factory;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
@@ -40,7 +40,6 @@ import de.cubeisland.engine.core.module.Module;
 import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
-import static de.cubeisland.engine.core.util.ReflectionUtils.getAccessibleConstructor;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
 public class CommandInjector
@@ -49,13 +48,12 @@ public class CommandInjector
     private final Field commandMapField;
     private SimpleCommandMap commandMap;
     private Field knownCommandField;
-    private final Constructor<PluginCommand> pluginCmdCtor;
 
     public CommandInjector(BukkitCore core)
     {
         this.core = core;
         this.commandMapField = findFirstField(core.getServer(), SimpleCommandMap.class);
-        this.pluginCmdCtor = getAccessibleConstructor(PluginCommand.class, String.class, Plugin.class);
+        core.getServer().getHelpMap().registerHelpTopicFactory(WrappedCubeCommand.class, new Factory());
     }
 
     @SuppressWarnings("unchecked")
@@ -155,6 +153,19 @@ public class CommandInjector
             if (hasAliases)
             {
                 removed.unregister(getCommandMap());
+            }
+        }
+        Iterator<HelpTopic> it = this.core.getServer().getHelpMap().getHelpTopics().iterator();
+        while (it.hasNext())
+        {
+            HelpTopic topic = it.next();
+            if (topic instanceof WrappedCubeCommandHelpTopic)
+            {
+                WrappedCubeCommandHelpTopic wrapped = (WrappedCubeCommandHelpTopic)topic;
+                if (!getKnownCommands().containsValue(wrapped.getCommand()))
+                {
+                    it.remove();
+                }
             }
         }
     }
