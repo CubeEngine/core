@@ -519,8 +519,8 @@ public class PlayerCommands
                    new Duration(System.currentTimeMillis(), lastPlayed).format("%www%ddd%hhh%mmm%sss"));
     }
 
-    @Command(desc = "Makes a player execute a command",
-             usage = "<player> </command>|<chat>",
+    @Command(desc = "Makes a player send a message (including commands)",
+             usage = "<player> <message>",
              min = 2, max = NO_MAX)
     public void sudo(ParameterizedContext context)
     {
