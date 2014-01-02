@@ -46,7 +46,7 @@ public class WrappedCubeCommand extends Command
     @Override
     public String getName()
     {
-        return this.getName();
+        return this.command.getName();
     }
 
     @Override

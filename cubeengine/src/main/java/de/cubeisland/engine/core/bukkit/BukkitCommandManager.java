@@ -29,6 +29,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.bukkit.command.CubeCommandExecutor;
+import de.cubeisland.engine.core.bukkit.command.WrappedCubeCommand;
 import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.CommandFactory;
 import de.cubeisland.engine.core.command.CommandHolder;
@@ -179,13 +180,9 @@ public class BukkitCommandManager implements CommandManager
     public CubeCommand getCommand(String name)
     {
         Command command = this.injector.getCommand(name);
-        if (command != null && command instanceof PluginCommand)
+        if (command != null && command instanceof WrappedCubeCommand)
         {
-            CommandExecutor executor = ((PluginCommand)command).getExecutor();
-            if (executor != null && executor instanceof CubeCommandExecutor)
-            {
-                ((CubeCommandExecutor)executor).getCommand();
-            }
+            return ((WrappedCubeCommand)command).getCommand();
         }
         return null;
     }
