@@ -31,7 +31,28 @@ public class Destination
     public World world;
     public WorldLocation location;
     public String portal;
-    private Location destination;
+
+    public Destination(Location location)
+    {
+        this.location = new WorldLocation(location);
+        this.world = location.getWorld();
+        this.type = Type.LOCATION;
+    }
+
+    public Destination(World world)
+    {
+        this.world = world;
+        this.type = Type.WORLD;
+    }
+
+    public Destination(Portal portal)
+    {
+        this.portal = portal.getName();
+        this.type = Type.PORTAL;
+    }
+
+    protected Destination()
+    {}
 
     public void teleport(User user, PortalManager manager)
     {
@@ -55,29 +76,7 @@ public class Destination
             break;
         }
         user.teleport(loc);
-    }
-
-    public void set(Location destination)
-    {
-        this.destination = destination;
-        this.type = Type.LOCATION;
-    }
-
-    public void set(World world)
-    {
-        this.world = world;
-        this.type = Type.WORLD;
-    }
-
-    public void set(Portal portal)
-    {
-        this.portal = portal.getName();
-        this.type = Type.PORTAL;
-    }
-
-    public Location getDestination()
-    {
-        return destination;
+        user.sendTranslated("TPed");
     }
 
     public enum Type

@@ -48,6 +48,7 @@ public class PortalCommands extends ContainerCommand
     }
 
     // TODO dest param (world)
+    @Alias(names = "mvpc")
     @Command(desc = "Creates a new Portal" , usage = "<name>", min = 1, max = 1)
     public void create(CommandContext context)
     {

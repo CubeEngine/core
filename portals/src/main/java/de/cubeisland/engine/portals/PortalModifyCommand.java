@@ -27,6 +27,7 @@ import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.portals.config.Destination;
 
 public class PortalModifyCommand extends ContainerCommand
 {
@@ -64,8 +65,9 @@ public class PortalModifyCommand extends ContainerCommand
         {
             if (context.getSender() instanceof User)
             {
-                portal.config.destination.set(((User)context.getSender()).getLocation());
+                portal.config.destination = new Destination(((User)context.getSender()).getLocation());
                 portal.config.save();
+                context.sendTranslated("&aPortal destination set!");
                 return;
             }
             context.sendTranslated("&eThe Portal Agency will bring you your portal for just &6$ 1337&e within &6%d weeks",
