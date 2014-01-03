@@ -22,6 +22,17 @@ import de.cubeisland.engine.core.user.UserAttachment;
 public class PortalsAttachment extends UserAttachment
 {
     private boolean isInPortal = false;
+    private Portal portal;
+
+    public Portal getPortal()
+    {
+        return portal;
+    }
+
+    public void setPortal(Portal portal)
+    {
+        this.portal = portal;
+    }
 
     public boolean isInPortal()
     {

@@ -31,6 +31,7 @@ public class Destination
     public World world;
     public WorldLocation location;
     public String portal;
+    private Location destination;
 
     public void teleport(User user, PortalManager manager)
     {
@@ -54,6 +55,29 @@ public class Destination
             break;
         }
         user.teleport(loc);
+    }
+
+    public void set(Location destination)
+    {
+        this.destination = destination;
+        this.type = Type.LOCATION;
+    }
+
+    public void set(World world)
+    {
+        this.world = world;
+        this.type = Type.WORLD;
+    }
+
+    public void set(Portal portal)
+    {
+        this.portal = portal.getName();
+        this.type = Type.PORTAL;
+    }
+
+    public Location getDestination()
+    {
+        return destination;
     }
 
     public enum Type

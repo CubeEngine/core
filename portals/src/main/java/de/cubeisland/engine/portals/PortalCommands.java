@@ -24,6 +24,7 @@ import org.bukkit.Location;
 import com.sun.java.swing.plaf.motif.resources.motif;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.service.Selector;
@@ -46,6 +47,7 @@ public class PortalCommands extends ContainerCommand
         this.manager = manager;
     }
 
+    // TODO dest param (world)
     @Command(desc = "Creates a new Portal" , usage = "<name>", min = 1, max = 1)
     public void create(CommandContext context)
     {
@@ -68,6 +70,7 @@ public class PortalCommands extends ContainerCommand
                     config.save();
                     Portal portal = new Portal(module, manager, context.getString(0), config);
                     this.manager.addPortal(portal);
+                    sender.attachOrGet(PortalsAttachment.class, module).setPortal(portal);
                     context.sendTranslated("&aPortal created! Select a destination using TODO portal modify command");
                     return;
                 }
@@ -80,5 +83,38 @@ public class PortalCommands extends ContainerCommand
             return;
         }
         context.sendTranslated("&cYou have to be ingame to do this!");
+    }
+
+    @Alias(names = "mvps")
+    @Command(desc = "Selects an existing portal" , usage = "<name>", min = 1, max = 1)
+    public void select(CommandContext context)
+    {
+        Portal portal = this.manager.getPortal(context.getString(0));
+        if (portal == null)
+        {
+            context.sendTranslated("&cThere is no portal named &6%s", context.getString(0));
+            return;
+        }
+        if (context.getSender() instanceof User)
+        {
+            ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module).setPortal(portal);
+            context.sendTranslated("&aPortal selected: &6%s", context.getString(0));
+        }
+        context.sendMessage("Y U NO IMPLEMENT ME"); // TODO
+    }
+
+    public void info()
+    {
+        // TODO
+    }
+
+    public void remove()
+    {
+        // TODO
+    }
+
+    public void debug()
+    {
+        // TODO
     }
 }
