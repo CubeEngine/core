@@ -281,7 +281,7 @@ public class RolesManager
                 this.worldRoleProviders.remove(m);
             }
         }
-        MirrorConfig roleMirror = new MirrorConfig(world);
+        MirrorConfig roleMirror = new MirrorConfig(module, world);
         for (World mWorld : worlds)
         {
             // Remove all providers of related worlds

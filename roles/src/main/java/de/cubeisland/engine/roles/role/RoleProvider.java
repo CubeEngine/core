@@ -28,6 +28,7 @@ import java.util.Stack;
 
 import org.bukkit.World;
 
+import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
@@ -112,11 +113,11 @@ public abstract class RoleProvider
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException|InvalidConfigurationException e)
         {
-            this.module.getLog().warn(e, "Failed to load the configuration");
+            this.module.getLog().warn(e, "Failed to load a configuration");
         }
-        this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getFileName(), i);
+        this.module.getLog().debug("provider {}: {} role-configs read!", this.getFolder().getFileName(), i);
     }
 
     /**

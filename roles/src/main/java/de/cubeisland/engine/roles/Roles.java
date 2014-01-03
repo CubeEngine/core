@@ -29,11 +29,11 @@ import de.cubeisland.engine.roles.commands.RoleManagementCommands;
 import de.cubeisland.engine.roles.commands.UserInformationCommands;
 import de.cubeisland.engine.roles.commands.UserManagementCommands;
 import de.cubeisland.engine.roles.config.MirrorConfig;
+import de.cubeisland.engine.roles.config.MirrorConfigConverter;
 import de.cubeisland.engine.roles.config.PermissionTree;
 import de.cubeisland.engine.roles.config.PermissionTreeConverter;
 import de.cubeisland.engine.roles.config.Priority;
 import de.cubeisland.engine.roles.config.PriorityConverter;
-import de.cubeisland.engine.roles.config.RoleMirrorConverter;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesEventHandler;
 import de.cubeisland.engine.roles.role.RolesManager;
@@ -52,7 +52,7 @@ public class Roles extends Module
         ConverterManager cManager = this.getCore().getConfigFactory().getDefaultConverterManager();
         cManager.registerConverter(PermissionTree.class, new PermissionTreeConverter(this));
         cManager.registerConverter(Priority.class, new PriorityConverter());
-        cManager.registerConverter(MirrorConfig.class, new RoleMirrorConverter(this));
+        cManager.registerConverter(MirrorConfig.class, new MirrorConfigConverter(this));
 
         Database db = this.getCore().getDB();
         db.registerTable(TableRole.class);
@@ -73,21 +73,12 @@ public class Roles extends Module
 
         this.getCore().getEventManager().registerListener(this, new RolesEventHandler(this));
 
+        this.config = loadConfig(RolesConfig.class);
         this.getCore().getTaskManager().runTask(this, new Runnable()
         {
             @Override
             public void run()
             {
-                try
-                {
-                    config = loadConfig(RolesConfig.class);
-                }
-                catch (InvalidConfigurationException e)
-                {
-                    getLog().error(e, "Error while loading role-configuration!");
-                    getCore().getModuleManager().disableModule(Roles.this);
-                    return;
-                }
                 rolesManager.initRoleProviders();
                 rolesManager.recalculateAllRoles();
             }
