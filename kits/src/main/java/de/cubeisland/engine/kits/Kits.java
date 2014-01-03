@@ -31,6 +31,7 @@ public class Kits extends Module
             registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
+        new KitsPerm(this);
         this.kitManager.loadKits();
         this.getCore().getUserManager().addDefaultAttachment(KitsAttachment.class, this);
         getCore().getCommandManager().registerCommand(new KitCommand(this));

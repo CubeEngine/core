@@ -89,7 +89,7 @@ public class KitManager implements Listener
             kitMap.put(kit.getKitName(), kit);
         }
         kit.applyToConfig(config);
-        config.save(module.getFolder().resolve("kits").resolve(config.kitName + ".yml").toFile());
+        config.save(module.getFolder().resolve(config.kitName + ".yml").toFile());
     }
 
     public void loadKit(Path file)
