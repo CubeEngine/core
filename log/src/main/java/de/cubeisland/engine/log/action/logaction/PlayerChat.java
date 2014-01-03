@@ -67,6 +67,7 @@ public class PlayerChat extends SimpleLogActionType
         {
             ArrayNode json = this.om.createArrayNode();
             json.add(event.getMessage());
+            json.add(event.getFormat());
             this.logSimple(event.getPlayer(),json.toString());
         }
     }
