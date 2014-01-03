@@ -70,7 +70,7 @@ public class WarpAdminCommand extends ContainerCommand
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
         {
-            context.sendMessage("You have permission to this command, but it has been disabled from in-game usage to enchant security.");
+            context.sendMessage("You have permission to this command, but it has been disabled from in-game usage for security reasons.");
             return null;
         }
         if (context.getArgCount() > 0)
