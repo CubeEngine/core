@@ -170,7 +170,7 @@ public class BukkitUserManager extends AbstractUserManager
             final User user = getUser(event.getPlayer().getName());
             final BukkitScheduler scheduler = user.getServer().getScheduler();
 
-            scheduler.runTask(core, new Runnable()
+            scheduler.runTaskLater(core, new Runnable()
             {
                 @Override
                 public void run()
@@ -180,7 +180,7 @@ public class BukkitUserManager extends AbstractUserManager
                         onlineUsers.remove(user);
                     }
                 }
-            });
+            }, 1);
 
             final BukkitTask task = scheduler.runTaskLater(core, new Runnable()
             {
