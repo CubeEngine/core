@@ -53,7 +53,7 @@ public class Chat extends Module implements Listener
         this.config = this.loadConfig(ChatConfig.class);
         new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
-        this.getCore().getCommandManager().registerCommands(this, this, ReflectedCommand.class);
+        this.getCore().getCommandManager().registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
         this.format = this.config.format;
         if (this.config.allowColors)
         {
@@ -67,13 +67,6 @@ public class Chat extends Module implements Listener
         {
             this.getLog().info("No Roles-Module found!");
         }
-    }
-
-    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
-    public void me(CommandContext context)
-    {
-        String message = context.getStrings(0);
-        this.getCore().getUserManager().broadcastStatus(message, context.getSender());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
