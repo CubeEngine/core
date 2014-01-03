@@ -237,7 +237,7 @@ public abstract class ResolvedDataHolder extends TempDataStore
             {
                 this.module.getLog().debug("Role to assign is dirty! {}", role.getName());
             }
-            role.dependentRoles.add(role);
+            role.dependentRoles.add(this);
         }
     }
 
