@@ -230,7 +230,10 @@ public abstract class ResolvedDataHolder extends TempDataStore
     private void inheritRoles(TreeSet<Role> roles)
     {
         this.resolvedRoles = roles;
-        this.dependentRoles = new HashSet<>();
+        if (dependentRoles == null)
+        {
+            this.dependentRoles = new HashSet<>();
+        }
         for (Role role : roles)
         {
             if (role.isDirty())

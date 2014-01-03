@@ -62,6 +62,14 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
         {
             super.calculate(roleStack);
             this.module.getLog().debug("   - {} calculated!", this.getName());
+            for (ResolvedDataHolder role : this.dependentRoles)
+            {
+                role.makeDirty();
+            }
+            for (ResolvedDataHolder role : this.dependentRoles)
+            {
+                role.calculate(roleStack);
+            }
         }
     }
 
