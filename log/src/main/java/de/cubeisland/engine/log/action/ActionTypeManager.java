@@ -103,6 +103,7 @@ import de.cubeisland.engine.log.action.logaction.interact.EntityDye;
 import de.cubeisland.engine.log.action.logaction.interact.EntityShear;
 import de.cubeisland.engine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.engine.log.action.logaction.interact.InteractEntityActionType;
+import de.cubeisland.engine.log.action.logaction.interact.ItemInFrameRemove;
 import de.cubeisland.engine.log.action.logaction.interact.MilkFill;
 import de.cubeisland.engine.log.action.logaction.interact.MonsterEggUse;
 import de.cubeisland.engine.log.action.logaction.interact.PotionSplash;
@@ -236,7 +237,8 @@ public class ActionTypeManager
             .registerActionType(new PlayerQuit())
             .registerActionType(new PlayerTeleport())
             .registerActionType(new EnchantItem())
-            .registerActionType(new CraftItem());
+            .registerActionType(new CraftItem())
+            .registerActionType(new ItemInFrameRemove());
         this.registerActionType(new EntityChangeActionType())
             .registerActionType(new ExplodeActionType())
             .registerActionType(new FlowActionType())

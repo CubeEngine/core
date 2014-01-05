@@ -85,7 +85,7 @@ public class ActionTypeCategory
      */
     public static final ActionTypeCategory VEHICLE = new ActionTypeCategory("vehicle");
     /**
-     * All actions involving
+     * All actions involving spawning
      */
     public static final ActionTypeCategory SPAWN = new ActionTypeCategory("spawn");
 
