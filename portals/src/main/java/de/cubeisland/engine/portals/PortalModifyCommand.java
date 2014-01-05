@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.portals;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.World;
@@ -35,7 +34,8 @@ public class PortalModifyCommand extends ContainerCommand
 
     public PortalModifyCommand(Portals module, PortalManager manager)
     {
-        super(module, "modify", "modifies a portal", Arrays.asList("mvpm"));
+        super(module, "modify", "modifies a portal");
+        this.registerAlias(new String[]{"mvpm"}, new String[0]);
         this.manager = manager;
     }
 

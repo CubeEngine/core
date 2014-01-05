@@ -975,6 +975,18 @@ public class MarketSign
 
     public void updateSignText()
     {
+        if (!CubeEngine.isMainThread())
+        {
+            this.module.getCore().getTaskManager().runTask(this.module, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    updateSignText();
+                }
+            });
+            return;
+        }
         Block block = this.getLocation().getWorld().getBlockAt(this.getLocation());
         if (block.getState() instanceof Sign)
         {
