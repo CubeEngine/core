@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.module;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -36,6 +37,8 @@ import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;
 import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
+import de.cubeisland.engine.core.module.exception.ModuleException;
+import de.cubeisland.engine.core.module.exception.ModuleLoadException;
 import de.cubeisland.engine.core.storage.Registry;
 import gnu.trove.set.hash.THashSet;
 
@@ -93,7 +96,7 @@ public class ModuleLoader
      * @throws IncompatibleCoreException if the module depends on a newer core
      * version
      */
-    public synchronized Module loadModule(Path file) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
+    public synchronized Module loadModule(Path file) throws ModuleException
     {
         return this.loadModule(this.loadModuleInfo(file));
     }
@@ -113,7 +116,7 @@ public class ModuleLoader
      * version
      */
     @SuppressWarnings("unchecked")
-    public synchronized Module loadModule(ModuleInfo info) throws InvalidModuleException, MissingDependencyException, IncompatibleDependencyException, IncompatibleCoreException
+    public synchronized Module loadModule(ModuleInfo info) throws ModuleException
     {
         final String name = info.getName();
 
@@ -122,29 +125,73 @@ public class ModuleLoader
             throw new IncompatibleCoreException(name, info.getMinimumCoreVersion(), this.core.getVersion());
         }
 
+        Path tempFile;
         try
         {
-            Path tempFile = this.tempPath.resolve(System.nanoTime() + "_" + info.getPath().getFileName());
+            tempFile = this.tempPath.resolve(System.nanoTime() + "_" + info.getPath().getFileName());
             Files.copy(info.getPath(), tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            ModuleClassLoader classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
-            Class<? extends Module> moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
-            Module module = moduleClass.getConstructor().newInstance();
-
-            module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader);
-            module.onLoad();
-
-            this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
-
-            this.classLoaders.put(info.getId(), classLoader);
-
-            this.getCore().getLog().debug("Module {} loaded...", info.getId());
-            return module;
         }
-        catch (IOException | ReflectiveOperationException | NoClassDefFoundError e)
+        catch (IOException e)
         {
-            throw new InvalidModuleException("Module: " + info.getName(), e);
+            throw new ModuleLoadException("Failed to copy the module to the temporary folder.", e);
         }
+
+        ModuleClassLoader classLoader;
+        try
+        {
+            classLoader = new ModuleClassLoader(this, tempFile.toUri().toURL(), info, this.parentClassLoader);
+        }
+        catch (MalformedURLException e)
+        {
+            throw new ModuleLoadException("Failed to create the class loader.", e);
+        }
+
+        Class<? extends Module> moduleClass;
+        try
+        {
+            moduleClass = Class.forName(info.getMain(), true, classLoader).asSubclass(Module.class);
+        }
+        catch (ClassNotFoundException | NoClassDefFoundError e)
+        {
+            throw new InvalidModuleException("Could not find the module main class!", e);
+        }
+
+        Constructor<? extends Module> constructor;
+        try
+        {
+            constructor = moduleClass.getConstructor();
+            constructor.setAccessible(true);
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new InvalidModuleException("No default constructor found in the module main class!", e);
+        }
+
+        Module module;
+        try
+        {
+            module = constructor.newInstance();
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new InvalidModuleException("Failed to create a new instance of the module main class!", e);
+        }
+
+        module.initialize(this.core, info, info.getPath().getParent().resolve(name), this, classLoader);
+
+        try
+        {
+            module.onLoad();
+        }
+        catch (Exception | Error e)
+        {
+            throw new InvalidModuleException("An error occurred during onLoad() !", e);
+        }
+
+        this.classLoaders.put(info.getId(), classLoader);
+        this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
+        this.getCore().getLog().debug("Module {} loaded...", info.getId());
+        return module;
     }
 
     /**
