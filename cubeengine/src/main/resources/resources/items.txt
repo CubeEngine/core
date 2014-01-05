@@ -1605,7 +1605,17 @@ GOLDEN_CARROT:0
   goldencarrot
   carrotgolden
 SKULL_ITEM:0
+  skeletonhead
   head
+SKULL_ITEM:1
+  witherskeletonhead
+SKULL_ITEM:2
+  zombiehead
+SKULL_ITEM:3
+  humanhead
+  stevehead
+SKULL_ITEM:4
+  creeperhead
 CARROT_STICK:0
   carrotOnAStick
 NETHER_STAR:0
