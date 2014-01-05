@@ -1647,62 +1647,62 @@ LEASH:0
 NAME_TAG:0
   nametag
 GOLD_RECORD:0
+  record13
   goldrecord
   golddisk
-  record13
   disk13
 GREEN_RECORD:0
+  recordcat
   greenrecord
   greendisk
-  recordcat
   diskcat
 RECORD_3:0
+  recordblocks
   orangerecord
   orangedisk
-  recordblocks
   diskblocks
 RECORD_4:0
+  recordchirp
   redrecord
   reddisk
-  recordchirp
   diskchirp
 RECORD_5:0
+  recordfar
   lightgreenrecord
   lightgreendisk
-  recordfar
   diskfar
 RECORD_6:0
+  recordmall
   purplerecord
   purpledisk
-  recordmall
   diskmall
 RECORD_7:0
+  recordmellohi
   pinkrecord
   pinkdisk
-  recordmellohi
   diskmellohi
 RECORD_8:0
+  recordstal
   blackrecord
   blackdisk
-  recordstal
   diskstal
 RECORD_9:0
+  recordstrad
   whiterecord
   whitedisk
-  recordstrad
   diskstrad
 RECORD_10:0
+  recordward
   greenrecord
   greendisk
-  recordward
   diskward
 RECORD_11:0
+  record11
   crackedrecord
   crackeddisk
-  record11
   disk11
 RECORD_12:0
+  recordwait
   lightbluerecord
   lightbluedisk
-  recordwait
   diskwait
