@@ -309,7 +309,7 @@ public class PlayerCommands
             user.setFoodLevel(20);
             user.setSaturation(20);
             user.setExhaustion(0);
-            if (user != sender)
+            if (user == sender)
             {
                 user.sendTranslated("&aYou are now healed!");
             }
