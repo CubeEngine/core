@@ -1175,7 +1175,11 @@ public class MarketSign
         {
             return true;
         }
-        return this.economy.has(user.getName(), this.getPrice());
+        if (this.economy.hasAccount(user.getName()))
+        {
+            return this.economy.has(user.getName(), this.getPrice());
+        }
+        return false;
     }
 
     public Inventory getInventory()
