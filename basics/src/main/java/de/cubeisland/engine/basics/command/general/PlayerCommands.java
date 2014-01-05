@@ -22,8 +22,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.bukkit.GameMode;
@@ -39,6 +41,7 @@ import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -236,16 +239,11 @@ public class PlayerCommands
         context.sendTranslated("&6You are now starving!");
     }
 
-    @Command(desc = "Heals a Player", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Heals a Player", max = 1, usage = "{player}")
     public void heal(ParameterizedContext context)
     {
         if (context.hasFlag("a"))
         {
-            if (!BasicsPerm.COMMAND_HEAL_ALL.isAuthorized(context.getSender()))
-            {
-                context.sendTranslated("&cYou are not allowed to heal everyone!");
-                return;
-            }
             Player[] players = context.getSender().getServer().getOnlinePlayers();
             for (Player player : players)
             {
@@ -258,53 +256,78 @@ public class PlayerCommands
             this.um.broadcastStatus("&ahealed every player.", context.getSender());
             return;
         }
-        User sender = null;
-        if (context.getSender() instanceof User)
+        CommandSender sender = context.getSender();
+        Set<User> targets = new HashSet<>();
+
+
+        if (context.hasArgs())
         {
-            sender = (User)context.getSender();
-        }
-        if (context.hasArg(0))
-        {
-            if (!BasicsPerm.COMMAND_STARVE_OTHER.isAuthorized(context.getSender()))
+            if (context.getString(0).equals("*"))
             {
-                context.sendTranslated("&cYou are not allowed to starve other users!");
-                return;
-            }
-            String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> healed = new ArrayList<>();
-            for (String name : userNames)
-            {
-                User user = this.um.findUser(name);
-                if (user == null || !user.isOnline())
+                targets.addAll(this.um.getOnlineUsers());
+                if (targets.isEmpty())
                 {
-                    context.sendTranslated("&cUser %s not found or offline!", name);
-                    continue;
+                    context.sendTranslated("&cThere are no users online at the moment!");
+                    return;
                 }
-                sender.setHealth(sender.getMaxHealth());
-                sender.setFoodLevel(20);
-                sender.setSaturation(20);
-                sender.setExhaustion(0);
-                healed.add(user.getName());
-                user.sendTranslated("&aYou got healed by &2%s&a!", context.getSender().getName());
             }
-            if (healed.isEmpty())
+            else
             {
-                context.sendTranslated("&eCould not find any of those users to heal!");
-                return;
+                for (String name : StringUtils.explode(",",context.getString(0)))
+                {
+                    User target = this.um.findUser(name);
+                    if (target != null && target.isOnline())
+                    {
+                        targets.add(target);
+                    }
+                }
+                if (targets.isEmpty())
+                {
+                    context.sendTranslated("&cNone of the given users where found!");
+                    return;
+                }
             }
-            context.sendTranslated("&aHealed &2%s&a!", StringUtils.implode(",", healed));
-            return;
         }
-        if (sender == null)
+        else if (sender instanceof User)
+        {
+            targets.add((User)sender);
+        }
+        else
         {
             context.sendTranslated("&cOnly time can heal your wounds!");
             return;
         }
-        sender.setHealth(sender.getMaxHealth());
-        sender.setFoodLevel(20);
-        sender.setSaturation(20);
-        sender.setExhaustion(0);
-        context.sendTranslated("&aYou are now healed!");
+
+        if ((targets.size() > 1 || targets.iterator().next() != sender) && !BasicsPerm.COMMAND_HEAL_OTHER.isAuthorized(sender))
+        {
+            throw new PermissionDeniedException(); // TODO update to new exception
+        }
+
+        for (User user : targets)
+        {
+            user.setHealth(user.getMaxHealth());
+            user.setFoodLevel(20);
+            user.setSaturation(20);
+            user.setExhaustion(0);
+            if (user != sender)
+            {
+                user.sendTranslated("&aYou are now healed!");
+            }
+            else
+            {
+                user.sendTranslated("&aYou got healed by &2%s&a!", sender.getName());
+            }
+        }
+
+        targets.remove(sender);
+        if (targets.size() == 1)
+        {
+            context.sendTranslated("&a1 user was successfully healed!", targets.size());
+        }
+        else if (targets.size() != 1)
+        {
+            context.sendTranslated("&a%d users were successfully healed!", targets.size());
+        }
     }
 
     @Command(names = {"gamemode", "gm"}, max = 2,

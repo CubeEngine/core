@@ -260,10 +260,10 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission COMMAND_STARVE_ALL = COMMAND_STARVE.createChild("all");
     public static final Permission COMMAND_STARVE_OTHER = COMMAND_STARVE.createChild("other");
 
-    public static final Permission COMMAND_HEAL_ALL = COMMAND.createAbstractChild("heal").createChild("all");
+    private static final Permission COMMAND_HEAL = COMMAND.createAbstractChild("heal");
+    public static final Permission COMMAND_HEAL_OTHER = COMMAND_HEAL.createChild("other");
 
     private static final Permission COMMAND_FLY = COMMAND.createAbstractChild("fly");
-
     public static final Permission COMMAND_FLY_KEEP = COMMAND_FLY.createChild("keep");
     public static final Permission COMMAND_FLY_OTHER = COMMAND_FLY.createChild("other");
 
