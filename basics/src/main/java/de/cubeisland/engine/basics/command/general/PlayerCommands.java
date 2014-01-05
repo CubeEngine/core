@@ -324,7 +324,7 @@ public class PlayerCommands
         {
             context.sendTranslated("&a1 user was successfully healed!", targets.size());
         }
-        else if (targets.size() != 1)
+        else if (targets.size() > 1)
         {
             context.sendTranslated("&a%d users were successfully healed!", targets.size());
         }
