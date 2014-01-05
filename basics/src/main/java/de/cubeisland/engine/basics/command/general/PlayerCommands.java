@@ -50,9 +50,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.TimeConversionException;
 import de.cubeisland.engine.core.util.TimeUtil;
-import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -61,7 +59,6 @@ import static java.text.DateFormat.SHORT;
 
 public class PlayerCommands
 {
-    private final PeriodFormatter formatter;
     private UserManager um;
     private Basics module;
     private AfkListener afkListener;
@@ -72,32 +69,17 @@ public class PlayerCommands
         this.um = basics.getCore().getUserManager();
         final long autoAfk;
         final long afkCheck;
-        try
+        afkCheck = basics.getConfiguration().autoAfk.check.getMillis();
+        if (afkCheck >= 0)
         {
-            autoAfk = StringUtils.convertTimeToMillis(basics.getConfiguration().afk.automaticAfk);
-            afkCheck = StringUtils.convertTimeToMillis(basics.getConfiguration().afk.afkCheckDelay);
-            if (afkCheck < 0)
+            autoAfk = basics.getConfiguration().autoAfk.after.getMillis();
+            this.afkListener = new AfkListener(basics, autoAfk, afkCheck);
+            basics.getCore().getEventManager().registerListener(basics, this.afkListener);
+            if (autoAfk > 0)
             {
-                throw new IllegalStateException("afk-check-time has to be greater than 0!");
+                basics.getCore().getTaskManager().runTimer(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
             }
         }
-        catch (TimeConversionException ex)
-        {
-            throw new IllegalStateException("illegal time format in configuration!");
-        }
-        this.afkListener = new AfkListener(basics, autoAfk, afkCheck);
-        basics.getCore().getEventManager().registerListener(basics, this.afkListener);
-        if (autoAfk > 0)
-        {
-            basics.getCore().getTaskManager().runTimer(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
-        }
-
-        this.formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week"," weeks").appendSeparator(" ")
-                                                     .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
-                                                     .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
-                                                     .appendMinutes().appendSuffix(" minute", " minutes").appendSeparator(" ")
-                                                     .appendSeconds().appendSuffix(" second", " seconds").appendSeparator(" ")
-                                                     .appendMillis().appendSuffix(" ms").toFormatter();
     }
 
     @Command(desc = "Refills your hunger bar", max = 1,

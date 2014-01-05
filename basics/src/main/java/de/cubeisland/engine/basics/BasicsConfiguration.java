@@ -30,6 +30,7 @@ import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
 import org.joda.time.Duration;
+import org.joda.time.Period;
 
 public class BasicsConfiguration extends YamlConfiguration
 {
@@ -116,13 +117,16 @@ public class BasicsConfiguration extends YamlConfiguration
               "Use {} if you want to use the spawn of the world the player is in."})
     public World mainWorld = Bukkit.getServer().getWorld("world");
 
-    public AfkSection afk;
+    public AfkSection autoAfk;
 
     public class AfkSection implements Section
     {
-        public String automaticAfk = "5m";
+        @Comment("Players will be automatically displayed as afk after this amount of time")
+        public Duration after = Period.minutes(5).toStandardDuration();
 
-        public String afkCheckDelay = "1s";
+        @Comment({"How often the server will check for afk players",
+        "Set to 0 to disable auto-afk"})
+        public Duration check = Period.seconds(1).toStandardDuration();
     }
 
     public NavigationSection navigation;
