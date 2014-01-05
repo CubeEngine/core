@@ -60,6 +60,7 @@ public class MirrorConfig
             if (world == null)
             {
                 module.getLog().warn("Configured world for mirror of {} does not exist! {}", mainWorld.getName(), entry.getKey().getName());
+                continue;
             }
             result.put(world, entry.getValue());
         }
