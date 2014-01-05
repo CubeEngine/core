@@ -254,7 +254,6 @@ public class UserDatabaseStore extends ResolvedDataHolder
         User user = this.attachment.getHolder();
         if (user.isOnline())
         {
-            this.module.getLog().debug("Calculating Roles of Player {}...", user.getName());
             if (this.getRawRoles().isEmpty())
             {
                 for (Role role : ((WorldRoleProvider)this.provider).getDefaultRoles())
@@ -281,6 +280,13 @@ public class UserDatabaseStore extends ResolvedDataHolder
         }
         this.module.getCore().getEventManager().fireEvent(new RoleAppliedEvent(module, user, this.attachment));
         // else user is offline ignore
+    }
+
+    @Override
+    public void calculate(Stack<String> roleStack)
+    {
+        super.calculate(roleStack);
+        this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getName());
     }
 
     /* TODO mass set

@@ -204,7 +204,6 @@ public class CubePermissionService extends Permission
         }
         role.setPermission(permission, PermissionValue.TRUE);
         role.save();
-        roles.getRolesManager().recalculateAllRoles();
         return true;
     }
 

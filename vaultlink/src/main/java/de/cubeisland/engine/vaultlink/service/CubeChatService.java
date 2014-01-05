@@ -322,6 +322,5 @@ public class CubeChatService extends Chat
         }
         role.setMetadata(node, value);
         role.save();
-        roles.getRolesManager().recalculateAllRoles();
     }
 }

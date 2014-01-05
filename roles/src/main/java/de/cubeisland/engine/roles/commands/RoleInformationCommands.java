@@ -122,9 +122,18 @@ public class RoleInformationCommands extends RoleCommandHelper
                                            permission, role.getName(), world.getName());
                 }
             }
-            Role originRole = (Role)myPerm.getOrigin();
-            context.sendTranslated("&ePermission inherited from:");
-            context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getOriginPermission(), originRole.getName());
+            if (!(myPerm.getOriginPermission() == null && myPerm.getOrigin() == role))
+            {
+                context.sendTranslated("&ePermission inherited from:");
+                if (myPerm.getOriginPermission() == null)
+                {
+                    context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getKey(), myPerm.getOrigin().getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getOriginPermission(), myPerm.getOrigin().getName());
+                }
+            }
             return;
         }
         if (global)

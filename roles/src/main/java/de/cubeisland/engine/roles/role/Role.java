@@ -193,6 +193,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
                 ((Role)dataHolder).save();
             }
         }
+        this.calculate(new Stack<String>());
     }
 
     @Override
