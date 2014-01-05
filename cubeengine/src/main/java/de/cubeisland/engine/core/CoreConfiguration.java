@@ -83,10 +83,10 @@ public class CoreConfiguration extends YamlConfiguration
 
     public class LoggingSection implements Section
     {
-        @Comment({"Logging into Console", "ALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF"})
+        @Comment({"Logging into Console", "ALL > TRACE > DEBUG > INFO > WARN > ERROR > NONE"})
         public LogLevel consoleLevel = LogLevel.INFO;
 
-        @Comment({"Logging to the main log file", "ALL > DEBUG > INFO > WARN > ERROR > OFF"})
+        @Comment({"Logging to the main log file", "ALL > DEBUG > INFO > WARN > ERROR > NONE"})
         public LogLevel fileLevel = LogLevel.INFO;
 
         @Comment("Zip all old logs to zip archives")
