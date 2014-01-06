@@ -659,7 +659,14 @@ public class EntityDataChanger<EntityInterface>
         @Override
         public Boolean getTypeValue(String input)
         {
-            return Match.string().matchString(input, this.names) != null;
+            for (String name : names)
+            {
+                if (name.equalsIgnoreCase(input))
+                {
+                    return true;
+                }
+            }
+            return null;
         }
     }
 

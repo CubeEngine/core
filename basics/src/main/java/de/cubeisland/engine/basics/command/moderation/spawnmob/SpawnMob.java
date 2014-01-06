@@ -116,9 +116,9 @@ public class SpawnMob
         {
             if (!entities[0].getType().equals(entity.getType())) throw new IllegalArgumentException("All the entities need to be of the same type");
         }
+        Map<EntityDataChanger, Object> changers = new HashMap<>();
         for (String data : datas)
         {
-            Map<EntityDataChanger, Object> changers = new HashMap<>();
             for (EntityDataChanger entityDataChanger : EntityDataChanger.entityDataChangers)
             {
                 if (entityDataChanger.canApply(entities[0]))
@@ -127,15 +127,16 @@ public class SpawnMob
                     if (typeValue != null) // valid typeValue for given data?
                     {
                         changers.put(entityDataChanger, typeValue); // save to apply later to all entities
+                        break;
                     }
                 }
             }
-            for (Entity entity : entities)
+        }
+        for (Entity entity : entities)
+        {
+            for (Entry<EntityDataChanger, Object> entry : changers.entrySet())
             {
-                for (Entry<EntityDataChanger, Object> entry : changers.entrySet())
-                {
-                    entry.getKey().changer.applyEntity(entity, entry.getValue());
-                }
+                entry.getKey().changer.applyEntity(entity, entry.getValue());
             }
         }
     }
