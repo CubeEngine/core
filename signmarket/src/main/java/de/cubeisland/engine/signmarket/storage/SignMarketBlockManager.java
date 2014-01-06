@@ -60,14 +60,12 @@ public class SignMarketBlockManager
         this.blockModels.remove(model.getLocation());
         if (model.getKey() == null || model.getKey().longValue() == 0) return; // unsaved model
         model.delete();
-        this.module.getLog().debug("deleted block-model #{}", model.getKey());
     }
 
     public void store(SignMarketBlockModel blockModel)
     {
         this.blockModels.put(blockModel.getLocation(),blockModel);
         blockModel.insert();
-        this.module.getLog().debug("stored block-model #{}", blockModel.getKey());
     }
 
     public void update(SignMarketBlockModel blockItemModel)

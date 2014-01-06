@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -51,8 +52,6 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeUtil;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static java.text.DateFormat.SHORT;
@@ -82,33 +81,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Refills your hunger bar", max = 1,
-            flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
-    public void feed(ParameterizedContext context)
+    @Command(desc = "Refills your hunger bar", max = 1, usage = "{players}")
+    public void feed(CommandContext context)
     {
-        if (context.hasFlag("a"))
-        {
-            if (!BasicsPerm.COMMAND_FEED_ALL.isAuthorized(context.getSender()))
-            {
-                context.sendTranslated("&cYou are not allowed to feed everyone!");
-                return;
-            }
-            Player[] players = context.getSender().getServer().getOnlinePlayers();
-            for (Player player : players)
-            {
-                player.setFoodLevel(20);
-                player.setSaturation(20);
-                player.setExhaustion(0);
-            }
-            context.sendTranslated("&6You made everyone fat!");
-            this.um.broadcastStatus("&ashared food with everyone.", context.getSender());
-            return;
-        }
-        User sender = null;
-        if (context.getSender() instanceof User)
-        {
-            sender = (User)context.getSender();
-        }
         if (context.hasArg(0))
         {
             if (!BasicsPerm.COMMAND_FEED_OTHER.isAuthorized(context.getSender()))
@@ -116,69 +91,69 @@ public class PlayerCommands
                 context.sendTranslated("&cYou are not allowed to feed other users!");
                 return;
             }
-            String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> fed = new ArrayList<>();
-            for (String name : userNames)
+            Collection<User> users;
+            boolean all = false;
+            if (context.getString(0).equals("*"))
             {
-                User user = this.um.findUser(name);
-                if (user == null || !user.isOnline())
+                all = true;
+                users = this.um.getOnlineUsers();
+                if (users.isEmpty())
                 {
-                    context.sendTranslated("&cUser &2%s &cnot found!", name);
-                    continue;
+                    context.sendTranslated("&cThere are no users online at the moment!");
+                    return;
+                }
+                context.sendTranslated("&6You made everyone fat!");
+                this.um.broadcastStatus("&ashared food with everyone.", context.getSender());
+            }
+            else
+            {
+                users = new ArrayList<>();
+                String[] userNames = StringUtils.explode(",",context.getString(0));
+                for (String name : userNames)
+                {
+                    User user = this.um.findUser(name);
+                    if (user == null || !user.isOnline())
+                    {
+                        context.sendTranslated("&cUser &2%s &cnot found!", name);
+                        continue;
+                    }
+                    users.add(user);
+                }
+                if (users.isEmpty())
+                {
+                    context.sendTranslated("&eCould not find any of those users to feed!");
+                    return;
+                }
+                context.sendTranslated("&aFeeded &6%d&a players!", users.size());
+            }
+            for (User user : users)
+            {
+                if (!all)
+                {
+                    user.sendTranslated("&aYou got fed by &2%s&a!", context.getSender().getName());
                 }
                 user.setFoodLevel(20);
                 user.setSaturation(20);
                 user.setExhaustion(0);
-                fed.add(user.getName());
-                user.sendTranslated("&aYou got fed by &2%s&a!", context.getSender().getName());
             }
-            if (fed.isEmpty())
-            {
-                context.sendTranslated("&eCould not find any of those users to feed!");
-                return;
-            }
-            context.sendTranslated("&aFeeded &2%s&a!", StringUtils.implode(",", fed));
             return;
         }
-        if (sender == null)
-        {
-            context.sendTranslated("&cDon't feed the troll!");
-            context.sendMessage(context.getCommand().getUsage());
-            return;
-        }
-        sender.setFoodLevel(20);
-        sender.setSaturation(20);
-        sender.setExhaustion(0);
-        context.sendTranslated("&aYou are now fed!");
-    }
-
-    @Command(desc = "Empties the hunger bar", max = 1,
-            flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
-    public void starve(ParameterizedContext context)
-    {
-        if (context.hasFlag("a"))
-        {
-            if (!BasicsPerm.COMMAND_STARVE_ALL.isAuthorized(context.getSender()))
-            {
-                context.sendTranslated("&cYou are not allowed to let everyone starve!");
-                return;
-            }
-            Player[] players = context.getSender().getServer().getOnlinePlayers();
-            for (Player player : players)
-            {
-                player.setFoodLevel(0);
-                player.setSaturation(0);
-                player.setExhaustion(4);
-            }
-            context.sendTranslated("&eYou let everyone starve to death!");
-            this.um.broadcastStatus("&etook away all food.", context.getSender());
-            return;
-        }
-        User sender = null;
         if (context.getSender() instanceof User)
         {
-            sender = (User)context.getSender();
+            User sender = (User)context.getSender();
+            sender.setFoodLevel(20);
+            sender.setSaturation(20);
+            sender.setExhaustion(0);
+            context.sendTranslated("&aYou are now fed!");
+            return;
         }
+        context.sendTranslated("&cDon't feed the troll!");
+        context.sendMessage(context.getCommand().getUsage());
+    }
+
+    @Command(desc = "Empties the hunger bar", max = 1, usage = "{players}")
+    public void starve(CommandContext context)
+    {
         if (context.hasArg(0))
         {
             if (!BasicsPerm.COMMAND_STARVE_OTHER.isAuthorized(context.getSender()))
@@ -186,130 +161,130 @@ public class PlayerCommands
                 context.sendTranslated("&cYou are not allowed to let other user starve!");
                 return;
             }
-            String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> starved = new ArrayList<>();
-            for (String name : userNames)
-            {
-                User user = this.um.findUser(name);
-                if (user == null || !user.isOnline())
-                {
-                    context.sendTranslated("&cUser &2%s &cnot found!", name);
-                    continue;
-                }
-                user.setFoodLevel(0);
-                user.setSaturation(0);
-                user.setExhaustion(4);
-                starved.add(user.getName());
-                user.sendTranslated("&eYou are suddenly starving!");
-            }
-            if (starved.isEmpty())
-            {
-                context.sendTranslated("&eCould not find any of those users to starve!");
-                return;
-            }
-            context.sendTranslated("&eStarved &2%s&e!", StringUtils.implode(",", starved));
-            return;
-        }
-        if (sender == null)
-        {
-            context.sendTranslated("\n\n\n\n\n\n\n\n\n\n\n\n\n&cI'll give you only one line to eat!");
-            return;
-        }
-        sender.setFoodLevel(0);
-        sender.setSaturation(0);
-        sender.setExhaustion(4);
-        context.sendTranslated("&6You are now starving!");
-    }
-
-    @Command(desc = "Heals a Player", max = 1, usage = "{player}")
-    public void heal(ParameterizedContext context)
-    {
-        if (context.hasFlag("a"))
-        {
-            Player[] players = context.getSender().getServer().getOnlinePlayers();
-            for (Player player : players)
-            {
-                player.setHealth(player.getMaxHealth());
-                player.setFoodLevel(20);
-                player.setSaturation(20);
-                player.setExhaustion(0);
-            }
-            context.sendTranslated("&aYou healed everyone!");
-            this.um.broadcastStatus("&ahealed every player.", context.getSender());
-            return;
-        }
-        CommandSender sender = context.getSender();
-        Set<User> targets = new HashSet<>();
-
-
-        if (context.hasArgs())
-        {
+            Collection<User> users;
+            boolean all = false;
             if (context.getString(0).equals("*"))
             {
-                targets.addAll(this.um.getOnlineUsers());
-                if (targets.isEmpty())
+                all = true;
+                users = this.um.getOnlineUsers();
+                if (users.isEmpty())
                 {
                     context.sendTranslated("&cThere are no users online at the moment!");
                     return;
                 }
+                context.sendTranslated("&eYou let everyone starve to death!");
+                this.um.broadcastStatus("&etook away all food.", context.getSender());
             }
             else
             {
-                for (String name : StringUtils.explode(",",context.getString(0)))
+                users = new ArrayList<>();
+                String[] userNames = StringUtils.explode(",",context.getString(0));
+                for (String name : userNames)
                 {
-                    User target = this.um.findUser(name);
-                    if (target != null && target.isOnline())
+                    User user = this.um.findUser(name);
+                    if (user == null || !user.isOnline())
                     {
-                        targets.add(target);
+                        context.sendTranslated("&cUser &2%s &cnot found!", name);
+                        continue;
                     }
+                    users.add(user);
                 }
-                if (targets.isEmpty())
+                if (users.isEmpty())
                 {
-                    context.sendTranslated("&cNone of the given users where found!");
+                    context.sendTranslated("&eCould not find any of those users to starve!");
                     return;
                 }
+                context.sendTranslated("&aStarved &6%d&a players!", users.size());
             }
-        }
-        else if (sender instanceof User)
-        {
-            targets.add((User)sender);
-        }
-        else
-        {
-            context.sendTranslated("&cOnly time can heal your wounds!");
+            for (User user : users)
+            {
+                if (!all)
+                {
+                    user.sendTranslated("&eYou are suddenly starving!");
+                }
+                user.setFoodLevel(0);
+                user.setSaturation(0);
+                user.setExhaustion(4);
+            }
             return;
         }
-
-        if ((targets.size() > 1 || targets.iterator().next() != sender) && !BasicsPerm.COMMAND_HEAL_OTHER.isAuthorized(sender))
+        if (context.getSender() instanceof User)
         {
-            throw new PermissionDeniedException(); // TODO update to new exception
+            User sender = (User)context.getSender();
+            sender.setFoodLevel(0);
+            sender.setSaturation(0);
+            sender.setExhaustion(4);
+            context.sendTranslated("&6You are now starving!");
+            return;
         }
+        context.sendTranslated("\n\n\n\n\n\n\n\n\n\n\n\n\n&cI'll give you only one line to eat!");
+        context.sendMessage(context.getCommand().getUsage());
+    }
 
-        for (User user : targets)
+    @Command(desc = "Heals a Player", max = 1, usage = "{player}")
+    public void heal(CommandContext context)
+    {
+        if (context.hasArg(0))
         {
-            user.setHealth(user.getMaxHealth());
-            user.setFoodLevel(20);
-            user.setSaturation(20);
-            user.setExhaustion(0);
-            if (user == sender)
+            if (!BasicsPerm.COMMAND_HEAL_OTHER.isAuthorized(context.getSender()))
             {
-                user.sendTranslated("&aYou are now healed!");
+                context.sendTranslated("&cYou are not allowed to heal other user!");
+                return;
+            }
+            Collection<User> users;
+            boolean all = false;
+            if (context.getString(0).equals("*"))
+            {
+                all = true;
+                users = this.um.getOnlineUsers();
+                if (users.isEmpty())
+                {
+                    context.sendTranslated("&cThere are no users online at the moment!");
+                    return;
+                }
+                context.sendTranslated("&aYou healed everyone!");
+                this.um.broadcastStatus("&ahealed every player.", context.getSender());
             }
             else
             {
-                user.sendTranslated("&aYou got healed by &2%s&a!", sender.getName());
+                users = new ArrayList<>();
+                String[] userNames = StringUtils.explode(",",context.getString(0));
+                for (String name : userNames)
+                {
+                    User user = this.um.findUser(name);
+                    if (user == null || !user.isOnline())
+                    {
+                        context.sendTranslated("&cUser &2%s &cnot found!", name);
+                        continue;
+                    }
+                    users.add(user);
+                }
+                if (users.isEmpty())
+                {
+                    context.sendTranslated("&eCould not find any of those users to heal!");
+                    return;
+                }
+                context.sendTranslated("&aHealed &6%d&a players!", users.size());
             }
+            for (User user : users)
+            {
+                if (!all)
+                {
+                    user.sendTranslated("&aYou got healed by &2%s&a!", context.getSender().getName());
+                }
+                user.setHealth(user.getMaxHealth());
+            }
+            return;
         }
-
-        targets.remove(sender);
-        if (targets.size() == 1)
+        if (context.getSender() instanceof User)
         {
-            context.sendTranslated("&a1 user was successfully healed!", targets.size());
+            User sender = (User)context.getSender();
+            sender.setHealth(sender.getMaxHealth());
+            sender.sendTranslated("&aYou are now healed!");
+            return;
         }
-        else if (targets.size() > 1)
-        {
-            context.sendTranslated("&a%d users were successfully healed!", targets.size());
-        }
+        context.sendTranslated("&cOnly time can heal your wounds!");
+        context.sendMessage(context.getCommand().getUsage());
     }
 
     @Command(names = {"gamemode", "gm"}, max = 2,

@@ -57,7 +57,6 @@ public class SignMarketItemManager
     {
         itemInfo.insert();
         this.itemInfoModels.put(itemInfo.getKey().longValue(), itemInfo);
-        this.module.getLog().debug("stored item-model #{}", itemInfo.getKey());
     }
 
     public void deleteUnusedModels(TLongHashSet usedKeys)
@@ -76,7 +75,6 @@ public class SignMarketItemManager
     {
         if (itemInfo.getKey() == null || itemInfo.getKey().longValue() == 0) return; // unsaved model
         this.itemInfoModels.remove(itemInfo.getKey().longValue()).delete();
-        this.module.getLog().debug("deleted item-model #{}", itemInfo.getKey());
     }
 
     public void update(SignMarketItemModel itemInfo)
