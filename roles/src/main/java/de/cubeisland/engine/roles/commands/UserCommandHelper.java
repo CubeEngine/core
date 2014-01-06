@@ -100,25 +100,24 @@ public class UserCommandHelper extends ContainerCommand
         if (sender instanceof User)
         {
             User user = (User)sender;
-            Long worldID = user.attachOrGet(RolesAttachment.class, this.module).getWorkingWorldId();
-            if (worldID == null)
+            world = user.attachOrGet(RolesAttachment.class, this.module).getWorkingWorld();
+            if (world == null)
             {
                 world = user.getWorld();
             }
             else
             {
-                world = this.worldManager.getWorld(worldID);
                 context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
             }
             return world;
         }
-        if (ManagementCommands.curWorldIdOfConsole == null)
+        if (ManagementCommands.curWorldOfConsole == null)
         {
             context.sendTranslated("&ePlease provide a world.");
             context.sendTranslated("&aYou can define a world with &6/roles admin defaultworld <world>");
             return null;
         }
-        world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
+        world = ManagementCommands.curWorldOfConsole;
         context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
         return world;
     }

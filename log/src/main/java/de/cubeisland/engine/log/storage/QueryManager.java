@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -42,10 +43,9 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
-import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
-import gnu.trove.TLongCollection;
+import org.joda.time.Duration;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -128,6 +128,7 @@ public class QueryManager
         };
         this.lookupExecutor = Executors.newSingleThreadExecutor(factory);
 
+        long delay = this.module.getConfiguration().cleanup.delay.getStandardSeconds() * 20;
         this.cleanUpTaskId = this.module.getCore().getTaskManager().runAsynchronousTimer(this.module, new Runnable()
         {
             @Override
@@ -135,8 +136,7 @@ public class QueryManager
             {
                 cleanUpLogs();
             }
-        }, this.module.getConfiguration().cleanup.delay.toTicks(), this.module.getConfiguration().cleanup.delay
-                                                                                                         .toTicks());
+        }, delay, delay);
     }
 
     /**
@@ -233,7 +233,7 @@ public class QueryManager
         if (this.module.getConfiguration().cleanup.oldLogs.enable)
         {
             this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of old logs");
-            this.cleanUpOldLogs(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanup.oldLogs.time.toMillis()));
+            this.cleanUpOldLogs(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanup.oldLogs.time.getMillis()));
         }
         else
         {
@@ -242,10 +242,10 @@ public class QueryManager
         if (this.module.getConfiguration().cleanup.deletedWorlds)
         {
             this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of deleted worlds");
-            TLongCollection loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
+            long[] loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
             for (UInteger dbWorld : cleanUpDsl.select(TABLE_WORLD.KEY).from(TABLE_WORLD).fetch().getValues(TABLE_WORLD.KEY))
             {
-                if (loadedworlds.contains(dbWorld.longValue()))
+                if (Arrays.binarySearch(loadedworlds, dbWorld.longValue()) >= 0)
                 {
                     continue;
                 }
@@ -347,7 +347,7 @@ public class QueryManager
             int del = this.cleanUpOldLogsPart(from, half, totalCount, depth +1);
             del += this.cleanUpOldLogsPart(half, to, totalCount, depth +1);
             this.module.getLog().debug("{}- Step 3/7: Deleted {} old logs in {}", StringUtils.repeat(" ", depth),
-                           del, new Duration(startTime, System.currentTimeMillis()).format("%ww%dd%hh%mm%ss%SS"));
+                           del, new Duration(startTime, System.currentTimeMillis()).toString());
             return del;
         }
     }

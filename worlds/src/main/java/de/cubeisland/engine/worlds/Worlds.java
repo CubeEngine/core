@@ -28,15 +28,15 @@ import org.bukkit.potion.PotionEffect;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.worlds.commands.WorldCommands;
-import de.cubeisland.engine.worlds.config.WorldLocation;
 import de.cubeisland.engine.worlds.config.WorldsConfig;
 import de.cubeisland.engine.worlds.converter.DiffcultyConverter;
 import de.cubeisland.engine.worlds.converter.EnvironmentConverter;
 import de.cubeisland.engine.worlds.converter.GameModeConverter;
 import de.cubeisland.engine.worlds.converter.InventoryConverter;
 import de.cubeisland.engine.worlds.converter.PotionEffectConverter;
-import de.cubeisland.engine.worlds.converter.WorldLocationConverter;
 import de.cubeisland.engine.worlds.converter.WorldTypeConverter;
 
 public class Worlds extends Module
@@ -64,7 +64,6 @@ public class Worlds extends Module
         manager.registerConverter(Environment.class, new EnvironmentConverter());
         manager.registerConverter(GameMode.class, new GameModeConverter());
         manager.registerConverter(WorldType.class, new WorldTypeConverter());
-        manager.registerConverter(WorldLocation.class, new WorldLocationConverter());
 ///*TODO remove
         manager.registerConverter(Inventory.class, new InventoryConverter(Bukkit.getServer()));
         manager.registerConverter(PotionEffect.class, new PotionEffectConverter());

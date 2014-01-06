@@ -23,7 +23,7 @@ import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
 
 public class LogConfiguration extends YamlConfiguration
 {

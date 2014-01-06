@@ -18,76 +18,72 @@
 package de.cubeisland.engine.roles.role;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+
+import org.bukkit.World;
 
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.roles.Roles;
+import de.cubeisland.engine.roles.RolesConfig;
+import de.cubeisland.engine.roles.config.MirrorConfig;
 import de.cubeisland.engine.roles.config.RoleConfig;
-import de.cubeisland.engine.roles.config.RoleMirror;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.procedure.TLongObjectProcedure;
-import org.jooq.impl.DSL;
-import org.jooq.types.UInteger;
-
-import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
-
 
 public class WorldRoleProvider extends RoleProvider
 {
-    private RoleMirror mirrorConfig;
+    private MirrorConfig mirrorConfig;
     private Set<Role> defaultRoles = new HashSet<>();
 
-    public WorldRoleProvider(Roles module, RolesManager manager, RoleMirror mirror, long mainWorldId)
+    public WorldRoleProvider(RolesManager manager, MirrorConfig mirrorConfig)
     {
-        super(module,manager,mainWorldId);
-        this.mirrorConfig = mirror;
-        this.basePerm = module.getBasePermission().createAbstractChild("world").createAbstractChild(mirror.mainWorld);
+        super(manager, manager.module.getBasePermission().createAbstractChild("world").createAbstractChild(mirrorConfig.mainWorld.getName()));
+        this.mirrorConfig = mirrorConfig;
     }
 
-    public WorldRoleProvider(Roles module, RolesManager manager, long worldId)
+    public WorldRoleProvider(RolesManager manager, World world)
     {
-        this(module,manager, new RoleMirror(module, worldId),worldId);
+        this(manager, new MirrorConfig(manager.module, world));
     }
 
     public void reloadRoles()
     {
-        Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(mirrorConfig.mainWorld);
+        Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(mirrorConfig.mainWorld.getName());
         if (defaultRoles == null)
         {
             defaultRoles = new HashSet<>();
         }
         for (RoleConfig config : this.configs.values())
         {
-            Role role = new Role(this, config);
+            Role role = new Role(manager, this, config);
             if (defaultRoles.contains(config.roleName))
             {
-                role.isDefaultRole = true;
+                role.setDefaultRole(true);
                 this.defaultRoles.add(role);
             }
             this.roles.put(role.getName().toLowerCase(Locale.ENGLISH), role);
         }
         if (this.defaultRoles.isEmpty())
         {
-            this.module.getLog().warn("The role-provider for {} has no default roles!", this.mirrorConfig.mainWorld);
+            this.module.getLog().warn("The role-provider for {} has no default roles!", this.mirrorConfig.mainWorld.getName());
         }
     }
 
-
-    public TLongObjectHashMap<Triplet<Boolean, Boolean, Boolean>> getWorldMirrors()
+    public Map<World, Triplet<Boolean, Boolean, Boolean>> getWorldMirrors()
     {
         return this.mirrorConfig.getWorldMirrors();
     }
 
     public Set<Role> getDefaultRoles()
     {
-        return this.defaultRoles;
+        return Collections.unmodifiableSet(this.defaultRoles);
     }
 
-    public String getMainWorld()
+    public World getMainWorld()
     {
-        return this.mirrorConfig.mainWorld;
+        return this.mirrorConfig.getMainWorld();
     }
 
     @Override
@@ -95,20 +91,20 @@ public class WorldRoleProvider extends RoleProvider
     {
         if (this.roles.isEmpty())
         {
-            this.module.getLog().warn("There are no roles for {}", mirrorConfig.mainWorld);
+            this.module.getLog().warn("There are no roles for {}", mirrorConfig.mainWorld.getName());
             return;
         }
-        this.module.getLog().debug("Calculating Roles of {}...", mirrorConfig.mainWorld);
+        this.module.getLog().debug("Calculating Roles of {}...", mirrorConfig.mainWorld.getName());
         super.recalculateRoles();
     }
 
     @Override
-    public Path getFolder()
+    protected Path getFolder()
     {
         if (this.folder == null)
         {
             // Sets the folder for this provider
-            this.folder = this.manager.getRolesFolder().resolve(this.mirrorConfig.mainWorld);
+            this.folder = this.manager.getRolesFolder().resolve(this.mirrorConfig.mainWorld.getName());
         }
         return this.folder;
     }
@@ -126,66 +122,32 @@ public class WorldRoleProvider extends RoleProvider
 
     protected void setDefaultRole(Role role, boolean set)
     {
+        RolesConfig config = this.module.getConfiguration();
+        Set<String> defaultRoles = config.defaultRoles.get(this.getMainWorld().getName());
+        if (defaultRoles == null)
+        {
+            defaultRoles = new HashSet<>();
+            config.defaultRoles.put(this.getMainWorld().getName(), defaultRoles);
+        }
         if (set)
         {
-            Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(this.getMainWorld());
             defaultRoles.add(role.getName());
             this.defaultRoles.add(role);
-            this.module.getConfiguration().save();
         }
         else
         {
-            Set<String> defaultRoles = this.module.getConfiguration().defaultRoles.get(this.getMainWorld());
             defaultRoles.remove(role.getName());
             this.defaultRoles.remove(role);
-            this.module.getConfiguration().save();
         }
+        config.save();
     }
 
-    @Override
-    protected void deleteRole(final Role role)
+    public Set<World> getMirroredWorlds()
     {
-        super.deleteRole(role);
-        // Also delete possible mirrors
-        this.mirrorConfig.getWorldMirrors().forEachEntry(new TLongObjectProcedure<Triplet<Boolean, Boolean, Boolean>>()
-        {
-            @Override
-            public boolean execute(long worldID, Triplet<Boolean, Boolean, Boolean> mirrors)
-            {
-                if (mirrors.getFirst() && !mirrors.getSecond()) // roles are mirrored but not assigned roles
-                {
-                    manager.dsl.delete(TABLE_ROLE).where(TABLE_ROLE.WORLDID.eq(UInteger.valueOf(worldID)),
-                                                              TABLE_ROLE.ROLENAME.eq(role.getName())).execute();
-                }
-                return true;
-            }
-        });
+        return this.mirrorConfig.getWorldMirrors().keySet();
     }
 
-    @Override
-    protected boolean renameRole(Role role, String newName)
-    {
-        if (super.renameRole(role,newName))
-        {
-            Set<UInteger> worldMirrors = new HashSet<>();
-            for (long mirrored : this.getWorldMirrors().keys())
-            {
-                worldMirrors.add(UInteger.valueOf(mirrored));
-            }
-            this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row(newName)).
-                where(TABLE_ROLE.ROLENAME.eq(role.getName()),
-                      TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
-            return true;
-        }
-        return false;
-    }
-
-    public long[] getMirroredWorlds()
-    {
-        return this.mirrorConfig.getWorldMirrors().keys();
-    }
-
-    protected RoleMirror getMirrorConfig()
+    protected MirrorConfig getMirrorConfig()
     {
         return mirrorConfig;
     }

@@ -1,0 +1,11 @@
+name: ${project.name}
+version: ${project.version}
+description: ${project.description}
+source-version: ${githead.branch}-${githead.commit}
+soft-dependencies:
+- roles
+- conomy
+services:
+- de.cubeisland.engine.core.module.service.Economy
+plugin-dependencies:
+- Vault

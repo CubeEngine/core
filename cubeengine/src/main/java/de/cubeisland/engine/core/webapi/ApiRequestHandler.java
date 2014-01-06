@@ -81,7 +81,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext context, Object message) throws Exception
+    protected void messageReceived(ChannelHandlerContext context, Object message) throws Exception
     {
         this.log.info("{} connected...", ((InetSocketAddress)context.channel().remoteAddress()).getAddress()
                                                                                                   .getHostAddress());

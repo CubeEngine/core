@@ -662,6 +662,10 @@ public class TelePointManager
     public final int OWNED = 1 << 2;
     public final int INVITED = 1 << 3;
 
+    // TODO - It seems there has been a mix-up in the "storageNames" of teleportpoints.
+    // Sometimes it they are used as <user name>:<teleport point name> and sometimes they are used as
+    // <user key>:<teleport point name>.
+
     public Set<Home> listHomes(int mask)
     {
         Set<Home> homes = new HashSet<>();
@@ -673,7 +677,11 @@ public class TelePointManager
                                                             TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC)).fetch();
             for (Record1<String> record2 : fetch)
             {
-                homes.add(this.homes.get(record2.value1()));
+                Home home = this.homes.get(record2.value1());
+                if (home != null)
+                {
+                    homes.add(home);
+                }
             }
         }
         if ((mask & PRIVATE) == PRIVATE)
@@ -684,7 +692,11 @@ public class TelePointManager
                                                                     TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PRIVATE)).fetch();
             for (Record2<String, UInteger> record2 : fetch)
             {
-                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
+                Home home = this.homes.get(record2.value2().longValue() + ":" + record2.value1());
+                if (home != null)
+                {
+                    homes.add(home);
+                }
             }
         }
         return homes;
@@ -721,7 +733,11 @@ public class TelePointManager
                                                                     TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
             for (Record1<String> record1 : fetch)
             {
-                homes.add(this.homes.get(record1.value1()));
+                Home home = this.homes.get(record1.value1());
+                if (home != null)
+                {
+                    homes.add(home);
+                }
             }
         }
         if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
@@ -733,7 +749,11 @@ public class TelePointManager
                                                                     TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
             for (Record2<String, UInteger> record2 : fetch)
             {
-                homes.add(this.homes.get(record2.value2().longValue() + ":" + record2.value1()));
+                Home home = this.homes.get(record2.value2().longValue() + ":" + record2.value1());
+                if (home != null)
+                {
+                    homes.add(home);
+                }
             }
         }
         if ((mask & INVITED) == INVITED)
@@ -773,7 +793,11 @@ public class TelePointManager
                                                                     TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PUBLIC)).fetch();
             for (Record2<String, UInteger> record2 : fetch)
             {
-                warps.add(this.warps.get(record2.value2().longValue() + ":" + record2.value1()));
+                Warp warp = this.warps.get(record2.value2().longValue() + ":" + record2.value1());
+                if (warp != null)
+                {
+                    warps.add(warp);
+                }
             }
         }
         if ((mask & PRIVATE) == PRIVATE)
@@ -784,7 +808,11 @@ public class TelePointManager
                                                                     TABLE_TP_POINT.VISIBILITY.eq(VISIBILITY_PRIVATE)).fetch();
             for (Record2<String, UInteger> record2 : fetch)
             {
-                warps.add(this.warps.get(record2.value2().longValue() + ":" + record2.value1()));
+                Warp warp = this.warps.get(record2.value2().longValue() + ":" + record2.value1());
+                if (warp != null)
+                {
+                    warps.add(warp);
+                }
             }
         }
         return warps;
@@ -821,7 +849,11 @@ public class TelePointManager
                                                                     TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
             for (Record2<String, UInteger> record2 : fetch)
             {
-                warps.add(this.warps.get("public:" + record2.value1()));
+                Warp warp = this.warps.get("public:" + record2.value1());
+                if (warp != null)
+                {
+                    warps.add(warp);
+                }
             }
         }
         if ((mask & (PRIVATE | OWNED)) == (PRIVATE | OWNED))
@@ -833,7 +865,11 @@ public class TelePointManager
                                                                     TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetch();
             for (Record2<String, UInteger> record2 : fetch)
             {
-                warps.add(this.warps.get(record2.value2().longValue() + ":" + record2.value1()));
+                Warp warp = this.warps.get(record2.value2().longValue() + ":" + record2.value1());
+                if (warp != null)
+                {
+                    warps.add(warp);
+                }
             }
         }
         if ((mask & INVITED) == INVITED)

@@ -59,7 +59,7 @@ public class SpawnListener implements Listener
                 this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
-            String spawnString = rolesAttachment.getCurrentMetadata("rolespawn");
+            String spawnString = rolesAttachment.getCurrentMetadataString("rolespawn");
             if (spawnString != null)
             {
                 Location spawnLoc = this.getSpawnLocation(spawnString);
@@ -85,7 +85,7 @@ public class SpawnListener implements Listener
                 this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
-            String spawnString = rolesAttachment.getCurrentMetadata("rolespawn");
+            String spawnString = rolesAttachment.getCurrentMetadataString("rolespawn");
             if (spawnString != null)
             {
                 Location spawnLoc = this.getSpawnLocation(spawnString);

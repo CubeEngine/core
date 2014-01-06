@@ -135,7 +135,7 @@ public class SpawnCommands
                 locStrings[4] = String.valueOf(pitch);
                 locStrings[5] = world.getName();
                 role.setMetadata("rolespawn", StringUtils.implode(":", locStrings));
-                role.saveToConfig();
+                role.save();
                 manager.getProvider(world).recalculateRoles();
                 return;
             }
@@ -203,7 +203,7 @@ public class SpawnCommands
                     this.roles.getLog().warn("Missing RolesAttachment!");
                     return;
                 }
-                String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");
+                String rolespawn = rolesAttachment.getCurrentMetadataString("rolespawn");
                 if (rolespawn == null)
                 {
                     spawnLocation = this.getSpawnLocation(rolespawn);
@@ -289,7 +289,7 @@ public class SpawnCommands
                 this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
-            String rolespawn = rolesAttachment.getCurrentMetadata("rolespawn");
+            String rolespawn = rolesAttachment.getCurrentMetadataString("rolespawn");
             if (rolespawn == null)
             {
                 spawnLocation = world.getSpawnLocation();
@@ -350,16 +350,16 @@ public class SpawnCommands
             List<String> roles = new ArrayList<>();
             if (sender instanceof User)
             {
-                if (((User)sender).get(RolesAttachment.class).getWorkingWorldId() != null)
+                if (((User)sender).get(RolesAttachment.class).getWorkingWorld() != null)
                 {
-                    for (Role role : manager.getProvider(((User)sender).get(RolesAttachment.class).getWorkingWorldId()).getRoles())
+                    for (Role role : manager.getProvider(((User)sender).get(RolesAttachment.class).getWorkingWorld()).getRoles())
                     {
                         roles.add(role.getName());
                     }
                 }
                 else
                 {
-                    for (Role role : manager.getProvider(((User)sender).getWorldId()).getRoles())
+                    for (Role role : manager.getProvider(((User)sender).getWorld()).getRoles())
                     {
                         roles.add(role.getName());
                     }
@@ -367,9 +367,9 @@ public class SpawnCommands
             }
             else
             {
-                if (ManagementCommands.curWorldIdOfConsole != null)
+                if (ManagementCommands.curWorldOfConsole != null)
                 {
-                    for (Role role : manager.getProvider(ManagementCommands.curWorldIdOfConsole).getRoles())
+                    for (Role role : manager.getProvider(ManagementCommands.curWorldOfConsole).getRoles())
                     {
                         roles.add(role.getName());
                     }

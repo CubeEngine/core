@@ -29,7 +29,8 @@ import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
+import org.joda.time.Period;
 
 public class BasicsConfiguration extends YamlConfiguration
 {
@@ -50,7 +51,7 @@ public class BasicsConfiguration extends YamlConfiguration
         public int nearDefaultRadius = 20;
 
         @Name("mute.default-mute-time")
-        public Duration defaultMuteTime = new Duration(-1);
+        public Duration defaultMuteTime = new Duration(0);
 
         public Collection<ItemStack> itemBlacklist = new LinkedList<ItemStack>()
         {
@@ -98,19 +99,34 @@ public class BasicsConfiguration extends YamlConfiguration
 
         @Name("door.max.radius")
         public int maxDoorRadius = 10;
+
+        public boolean containsBlackListed(ItemStack item)
+        {
+            for (ItemStack blItem : itemBlacklist)
+            {
+                if (blItem.getType() == item.getType() && blItem.getDurability() == item.getDurability())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     @Comment({"The world to teleport to when using /spawn",
               "Use {} if you want to use the spawn of the world the player is in."})
     public World mainWorld = Bukkit.getServer().getWorld("world");
 
-    public AfkSection afk;
+    public AfkSection autoAfk;
 
     public class AfkSection implements Section
     {
-        public String automaticAfk = "5m";
+        @Comment("Players will be automatically displayed as afk after this amount of time")
+        public Duration after = Period.minutes(5).toStandardDuration();
 
-        public String afkCheckDelay = "1s";
+        @Comment({"How often the server will check for afk players",
+        "Set to 0 to disable auto-afk"})
+        public Duration check = Period.seconds(1).toStandardDuration();
     }
 
     public NavigationSection navigation;

@@ -19,17 +19,17 @@ package de.cubeisland.engine.chat;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 
-public class RoleChatFormatListener implements Listener
+public class RoleChatFormatListener extends ChatFormatListener
 {
-    private final Chat chat;
-
     public RoleChatFormatListener(Chat chat)
     {
-        this.chat = chat;
+        super(chat);
     }
 
     @EventHandler
@@ -38,11 +38,27 @@ public class RoleChatFormatListener implements Listener
         final RolesAttachment rolesAttachment = event.getUser().get(RolesAttachment.class);
         if (rolesAttachment == null)
         {
-            this.chat.getLog().warn("Missing RolesAttachment!");
+            this.module.getLog().warn("Missing RolesAttachment!");
             return;
         }
+        event.setVariable("ROLE.PREFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadataString("prefix")));
+        event.setVariable("ROLE.SUFFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadataString("suffix")));
+    }
 
-        event.setVariable("ROLE.PREFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadata("prefix")));
-        event.setVariable("ROLE.SUFFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadata("suffix")));
+    @Override
+    protected String getFormat(User user)
+    {
+        RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
+        if (rolesAttachment == null)
+        {
+            this.module.getLog().warn("Missing RolesAttachment!");
+            return this.module.getConfig().format;
+        }
+        String chatFormat = rolesAttachment.getCurrentMetadataString("chat-format");
+        if (chatFormat == null)
+        {
+            return this.module.getConfig().format;
+        }
+        return chatFormat;
     }
 }

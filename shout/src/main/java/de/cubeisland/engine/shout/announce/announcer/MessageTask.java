@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.shout.announce.announcer;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.shout.announce.Announcement;
@@ -29,20 +28,16 @@ public class MessageTask implements Runnable
     private final Receiver receiver;
     private int runs = 0;
     private int nextExecution = 0;
-    private long lastTime;
 
     public MessageTask(TaskManager taskManager, Receiver receiver)
     {
         this.taskManager = taskManager;
         this.receiver = receiver;
-        lastTime = System.currentTimeMillis();
     }
 
     @Override
     public void run()
     {
-        long tmpTime = System.currentTimeMillis();
-        CubeEngine.getLog().trace("{} time since last: {}", receiver.getName(), (tmpTime - lastTime));
         if (this.runs == this.nextExecution)
         {
             Pair<Announcement, Integer> pair = receiver.getNextDelayAndAnnouncement();
@@ -57,6 +52,5 @@ public class MessageTask implements Runnable
             }
         }
         this.runs++;
-        lastTime = tmpTime;
     }
 }

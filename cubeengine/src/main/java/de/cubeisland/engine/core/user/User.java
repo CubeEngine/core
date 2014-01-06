@@ -18,11 +18,14 @@
 package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -294,64 +297,86 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
-        Location checkLocation = location.clone().add(0, 1, 0);
+        Block block = location.getBlock();
+        Block block1Up = block.getRelative(BlockFace.UP);
+        double y = location.getY();
         // Search for 2 non occluding blocks
-        while (location.getBlock().getType().isSolid() || checkLocation.getBlock().getType().isSolid())
+        if ((location.getY() + 1 < location.getWorld().getMaxHeight())) // on top of the world
         {
-            BlockState block = location.getBlock().getState();
-            BlockState block1Up = checkLocation.getBlock().getState();
-            // signpost OR plates ...
-            if ((!block.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block.getType()))
-            && (!block1Up.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block1Up.getType())))
+            while (block.getType().isSolid() || block1Up.getType().isSolid())
             {
-                break;
-            }
-            if (!block1Up.getType().isSolid()) // block on top is non Solid
-            {
-                BlockState block2Up = checkLocation.getBlock().getRelative(BlockFace.UP).getState();
-                // If block & block2Up are Steps in the right direction add 0.5 to y and exit
-                if ((block.getData() instanceof Step || block.getData() instanceof  WoodenStep)
-                && (block2Up.getData() instanceof Step || block2Up.getData() instanceof WoodenStep))
+                // signpost OR plates ...
+                if ((!block.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block.getType()))
+                    && (!block1Up.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block1Up.getType())))
                 {
-                    if (!isInvertedStep(block.getData()) && isInvertedStep(block2Up.getData()))
+                    break;
+                }
+                if (!block1Up.getType().isSolid()) // block on top is non Solid
+                {
+                    Block block2Up = block1Up.getRelative(BlockFace.UP);
+                    if (block2Up.getY() != 0) // ignore wrap around
                     {
-                        location.add(0,0.5,0);
-                        break;
+                        BlockState bs = block.getState();
+                        BlockState bs2 = block2Up.getState();
+                        if ((bs.getData() instanceof Step || bs.getData() instanceof  WoodenStep)
+                            && (bs2.getData() instanceof Step || bs2.getData() instanceof WoodenStep))
+                        {
+                            if (!isInvertedStep(bs.getData()) && isInvertedStep(bs2.getData()))
+                            {
+                                block.getRelative(BlockFace.UP);
+                                break; // allow tp
+                            }
+                        }
                     }
+                    // If block & block2Up are Steps in the right direction add 0.5 to y and exit
+                }
+                block1Up = block1Up.getRelative(BlockFace.UP);
+                block = block.getRelative(BlockFace.UP);
+                if (block1Up.getY() == 0) // reached wrap around of world
+                {
+                    if (block.getType().isSolid() && !BlockUtil.isNonObstructingSolidBlock(block.getType()))
+                    {
+                        y = block.getY() + 1;
+                    }
+                    else
+                    {
+                        y = block.getY();
+                    }
+                    break;
                 }
             }
-            location.add(0, 1, 0);
-            checkLocation.add(0, 1, 0);
         }
+        Block standOn = block.getRelative(BlockFace.DOWN); // Standing on
         if (!this.isFlying())
         {
-            checkLocation = location.clone();
-            while (checkLocation.add(0, -1, 0).getBlock().getType() == Material.AIR)
+            while (standOn.getType() == Material.AIR)
             {
-                if (checkLocation.getY() < 0)
+                Block rel = standOn.getRelative(BlockFace.DOWN);
+                if (rel.getY() > block.getY() || rel.getY() < 0) // wrap around from below
                 {
                     return false;
                 }
-                location.add(0, -1, 0);
+                standOn = rel;
             }
+            y = standOn.getY() + 1;
         }
-        checkLocation = location.clone().add(0, -1, 0);
-        Block blockBelow = checkLocation.getBlock();
-        if (blockBelow.getType() == Material.STATIONARY_LAVA || blockBelow.getType() == Material.LAVA)
+        if (standOn.getType() == Material.STATIONARY_LAVA || standOn.getType() == Material.LAVA)
         {
-            location = location.getWorld().getHighestBlockAt(location).getLocation().add(0, 1, 0); // If would fall in lava tp on highest position.
+            standOn = standOn.getWorld().getHighestBlockAt(location);
+            y = standOn.getY() + 1;
+            // If would fall in lava tp on highest position.
             // If there is still lava then you shall burn!
         }
-        if (blockBelow.getType().equals(Material.FENCE)
-         || blockBelow.getType().equals(Material.NETHER_FENCE))
+        if (standOn.getType() == Material.FENCE || standOn.getType() == Material.NETHER_FENCE)
         {
-            location.add(0, 0.5, 0);
+            y += 0.5;
         }
-        if (blockBelow.getType().equals(Material.STEP) || blockBelow.getType().equals(Material.WOOD_STEP))
+        block1Up = standOn.getRelative(BlockFace.UP);
+        if (block1Up.getType() == Material.STEP || block1Up.getType() == Material.WOOD_STEP)
         {
-            if (!isInvertedStep(blockBelow.getState().getData()))
+            if (!isInvertedStep(standOn.getState().getData()))
             {
-                location.setY(location.getBlockY() - 0.5);
+                y += 0.5;
             }
         }
         if (keepDirection)
@@ -360,6 +385,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             location.setPitch(loc.getPitch());
             location.setYaw(loc.getYaw());
         }
+        location.setY(y);
         return this.teleport(location, cause);
     }
 
@@ -622,5 +648,42 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     public UserEntity getEntity()
     {
         return entity;
+    }
+
+    public Iterator<Block> getLineOfSight(int maxDistance)
+    {
+        if (maxDistance > Bukkit.getServer().getViewDistance() * 16) {
+            maxDistance = Bukkit.getServer().getViewDistance() * 16;
+        }
+        return new BlockIterator(this, maxDistance);
+    }
+
+    public Block getTargetBlock(int maxDistance)
+    {
+        Iterator<Block> lineOfSight = this.getLineOfSight(maxDistance);
+        while (lineOfSight.hasNext())
+        {
+            Block next = lineOfSight.next();
+            if (next.getType().isSolid() && !BlockUtil.isNonObstructingSolidBlock(next.getType()))
+            {
+                return next;
+            }
+        }
+        return null;
+    }
+
+    public Block getTargetBlock(int maxDistance, Material... transparent)
+    {
+        Iterator<Block> lineOfSight = this.getLineOfSight(maxDistance);
+        List<Material> list = Arrays.asList(transparent);
+        while (lineOfSight.hasNext())
+        {
+            Block next = lineOfSight.next();
+            if (!list.contains(next.getType()))
+            {
+                return next;
+            }
+        }
+        return null;
     }
 }

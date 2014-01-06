@@ -18,6 +18,8 @@
 package de.cubeisland.engine.portals;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.portals.config.Destination;
+import de.cubeisland.engine.portals.config.DestinationConverter;
 
 public class Portals extends Module
 {
@@ -27,5 +29,7 @@ public class Portals extends Module
     public void onEnable()
     {
         this.config = this.loadConfig(PortalsConfig.class);
+        this.getCore().getConfigFactory().getDefaultConverterManager().registerConverter(Destination.class, new DestinationConverter(getCore()));
+        new PortalManager(this);
     }
 }

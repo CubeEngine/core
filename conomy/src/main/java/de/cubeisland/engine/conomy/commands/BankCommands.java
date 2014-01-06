@@ -504,7 +504,7 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Lists the current invites of a bank",
-             usage = "<bank-name>")
+             usage = "<bank-name>", min = 1, max = 1)
     public void listinvites(ParameterizedContext context)
     {
         BankAccount account = this.getBankAccount(context.getString(0));
@@ -541,7 +541,7 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Lists the members of a bank",
-             usage = "<bank-name>")
+             usage = "<bank-name>", min = 1, max = 1)
     public void listmembers(CommandContext context)
     {
         BankAccount account = this.getBankAccount(context.getString(0));

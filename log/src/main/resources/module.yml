@@ -2,3 +2,5 @@ name: ${project.name}
 description: ${project.description}
 version: ${project.version}
 source-version: ${githead.branch}-${githead.commit}
+services:
+- de.cubeisland.engine.core.module.service.Selector

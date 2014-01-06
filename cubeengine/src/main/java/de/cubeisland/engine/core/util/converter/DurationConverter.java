@@ -20,22 +20,48 @@ package de.cubeisland.engine.core.util.converter;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.IntNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
-import de.cubeisland.engine.core.util.time.Duration;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 public class DurationConverter implements Converter<Duration>
 {
+    private final PeriodFormatter formatter;
+
+    public DurationConverter()
+    {
+        this.formatter = new PeriodFormatterBuilder()
+        .appendWeeks().appendSuffix("w").appendSeparator(" ")
+        .appendDays().appendSuffix("d").appendSeparator(" ")
+        .appendHours().appendSuffix("h").appendSeparator(" ")
+        .appendMinutes().appendSuffix("m").appendSeparator(" ")
+        .appendSeconds().appendSuffix("s").appendSeparator(".")
+        .appendMillis().toFormatter();
+    }
 
     @Override
     public Node toNode(Duration object, ConverterManager manager) throws ConversionException
     {
-        return StringNode.of(object.format());
+        return StringNode.of(this.formatter.print(object.toPeriod()));
     }
 
     @Override
     public Duration fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        return new Duration(node.asText());
+        try
+        {
+            if (node instanceof IntNode)
+            {
+                return new Duration(((IntNode)node).getValue().longValue());
+            }
+            return this.formatter.parsePeriod(node.asText()).toStandardDuration();
+        }
+        catch (Exception e)
+        {
+            throw ConversionException.of(this, node, "Unknown error while parsing Duration!", e);
+        }
     }
 }

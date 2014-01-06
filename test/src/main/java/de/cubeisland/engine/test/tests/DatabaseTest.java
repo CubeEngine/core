@@ -19,8 +19,6 @@ package de.cubeisland.engine.test.tests;
 
 import java.sql.SQLException;
 
-import de.cubeisland.engine.test.tests.config.TestConfig;
-
 public class DatabaseTest extends Test
 {
     private final de.cubeisland.engine.test.Test module;

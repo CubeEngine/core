@@ -68,6 +68,8 @@ import de.cubeisland.engine.core.util.FreezeDetection;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.util.converter.BlockVector3Converter;
 import de.cubeisland.engine.core.util.converter.DurationConverter;
 import de.cubeisland.engine.core.util.converter.EnchantmentConverter;
 import de.cubeisland.engine.core.util.converter.ItemStackConverter;
@@ -78,17 +80,18 @@ import de.cubeisland.engine.core.util.converter.PlayerConverter;
 import de.cubeisland.engine.core.util.converter.UserConverter;
 import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.converter.WorldConverter;
+import de.cubeisland.engine.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.core.util.time.Duration;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
+import de.cubeisland.engine.core.world.ConfigWorld;
+import de.cubeisland.engine.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.core.world.TableWorld;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
-
-import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
-import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
+import org.joda.time.Duration;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
@@ -121,7 +124,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private List<Runnable> initHooks;
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
-    private boolean loadSucceeded;
     private boolean loaded = false;
     private boolean isStartupFinished = false;
 
@@ -139,7 +141,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public void onLoad()
     {
-        this.loadSucceeded = false;
         final Server server = this.getServer();
         final PluginManager pm = server.getPluginManager();
 
@@ -165,6 +166,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         manager.registerConverter(Version.class, new VersionConverter());
         manager.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
         manager.registerConverter(Location.class, new LocationConverter(this));
+        manager.registerConverter(WorldLocation.class, new WorldLocationConverter());
+        manager.registerConverter(BlockVector3.class, new BlockVector3Converter());
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
@@ -232,9 +235,11 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: core config, file manager, task manager
+        getLog().info("Connecting to the database...");
         this.database = MySQLDatabase.loadFromConfig(this, this.fileManager.getDataPath().resolve("database.yml"));
         if (this.database == null)
         {
+            getLog().error("Failed to connect tot the database, aborting...");
             return;
         }
 
@@ -288,27 +293,28 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on loaded worlds
         this.worldManager = new BukkitWorldManager(BukkitCore.this);
+        // depends on worldManager
+        this.getConfigFactory().getDefaultConverterManager().registerConverter(ConfigWorld.class, new ConfigWorldConverter(worldManager));
 
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
-        this.loadSucceeded = true;
         this.loaded = true;
     }
 
     @Override
     public void onEnable()
     {
-        if (!this.loadSucceeded)
-        {
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
         if (!this.loaded)
         {
             this.onLoad();
+            if (!this.loaded)
+            {
+                this.getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
         }
-        Iterator< Runnable > it = this.initHooks.iterator();
+        Iterator<Runnable> it = this.initHooks.iterator();
         while (it.hasNext())
         {
             try

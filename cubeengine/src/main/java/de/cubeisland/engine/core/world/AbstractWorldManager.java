@@ -19,9 +19,12 @@ package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.World;
@@ -95,9 +98,9 @@ public abstract class AbstractWorldManager implements WorldManager
         return entity.getKey().longValue();
     }
 
-    public synchronized TLongCollection getAllWorldIds()
+    public synchronized long[] getAllWorldIds()
     {
-        return this.worldIds.keySet();
+        return this.worldIds.keySet().toArray();
     }
 
     public synchronized World getWorld(long id)

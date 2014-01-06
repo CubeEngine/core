@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.backpack;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,7 +47,7 @@ public class BackpackManager implements Listener
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
@@ -53,26 +56,26 @@ public class BackpackManager implements Listener
         backPack.openInventory(sender);
     }
 
-    public void createBackpack(CommandSender sender, User forUser, String name, World forWorld, boolean global, boolean single, boolean blockInput, Integer pages)
+    public void createBackpack(CommandSender sender, User forUser, String name, World forWorld, boolean global, boolean single, boolean blockInput, Integer pages, Integer size)
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             if (global)
             {
-                attachment.createGlobalBackpack(name, blockInput, pages);
+                attachment.createGlobalBackpack(name, blockInput, pages, size);
                 sender.sendTranslated("&aCreated global backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else if (single)
             {
-                attachment.createBackpack(name, forWorld, blockInput, pages);
+                attachment.createBackpack(name, forWorld, blockInput, pages, size);
                 sender.sendTranslated("&aCreated singleworld backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else
             {
-                attachment.createGroupedBackpack(name, forWorld, blockInput, pages);
+                attachment.createGroupedBackpack(name, forWorld, blockInput, pages, size);
                 sender.sendTranslated("&aCreated grouped backpack &6%s&a in &6%s&a for &2%s", name, forWorld.getName(), forUser.getName());
             }
         }
@@ -93,17 +96,17 @@ public class BackpackManager implements Listener
     public void onInventoryClick(InventoryClickEvent event)
     {
         if (event.getWhoClicked() instanceof Player
-            && event.getInventory().getHolder() instanceof BackpackInventory)
+            && event.getInventory().getHolder() instanceof BackpackHolder)
         {
             if (event.getSlotType() == SlotType.OUTSIDE)
             {
                 if (event.isLeftClick())
                 {
-                    ((BackpackInventory)event.getInventory().getHolder()).showNextPage((Player)event.getWhoClicked());
+                    ((BackpackHolder)event.getInventory().getHolder()).getBackpack().showNextPage((Player)event.getWhoClicked());
                 }
                 else if (event.isRightClick())
                 {
-                    ((BackpackInventory)event.getInventory().getHolder()).showPrevPage((Player)event.getWhoClicked());
+                    ((BackpackHolder)event.getInventory().getHolder()).getBackpack().showPrevPage((Player)event.getWhoClicked());
                 }
             }
         }
@@ -113,9 +116,9 @@ public class BackpackManager implements Listener
     public void onInventoryClose(InventoryCloseEvent event)
     {
         if (event.getPlayer() instanceof Player
-            && event.getInventory().getHolder() instanceof BackpackInventory)
+            && event.getInventory().getHolder() instanceof BackpackHolder)
         {
-            ((BackpackInventory)event.getInventory().getHolder()).closeInventory((Player)event.getPlayer());
+            ((BackpackHolder)event.getInventory().getHolder()).getBackpack().closeInventory((Player)event.getPlayer());
         }
     }
 
@@ -123,7 +126,7 @@ public class BackpackManager implements Listener
     {
         BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
         attachment.loadBackpacks(forWorld);
-        BackpackInventory backPack = attachment.getBackpack(name, forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
             sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
@@ -135,5 +138,74 @@ public class BackpackManager implements Listener
         {
             forUser.sendTranslated("&aYou received items in your backpack &6%s", name);
         }
+    }
+
+    public void modifyBackpack(CommandSender sender, User forUser, String name, World forWorld, Integer pages, Boolean blockInput, Integer size)
+    {
+        BackpackAttachment attachment = forUser.attachOrGet(BackpackAttachment.class, module);
+        attachment.loadBackpacks(forWorld);
+        BackpackInventories backPack = attachment.getBackpack(name, forWorld);
+        if (backPack == null)
+        {
+            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
+            return;
+        }
+        if (pages != null)
+        {
+            if (backPack.data.contents.size() > pages * backPack.data.size)
+            {
+                sender.sendTranslated("&cCould not change page amount! Not enough space!");
+            }
+            else
+            {
+                if (backPack.data.pages > pages) // compact inventory
+                {
+                    Collection<ItemStack> values = backPack.data.contents.values();
+                    backPack.data.contents = new HashMap<>();
+                    int i = 0;
+                    for (ItemStack value : values)
+                    {
+                        backPack.data.contents.put(i++, value);
+                    }
+                }
+                backPack.data.pages = pages;
+                sender.sendTranslated("&aPages changed!");
+            }
+        }
+        if (size != null)
+        {
+            if (backPack.data.contents.size() > size * backPack.data.pages)
+            {
+                sender.sendTranslated("&cCould not change page size! Not enough space!");
+            }
+            else
+            {
+                if (backPack.data.size > size) // compact inventory
+                {
+                    Collection<ItemStack> values = backPack.data.contents.values();
+                    backPack.data.contents = new HashMap<>();
+                    int i = 0;
+                    for (ItemStack value : values)
+                    {
+                        backPack.data.contents.put(i++, value);
+                    }
+                }
+                backPack.data.size = size;
+                sender.sendTranslated("&aPageSize changed!");
+            }
+        }
+        if (blockInput != null)
+        {
+            backPack.data.allowItemsIn = !blockInput;
+            if (blockInput)
+            {
+                sender.sendTranslated("&aItems are not allowed to go in!");
+            }
+            else
+            {
+                sender.sendTranslated("&aItems are allowed to go in!");
+            }
+        }
+        backPack.data.save();
     }
 }

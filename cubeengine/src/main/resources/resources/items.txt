@@ -1102,6 +1102,7 @@ SIGN:0
   sign
 WOOD_DOOR:0
   wooddoor
+  woodendoor
 BUCKET:0
   bucket
 WATER_BUCKET:0
@@ -1604,7 +1605,17 @@ GOLDEN_CARROT:0
   goldencarrot
   carrotgolden
 SKULL_ITEM:0
+  skeletonhead
   head
+SKULL_ITEM:1
+  witherskeletonhead
+SKULL_ITEM:2
+  zombiehead
+SKULL_ITEM:3
+  humanhead
+  stevehead
+SKULL_ITEM:4
+  creeperhead
 CARROT_STICK:0
   carrotOnAStick
 NETHER_STAR:0
@@ -1646,62 +1657,62 @@ LEASH:0
 NAME_TAG:0
   nametag
 GOLD_RECORD:0
+  record13
   goldrecord
   golddisk
-  record13
   disk13
 GREEN_RECORD:0
+  recordcat
   greenrecord
   greendisk
-  recordcat
   diskcat
 RECORD_3:0
+  recordblocks
   orangerecord
   orangedisk
-  recordblocks
   diskblocks
 RECORD_4:0
+  recordchirp
   redrecord
   reddisk
-  recordchirp
   diskchirp
 RECORD_5:0
+  recordfar
   lightgreenrecord
   lightgreendisk
-  recordfar
   diskfar
 RECORD_6:0
+  recordmall
   purplerecord
   purpledisk
-  recordmall
   diskmall
 RECORD_7:0
+  recordmellohi
   pinkrecord
   pinkdisk
-  recordmellohi
   diskmellohi
 RECORD_8:0
+  recordstal
   blackrecord
   blackdisk
-  recordstal
   diskstal
 RECORD_9:0
+  recordstrad
   whiterecord
   whitedisk
-  recordstrad
   diskstrad
 RECORD_10:0
+  recordward
   greenrecord
   greendisk
-  recordward
   diskward
 RECORD_11:0
+  record11
   crackedrecord
   crackeddisk
-  record11
   disk11
 RECORD_12:0
+  recordwait
   lightbluerecord
   lightbluedisk
-  recordwait
   diskwait

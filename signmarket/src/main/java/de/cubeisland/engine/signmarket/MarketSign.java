@@ -83,7 +83,7 @@ public class MarketSign
     {
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
-        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
         this.blockInfo = this.dsl.newRecord(TABLE_SIGN_BLOCK).newBlockModel(location);
         this.setItemInfo(this.dsl.newRecord(TABLE_SIGN_ITEM));
         this.msFactory = module.getMarketSignFactory();
@@ -98,7 +98,7 @@ public class MarketSign
     public MarketSign(Signmarket module, SignMarketItemModel itemModel, SignMarketBlockModel blockModel)
     {
         this.module = module;
-        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
+        this.economy = module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
         this.blockInfo = blockModel;
         this.setItemInfo(itemModel);
         this.msFactory = module.getMarketSignFactory();
@@ -492,15 +492,18 @@ public class MarketSign
                         user.sendTranslated("&cThis sign is being edited right now!");
                         return;
                     }
-                    if (!this.getInventory().getViewers().isEmpty())
+                    if (this.isValidSign(null))
                     {
-                        user.sendTranslated("&cThis signs inventory is being edited right now!");
-                        return;
-                    }
-                    if (this.isOwner(user))
-                    {
-                        this.takeItems(user);
-                        return;
+                        if (!this.getInventory().getViewers().isEmpty())
+                        {
+                            user.sendTranslated("&cThis signs inventory is being edited right now!");
+                            return;
+                        }
+                        if (this.isOwner(user))
+                        {
+                            this.takeItems(user);
+                            return;
+                        }
                     }
                     this.useSign(user);
                 }
@@ -972,6 +975,18 @@ public class MarketSign
 
     public void updateSignText()
     {
+        if (!CubeEngine.isMainThread())
+        {
+            this.module.getCore().getTaskManager().runTask(this.module, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    updateSignText();
+                }
+            });
+            return;
+        }
         Block block = this.getLocation().getWorld().getBlockAt(this.getLocation());
         if (block.getState() instanceof Sign)
         {
@@ -1172,7 +1187,11 @@ public class MarketSign
         {
             return true;
         }
-        return this.economy.has(user.getName(), this.getPrice());
+        if (this.economy.hasAccount(user.getName()))
+        {
+            return this.economy.has(user.getName(), this.getPrice());
+        }
+        return false;
     }
 
     public Inventory getInventory()

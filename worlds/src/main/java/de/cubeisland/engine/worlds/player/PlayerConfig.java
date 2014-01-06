@@ -17,11 +17,10 @@
  */
 package de.cubeisland.engine.worlds.player;
 
-import org.bukkit.World;
-
 import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.core.world.ConfigWorld;
 
 public class PlayerConfig extends YamlConfiguration
 {
-    public World lastWorld;
+    public ConfigWorld lastWorld;
 }

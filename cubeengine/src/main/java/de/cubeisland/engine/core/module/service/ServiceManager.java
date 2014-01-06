@@ -19,17 +19,20 @@ package de.cubeisland.engine.core.module.service;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.ModuleClassLoader;
+import de.cubeisland.engine.core.module.ModuleInfo;
+import de.cubeisland.engine.core.module.service.Service.Priority;
 
 public class ServiceManager
 {
     private Core core;
 
-    private final Map<Class, LinkedList<RegisteredServiceProvider>> providers = new HashMap<>();
+    private final Map<Class<?>, Service<?>> services = new HashMap<>();
 
     public ServiceManager(Core core)
     {
@@ -37,83 +40,71 @@ public class ServiceManager
     }
 
     @SuppressWarnings("unchecked")
-    public <S> S getServiceProvider(Class<S> service)
+    public <S> Service<S> getService(Class<S> service)
     {
-        LinkedList<RegisteredServiceProvider> providers = this.providers.get(service);
-        if (providers == null || providers.isEmpty())
+        synchronized (this.services)
         {
-            return null;
-        }
-        RegisteredServiceProvider<S> registeredServiceProvider = providers.getLast();
-        return registeredServiceProvider.getProvider();
-    }
-
-    public <S> void registerService(Class<S> service, S provider, Module module)
-    {
-        LinkedList<RegisteredServiceProvider> providers = this.providers.get(service);
-        if (providers == null)
-        {
-            providers = new LinkedList<>();
-            this.providers.put(service, providers);
-        }
-        RegisteredServiceProvider last = providers.isEmpty() ? null : providers.getLast();
-        providers.addLast(new RegisteredServiceProvider<>(service, provider, module));
-        if (last == null)
-        {
-            module.getLog().info("Registered ServiceProvider {} for the Service: {}",
-                                 provider.getClass().getName(),
-                                 service.getName());
-        }
-        else
-        {
-            module.getLog().info("Replaced the registered ServiceProvider ({}) for the Service {} by {}",
-                                 last.getProvider().getClass().getName(),
-                                 service.getName(),
-                                 provider.getClass().getName());
+            return (Service<S>)this.services.get(service);
         }
     }
 
-    public <S> void unregisterService(Class<S> service, Module module)
+    public <S> S getServiceImplementation(Class<S> service)
     {
-        LinkedList<RegisteredServiceProvider> providers = this.providers.get(service);
-        if (providers == null || providers.isEmpty())
+        return this.getService(service).getImplementation();
+    }
+
+    public <S> Service<S> registerService(Module module, Class<S> interfaceClass, S implementation)
+    {
+        return this.registerService(module, interfaceClass, implementation, Priority.NORMAL);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <S> Service<S> registerService(Module module, Class<S> interfaceClass, S implementation, Priority priority)
+    {
+        assert interfaceClass.isInterface(): "Services have to be interfaces!";
+
+        synchronized (this.services)
         {
-            return;
-        }
-        RegisteredServiceProvider remove = null;
-        for (RegisteredServiceProvider provider : providers)
-        {
-            if (provider.getModule().getId().equals(module.getId()))
+            Service<S> service = (Service<S>)this.services.get(interfaceClass);
+            if (service == null)
             {
-                remove = provider;
-                break;
+                Module m = this.getModuleFromClass(interfaceClass);
+                this.services.put(interfaceClass, service = new Service<>(m != null ? m : module, interfaceClass));
             }
+            service.addImplementation(module, implementation, priority);
+            return service;
         }
-        if (remove != null)
+    }
+
+    private Module getModuleFromClass(Class interfaceClass)
+    {
+        ClassLoader classLoader = interfaceClass.getClassLoader();
+        if (classLoader instanceof ModuleClassLoader)
         {
-            providers.remove(remove);
-            this.core.getLog().info("Unregistered ServiceProvider {} of {} for the Service {}",
-                                    remove.getProvider().getClass().getName(),
-                                    remove.getModule().getName(),
-                                    remove.getService().getName());
+            ModuleInfo info = ((ModuleClassLoader)classLoader).getModuleInfo();
+            return this.core.getModuleManager().getModule(info.getId());
+        }
+        return null;
+    }
+
+    public void unregisterService(Class interfaceClass)
+    {
+        synchronized (this.services)
+        {
+            this.services.remove(interfaceClass);
         }
     }
 
     public void unregisterServices(Module module)
     {
-        for (LinkedList<RegisteredServiceProvider> providers : this.providers.values())
+        synchronized (this.services)
         {
-            Iterator<RegisteredServiceProvider> iterator = providers.iterator();
-            while (iterator.hasNext())
+            Iterator<Entry<Class<?>, Service<?>>> it = this.services.entrySet().iterator();
+            while (it.hasNext())
             {
-                RegisteredServiceProvider next = iterator.next();
-                if (next.getModule().getId().equals(module.getId()))
+                if (it.next().getValue().getModule() == module)
                 {
-                    iterator.remove();
-                    module.getLog().info("Unregistered ServiceProvider {} of {} for the Service {}",
-                                            next.getProvider().getClass().getName(),
-                                            next.getModule().getName(),
-                                            next.getService().getName());
+                    it.remove();
                 }
             }
         }

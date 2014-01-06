@@ -374,7 +374,7 @@ public class ItemCommands
                 return;
             }
             if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(sender)
-                    && this.basics.getConfiguration().commands.itemBlacklist.contains(item))
+                    && this.basics.getConfiguration().commands.containsBlackListed(item))
             {
                 context.sendTranslated("&cThis item is blacklisted!");
                 return;

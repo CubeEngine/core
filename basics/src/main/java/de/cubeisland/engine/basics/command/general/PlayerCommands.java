@@ -22,8 +22,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.bukkit.GameMode;
@@ -39,6 +41,7 @@ import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -47,8 +50,9 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.TimeConversionException;
-import de.cubeisland.engine.core.util.time.Duration;
+import de.cubeisland.engine.core.util.TimeUtil;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static java.text.DateFormat.SHORT;
@@ -65,24 +69,16 @@ public class PlayerCommands
         this.um = basics.getCore().getUserManager();
         final long autoAfk;
         final long afkCheck;
-        try
+        afkCheck = basics.getConfiguration().autoAfk.check.getMillis();
+        if (afkCheck >= 0)
         {
-            autoAfk = StringUtils.convertTimeToMillis(basics.getConfiguration().afk.automaticAfk);
-            afkCheck = StringUtils.convertTimeToMillis(basics.getConfiguration().afk.afkCheckDelay);
-            if (afkCheck < 0)
+            autoAfk = basics.getConfiguration().autoAfk.after.getMillis();
+            this.afkListener = new AfkListener(basics, autoAfk, afkCheck);
+            basics.getCore().getEventManager().registerListener(basics, this.afkListener);
+            if (autoAfk > 0)
             {
-                throw new IllegalStateException("afk-check-time has to be greater than 0!");
+                basics.getCore().getTaskManager().runTimer(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
             }
-        }
-        catch (TimeConversionException ex)
-        {
-            throw new IllegalStateException("illegal time format in configuration!");
-        }
-        this.afkListener = new AfkListener(basics, autoAfk, afkCheck);
-        basics.getCore().getEventManager().registerListener(basics, this.afkListener);
-        if (autoAfk > 0)
-        {
-            basics.getCore().getTaskManager().runTimer(basics, this.afkListener, 20, afkCheck / 50); // this is in ticks so /50
         }
     }
 
@@ -225,16 +221,11 @@ public class PlayerCommands
         context.sendTranslated("&6You are now starving!");
     }
 
-    @Command(desc = "Heals a Player", max = 1, flags = @Flag(longName = "all", name = "a"), usage = "[player]|[-a]")
+    @Command(desc = "Heals a Player", max = 1, usage = "{player}")
     public void heal(ParameterizedContext context)
     {
         if (context.hasFlag("a"))
         {
-            if (!BasicsPerm.COMMAND_HEAL_ALL.isAuthorized(context.getSender()))
-            {
-                context.sendTranslated("&cYou are not allowed to heal everyone!");
-                return;
-            }
             Player[] players = context.getSender().getServer().getOnlinePlayers();
             for (Player player : players)
             {
@@ -247,53 +238,78 @@ public class PlayerCommands
             this.um.broadcastStatus("&ahealed every player.", context.getSender());
             return;
         }
-        User sender = null;
-        if (context.getSender() instanceof User)
+        CommandSender sender = context.getSender();
+        Set<User> targets = new HashSet<>();
+
+
+        if (context.hasArgs())
         {
-            sender = (User)context.getSender();
-        }
-        if (context.hasArg(0))
-        {
-            if (!BasicsPerm.COMMAND_STARVE_OTHER.isAuthorized(context.getSender()))
+            if (context.getString(0).equals("*"))
             {
-                context.sendTranslated("&cYou are not allowed to starve other users!");
-                return;
-            }
-            String[] userNames = StringUtils.explode(",",context.getString(0));
-            List<String> healed = new ArrayList<>();
-            for (String name : userNames)
-            {
-                User user = this.um.findUser(name);
-                if (user == null || !user.isOnline())
+                targets.addAll(this.um.getOnlineUsers());
+                if (targets.isEmpty())
                 {
-                    context.sendTranslated("&cUser %s not found or offline!", name);
-                    continue;
+                    context.sendTranslated("&cThere are no users online at the moment!");
+                    return;
                 }
-                sender.setHealth(sender.getMaxHealth());
-                sender.setFoodLevel(20);
-                sender.setSaturation(20);
-                sender.setExhaustion(0);
-                healed.add(user.getName());
-                user.sendTranslated("&aYou got healed by &2%s&a!", context.getSender().getName());
             }
-            if (healed.isEmpty())
+            else
             {
-                context.sendTranslated("&eCould not find any of those users to heal!");
-                return;
+                for (String name : StringUtils.explode(",",context.getString(0)))
+                {
+                    User target = this.um.findUser(name);
+                    if (target != null && target.isOnline())
+                    {
+                        targets.add(target);
+                    }
+                }
+                if (targets.isEmpty())
+                {
+                    context.sendTranslated("&cNone of the given users where found!");
+                    return;
+                }
             }
-            context.sendTranslated("&aHealed &2%s&a!", StringUtils.implode(",", healed));
-            return;
         }
-        if (sender == null)
+        else if (sender instanceof User)
+        {
+            targets.add((User)sender);
+        }
+        else
         {
             context.sendTranslated("&cOnly time can heal your wounds!");
             return;
         }
-        sender.setHealth(sender.getMaxHealth());
-        sender.setFoodLevel(20);
-        sender.setSaturation(20);
-        sender.setExhaustion(0);
-        context.sendTranslated("&aYou are now healed!");
+
+        if ((targets.size() > 1 || targets.iterator().next() != sender) && !BasicsPerm.COMMAND_HEAL_OTHER.isAuthorized(sender))
+        {
+            throw new PermissionDeniedException(); // TODO update to new exception
+        }
+
+        for (User user : targets)
+        {
+            user.setHealth(user.getMaxHealth());
+            user.setFoodLevel(20);
+            user.setSaturation(20);
+            user.setExhaustion(0);
+            if (user == sender)
+            {
+                user.sendTranslated("&aYou are now healed!");
+            }
+            else
+            {
+                user.sendTranslated("&aYou got healed by &2%s&a!", sender.getName());
+            }
+        }
+
+        targets.remove(sender);
+        if (targets.size() == 1)
+        {
+            context.sendTranslated("&a1 user was successfully healed!", targets.size());
+        }
+        else if (targets.size() > 1)
+        {
+            context.sendTranslated("&a%d users were successfully healed!", targets.size());
+        }
     }
 
     @Command(names = {"gamemode", "gm"}, max = 2,
@@ -515,11 +531,13 @@ public class PlayerCommands
             context.sendTranslated("&2%s&e is offline since %s", user.getName(), format.format(date));
             return;
         }
-        context.sendTranslated("&2%s&e was last seen &6%s &eago.", user.getName(),
-                   new Duration(System.currentTimeMillis(), lastPlayed).format("%www%ddd%hhh%mmm%sss"));
+        context.sendTranslated("&2%s&e was last seen &6%s.", user.getName(),
+                   TimeUtil.format(context.getSender().getLocale(), new Date(lastPlayed)));
     }
 
-    @Command(desc = "Makes a player execute a command", usage = "<player> <command>", min = 2, max = NO_MAX, flags = @Flag(longName = "chat", name = "c"))
+    @Command(desc = "Makes a player send a message (including commands)",
+             usage = "<player> <message>",
+             min = 2, max = NO_MAX)
     public void sudo(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -528,18 +546,15 @@ public class PlayerCommands
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
-        StringBuilder sb = new StringBuilder();
-        int i = 1;
-        while (context.hasArg(i))
+        String s = context.getStrings(1);
+        if (s.startsWith("/"))
         {
-            sb.append(context.getString(i++)).append(" ");
-        }
-        if (context.hasFlag("c"))
-        {
-            user.chat(sb.toString());
+            this.module.getCore().getCommandManager().runCommand(user,s.substring(1));
+            context.sendTranslated("&aCommand &6%s &aexecuted as &2%s", s, user.getName());
             return;
         }
-        this.module.getCore().getCommandManager().runCommand(user,sb.toString());
+        user.chat(s);
+        context.sendTranslated("&aForced &2%s&a to chat: &6%s", s, user.getName());
     }
 
     @Command(desc = "Kills yourself", max = 0)

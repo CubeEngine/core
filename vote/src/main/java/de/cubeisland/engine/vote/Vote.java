@@ -57,7 +57,7 @@ public class Vote extends Module implements Listener
         if (this.getCore().getUserManager().getUser(vote.getUsername(), false) != null)
         {
             User user = this.getCore().getUserManager().getUser(vote.getUsername());
-            Economy economy = this.getCore().getModuleManager().getServiceManager().getServiceProvider(Economy.class);
+            Economy economy = this.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
             VoteModel voteModel = this.dsl.selectFrom(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOne();
             if (voteModel == null)
             {
@@ -66,7 +66,7 @@ public class Vote extends Module implements Listener
             }
             else
             {
-                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.voteBonusTime.toMillis())
+                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.voteBonusTime.getMillis())
                 {
                     voteModel.setVoteamount(UShort.valueOf(1));
                 }

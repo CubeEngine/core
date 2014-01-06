@@ -36,12 +36,9 @@ import de.cubeisland.engine.test.tests.AsyncCommandTest;
 import de.cubeisland.engine.test.tests.ClearChatTest;
 import de.cubeisland.engine.test.tests.CommandArgsTest;
 import de.cubeisland.engine.test.tests.DatabaseTest;
-import de.cubeisland.engine.test.tests.LoggerTest;
 import de.cubeisland.engine.test.tests.MatchTest;
 import de.cubeisland.engine.test.tests.ModuleTest;
-import de.cubeisland.engine.test.tests.ParseTimeTest;
 import de.cubeisland.engine.test.tests.UtilTest;
-import de.cubeisland.engine.test.tests.config.ConfigTest;
 import de.cubeisland.engine.test.tests.l18n.l18nTest;
 import de.cubeisland.engine.test.tests.listener.ListenerTest;
 import de.cubeisland.engine.test.tests.worldgenerator.WorldGeneratorTest;
@@ -55,7 +52,6 @@ public class Test extends Module
     {
         this.tests = new HashMap<>();
 
-        this.registerTest("Config test", new ConfigTest(this));
         this.registerTest("l18n test", new l18nTest(this));
         this.registerTest("Listener test", new ListenerTest(this));
         this.registerTest("World generator test", new WorldGeneratorTest(this));
@@ -63,10 +59,8 @@ public class Test extends Module
         this.registerTest("Clear chat test", new ClearChatTest(this));
         this.registerTest("Command args test", new CommandArgsTest(this));
         this.registerTest("Database test", new DatabaseTest(this));
-        this.registerTest("Log test", new LoggerTest(this));
         this.registerTest("Match test", new MatchTest(this));
         this.registerTest("Module test", new ModuleTest(this));
-        this.registerTest("Parse time test", new ParseTimeTest(this));
         this.registerTest("Util test", new UtilTest(this));
     }
 

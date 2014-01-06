@@ -13,15 +13,22 @@
   <version>1.0.0-SNAPSHOT</version>
   <description>This module allows players to hide themselves.</description>
 
+  <repositories>
+    <repository>
+      <id>mikeprimm-repo</id>
+      <url>http://repo.mikeprimm.com/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>cubeengine</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>basics</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <groupId>org.dynmap</groupId>
+      <artifactId>dynmap</artifactId>
+      <version>1.9</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>

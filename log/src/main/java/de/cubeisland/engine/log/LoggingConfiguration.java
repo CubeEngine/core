@@ -310,6 +310,8 @@ public class LoggingConfiguration extends YamlConfiguration
     @Comment("Placing a painting or itemframe")
     @Name("logging.hanging.place")
     public boolean HANGING_PLACE_enable = true;
+    @Name("logging.hanging.remove-item-from-frame")
+    public boolean ITEM_REMOVE_FROM_FRAME = true;
     @Comment("Breaking a boat or minecart")
     @Name("logging.vehicle.break")
     public boolean VEHICLE_BREAK_enable = false;

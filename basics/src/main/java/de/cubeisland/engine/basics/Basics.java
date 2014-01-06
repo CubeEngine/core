@@ -38,14 +38,8 @@ import de.cubeisland.engine.basics.command.moderation.InventoryCommands;
 import de.cubeisland.engine.basics.command.moderation.ItemCommands;
 import de.cubeisland.engine.basics.command.moderation.KickBanCommands;
 import de.cubeisland.engine.basics.command.moderation.PaintingListener;
-import de.cubeisland.engine.basics.command.moderation.PowerToolCommand;
 import de.cubeisland.engine.basics.command.moderation.TimeControlCommands;
 import de.cubeisland.engine.basics.command.moderation.WorldControlCommands;
-import de.cubeisland.engine.basics.command.moderation.kit.KitCommand;
-import de.cubeisland.engine.basics.command.moderation.kit.KitItem;
-import de.cubeisland.engine.basics.command.moderation.kit.KitItemConverter;
-import de.cubeisland.engine.basics.command.moderation.kit.KitManager;
-import de.cubeisland.engine.basics.command.moderation.kit.TableKitsGiven;
 import de.cubeisland.engine.basics.command.moderation.spawnmob.SpawnMobCommand;
 import de.cubeisland.engine.basics.command.teleport.MovementCommands;
 import de.cubeisland.engine.basics.command.teleport.SpawnCommands;
@@ -66,7 +60,6 @@ import de.cubeisland.engine.roles.Roles;
 public class Basics extends Module
 {
     private BasicsConfiguration config;
-    private KitManager kitManager;
     private LagTimer lagTimer;
 
     @Override
@@ -79,7 +72,6 @@ public class Basics extends Module
         db.registerTable(TableBasicsUser.class);
         db.registerTable(TableIgnorelist.class);
         db.registerTable(TableMail.class);
-        db.registerTable(TableKitsGiven.class);
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
         this.getLog().trace("{} ms - Basics.Permission", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
@@ -107,10 +99,6 @@ public class Basics extends Module
         cm.registerCommands(this, new SpawnMobCommand(this), ReflectedCommand.class);
         cm.registerCommands(this, new TimeControlCommands(this), ReflectedCommand.class);
         cm.registerCommands(this, new WorldControlCommands(this), ReflectedCommand.class);
-        PowerToolCommand ptCommands = new PowerToolCommand(this);
-        cm.registerCommand(ptCommands);
-        em.registerListener(this, ptCommands);
-        cm.registerCommand(new KitCommand(this));
 
         Module roles = getCore().getModuleManager().getModule("roles");
         if (roles != null && roles instanceof Roles)
@@ -125,12 +113,6 @@ public class Basics extends Module
         
         em.registerListener(this, new PaintingListener(this));
 
-        this.getLog().trace("{} ms - Kits", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        this.getCore().getConfigFactory().getDefaultConverterManager().
-            registerConverter(KitItem.class, new KitItemConverter());
-
-        this.kitManager = new KitManager(this);
-        this.kitManager.loadKits();
         this.getLog().trace("{} ms - Teleport-Commands", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         //Teleport:
         cm.registerCommands(this, new MovementCommands(this), ReflectedCommand.class);
@@ -151,10 +133,6 @@ public class Basics extends Module
     public BasicsConfiguration getConfiguration()
     {
         return this.config;
-    }
-
-    public KitManager getKitManager() {
-        return this.kitManager;
     }
 
     public LagTimer getLagTimer() {

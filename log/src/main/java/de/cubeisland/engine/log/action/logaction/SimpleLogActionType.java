@@ -102,7 +102,7 @@ public abstract class SimpleLogActionType extends LogActionType
         this.queueLog(location,player,type.name,null,null,null,additional);
     }
 
-    public void logSimple(Location location, Player player, String additional)
+    public void logSimple(Location location, Entity player, String additional)
     {
         this.queueLog(location,player,null,null,null,null,additional);
     }

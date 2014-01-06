@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
+
 public class PermissionTree
 {
     private Map<String, Boolean> permissions = new TreeMap<>();
@@ -82,5 +84,14 @@ public class PermissionTree
     public Map<String, Boolean> getPermissions()
     {
         return this.permissions;
+    }
+
+    public PermissionValue setPermission(String perm, PermissionValue set)
+    {
+        if (set == PermissionValue.RESET)
+        {
+            return PermissionValue.of(this.permissions.remove(perm));
+        }
+        return PermissionValue.of(this.permissions.put(perm, set == PermissionValue.TRUE));
     }
 }

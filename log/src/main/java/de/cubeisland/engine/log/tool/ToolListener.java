@@ -56,51 +56,29 @@ public class ToolListener implements Listener
             ItemStack item = event.getPlayer().getItemInHand();
             if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
             {
-                if (!item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
+                if (item.getItemMeta().getDisplayName().equals(LogCommands.toolName))
                 {
-                    if (item.getItemMeta().getDisplayName().equals(LogCommands.selectorToolName))
+                    LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+                    Lookup lookup = attachment.getLookup(item.getType());
+                    if (lookup == null)
                     {
-                        LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
-                        Location clicked = event.getClickedBlock().getLocation();
-                        if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
-                        {
-                            logAttachment.setSelectionPos1(clicked);
-                            user.sendTranslated("&aFirst Position selected!");
-                        }
-                        else
-                        {
-                            logAttachment.setSelectionPos2(clicked);
-                            user.sendTranslated("&aSecond Position selected!");
-                        }
-                        event.setCancelled(true);
-                        event.setUseItemInHand(Result.DENY);
+                        user.sendTranslated("&cInvalid LoggingTool-Block!");
+                        return;
                     }
-                    return;
+                    Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)
+                                   ? event.getClickedBlock().getLocation()
+                                   : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
+                    lookup.getQueryParameter().setSingleLocations(loc);
+
+                    ShowParameter show = new ShowParameter();
+                    show.showCoords = false;
+                    attachment.queueShowParameter(show);
+                    this.module.getLogManager().fillLookupAndShow(lookup, user);
+                    event.setCancelled(true);
+                    event.setUseItemInHand(Result.DENY);
+                    event.setUseInteractedBlock(Result.DENY);
                 }
             }
-            else
-            {
-                return;
-            }
-            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
-            Lookup lookup = attachment.getLookup(item.getType());
-            if (lookup == null)
-            {
-                user.sendTranslated("&cInvalid LoggingTool-Block!");
-                return;
-            }
-            Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)
-                    ? event.getClickedBlock().getLocation()
-                    : event.getClickedBlock().getRelative(event.getBlockFace()).getLocation();
-            lookup.getQueryParameter().setSingleLocations(loc);
-
-            ShowParameter show = new ShowParameter();
-            show.showCoords = false;
-            attachment.queueShowParameter(show);
-            this.module.getLogManager().fillLookupAndShow(lookup, user);
-            event.setCancelled(true);
-            event.setUseItemInHand(Result.DENY);
-            event.setUseInteractedBlock(Result.DENY);
         }
     }
 

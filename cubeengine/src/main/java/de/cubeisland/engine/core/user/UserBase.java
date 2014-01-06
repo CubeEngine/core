@@ -1066,7 +1066,7 @@ public class UserBase implements Player
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
-            return player.getMaxHealth();
+            return player.getEyeHeight();
         }
         return 0;
     }

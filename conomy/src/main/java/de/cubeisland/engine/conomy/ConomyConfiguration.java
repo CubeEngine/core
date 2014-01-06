@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.conomy;
 
-import java.io.File;
-import javax.persistence.Transient;
-
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
@@ -58,18 +55,9 @@ public class ConomyConfiguration extends YamlConfiguration
     @Name("enable-logging")
     public boolean enableLogging = true;
 
-    @Transient
-    private int fractionalDigitsFactor;
-
-    @Override
-    public void onLoaded(File loadFrom)
-    {
-        this.fractionalDigitsFactor = (int)Math.pow(10, this.fractionalDigits);
-    }
-
     public int fractionalDigitsFactor()
     {
-        return this.fractionalDigitsFactor;
+        return (int)Math.pow(10, this.fractionalDigits);
     }
 
 }
