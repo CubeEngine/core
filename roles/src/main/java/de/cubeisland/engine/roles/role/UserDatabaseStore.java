@@ -254,13 +254,6 @@ public class UserDatabaseStore extends ResolvedDataHolder
         User user = this.attachment.getHolder();
         if (user.isOnline())
         {
-            if (this.getRawRoles().isEmpty())
-            {
-                for (Role role : ((WorldRoleProvider)this.provider).getDefaultRoles())
-                {
-                    this.assignTempRole(role);
-                }
-            }
             this.calculate(new Stack<String>());
             if (!Bukkit.getServer().getOnlineMode() && this.module.getConfiguration().doNotAssignPermIfOffline && !user.isLoggedIn())
             {
@@ -285,8 +278,20 @@ public class UserDatabaseStore extends ResolvedDataHolder
     @Override
     public void calculate(Stack<String> roleStack)
     {
-        super.calculate(roleStack);
-        this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getName());
+        if (this.isDirty())
+        {
+            if (this.getRawRoles().isEmpty() && this.getRawTempRoles().isEmpty())
+            {
+                this.module.getLog().debug("{} had no roles applying default-roles", this.attachment.getHolder().getName());
+
+                for (Role role : ((WorldRoleProvider)this.provider).getDefaultRoles())
+                {
+                    this.assignTempRole(role);
+                }
+            }
+            super.calculate(roleStack);
+            this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getName());
+        }
     }
 
     /* TODO mass set

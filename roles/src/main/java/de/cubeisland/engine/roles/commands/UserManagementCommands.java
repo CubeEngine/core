@@ -74,9 +74,8 @@ public class UserManagementCommands extends UserCommandHelper
                 context.sendTranslated("&cYou cannot assign a temporary role to a offline player!");
                 return;
             }
-            if (attachment.getDataHolder(world).assignRole(role))
+            if (attachment.getDataHolder(world).assignTempRole(role))
             {
-                attachment.reload();
                 attachment.getCurrentDataHolder().apply();
                 context.sendTranslated("&aAdded the role &6%s&a temporarily to &2%s&a in &6%s&a.", roleName, user
                     .getName(), world.getName());
@@ -87,7 +86,6 @@ public class UserManagementCommands extends UserCommandHelper
         }
         if (attachment.getDataHolder(world).assignRole(role))
         {
-            attachment.reload();
             attachment.getCurrentDataHolder().apply();
             context.sendTranslated("&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world
                 .getName());

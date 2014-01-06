@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -138,6 +137,10 @@ public abstract class RoleProvider
     public void recalculateRoles()
     {
         Stack<String> roleStack = new Stack<>(); // stack for detecting circular dependencies
+        for (Role role : this.roles.values())
+        {
+            role.resetTempData();
+        }
         for (Role role : this.roles.values())
         {
             role.calculate(roleStack);
