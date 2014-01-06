@@ -580,7 +580,7 @@ public class EntityDataChanger<EntityInterface>
                                     {
                                         this.map.put("horse", Variant.HORSE);
                                         this.map.put("donkey", Variant.DONKEY);
-                                        this.map.put("chestnut", Variant.MULE);
+                                        this.map.put("mule", Variant.MULE);
                                         this.map.put("undead", Variant.UNDEAD_HORSE);
                                         this.map.put("skeleton", Variant.SKELETON_HORSE);
                                     }
@@ -675,8 +675,7 @@ public class EntityDataChanger<EntityInterface>
         @Override
         public T getTypeValue(String input)
         {
-            String match = Match.string().matchString(input, map.keySet());
-            return match != null ? map.get(match) : null;
+            return map.get(input);
         }
 
         abstract void fillValues();
