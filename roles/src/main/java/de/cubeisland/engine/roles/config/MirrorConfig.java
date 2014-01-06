@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.roles.Roles;
 
 public class MirrorConfig

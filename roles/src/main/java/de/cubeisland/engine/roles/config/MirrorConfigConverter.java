@@ -20,8 +20,6 @@ package de.cubeisland.engine.roles.config;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.World;
-
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
 import de.cubeisland.engine.configuration.exception.ConversionException;
@@ -31,6 +29,7 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.roles.Roles;
 
 public class MirrorConfigConverter implements Converter<MirrorConfig>
