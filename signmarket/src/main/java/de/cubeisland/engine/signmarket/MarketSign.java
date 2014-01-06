@@ -31,6 +31,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.engine.core.CubeEngine;
@@ -590,6 +591,17 @@ public class MarketSign
             for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
             {
                 user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
+            }
+            if (meta instanceof EnchantmentStorageMeta)
+            {
+                if (!((EnchantmentStorageMeta)meta).getStoredEnchants().isEmpty())
+                {
+                    user.sendTranslated("&6Book-Enchantments:");
+                    for (Map.Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta)meta).getStoredEnchants().entrySet())
+                    {
+                        user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
+                    }
+                }
             }
         }
         if (this.hasStock())
