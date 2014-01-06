@@ -343,4 +343,10 @@ public class CubePermissionService extends Permission
         }
         return roles.toArray(new String[roles.size()]);
     }
+
+    @Override
+    public boolean hasGroupSupport()
+    {
+        return true;
+    }
 }
