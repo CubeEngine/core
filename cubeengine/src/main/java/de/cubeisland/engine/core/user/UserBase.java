@@ -1670,8 +1670,7 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return this.getServer()
-                           .getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
+                return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
             }
         }
         return null;

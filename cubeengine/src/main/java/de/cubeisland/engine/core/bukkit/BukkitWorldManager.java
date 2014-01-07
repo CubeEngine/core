@@ -80,10 +80,6 @@ public class BukkitWorldManager extends AbstractWorldManager
         });
     }
 
-    void loadWorlds()
-    {
-    }
-
     public World createWorld(WorldCreator creator)
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
@@ -95,6 +91,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     public World getWorld(String name)
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        assert name != null: "The world name must not be null!";
 
         return this.server.getWorld(name);
     }
@@ -103,6 +100,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     public World getWorld(UUID uid)
     {
         assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        assert uid != null: "The world UUID must not be null!";
 
         return this.server.getWorld(uid);
     }
