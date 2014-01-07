@@ -71,7 +71,7 @@ public class CubeChatService extends Chat
         }
         else
         {
-            world = this.module.getCore().getWorldManager().getWorld(worldName);
+            world = this.wm.getWorld(worldName);
         }
         if (world == null)
         {
@@ -86,7 +86,7 @@ public class CubeChatService extends Chat
         RoleProvider provider;
         if (worldName != null)
         {
-            World world = this.module.getCore().getWorldManager().getWorld(worldName);
+            World world = this.wm.getWorld(worldName);
             if (world == null)
             {
                 return null;
