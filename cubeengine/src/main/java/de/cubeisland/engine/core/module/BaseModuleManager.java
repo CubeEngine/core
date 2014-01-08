@@ -399,6 +399,17 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized boolean enableModule(Module module)
     {
+        boolean result = this.enableModule0(module);
+        if (!result)
+        {
+            module.getLog().error("Module failed to enable, unloading it now.");
+            this.unloadModule(module);
+        }
+        return result;
+    }
+
+    protected synchronized boolean enableModule0(Module module)
+    {
         module.getLog().info("Enabling version {}...", module.getVersion());
         Profiler.startProfiling("enable-module");
         boolean result = module.enable();
@@ -412,19 +423,24 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             module.getLog().info("Successfully enabled within {} microseconds!", enableTime);
         }
-        else
-        {
-            module.getLog().error("Module failed to enable, unloading it now");
-            this.unloadModule(module);
-        }
         return result;
     }
 
     public synchronized void enableModules()
     {
+        List<Module> brokenModules = new ArrayList<>();
         for (Module module : this.modules.values())
         {
-            this.enableModule(module);
+            if (!this.enableModule0(module))
+            {
+                brokenModules.add(module);
+                module.getLog().error("Module failed to enable, queued for unloading...");
+            }
+        }
+
+        for (Module module : brokenModules)
+        {
+            this.unloadModule(module);
         }
     }
 
