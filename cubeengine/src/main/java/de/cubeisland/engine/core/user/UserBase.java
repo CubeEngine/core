@@ -1022,19 +1022,24 @@ public class UserBase implements Player
     public GameMode getGameMode()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
+        GameMode mode = null;
         if (player != null)
         {
-            return player.getGameMode();
+            mode = player.getGameMode();
         }
         else
         {
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return GameMode.getByValue(data.getInt("playerGameType"));
+                mode = GameMode.getByValue(data.getInt("playerGameType"));
             }
         }
-        return null;
+        if (mode == null)
+        {
+            mode = GameMode.SURVIVAL;
+        }
+        return mode;
     }
 
     @Override

@@ -285,9 +285,11 @@ public class Permission
         return this.parent;
     }
 
-    public boolean isAuthorized(Permissible player)
+    public boolean isAuthorized(Permissible permissible)
     {
-        return player.hasPermission(this.permission);
+        assert permissible != null: "The player may not be null!";
+
+        return permissible.hasPermission(this.permission);
     }
 
     public String getName()
