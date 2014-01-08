@@ -51,12 +51,12 @@ public class ModuleLoader
     private final Core core;
     private final ClassLoader parentClassLoader;
     private final LibraryClassLoader libClassLoader;
-    private final Map<String, ModuleClassLoader> classLoaders;
+   private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final Path tempPath;
     private Registry registry;
 
-    ModuleLoader(Core core, ClassLoader parentClassLoader)
+    protected ModuleLoader(Core core, ClassLoader parentClassLoader)
     {
         this.core = core;
         this.parentClassLoader = parentClassLoader;

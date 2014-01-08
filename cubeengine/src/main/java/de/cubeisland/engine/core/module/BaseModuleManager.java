@@ -73,18 +73,18 @@ public abstract class BaseModuleManager implements ModuleManager
 
     private final Map<String, LinkedList<String>> serviceProviders;
 
-    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
+    protected BaseModuleManager(Core core, ServiceManager serviceManager, ModuleLoader loader)
     {
         this.core = core;
         this.logger = core.getLog();
-        this.loader = new ModuleLoader(core, parentClassLoader);
+        this.loader = loader;
         this.modules = new LinkedHashMap<>();
         this.moduleInfoMap = new THashMap<>();
         this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null);
-        this.serviceManager = new ServiceManager(core);
+        this.serviceManager = serviceManager;
     }
 
     @Override
@@ -458,6 +458,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
         this.core.getModuleManager().getServiceManager().unregisterServices(module);
+        this.core.getModuleManager().getServiceManager().removeImplementations(module);
 
         if (wasEnabled)
         {
