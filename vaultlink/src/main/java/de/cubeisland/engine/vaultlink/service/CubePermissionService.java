@@ -199,6 +199,11 @@ public class CubePermissionService extends Permission
     @Override
     public boolean groupHas(String worldName, String group, String permission)
     {
+        if (group == null)
+        {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
+            return false;
+        }
         RoleProvider provider;
         if (worldName != null)
         {
@@ -225,6 +230,11 @@ public class CubePermissionService extends Permission
     @Override
     public boolean groupAdd(String worldName, String group, String permission)
     {
+        if (group == null)
+        {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
+            return false;
+        }
         RoleProvider provider;
         if (worldName != null)
         {
@@ -252,6 +262,11 @@ public class CubePermissionService extends Permission
     @Override
     public boolean groupRemove(String worldName, String group, String permission)
     {
+        if (group == null)
+        {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
+            return false;
+        }
         RoleProvider provider;
         if (worldName != null)
         {
@@ -279,6 +294,11 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerInGroup(String worldName, String player, String group)
     {
+        if (group == null)
+        {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
+            return false;
+        }
         User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
         {
@@ -304,6 +324,11 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerAddGroup(String worldName, String player, String group)
     {
+        if (group == null)
+        {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
+            return false;
+        }
         User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
         {
@@ -336,6 +361,11 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerRemoveGroup(String worldName, String player, String group)
     {
+        if (group == null)
+        {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
+            return false;
+        }
         User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
         {

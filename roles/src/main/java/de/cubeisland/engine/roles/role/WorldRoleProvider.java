@@ -112,6 +112,8 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public Role getRole(String name)
     {
+        assert name != null: "The role name may not be null!";
+
         name = name.toLowerCase();
         if (name.startsWith("g:"))
         {
