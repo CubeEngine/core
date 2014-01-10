@@ -19,6 +19,8 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -78,6 +80,27 @@ public class BukkitUserManager extends AbstractUserManager
                 }
             }
         });
+    }
+
+    @Override
+    public synchronized Set<User> getOnlineUsers()
+    {
+        Set<User> users = super.getOnlineUsers();
+        Iterator<User> it = users.iterator();
+
+        User user;
+        while (it.hasNext())
+        {
+            user = it.next();
+            if (!user.isOnline())
+            {
+                core.getLog().warn("Found an offline user in the online users list: {}({})", user.getName(), user.getUniqueId());
+                this.onlineUsers.remove(user);
+                it.remove();
+            }
+        }
+
+        return users;
     }
 
     public User findUser(String name)
@@ -175,7 +198,7 @@ public class BukkitUserManager extends AbstractUserManager
                 @Override
                 public void run()
                 {
-                    if (!user.isOnline())
+                    synchronized (BukkitUserManager.this)
                     {
                         onlineUsers.remove(user);
                     }

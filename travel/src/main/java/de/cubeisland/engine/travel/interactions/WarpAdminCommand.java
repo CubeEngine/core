@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
+import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
@@ -67,6 +68,11 @@ public class WarpAdminCommand extends ContainerCommand
     }, permDefault =  PermDefault.OP, max = 1, usage = " <user> <-public> <-Private>")
     public ConfirmResult clear(final ParameterizedContext context)
     {
+        if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
+        {
+            context.sendMessage("You have permission to this command, but it has been disabled from in-game usage for security reasons.");
+            return null;
+        }
         if (context.getArgCount() > 0)
         {
             if (module.getCore().getUserManager().getUser(context.getString(0), false) == null)

@@ -63,6 +63,14 @@ public class Service<T>
         return new ArrayList<>(implementations);
     }
 
+    public boolean hasImplementations()
+    {
+        synchronized (this.implementations)
+        {
+            return !this.implementations.isEmpty();
+        }
+    }
+
     public Service<T> addImplementation(Module module, T implementation, Priority priority)
     {
         synchronized (this.implementations)

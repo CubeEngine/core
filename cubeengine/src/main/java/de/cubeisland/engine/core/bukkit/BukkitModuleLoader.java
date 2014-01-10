@@ -15,30 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.kits;
+package de.cubeisland.engine.core.bukkit;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.ModuleLoader;
 
-public class Kits extends Module
+public class BukkitModuleLoader extends ModuleLoader
 {
-    private KitManager kitManager;
-    
-    @Override
-    public void onEnable()
+    public BukkitModuleLoader(Core core, ClassLoader parentClassLoader)
     {
-        getCore().getDB().registerTable(TableKitsGiven.class);
-        this.getCore().getConfigFactory().getDefaultConverterManager().
-            registerConverter(KitItem.class, new KitItemConverter());
-
-        this.kitManager = new KitManager(this);
-        new KitsPerm(this);
-        this.kitManager.loadKits();
-        this.getCore().getUserManager().addDefaultAttachment(KitsAttachment.class, this);
-        getCore().getCommandManager().registerCommand(new KitCommand(this));
-    }
-
-    public KitManager getKitManager()
-    {
-        return this.kitManager;
+        super(core, parentClassLoader);
     }
 }

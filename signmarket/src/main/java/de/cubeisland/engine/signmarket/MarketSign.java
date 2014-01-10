@@ -31,6 +31,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.cubeisland.engine.core.CubeEngine;
@@ -126,7 +127,11 @@ public class MarketSign
         {
             this.getLocation().getBlock().breakNaturally();
         }
-        this.dropContents();
+        this.msFactory.syncAndSaveSign(this);
+        if (!this.getItemInfo().sharesStock())
+        {
+            this.dropContents();
+        }
         this.msFactory.delete(this);
     }
 
@@ -587,6 +592,17 @@ public class MarketSign
             {
                 user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
             }
+            if (meta instanceof EnchantmentStorageMeta)
+            {
+                if (!((EnchantmentStorageMeta)meta).getStoredEnchants().isEmpty())
+                {
+                    user.sendTranslated("&6Book-Enchantments:");
+                    for (Map.Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta)meta).getStoredEnchants().entrySet())
+                    {
+                        user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
+                    }
+                }
+            }
         }
         if (this.hasStock())
         {
@@ -614,7 +630,8 @@ public class MarketSign
      */
     public boolean canSync(MarketSign model)
     {
-        return this.hasStock() == model.hasStock()
+        return this.isValidSign(null)
+            && this.hasStock() == model.hasStock()
             && this.getItem().isSimilar(model.getItem())
             && this.itemInfo.getSize() == model.itemInfo.getSize()
             && this.module.getConfig().canSync(this.module.getCore().getWorldManager(), this.blockInfo.getWorld(), model.blockInfo.getWorld());
@@ -970,6 +987,18 @@ public class MarketSign
 
     public void updateSignText()
     {
+        if (!CubeEngine.isMainThread())
+        {
+            this.module.getCore().getTaskManager().runTask(this.module, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    updateSignText();
+                }
+            });
+            return;
+        }
         Block block = this.getLocation().getWorld().getBlockAt(this.getLocation());
         if (block.getState() instanceof Sign)
         {
@@ -990,7 +1019,11 @@ public class MarketSign
             else if (!isValid ||(this.isTypeBuy() && this.isSoldOut())
                 || (!this.isTypeBuy() && ((this.hasDemand() && this.isSatisfied()) || isFull())))
             {
-                lines[0] = "&4&l";
+                lines[0] = "&4";
+                if (this.isAdminSign())
+                {
+                    lines[0] += "Admin-";
+                }
             }
             else if (this.isAdminSign())
             {
@@ -1166,7 +1199,11 @@ public class MarketSign
         {
             return true;
         }
-        return this.economy.has(user.getName(), this.getPrice());
+        if (this.economy.hasAccount(user.getName()))
+        {
+            return this.economy.has(user.getName(), this.getPrice());
+        }
+        return false;
     }
 
     public Inventory getInventory()

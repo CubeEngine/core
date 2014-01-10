@@ -32,6 +32,28 @@ public class Destination
     public WorldLocation location;
     public String portal;
 
+    public Destination(Location location)
+    {
+        this.location = new WorldLocation(location);
+        this.world = location.getWorld();
+        this.type = Type.LOCATION;
+    }
+
+    public Destination(World world)
+    {
+        this.world = world;
+        this.type = Type.WORLD;
+    }
+
+    public Destination(Portal portal)
+    {
+        this.portal = portal.getName();
+        this.type = Type.PORTAL;
+    }
+
+    protected Destination()
+    {}
+
     public void teleport(User user, PortalManager manager)
     {
         Location loc = null;
@@ -54,6 +76,7 @@ public class Destination
             break;
         }
         user.teleport(loc);
+        user.sendTranslated("TPed");
     }
 
     public enum Type

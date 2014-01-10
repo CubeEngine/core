@@ -47,6 +47,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.player.PlayerConfig;
@@ -58,6 +59,7 @@ import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 public class Multiverse implements Listener
 {
     private final Worlds module;
+    private final File universesFolder;
 
     private World mainWorld;
 
@@ -76,7 +78,7 @@ public class Multiverse implements Listener
 
         this.universeRootPerm = this.module.getBasePermission().createAbstractChild("universe");
 
-        File universesFolder = this.module.getFolder().resolve("universes").toFile();
+        this.universesFolder = this.module.getFolder().resolve("universes").toFile();
         if (universesFolder.exists() && universesFolder.list().length != 0)
         {
             for (File universeDir : universesFolder.listFiles())
@@ -353,17 +355,17 @@ public class Multiverse implements Listener
             if (config.lastWorld != null)
             {
                 Universe universe = this.getUniverse(player.getWorld());
-                Universe expected = this.getUniverse(config.lastWorld);
+                Universe expected = this.getUniverse(config.lastWorld.getWorld());
                 if (universe != expected)
                 {
                     File errors = this.module.getFolder().resolve("errors").toFile();
                     errors.mkdir();
                     // expectedworld-actualworld_playername.yml
-                    File errorFile = new File(errors, config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName()  + ".yml");
+                    File errorFile = new File(errors, config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName()  + ".dat");
                     int i = 1;
                     while (errorFile.exists())
                     {
-                        errorFile = new File(errors, config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName() + "_" + i++ + ".yml");
+                        errorFile = new File(errors, config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName() + "_" + i++ + ".dat");
                     }
                     this.module.getLog().warn("The Player {} was not in the expected world! Overwritten Inventory is saved under /errors/{}", player.getName(), errorFile.getName());
                     PlayerDataConfig pdc = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
@@ -375,11 +377,11 @@ public class Multiverse implements Listener
                     pdc.applyFromPlayer(player);
                     pdc.save();
                 }
-                if (config.lastWorld == player.getWorld())
+                if (config.lastWorld.getWorld() == player.getWorld())
                 {
                     return; // everything is ok
                 }
-                this.module.getLog().debug("{} was not in expected world but in the same universe {} instead of {}",
+                this.module.getLog().debug("{} was not in expected world {} instead of {}",
                                     player.getName(), player.getWorld().getName(), config.lastWorld.getName());
                 universe.loadPlayer(player);
                 // else save new world (strange that player changed world but nvm
@@ -391,7 +393,7 @@ public class Multiverse implements Listener
             this.module.getLog().debug("Created PlayerConfig for {}" , player.getName());
             config = this.module.getCore().getConfigFactory().create(PlayerConfig.class);
         }
-        config.lastWorld = player.getWorld(); // update last world
+        config.lastWorld = new ConfigWorld(module.getCore().getWorldManager(), player.getWorld()); // update last world
         config.setFile(file);
         config.save();
     }
@@ -400,7 +402,7 @@ public class Multiverse implements Listener
     {
         File file = new File(this.playersDir, player.getName() + ".yml");
         PlayerConfig config = this.module.getCore().getConfigFactory().load(PlayerConfig.class, file);
-        config.lastWorld = player.getWorld();
+        config.lastWorld = new ConfigWorld(module.getCore().getWorldManager(), player.getWorld());
         config.save();
         this.module.getLog().debug("Saved last world of {}: {}", player.getName(), player.getWorld().getName());
     }
@@ -417,8 +419,31 @@ public class Multiverse implements Listener
 
     public Universe getUniverse(World world)
     {
-        // TODO handle missing universe
-        return this.worlds.get(world);
+        if (world == null)
+        {
+            return null;
+        }
+        Universe universe = this.worlds.get(world);
+        if (universe == null)
+        {
+            HashSet<World> set = new HashSet<>();
+            set.add(world);
+            String universeName = world.getName();
+            if (world.getName().contains("_"))
+            {
+                universeName = world.getName().substring(0, world.getName().indexOf("_"));
+                if (this.universes.containsKey(universeName))
+                {
+                    module.getLog().info("Added world {} to universe {}", world.getName(), universeName);
+                    universe = universes.get(universeName);
+                    universe.addWorlds(set);
+                    return universe;
+                }
+            }
+            module.getLog().info("Created new universe {} containing the world {}", universeName, world.getName());
+            new Universe(module, this, new File(universesFolder, universeName), set);
+        }
+        return universe;
     }
 
     public World loadWorld(String name)

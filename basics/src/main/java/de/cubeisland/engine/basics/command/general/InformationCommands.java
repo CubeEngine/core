@@ -51,17 +51,25 @@ import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.math.MathHelper;
-import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsPerm;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 public class InformationCommands
 {
+    private final PeriodFormatter formatter;
     private Basics basics;
 
     public InformationCommands(Basics basics)
     {
         this.basics = basics;
+        this.formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week"," weeks").appendSeparator(" ")
+                                                     .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
+                                                     .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
+                                                     .appendMinutes().appendSuffix(" minute", " minutes").appendSeparator(" ")
+                                                     .appendSeconds().appendSuffix(" second", " seconds").toFormatter();
     }
 
     @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z}", max = 3)
@@ -371,7 +379,7 @@ public class InformationCommands
         Date start = new Date(ManagementFactory.getRuntimeMXBean().getStartTime());
         Duration dura = new Duration(start.getTime(), System.currentTimeMillis());
         context.sendTranslated("&aServer is running since &6%s", df.format(start));
-        context.sendTranslated("&aUptime: &6%s", dura.format("%www%ddd%hhh%mmm%sss"));
+        context.sendTranslated("&aUptime: &6%s", formatter.print(dura.toPeriod()));
         //TPS:
         float tps = this.basics.getLagTimer().getAverageTPS();
         String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : tps == 0 ? "&eNaN" : "&4";

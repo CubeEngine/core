@@ -50,7 +50,6 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 public class EditModeListener extends ConversationCommand
 {
     private final MarketSignFactory signFactory;
-    private final SignMarketConfig config;
     private Signmarket module;
 
     public EditModeListener(Signmarket module)
@@ -58,7 +57,6 @@ public class EditModeListener extends ConversationCommand
         super(module, new ConversationContextFactory());
         this.module = module;
         this.signFactory = module.getMarketSignFactory();
-        this.config = module.getConfig();
 
         this.getContextFactory()
                 .addFlag(new CommandFlag("exit", "exit"))
@@ -148,7 +146,7 @@ public class EditModeListener extends ConversationCommand
     @EventHandler
     public void changeWorld(PlayerChangedWorldEvent event)
     {
-        if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+        if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
         {
             User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
@@ -310,9 +308,9 @@ public class EditModeListener extends ConversationCommand
             if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
             {
                 marketSign.setAdminSign();
-                if (this.config.maxAdminStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.config.maxAdminStock))
+                if (this.module.getConfig().maxAdminStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.module.getConfig().maxAdminStock))
                 {
-                    marketSign.setSize(this.config.maxAdminStock);
+                    marketSign.setSize(this.module.getConfig().maxAdminStock);
                 }
             }
             else
@@ -326,9 +324,9 @@ public class EditModeListener extends ConversationCommand
             if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
             {
                 marketSign.setOwner(user);
-                if (this.config.maxUserStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.config.maxUserStock))
+                if (this.module.getConfig().maxUserStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.module.getConfig().maxUserStock))
                 {
-                    marketSign.setSize(this.config.maxUserStock);
+                    marketSign.setSize(this.module.getConfig().maxUserStock);
                 }
             }
             else
@@ -364,7 +362,7 @@ public class EditModeListener extends ConversationCommand
             {
                 if (marketSign.hasStock())
                 {
-                    if (this.config.allowAdminNoStock)
+                    if (this.module.getConfig().allowAdminNoStock)
                     {
                         if (MarketSignPerm.SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
                         {
@@ -384,7 +382,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    if (this.config.allowAdminStock)
+                    if (this.module.getConfig().allowAdminStock)
                     {
                         if (MarketSignPerm.SIGN_CREATE_ADMIN_STOCK.isAuthorized(user))
                         {
@@ -505,7 +503,7 @@ public class EditModeListener extends ConversationCommand
                     {
                         if (marketSign.isAdminSign())
                         {
-                            int maxAdmin = this.config.maxAdminStock;
+                            int maxAdmin = this.module.getConfig().maxAdminStock;
                             if (maxAdmin != -1 && (size > maxAdmin || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of admin-signs is set to &6%d&c!", maxAdmin);
@@ -519,7 +517,7 @@ public class EditModeListener extends ConversationCommand
                         }
                         else // user-sign
                         {
-                            int maxUser = this.config.maxUserStock;
+                            int maxUser = this.module.getConfig().maxUserStock;
                             if (maxUser != -1 && (size > maxUser || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of user-signs is set to &6%d&c!", maxUser);
@@ -561,7 +559,7 @@ public class EditModeListener extends ConversationCommand
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.hasUser(user))
         {
-            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
             {
                 user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                 return;
@@ -654,7 +652,7 @@ public class EditModeListener extends ConversationCommand
             User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
             {
-                if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+                if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
                 {
                     user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                     return;
@@ -679,7 +677,7 @@ public class EditModeListener extends ConversationCommand
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.hasUser(user))
         {
-            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
             {
                 user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                 return;

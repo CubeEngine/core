@@ -24,18 +24,23 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
+import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.time.Duration;
+import de.cubeisland.engine.core.util.TimeUtil;
+import de.cubeisland.engine.core.util.converter.DurationConverter;
+import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class ChatCommands
 {
+    private final DurationConverter converter = new DurationConverter();
     private UserManager um;
     private String lastWhisperOfConsole = null;
     private Basics module;
@@ -46,26 +51,7 @@ public class ChatCommands
         this.um = basics.getCore().getUserManager();
     }
 
-    @Command(desc = "Changes your DisplayName", usage = "<name>|-r", min = 1, max = 1)
-    // TODO param change nick of other player /w perm
-    // TODO perm to take name of a player that is already Playing on the server
-    public void nick(CommandContext context)
-    {
-        if (context.getSender() instanceof User)
-        {
-            String name = context.getString(0);
-            if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
-            {
-                ((User)context.getSender()).setDisplayName(context.getSender().getName());
-            }
-            else
-            {
-                ((User)context.getSender()).setDisplayName(name);
-            }
-            return;
-        }
-        context.sendMessage("&cYou cannot change the consoles DisplayName");
-    }
+
 
     @Command(desc = "Sends a private message to someone", names = {
         "message", "msg", "tell", "pm", "m", "t", "whisper", "w"
@@ -188,17 +174,18 @@ public class ChatCommands
         {
             try
             {
-                dura = new Duration(context.getStrings(1));
+                dura = converter.fromNode(StringNode.of(context.getString(1)), null);
             }
-            catch (IllegalArgumentException e)
+            catch (ConversionException e)
             {
                 context.sendTranslated("&cInvalid duration format!");
                 return;
             }
         }
-        basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() + (dura.toMillis() == -1 ? TimeUnit.DAYS.toMillis(9001) : dura.toMillis())));
+        basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() +
+            (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
-        String timeString = dura.toMillis() == -1 ? "ever" : dura.format("%www%ddd%hhh%mmm%sss");
+        String timeString = dura.getMillis() == 0 ? user.translate("ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
         user.sendTranslated("&cYou are now muted for &6%s&c!", timeString);
         context.sendTranslated("&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
     }

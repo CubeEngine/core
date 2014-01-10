@@ -106,4 +106,11 @@ public abstract class TempDataStore implements DataStore
         this.makeDirty();
         this.tempRoles = new HashSet<>();
     }
+
+    public void resetTempData()
+    {
+        this.clearTempRoles();
+        this.clearTempPermissions();
+        this.clearTempMetadata();
+    }
 }

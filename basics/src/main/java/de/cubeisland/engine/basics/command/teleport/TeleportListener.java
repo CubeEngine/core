@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.basics.command.teleport;
 
-import java.util.HashSet;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,25 +27,25 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.LocationUtil;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.LocationUtil;
 
 public class TeleportListener implements Listener
 {
-    private Basics basics;
+    private Basics module;
 
     public TeleportListener(Basics basics)
     {
-        this.basics = basics;
+        this.module = basics;
     }
 
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        User user = basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         switch (event.getCause())
         {
             case COMMAND:
@@ -59,7 +57,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
-        User user = this.basics.getCore().getUserManager().getExactUser(event.getEntity().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getEntity().getName());
         if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
             user.get(BasicsAttachment.class).setDeathLocation(user.getLocation());
@@ -82,7 +80,7 @@ public class TeleportListener implements Listener
                 case LEFT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                         Location loc;
                         if (event.getClickedBlock() != null && event.getClickedBlock().getType().isSolid())
                         {
@@ -90,22 +88,12 @@ public class TeleportListener implements Listener
                         }
                         else
                         {
-                            Block block;
-                            Material userIsIn = user.getEyeLocation().getBlock().getType();
-                            if (userIsIn.equals(Material.WATER) || userIsIn.equals(Material.STATIONARY_WATER))
+                            Block block = user.getTargetBlock(this.module.getConfiguration().navigation.jumpToMaxRange);
+                            if (block == null || block.getType() == Material.AIR)
                             {
-                                block = event.getPlayer().getTargetBlock(new HashSet<Byte>(8,9), this.basics.getConfiguration().navigation.jumpToMaxRange);
+                                return;
                             }
-                            else
-                            {
-                                block = event.getPlayer().getTargetBlock(null, this.basics.getConfiguration().navigation.jumpToMaxRange);
-                            }
-
-                            if (block.getTypeId() != 0)
-                            {
-                                loc = block.getLocation().add(0.5, 1, 0.5);
-                            }
-                            else return;
+                            loc = block.getLocation().add(0.5, 1, 0.5);
                         }
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
                         user.sendTranslated("&ePoof!");
@@ -116,14 +104,15 @@ public class TeleportListener implements Listener
                 case RIGHT_CLICK_BLOCK:
                     if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                        Location loc = LocationUtil.getBlockBehindWall(user, this.basics.getConfiguration().navigation.thru.maxRange,
-                                this.basics.getConfiguration().navigation.thru.maxWallThickness);
+                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                        Location loc = LocationUtil.getBlockBehindWall(user, this.module.getConfiguration().navigation.thru.maxRange,
+                                this.module.getConfiguration().navigation.thru.maxWallThickness);
                         if (loc == null)
                         {
                             user.sendTranslated("&cNothing to pass through!");
                             return;
                         }
+                        loc.setY(loc.getY() + 1);
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
                         user.sendTranslated("&eYou passed the wall");
                         event.setCancelled(true);

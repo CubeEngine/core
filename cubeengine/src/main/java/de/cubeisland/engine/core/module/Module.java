@@ -54,6 +54,9 @@ public abstract class Module
     private boolean enabled;
     private Permission modulePermission;
 
+    protected Module()
+    {}
+
     void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader)
     {
         if (!this.initialized)
@@ -285,8 +288,10 @@ public abstract class Module
 
     /**
      * This method disables the module
+     *
+     * @return true if and only if the module has been disabled
      */
-    final void disable()
+    final boolean disable()
     {
         if (this.enabled)
         {
@@ -304,7 +309,9 @@ public abstract class Module
                 this.getLog().warn(t, "{} while disabling!", t.getClass().getSimpleName());
             }
             this.enabled = false;
+            return true;
         }
+        return false;
     }
 
     public ModuleRegistry getRegistry()

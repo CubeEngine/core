@@ -18,8 +18,7 @@
 package de.cubeisland.engine.roles.config;
 
 import java.util.Map;
-
-import org.bukkit.World;
+import java.util.Map.Entry;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
@@ -29,13 +28,15 @@ import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.roles.Roles;
 
-public class RoleMirrorConverter implements Converter<MirrorConfig>
+public class MirrorConfigConverter implements Converter<MirrorConfig>
 {
     private Roles module;
 
-    public RoleMirrorConverter(Roles module)
+    public MirrorConfigConverter(Roles module)
     {
         this.module = module;
     }
@@ -45,25 +46,24 @@ public class RoleMirrorConverter implements Converter<MirrorConfig>
     {
         MapNode resultMap = MapNode.emptyMap();
         resultMap.setNode(new StringNode(mirror.mainWorld.getName()), NullNode.emptyNode());
-        for (World world : mirror.getWorldMirrors().keySet())
+        for (Entry<ConfigWorld, Triplet<Boolean, Boolean, Boolean>> entry : mirror.mirrors.entrySet())
         {
-            if (mirror.mainWorld.equals(world))
+            if (!entry.getKey().getName().equals(mirror.mainWorld.getName()))
             {
-                continue;
-            }
-            ListNode values = ListNode.emptyList();
-            resultMap.setNode(StringNode.of(mirror.mainWorld.getName()), values);
-            if (mirror.getWorldMirrors().get(world).getFirst())
-            {
-                values.addNode(StringNode.of("roles"));
-            }
-            if (mirror.getWorldMirrors().get(world).getSecond())
-            {
-                values.addNode(StringNode.of("assigned"));
-            }
-            if (mirror.getWorldMirrors().get(world).getThird())
-            {
-                values.addNode(StringNode.of("users"));
+                ListNode values = ListNode.emptyList();
+                resultMap.setNode(StringNode.of(entry.getKey().getName()), values);
+                if (entry.getValue().getFirst())
+                {
+                    values.addNode(StringNode.of("roles"));
+                }
+                if (entry.getValue().getSecond())
+                {
+                    values.addNode(StringNode.of("assigned"));
+                }
+                if (entry.getValue().getThird())
+                {
+                    values.addNode(StringNode.of("users"));
+                }
             }
         }
         return resultMap;
@@ -78,15 +78,12 @@ public class RoleMirrorConverter implements Converter<MirrorConfig>
         {
             return null;
         }
-        World mainWorld = this.module.getCore().getWorldManager().getWorld(readMap.getMappedNodes().keySet().iterator().next());
-        if (mainWorld == null)
-        {
-            throw ConversionException.of(this, node, "Unknown world " + readMap.getMappedNodes().keySet().iterator().next());
-        }
-        MirrorConfig mirror = new MirrorConfig(mainWorld);
+
+        MirrorConfig mirror = new MirrorConfig(module, new ConfigWorld(module.getCore().getWorldManager(),
+                                       readMap.getMappedNodes().keySet().iterator().next()));
         for (Map.Entry<String, Node> worlds : readMap.getMappedNodes().entrySet())
         {
-            if (worlds.getKey().equals(mainWorld.getName()))
+            if (worlds.getKey().equals(mirror.mainWorld.getName()))
             {
                 continue;
             }
@@ -114,12 +111,8 @@ public class RoleMirrorConverter implements Converter<MirrorConfig>
                     assigned = true;
                 }
             }
-            World world = this.module.getCore().getWorldManager().getWorld(worldName);
-            if (world == null)
-            {
-                throw ConversionException.of(this, node, "Unknown world " + readMap.getMappedNodes().keySet().iterator().next());
-            }
-            mirror.setWorld(world, roles, assigned, users);
+            ConfigWorld world = new ConfigWorld(module.getCore().getWorldManager(), worldName);
+            mirror.setWorld(world, new Triplet<>(roles, assigned, users));
         }
         return mirror;
     }

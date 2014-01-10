@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.roles.role;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -28,6 +27,7 @@ import java.util.Stack;
 
 import org.bukkit.World;
 
+import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
@@ -112,11 +112,11 @@ public abstract class RoleProvider
                 }
             }
         }
-        catch (IOException e)
+        catch (IOException|InvalidConfigurationException e)
         {
-            this.module.getLog().warn(e, "Failed to load the configuration");
+            this.module.getLog().warn(e, "Failed to load a configuration");
         }
-        this.module.getLog().debug("{}: {} role-configs read!", this.getFolder().getFileName(), i);
+        this.module.getLog().debug("provider {}: {} role-configs read!", this.getFolder().getFileName(), i);
     }
 
     /**
@@ -137,6 +137,10 @@ public abstract class RoleProvider
     public void recalculateRoles()
     {
         Stack<String> roleStack = new Stack<>(); // stack for detecting circular dependencies
+        for (Role role : this.roles.values())
+        {
+            role.resetTempData();
+        }
         for (Role role : this.roles.values())
         {
             role.calculate(roleStack);

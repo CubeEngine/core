@@ -111,33 +111,39 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            final Location userLocation = sender.getLocation();
-            final Location currentLocation = userLocation.clone();
-            currentLocation.add(0,2,0);
+            Location userLocation = sender.getLocation();
+            Block curBlock = userLocation.add(0,2,0).getBlock();
             //go upwards until hitting solid blocks
-            while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight()+1)
+            while (curBlock.getType() == Material.AIR)
             {
-                currentLocation.add(0, 1, 0);
+                Block rel = curBlock.getRelative(BlockFace.UP);
+                if (rel.getY() < userLocation.getBlockY())
+                {
+                    context.sendTranslated("&cYou cannot ascend here");
+                    return;
+                }
+                curBlock = rel;
             }
+            Block standOn = curBlock;
+            curBlock = curBlock.getRelative(BlockFace.UP);
             // go upwards until hitting 2 airblocks again
-            while (!((currentLocation.getBlock().getType().equals(Material.AIR))
-                    && (currentLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)))
-                    && currentLocation.getBlockY() + 1 < currentLocation.getWorld().getMaxHeight()+1)
+            while (!(curBlock.getType() == Material.AIR
+                && curBlock.getRelative(BlockFace.DOWN).getType() == Material.AIR))
             {
-                currentLocation.add(0, 1, 0);
+                Block rel = curBlock.getRelative(BlockFace.UP);
+                if (rel.getY() == 0)
+                {
+                    break;
+                }
+                curBlock = rel;
             }
-            if (currentLocation.getY() > currentLocation.getWorld().getMaxHeight() // currentLocation is higher than the world
-                && currentLocation.getWorld().getHighestBlockYAt(currentLocation) < currentLocation.getBlockY())
-            {
-                currentLocation.setY(currentLocation.getWorld().getHighestBlockYAt(currentLocation)); // set to highest point
-            }
-            if (currentLocation.getY() <= userLocation.getY()) // highest point is equal/below current location
+            if (userLocation.getY() + 0.5 > curBlock.getY())
             {
                 context.sendTranslated("&cYou cannot ascend here");
                 return;
             }
-            //reached new location
-            if (TeleportCommands.teleport(sender, currentLocation, true, false, true))
+            userLocation.setY(standOn.getY() + 1);
+            if (TeleportCommands.teleport(sender, userLocation, true, false, true))
             {
                 context.sendTranslated("&aAscended a level!");
             }
@@ -190,7 +196,7 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().navigation.jumpToMaxRange).getLocation();
+            Location loc = sender.getTargetBlock(this.basics.getConfiguration().navigation.jumpToMaxRange).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
                 context.sendTranslated("&cNo block in sight!");

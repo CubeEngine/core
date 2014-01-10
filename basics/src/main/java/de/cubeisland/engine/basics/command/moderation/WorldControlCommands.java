@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsConfiguration;
 import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -58,7 +59,9 @@ public class WorldControlCommands
         this.config = module.getConfiguration();
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather", min = 1, max = 3,
+             usage = "<sun|rain|storm> [duration] [in <world>]",
+             params = @Param(names = "in", type = World.class))
     public void weather(ParameterizedContext context)
     {
         User sender = null;
@@ -72,7 +75,7 @@ public class WorldControlCommands
         String weather = Match.string().matchString(context.getString(0), "sun", "rain", "storm");
         if (weather == null)
         {
-            context.sendTranslated("&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
+            context.sendTranslated("&cInvalid weather!\n&eUse &6sun&e, &6rain&e or &6storm&e!");
             return;
         }
         if (weather.equalsIgnoreCase("sun"))
@@ -114,14 +117,10 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                context.sendTranslated("&cIf not used ingame you have to specify a world!");
-                return;
+                throw new IncorrectUsageException(context.getSender().translate("&cIf not used ingame you have to specify a world!"));
             }
             world = sender.getWorld();
         }
-        world.setStorm(!sunny);
-        world.setThundering(!noThunder);
-        world.setWeatherDuration(duration);
         if (world.isThundering() != noThunder && world.hasStorm() != sunny) // weather is not changing
         {
             context.sendTranslated("&aWeather in &6%s &awas already set to &e%s&a!", world.getName(), weather);
@@ -130,6 +129,9 @@ public class WorldControlCommands
         {
             context.sendTranslated("&aChanged weather in &6%s &ato &e%s&a!", world.getName(), weather);
         }
+        world.setStorm(!sunny);
+        world.setThundering(!noThunder);
+        world.setWeatherDuration(duration);
     }
 
     @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags = @Flag(longName = "all", name = "a"), params = @Param(names = {

@@ -21,14 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
-import de.cubeisland.engine.roles.RoleAppliedEvent;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 
 public class RolesAttachment extends UserAttachment
@@ -85,6 +81,7 @@ public class RolesAttachment extends UserAttachment
     {
         for (UserDatabaseStore userDatabaseStore : this.dataStores.values())
         {
+            userDatabaseStore.resetTempData();
             userDatabaseStore.loadFromDatabase();
         }
     }

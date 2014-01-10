@@ -15,30 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.kits;
+package de.cubeisland.engine.core.module.exception;
 
-import de.cubeisland.engine.core.module.Module;
-
-public class Kits extends Module
+public class ModuleLoadException extends ModuleException
 {
-    private KitManager kitManager;
-    
-    @Override
-    public void onEnable()
+    public ModuleLoadException()
     {
-        getCore().getDB().registerTable(TableKitsGiven.class);
-        this.getCore().getConfigFactory().getDefaultConverterManager().
-            registerConverter(KitItem.class, new KitItemConverter());
-
-        this.kitManager = new KitManager(this);
-        new KitsPerm(this);
-        this.kitManager.loadKits();
-        this.getCore().getUserManager().addDefaultAttachment(KitsAttachment.class, this);
-        getCore().getCommandManager().registerCommand(new KitCommand(this));
+        super();
     }
 
-    public KitManager getKitManager()
+    public ModuleLoadException(String message)
     {
-        return this.kitManager;
+        super(message);
+    }
+
+    public ModuleLoadException(Throwable cause)
+    {
+        super(cause);
+    }
+
+    public ModuleLoadException(String message, Throwable cause)
+    {
+        super(message, cause);
     }
 }

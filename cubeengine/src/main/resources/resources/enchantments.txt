@@ -91,3 +91,7 @@ ARROW_INFINITE:
   infinity
   infinitearrow
   infarrow
+LUCK:
+  luckofthesea
+LURE:
+  lure

@@ -204,8 +204,15 @@ public class MoneyCommand extends ContainerCommand
         Account source = this.manager.getUserAccount(sender, false);
         if (source == null)
         {
-            context.sendTranslated("&2%s &cdoes not have an account!",
-                                   sender.getName());
+            if (asSomeOneElse)
+            {
+                context.sendTranslated("&2%s &cdoes not have an account!",
+                                       sender.getName());
+            }
+            else
+            {
+                context.sendTranslated("&cYou do not have an account!");
+            }
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -221,7 +228,7 @@ public class MoneyCommand extends ContainerCommand
             if (target == null)
             {
                 context.sendTranslated("&2%s &cdoes not have an account!",
-                                       sender.getName());
+                                       user.getName());
                 continue;
             }
             if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed

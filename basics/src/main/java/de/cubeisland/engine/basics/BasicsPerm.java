@@ -253,17 +253,15 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission COMMAND_BUTCHER_FLAG_BOSS = COMMAND_BUTCHER_FLAG.createChild("boss");
 
     private static final Permission COMMAND_FEED = COMMAND.createAbstractChild("feed");
-    public static final Permission COMMAND_FEED_ALL = COMMAND_FEED.createChild("all");
     public static final Permission COMMAND_FEED_OTHER = COMMAND_FEED.createChild("other");
 
     private static final Permission COMMAND_STARVE = COMMAND.createAbstractChild("starve");
-    public static final Permission COMMAND_STARVE_ALL = COMMAND_STARVE.createChild("all");
     public static final Permission COMMAND_STARVE_OTHER = COMMAND_STARVE.createChild("other");
 
-    public static final Permission COMMAND_HEAL_ALL = COMMAND.createAbstractChild("heal").createChild("all");
+    private static final Permission COMMAND_HEAL = COMMAND.createAbstractChild("heal");
+    public static final Permission COMMAND_HEAL_OTHER = COMMAND_HEAL.createChild("other");
 
     private static final Permission COMMAND_FLY = COMMAND.createAbstractChild("fly");
-
     public static final Permission COMMAND_FLY_KEEP = COMMAND_FLY.createChild("keep");
     public static final Permission COMMAND_FLY_OTHER = COMMAND_FLY.createChild("other");
 

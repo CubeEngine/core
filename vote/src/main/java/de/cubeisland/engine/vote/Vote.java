@@ -66,7 +66,7 @@ public class Vote extends Module implements Listener
             }
             else
             {
-                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.voteBonusTime.toMillis())
+                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() > this.config.voteBonusTime.getMillis())
                 {
                     voteModel.setVoteamount(UShort.valueOf(1));
                 }

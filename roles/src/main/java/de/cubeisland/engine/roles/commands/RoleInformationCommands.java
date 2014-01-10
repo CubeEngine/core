@@ -52,7 +52,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         boolean global = context.hasFlag("g");
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         if (provider.getRoles().isEmpty())
         {
             if (global)
@@ -89,7 +89,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         String permission = context.getString(1);
@@ -122,9 +122,18 @@ public class RoleInformationCommands extends RoleCommandHelper
                                            permission, role.getName(), world.getName());
                 }
             }
-            Role originRole = (Role)myPerm.getOrigin();
-            context.sendTranslated("&ePermission inherited from:");
-            context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getOriginPermission(), originRole.getName());
+            if (!(myPerm.getOriginPermission() == null && myPerm.getOrigin() == role))
+            {
+                context.sendTranslated("&ePermission inherited from:");
+                if (myPerm.getOriginPermission() == null)
+                {
+                    context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getKey(), myPerm.getOrigin().getName());
+                }
+                else
+                {
+                    context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getOriginPermission(), myPerm.getOrigin().getName());
+                }
+            }
             return;
         }
         if (global)
@@ -150,7 +159,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         Map<String,Boolean> rawPerms = context.hasFlag("a") ? role.getAllRawPermissions() : role.getRawPermissions();
@@ -202,7 +211,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         Map<String, String> rawMetadata = context.hasFlag("a") ? role.getAllRawMetadata() : role.getRawMetadata();
@@ -245,7 +254,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         if (role.getRoles().isEmpty())
@@ -283,7 +292,7 @@ public class RoleInformationCommands extends RoleCommandHelper
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
-        RoleProvider provider = this.manager.getProvider(world);
+        RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
         if (global)

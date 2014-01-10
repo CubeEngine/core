@@ -15,30 +15,40 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.kits;
+package de.cubeisland.engine.core.world;
 
-import de.cubeisland.engine.core.module.Module;
+import org.bukkit.World;
 
-public class Kits extends Module
+public class ConfigWorld
 {
-    private KitManager kitManager;
-    
-    @Override
-    public void onEnable()
-    {
-        getCore().getDB().registerTable(TableKitsGiven.class);
-        this.getCore().getConfigFactory().getDefaultConverterManager().
-            registerConverter(KitItem.class, new KitItemConverter());
+    private final WorldManager wm;
+    private World world;
+    private String name;
 
-        this.kitManager = new KitManager(this);
-        new KitsPerm(this);
-        this.kitManager.loadKits();
-        this.getCore().getUserManager().addDefaultAttachment(KitsAttachment.class, this);
-        getCore().getCommandManager().registerCommand(new KitCommand(this));
+    public ConfigWorld(WorldManager wm, String world)
+    {
+        this.wm = wm;
+        this.name = world;
     }
 
-    public KitManager getKitManager()
+    public ConfigWorld(WorldManager wm, World world)
     {
-        return this.kitManager;
+        this.wm = wm;
+        this.name = world.getName();
+        this.world = world;
+    }
+
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public World getWorld()
+    {
+        if (this.world == null || !this.world.getName().equals(this.name))
+        {
+            this.world = this.wm.getWorld(name);
+        }
+        return this.world;
     }
 }

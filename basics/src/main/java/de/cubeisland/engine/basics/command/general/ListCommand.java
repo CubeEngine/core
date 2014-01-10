@@ -17,12 +17,8 @@
  */
 package de.cubeisland.engine.basics.command.general;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
@@ -45,10 +41,12 @@ import de.cubeisland.engine.core.util.ChatFormat;
 public class ListCommand extends CubeCommand
 {
     protected static final Comparator<User> USER_COMPARATOR = new UserComparator();
+    private Basics basics;
 
     public ListCommand(Basics basics)
     {
         super(basics, "list", "Displays all the online players.", new BasicContextFactory());
+        this.basics = basics;
     }
 
     protected SortedMap<String, Set<User>> groupUsers(Set<User> users)
@@ -106,7 +104,7 @@ public class ListCommand extends CubeCommand
     private String formatUser(User user)
     {
         String entry = "&2" + user.getDisplayName();
-        if (user.get(BasicsAttachment.class).isAfk())
+        if (user.attachOrGet(BasicsAttachment.class, basics).isAfk())
         {
             entry += "&f(&7afk&f)";
         }

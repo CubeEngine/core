@@ -17,23 +17,34 @@
  */
 package de.cubeisland.engine.vote;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.time.Duration;
+import de.cubeisland.engine.core.util.TimeUtil;
 import de.cubeisland.engine.vote.storage.VoteModel;
+import org.joda.time.Duration;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
 
 public class VoteCommands
 {
+    private final PeriodFormatter formatter;
     private Vote module;
 
     public VoteCommands(Vote module)
     {
         this.module = module;
+        this.formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week"," weeks").appendSeparator(" ")
+                                                     .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
+                                                     .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
+                                                     .appendMinutes().appendSuffix(" minute", " minutes").appendSeparator(" ")
+                                                     .appendSeconds().appendSuffix(" second", " seconds").appendSeparator(" ")
+                                                     .appendMillis().appendSuffix(" ms").toFormatter();
     }
 
     @Command(desc = "shows your current vote situation")
@@ -51,15 +62,15 @@ public class VoteCommands
             else
             {
                 context.sendTranslated("&aYou current vote-count is &6%d", voteModel.getVoteamount().intValue());
-                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() >= module.getConfig().voteBonusTime.toMillis())
+                if (System.currentTimeMillis() - voteModel.getLastvote().getTime() >= module.getConfig().voteBonusTime.getMillis())
                 {
                     context.sendTranslated("&eSadly you did not vote in the last &6%s&e so your vote-count will be reset to 1",
-                                           module.getConfig().voteBonusTime.format("%www%ddd%hhh%mmm%sss"));
+                                           this.formatter.print(module.getConfig().voteBonusTime.toPeriod()));
                 }
                 else if (System.currentTimeMillis() - voteModel.getLastvote().getTime() < TimeUnit.DAYS.toMillis(1))
                 {
-                    context.sendTranslated("&aYou voted &6%s&a ago so you will probably not be able to vote again already!",
-                                          new Duration(System.currentTimeMillis() - voteModel.getLastvote().getTime()).format("%www%ddd%hhh%mmm%sss"));
+                    context.sendTranslated("&aYou voted &6%s&a so you will probably not be able to vote again already!",
+                                           TimeUtil.format(context.getSender().getLocale(), new Date(voteModel.getLastvote().getTime())));
                 }
                 else
                 {

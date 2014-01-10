@@ -27,6 +27,10 @@ public class TravelConfig extends YamlConfiguration
 
     public HomesSection homes;
 
+    @Comment({"If this is set to true the commands /clearhomes and /clearwarps can only be used from the console.",
+              "This will also affect \"/home admin clear\" and \"/warp admin clear\""})
+    public boolean clearOnlyFromConsole = false;
+
     public class HomesSection implements Section
     {
         @Comment("If users should be able to have multiple homes")
