@@ -21,8 +21,9 @@ import java.util.Random;
 
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
@@ -47,36 +48,62 @@ public class PortalModifyCommand extends ContainerCommand
     @Alias(names = "mvpd")
     @Command(names = {"destination","dest"},
         desc = "changes the destination of the selected portal",
-             usage = "here|<world>", min = 1, max = 1)
-    public void destination(CommandContext context)
+             usage = "here|<world>|<p:<portal>> [p <portal>]", min = 1, max = 1,
+    params = @Param(names = {"p","portal"}))
+    public void destination(ParameterizedContext context)
     {
         Portal portal = null;
-        if (context.getSender() instanceof User)
+        if (context.hasParam("p"))
+        {
+            portal = manager.getPortal(context.getString("p"));
+            if (portal == null)
+            {
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString("p"));
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
         {
             portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
         }
-        // TODO named portal param
         if (portal == null)
         {
-            context.sendTranslated("You have to select a portal!");
+            context.sendTranslated("&cYou need to define a portal!");
+            context.sendMessage(context.getCommand().getUsage(context));
             return;
         }
         if (context.getString(0).equalsIgnoreCase("here"))
         {
-            if (context.getSender() instanceof User)
+            if (!(context.getSender() instanceof User))
             {
-                portal.config.destination = new Destination(((User)context.getSender()).getLocation());
-                portal.config.save();
-                context.sendTranslated("&aPortal destination set!");
+                context.sendTranslated("&eThe Portal Agency will bring you your portal for just &6$ 1337&e within &6%d weeks",
+                                       new Random().nextInt(51)+1);
                 return;
             }
-            context.sendTranslated("&eThe Portal Agency will bring you your portal for just &6$ 1337&e within &6%d weeks",
-                                   new Random().nextInt(51)+1);
-            return;
+            portal.config.destination = new Destination(((User)context.getSender()).getLocation());
         }
-        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
-        context.sendMessage("TODO");
-        // TODO
+        else if (context.getString(0).startsWith("p:"))
+        {
+            Portal destPortal = manager.getPortal(context.getString(0).substring(2));
+            if (destPortal == null)
+            {
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString(0).substring(2));
+                return;
+            }
+            portal.config.destination = new Destination(destPortal);
+        }
+        else
+        {
+            World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+            if (world == null)
+            {
+                context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
+                return;
+            }
+            portal.config.destination = new Destination(world);
+        }
+        portal.config.save();
+        context.sendTranslated("&aPortal destination set!");
     }
 
     public void location()

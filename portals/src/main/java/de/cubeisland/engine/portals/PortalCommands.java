@@ -21,18 +21,16 @@ import java.io.File;
 
 import org.bukkit.Location;
 
-import com.sun.java.swing.plaf.motif.resources.motif;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.service.Selector;
-import de.cubeisland.engine.core.module.service.Service;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.util.math.shape.Cuboid;
-import de.cubeisland.engine.core.util.math.shape.Shape;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.config.PortalConfig;
 
 public class PortalCommands extends ContainerCommand
@@ -65,8 +63,9 @@ public class PortalCommands extends ContainerCommand
                     PortalConfig config = this.getModule().getCore().getConfigFactory().create(PortalConfig.class);
                     config.location.from = new BlockVector3(p1.getBlockX(), p1.getBlockY(), p1.getBlockZ());
                     config.location.to = new BlockVector3(p2.getBlockX(), p2.getBlockY(), p2.getBlockZ());
+                    config.location.destination = new WorldLocation(sender.getLocation());
                     config.owner = sender.getOfflinePlayer();
-                    config.world = p1.getWorld().getName();
+                    config.world = new ConfigWorld(module.getCore().getWorldManager(), p1.getWorld());
                     config.setFile(new File(manager.portalsDir, context.getString(0) + ".yml"));
                     config.save();
                     Portal portal = new Portal(module, manager, context.getString(0), config);

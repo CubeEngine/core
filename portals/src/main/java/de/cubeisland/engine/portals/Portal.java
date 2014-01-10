@@ -45,7 +45,7 @@ public class Portal
 
     public boolean has(Location location)
     {
-        return location.getWorld().getName().equals(config.world) &&
+        return location.getWorld().getName().equals(config.world.getName()) &&
             isBetween(config.location.from.x, config.location.to.x, location.getBlockX()) &&
             isBetween(config.location.from.y, config.location.to.y, location.getBlockY()) &&
             isBetween(config.location.from.z, config.location.to.z, location.getBlockZ());
@@ -60,7 +60,7 @@ public class Portal
     {
         if (this.config.destination == null)
         {
-            user.sendTranslated("&eThis portal has no destination yet!");
+            user.sendTranslated("&eThis portal \"&6%s&e\" has no destination yet!", this.getName());
             user.attachOrGet(PortalsAttachment.class, module).setInPortal(true);
         }
         else
@@ -71,7 +71,11 @@ public class Portal
 
     public Location getPortalPos()
     {
-        BlockVector3 midpoint = this.config.location.to.midpoint(this.config.location.from);
-        return new Location(this.config.getWorld(), midpoint.x + 0.5, midpoint.y, midpoint.z + 0.5);
+        if (this.config.location.destination == null)
+        {
+            BlockVector3 midpoint = this.config.location.to.midpoint(this.config.location.from);
+            return new Location(this.config.world.getWorld(), midpoint.x + 0.5, midpoint.y, midpoint.z + 0.5);
+        }
+        return this.config.location.destination.getLocationIn(this.config.world.getWorld());
     }
 }

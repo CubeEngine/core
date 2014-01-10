@@ -23,10 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.bukkit.GameMode;
@@ -42,7 +40,6 @@ import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -148,7 +145,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("&cDon't feed the troll!");
-        context.sendMessage(context.getCommand().getUsage());
+        context.sendMessage(context.getCommand().getUsage(context));
     }
 
     @Command(desc = "Empties the hunger bar", max = 1, usage = "{players}")
@@ -218,7 +215,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("\n\n\n\n\n\n\n\n\n\n\n\n\n&cI'll give you only one line to eat!");
-        context.sendMessage(context.getCommand().getUsage());
+        context.sendMessage(context.getCommand().getUsage(context));
     }
 
     @Command(desc = "Heals a Player", max = 1, usage = "{player}")
@@ -284,7 +281,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("&cOnly time can heal your wounds!");
-        context.sendMessage(context.getCommand().getUsage());
+        context.sendMessage(context.getCommand().getUsage(context));
     }
 
     private GameMode getGameMode(String name)
