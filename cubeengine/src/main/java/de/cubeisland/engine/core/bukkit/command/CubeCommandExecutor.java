@@ -118,34 +118,44 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
     public boolean onCommand(final org.bukkit.command.CommandSender bukkitSender, final Command bukkitCommand, final String label, final String[] args)
     {
         final CommandSender sender = wrapSender(this.command.getModule().getCore(), bukkitSender);
-        
+
+        final CommandContext context;
         try
         {
-            final CommandContext ctx = toCommandContext(this.command, sender, label, args);
-            if (ctx instanceof HelpContext)
+            context = toCommandContext(this.command, sender, label, args);
+        }
+        catch (CommandException e)
+        {
+            this.handleCommandException(null, sender, e);
+            return true;
+        }
+
+        try
+        {
+            if (context instanceof HelpContext)
             {
-                ctx.getCommand().help((HelpContext)ctx);
+                context.getCommand().help((HelpContext)context);
                 return true;
             }
             if (this.command.isAsynchronous())
             {
-                ctx.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+                context.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        run0(ctx);
+                        run0(context);
                     }
                 }).start();
             }
             else
             {
-                this.run0(ctx);
+                this.run0(context);
             }
         }
         catch (CommandException e)
         {
-            this.handleCommandException(sender, e);
+            this.handleCommandException(context, sender, e);
         }
 
         return true;
@@ -156,11 +166,19 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
     {
         final Core core = this.command.getModule().getCore();
         final CommandSender sender = wrapSender(core, bukkitSender);
-        
+
+        final CommandContext context;
         try
         {
-            CommandContext context = toCommandContext(this.command, sender, label, args);
-
+            context = toCommandContext(this.command, sender, label, args);
+        }
+        catch (CommandException e)
+        {
+            this.handleCommandException(null, sender, e);
+            return null;
+        }
+        try
+        {
             List<String> result = this.completeChild(context);
             if (result == null)
             {
@@ -184,7 +202,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
         catch (Exception e)
         {
-            this.handleCommandException(sender, e);
+            this.handleCommandException(context, sender, e);
         }
         
         return null;
@@ -251,11 +269,16 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
         catch (Exception e)
         {
-            handleCommandException(ctx.getSender(), e);
+            handleCommandException(ctx, e);
         }
     }
 
-    private void handleCommandException(final CommandSender sender, Throwable t)
+    private void handleCommandException(final CommandContext context, Throwable t)
+    {
+        this.handleCommandException(context, context.getSender(), t);
+    }
+
+    private void handleCommandException(final CommandContext context, final CommandSender sender, Throwable t)
     {
         if (!CubeEngine.isMainThread())
         {
@@ -265,7 +288,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                 @Override
                 public Void call() throws Exception
                 {
-                    handleCommandException(sender, tmp);
+                    handleCommandException(context, sender, tmp);
                     return null;
                 }
             });
@@ -292,7 +315,16 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             }
             if (e.getDisplayUsage())
             {
-                sender.sendTranslated("&eProper usage: &f%s", this.command.getUsage(sender));
+                final String usage;
+                if (context != null)
+                {
+                    usage = this.command.getUsage(context);
+                }
+                else
+                {
+                    usage = this.command.getUsage(sender);
+                }
+                sender.sendTranslated("&eProper usage: &f%s", usage);
             }
         }
         else if (t instanceof PermissionDeniedException)
