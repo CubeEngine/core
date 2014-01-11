@@ -28,8 +28,11 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.util.math.BlockVector3;
+import de.cubeisland.engine.core.util.math.shape.Cuboid;
 import de.cubeisland.engine.portals.config.Destination;
 
 public class PortalModifyCommand extends ContainerCommand
@@ -139,9 +142,34 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated("&aPortal destination set!");
     }
 
-    public void location()
+    @Command(desc = "Changes a portals location", usage = "[portal]", max = 1)
+    public void location(CommandContext context)
     {
-
+        if (context.getSender() instanceof User)
+        {
+            User sender = (User)context.getSender();
+            Selector selector = this.getModule().getCore().getModuleManager().getServiceManager().getServiceImplementation(Selector.class);
+            if (selector.getSelection(sender) instanceof Cuboid)
+            {
+                Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+                if (portal == null)
+                {
+                    context.sendTranslated("&cYou need to define a portal!");
+                    context.sendMessage(context.getCommand().getUsage(context));
+                    return;
+                }
+                Location p1 = selector.getFirstPoint(sender);
+                Location p2 = selector.getSecondPoint(sender);
+                portal.config.location.from = new BlockVector3(p1.getBlockX(), p1.getBlockY(), p1.getBlockZ());
+                portal.config.location.to = new BlockVector3(p2.getBlockX(), p2.getBlockY(), p2.getBlockZ());
+                portal.config.save();
+                context.sendTranslated("&aPortal &6%s&a updated to your current selection!", portal.getName());
+                return;
+            }
+            context.sendTranslated("&cPlease select a cuboid first!");
+            return;
+        }
+        context.sendTranslated("&cYou have to be ingame to do this!");
     }
 
     @Command(desc = "Modifies the location where a player exits when teleporting a portal", usage = "[portal]", max = 1)
@@ -169,13 +197,31 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated("&cYou have to be ingame to do this!");
     }
 
-    public void safe()
+    @Command(desc = "Toggles safe teleportation for this portal", usage = "[portal]")
+    public void togglesafe(CommandContext context)
     {
-
+        Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        if (portal == null)
+        {
+            context.sendTranslated("&cYou need to define a portal!");
+            context.sendMessage(context.getCommand().getUsage(context));
+            return;
+        }
+        portal.config.safeTeleport = !portal.config.safeTeleport;
+        portal.config.save();
+        if (portal.config.safeTeleport)
+        {
+            context.sendTranslated("&aThe portal &6%s&a will not teleport to an unsafe destination");
+        }
+        else
+        {
+            context.sendTranslated("&aThe portal &6%s&a will also teleport to an unsafe destination");
+        }
     }
 
     public void entity()
     {
-
+        // TODO implement entity tp
+        // TODO implement riding tp
     }
 }
