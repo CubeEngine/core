@@ -162,4 +162,13 @@ public class PortalManager implements Listener
             }
         }
     }
+
+    protected void removePortal(Portal portal)
+    {
+        this.portals.remove(portal.getName().toLowerCase());
+        for (List<Portal> portalList : this.chunksWithPortals.values())
+        {
+            portalList.remove(portal);
+        }
+    }
 }

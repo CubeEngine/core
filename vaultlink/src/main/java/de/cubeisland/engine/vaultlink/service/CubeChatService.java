@@ -24,6 +24,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.Role;
+import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.vaultlink.Vaultlink;
@@ -56,14 +57,22 @@ public class CubeChatService extends Chat
         return roles.isEnabled();
     }
 
-    private ResolvedMetadata getUserMetadata(String worldName, String username, String key)
+    private ResolvedMetadata getUserMetadata(String worldName, String player, String key)
     {
-        User user = roles.getCore().getUserManager().getUser(username);
+        User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
         {
             return null;
         }
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.wm.getWorld(worldName);
+        }
         if (world == null)
         {
             return null;
@@ -72,14 +81,23 @@ public class CubeChatService extends Chat
         return attachment.getDataHolder(world).getMetadata().get(key);
     }
 
-    private ResolvedMetadata getRoleMetadata(String worldName, String roleName, String key)
+    private ResolvedMetadata getRoleMetadata(String worldName, String group, String key)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        RoleProvider provider;
+        if (worldName != null)
         {
-            return null;
+            World world = this.wm.getWorld(worldName);
+            if (world == null)
+            {
+                return null;
+            }
+            provider = roles.getRolesManager().getProvider(world);
         }
-        Role role = roles.getRolesManager().getProvider(world).getRole(roleName);
+        else
+        {
+            provider = roles.getRolesManager().getGlobalProvider();
+        }
+        Role role = provider.getRole(group);
         if (role == null)
         {
             return null;

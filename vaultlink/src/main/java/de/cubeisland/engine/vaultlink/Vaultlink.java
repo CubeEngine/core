@@ -29,6 +29,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.bukkit.BukkitServiceManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.vaultlink.service.CubeChatService;
@@ -40,21 +41,23 @@ import net.milkbowl.vault.permission.Permission;
 
 public class Vaultlink extends Module implements Listener
 {
+    private BukkitServiceManager serviceManager;
     private final AtomicReference<de.cubeisland.engine.core.module.service.Economy> economyReference = new AtomicReference<>();
 
     @Override
     public void onLoad()
     {
+        this.serviceManager = ((BukkitCore)this.getCore()).getModuleManager().getServiceManager();
         Module module = getCore().getModuleManager().getModule("roles");
         if (module != null && module instanceof Roles)
         {
             Roles roles = (Roles)module;
             Permission service = new CubePermissionService(this, roles);
-            Bukkit.getServicesManager().register(Permission.class, service, (BukkitCore)getCore(), ServicePriority.Normal);
-            Bukkit.getServicesManager().register(Chat.class, new CubeChatService(this, roles, service), (BukkitCore)getCore(), ServicePriority.Normal);
+            this.serviceManager.register(Permission.class, service, this, ServicePriority.Normal);
+            this.serviceManager.register(Chat.class, new CubeChatService(this, roles, service), this, ServicePriority.Normal);
         }
 
-        Bukkit.getServicesManager().register(Economy.class, new CubeEconomyService(this, economyReference), (BukkitCore)getCore(), ServicePriority.Normal);
+        this.serviceManager.register(Economy.class, new CubeEconomyService(this, economyReference), this, ServicePriority.Normal);
     }
 
     @Override

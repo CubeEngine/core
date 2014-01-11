@@ -75,12 +75,20 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerHas(String worldName, String player, String permission)
     {
-        User user = um.getUser(player);
+        User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
         {
             return false;
         }
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
         if (world == null)
         {
             return false;
@@ -114,7 +122,15 @@ public class CubePermissionService extends Permission
         {
             return false;
         }
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
         if (world == null)
         {
             return false;
@@ -147,7 +163,15 @@ public class CubePermissionService extends Permission
         {
             return false;
         }
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
         if (world == null)
         {
             return false;
@@ -175,12 +199,26 @@ public class CubePermissionService extends Permission
     @Override
     public boolean groupHas(String worldName, String group, String permission)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        if (group == null)
         {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
-        Role role = roles.getRolesManager().getProvider(world).getRole(group);
+        RoleProvider provider;
+        if (worldName != null)
+        {
+            World world = this.module.getCore().getWorldManager().getWorld(worldName);
+            if (world == null)
+            {
+                return false;
+            }
+            provider = roles.getRolesManager().getProvider(world);
+        }
+        else
+        {
+            provider = roles.getRolesManager().getGlobalProvider();
+        }
+        Role role = provider.getRole(group);
         if (role == null)
         {
             return false;
@@ -192,12 +230,26 @@ public class CubePermissionService extends Permission
     @Override
     public boolean groupAdd(String worldName, String group, String permission)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        if (group == null)
         {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
-        Role role = roles.getRolesManager().getProvider(world).getRole(group);
+        RoleProvider provider;
+        if (worldName != null)
+        {
+            World world = this.module.getCore().getWorldManager().getWorld(worldName);
+            if (world == null)
+            {
+                return false;
+            }
+            provider = roles.getRolesManager().getProvider(world);
+        }
+        else
+        {
+            provider = roles.getRolesManager().getGlobalProvider();
+        }
+        Role role = provider.getRole(group);
         if (role == null)
         {
             return false;
@@ -210,12 +262,26 @@ public class CubePermissionService extends Permission
     @Override
     public boolean groupRemove(String worldName, String group, String permission)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        if (group == null)
         {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
-        Role role = roles.getRolesManager().getProvider(world).getRole(group);
+        RoleProvider provider;
+        if (worldName != null)
+        {
+            World world = this.module.getCore().getWorldManager().getWorld(worldName);
+            if (world == null)
+            {
+                return false;
+            }
+            provider = roles.getRolesManager().getProvider(world);
+        }
+        else
+        {
+            provider = roles.getRolesManager().getGlobalProvider();
+        }
+        Role role = provider.getRole(group);
         if (role == null)
         {
             return false;
@@ -228,13 +294,26 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerInGroup(String worldName, String player, String group)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        if (group == null)
         {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
         User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
+        {
+            return false;
+        }
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
+        if (world == null)
         {
             return false;
         }
@@ -245,13 +324,26 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerAddGroup(String worldName, String player, String group)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        if (group == null)
         {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
         User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
+        {
+            return false;
+        }
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
+        if (world == null)
         {
             return false;
         }
@@ -269,13 +361,26 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerRemoveGroup(String worldName, String player, String group)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        if (group == null)
         {
+            this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
         User user = roles.getCore().getUserManager().getUser(player);
         if (user == null)
+        {
+            return false;
+        }
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
+        if (world == null)
         {
             return false;
         }
@@ -293,13 +398,21 @@ public class CubePermissionService extends Permission
     @Override
     public String[] getPlayerGroups(String worldName, String player)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        User user = roles.getCore().getUserManager().getUser(player);
+        if (user == null)
         {
             return null;
         }
-        User user = roles.getCore().getUserManager().getUser(player);
-        if (user == null)
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
+        if (world == null)
         {
             return null;
         }
@@ -315,13 +428,21 @@ public class CubePermissionService extends Permission
     @Override
     public String getPrimaryGroup(String worldName, String player)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(worldName);
-        if (world == null)
+        User user = roles.getCore().getUserManager().getUser(player);
+        if (user == null)
         {
             return null;
         }
-        User user = roles.getCore().getUserManager().getUser(player);
-        if (user == null)
+        World world;
+        if (worldName == null)
+        {
+            world = user.getWorld();
+        }
+        else
+        {
+            world = this.module.getCore().getWorldManager().getWorld(worldName);
+        }
+        if (world == null)
         {
             return null;
         }

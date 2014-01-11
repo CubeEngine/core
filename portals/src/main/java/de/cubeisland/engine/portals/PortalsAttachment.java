@@ -23,6 +23,7 @@ public class PortalsAttachment extends UserAttachment
 {
     private boolean isInPortal = false;
     private Portal portal;
+    private boolean debug = false;
 
     public Portal getPortal()
     {
@@ -42,5 +43,18 @@ public class PortalsAttachment extends UserAttachment
     public void setInPortal(boolean isInPortal)
     {
         this.isInPortal = isInPortal;
+    }
+
+    public void toggleDebug()
+    {
+        this.debug = !this.debug;
+        if (debug)
+        {
+            this.getHolder().sendTranslated("&aYou are now in portal debug mode!");
+        }
+        else
+        {
+            this.getHolder().sendTranslated("&aYou are no longer in portal debug mode!");
+        }
     }
 }

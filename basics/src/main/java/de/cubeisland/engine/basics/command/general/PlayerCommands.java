@@ -23,10 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.bukkit.GameMode;
@@ -42,7 +40,6 @@ import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -148,7 +145,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("&cDon't feed the troll!");
-        context.sendMessage(context.getCommand().getUsage());
+        context.sendMessage(context.getCommand().getUsage(context));
     }
 
     @Command(desc = "Empties the hunger bar", max = 1, usage = "{players}")
@@ -218,7 +215,7 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("\n\n\n\n\n\n\n\n\n\n\n\n\n&cI'll give you only one line to eat!");
-        context.sendMessage(context.getCommand().getUsage());
+        context.sendMessage(context.getCommand().getUsage(context));
     }
 
     @Command(desc = "Heals a Player", max = 1, usage = "{player}")
@@ -284,85 +281,97 @@ public class PlayerCommands
             return;
         }
         context.sendTranslated("&cOnly time can heal your wounds!");
-        context.sendMessage(context.getCommand().getUsage());
+        context.sendMessage(context.getCommand().getUsage(context));
+    }
+
+    private GameMode getGameMode(String name)
+    {
+        if (name == null)
+        {
+            return null;
+        }
+        switch (name.trim().toLowerCase())
+        {
+            case "survival":
+            case "s":
+            case "0":
+                return GameMode.SURVIVAL;
+            case "creative":
+            case "c":
+            case "1":
+                return GameMode.CREATIVE;
+            case "adventure":
+            case "a":
+            case "2":
+                return GameMode.ADVENTURE;
+            default:
+                return null;
+        }
+    }
+
+    private GameMode toggleGameMode(GameMode mode)
+    {
+        switch (mode)
+        {
+            case SURVIVAL:
+                return GameMode.CREATIVE;
+            case ADVENTURE:
+            case CREATIVE:
+            default:
+                return GameMode.SURVIVAL;
+        }
     }
 
     @Command(names = {"gamemode", "gm"}, max = 2,
-            desc = "Changes the gamemode", usage = "[gamemode] [player]")
+            desc = "Changes the gamemode", usage = "{player} [gamemode]")
     public void gamemode(CommandContext context)
     {
-        boolean changeOther = false;
-        User sender = null;
-        if (context.getSender() instanceof User)
+        CommandSender sender = context.getSender();
+        User target = null;
+        if (context.getArgCount() > 0)
         {
-            sender = (User)context.getSender();
-        }
-        User user = sender;
-        if (context.hasArg(1))
-        {
-            user = context.getUser(1);
-            if (user == null)
+            if (context.getArgCount() > 1 || getGameMode(context.getString(0)) == null)
             {
-                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(1));
+                target = um.findUser(context.getString(0));
+                if (target == null)
+                {
+                    context.sendTranslated("&cCould not find a user for &2%s&c!", context.getString(0));
+                    return;
+                }
+            }
+        }
+        if (target == null)
+        {
+            if (sender instanceof User)
+            {
+                target = (User)sender;
+            }
+            else
+            {
+                context.sendTranslated("&cYou do not not have any game mode!");
                 return;
             }
-            changeOther = true;
         }
-        else if (user == null)
+        if (sender != target && !BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
-            context.sendTranslated("&cYou do not not have any gamemode!");
+            context.sendTranslated("&cYou are not allowed to change the game mode of an other player!");
             return;
         }
-        if (changeOther && !BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
+        GameMode newMode = getGameMode(context.getString(context.getArgCount() - 1));
+        if (newMode == null)
         {
-            context.sendTranslated("&cYou are not allowed to change the gamemode of an other player!");
-            return;
+            newMode = toggleGameMode(target.getGameMode());
         }
-        if (context.hasArg(0))
+        target.setGameMode(newMode);
+        if (sender != target)
         {
-            String mode = context.getString(0);
-            switch (mode)
-            {
-                case "survival":
-                case "s":
-                case "0":
-                    user.setGameMode(GameMode.SURVIVAL);
-                    break;
-                case "creative":
-                case "c":
-                case "1":
-                    user.setGameMode(GameMode.CREATIVE);
-                    break;
-                case "adventure":
-                case "a":
-                case "2":
-                    user.setGameMode(GameMode.ADVENTURE);
-                    break;
-            }
+            context.sendTranslated("&aYou changed the game mode of &2%s &ato &6%s&a!", target.getDisplayName(), sender.translate(newMode.toString()));
+            target.sendTranslated("&eYour game mode has been changed to &6%s&a!", target.translate(newMode.toString()));
         }
         else
         {
-            GameMode gamemode = user.getGameMode();
-            switch (gamemode)
-            {
-                case ADVENTURE:
-                case CREATIVE:
-                    user.setGameMode(GameMode.SURVIVAL);
-                    break;
-                case SURVIVAL:
-                    user.setGameMode(GameMode.CREATIVE);
-            }
+            context.sendTranslated("&aYou changed your game mode to &6%s&a!", sender.translate(newMode.toString()));
         }
-        if (changeOther)
-        {
-            context.sendTranslated("&aYou changed the gamemode of &2%s &ato &6%s&a!",
-                                   user.getName(), sender.translate(user.getGameMode().toString()));
-            user.sendTranslated("&eYour Gamemode has been changed to &6%s&a!",
-                                user.translate(user.getGameMode().toString()));
-            return;
-        }
-        context.sendTranslated("&aYou changed your gamemode to &6%s&a!",
-                               sender.translate(user.getGameMode().toString()));
     }
 
     @Command(names = {

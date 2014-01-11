@@ -18,9 +18,11 @@
 package de.cubeisland.engine.core.module.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
@@ -108,6 +110,36 @@ public class ServiceManager
                 }
             }
         }
+    }
+
+    public void removeImplementations(Module module)
+    {
+        synchronized (this.services)
+        {
+            for (Service<?> service : this.services.values())
+            {
+                service.removeImplementations(module);
+            }
+        }
+    }
+
+    public Set<Service<?>> getServices()
+    {
+        synchronized (this.services)
+        {
+            return new HashSet<>(this.services.values());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> boolean isImplemented(Class<T> serviceInterface)
+    {
+        Service<T> service;
+        synchronized (this.services)
+        {
+            service = (Service<T>)this.services.get(serviceInterface);
+        }
+        return service != null && service.hasImplementations();
     }
 }
 

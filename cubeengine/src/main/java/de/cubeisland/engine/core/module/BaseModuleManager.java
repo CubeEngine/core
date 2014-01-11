@@ -73,18 +73,18 @@ public abstract class BaseModuleManager implements ModuleManager
 
     private final Map<String, LinkedList<String>> serviceProviders;
 
-    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
+    protected BaseModuleManager(Core core, ServiceManager serviceManager, ModuleLoader loader)
     {
         this.core = core;
         this.logger = core.getLog();
-        this.loader = new ModuleLoader(core, parentClassLoader);
+        this.loader = loader;
         this.modules = new LinkedHashMap<>();
         this.moduleInfoMap = new THashMap<>();
         this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null);
-        this.serviceManager = new ServiceManager(core);
+        this.serviceManager = serviceManager;
     }
 
     @Override
@@ -399,6 +399,17 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized boolean enableModule(Module module)
     {
+        boolean result = this.enableModule0(module);
+        if (!result)
+        {
+            module.getLog().error("Module failed to enable, unloading it now.");
+            this.unloadModule(module);
+        }
+        return result;
+    }
+
+    protected synchronized boolean enableModule0(Module module)
+    {
         module.getLog().info("Enabling version {}...", module.getVersion());
         Profiler.startProfiling("enable-module");
         boolean result = module.enable();
@@ -412,19 +423,24 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             module.getLog().info("Successfully enabled within {} microseconds!", enableTime);
         }
-        else
-        {
-            module.getLog().error("Module failed to enable, unloading it now");
-            this.unloadModule(module);
-        }
         return result;
     }
 
     public synchronized void enableModules()
     {
+        List<Module> brokenModules = new ArrayList<>();
         for (Module module : this.modules.values())
         {
-            this.enableModule(module);
+            if (!this.enableModule0(module))
+            {
+                brokenModules.add(module);
+                module.getLog().error("Module failed to enable, queued for unloading...");
+            }
+        }
+
+        for (Module module : brokenModules)
+        {
+            this.unloadModule(module);
         }
     }
 
@@ -458,6 +474,7 @@ public abstract class BaseModuleManager implements ModuleManager
             }
         }
         this.core.getModuleManager().getServiceManager().unregisterServices(module);
+        this.core.getModuleManager().getServiceManager().removeImplementations(module);
 
         if (wasEnabled)
         {
