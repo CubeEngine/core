@@ -70,6 +70,8 @@ public class Destination
             break;
         case WORLD:
             loc = world.getSpawnLocation();
+            loc.setX(loc.getBlockX() + 0.5);
+            loc.setZ(loc.getBlockZ() + 0.5);
             break;
         case LOCATION:
             loc = location.getLocationIn(world);

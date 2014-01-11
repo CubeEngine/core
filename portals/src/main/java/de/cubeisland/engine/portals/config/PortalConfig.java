@@ -18,31 +18,30 @@
 package de.cubeisland.engine.portals.config;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.util.math.BlockVector3;
+import de.cubeisland.engine.core.world.ConfigWorld;
 
 public class PortalConfig extends YamlConfiguration
 {
     public boolean safeTeleport = true;
     public boolean teleportNonPlayers = false;
     public OfflinePlayer owner;
-    public String world;
+    public ConfigWorld world;
 
     public PortalRegion location = new PortalRegion();
-
-    public World getWorld()
-    {
-        return CubeEngine.getCore().getWorldManager().getWorld(world);
-    }
 
     public class PortalRegion implements Section
     {
         public BlockVector3 from;
         public BlockVector3 to;
+
+        @Comment("When linking another portal to this one a player will be teleported to this location")
+        public WorldLocation destination;
     }
 
     public Destination destination;
