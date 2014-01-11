@@ -31,7 +31,7 @@
     </repository>
     <snapshotRepository>
       <id>cubeisland-repo</id>
-      <name>Release</name>
+      <name>Snapshot</name>
       <url>http://nexus.cubeisland.de/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
@@ -324,7 +324,7 @@
         <plugin>
           <groupId>de.cubeisland.maven.plugins</groupId>
           <artifactId>githead-maven-plugin</artifactId>
-          <version>1.0.1</version>
+          <version>1.0.2-SNAPSHOT</version>
           <executions>
             <execution>
               <goals>
