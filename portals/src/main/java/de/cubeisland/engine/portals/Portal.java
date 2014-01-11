@@ -78,4 +78,10 @@ public class Portal
         }
         return this.config.location.destination.getLocationIn(this.config.world.getWorld());
     }
+
+    public void delete()
+    {
+        this.manager.removePortal(this);
+        this.config.getFile().delete();
+    }
 }

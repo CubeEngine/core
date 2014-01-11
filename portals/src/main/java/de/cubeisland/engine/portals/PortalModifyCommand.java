@@ -19,14 +19,17 @@ package de.cubeisland.engine.portals;
 
 import java.util.Random;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 
+import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.portals.config.Destination;
 
 public class PortalModifyCommand extends ContainerCommand
@@ -40,9 +43,39 @@ public class PortalModifyCommand extends ContainerCommand
         this.manager = manager;
     }
 
-    public void owner()
+    @Command(desc = "Changes the owner of a portal",
+    usage = "<owner> [portal]", min = 1, max = 2)
+    public void owner(CommandContext context)
     {
-
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
+            return;
+        }
+        Portal portal = null;
+        if (context.hasArg(1))
+        {
+            portal = manager.getPortal(context.getString(1));
+            if (portal == null)
+            {
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString(1));
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        }
+        if (portal == null)
+        {
+            context.sendTranslated("&cYou need to define a portal to use!");
+            context.sendMessage(context.getCommand().getUsage(context));
+            return;
+        }
+        portal.config.owner = user.getOfflinePlayer();
+        portal.config.save();
+        context.sendTranslated("&2%s&a is now the owner of &6%s&a!", user.getName(), portal.getName());
     }
 
     @Alias(names = "mvpd")
@@ -68,7 +101,7 @@ public class PortalModifyCommand extends ContainerCommand
         }
         if (portal == null)
         {
-            context.sendTranslated("&cYou need to define a portal!");
+            context.sendTranslated("&cYou need to define a portal to use!");
             context.sendMessage(context.getCommand().getUsage(context));
             return;
         }
@@ -109,6 +142,31 @@ public class PortalModifyCommand extends ContainerCommand
     public void location()
     {
 
+    }
+
+    @Command(desc = "Modifies the location where a player exits when teleporting a portal", usage = "[portal]", max = 1)
+    public void exit(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+            if (portal == null)
+            {
+                context.sendTranslated("&cYou need to define a portal!");
+                context.sendMessage(context.getCommand().getUsage(context));
+                return;
+            }
+            Location location = ((User)context.getSender()).getLocation();
+            if (portal.config.world.getWorld() != location.getWorld())
+            {
+                context.sendTranslated("&cA portals exit cannot be in an other world than its location!");
+                return;
+            }
+            portal.config.location.destination = new WorldLocation(location);
+            portal.config.save();
+            return;
+        }
+        context.sendTranslated("&cYou have to be ingame to do this!");
     }
 
     public void safe()
