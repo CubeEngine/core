@@ -22,19 +22,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.LocationUtil;
+import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.portals.config.PortalConfig;
 
 public class PortalManager implements Listener
 {
-    private final Portals module;
+    public final Portals module;
     protected final File portalsDir;
 
     private Map<String, Portal> portals = new HashMap<>();
@@ -49,6 +54,14 @@ public class PortalManager implements Listener
         this.module.getCore().getCommandManager().registerCommand(new PortalModifyCommand(this.module, this), "portals");
         this.module.getCore().getEventManager().registerListener(this.module, this);
         this.loadPortals();
+        this.module.getCore().getTaskManager().runTimer(module, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                checkForEntitiesInPortals();
+            }
+        }, 5, 5);
     }
 
     private void loadPortals()
@@ -66,10 +79,12 @@ public class PortalManager implements Listener
         this.module.getLog().debug("in {} chunks", this.chunksWithPortals.size());
     }
 
+    // TODO riding entities
+
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getFrom()));
+        List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getTo()));
         if (portals == null)
         {
             return;
@@ -79,11 +94,77 @@ public class PortalManager implements Listener
             if (portal.has(event.getTo()))
             {
                 User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                user.attachOrGet(PortalsAttachment.class, module).setInPortal(true);
-                user.sendMessage("TP INTO PORTAL"); // TODO remove
+                PortalsAttachment attachment = user.attachOrGet(PortalsAttachment.class, module);
+                attachment.setInPortal(true);
+                if (attachment.isDebug())
+                {
+                    user.sendTranslated("&e[Portals] Debug: &aTeleported into portal: &6%s", portal.getName());
+                }
                 return;
             }
             // else ignore
+        }
+    }
+
+    WeakHashMap<Portal, List<Entity>> entitesInPortals = new WeakHashMap<>();
+
+    private void checkForEntitiesInPortals()
+    {
+        for (Portal portal : this.portals.values())
+        {
+            if (portal.config.teleportNonPlayers)
+            {
+                for (Pair<Integer, Integer> chunk : portal.getChunks())
+                {
+                    if (portal.getWorld().isChunkLoaded(chunk.getLeft(), chunk.getRight()))
+                    {
+                        Location helperLoc = new Location(null, 0,0,0);
+                        for (Entity entity : portal.getWorld().getChunkAt(chunk.getLeft(), chunk.getRight()).getEntities())
+                        {
+                            List<Entity> entities = entitesInPortals.get(portal);
+                            if (portal.has(entity.getLocation(helperLoc)))
+                            {
+                                if (entities == null || entities.isEmpty() || !entities.contains(entity))
+                                {
+                                    portal.teleport(entity);
+                                }
+                            }
+                            else if (entities != null)
+                            {
+                                entities.remove(entity);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityTeleport(EntityTeleportEvent event)
+    {
+        List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getFrom()));
+        if (portals == null)
+        {
+            return;
+        }
+        for (Portal portal : portals)
+        {
+            List<Entity> entities = this.entitesInPortals.get(portal);
+            if (portal.has(event.getTo()))
+            {
+                if (entities == null)
+                {
+                    entities = new ArrayList<>();
+                    this.entitesInPortals.put(portal, entities);
+                }
+                entities.add(event.getEntity());
+                return;
+            }
+            else if (entities != null)
+            {
+                entities.remove(event.getEntity());
+            }
         }
     }
 
@@ -100,24 +181,36 @@ public class PortalManager implements Listener
         {
             List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getFrom()));
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            PortalsAttachment attachment = user.attachOrGet(PortalsAttachment.class, module);
             if (portals != null)
             {
                 for (Portal portal : portals)
                 {
                     if (portal.has(event.getTo()))
                     {
-                        if (!user.attachOrGet(PortalsAttachment.class, module).isInPortal())
+                        if (attachment.isDebug())
+                        {
+                            if (attachment.isInPortal())
+                            {
+                                user.sendTranslated("&e[Portals] Debug: &aMove in portal: &6%s", portal.getName());
+                            }
+                            else
+                            {
+                                user.sendTranslated("&e[Portals] Debug: &aEntered portal: &6%s", portal.getName());
+                                portal.showInfo(user);
+                                attachment.setInPortal(true);
+                            }
+                        }
+                        else if (!attachment.isInPortal())
                         {
                             portal.teleport(user);
-                            return;
                         }
-                        user.sendMessage("MOVE IN PORTAL"); // TODO remove
                         return;
                     }
                     // else ignore
                 }
             }
-            user.attachOrGet(PortalsAttachment.class, module).setInPortal(false);
+            attachment.setInPortal(false);
             // else movement is not in a chunk that has a portal
         }
     }
@@ -131,35 +224,17 @@ public class PortalManager implements Listener
     {
         this.portals.put(portal.getName().toLowerCase(), portal);
 
-        int chunkXFrom = portal.config.location.from.x >> 4;
-        int chunkZFrom =  portal.config.location.from.z >> 4;
-        int chunkXTo =  portal.config.location.to.x >> 4;
-        int chunkZTo = portal.config.location.to.z >> 4;
-        if (chunkXFrom > chunkXTo) // if from is greater swap
+        List<Pair<Integer,Integer>> chunks = portal.getChunks();
+        for (Pair<Integer, Integer> chunk : chunks)
         {
-            chunkXFrom = chunkXFrom + chunkXTo;
-            chunkXTo = chunkXFrom - chunkXTo;
-            chunkXFrom = chunkXFrom - chunkXTo;
-        }
-        if (chunkZFrom > chunkZTo) // if from is greater swap
-        {
-            chunkZFrom = chunkZFrom + chunkZTo;
-            chunkZTo = chunkZFrom - chunkZTo;
-            chunkZFrom = chunkZFrom - chunkZTo;
-        }
-        for (int x = chunkXFrom; x <= chunkXTo; x++)
-        {
-            for (int z = chunkZFrom; z <= chunkZTo; z++)
+            long chunkKey = LocationUtil.getChunkKey(chunk.getLeft(), chunk.getRight());
+            List<Portal> list = this.chunksWithPortals.get(chunkKey);
+            if (list == null)
             {
-                long chunkKey = LocationUtil.getChunkKey(x, z);
-                List<Portal> list = this.chunksWithPortals.get(chunkKey);
-                if (list == null)
-                {
-                    list = new ArrayList<>();
-                    this.chunksWithPortals.put(chunkKey, list);
-                }
-                list.add(portal);
+                list = new ArrayList<>();
+                this.chunksWithPortals.put(chunkKey, list);
             }
+            list.add(portal);
         }
     }
 

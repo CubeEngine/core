@@ -197,7 +197,7 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated("&cYou have to be ingame to do this!");
     }
 
-    @Command(desc = "Toggles safe teleportation for this portal", usage = "[portal]")
+    @Command(desc = "Toggles safe teleportation for this portal", usage = "[portal]", max = 1)
     public void togglesafe(CommandContext context)
     {
         Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
@@ -219,9 +219,25 @@ public class PortalModifyCommand extends ContainerCommand
         }
     }
 
-    public void entity()
+    @Command(desc = "Toggles whether entities can teleport with this portal", usage = "[portal]", max = 1)
+    public void entity(CommandContext context)
     {
-        // TODO implement entity tp
-        // TODO implement riding tp
+        Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        if (portal == null)
+        {
+            context.sendTranslated("&cYou need to define a portal!");
+            context.sendMessage(context.getCommand().getUsage(context));
+            return;
+        }
+        portal.config.teleportNonPlayers = !portal.config.teleportNonPlayers;
+        portal.config.save();
+        if (portal.config.teleportNonPlayers)
+        {
+            context.sendTranslated("&aThe portal &6%s&a will teleport entities too", portal.getName());
+        }
+        else
+        {
+            context.sendTranslated("&aThe portal &6%s&a will only teleport players", portal.getName());
+        }
     }
 }

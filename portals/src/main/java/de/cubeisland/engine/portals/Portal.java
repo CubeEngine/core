@@ -17,9 +17,16 @@
  */
 package de.cubeisland.engine.portals;
 
-import org.bukkit.Location;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.portals.config.PortalConfig;
 
@@ -56,16 +63,19 @@ public class Portal
         return b > a ? x >= a && x <= b : x >= b && x <= a;
     }
 
-    public void teleport(User user)
+    public void teleport(Entity entity)
     {
         if (this.config.destination == null)
         {
-            user.sendTranslated("&eThis portal \"&6%s&e\" has no destination yet!", this.getName());
-            user.attachOrGet(PortalsAttachment.class, module).setInPortal(true);
+            if (entity instanceof User)
+            {
+                ((User)entity).sendTranslated("&eThis portal \"&6%s&e\" has no destination yet!", this.getName());
+                ((User)entity).attachOrGet(PortalsAttachment.class, module).setInPortal(true);
+            }
         }
         else
         {
-            this.config.destination.teleport(user, this.manager);
+            this.config.destination.teleport(entity, this.manager, this.config.safeTeleport);
         }
     }
 
@@ -83,5 +93,44 @@ public class Portal
     {
         this.manager.removePortal(this);
         this.config.getFile().delete();
+    }
+
+    public void showInfo(CommandSender user)
+    {
+        user.sendMessage("TODO");// TODO
+    }
+
+    public List<Pair<Integer,Integer>> getChunks()
+    {
+        List<Pair<Integer,Integer>> result = new ArrayList<>();
+        int chunkXFrom = config.location.from.x >> 4;
+        int chunkZFrom =  config.location.from.z >> 4;
+        int chunkXTo =  config.location.to.x >> 4;
+        int chunkZTo = config.location.to.z >> 4;
+        if (chunkXFrom > chunkXTo) // if from is greater swap
+        {
+            chunkXFrom = chunkXFrom + chunkXTo;
+            chunkXTo = chunkXFrom - chunkXTo;
+            chunkXFrom = chunkXFrom - chunkXTo;
+        }
+        if (chunkZFrom > chunkZTo) // if from is greater swap
+        {
+            chunkZFrom = chunkZFrom + chunkZTo;
+            chunkZTo = chunkZFrom - chunkZTo;
+            chunkZFrom = chunkZFrom - chunkZTo;
+        }
+        for (int x = chunkXFrom; x <= chunkXTo; x++)
+        {
+            for (int z = chunkZFrom; z <= chunkZTo; z++)
+            {
+                result.add(new Pair<>(x,z));
+            }
+        }
+        return result;
+    }
+
+    public World getWorld()
+    {
+        return this.config.world.getWorld();
     }
 }

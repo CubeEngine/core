@@ -128,13 +128,37 @@ public class PortalCommands extends ContainerCommand
         {
             ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module).setPortal(portal);
             context.sendTranslated("&aPortal selected: &6%s", context.getString(0));
+            return;
         }
         context.sendTranslated("&cYou have to be ingame to do this!");
     }
 
-    public void info()
+    @Alias(names ="mvpi")
+    @Command(desc = "Show info about a portal", usage = "[portal]", max = 1)
+    public void info(CommandContext context)
     {
-        // TODO
+        Portal portal = null;
+        if (context.hasArg(0))
+        {
+            portal = manager.getPortal(context.getString(0));
+            if (portal == null)
+            {
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString(0));
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        }
+        if (portal == null)
+        {
+            context.sendTranslated("&cYou need to define a portal to use!");
+            context.sendMessage(context.getCommand().getUsage(context));
+            return;
+        }
+        context.sendTranslated("&aPortal Information for: &6%s", portal.getName());
+        portal.showInfo(context.getSender());
     }
 
     @Alias(names = "mvpr")
