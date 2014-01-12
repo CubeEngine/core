@@ -39,6 +39,8 @@ import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.config.Destination;
 import de.cubeisland.engine.portals.config.PortalConfig;
 
+import static de.cubeisland.engine.core.command.Commands.aliases;
+
 public class PortalCommands extends ContainerCommand
 {
     private Portals module;
@@ -46,7 +48,7 @@ public class PortalCommands extends ContainerCommand
 
     public PortalCommands(Portals module, PortalManager manager)
     {
-        super(module, "portals", "The portal commands", Arrays.asList("mvp"));
+        super(module, "portals", "The portal commands", aliases("mvp"));
         this.module = module;
         this.manager = manager;
     }
