@@ -23,12 +23,9 @@ import de.cubeisland.engine.portals.config.DestinationConverter;
 
 public class Portals extends Module
 {
-    private PortalsConfig config;
-    
     @Override
     public void onEnable()
     {
-        this.config = this.loadConfig(PortalsConfig.class);
         this.getCore().getConfigFactory().getDefaultConverterManager().registerConverter(Destination.class, new DestinationConverter(getCore()));
         new PortalManager(this);
     }
