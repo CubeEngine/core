@@ -175,12 +175,42 @@ public class PortalCommands extends ContainerCommand
         context.sendTranslated("&aPortal &6%s&a deleted", portal.getName());
     }
 
-    @Command(desc = "Shows debug portal information instead of teleporting", usage = "on|off", max = 1, min = 1)
+    @Command(desc = "Shows debug portal information instead of teleporting", usage = "[on|off]", max = 1)
     public void debug(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
-            ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module).toggleDebug();
+            PortalsAttachment attachment = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module);
+            if (context.hasArg(0))
+            {
+                if (context.getString(0).equalsIgnoreCase("on"))
+                {
+                    if (!attachment.isDebug())
+                    {
+                        attachment.toggleDebug();
+                    }
+                }
+                else if (context.getString(0).equalsIgnoreCase("off"))
+                {
+                    if (attachment.isDebug())
+                    {
+                        attachment.toggleDebug();
+                    }
+                    context.sendTranslated("&e[Portals] Debug &6OFF");
+                }
+            }
+            else
+            {
+                attachment.toggleDebug();
+            }
+            if (attachment.isDebug())
+            {
+                context.sendTranslated("&e[Portals] Debug &6ON");
+            }
+            else
+            {
+                context.sendTranslated("&aToggled debug mode!");
+            }
             return;
         }
         context.sendTranslated("&cYou have to be ingame to do this!");

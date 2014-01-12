@@ -24,8 +24,6 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Param;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.service.Selector;
@@ -84,17 +82,16 @@ public class PortalModifyCommand extends ContainerCommand
     @Alias(names = "mvpd")
     @Command(names = {"destination","dest"},
         desc = "changes the destination of the selected portal",
-             usage = "here|<world>|<p:<portal>> [p <portal>]", min = 1, max = 1,
-    params = @Param(names = {"p","portal"}))
-    public void destination(ParameterizedContext context)
+             usage = "here|<world>|<p:<portal>> [portal]", min = 1, max = 2)
+    public void destination(CommandContext context)
     {
         Portal portal = null;
-        if (context.hasParam("p"))
+        if (context.hasArg(1))
         {
-            portal = manager.getPortal(context.getString("p"));
+            portal = manager.getPortal(context.getString(1));
             if (portal == null)
             {
-                context.sendTranslated("&cPortal &6%s&c not found!", context.getString("p"));
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString(1));
                 return;
             }
         }
@@ -151,7 +148,16 @@ public class PortalModifyCommand extends ContainerCommand
             Selector selector = this.getModule().getCore().getModuleManager().getServiceManager().getServiceImplementation(Selector.class);
             if (selector.getSelection(sender) instanceof Cuboid)
             {
-                Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+                Portal portal = sender.attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+                if (context.hasArg(0))
+                {
+                    portal = manager.getPortal(context.getString(0));
+                    if (portal == null)
+                    {
+                        context.sendTranslated("&cPortal &6%s&c not found!", context.getString(0));
+                        return;
+                    }
+                }
                 if (portal == null)
                 {
                     context.sendTranslated("&cYou need to define a portal!");
@@ -177,14 +183,24 @@ public class PortalModifyCommand extends ContainerCommand
     {
         if (context.getSender() instanceof User)
         {
-            Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+            User sender = (User)context.getSender();
+            Portal portal = sender.attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+            if (context.hasArg(0))
+            {
+                portal = manager.getPortal(context.getString(0));
+                if (portal == null)
+                {
+                    context.sendTranslated("&cPortal &6%s&c not found!", context.getString(0));
+                    return;
+                }
+            }
             if (portal == null)
             {
                 context.sendTranslated("&cYou need to define a portal!");
                 context.sendMessage(context.getCommand().getUsage(context));
                 return;
             }
-            Location location = ((User)context.getSender()).getLocation();
+            Location location = sender.getLocation();
             if (portal.config.world.getWorld() != location.getWorld())
             {
                 context.sendTranslated("&cA portals exit cannot be in an other world than its location!");
@@ -200,7 +216,20 @@ public class PortalModifyCommand extends ContainerCommand
     @Command(desc = "Toggles safe teleportation for this portal", usage = "[portal]", max = 1)
     public void togglesafe(CommandContext context)
     {
-        Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        Portal portal = null;
+        if (context.hasArg(0))
+        {
+            portal = manager.getPortal(context.getString(0));
+            if (portal == null)
+            {
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString(0));
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        }
         if (portal == null)
         {
             context.sendTranslated("&cYou need to define a portal!");
@@ -222,7 +251,20 @@ public class PortalModifyCommand extends ContainerCommand
     @Command(desc = "Toggles whether entities can teleport with this portal", usage = "[portal]", max = 1)
     public void entity(CommandContext context)
     {
-        Portal portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        Portal portal = null;
+        if (context.hasArg(0))
+        {
+            portal = manager.getPortal(context.getString(0));
+            if (portal == null)
+            {
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString(0));
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        }
         if (portal == null)
         {
             context.sendTranslated("&cYou need to define a portal!");
