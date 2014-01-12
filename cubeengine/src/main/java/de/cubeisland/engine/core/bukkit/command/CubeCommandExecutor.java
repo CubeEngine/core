@@ -183,22 +183,21 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             if (result == null)
             {
                 result = context.getCommand().tabComplete(context);
-                if (result == null)
-                {
-                    result = bukkitCommand.tabComplete(bukkitSender, label, args);
-                }
             }
-            
-            final int max = core.getConfiguration().commands.maxTabCompleteOffers;
-            if (result.size() > max)
+
+            if (result != null)
             {
-                if (StringUtils.implode(", ", result).length() < TAB_LIMIT_THRESHOLD)
+                final int max = core.getConfiguration().commands.maxTabCompleteOffers;
+                if (result.size() > max)
                 {
-                    return result;
+                    if (StringUtils.implode(", ", result).length() < TAB_LIMIT_THRESHOLD)
+                    {
+                        return result;
+                    }
+                    result = result.subList(0, max);
                 }
-                result = result.subList(0, max);
+                return result;
             }
-            return result;
         }
         catch (Exception e)
         {
