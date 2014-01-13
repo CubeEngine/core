@@ -17,7 +17,9 @@
  */
 package de.cubeisland.engine.worlds.commands;
 
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.command.CommandContext;
@@ -27,6 +29,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.worlds.Multiverse;
 import de.cubeisland.engine.worlds.Universe;
@@ -45,12 +48,12 @@ public class WorldCommands extends ContainerCommand
     @Command(desc = "Creates and loads a new world")
     public void create(ParameterizedContext context)
     {
-        // TODO
+        context.sendMessage("TODO"); // TODO
+        // create name environement seed generator worldtype structures?
+        // flag to recreate
     }
-    // create name environement seed generator worldtype structures?
 
-    @Command(desc = "Loads a world from configuration", usage = "<world>",
-    min = 1, max = 1)
+    @Command(desc = "Loads a world from configuration", usage = "<world>", min = 1, max = 1)
     public void load(CommandContext context)
     {
         World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
@@ -77,15 +80,39 @@ public class WorldCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Unload a loaded world",
-             flags = @Flag(longName = "force", name = "f")
-    )
-    public void unload(ParameterizedContext context) // -f to tp players out of that world
+    @Command(desc = "Unload a loaded world", usage = "<world> [-f]", max = 1, min = 1,
+             flags = @Flag(longName = "force", name = "f"))
+    public void unload(ParameterizedContext context)
     {
-        // TODO force flag
         World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
         if (world != null)
         {
+            World tpWorld = this.multiverse.getUniverse(world).getMainWorld();
+            if (tpWorld == world)
+            {
+                tpWorld = this.multiverse.getMainWorld();
+                if (tpWorld == world)
+                {
+                    context.sendTranslated("&cCannot unload main world of main universe!");
+                    // TODO how to change main world
+                    return;
+                }
+            }
+            if (context.hasFlag("f") && !world.getPlayers().isEmpty())
+            {
+                Location spawnLocation = tpWorld.getSpawnLocation();
+                spawnLocation.setX(spawnLocation.getX() + 0.5);
+                spawnLocation.setZ(spawnLocation.getZ() + 0.5);
+                for (Player player : world.getPlayers())
+                {
+                    if (!player.teleport(spawnLocation))
+                    {
+                        context.sendTranslated("&cCould not teleport every player out of the world to unload!");
+                        return;
+                    }
+                }
+                context.sendTranslated("&aTeleported all players out of &6%s", world.getName());
+            }
             if (this.getModule().getCore().getWorldManager().unloadWorld(world, true))
             {
                 context.sendTranslated("&aUnloaded the world &6%s&a!", world.getName());
@@ -93,19 +120,35 @@ public class WorldCommands extends ContainerCommand
             else
             {
                 context.sendTranslated("&cCould not unload &6%s", world.getName());
+                if (!world.getPlayers().isEmpty())
+                {
+                    context.sendTranslated("&eThere are players still on that map! (&6%d&e)", world.getPlayers().size());
+                }
             }
             return;
         }
         context.sendTranslated("&aThe world does not exist");
     }
-    // unload (-f teleports all players out of this world)
 
-    @Command(desc = "Remove a world")
-    public void remove(CommandContext context) // -f unload and tp players out
+    @Command(desc = "Remove a world", usage = "<world> [-f]",
+    flags = @Flag(name = "f", longName = "folder"))
+    public void remove(CommandContext context)
     {
-        // TODO
+        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        if (world != null)
+        {
+            context.sendTranslated("&cYou have to unload the world first!");
+            return;
+        }
+        Universe universe = multiverse.hasWorld(context.getString(0));
+        if (universe == null)
+        {
+            context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
+            return;
+        }
+        universe.removeWorld(context.getString(0));
+        // TODO folder flag permission
     }
-    // remove/delete
 
     @Command(desc = "Lists all worls")
     public void list(CommandContext context)
@@ -132,28 +175,38 @@ public class WorldCommands extends ContainerCommand
     @Command(desc = "Show info about a world")
     public void info(CommandContext context)
     {
-        // TODO
+        context.sendMessage("TODO"); // TODO
     }
     // info
 
-    @Command(desc = "Lists the players in a world")
+    @Command(desc = "Lists the players in a world", usage = "<world>", min = 1, max = 1)
     public void listplayers(CommandContext context)
     {
-        // TODO
+        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        if (world == null)
+        {
+            context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
+            return;
+        }
+        if (world.getPlayers().isEmpty())
+        {
+            context.sendTranslated("&eThere are no players in &6%s", world.getName());
+        }
+        else
+        {
+            context.sendTranslated("&aThe following players are in &6%s", world.getName());
+            String s = ChatFormat.parseFormats(" &e-&6 ");
+            for (Player player : world.getPlayers())
+            {
+                context.sendMessage(s + player.getName());
+            }
+        }
     }
-    // listplayers in world/universe
-
-    @Command(desc = "Reloads the module")
-    public void reload(CommandContext context)
-    {
-        // TODO
-    }
-    // reload
 
     @Command(desc = "Sets the main world")
     public void setMainWorld(CommandContext context)
     {
-        // TODO
+        context.sendMessage("TODO"); // TODO
     }
     // set main world (of universe) (of universes)
     // set main universe
@@ -161,7 +214,7 @@ public class WorldCommands extends ContainerCommand
     @Command(desc = "Moves a world into another universe")
     public void move(CommandContext context)
     {
-        // TODO
+        context.sendMessage("TODO"); // TODO
     }
     // move to other universe
 

@@ -40,6 +40,7 @@ import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.worlds.config.UniverseConfig;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.player.PlayerDataConfig;
@@ -118,12 +119,12 @@ public class Universe
             {
                 if (worldConfig.spawn.respawnWorld == null)
                 {
-                    worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
+                    worldConfig.spawn.respawnWorld = new ConfigWorld(module.getCore().getWorldManager(), this.universeConfig.mainWorld.getName());
                     worldConfig.save();
                 }
             }
         }
-        this.mainWorld = this.universeConfig.mainWorld == null ? null : this.module.getCore().getWorldManager().getWorld(this.universeConfig.mainWorld);
+        this.mainWorld = this.universeConfig.mainWorld.getWorld();
         if (this.mainWorld == null)
         {
             if (this.worlds.isEmpty())
@@ -135,7 +136,7 @@ public class Universe
             {
                 this.mainWorld = this.worlds.iterator().next();
                 module.getLog().warn("Unknown world set as mainworld! Mainworld {} replaced with {}!", this.universeConfig.mainWorld, this.mainWorld.getName());
-                this.universeConfig.mainWorld = this.mainWorld.getName();
+                this.universeConfig.mainWorld = new ConfigWorld(module.getCore().getWorldManager(), this.mainWorld.getName());
             }
             this.universeConfig.save();
         }
@@ -213,14 +214,14 @@ public class Universe
         {
             if (world.getName().equals(universeDir.getName()))
             {
-                this.universeConfig.mainWorld = world.getName();
+                this.universeConfig.mainWorld = new ConfigWorld(module.getCore().getWorldManager(), world.getName());
                 this.universeConfig.save();
 
                 this.defaults = this.createWorldConfigFromExisting(world);
                 this.defaults.spawn.spawnLocation = null;
                 this.defaults.generation.worldType = null;
                 this.defaults.generation.seed = null;
-                this.defaults.spawn.respawnWorld = this.universeConfig.mainWorld;
+                this.defaults.spawn.respawnWorld = new ConfigWorld(module.getCore().getWorldManager(), this.universeConfig.mainWorld.getName());
                 this.defaults.setFile(new File(universeDir, "defaults.yml"));
 
                 this.defaults.save();
@@ -411,7 +412,7 @@ public class Universe
         {
             return this.getSpawnLocation(this.getMainWorld());
         }
-        World respawnWorld = this.module.getCore().getWorldManager().getWorld(worldConfig.spawn.respawnWorld);
+        World respawnWorld = worldConfig.spawn.respawnWorld.getWorld();
         if (respawnWorld == null)
         {
             this.module.getLog().warn("Unknown respawn world for {}", world.getName());
@@ -428,7 +429,7 @@ public class Universe
     public boolean hasWorld(String name)
     {
         WorldConfig worldConfig = this.worldConfigMap.get(name);
-        return worldConfig == null;
+        return worldConfig != null;
     }
 
     public World loadWorld(String name)
@@ -444,5 +445,11 @@ public class Universe
             list.add(new Pair<>(entry.getKey(), entry.getValue()));
         }
         return list;
+    }
+
+    public void removeWorld(String name)
+    {
+        WorldConfig config = this.worldConfigMap.remove(name);
+        config.getFile().delete();
     }
 }

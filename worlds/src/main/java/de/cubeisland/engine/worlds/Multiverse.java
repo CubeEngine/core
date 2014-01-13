@@ -207,6 +207,8 @@ public class Multiverse implements Listener
 
     }
 
+    // TODO load World / unload World events
+
     @EventHandler
     public void onSetSpawn(WorldSetSpawnEvent event)
     {
@@ -467,5 +469,11 @@ public class Multiverse implements Listener
     public Collection<Universe> getUniverses()
     {
         return this.universes.values();
+    }
+
+
+    public World getMainWorld()
+    {
+        return mainWorld;
     }
 }

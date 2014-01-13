@@ -35,6 +35,7 @@ import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.world.ConfigWorld;
 
 public class WorldConfig extends YamlConfiguration
 {
@@ -87,7 +88,7 @@ public class WorldConfig extends YamlConfiguration
     {
         @Comment("The world a player will respawn in when dying and not having a bedspawn set\n" +
                      "Empty means main world of this universe")
-        public String respawnWorld; // empty means main universe world
+        public ConfigWorld respawnWorld; // empty means main universe world
         @Comment("If false sleeping in a bed will not set a players spawn. Not implemented yet")
         public boolean allowBedRespawn = true; // TODO implement bedspawn
         @Comment("Keeps the spawn of this world loaded.")

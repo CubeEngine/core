@@ -19,11 +19,12 @@ package de.cubeisland.engine.worlds.config;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.core.world.ConfigWorld;
 
 public class UniverseConfig extends YamlConfiguration
 {
     @Comment("The main world in this universe")
-    public String mainWorld;
+    public ConfigWorld mainWorld;
 
     @Comment("Players will keep their gamemode when changing worlds in this universe")
     public boolean keepGameMode = false; // if false can use perm
