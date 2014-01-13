@@ -109,20 +109,34 @@ public class PaintingListener implements Listener
                     return;
                 }
 
+                Art[] arts = Art.values();
                 int artNumber = painting.getArt().ordinal();
-                do
+                int change = this.compareSlots(event.getPreviousSlot(), event.getNewSlot());
+                artNumber += change;
+                if (artNumber >= arts.length)
                 {
-                    artNumber += this.compareSlots(event.getPreviousSlot(), event.getNewSlot());
-                    if (artNumber >= Art.values().length)
+                    artNumber = 0;
+                }
+                else if(artNumber < 0)
+                {
+                    artNumber = arts.length - 1;
+                }
+                for (int i = 0; i < arts.length; i++)
+                {
+                    if (painting.setArt(arts[artNumber]))
+                    {
+                        return;
+                    }
+                    artNumber += change;
+                    if (artNumber >= arts.length)
                     {
                         artNumber = 0;
                     }
-                    else if(artNumber < 0)
+                    if (artNumber == -1)
                     {
-                        artNumber = Art.values().length - 1;
+                        artNumber = arts.length;
                     }
                 }
-                while (!painting.setArt(Art.values()[artNumber]));
             }
         }
     }
