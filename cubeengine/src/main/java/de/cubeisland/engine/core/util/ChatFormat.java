@@ -21,35 +21,34 @@ import java.util.regex.Pattern;
 
 import gnu.trove.map.TCharObjectMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
-import org.fusesource.jansi.Ansi;
 
 /**
  * This enum contains all of Minecraft's chat format codes and some utility methods to parse them.
  */
 public enum ChatFormat
 {
-    BLACK('0', Ansi.ansi().fg(Ansi.Color.BLACK).boldOff().toString()),
-    DARK_BLUE('1', Ansi.ansi().fg(Ansi.Color.BLUE).boldOff().toString()),
-    DARK_GREEN('2', Ansi.ansi().fg(Ansi.Color.GREEN).boldOff().toString()),
-    DARK_AQUA('3', Ansi.ansi().fg(Ansi.Color.CYAN).boldOff().toString()),
-    DARK_RED('4', Ansi.ansi().fg(Ansi.Color.RED).boldOff().toString()),
-    PURPLE('5', Ansi.ansi().fg(Ansi.Color.MAGENTA).boldOff().toString()),
-    GOLD('6', Ansi.ansi().fg(Ansi.Color.YELLOW).boldOff().toString()),
-    GREY('7', Ansi.ansi().fg(Ansi.Color.WHITE).boldOff().toString()),
-    DARK_GREY('8', Ansi.ansi().fg(Ansi.Color.BLACK).bold().toString()),
-    INDIGO('9', Ansi.ansi().fg(Ansi.Color.BLUE).bold().toString()),
-    BRIGHT_GREEN('a', Ansi.ansi().fg(Ansi.Color.GREEN).bold().toString()),
-    AQUA('b', Ansi.ansi().fg(Ansi.Color.CYAN).bold().toString()),
-    RED('c', Ansi.ansi().fg(Ansi.Color.RED).bold().toString()),
-    PINK('d', Ansi.ansi().fg(Ansi.Color.MAGENTA).bold().toString()),
-    YELLOW('e', Ansi.ansi().fg(Ansi.Color.YELLOW).bold().toString()),
-    WHITE('f', Ansi.ansi().fg(Ansi.Color.WHITE).bold().toString()),
-    MAGIC('k', Ansi.ansi().a(Ansi.Attribute.BLINK_SLOW).toString()),
-    BOLD('l', Ansi.ansi().a(Ansi.Attribute.UNDERLINE_DOUBLE).toString()),
-    STRIKE('m', Ansi.ansi().a(Ansi.Attribute.STRIKETHROUGH_ON).toString()),
-    UNDERLINE('n', Ansi.ansi().a(Ansi.Attribute.UNDERLINE).toString()),
-    ITALIC('o', Ansi.ansi().a(Ansi.Attribute.ITALIC).toString()),
-    RESET('r', Ansi.ansi().a(Ansi.Attribute.RESET).fg(Ansi.Color.DEFAULT).toString());
+    BLACK('0'),
+    DARK_BLUE('1'),
+    DARK_GREEN('2'),
+    DARK_AQUA('3'),
+    DARK_RED('4'),
+    PURPLE('5'),
+    GOLD('6'),
+    GREY('7'),
+    DARK_GREY('8'),
+    INDIGO('9'),
+    BRIGHT_GREEN('a'),
+    AQUA('b'),
+    RED('c'),
+    PINK('d'),
+    YELLOW('e'),
+    WHITE('f'),
+    MAGIC('k'),
+    BOLD('l'),
+    STRIKE('m'),
+    UNDERLINE('n'),
+    ITALIC('o'),
+    RESET('r');
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
     private static final char BASE_CHAR = '\u00A7';
@@ -58,12 +57,10 @@ public enum ChatFormat
     private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
     private final char formatChar;
     private final String string;
-    private final String ansiCode;
 
-    private ChatFormat(char formatChar, String ansiCode)
+    private ChatFormat(char formatChar)
     {
         this.formatChar = formatChar;
-        this.ansiCode = ansiCode;
         this.string = String.valueOf(new char[] {
             BASE_CHAR, formatChar
         });
@@ -83,11 +80,6 @@ public enum ChatFormat
     public char getChar()
     {
         return this.formatChar;
-    }
-
-    public String getAnsiCode()
-    {
-        return this.ansiCode;
     }
 
     /**

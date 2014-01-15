@@ -104,19 +104,6 @@
             <groupId>org.ocpsoft.prettytime</groupId>
             <artifactId>prettytime</artifactId>
           </exclusion>
-          <!-- JANSI -->
-          <exclusion>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi-native</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi-project</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi-website</artifactId>
-          </exclusion>
           <exclusion>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
