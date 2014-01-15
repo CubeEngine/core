@@ -99,7 +99,7 @@ public class TeleportRequestCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
-            user.sendTranslated("&2%s &awants to teleport you to him!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
+            user.sendTranslated("&2%s &awants to teleport you to them!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
             user.get(BasicsAttachment.class).setPendingTpFromRequest(sender.getName());
             user.get(BasicsAttachment.class).removePendingTpToRequest();
             context.sendTranslated("&aTeleport request send to &2%s!", user.getName());
