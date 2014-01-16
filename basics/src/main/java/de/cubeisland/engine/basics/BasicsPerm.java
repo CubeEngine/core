@@ -226,11 +226,11 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Prevents from being displayed as no longer afk automatically unless using chat
      */
-    public static final Permission PREVENT_AUTOUNAFK = COMMAND_AFK_PREVENT.createChild("autounafk");
+    public static final Permission PREVENT_AUTOUNAFK = COMMAND_AFK_PREVENT.createChild("autounafk", FALSE);
     /**
      * Prevents from being displayed as afk automatically
      */
-    public static final Permission PREVENT_AUTOAFK = COMMAND_AFK_PREVENT.createChild("autoafk");
+    public static final Permission PREVENT_AUTOAFK = COMMAND_AFK_PREVENT.createChild("autoafk", FALSE);
 
     /**
      * Allows to set or unset the afk status of other players

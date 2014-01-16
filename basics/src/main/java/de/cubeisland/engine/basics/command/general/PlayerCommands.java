@@ -66,7 +66,7 @@ public class PlayerCommands
         final long autoAfk;
         final long afkCheck;
         afkCheck = basics.getConfiguration().autoAfk.check.getMillis();
-        if (afkCheck >= 0)
+        if (afkCheck > 0)
         {
             autoAfk = basics.getConfiguration().autoAfk.after.getMillis();
             this.afkListener = new AfkListener(basics, autoAfk, afkCheck);
