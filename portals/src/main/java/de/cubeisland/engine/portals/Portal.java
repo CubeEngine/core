@@ -126,7 +126,7 @@ public class Portal
                 user.sendTranslated("&aThis portal teleports to the spawn of &6%s", config.destination.world.getName());
                 break;
             case LOCATION:
-                user.sendTranslated("&aThis portal teleports to &6%d:%d:%Dd &ain &6%s",
+                user.sendTranslated("&aThis portal teleports to &6%d:%d:%d&a in &6%s",
                     config.destination.location.x, config.destination.location.y, config.destination.location.z,
                     config.destination.world.getName());
                 break;
