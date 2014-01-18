@@ -69,7 +69,7 @@ public class KickBanCommands
     }
 
     @Command(desc = "Kicks a player from the server",
-             usage = "<*|<player>> [reason]", min = 1, max = 2)
+             usage = "<*|<player>> [reason]", min = 1, max = NO_MAX)
     public void kick(ParameterizedContext context)
     {
         String reason;
