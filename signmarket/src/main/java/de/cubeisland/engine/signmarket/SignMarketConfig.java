@@ -97,7 +97,7 @@ public class  SignMarketConfig extends YamlConfiguration
 
     public boolean canSync(WorldManager manager, UInteger world1, UInteger world2)
     {
-        if (syncWorlds == null || syncWorlds.isEmpty())
+        if (world1.equals(world2) || syncWorlds == null || syncWorlds.isEmpty())
         {
             return true;
         }
