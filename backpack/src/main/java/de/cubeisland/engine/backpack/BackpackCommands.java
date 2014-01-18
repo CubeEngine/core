@@ -19,14 +19,11 @@ package de.cubeisland.engine.backpack;
 
 import java.util.Arrays;
 
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -34,7 +31,6 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -154,14 +150,14 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "modifybp")
     @Command(desc = "modifies a backpack",
-             usage = "<name> [user] [w <world>] [pages <pages>] [blockinput <true|false>]",
+             usage = "<name> [user] [w <world>] [pages <pages>] [s <size>] [blockinput <true|false>]",
     params = {
         @Param(names = {"p","pages"}, type = Integer.class),
         @Param(names = {"s","size"}, type = Integer.class),
         @Param(names = {"b","blockinput"}, type = Boolean.class),
         @Param(names = {"w", "world", "for", "in"},
                completer = WorldCompleter.class, type = World.class),
-    })
+    }, min = 1, max = 2)
     public void modify(ParameterizedContext context)
     {
         User forUser = null;
