@@ -27,7 +27,7 @@ import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.util.WorldLocation;
-import de.cubeisland.engine.portals.config.Destination;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.config.Destination.Type;
 
 public class DestinationConverter implements Converter<Destination>
@@ -77,10 +77,10 @@ public class DestinationConverter implements Converter<Destination>
                     destination.portal = mappedNodes.get("portal").asText();
                     break;
                 case WORLD:
-                    destination.world = core.getWorldManager().getWorld(mappedNodes.get("world").asText());
+                    destination.world = new ConfigWorld(core.getWorldManager(), mappedNodes.get("world").asText());
                     break;
                 case LOCATION:
-                    destination.world = core.getWorldManager().getWorld(mappedNodes.get("world").asText());
+                    destination.world = new ConfigWorld(core.getWorldManager(), mappedNodes.get("world").asText());
                     destination.location = converterManager.convertFromNode(mappedNodes.get("location"), WorldLocation.class);
                     break;
                 }

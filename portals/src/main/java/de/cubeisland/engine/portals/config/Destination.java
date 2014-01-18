@@ -22,28 +22,30 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.Portal;
 import de.cubeisland.engine.portals.PortalManager;
 
 public class Destination
 {
     public Type type;
-    public World world;
+    public ConfigWorld world;
     public WorldLocation location;
     public String portal;
 
     public Destination(Location location)
     {
         this.location = new WorldLocation(location);
-        this.world = location.getWorld();
+        this.world = new ConfigWorld(CubeEngine.getCore().getWorldManager(), location.getWorld());
         this.type = Type.LOCATION;
     }
 
     public Destination(World world)
     {
-        this.world = world;
+        this.world = new ConfigWorld(CubeEngine.getCore().getWorldManager(), world);
         this.type = Type.WORLD;
     }
 
@@ -74,12 +76,12 @@ public class Destination
             loc = destPortal.getPortalPos();
             break;
         case WORLD:
-            loc = world.getSpawnLocation();
+            loc = world.getWorld().getSpawnLocation();
             loc.setX(loc.getBlockX() + 0.5);
             loc.setZ(loc.getBlockZ() + 0.5);
             break;
         case LOCATION:
-            loc = location.getLocationIn(world);
+            loc = location.getLocationIn(world.getWorld());
             break;
         }
         if (entity.isInsideVehicle())

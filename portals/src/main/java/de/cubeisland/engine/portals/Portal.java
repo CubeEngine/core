@@ -97,7 +97,42 @@ public class Portal
 
     public void showInfo(CommandSender user)
     {
-        user.sendMessage("TODO");// TODO
+        user.sendTranslated("&aPortal Information for &6%s", this.getName());
+        if (this.config.safeTeleport)
+        {
+            user.sendTranslated("&aThis Portal has safe-teleport enabled");
+        }
+        if (this.config.teleportNonPlayers)
+        {
+            user.sendTranslated("&aThis Portal will teleport non-players too");
+        }
+        user.sendTranslated("&2%s&a is the owner of this portal", this.config.owner.getName());
+        user.sendTranslated("&aLocation: &6%d:%d:%d&a to &6%d:%d:%d&a in &6%s",
+                            this.config.location.from.x, this.config.location.from.y,this.config.location.from.z,
+                            this.config.location.to.x, this.config.location.to.y, this.config.location.to.z,
+                            this.config.world.getName());
+        if (this.config.destination == null)
+        {
+            user.sendTranslated("&aThis portal has no destination yet");
+        }
+        else
+        {
+            switch (config.destination.type)
+            {
+            case PORTAL:
+                user.sendTranslated("&aThis portal teleports to another portal: &6%s", config.destination.portal);
+                break;
+            case WORLD:
+                user.sendTranslated("&aThis portal teleports to the spawn of &6%s", config.destination.world.getName());
+                break;
+            case LOCATION:
+                user.sendTranslated("&aThis portal teleports to &6%d:%d:%Dd &ain &6%s",
+                    config.destination.location.x, config.destination.location.y, config.destination.location.z,
+                    config.destination.world.getName());
+                break;
+            }
+
+        }
     }
 
     public List<Pair<Integer,Integer>> getChunks()

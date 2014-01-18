@@ -79,8 +79,6 @@ public class PortalManager implements Listener
         this.module.getLog().debug("in {} chunks", this.chunksWithPortals.size());
     }
 
-    // TODO riding entities
-
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
