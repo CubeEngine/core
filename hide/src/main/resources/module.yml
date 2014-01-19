@@ -2,5 +2,6 @@ name: ${project.name}
 version: ${project.version}
 description: ${project.description}
 source-version: ${githead.branch}-${githead.commit}
+build-timestamp: "${timestamp}"
 soft-dependencies:
 - basics
