@@ -60,7 +60,13 @@ public class ChatFormatListener implements Listener
             }
             else
             {
-                event.setMessage(this.stripFormat(event.getMessage(), user));
+                String message = this.stripFormat(event.getMessage(), user);
+                if (message.trim().isEmpty())
+                {
+                    event.setCancelled(true);
+                    return;
+                }
+                event.setMessage(message);
             }
         }
         MacroProcessor processor = new MacroProcessor();
