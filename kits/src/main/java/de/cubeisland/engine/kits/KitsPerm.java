@@ -19,19 +19,16 @@ package de.cubeisland.engine.kits;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 
 public class KitsPerm extends PermissionContainer<Kits>
 {
     public KitsPerm(Kits module)
     {
-        super(module);
-        
-        bindToModule(COMMAND, KITS);
-        
-        this.registerAllPermissions();
+        this.registerAllPermissions(module);
     }
 
-    public static final Permission COMMAND = Permission.createWildcard("command");
-    public static final Permission KITS = Permission.createWildcard("kits");
-    public static final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.createChild("kit.give.force");
+    public static final WildcardPermission COMMAND = Permission.createWildcard("command");
+    public static final WildcardPermission KITS = Permission.createWildcard("kits");
+    public static final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.child("kit.give.force");
 }

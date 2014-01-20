@@ -19,29 +19,28 @@ package de.cubeisland.engine.spawn;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 
 public class SpawnPerms extends PermissionContainer<Spawn>
 {
     public SpawnPerms(Spawn module)
     {
-        super(module);
-        this.bindToModule(COMMAND);
-        this.registerAllPermissions();
+        this.registerAllPermissions(module);
     }
-    private static final Permission COMMAND = Permission.createWildcard("command");
+    private static final WildcardPermission COMMAND = Permission.createWildcard("command");
 
-    private static final Permission COMMAND_SPAWN = COMMAND.createAbstractChild("spawn");
+    private static final WildcardPermission COMMAND_SPAWN = COMMAND.childWildcard("spawn");
     /**
      * Allows to teleport all online players to the spawn of the main world
      */
-    public static final Permission COMMAND_SPAWN_ALL = COMMAND_SPAWN.createChild("all");
+    public static final Permission COMMAND_SPAWN_ALL = COMMAND_SPAWN.child("all");
     /**
      * Prevents from being teleported to spawn by someone else
      */
-    public static final Permission COMMAND_SPAWN_PREVENT = COMMAND_SPAWN.createChild("prevent");
+    public static final Permission COMMAND_SPAWN_PREVENT = COMMAND_SPAWN.child("prevent");
     /**
      * Allows teleporting a player to spawn even if the player has the prevent permission
      */
-    public static final Permission COMMAND_SPAWN_FORCE = COMMAND_SPAWN.createChild("force");
+    public static final Permission COMMAND_SPAWN_FORCE = COMMAND_SPAWN.child("force");
 
 }

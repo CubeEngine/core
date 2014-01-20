@@ -18,19 +18,20 @@
 package de.cubeisland.engine.locker;
 
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.permission.ParentPermission;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 import de.cubeisland.engine.locker.commands.LockerCommands;
 
 public class LockerPerm extends PermissionContainer<Locker>
 {
     public LockerPerm(Locker module, LockerCommands mainCmd)
     {
-        super(module);
-        this.bindToModule(PROTECT, MODERATOR, ADMIN, LOCKER_COMMAND, SHOW_OWNER, BREAK_OTHER, EXPAND_OTHER, ACCESS_OTHER, PREVENT_NOTIFY);
-        this.prependModulePerm(DENY);
         CubeCommand createCmd = mainCmd.getChild("create");
+        // TODO attaching permissions
+        // TODO getting e.g. commandpermissions
         PROTECT.attach(Permission.create(mainCmd.getChild("info").getPermission()),
                        Permission.create(mainCmd.getChild("persist").getPermission()),
                        Permission.create(mainCmd.getChild("remove").getPermission()),
@@ -57,15 +58,15 @@ public class LockerPerm extends PermissionContainer<Locker>
             //         Permission.create(adminCmd.getChild("cleanup").getPermission()),
               //       Permission.create(adminCmd.getChild("list").getPermission()),
             MODERATOR);
-        this.registerAllPermissions();
+        this.registerAllPermissions(module);
     }
 
-    private static final Permission DENY = Permission.createWildcard("deny", PermDefault.FALSE);
+    private static final WildcardPermission DENY = Permission.createWildcard("deny", PermDefault.FALSE);
 
-    public static final Permission DENY_CONTAINER = DENY.createChild("container", PermDefault.FALSE);
-    public static final Permission DENY_DOOR = DENY.createChild("door", PermDefault.FALSE);
-    public static final Permission DENY_ENTITY = DENY.createChild("entity", PermDefault.FALSE);
-    public static final Permission DENY_HANGING = DENY.createChild("hanging", PermDefault.FALSE);
+    public static final Permission DENY_CONTAINER = DENY.child("container", PermDefault.FALSE);
+    public static final Permission DENY_DOOR = DENY.child("door", PermDefault.FALSE);
+    public static final Permission DENY_ENTITY = DENY.child("entity", PermDefault.FALSE);
+    public static final Permission DENY_HANGING = DENY.child("hanging", PermDefault.FALSE);
 
     public static final Permission SHOW_OWNER = Permission.create("show-owner");
     public static final Permission BREAK_OTHER = Permission.create("break-other");
@@ -74,21 +75,21 @@ public class LockerPerm extends PermissionContainer<Locker>
 
     public static final Permission PREVENT_NOTIFY = Permission.create("prevent-notify");
 
-    private static final Permission LOCKER_COMMAND = Permission.createWildcard("command").childWildcard("locker");
+    private static final WildcardPermission LOCKER_COMMAND = Permission.createWildcard("command").childWildcard("locker");
 
-    public static final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.createAbstractChild("remove").createChild("other");
-    public static final Permission CMD_KEY_OTHER = LOCKER_COMMAND.createAbstractChild("key").createChild("other");
-    public static final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.createAbstractChild("modify").createChild("other");
-    public static final Permission CMD_GIVE_OTHER = LOCKER_COMMAND.createAbstractChild("give").createChild("other");
+    public static final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.childWildcard("remove").child("other");
+    public static final Permission CMD_KEY_OTHER = LOCKER_COMMAND.childWildcard("key").child("other");
+    public static final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.childWildcard("modify").child("other");
+    public static final Permission CMD_GIVE_OTHER = LOCKER_COMMAND.childWildcard("give").child("other");
 
-    private static final Permission CMD_INFO = LOCKER_COMMAND.createAbstractChild("info");
+    private static final WildcardPermission CMD_INFO = LOCKER_COMMAND.childWildcard("info");
 
-    public static final Permission CMD_INFO_OTHER = CMD_INFO.createChild("other");
-    public static final Permission CMD_INFO_SHOW_OWNER = CMD_INFO.createChild("show-owner");
+    public static final Permission CMD_INFO_OTHER = CMD_INFO.child("other");
+    public static final Permission CMD_INFO_SHOW_OWNER = CMD_INFO.child("show-owner");
 
-    public static final Permission PROTECT = Permission.create("protect");
-    public static final Permission ADMIN = Permission.create("admin");
-    public static final Permission MODERATOR = Permission.create("moderator");
+    public static final ParentPermission PROTECT = Permission.createParent("protect");
+    public static final ParentPermission ADMIN = Permission.createParent("admin");
+    public static final ParentPermission MODERATOR = Permission.createParent("moderator");
 
 
 }

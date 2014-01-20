@@ -71,7 +71,7 @@ public class Kit
         this.customMessage = customMessage;
         if (usePermission)
         {
-            this.permission = KitsPerm.KITS.createChild(name);
+            this.permission = KitsPerm.KITS.child(name);
         }
         else
         {

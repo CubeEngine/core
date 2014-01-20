@@ -24,10 +24,7 @@ public class WorldsPermissions extends PermissionContainer<Worlds>
 {
     public WorldsPermissions(Worlds module)
     {
-        super(module);
-
-        this.bindToModule(KEEP_GAMEMODE, KEEP_FLYMODE);
-        this.registerAllPermissions();
+        this.registerAllPermissions(module);
     }
 
     public static final Permission KEEP_GAMEMODE = Permission.create("keep-gamemode");

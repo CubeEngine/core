@@ -29,9 +29,7 @@ public class CorePerms extends PermissionContainer<CoreModule>
 
     public CorePerms(CoreModule module)
     {
-        super(module);
-        this.bindToModule(COMMAND,SPAM);
-        this.registerAllPermissions();
+        this.registerAllPermissions(module);
     }
 
     private static final WildcardPermission COMMAND = Permission.createWildcard("command");

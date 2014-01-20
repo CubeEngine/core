@@ -27,34 +27,7 @@ import gnu.trove.set.hash.THashSet;
 
 public abstract class PermissionContainer<T extends Module>
 {
-    private final PermissionManager permissionManager;
-    private final T module;
-
-    protected PermissionContainer(T module)
-    {
-        this.permissionManager = module.getCore().getPermissionManager();
-        this.module = module;
-    }
-
-    protected final void bindToModule(Permission... perms)
-    {
-        WildcardPermission modulePerm = this.module.getBasePermission();
-        for (Permission perm : perms)
-        {
-            modulePerm.addChildren(perm);
-        }
-    }
-
-    protected final void prependModulePerm(Permission... perms)
-    {
-        Permission modulePerm = this.module.getBasePermission();
-        for (Permission perm : perms)
-        {
-            perm.prepend(modulePerm);
-        }
-    }
-
-    public Set<Permission> getPermissions()
+    private Set<Permission> getPermissions()
     {
         THashSet<Permission> perms = new THashSet<>();
         for (Field field : this.getClass().getFields())
@@ -80,16 +53,23 @@ public abstract class PermissionContainer<T extends Module>
         return perms;
     }
 
-    public void registerAllPermissions()
+    public void registerAllPermissions(T module)
     {
-        String prefix = "cubeengine." + this.module.getId()+ ".";
-        for (Permission perm : getPermissions())
+        Set<Permission> permissions = getPermissions();
+        WildcardPermission basePerm = module.getBasePermission();
+        // First make sure all permissions are child-perms of the modules base-perm
+        for (Permission perm : permissions)
         {
-            if (!perm.getName().startsWith(prefix))
+            if (perm.parent == null)
             {
-                throw new IllegalArgumentException("Permissions must start with 'cubeengine."+ module.getId() +"' ! Actual perm: " + perm.getName());
+                basePerm.addChild(perm);
             }
-            this.permissionManager.registerPermission(module,perm);
+            // else perm is a sub-perm
+        }
+        // Now register the permissions
+        for (Permission perm : permissions)
+        {
+            module.getCore().getPermissionManager().registerPermission(module, perm);
         }
     }
 }

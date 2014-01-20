@@ -245,7 +245,7 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            boolean backPerm = BasicsPerm.COMMAND_BACK.isAuthorized(sender);
+            boolean backPerm = BasicsPerm.COMMAND_BACK_USE.isAuthorized(sender);
             boolean safe = !context.hasFlag("u");
             if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(sender))
             {

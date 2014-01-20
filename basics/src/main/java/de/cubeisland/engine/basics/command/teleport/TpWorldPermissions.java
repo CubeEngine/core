@@ -27,6 +27,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 import de.cubeisland.engine.basics.Basics;
 
+import de.cubeisland.engine.core.permission.WildcardPermission;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -37,13 +38,12 @@ import static de.cubeisland.engine.basics.BasicsPerm.COMMAND;
  */
 public class TpWorldPermissions extends PermissionContainer<Basics>
 {
-    private static final Permission COMMAND_TPWORLD = COMMAND.createAbstractChild("tpworld");
+    private static final WildcardPermission COMMAND_TPWORLD = COMMAND.childWildcard("tpworld");
     private static Map<String, Permission> permissions = new THashMap<>();
     private static Module module;
 
     public TpWorldPermissions(Basics module)
     {
-        super(module);
         TpWorldPermissions.module = module;
         for (final World world : module.getCore().getWorldManager().getWorlds())
         {
@@ -53,16 +53,10 @@ public class TpWorldPermissions extends PermissionContainer<Basics>
 
     private static Permission initWorldPermission(String world)
     {
-        Permission perm = COMMAND_TPWORLD.createChild(world);
+        Permission perm = COMMAND_TPWORLD.child(world);
         permissions.put(world, perm);
         module.getCore().getPermissionManager().registerPermission(module,perm);
         return perm;
-    }
-
-    @Override
-    public Set<Permission> getPermissions()
-    {
-        return new THashSet<>(permissions.values());
     }
 
     public static Permission getPermission(String world)

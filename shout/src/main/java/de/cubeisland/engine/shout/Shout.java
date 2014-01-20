@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 import de.cubeisland.engine.shout.announce.AnnouncementManager;
 import de.cubeisland.engine.shout.announce.announcer.Announcer;
 import de.cubeisland.engine.shout.interactions.ShoutCommand;
@@ -36,9 +36,9 @@ public class Shout extends Module
     private Announcer announcer;
     private ShoutConfiguration config;
 
-    private Permission announcePerm;
+    private WildcardPermission announcePerm;
 
-    public Permission getAnnouncePerm()
+    public WildcardPermission getAnnouncePerm()
     {
         return announcePerm;
     }

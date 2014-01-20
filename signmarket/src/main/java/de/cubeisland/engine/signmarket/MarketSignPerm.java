@@ -17,15 +17,15 @@
  */
 package de.cubeisland.engine.signmarket;
 
+import de.cubeisland.engine.core.permission.ParentPermission;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 
 public class MarketSignPerm extends PermissionContainer<Signmarket>
 {
     public MarketSignPerm(Signmarket module, SignMarketCommands smCmds)
     {
-        super(module);
-        this.bindToModule(SIGN, SIGN_CREATE_USER_OTHER, USE, USE_SELL, USE_BUY, USER, USER_CREATE, ADMIN, ADMIN_CREATE);
         USER_CREATE.attach(SIGN_CREATE_USER, SIGN_CREATE_USER_BUY,  SIGN_CREATE_USER_SELL,
                            SIGN_CREATE_USER_DEMAND, SIGN_SIZE_CHANGE, SIGN_DESTROY_OWN,
                        Permission.create(smCmds.getChild("editmode").getPermission())
@@ -33,69 +33,72 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
         USE.attach(SIGN_INVENTORY_SHOW, USE_BUY, USE_SELL);
         USER.attach(USE, USER_CREATE);
         ADMIN_CREATE.attach(SIGN_CREATE_ADMIN, SIGN_CREATE_ADMIN_BUY, SIGN_CREATE_ADMIN_NOSTOCK, SIGN_CREATE_ADMIN_STOCK,
-                     SIGN_CREATE_ADMIN_SELL, SIGN_SETSTOCK, SIGN_SIZE_CHANGE_INFINITE, SIGN_DESTROY_ADMIN);
+                     SIGN_CREATE_ADMIN_SELL, SIGN_SETSTOCK, SIGN_SIZE_INFINITE, SIGN_DESTROY_ADMIN);
         ADMIN.attach(ADMIN_CREATE, USER, SIGN_CREATE_USER_OTHER, SIGN_DESTROY_OTHER, SIGN_INVENTORY_ACCESS_OTHER);
-        this.registerAllPermissions();
+        this.registerAllPermissions(module);
     }
 
     /**
      * Allow buying and selling to signs
      */
-    public static final Permission USE = Permission.create("use");
+    public static final ParentPermission USE = Permission.createParent("use");
 
     public static final Permission USE_BUY = USE.newPerm("buy");
     public static final Permission USE_SELL = USE.newPerm("sell");
     /**
      * Allow creating user signs
      */
-    public static final Permission USER_CREATE = Permission.create("user-create");
-    public static final Permission USER = Permission.create("user");
+    public static final ParentPermission USER_CREATE = Permission.createParent("user-create");
+    public static final ParentPermission USER = Permission.createParent("user");
     /**
      * Allow creating admin signs
      */
-    public static final Permission ADMIN_CREATE = Permission.create("admin-create");
+    public static final ParentPermission ADMIN_CREATE = Permission.createParent("admin-create");
     /**
      * full access
      */
-    public static final Permission ADMIN = Permission.create("admin");
+    public static final ParentPermission ADMIN = Permission.createParent("admin");
 
     // -----------------------------------------------------------------------------
 
-    private static final Permission SIGN = Permission.createWildcard("sign");
+    private static final WildcardPermission SIGN = Permission.createWildcard("sign");
 
-    private static final Permission SIGN_DESTROY = SIGN.createAbstractChild("destroy");
-    public static final Permission SIGN_DESTROY_OWN = SIGN_DESTROY.createChild("own");
-    public static final Permission SIGN_DESTROY_ADMIN = SIGN_DESTROY.createChild("admin");
-    public static final Permission SIGN_DESTROY_OTHER = SIGN_DESTROY.createChild("other");
+    private static final WildcardPermission SIGN_DESTROY = SIGN.childWildcard("destroy");
+    public static final Permission SIGN_DESTROY_OWN = SIGN_DESTROY.child("own");
+    public static final Permission SIGN_DESTROY_ADMIN = SIGN_DESTROY.child("admin");
+    public static final Permission SIGN_DESTROY_OTHER = SIGN_DESTROY.child("other");
 
-    private static final Permission SIGN_INVENTORY = SIGN.createAbstractChild("inventory");
-    public static final Permission SIGN_INVENTORY_SHOW = SIGN_INVENTORY.createChild("show");
+    private static final WildcardPermission SIGN_INVENTORY = SIGN.childWildcard("inventory");
+    public static final Permission SIGN_INVENTORY_SHOW = SIGN_INVENTORY.child("show");
 
-    public static final Permission SIGN_INVENTORY_ACCESS_OTHER = SIGN_DESTROY.createChild("access.other");
+    public static final Permission SIGN_INVENTORY_ACCESS_OTHER = SIGN_DESTROY.child("access.other");
 
-    private static final Permission SIGN_CREATE = SIGN.createAbstractChild("create");
+    private static final WildcardPermission SIGN_CREATE = SIGN.childWildcard("create");
 
     /**
      * Allows creating and editing user-signs
      */
-    public static final Permission SIGN_CREATE_USER = SIGN_CREATE.createChild("user");
-    public static final Permission SIGN_CREATE_USER_BUY = SIGN_CREATE_USER.createChild("buy");
-    public static final Permission SIGN_CREATE_USER_SELL = SIGN_CREATE_USER.createChild("sell");
-    public static final Permission SIGN_CREATE_USER_DEMAND = SIGN_CREATE_USER.createChild("demand");
+    private static final WildcardPermission SIGN_CREATE_USER = SIGN_CREATE.childWildcard("user");
+    public static final Permission SIGN_CREATE_USER_CREATE = SIGN_CREATE_USER.child("create");
+    public static final Permission SIGN_CREATE_USER_BUY = SIGN_CREATE_USER.child("buy");
+    public static final Permission SIGN_CREATE_USER_SELL = SIGN_CREATE_USER.child("sell");
+    public static final Permission SIGN_CREATE_USER_DEMAND = SIGN_CREATE_USER.child("demand");
 
-    public static final Permission SIGN_SIZE_CHANGE = SIGN.createChild("size.change");
+    private static final WildcardPermission SIGN_SIZE = SIGN.childWildcard("size");
+    public static final Permission SIGN_SIZE_CHANGE = SIGN_SIZE.child("change");
 
     /**
      * Allows creating and editing admin-signs
      */
-    public static final Permission SIGN_CREATE_ADMIN = SIGN_CREATE.createChild("admin");
-    public static final Permission SIGN_CREATE_ADMIN_BUY = SIGN_CREATE_ADMIN.createChild("buy");
-    public static final Permission SIGN_CREATE_ADMIN_SELL = SIGN_CREATE_ADMIN.createChild("sell");
-    public static final Permission SIGN_CREATE_ADMIN_STOCK = SIGN_CREATE_ADMIN.createChild("stock");
-    public static final Permission SIGN_CREATE_ADMIN_NOSTOCK = SIGN_CREATE_ADMIN.createChild("nostock");
+    private static final WildcardPermission SIGN_CREATE_ADMIN = SIGN_CREATE.childWildcard("admin");
+    public static final Permission SIGN_CREATE_ADMIN_CREATE = SIGN_CREATE_ADMIN.child("create");
+    public static final Permission SIGN_CREATE_ADMIN_BUY = SIGN_CREATE_ADMIN.child("buy");
+    public static final Permission SIGN_CREATE_ADMIN_SELL = SIGN_CREATE_ADMIN.child("sell");
+    public static final Permission SIGN_CREATE_ADMIN_STOCK = SIGN_CREATE_ADMIN.child("stock");
+    public static final Permission SIGN_CREATE_ADMIN_NOSTOCK = SIGN_CREATE_ADMIN.child("nostock");
 
-    public static final Permission SIGN_SETSTOCK = SIGN.createChild("setstock");
-    public static final Permission SIGN_SIZE_CHANGE_INFINITE = SIGN_SIZE_CHANGE.createChild("infinite");
+    public static final Permission SIGN_SETSTOCK = SIGN.child("setstock");
+    public static final Permission SIGN_SIZE_INFINITE = SIGN_SIZE.child("infinite");
 
     /**
      * Detached perm / allows to create & edit signs of an other user

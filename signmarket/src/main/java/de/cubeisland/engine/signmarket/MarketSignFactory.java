@@ -90,11 +90,11 @@ public class MarketSignFactory
             return marketSign;
         }
         marketSign = new MarketSign(this.module, location);
-        if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user) && module.getConfig().enableAdmin)
+        if (MarketSignPerm.SIGN_CREATE_ADMIN_CREATE.isAuthorized(user) && module.getConfig().enableAdmin)
         {
             marketSign.setAdminSign();
         }
-        else if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user) && module.getConfig().enableUser)
+        else if (MarketSignPerm.SIGN_CREATE_USER_CREATE.isAuthorized(user) && module.getConfig().enableUser)
         {
             marketSign.setOwner(user);
         }

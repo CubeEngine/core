@@ -45,6 +45,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
@@ -68,7 +69,7 @@ public class Multiverse implements Listener
 
     private File playersDir;
 
-    private Permission universeRootPerm;
+    private WildcardPermission universeRootPerm;
 
     public Multiverse(Worlds module)
     {
@@ -414,7 +415,7 @@ public class Multiverse implements Listener
         return this.getUniverse(world).getWorldConfig(world);
     }
 
-    public Permission getUniverseRootPerm()
+    public WildcardPermission getUniverseRootPerm()
     {
         return universeRootPerm;
     }

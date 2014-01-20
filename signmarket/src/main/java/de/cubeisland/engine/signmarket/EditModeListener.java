@@ -79,7 +79,7 @@ public class EditModeListener extends ConversationCommand
                     @Override
                     public List<String> complete(CommandSender sender, String token)
                     {
-                        if (MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(sender))
+                        if (MarketSignPerm.SIGN_SIZE_INFINITE.isAuthorized(sender))
                         {
                             return Arrays.asList("6", "5", "4", "3", "2", "1", "-1");
                         }
@@ -116,13 +116,13 @@ public class EditModeListener extends ConversationCommand
 
     private boolean checkAllowedEditing(MarketSign marketSign, User user)
     {
-        if (marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+        if (marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
         {
             user.sendTranslated("&cYou are not allowed to edit Admin-Signs!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
-        else if (!marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+        else if (!marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER_CREATE.isAuthorized(user))
         {
             user.sendTranslated("&cYou are not allowed to edit User-Signs!");
             this.currentSignLocation.remove(user.getId());
@@ -191,12 +191,12 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                if (prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+                if (prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
                 {
                     user.sendTranslated("&cYou are not allowed to copy Admin-Signs!");
                     return null;
                 }
-                else if (!prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+                else if (!prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER_CREATE.isAuthorized(user))
                 {
                     user.sendTranslated("&cYou are not allowed to copy User-Signs!");
                     return null;
@@ -306,7 +306,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasFlag("admin"))
         {
-            if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+            if (MarketSignPerm.SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
             {
                 marketSign.setAdminSign();
                 if (this.module.getConfig().maxAdminStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.module.getConfig().maxAdminStock))
@@ -322,7 +322,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasFlag("user"))
         {
-            if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+            if (MarketSignPerm.SIGN_CREATE_USER_CREATE.isAuthorized(user))
             {
                 marketSign.setOwner(user);
                 if (this.module.getConfig().maxUserStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.module.getConfig().maxUserStock))
@@ -495,7 +495,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    if (size == -1 && !MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(user))
+                    if (size == -1 && !MarketSignPerm.SIGN_SIZE_INFINITE.isAuthorized(user))
                     {
                         context.sendTranslated("&cYou are not allowed to set infinite inventories!");
                         return null;
@@ -658,9 +658,9 @@ public class EditModeListener extends ConversationCommand
                     user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                     return;
                 }
-                if (!MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+                if (!MarketSignPerm.SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
                 {
-                    if (!MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+                    if (!MarketSignPerm.SIGN_CREATE_USER_CREATE.isAuthorized(user))
                     {
                         user.sendTranslated("&cYou are not allowed to create market-signs!");
                         event.setCancelled(true);

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.chat;
 
+import de.cubeisland.engine.core.permission.ParentPermission;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
@@ -24,18 +25,10 @@ public class ChatPerm extends PermissionContainer<Chat>
 {
     public ChatPerm(Chat module)
     {
-        super(module);
-        this.bindToModule(COLOR, COLOR_BLACK, COLOR_DARK_BLUE, COLOR_DARK_GREEN,
-                          COLOR_DARK_AQUA, COLOR_DARK_RED, COLOR_DARK_PURPLE,
-                          COLOR_GOLD, COLOR_GRAY, COLOR_DARK_GRAY,
-                          COLOR_BLUE, COLOR_GREEN, COLOR_AQUA,
-                          COLOR_RED, COLOR_LIGHT_PURPLE, COLOR_YELLOW,
-                          COLOR_WHITE, COLOR_OBFUSCATED, COLOR_BOLD,
-                          COLOR_STRIKE, COLOR_UNDERLINE, COLOR_ITALIC, COLOR_RESET);
-        this.registerAllPermissions();
+        this.registerAllPermissions(module);
     }
 
-    public static final Permission COLOR = Permission.create("color");
+    public static final ParentPermission COLOR = Permission.createParent("color");
 
     public static final Permission COLOR_BLACK = COLOR.newPerm("black");
     public static final Permission COLOR_DARK_BLUE = COLOR.newPerm("dark-blue");

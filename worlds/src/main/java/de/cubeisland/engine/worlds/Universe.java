@@ -38,6 +38,7 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
@@ -187,15 +188,16 @@ public class Universe
     {
         if (!this.universeConfig.freeAccess)
         {
-            this.universeAccessPerm = this.multiverse.getUniverseRootPerm().createAbstractChild("access").createChild(dirUniverse.getName());
+            this.universeAccessPerm = this.multiverse.getUniverseRootPerm().childWildcard("access").child(dirUniverse
+                                                                                                              .getName());
             this.module.getCore().getPermissionManager().registerPermission(module, this.universeAccessPerm);
         }
-        Permission worldAccess = this.multiverse.getUniverseRootPerm().createAbstractChild("world-access");
+        WildcardPermission worldAccess = this.multiverse.getUniverseRootPerm().childWildcard("world-access");
         for (Entry<World, WorldConfig> entry : this.worldConfigs.entrySet())
         {
             if (!entry.getValue().access.free)
             {
-                Permission perm = worldAccess.createChild(entry.getKey().getName());
+                Permission perm = worldAccess.child(entry.getKey().getName());
                 this.module.getCore().getPermissionManager().registerPermission(module, perm);
                 this.worldPerms.put(entry.getKey(), perm);
             }
