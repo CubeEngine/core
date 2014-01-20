@@ -11,7 +11,7 @@
   <artifactId>backpack</artifactId>
   <name>Backpack</name>
   <version>1.0.0-SNAPSHOT</version>
-  <description>Expand you inventory!</description>
+  <description>Expand your inventory!</description>
 
   <dependencies>
     <dependency>

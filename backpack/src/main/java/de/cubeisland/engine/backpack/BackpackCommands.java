@@ -111,12 +111,7 @@ public class BackpackCommands extends ContainerCommand
     {
         User forUser = null;
         World forWorld = null;
-        if (context.getSender() instanceof User)
-        {
-            forUser = (User)context.getSender();
-            forWorld = ((User)context.getSender()).getWorld();
-        }
-        else if (context.hasParam("w"))
+        if (context.hasParam("w"))
         {
             forWorld = context.getParam("w", null);
             if (forWorld == null)
@@ -124,6 +119,11 @@ public class BackpackCommands extends ContainerCommand
                 context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
                 return;
             }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            forUser = (User)context.getSender();
+            forWorld = ((User)context.getSender()).getWorld();
         }
         else if (!context.hasFlag("g"))
         {
