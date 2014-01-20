@@ -61,7 +61,7 @@ public class BackpackAttachment extends UserAttachment
             }
             this.loadBackpacks(dir, map);
         }
-        dir = new File(module.groupedDir, world.getName());
+        dir = new File(module.groupedDir, ((Backpack)this.getModule()).getMainWorld(world).getName());
         if (dir.exists())
         {
             Map<String, BackpackInventories> map = this.groupedBackpacks.get(world);
