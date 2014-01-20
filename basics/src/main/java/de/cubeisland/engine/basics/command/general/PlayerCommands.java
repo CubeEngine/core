@@ -538,7 +538,7 @@ public class PlayerCommands
             return;
         }
         user.chat(s);
-        context.sendTranslated("&aForced &2%s&a to chat: &6%s", s, user.getName());
+        context.sendTranslated("&aForced &2%s&a to chat: &6%s", user.getName(), s);
     }
 
     @Command(desc = "Kills yourself", max = 0)
