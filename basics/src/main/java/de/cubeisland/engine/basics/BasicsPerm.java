@@ -51,7 +51,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
         new TpWorldPermissions(module); // per world permissions
     }
 
-    public static final Permission COMMAND = Permission.createAbstractPermission("command");
+    public static final Permission COMMAND = Permission.createWildcard("command");
 
     public static final Permission COMMAND_ENCHANT_UNSAFE = COMMAND.createAbstractChild("enchant").createChild("unsafe");
 
@@ -60,7 +60,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Allows to create items that are blacklisted
      */
-    public static final Permission ITEM_BLACKLIST = Permission.createPermission("item-blacklist");
+    public static final Permission ITEM_BLACKLIST = Permission.create("item-blacklist");
 
     private static final Permission COMMAND_ITEM = COMMAND.createAbstractChild("item");
     public static final Permission COMMAND_ITEM_ENCHANTMENTS = COMMAND_ITEM.createChild("enchantments");
@@ -94,7 +94,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Prevents your inventory from being cleared unless forced
      */
-    public static final Permission COMMAND_CLEARINVENTORY_PREVENT = COMMAND_CLEARINVENTORY.createNew("prevent",FALSE);
+    public static final Permission COMMAND_CLEARINVENTORY_PREVENT = COMMAND_CLEARINVENTORY.newPerm("prevent", FALSE);
     /**
      * Clears an inventory even if the player has the prevent permission
      */
@@ -104,7 +104,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Prevents from being killed by the kill command unless forced
      */
-    public static final Permission COMMAND_KILL_PREVENT = COMMAND_KILL.createNew("prevent",FALSE);
+    public static final Permission COMMAND_KILL_PREVENT = COMMAND_KILL.newPerm("prevent", FALSE);
     /**
      * Kills a player even if the player has the prevent permission
      */
@@ -135,7 +135,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Prevents an inventory from being modified unless forced
      */
-    public static final Permission COMMAND_INVSEE_MODIFY_PREVENT = COMMAND_INVSEE.createNew("modify.prevent",FALSE);
+    public static final Permission COMMAND_INVSEE_MODIFY_PREVENT = COMMAND_INVSEE.newPerm("modify.prevent", FALSE);
     /**
      * Allows modifying an inventory even if the player has the prevent permission
      */
@@ -173,7 +173,7 @@ public class BasicsPerm extends PermissionContainer<Basics>
      */
     public static final Permission COMMAND_TP_OTHER = COMMAND_TP.createChild("other");
 
-    private static final Permission TELEPORT = Permission.createAbstractPermission("teleport");
+    private static final Permission TELEPORT = Permission.createWildcard("teleport");
     private static final Permission TELEPORT_PREVENT = TELEPORT.createAbstract("prevent");
     /**
      * Prevents from being teleported by someone else
@@ -265,13 +265,13 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public static final Permission COMMAND_FLY_KEEP = COMMAND_FLY.createChild("keep");
     public static final Permission COMMAND_FLY_OTHER = COMMAND_FLY.createChild("other");
 
-    private static final Permission COMPASS_JUMPTO = Permission.createAbstractPermission("compass.jumpto");
+    private static final Permission COMPASS_JUMPTO = Permission.createWildcard("compass.jumpto");
     public static final Permission COMPASS_JUMPTO_LEFT = COMPASS_JUMPTO.createChild("left");
     public static final Permission COMPASS_JUMPTO_RIGHT = COMPASS_JUMPTO.createChild("right");
 
     private static final Permission COMMAND_KICK = COMMAND.createAbstractChild("kick");
     public static final Permission COMMAND_KICK_ALL = COMMAND_KICK.createChild("all");
-    public static final Permission COMMAND_KICK_NOREASON = COMMAND_KICK.createNew("noreason");
+    public static final Permission COMMAND_KICK_NOREASON = COMMAND_KICK.newPerm("noreason");
 
     public static final Permission COMMAND_STACK_FULLSTACK = COMMAND.createAbstractChild("stack").createChild("fullstack");
 
@@ -287,36 +287,36 @@ public class BasicsPerm extends PermissionContainer<Basics>
     /**
      * Allows writing colored signs
      */
-    public static final Permission SIGN_COLORED = Permission.createPermission("sign.colored");
-    public static final Permission SIGN_COLORED_BLACK = SIGN_COLORED.createNew("black");
-    public static final Permission SIGN_COLORED_DARK_BLUE = SIGN_COLORED.createNew("dark-blue");
-    public static final Permission SIGN_COLORED_DARK_GREEN = SIGN_COLORED.createNew("dark-green");
-    public static final Permission SIGN_COLORED_DARK_AQUA = SIGN_COLORED.createNew("dark-aqua");
-    public static final Permission SIGN_COLORED_DARK_RED = SIGN_COLORED.createNew("dark-red");
-    public static final Permission SIGN_COLORED_DARK_PURPLE = SIGN_COLORED.createNew("dark-purple");
-    public static final Permission SIGN_COLORED_GOLD = SIGN_COLORED.createNew("gold");
-    public static final Permission SIGN_COLORED_GRAY = SIGN_COLORED.createNew("gray");
-    public static final Permission SIGN_COLORED_DARK_GRAY = SIGN_COLORED.createNew("dark-gray");
-    public static final Permission SIGN_COLORED_BLUE = SIGN_COLORED.createNew("blue");
-    public static final Permission SIGN_COLORED_GREEN = SIGN_COLORED.createNew("green");
-    public static final Permission SIGN_COLORED_AQUA = SIGN_COLORED.createNew("aqua");
-    public static final Permission SIGN_COLORED_RED = SIGN_COLORED.createNew("red");
-    public static final Permission SIGN_COLORED_LIGHT_PURPLE = SIGN_COLORED.createNew("light-purple");
-    public static final Permission SIGN_COLORED_YELLOW = SIGN_COLORED.createNew("yellow");
-    public static final Permission SIGN_COLORED_WHITE = SIGN_COLORED.createNew("white");
+    public static final Permission SIGN_COLORED = Permission.create("sign.colored");
+    public static final Permission SIGN_COLORED_BLACK = SIGN_COLORED.newPerm("black");
+    public static final Permission SIGN_COLORED_DARK_BLUE = SIGN_COLORED.newPerm("dark-blue");
+    public static final Permission SIGN_COLORED_DARK_GREEN = SIGN_COLORED.newPerm("dark-green");
+    public static final Permission SIGN_COLORED_DARK_AQUA = SIGN_COLORED.newPerm("dark-aqua");
+    public static final Permission SIGN_COLORED_DARK_RED = SIGN_COLORED.newPerm("dark-red");
+    public static final Permission SIGN_COLORED_DARK_PURPLE = SIGN_COLORED.newPerm("dark-purple");
+    public static final Permission SIGN_COLORED_GOLD = SIGN_COLORED.newPerm("gold");
+    public static final Permission SIGN_COLORED_GRAY = SIGN_COLORED.newPerm("gray");
+    public static final Permission SIGN_COLORED_DARK_GRAY = SIGN_COLORED.newPerm("dark-gray");
+    public static final Permission SIGN_COLORED_BLUE = SIGN_COLORED.newPerm("blue");
+    public static final Permission SIGN_COLORED_GREEN = SIGN_COLORED.newPerm("green");
+    public static final Permission SIGN_COLORED_AQUA = SIGN_COLORED.newPerm("aqua");
+    public static final Permission SIGN_COLORED_RED = SIGN_COLORED.newPerm("red");
+    public static final Permission SIGN_COLORED_LIGHT_PURPLE = SIGN_COLORED.newPerm("light-purple");
+    public static final Permission SIGN_COLORED_YELLOW = SIGN_COLORED.newPerm("yellow");
+    public static final Permission SIGN_COLORED_WHITE = SIGN_COLORED.newPerm("white");
 
-    public static final Permission SIGN_COLORED_OBFUSCATED = SIGN_COLORED.createNew("obfuscated");
-    public static final Permission SIGN_COLORED_BOLD = SIGN_COLORED.createNew("bold");
-    public static final Permission SIGN_COLORED_STRIKE = SIGN_COLORED.createNew("strike");
-    public static final Permission SIGN_COLORED_UNDERLINE = SIGN_COLORED.createNew("underline");
-    public static final Permission SIGN_COLORED_ITALIC = SIGN_COLORED.createNew("italic");
-    public static final Permission SIGN_COLORED_RESET = SIGN_COLORED.createNew("reset");
+    public static final Permission SIGN_COLORED_OBFUSCATED = SIGN_COLORED.newPerm("obfuscated");
+    public static final Permission SIGN_COLORED_BOLD = SIGN_COLORED.newPerm("bold");
+    public static final Permission SIGN_COLORED_STRIKE = SIGN_COLORED.newPerm("strike");
+    public static final Permission SIGN_COLORED_UNDERLINE = SIGN_COLORED.newPerm("underline");
+    public static final Permission SIGN_COLORED_ITALIC = SIGN_COLORED.newPerm("italic");
+    public static final Permission SIGN_COLORED_RESET = SIGN_COLORED.newPerm("reset");
 
-    public static final Permission CHANGEPAINTING = Permission.createPermission("changepainting");
-    public static final Permission KICK_RECEIVEMESSAGE = Permission.createPermission("kick.receivemessage");
-    public static final Permission BAN_RECEIVEMESSAGE = Permission.createPermission("ban.receivemessage");
+    public static final Permission CHANGEPAINTING = Permission.create("changepainting");
+    public static final Permission KICK_RECEIVEMESSAGE = Permission.create("kick.receivemessage");
+    public static final Permission BAN_RECEIVEMESSAGE = Permission.create("ban.receivemessage");
 
-    public static Permission OVERSTACKED_ANVIL_AND_BREWING = Permission.createPermission("allow-overstacked-anvil-and-brewing");
+    public static Permission OVERSTACKED_ANVIL_AND_BREWING = Permission.create("allow-overstacked-anvil-and-brewing");
 
     static
     {

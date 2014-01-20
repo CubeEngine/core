@@ -38,7 +38,7 @@ public abstract class PermissionContainer<T extends Module>
 
     protected final void bindToModule(Permission... perms)
     {
-        Permission modulePerm = this.module.getBasePermission();
+        WildcardPermission modulePerm = this.module.getBasePermission();
         for (Permission perm : perms)
         {
             modulePerm.addChildren(perm);
@@ -67,7 +67,7 @@ public abstract class PermissionContainer<T extends Module>
                     try
                     {
                         Permission perm = (Permission)field.get(this);
-                        if (perm.isRegistrable())
+                        if (!(perm instanceof WildcardPermission))
                         {
                             perms.add(perm);
                         }

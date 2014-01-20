@@ -25,7 +25,7 @@ public class GlobalRoleProvider extends RoleProvider
 {
     public GlobalRoleProvider(RolesManager manager)
     {
-        super(manager, manager.module.getBasePermission().createAbstractChild("global"));
+        super(manager, manager.module.getBasePermission().childWildcard("global"));
     }
 
     @Override

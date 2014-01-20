@@ -50,7 +50,7 @@ public class FunPerm extends PermissionContainer<Fun>
         }
     }
 
-    private static final Permission COMMAND = Permission.createAbstractPermission("command");
+    private static final Permission COMMAND = Permission.createWildcard("command");
 
     private static final Permission COMMAND_EXPLOSION = COMMAND.createAbstractChild("explosion");
     public static final Permission COMMAND_EXPLOSION_OTHER = COMMAND_EXPLOSION.createChild("other");

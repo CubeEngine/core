@@ -46,6 +46,7 @@ import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -152,7 +153,7 @@ public abstract class CubeCommand extends Command
 
     protected Permission generatePermissionNode()
     {
-        Permission commandBase = this.getModule().getBasePermission().createAbstractChild("command");
+        WildcardPermission commandBase = this.getModule().getBasePermission().childWildcard("command");
         LinkedList<String> cmds = new LinkedList<>();
         CubeCommand cmd = this;
         do
@@ -160,21 +161,21 @@ public abstract class CubeCommand extends Command
             cmds.addFirst(cmd.getName());
         }
         while ((cmd = cmd.getParent()) != null);
-        Permission result = commandBase;
+        WildcardPermission perm = commandBase;
         Iterator<String> it = cmds.iterator();
         while (it.hasNext())
         {
             String permString = it.next();
             if (it.hasNext())
             {
-                result = result.createAbstractChild(permString);
+                perm = perm.childWildcard(permString);
             }
             else
             {
-                result = result.createChild(permString, this.getGeneratedPermissionDefault());
+                return perm.child(permString, this.getGeneratedPermissionDefault());
             }
         }
-        return result;
+        return perm; // TODO this is wrong throw IllegalState?
     }
 
     public void updateGeneratedPermission()

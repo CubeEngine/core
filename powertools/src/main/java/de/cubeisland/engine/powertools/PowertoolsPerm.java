@@ -31,5 +31,5 @@ public class PowertoolsPerm extends PermissionContainer<Powertools>
         this.registerAllPermissions();
     }
 
-    public static final Permission POWERTOOL_USE = Permission.createPermission("powertool.use");
+    public static final Permission POWERTOOL_USE = Permission.create("powertool.use");
 }

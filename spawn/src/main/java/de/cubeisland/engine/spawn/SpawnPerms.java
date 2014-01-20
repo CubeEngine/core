@@ -28,7 +28,7 @@ public class SpawnPerms extends PermissionContainer<Spawn>
         this.bindToModule(COMMAND);
         this.registerAllPermissions();
     }
-    private static final Permission COMMAND = Permission.createAbstractPermission("command");
+    private static final Permission COMMAND = Permission.createWildcard("command");
 
     private static final Permission COMMAND_SPAWN = COMMAND.createAbstractChild("spawn");
     /**

@@ -29,5 +29,5 @@ public class BorderPerms extends PermissionContainer<Border>
         this.registerAllPermissions();
     }
 
-    public static final Permission BYPASS = Permission.createPermission("bypass");
+    public static final Permission BYPASS = Permission.create("bypass");
 }

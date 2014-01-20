@@ -45,7 +45,7 @@ public class FlyListener implements Listener
 
     public FlyListener(Fly fly)
     {
-        this.FLY_FEATHER = fly.getBasePermission().createChild("feather");
+        this.FLY_FEATHER = fly.getBasePermission().child("feather");
         fly.getCore().getPermissionManager().registerPermission(fly,FLY_FEATHER);
         this.fly = fly;
         this.usermanager = fly.getCore().getUserManager();

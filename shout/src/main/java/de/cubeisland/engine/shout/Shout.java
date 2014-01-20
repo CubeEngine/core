@@ -46,7 +46,7 @@ public class Shout extends Module
     @Override
     public void onEnable()
     {
-        this.announcePerm = this.getBasePermission().createAbstract("announcement");
+        this.announcePerm = this.getBasePermission().newWildcard("announcement");
 
         this.config = this.loadConfig(ShoutConfiguration.class);
 

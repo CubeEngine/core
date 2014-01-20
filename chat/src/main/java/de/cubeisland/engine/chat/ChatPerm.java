@@ -35,31 +35,31 @@ public class ChatPerm extends PermissionContainer<Chat>
         this.registerAllPermissions();
     }
 
-    public static final Permission COLOR = Permission.createPermission("color");
+    public static final Permission COLOR = Permission.create("color");
 
-    public static final Permission COLOR_BLACK = COLOR.createNew("black");
-    public static final Permission COLOR_DARK_BLUE = COLOR.createNew("dark-blue");
-    public static final Permission COLOR_DARK_GREEN = COLOR.createNew("dark-green");
-    public static final Permission COLOR_DARK_AQUA = COLOR.createNew("dark-aqua");
-    public static final Permission COLOR_DARK_RED = COLOR.createNew("dark-red");
-    public static final Permission COLOR_DARK_PURPLE = COLOR.createNew("dark-purple");
-    public static final Permission COLOR_GOLD = COLOR.createNew("gold");
-    public static final Permission COLOR_GRAY = COLOR.createNew("gray");
-    public static final Permission COLOR_DARK_GRAY = COLOR.createNew("dark-gray");
-    public static final Permission COLOR_BLUE = COLOR.createNew("blue");
-    public static final Permission COLOR_GREEN = COLOR.createNew("green");
-    public static final Permission COLOR_AQUA = COLOR.createNew("aqua");
-    public static final Permission COLOR_RED = COLOR.createNew("red");
-    public static final Permission COLOR_LIGHT_PURPLE = COLOR.createNew("light-purple");
-    public static final Permission COLOR_YELLOW = COLOR.createNew("yellow");
-    public static final Permission COLOR_WHITE = COLOR.createNew("white");
+    public static final Permission COLOR_BLACK = COLOR.newPerm("black");
+    public static final Permission COLOR_DARK_BLUE = COLOR.newPerm("dark-blue");
+    public static final Permission COLOR_DARK_GREEN = COLOR.newPerm("dark-green");
+    public static final Permission COLOR_DARK_AQUA = COLOR.newPerm("dark-aqua");
+    public static final Permission COLOR_DARK_RED = COLOR.newPerm("dark-red");
+    public static final Permission COLOR_DARK_PURPLE = COLOR.newPerm("dark-purple");
+    public static final Permission COLOR_GOLD = COLOR.newPerm("gold");
+    public static final Permission COLOR_GRAY = COLOR.newPerm("gray");
+    public static final Permission COLOR_DARK_GRAY = COLOR.newPerm("dark-gray");
+    public static final Permission COLOR_BLUE = COLOR.newPerm("blue");
+    public static final Permission COLOR_GREEN = COLOR.newPerm("green");
+    public static final Permission COLOR_AQUA = COLOR.newPerm("aqua");
+    public static final Permission COLOR_RED = COLOR.newPerm("red");
+    public static final Permission COLOR_LIGHT_PURPLE = COLOR.newPerm("light-purple");
+    public static final Permission COLOR_YELLOW = COLOR.newPerm("yellow");
+    public static final Permission COLOR_WHITE = COLOR.newPerm("white");
 
-    public static final Permission COLOR_OBFUSCATED = COLOR.createNew("obfuscated");
-    public static final Permission COLOR_BOLD = COLOR.createNew("bold");
-    public static final Permission COLOR_STRIKE = COLOR.createNew("strike");
-    public static final Permission COLOR_UNDERLINE = COLOR.createNew("underline");
-    public static final Permission COLOR_ITALIC = COLOR.createNew("italic");
-    public static final Permission COLOR_RESET = COLOR.createNew("reset");
+    public static final Permission COLOR_OBFUSCATED = COLOR.newPerm("obfuscated");
+    public static final Permission COLOR_BOLD = COLOR.newPerm("bold");
+    public static final Permission COLOR_STRIKE = COLOR.newPerm("strike");
+    public static final Permission COLOR_UNDERLINE = COLOR.newPerm("underline");
+    public static final Permission COLOR_ITALIC = COLOR.newPerm("italic");
+    public static final Permission COLOR_RESET = COLOR.newPerm("reset");
 
     static
     {

@@ -27,7 +27,6 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.util.Triplet;
-import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.config.MirrorConfig;
 import de.cubeisland.engine.roles.config.RoleConfig;
@@ -39,7 +38,8 @@ public class WorldRoleProvider extends RoleProvider
 
     public WorldRoleProvider(RolesManager manager, MirrorConfig mirrorConfig)
     {
-        super(manager, manager.module.getBasePermission().createAbstractChild("world").createAbstractChild(mirrorConfig.mainWorld.getName()));
+        super(manager, manager.module.getBasePermission().childWildcard("world").childWildcard(mirrorConfig.mainWorld
+                                                                                                           .getName()));
         this.mirrorConfig = mirrorConfig;
     }
 

@@ -29,7 +29,7 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
         this.registerAllPermissions();
     }
 
-    private static final Permission ACCOUNT = Permission.createAbstractPermission("account");
+    private static final Permission ACCOUNT = Permission.createWildcard("account");
     private static final Permission ACCOUNT_USER = ACCOUNT.createAbstractChild("user");
 
     public static final Permission USER_ALLOWUNDERMIN = ACCOUNT_USER.createChild("allow-under-min");
@@ -37,7 +37,7 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
 
     public static final Permission BANK_SHOWHIDDEN = ACCOUNT.createAbstractChild("bank").createChild("show-hidden");
 
-    private static final Permission COMMAND = Permission.createAbstractPermission("command");
+    private static final Permission COMMAND = Permission.createWildcard("command");
     private static final Permission COMMAND_MONEY_PAY = COMMAND.createAbstractChild("money").createAbstractChild("pay");
     public static final Permission COMMAND_MONEY_PAY_FORCE = COMMAND_MONEY_PAY.createChild("force");
     public static Permission COMMAND_PAY_ASOTHER = COMMAND_MONEY_PAY.createChild("as-other");

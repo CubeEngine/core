@@ -30,6 +30,6 @@ public class WorldsPermissions extends PermissionContainer<Worlds>
         this.registerAllPermissions();
     }
 
-    public static final Permission KEEP_GAMEMODE = Permission.createPermission("keep-gamemode");
-    public static final Permission KEEP_FLYMODE = Permission.createPermission("keep-flymode");
+    public static final Permission KEEP_GAMEMODE = Permission.create("keep-gamemode");
+    public static final Permission KEEP_FLYMODE = Permission.create("keep-flymode");
 }

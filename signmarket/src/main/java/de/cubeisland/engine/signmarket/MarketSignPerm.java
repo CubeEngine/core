@@ -28,7 +28,7 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
         this.bindToModule(SIGN, SIGN_CREATE_USER_OTHER, USE, USE_SELL, USE_BUY, USER, USER_CREATE, ADMIN, ADMIN_CREATE);
         USER_CREATE.attach(SIGN_CREATE_USER, SIGN_CREATE_USER_BUY,  SIGN_CREATE_USER_SELL,
                            SIGN_CREATE_USER_DEMAND, SIGN_SIZE_CHANGE, SIGN_DESTROY_OWN,
-                       Permission.createPermission(smCmds.getChild("editmode").getPermission())
+                       Permission.create(smCmds.getChild("editmode").getPermission())
                            );
         USE.attach(SIGN_INVENTORY_SHOW, USE_BUY, USE_SELL);
         USER.attach(USE, USER_CREATE);
@@ -41,27 +41,27 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
     /**
      * Allow buying and selling to signs
      */
-    public static final Permission USE = Permission.createPermission("use");
+    public static final Permission USE = Permission.create("use");
 
-    public static final Permission USE_BUY = USE.createNew("buy");
-    public static final Permission USE_SELL = USE.createNew("sell");
+    public static final Permission USE_BUY = USE.newPerm("buy");
+    public static final Permission USE_SELL = USE.newPerm("sell");
     /**
      * Allow creating user signs
      */
-    public static final Permission USER_CREATE = Permission.createPermission("user-create");
-    public static final Permission USER = Permission.createPermission("user");
+    public static final Permission USER_CREATE = Permission.create("user-create");
+    public static final Permission USER = Permission.create("user");
     /**
      * Allow creating admin signs
      */
-    public static final Permission ADMIN_CREATE = Permission.createPermission("admin-create");
+    public static final Permission ADMIN_CREATE = Permission.create("admin-create");
     /**
      * full access
      */
-    public static final Permission ADMIN = Permission.createPermission("admin");
+    public static final Permission ADMIN = Permission.create("admin");
 
     // -----------------------------------------------------------------------------
 
-    private static final Permission SIGN = Permission.createAbstractPermission("sign");
+    private static final Permission SIGN = Permission.createWildcard("sign");
 
     private static final Permission SIGN_DESTROY = SIGN.createAbstractChild("destroy");
     public static final Permission SIGN_DESTROY_OWN = SIGN_DESTROY.createChild("own");
@@ -100,6 +100,6 @@ public class MarketSignPerm extends PermissionContainer<Signmarket>
     /**
      * Detached perm / allows to create & edit signs of an other user
      */
-    public static final Permission SIGN_CREATE_USER_OTHER = SIGN_CREATE_USER.createNew("other");
+    public static final Permission SIGN_CREATE_USER_OTHER = SIGN_CREATE_USER.newPerm("other");
 
 }

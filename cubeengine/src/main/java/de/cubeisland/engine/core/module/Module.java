@@ -23,12 +23,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.configuration.Configuration;
-import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.permission.WildcardPermission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
@@ -52,7 +51,7 @@ public abstract class Module
     private ClassLoader classLoader;
     private Path folder;
     private boolean enabled;
-    private Permission modulePermission;
+    private WildcardPermission modulePermission;
 
     protected Module()
     {}
@@ -323,11 +322,11 @@ public abstract class Module
         return this.registry;
     }
 
-    public Permission getBasePermission()
+    public WildcardPermission getBasePermission()
     {
         if (modulePermission == null)
         {
-            modulePermission = Permission.BASE.createAbstractChild(this.getId());
+            modulePermission = Permission.BASE.childWildcard(this.getId());
         }
         return modulePermission;
     }

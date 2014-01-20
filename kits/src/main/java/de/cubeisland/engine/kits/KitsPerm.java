@@ -31,7 +31,7 @@ public class KitsPerm extends PermissionContainer<Kits>
         this.registerAllPermissions();
     }
 
-    public static final Permission COMMAND = Permission.createAbstractPermission("command");
-    public static final Permission KITS = Permission.createAbstractPermission("kits");
+    public static final Permission COMMAND = Permission.createWildcard("command");
+    public static final Permission KITS = Permission.createWildcard("kits");
     public static final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.createChild("kit.give.force");
 }

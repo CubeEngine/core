@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.ParentPermission;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -206,9 +207,9 @@ public class BukkitPermissionManager implements PermissionManager
             parent = permission.getParent().getName();
         }
         Set<String> bundles = new THashSet<>();
-        if (permission.hasBundles())
+        if (permission.hasChildren() && permission instanceof ParentPermission)
         {
-            for (Permission bundle : permission.getBundles())
+            for (Permission bundle : ((ParentPermission)permission).getChildren())
             {
                 bundles.add(bundle.getName());
             }

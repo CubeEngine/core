@@ -42,7 +42,7 @@ public class ToolListener implements Listener
     public ToolListener(Log module)
     {
         this.module = module;
-        toolPerm = module.getBasePermission().createChild("use-logtool");
+        toolPerm = module.getBasePermission().child("use-logtool");
     }
 
     @EventHandler

@@ -32,11 +32,11 @@ public class HidePerm extends PermissionContainer<Hide>
         this.registerAllPermissions();
     }
 
-    private static final Permission AUTO = Permission.createAbstractPermission("auto");
+    private static final Permission AUTO = Permission.createWildcard("auto");
     public static final Permission AUTO_HIDE = AUTO.createChild("hide", PermDefault.FALSE);
     public static final Permission AUTO_SEEHIDDENS = AUTO.createChild("seehiddens", PermDefault.FALSE);
 
-    public static final Permission INTERACT = Permission.createPermission("interact", PermDefault.FALSE);
-    public static final Permission DROP = Permission.createPermission("drop", PermDefault.FALSE);
-    public static final Permission CHAT = Permission.createPermission("chat", PermDefault.FALSE);
+    public static final Permission INTERACT = Permission.create("interact", PermDefault.FALSE);
+    public static final Permission DROP = Permission.create("drop", PermDefault.FALSE);
+    public static final Permission CHAT = Permission.create("chat", PermDefault.FALSE);
 }

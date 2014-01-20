@@ -76,7 +76,7 @@ public class Multiverse implements Listener
         this.playersDir = this.module.getFolder().resolve("players").toFile();
         this.playersDir.mkdir();
 
-        this.universeRootPerm = this.module.getBasePermission().createAbstractChild("universe");
+        this.universeRootPerm = this.module.getBasePermission().childWildcard("universe");
 
         this.universesFolder = this.module.getFolder().resolve("universes").toFile();
         if (universesFolder.exists() && universesFolder.list().length != 0)
