@@ -22,14 +22,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 
-import de.cubeisland.engine.core.CorePerms;
-
 public class PreventSpamKickListener implements Listener
 {
+    private BukkitCore core;
+
+    public PreventSpamKickListener(BukkitCore core)
+    {
+        this.core = core;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onKick(PlayerKickEvent event)
     {
-        if (event.getReason().equals("disconnect.spam") && CorePerms.SPAM.isAuthorized(event.getPlayer()))
+        if (event.getReason().equals("disconnect.spam") && core.perms().SPAM.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
         }

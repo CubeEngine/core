@@ -22,28 +22,30 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import de.cubeisland.engine.core.module.Module;
-
 import gnu.trove.set.hash.THashSet;
 
 public abstract class PermissionContainer<T extends Module>
 {
+    public final T module;
+
+    public PermissionContainer(T module)
+    {
+        this.module = module;
+    }
+
     private Set<Permission> getPermissions()
     {
         THashSet<Permission> perms = new THashSet<>();
         for (Field field : this.getClass().getFields())
         {
             int mask = field.getModifiers();
-            if ((((mask & Modifier.STATIC) == Modifier.STATIC)))
+            if (!((mask & Modifier.STATIC) == Modifier.STATIC)) // ignore static
             {
                 if (Permission.class.isAssignableFrom(field.getType()))
                 {
                     try
                     {
-                        Permission perm = (Permission)field.get(this);
-                        if (!(perm instanceof WildcardPermission))
-                        {
-                            perms.add(perm);
-                        }
+                        perms.add((Permission)field.get(this));
                     }
                     catch (IllegalAccessException ignored)
                     {}
@@ -53,23 +55,16 @@ public abstract class PermissionContainer<T extends Module>
         return perms;
     }
 
-    public void registerAllPermissions(T module)
+    public void registerAllPermissions()
     {
-        Set<Permission> permissions = getPermissions();
-        WildcardPermission basePerm = module.getBasePermission();
-        // First make sure all permissions are child-perms of the modules base-perm
-        for (Permission perm : permissions)
-        {
-            if (perm.parent == null)
-            {
-                basePerm.addChild(perm);
-            }
-            // else perm is a sub-perm
-        }
-        // Now register the permissions
-        for (Permission perm : permissions)
+        for (Permission perm : getPermissions())
         {
             module.getCore().getPermissionManager().registerPermission(module, perm);
         }
+    }
+
+    public final Permission getBasePerm()
+    {
+        return module.getBasePermission();
     }
 }

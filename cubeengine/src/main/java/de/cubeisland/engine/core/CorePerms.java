@@ -20,32 +20,31 @@ package de.cubeisland.engine.core;
 import de.cubeisland.engine.core.module.CoreModule;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
-import de.cubeisland.engine.core.permission.WildcardPermission;
 
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 
 public class CorePerms extends PermissionContainer<CoreModule>
 {
-
     public CorePerms(CoreModule module)
     {
-        this.registerAllPermissions(module);
+        super(module);
+        this.registerAllPermissions();
     }
 
-    private static final WildcardPermission COMMAND = Permission.createWildcard("command");
-    private static final WildcardPermission CLEARPASSWORD = COMMAND.childWildcard("clearpassword");
-    public static final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.child("all");
-    public static final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.child("other");
+    private final Permission COMMAND = getBasePerm().childWildcard("command");
+    private final Permission CLEARPASSWORD = COMMAND.childWildcard("clearpassword");
+    public final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.child("all");
+    public final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.child("other");
 
-    public static final Permission COMMAND_SETPASSWORD_OTHER = COMMAND.child("other");
-    public static final Permission COMMAND_OP_NOTIFY = COMMAND.child("op.notify");
+    public final Permission COMMAND_SETPASSWORD_OTHER = COMMAND.childWildcard("setpassword").child("other");
+    public final Permission COMMAND_OP_NOTIFY = COMMAND.childWildcard("op").child("notify");
 
-    private static final WildcardPermission DEOP = COMMAND.childWildcard("deop");
-    public static final Permission COMMAND_DEOP_NOTIFY = DEOP.child("notify"); // TODO perm not used
-    public static final Permission COMMAND_DEOP_OTHER = DEOP.child("other",FALSE);
-    public static final Permission COMMAND_RELOAD_NOTIFY = COMMAND.child("reload.notify");
+    private final Permission DEOP = COMMAND.childWildcard("deop");
+    public final Permission COMMAND_DEOP_NOTIFY = DEOP.child("notify"); // TODO perm not used
+    public final Permission COMMAND_DEOP_OTHER = DEOP.child("other",FALSE);
+    public final Permission COMMAND_RELOAD_NOTIFY = COMMAND.childWildcard("reload").child("notify");
 
-    public static final Permission COMMAND_VERSION_PLUGINS = COMMAND.child("version.plugins");
+    public final Permission COMMAND_VERSION_PLUGINS = COMMAND.childWildcard("version").child("plugins");
 
-    public static final Permission SPAM = Permission.create("spam");
+    public final Permission SPAM = getBasePerm().child("spam");
 }

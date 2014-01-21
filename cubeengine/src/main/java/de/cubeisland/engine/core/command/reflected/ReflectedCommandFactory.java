@@ -39,7 +39,6 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.permission.WildcardPermission;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -157,8 +156,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             }
             else
             {
-                WildcardPermission wcPerm = module.getBasePermission().childWildcard("command");
-                Permission perm = wcPerm.child(node, annotation.permDefault());
+                Permission perm = module.getBasePermission().childWildcard("command").child(node, annotation.permDefault());
                 module.getCore().getPermissionManager().registerPermission(module, perm);
                 cmd.setPermission(perm.getName());
             }

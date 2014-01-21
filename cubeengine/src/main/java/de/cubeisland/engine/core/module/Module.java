@@ -27,7 +27,6 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.permission.WildcardPermission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
@@ -51,7 +50,7 @@ public abstract class Module
     private ClassLoader classLoader;
     private Path folder;
     private boolean enabled;
-    private WildcardPermission modulePermission;
+    private Permission modulePermission;
 
     protected Module()
     {}
@@ -299,7 +298,7 @@ public abstract class Module
                 this.onDisable();
                 if (this.modulePermission != null)
                 {
-                    Permission.BASE.removeChild(this.modulePermission);
+                    Permission.BASE.detach(this.modulePermission);
                     this.modulePermission = null;
                 }
             }
@@ -322,7 +321,7 @@ public abstract class Module
         return this.registry;
     }
 
-    public WildcardPermission getBasePermission()
+    public Permission getBasePermission()
     {
         if (modulePermission == null)
         {

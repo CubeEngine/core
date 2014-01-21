@@ -25,7 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
@@ -110,7 +109,7 @@ public class CoreCommands extends ContainerCommand
             return;
         }
 
-        if (target == sender && !sender.isAuthorized(CorePerms.COMMAND_SETPASSWORD_OTHER))
+        if (target == sender && !sender.isAuthorized(core.perms().COMMAND_SETPASSWORD_OTHER))
         {
             context.sendTranslated("&cYou are not allowed to change the password of an other user!");
             return;
@@ -134,7 +133,7 @@ public class CoreCommands extends ContainerCommand
         CommandSender sender = context.getSender();
         if (context.hasFlag("a"))
         {
-            if (CorePerms.COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
+            if (core.perms().COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
             {
                 final UserManager um = this.getModule().getCore().getUserManager();
                 um.resetAllPasswords();
@@ -147,7 +146,7 @@ public class CoreCommands extends ContainerCommand
         }
         else if (context.hasArg(0))
         {
-            if (!CorePerms.COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
+            if (!core.perms().COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to clear the password of other users!");
                 return;

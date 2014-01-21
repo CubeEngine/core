@@ -33,7 +33,6 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.permission.ParentPermission;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -102,7 +101,7 @@ public class BukkitPermissionManager implements PermissionManager
                 {
                     this.defaultPermTrue.add(permission);
                 }
-                if ((permission.getDefault() == PermissionDefault.NOT_OP) || (permission.getDefault() == PermissionDefault.TRUE))
+                if ((permission.getDefault() == PermissionDefault.NOT_OP) || (permission.getDefault() == PermissionDefault.FALSE))
                 {
                     this.defaultPermFalse.add(permission);
                 }
@@ -123,14 +122,14 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
-    private org.bukkit.permissions.Permission registerWildcard(Module module, String perm)
+    private org.bukkit.permissions.Permission registerWildcard(Module module, String perm, PermDefault def)
     {
         perm += ".*";
 
         org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
         if (wildcard == null)
         {
-            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, PermissionDefault.FALSE));
+            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, def.getValue()));
             this.getPermissions(module).add(perm);
         }
 
@@ -147,8 +146,7 @@ public class BukkitPermissionManager implements PermissionManager
         return perms;
     }
 
-    @Override
-    public org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundle)
+    private org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault)
     {
         assert CubeEngine.isMainThread(): "Permissions may only be registered from the main thread!";
         assert module != null: "The module must not be null!";
@@ -167,8 +165,7 @@ public class BukkitPermissionManager implements PermissionManager
             throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
         }
 
-        Set<String> modulePermissions = this.getPermissions(module);
-        modulePermissions.add(perm);
+        this.getPermissions(module).add(perm);
 
         org.bukkit.permissions.Permission permission = this.pm.getPermission(perm);
         if (permission == null)
@@ -176,58 +173,49 @@ public class BukkitPermissionManager implements PermissionManager
             permission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
             this.registerBukkitPermission(permission);
         }
-        if (parent != null)
-        {
-            org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parent);
-            permission.addParent(parentPerm, true);
-        }
-        if (bundle != null) // register the known bundles
-        {
-            for (String bundled : bundle)
-            {
-                org.bukkit.permissions.Permission bundledPerm = this.pm.getPermission(bundled);
-                if (bundledPerm == null)
-                {
-                    bundledPerm = new org.bukkit.permissions.Permission(bundled, PermissionDefault.FALSE);
-                    this.registerBukkitPermission(bundledPerm);
-                }
-                modulePermissions.add(bundled);
-                bundledPerm.addParent(permission, true);
-            }
-        }
         return permission;
     }
 
     @Override
     public void registerPermission(Module module, Permission permission)
     {
-        String parent = null;
-        if (permission.hasParent())
+        Set<Permission> attached = permission.getAttached();
+        org.bukkit.permissions.Permission mainBPerm;
+        org.bukkit.permissions.Permission mainBWCPerm = null;
+        if (permission.isWildcard())
         {
-            parent = permission.getParent().getName();
+            mainBPerm = this.registerWildcard(module, permission.getName(), permission.getDefault());
+            mainBWCPerm = mainBPerm;
         }
-        Set<String> bundles = new THashSet<>();
-        if (permission.hasChildren() && permission instanceof ParentPermission)
+        else
         {
-            for (Permission bundle : ((ParentPermission)permission).getChildren())
+            mainBPerm = this.registerPermission(module, permission.getName(), permission.getDefault());
+            if (permission.hasChildren()) // create wildcard perm-name.* (will contain perm-name)
             {
-                bundles.add(bundle.getName());
+                mainBWCPerm = this.registerWildcard(module, permission.getName(), permission.getDefault());
+                mainBPerm.addParent(mainBWCPerm, true);
             }
         }
-        org.bukkit.permissions.Permission registeredPerm =
-            this.registerPermission(module, permission.getName(), permission.getDefault(), parent, bundles);
-        // register all known abstract parents...
-        Permission parentpermission;
-        while (permission.hasParent())
+        // search/register direct parents and add parent to bukkitperm
+        for (Permission parentPerm : permission.getParents())
         {
-            parentpermission = permission.getParent();
-            // register the wildcard-permission
-            org.bukkit.permissions.Permission parentPerm = this.registerWildcard(module, parentpermission.getName());
-            // and bind the child-permission to it
-            registeredPerm.addParent(parentPerm,true);
-            // next parent-permission
-            registeredPerm = parentPerm;
-            permission = parentpermission;
+            org.bukkit.permissions.Permission bPerm;
+            if (parentPerm.isWildcard())
+            {
+                bPerm = this.registerWildcard(module, parentPerm.getName(), parentPerm.getDefault());
+            }
+            else
+            {
+                bPerm = this.registerPermission(module, parentPerm.getName(), parentPerm.getDefault());
+            }
+            if (mainBWCPerm == null)
+            {
+                mainBPerm.addParent(bPerm, true);
+            }
+            else
+            {
+                mainBWCPerm.addParent(bPerm, true);
+            }
         }
     }
 

@@ -330,7 +330,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.config.preventSpamKick)
         {
-            this.getServer().getPluginManager().registerEvents(new PreventSpamKickListener(), this);
+            this.getServer().getPluginManager().registerEvents(new PreventSpamKickListener(this), this);
         }
 
         this.getServer().getPluginManager().registerEvents(new CoreListener(this), this);
@@ -641,6 +641,11 @@ public final class BukkitCore extends JavaPlugin implements Core
     public ConfigurationFactory getConfigFactory()
     {
         return configFactory;
+    }
+
+    public CorePerms perms()
+    {
+        return corePerms;
     }
     //endregion
 }
