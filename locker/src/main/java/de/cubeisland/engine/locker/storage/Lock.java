@@ -527,6 +527,23 @@ public class Lock
         user.sendTranslated("&cMagic prevents you from breaking this protection!");
     }
 
+
+    public void handleBlockInteract(Cancellable event, User user)
+    {
+        if (module.perms().SHOW_OWNER.isAuthorized(user))
+        {
+            user.sendTranslated("&eThis block is protected by &2%s", this.getOwner().getName());
+        }
+        if (this.getLockType() == PUBLIC) return;
+        if (this.handleAccess(user, null, event))
+        {
+            this.notifyUsage(user);
+            return;
+        }
+        event.setCancelled(true);
+        user.sendTranslated("&cMagic prevents you from interacting with this block!");
+    }
+
     public boolean handleEntityDamage(Cancellable event, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey()) || module.perms().BREAK_OTHER.isAuthorized(user))
