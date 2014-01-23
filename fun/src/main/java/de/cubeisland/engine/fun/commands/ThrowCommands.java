@@ -140,7 +140,7 @@ public class ThrowCommands
             return;
         }
 
-        if (!user.hasPermission(module.perms().COMMAND_THROW.getPermission() + "." + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-"))) // TODO these should get registered!!!
+        if (!user.hasPermission(module.perms().COMMAND_THROW.getName() + "." + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-"))) // TODO these should get registered!!!
         {
             context.sendTranslated("&cYou are not allowed to throw this");
             return;

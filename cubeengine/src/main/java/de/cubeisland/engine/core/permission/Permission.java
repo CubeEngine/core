@@ -31,7 +31,6 @@ import static de.cubeisland.engine.core.permission.PermDefault.OP;
 public class Permission
 {
     private final String name;
-    private final String permission;
     private final PermDefault def;
     private final Set<Permission> parents = new HashSet<>(); // bound as children or attached
 
@@ -51,14 +50,13 @@ public class Permission
     {
         if (parentName != null)
         {
-            this.permission = parentName.toLowerCase() + "." + name.toLowerCase();
+            this.name = parentName.toLowerCase() + "." + name.toLowerCase();
         }
         else
         {
-            this.permission = name.toLowerCase();
+            this.name = name.toLowerCase();
         }
         this.def = def;
-        this.name = name;
         this.wildcard = wildcard;
     }
 
@@ -69,7 +67,7 @@ public class Permission
 
     public Permission newPerm(String name, PermDefault def)
     {
-        return new Permission(this.permission, name, def);
+        return new Permission(this.name, name, def);
     }
 
     public Permission newWildcard(String name)
@@ -79,7 +77,7 @@ public class Permission
 
     public Permission newWildcard(String name, PermDefault def)
     {
-        return new Permission(this.permission, name, def, true);
+        return new Permission(this.name, name, def, true);
     }
 
     public Permission child(String name)
@@ -160,17 +158,12 @@ public class Permission
     {
         assert permissible != null: "The player may not be null!";
 
-        return permissible.hasPermission(this.permission);
+        return permissible.hasPermission(this.name);
     }
 
     public String getName()
     {
         return name;
-    }
-
-    public String getPermission()
-    {
-        return permission;
     }
 
     public PermDefault getDefault()
@@ -229,7 +222,7 @@ public class Permission
 
         Permission that = (Permission)o;
 // TODO add if it is a wildcard
-        if (permission != null ? !permission.equals(that.permission) : that.permission != null)
+        if (name != null ? !name.equals(that.name) : that.name != null)
         {
             return false;
         }
@@ -240,7 +233,7 @@ public class Permission
     @Override
     public int hashCode()
     {
-        return permission != null ? permission.hashCode() : 0;
+        return name != null ? name.hashCode() : 0;
     }
 
     public static Permission getFor(CubeCommand command)
