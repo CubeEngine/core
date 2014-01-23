@@ -17,16 +17,18 @@
  */
 package de.cubeisland.engine.conomy.account;
 
-import de.cubeisland.engine.conomy.ConomyPermissions;
+import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 
 public class UserAccount extends Account
 {
+    private final Conomy module;
     private AccountAttachment attachment;
 
     public UserAccount(AccountAttachment attachment, ConomyManager manager, AccountModel model)
     {
         super(manager, model);
+        module = manager.module;
         this.attachment = attachment;
     }
 
@@ -53,7 +55,7 @@ public class UserAccount extends Account
     @Override
     public boolean has(double amount)
     {
-        if (ConomyPermissions.USER_ALLOWUNDERMIN.isAuthorized(this.attachment.getHolder()))
+        if (module.perms().USER_ALLOWUNDERMIN.isAuthorized(this.attachment.getHolder()))
         {
             return true;
         }

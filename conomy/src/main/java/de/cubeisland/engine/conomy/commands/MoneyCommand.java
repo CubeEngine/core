@@ -30,7 +30,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.conomy.Conomy;
-import de.cubeisland.engine.conomy.ConomyPermissions;
 import de.cubeisland.engine.conomy.account.Account;
 import de.cubeisland.engine.conomy.account.ConomyManager;
 import de.cubeisland.engine.conomy.account.UserAccount;
@@ -72,7 +71,7 @@ public class MoneyCommand extends ContainerCommand
     public void balance(ParameterizedContext context)
     {
         User user;
-        boolean showHidden = context.hasFlag("f") && ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender());
+        boolean showHidden = context.hasFlag("f") && module.perms().USER_SHOWHIDDEN.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
             user = context.getUser(0);
@@ -112,7 +111,7 @@ public class MoneyCommand extends ContainerCommand
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
-            if (!ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender()))
+            if (!module.perms().USER_SHOWHIDDEN.isAuthorized(context.getSender()))
                 showHidden = false;
         }
         int fromRank = 1;
@@ -179,7 +178,7 @@ public class MoneyCommand extends ContainerCommand
         boolean asSomeOneElse = false;
         if (context.hasParam("as"))
         {
-            if (!ConomyPermissions.COMMAND_PAY_ASOTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_PAY_ASOTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to pay money as someone else!");
                 return;
@@ -231,7 +230,7 @@ public class MoneyCommand extends ContainerCommand
                                        user.getName());
                 continue;
             }
-            if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
+            if (!(context.hasFlag("f") && module.perms().COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
             {
                 if (!source.has(amount))
                 {

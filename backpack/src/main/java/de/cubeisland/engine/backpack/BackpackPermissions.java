@@ -19,17 +19,17 @@ package de.cubeisland.engine.backpack;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
-import de.cubeisland.engine.core.permission.WildcardPermission;
 
 public class BackpackPermissions extends PermissionContainer<Backpack>
 {
     public BackpackPermissions(Backpack module)
     {
-        this.registerAllPermissions(module);
+        super(module);
+        this.registerAllPermissions();
     }
 
-    private static final WildcardPermission COMMAND = Permission.createWildcard("command");
-    private static final WildcardPermission COMMAND_OPEN = COMMAND.childWildcard("open");
-    public static final Permission OPEN_OTHER_USER = COMMAND_OPEN.child("other-user");
-    public static final Permission OPEN_OTHER_WORLDS = COMMAND_OPEN.child("other-worlds");
+    private final Permission COMMAND = getBasePerm().childWildcard("command");
+    private final Permission COMMAND_OPEN = COMMAND.childWildcard("open");
+    public final Permission OPEN_OTHER_USER = COMMAND_OPEN.child("other-user");
+    public final Permission OPEN_OTHER_WORLDS = COMMAND_OPEN.child("other-worlds");
 }

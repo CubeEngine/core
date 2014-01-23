@@ -41,11 +41,9 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
-import de.cubeisland.engine.fun.FunPerm;
 
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
@@ -56,17 +54,15 @@ public class ThrowCommands
     // entities that can't be safe due to bukkit flaws
     private final EnumSet<EntityType> BUGGED_ENTITIES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
 
-    private static final String BASE_THROW_PERM = FunPerm.COMMAND_THROW.getName();
-
-    private final Fun fun;
+    private final Fun module;
     private final ThrowListener throwListener;
 
-    public ThrowCommands(Fun fun)
+    public ThrowCommands(Fun module)
     {
-        this.fun = fun;
+        this.module = module;
         this.thrownItems = new THashMap<>();
         this.throwListener = new ThrowListener();
-        fun.getCore().getEventManager().registerListener(fun, this.throwListener);
+        module.getCore().getEventManager().registerListener(module, this.throwListener);
     }
 
     @Command
@@ -109,20 +105,20 @@ public class ThrowCommands
         }
 
         int amount = context.getArg(1, Integer.class, -1);
-        if ((amount > this.fun.getConfig().command.throwSection.maxAmount || amount < 1) && amount != -1)
+        if ((amount > this.module.getConfig().command.throwSection.maxAmount || amount < 1) && amount != -1)
         {
-            context.sendTranslated("&cThe amount has to be a number from 1 to %d", this.fun.getConfig().command.throwSection.maxAmount);
+            context.sendTranslated("&cThe amount has to be a number from 1 to %d", this.module.getConfig().command.throwSection.maxAmount);
             return;
         }
 
         int delay = context.getParam("delay", 3);
-        if (delay > this.fun.getConfig().command.throwSection.maxDelay || delay < 0)
+        if (delay > this.module.getConfig().command.throwSection.maxDelay || delay < 0)
         {
-            context.sendTranslated("&cThe delay has to be a number from 0 to %d", this.fun.getConfig().command.throwSection.maxDelay);
+            context.sendTranslated("&cThe delay has to be a number from 0 to %d", this.module.getConfig().command.throwSection.maxDelay);
             return;
         }
         
-        if(unsafe && !FunPerm.COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ) )
+        if(unsafe && !module.perms().COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ) )
         {
             context.sendTranslated("&cYou are not allowed to execute this command in unsafe-mode.");
             return;
@@ -144,7 +140,7 @@ public class ThrowCommands
             return;
         }
 
-        if (!user.hasPermission(BASE_THROW_PERM + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")))
+        if (!user.hasPermission(module.perms().COMMAND_THROW.getPermission() + "." + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-"))) // TODO these should get registered!!!
         {
             context.sendTranslated("&cYou are not allowed to throw this");
             return;
@@ -232,7 +228,7 @@ public class ThrowCommands
                 this.user.sendTranslated("&aStarted throwing!");
                 this.user.sendTranslated("&aYou will keep throwing until you run this command again.");
             }
-            this.taskId = fun.getCore().getTaskManager().runTimer(fun, this, 0, this.interval);
+            this.taskId = module.getCore().getTaskManager().runTimer(module, this, 0, this.interval);
             return this.taskId != -1;
         }
 
@@ -256,7 +252,7 @@ public class ThrowCommands
                         this.user.sendTranslated("&aAll objects thrown.");
                     }
                 }
-                fun.getCore().getTaskManager().cancelTask(fun, this.taskId);
+                module.getCore().getTaskManager().cancelTask(module, this.taskId);
                 this.taskId = -1;
             }
         }
@@ -352,7 +348,7 @@ public class ThrowCommands
         {
             if (this.entities.contains(entity) && this.removal != entity)
             {
-                fun.getCore().getTaskManager().runTask(fun, new Runnable()
+                module.getCore().getTaskManager().runTask(module, new Runnable()
                 {
                     @Override
                     public void run()

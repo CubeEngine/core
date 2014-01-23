@@ -168,7 +168,7 @@ public class SpawnCommands
             world = user.getWorld();
         }
         boolean force = false;
-        if (context.hasFlag("f") && SpawnPerms.COMMAND_SPAWN_FORCE.isAuthorized(context.getSender()))
+        if (context.hasFlag("f") && module.perms().COMMAND_SPAWN_FORCE.isAuthorized(context.getSender()))
         {
             force = true; // if not allowed ignore flag
         }
@@ -188,7 +188,7 @@ public class SpawnCommands
         }
         if (context.hasFlag("a"))
         {
-            if (!SpawnPerms.COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to spawn everyone!");
                 return;
@@ -221,7 +221,7 @@ public class SpawnCommands
                 }
                 if (!force)
                 {
-                    if (SpawnPerms.COMMAND_SPAWN_PREVENT.isAuthorized(player))
+                    if (module.perms().COMMAND_SPAWN_PREVENT.isAuthorized(player))
                     {
                         continue;
                     }
@@ -250,7 +250,7 @@ public class SpawnCommands
                 context.sendTranslated("&cYou cannot teleport an offline player to spawn!");
                 return;
             }
-            if (!force && SpawnPerms.COMMAND_SPAWN_PREVENT.isAuthorized(user))
+            if (!force && module.perms().COMMAND_SPAWN_PREVENT.isAuthorized(user))
             {
                 context.sendTranslated("&cYou are not allowed to spawn %s!", user.getName());
                 return;

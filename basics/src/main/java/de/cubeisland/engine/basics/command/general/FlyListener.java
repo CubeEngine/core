@@ -27,10 +27,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.basics.Basics;
 
 public class FlyListener implements Listener
 {
+    private Basics module;
+
+    public FlyListener(Basics module)
+    {
+        this.module = module;
+    }
+
     private static final float FLY_SPEED_MARKER = 42.0f;
     private static final float FLY_SPEED_DETECT = -10.0f;
     private static final float FLY_SPEED_DEFAULT = 0.05f;
@@ -72,7 +79,7 @@ public class FlyListener implements Listener
     {
         final Player player = event.getPlayer();
 
-        if (player.getGameMode() != GameMode.CREATIVE && wasFlying(player) && BasicsPerm.COMMAND_FLY_KEEP.isAuthorized(player))
+        if (player.getGameMode() != GameMode.CREATIVE && wasFlying(player) && module.perms().COMMAND_FLY_KEEP.isAuthorized(player))
         {
             player.setAllowFlight(true);
             player.setFlying(true);
@@ -84,7 +91,7 @@ public class FlyListener implements Listener
     public void quit(final PlayerQuitEvent event)
     {
         final Player player = event.getPlayer();
-        if (player.getGameMode() != GameMode.CREATIVE && player.isFlying() && BasicsPerm.COMMAND_FLY_KEEP.isAuthorized(player))
+        if (player.getGameMode() != GameMode.CREATIVE && player.isFlying() && module.perms().COMMAND_FLY_KEEP.isAuthorized(player))
         {
             markFlySpeed(player);
         }

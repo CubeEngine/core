@@ -28,7 +28,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.conomy.Conomy;
-import de.cubeisland.engine.conomy.ConomyPermissions;
 import de.cubeisland.engine.conomy.account.Account;
 import de.cubeisland.engine.conomy.account.BankAccount;
 import de.cubeisland.engine.conomy.account.ConomyManager;
@@ -37,9 +36,12 @@ import de.cubeisland.engine.conomy.account.UserAccount;
 public class BankCommands extends ContainerCommand
 {
     private final ConomyManager manager;
+    private Conomy module;
+
     public BankCommands(Conomy module)
     {
         super(module, "bank", "Manages your money in banks.");
+        this.module = module;
         this.manager = module.getManager();
     }
 
@@ -58,7 +60,7 @@ public class BankCommands extends ContainerCommand
                 context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
                 return;
             }
-            boolean showHidden = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_BALANCE_SHOWHIDDEN.isAuthorized(context.getSender());
+            boolean showHidden = context.hasFlag("f") && module.perms().COMMAND_BANK_BALANCE_SHOWHIDDEN.isAuthorized(context.getSender());
             if (!showHidden && bankAccount.isHidden())
             {
                 if (context.getSender() instanceof User && !bankAccount.hasAccess((User)context.getSender()))
@@ -109,7 +111,7 @@ public class BankCommands extends ContainerCommand
             }
             return;
         }
-        Set<String> allBanks = this.manager.getBankNames(ConomyPermissions.BANK_SHOWHIDDEN.isAuthorized(context.getSender()));
+        Set<String> allBanks = this.manager.getBankNames(module.perms().BANK_SHOWHIDDEN.isAuthorized(context.getSender()));
         if (allBanks.isEmpty())
         {
             context.sendTranslated("&eThere are no banks currently!");
@@ -135,7 +137,7 @@ public class BankCommands extends ContainerCommand
             return;
         }
         boolean force = context.hasFlag("f")
-            && ConomyPermissions.COMMAND_BANK_INVITE_FORCE.isAuthorized(context.getSender());
+            && module.perms().COMMAND_BANK_INVITE_FORCE.isAuthorized(context.getSender());
         if (context.hasArg(1))
         {
             BankAccount account = this.getBankAccount(context.getString(1));
@@ -192,7 +194,7 @@ public class BankCommands extends ContainerCommand
         boolean other = false;
         if (context.hasArg(1))
         {
-            if (!ConomyPermissions.COMMAND_BANK_JOIN_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_BANK_JOIN_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to let someone else join a bank!");
                 return;
@@ -240,7 +242,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cYou are already member of this bank!");
             return;
         }
-        boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_JOIN_FORCE.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_JOIN_FORCE.isAuthorized(context.getSender());
         if (!force || (account.needsInvite() && !account.isInvited(user)))
         {
             if (other)
@@ -266,7 +268,7 @@ public class BankCommands extends ContainerCommand
             boolean other = false;
             if (context.hasArg(1))
             {
-                if (!ConomyPermissions.COMMAND_BANK_LEAVE_OTHER.isAuthorized(context.getSender()))
+                if (!module.perms().COMMAND_BANK_LEAVE_OTHER.isAuthorized(context.getSender()))
                 {
                     context.sendTranslated("&cYou are not allowed to let someone else leave a bank!");
                     return;
@@ -349,7 +351,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
             return;
         }
-        if (bankAccount.isOwner(user) || ConomyPermissions.COMMAND_BANK_UNINVITE_FORCE.isAuthorized(context.getSender()))
+        if (bankAccount.isOwner(user) || module.perms().COMMAND_BANK_UNINVITE_FORCE.isAuthorized(context.getSender()))
         {
             if (!bankAccount.isInvited(user))
             {
@@ -424,7 +426,7 @@ public class BankCommands extends ContainerCommand
         {
             if (account.isOwner((User)context.getSender()))
             {
-                if (!ConomyPermissions.COMMAND_BANK_DELETE_OWN.isAuthorized(context.getSender()))
+                if (!module.perms().COMMAND_BANK_DELETE_OWN.isAuthorized(context.getSender()))
                 {
                     context.sendTranslated("&cYou are not allowed to delete your bank!");
                     return;
@@ -432,7 +434,7 @@ public class BankCommands extends ContainerCommand
             }
             else
             {
-                if (!ConomyPermissions.COMMAND_BANK_DELETE_OTHER.isAuthorized(context.getSender()))
+                if (!module.perms().COMMAND_BANK_DELETE_OTHER.isAuthorized(context.getSender()))
                 {
                     context.sendTranslated("&cYou are not owner of this bank!");
                     return;
@@ -455,7 +457,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
             return;
         }
-        boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_RENAME_FORCE.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_RENAME_FORCE.isAuthorized(context.getSender());
         if (!force && context.getSender() instanceof User)
         {
             if (!account.isOwner((User)context.getSender()))
@@ -490,7 +492,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cThere is no bank-account named &6%s&c!", context.getString(0));
             return;
         }
-        boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_SETOWNER_FORCE.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_SETOWNER_FORCE.isAuthorized(context.getSender());
         if (force || context.getSender() instanceof User)
         {
             if (!account.isOwner((User)context.getSender()))
@@ -517,7 +519,7 @@ public class BankCommands extends ContainerCommand
         {
             if (context.getSender() instanceof User && !account.hasAccess((User)context.getSender()))
             {
-                if (!ConomyPermissions.COMMAND_BANK_LISTINVITES_OTHER.isAuthorized(context.getSender()))
+                if (!module.perms().COMMAND_BANK_LISTINVITES_OTHER.isAuthorized(context.getSender()))
                 {
                     context.sendTranslated("&cYou are not allowed to see the invites of this bank!");
                     return;
@@ -611,7 +613,7 @@ public class BankCommands extends ContainerCommand
                 context.sendTranslated("&cYou do not have an account!");
                 return;
             }
-            boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_DEPOSIT_FORCE.isAuthorized(context.getSender());
+            boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_DEPOSIT_FORCE.isAuthorized(context.getSender());
             if (userAccount.transactionTo(account, amount, force))
             {
                 context.sendTranslated("&aDeposited &6%s&a into &6%s&a! New Balance: &6%s",
@@ -655,7 +657,7 @@ public class BankCommands extends ContainerCommand
                 context.sendTranslated("&cYou do not have an account!");
                 return;
             }
-            boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_WITHDRAW_FORCE.isAuthorized(context.getSender());
+            boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_WITHDRAW_FORCE.isAuthorized(context.getSender());
             if (account.transactionTo(userAccount, amount, force))
             {
                 context.sendTranslated("&aWithdrawn &6%s&a from &6%s&a! New Balance: &6%s",
@@ -722,7 +724,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated("&cSorry but robbing a bank is not allowed!");
             return;
         }
-        boolean force = context.hasFlag("f") && ConomyPermissions.COMMAND_BANK_PAY_FORCE.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_PAY_FORCE.isAuthorized(context.getSender());
         if (account.transactionTo(target, amount, force))
         {
             if (context.hasFlag("b"))

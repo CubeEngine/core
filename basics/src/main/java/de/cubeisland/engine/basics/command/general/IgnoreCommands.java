@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.basics.storage.IgnoreList;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
@@ -96,7 +95,7 @@ public class IgnoreCommands
                 }
                 else if (!this.addIgnore(sender, user))
                 {
-                    if (BasicsPerm.COMMAND_IGNORE_PREVENT.isAuthorized(user))
+                    if (module.perms().COMMAND_IGNORE_PREVENT.isAuthorized(user))
                     {
                         context.sendTranslated("&cYou are not allowed to ignore &2%s&c!",user.getName());
                         continue;

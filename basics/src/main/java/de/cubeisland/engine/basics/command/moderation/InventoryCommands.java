@@ -22,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -39,11 +38,11 @@ import de.cubeisland.engine.core.util.InventoryGuardFactory;
  */
 public class InventoryCommands
 {
-    private Basics basics;
+    private Basics module;
 
-    public InventoryCommands(Basics basics)
+    public InventoryCommands(Basics module)
     {
-        this.basics = basics;
+        this.module = module;
     }
 
     @Command(desc = "Allows you to see into the inventory of someone else.",
@@ -66,7 +65,7 @@ public class InventoryCommands
             Inventory inv;
             if (context.hasFlag("e"))
             {
-                if (BasicsPerm.COMMAND_INVSEE_ENDERCHEST.isAuthorized(sender))
+                if (module.perms().COMMAND_INVSEE_ENDERCHEST.isAuthorized(sender))
                 {
                     inv = user.getEnderChest();
                 }
@@ -80,18 +79,18 @@ public class InventoryCommands
             {
                 inv = user.getInventory();
             }
-            if (BasicsPerm.COMMAND_INVSEE_MODIFY.isAuthorized(sender))
+            if (module.perms().COMMAND_INVSEE_MODIFY.isAuthorized(sender))
             {
                 allowModify = true;
-                if (!(context.hasFlag("f") && BasicsPerm.COMMAND_INVSEE_MODIFY_FORCE.isAuthorized(sender))
-                    && BasicsPerm.COMMAND_INVSEE_MODIFY_PREVENT.isAuthorized(user))
+                if (!(context.hasFlag("f") && module.perms().COMMAND_INVSEE_MODIFY_FORCE.isAuthorized(sender))
+                    && module.perms().COMMAND_INVSEE_MODIFY_PREVENT.isAuthorized(user))
                 {
                     allowModify = false;
                 }
             }
-            if (BasicsPerm.COMMAND_INVSEE_NOTIFY.isAuthorized(user))
+            if (module.perms().COMMAND_INVSEE_NOTIFY.isAuthorized(user))
             {
-                if (!(context.hasFlag("q") && BasicsPerm.COMMAND_INVSEE_QUIET.isAuthorized(context.getSender())))
+                if (!(context.hasFlag("q") && module.perms().COMMAND_INVSEE_QUIET.isAuthorized(context.getSender())))
                 {
                     user.sendTranslated("&2%s&e is looking into your inventory.", sender.getName());
                 }
@@ -101,7 +100,7 @@ public class InventoryCommands
             {
                 guard.blockPutInAll().blockTakeOutAll();
             }
-            guard.submitInventory(this.basics, true);
+            guard.submitInventory(this.module, true);
             return;
         }
         context.sendTranslated("&cThis command can only be used by a player!");
@@ -175,14 +174,14 @@ public class InventoryCommands
             sender.sendTranslated("&cThat awkward moment when you realize you do not have an inventory!");
             return;
         }
-        if (sender != target && !BasicsPerm.COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
+        if (sender != target && !module.perms().COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
         {
             context.sendTranslated("&cYou are not allowed to clear the inventory of other users!");
             return;
         }
-        if (target != sender && BasicsPerm.COMMAND_CLEARINVENTORY_PREVENT.isAuthorized(target)) // other has prevent
+        if (target != sender && module.perms().COMMAND_CLEARINVENTORY_PREVENT.isAuthorized(target)) // other has prevent
         {
-            if (!(context.hasFlag("f") && BasicsPerm.COMMAND_CLEARINVENTORY_FORCE.isAuthorized(sender))) // is not forced?
+            if (!(context.hasFlag("f") && module.perms().COMMAND_CLEARINVENTORY_FORCE.isAuthorized(sender))) // is not forced?
             {
                 context.sendTranslated("&cYou are not allowed to clear the inventory of &2%s", target.getName());
                 return;
@@ -203,9 +202,9 @@ public class InventoryCommands
         }
         else
         {
-            if (BasicsPerm.COMMAND_CLEARINVENTORY_NOTIFY.isAuthorized(target)) // notify
+            if (module.perms().COMMAND_CLEARINVENTORY_NOTIFY.isAuthorized(target)) // notify
             {
-                if (!(BasicsPerm.COMMAND_CLEARINVENTORY_QUIET.isAuthorized(sender) && context.hasFlag("q"))) // quiet
+                if (!(module.perms().COMMAND_CLEARINVENTORY_QUIET.isAuthorized(sender) && context.hasFlag("q"))) // quiet
                 {
                     target.sendTranslated("&eYour inventory has been cleared by &6%s&e!", sender.getName());
                 }

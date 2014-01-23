@@ -35,7 +35,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -83,7 +82,7 @@ public class PlayerCommands
     {
         if (context.hasArg(0))
         {
-            if (!BasicsPerm.COMMAND_FEED_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_FEED_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to feed other users!");
                 return;
@@ -153,7 +152,7 @@ public class PlayerCommands
     {
         if (context.hasArg(0))
         {
-            if (!BasicsPerm.COMMAND_STARVE_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_STARVE_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to let other user starve!");
                 return;
@@ -223,7 +222,7 @@ public class PlayerCommands
     {
         if (context.hasArg(0))
         {
-            if (!BasicsPerm.COMMAND_HEAL_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_HEAL_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to heal other user!");
                 return;
@@ -352,7 +351,7 @@ public class PlayerCommands
                 return;
             }
         }
-        if (sender != target && !BasicsPerm.COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
+        if (sender != target && !module.perms().COMMAND_GAMEMODE_OTHER.isAuthorized(sender))
         {
             context.sendTranslated("&cYou are not allowed to change the game mode of an other player!");
             return;
@@ -383,16 +382,16 @@ public class PlayerCommands
     }, min = 0 , max = 1)
     public void kill(ParameterizedContext context)
     {
-        boolean lightning = context.hasFlag("l") && BasicsPerm.COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
-        boolean force = context.hasFlag("f") && BasicsPerm.COMMAND_KILL_FORCE.isAuthorized(context.getSender());
-        boolean quiet = context.hasFlag("q") && BasicsPerm.COMMAND_KILL_QUIET.isAuthorized(context.getSender());
+        boolean lightning = context.hasFlag("l") && module.perms().COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
+        boolean force = context.hasFlag("f") && module.perms().COMMAND_KILL_FORCE.isAuthorized(context.getSender());
+        boolean quiet = context.hasFlag("q") && module.perms().COMMAND_KILL_QUIET.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
             String[] names = StringUtils.explode(",",context.getString(0));
             List<String> killed = new ArrayList<>();
             if ("*".equals(names[0]))
             {
-                if (!BasicsPerm.COMMAND_KILL_ALL.isAuthorized(context.getSender()))
+                if (!module.perms().COMMAND_KILL_ALL.isAuthorized(context.getSender()))
                 {
                     context.sendTranslated("&cYou are not allowed to kill everyone!");
                     return;
@@ -471,7 +470,7 @@ public class PlayerCommands
     {
         if (!force)
         {
-            if (BasicsPerm.COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().getGodmode())
+            if (module.perms().COMMAND_KILL_PREVENT.isAuthorized(user) || this.module.getBasicsUser(user).getbUEntity().getGodmode())
             {
                 context.sendTranslated("&cYou cannot kill &2%s&c!", user.getDisplayName());
                 return false;
@@ -486,7 +485,7 @@ public class PlayerCommands
         {
             context.sendTranslated("&aYou killed &2%s&a!", user.getDisplayName());
         }
-        if (!quiet && BasicsPerm.COMMAND_KILL_NOTIFY.isAuthorized(user))
+        if (!quiet && module.perms().COMMAND_KILL_NOTIFY.isAuthorized(user))
         {
             user.sendTranslated("&eYou were killed by &2%s",context.getSender().getDisplayName());
         }
@@ -561,7 +560,7 @@ public class PlayerCommands
         User user;
         if (context.hasArg(0))
         {
-            if (!BasicsPerm.COMMAND_AFK_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_AFK_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to change the afk-state of an other player!");
                 return;
@@ -687,7 +686,7 @@ public class PlayerCommands
         boolean other = false;
         if (context.hasArg(0))
         {
-            if (!BasicsPerm.COMMAND_GOD_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_GOD_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to god others!");
                 return;
@@ -759,7 +758,7 @@ public class PlayerCommands
             context.sendTranslated("&cUser %s not found or offline!", context.getString("player"));
             return;
         }
-        if (other && !BasicsPerm.COMMAND_WALKSPEED_OTHER.isAuthorized(context.getSender())) // PermissionChecks
+        if (other && !module.perms().COMMAND_WALKSPEED_OTHER.isAuthorized(context.getSender())) // PermissionChecks
         {
             context.sendTranslated("&cYou are not allowed to change the walk-speed of other user!");
             return;
@@ -809,7 +808,7 @@ public class PlayerCommands
             return;
         }
         // PermissionChecks
-        if (sender != target && !BasicsPerm.COMMAND_FLY_OTHER.isAuthorized(context.getSender()))
+        if (sender != target && !module.perms().COMMAND_FLY_OTHER.isAuthorized(context.getSender()))
         {
             context.sendTranslated("&cYou are not allowed to change the fly-mode of other user!");
             return;

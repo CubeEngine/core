@@ -44,7 +44,6 @@ import de.cubeisland.engine.core.util.math.shape.Cylinder;
 import de.cubeisland.engine.core.util.math.shape.Shape;
 import de.cubeisland.engine.core.util.math.shape.Sphere;
 import de.cubeisland.engine.fun.Fun;
-import de.cubeisland.engine.fun.FunPerm;
 
 public class NukeCommand
 {
@@ -84,7 +83,7 @@ public class NukeCommand
         int explosionRange = context.getParam("range", 4);
         int height = context.getParam("height", 5);
 
-        if(explosionRange != 4 && !FunPerm.COMMAND_NUKE_CHANGE_RANGE.isAuthorized(context.getSender()))
+        if(explosionRange != 4 && !module.perms().COMMAND_NUKE_CHANGE_RANGE.isAuthorized(context.getSender()))
         {
             context.sendTranslated("&cYou are not allowed to change the explosion range of the nuke carpet!");
             return;
@@ -97,7 +96,7 @@ public class NukeCommand
 
         if(context.hasParam("player"))
         {
-            if(!FunPerm.COMMAND_NUKE_OTHER.isAuthorized(context.getSender()))
+            if(!module.perms().COMMAND_NUKE_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendMessage("&cYou are not allowed to specify a player!");
                 return;

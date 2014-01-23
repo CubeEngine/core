@@ -28,12 +28,13 @@ public class Chat extends Module implements Listener
 
     private ChatConfig config;
     private String defaultFormat;
+    private ChatPerm perms;
 
     @Override
     public void onEnable()
     {
         this.config = this.loadConfig(ChatConfig.class);
-        new ChatPerm(this);
+        perms = new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
         this.getCore().getCommandManager().registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
         this.defaultFormat = this.config.format;
@@ -55,5 +56,10 @@ public class Chat extends Module implements Listener
     protected ChatConfig getConfig()
     {
         return config;
+    }
+
+    public ChatPerm perms()
+    {
+        return perms;
     }
 }

@@ -34,7 +34,6 @@ import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryUtil;
 import org.joda.time.Duration;
@@ -62,16 +61,16 @@ public class Kit
     private List<String> commands;
     private DSLContext dsl;
 
-    public Kit(Database db, final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
+    public Kit(Kits module, final String name, boolean giveKitOnFirstJoin, int limitUsagePerPlayer, long limitUsageDelay, boolean usePermission, String customMessage, List<String> commands, List<KitItem> items)
     {
-        this.dsl = db.getDSL();
+        this.dsl = module.getCore().getDB().getDSL();
         this.name = name;
         this.items = items;
         this.commands = commands;
         this.customMessage = customMessage;
         if (usePermission)
         {
-            this.permission = KitsPerm.KITS.child(name);
+            this.permission = module.perms().KITS.child(name);
         }
         else
         {

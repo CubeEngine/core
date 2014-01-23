@@ -37,10 +37,17 @@ public class Backpack extends Module
     protected File globalDir;
     private BackpackManager manager;
 
+    public BackpackPermissions perms()
+    {
+        return perms;
+    }
+
+    private BackpackPermissions perms;
+
     @Override
     public void onEnable()
     {
-        new BackpackPermissions(this);
+        perms = new BackpackPermissions(this);
         this.getCore().getConfigFactory().getCodecManager().getCodec(NBTCodec.class).getConverterManager().
             registerConverter(ItemStack.class, new NBTItemStackConverter());
         this.config = this.loadConfig(BackpackConfig.class);

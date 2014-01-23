@@ -30,7 +30,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -56,11 +55,11 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
  */
 public class ItemCommands
 {
-    private Basics basics;
+    private Basics module;
 
-    public ItemCommands(Basics basics)
+    public ItemCommands(Basics module)
     {
-        this.basics = basics;
+        this.module = module;
     }
 
     @Command(desc = "Looks up an item for you!", max = 1, usage = "[item]")
@@ -247,7 +246,7 @@ public class ItemCommands
             }
             if (context.hasFlag("u"))
             {
-                if (BasicsPerm.COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
+                if (module.perms().COMMAND_ENCHANT_UNSAFE.isAuthorized(sender))
                 {
                     if (item.getItemMeta() instanceof EnchantmentStorageMeta)
                     {
@@ -332,8 +331,8 @@ public class ItemCommands
             context.sendTranslated("&cUnknown Item: &6%s&c!", context.getString(1));
             return;
         }
-        if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(context.getSender())
-            && this.basics.getConfiguration().commands.itemBlacklist.contains(item))
+        if (!context.hasFlag("b") && module.perms().ITEM_BLACKLIST.isAuthorized(context.getSender())
+            && this.module.getConfiguration().commands.itemBlacklist.contains(item))
         {
             context.sendTranslated("&cThis item is blacklisted!");
             return;
@@ -373,8 +372,8 @@ public class ItemCommands
                 context.sendTranslated("&cUnknown Item: &6%s&c!", context.getString(0));
                 return;
             }
-            if (!context.hasFlag("b") && BasicsPerm.ITEM_BLACKLIST.isAuthorized(sender)
-                    && this.basics.getConfiguration().commands.containsBlackListed(item))
+            if (!context.hasFlag("b") && module.perms().ITEM_BLACKLIST.isAuthorized(sender)
+                    && this.module.getConfiguration().commands.containsBlackListed(item))
             {
                 context.sendTranslated("&cThis item is blacklisted!");
                 return;
@@ -400,9 +399,9 @@ public class ItemCommands
                     enchLvl = Integer.parseInt(enchName.substring(enchName.indexOf(":") + 1, enchName.length()));
                     enchName = enchName.substring(0, enchName.indexOf(":"));
                 }
-                if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
+                if (module.perms().COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
                 {
-                    if (BasicsPerm.COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
+                    if (module.perms().COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
                     {
                         Match.enchant().applyMatchedEnchantment(item, enchName, enchLvl, true);
                     }
@@ -528,7 +527,7 @@ public class ItemCommands
         if (context.getSender() instanceof User)
         {
             User user = (User)context.getSender();
-            boolean allow64 = BasicsPerm.COMMAND_STACK_FULLSTACK.isAuthorized(user);
+            boolean allow64 = module.perms().COMMAND_STACK_FULLSTACK.isAuthorized(user);
             ItemStack[] items = user.getInventory().getContents();
             int size = items.length;
             boolean changed = false;

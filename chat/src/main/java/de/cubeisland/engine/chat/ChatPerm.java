@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.chat;
 
-import de.cubeisland.engine.core.permission.ParentPermission;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
@@ -25,37 +24,7 @@ public class ChatPerm extends PermissionContainer<Chat>
 {
     public ChatPerm(Chat module)
     {
-        this.registerAllPermissions(module);
-    }
-
-    public static final ParentPermission COLOR = Permission.createParent("color");
-
-    public static final Permission COLOR_BLACK = COLOR.newPerm("black");
-    public static final Permission COLOR_DARK_BLUE = COLOR.newPerm("dark-blue");
-    public static final Permission COLOR_DARK_GREEN = COLOR.newPerm("dark-green");
-    public static final Permission COLOR_DARK_AQUA = COLOR.newPerm("dark-aqua");
-    public static final Permission COLOR_DARK_RED = COLOR.newPerm("dark-red");
-    public static final Permission COLOR_DARK_PURPLE = COLOR.newPerm("dark-purple");
-    public static final Permission COLOR_GOLD = COLOR.newPerm("gold");
-    public static final Permission COLOR_GRAY = COLOR.newPerm("gray");
-    public static final Permission COLOR_DARK_GRAY = COLOR.newPerm("dark-gray");
-    public static final Permission COLOR_BLUE = COLOR.newPerm("blue");
-    public static final Permission COLOR_GREEN = COLOR.newPerm("green");
-    public static final Permission COLOR_AQUA = COLOR.newPerm("aqua");
-    public static final Permission COLOR_RED = COLOR.newPerm("red");
-    public static final Permission COLOR_LIGHT_PURPLE = COLOR.newPerm("light-purple");
-    public static final Permission COLOR_YELLOW = COLOR.newPerm("yellow");
-    public static final Permission COLOR_WHITE = COLOR.newPerm("white");
-
-    public static final Permission COLOR_OBFUSCATED = COLOR.newPerm("obfuscated");
-    public static final Permission COLOR_BOLD = COLOR.newPerm("bold");
-    public static final Permission COLOR_STRIKE = COLOR.newPerm("strike");
-    public static final Permission COLOR_UNDERLINE = COLOR.newPerm("underline");
-    public static final Permission COLOR_ITALIC = COLOR.newPerm("italic");
-    public static final Permission COLOR_RESET = COLOR.newPerm("reset");
-
-    static
-    {
+        super(module);
         COLOR.attach(COLOR_BLACK, COLOR_DARK_BLUE, COLOR_DARK_GREEN,
                      COLOR_DARK_AQUA, COLOR_DARK_RED, COLOR_DARK_PURPLE,
                      COLOR_GOLD, COLOR_GRAY, COLOR_DARK_GRAY,
@@ -63,5 +32,32 @@ public class ChatPerm extends PermissionContainer<Chat>
                      COLOR_RED, COLOR_LIGHT_PURPLE, COLOR_YELLOW,
                      COLOR_WHITE, COLOR_OBFUSCATED, COLOR_BOLD,
                      COLOR_STRIKE, COLOR_UNDERLINE, COLOR_ITALIC, COLOR_RESET);
+        this.registerAllPermissions();
     }
+
+    public final Permission COLOR = getBasePerm().child("color");
+
+    public final Permission COLOR_BLACK = COLOR.newPerm("black");
+    public final Permission COLOR_DARK_BLUE = COLOR.newPerm("dark-blue");
+    public final Permission COLOR_DARK_GREEN = COLOR.newPerm("dark-green");
+    public final Permission COLOR_DARK_AQUA = COLOR.newPerm("dark-aqua");
+    public final Permission COLOR_DARK_RED = COLOR.newPerm("dark-red");
+    public final Permission COLOR_DARK_PURPLE = COLOR.newPerm("dark-purple");
+    public final Permission COLOR_GOLD = COLOR.newPerm("gold");
+    public final Permission COLOR_GRAY = COLOR.newPerm("gray");
+    public final Permission COLOR_DARK_GRAY = COLOR.newPerm("dark-gray");
+    public final Permission COLOR_BLUE = COLOR.newPerm("blue");
+    public final Permission COLOR_GREEN = COLOR.newPerm("green");
+    public final Permission COLOR_AQUA = COLOR.newPerm("aqua");
+    public final Permission COLOR_RED = COLOR.newPerm("red");
+    public final Permission COLOR_LIGHT_PURPLE = COLOR.newPerm("light-purple");
+    public final Permission COLOR_YELLOW = COLOR.newPerm("yellow");
+    public final Permission COLOR_WHITE = COLOR.newPerm("white");
+
+    public final Permission COLOR_OBFUSCATED = COLOR.newPerm("obfuscated");
+    public final Permission COLOR_BOLD = COLOR.newPerm("bold");
+    public final Permission COLOR_STRIKE = COLOR.newPerm("strike");
+    public final Permission COLOR_UNDERLINE = COLOR.newPerm("underline");
+    public final Permission COLOR_ITALIC = COLOR.newPerm("italic");
+    public final Permission COLOR_RESET = COLOR.newPerm("reset");
 }

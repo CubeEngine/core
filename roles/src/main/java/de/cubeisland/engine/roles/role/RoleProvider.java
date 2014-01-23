@@ -28,7 +28,7 @@ import java.util.Stack;
 import org.bukkit.World;
 
 import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
-import de.cubeisland.engine.core.permission.WildcardPermission;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.RoleConfig;
@@ -40,13 +40,13 @@ public abstract class RoleProvider
 {
     protected final Roles module;
     protected final RolesManager manager;
-    protected final WildcardPermission basePerm;
+    protected final Permission basePerm;
 
     protected THashMap<String, RoleConfig> configs;
     protected THashMap<String, Role> roles;
     protected Path folder;
 
-    protected RoleProvider(RolesManager manager, WildcardPermission basePerm)
+    protected RoleProvider(RolesManager manager, Permission basePerm)
     {
         this.module = manager.module;
         this.manager = manager;

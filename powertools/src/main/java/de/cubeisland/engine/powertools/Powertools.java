@@ -31,4 +31,9 @@ public class Powertools extends Module
         getCore().getCommandManager().registerCommand(ptCommands);
         getCore().getEventManager().registerListener(this, ptCommands);
     }
+
+    public PowertoolsPerm perms()
+    {
+        return perm;
+    }
 }

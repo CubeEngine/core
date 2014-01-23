@@ -76,7 +76,7 @@ public class BorderListener implements Listener
             return;
         }
         BorderConfig config = this.module.getConfig(event.getTo().getWorld());
-        if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
+        if (config.allowBypass && module.perms().BYPASS.isAuthorized(event.getPlayer()))
         {
             return;
         }
@@ -151,7 +151,7 @@ public class BorderListener implements Listener
             return;
         }
         BorderConfig config = this.module.getConfig(event.getTo().getWorld());
-        if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
+        if (config.allowBypass && module.perms().BYPASS.isAuthorized(event.getPlayer()))
         {
             return;
         }

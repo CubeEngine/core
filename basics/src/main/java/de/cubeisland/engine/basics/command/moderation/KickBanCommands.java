@@ -27,7 +27,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
@@ -73,11 +72,11 @@ public class KickBanCommands
     public void kick(ParameterizedContext context)
     {
         String reason;
-        reason = this.getReasonFrom(context, 1, BasicsPerm.COMMAND_KICK_NOREASON);
+        reason = this.getReasonFrom(context, 1, module.perms().COMMAND_KICK_NOREASON);
         if (reason == null) return;
         if (context.getString(0).equals("*"))
         {
-            if (!BasicsPerm.COMMAND_KICK_ALL.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to kick everyone!");
                 return;
@@ -99,7 +98,7 @@ public class KickBanCommands
             return;
         }
         user.kickPlayer(user.translate(kickMessage) + "\n" +  reason);
-        this.um.broadcastMessageWithPerm("&2%s&c was kicked from the server by &2%s&c!\n%s", BasicsPerm.KICK_RECEIVEMESSAGE,
+        this.um.broadcastMessageWithPerm("&2%s&c was kicked from the server by &2%s&c!\n%s", module.perms().KICK_RECEIVEMESSAGE,
                          user.getName(), context.getSender().getName(), reason);
     }
 
@@ -123,7 +122,7 @@ public class KickBanCommands
             context.sendTranslated("&2%s&6 has never played on this server before! Use the -force flag to ban him anyways.", player.getName());
             return;
         }
-        String reason = this.getReasonFrom(context, 1, BasicsPerm.COMMAND_BAN_NOREASON);
+        String reason = this.getReasonFrom(context, 1, module.perms().COMMAND_BAN_NOREASON);
         if (reason == null) return;
         if (context.hasFlag("ip"))
         {
@@ -151,10 +150,10 @@ public class KickBanCommands
                     }
                 }
                 context.sendTranslated("&cYou banned the IP: &e%s&c!", ipAdress.getHostAddress());
-                um.broadcastMessageWithPerm("&2%s&c was banned from the server by &2%s&c!", BasicsPerm.BAN_RECEIVEMESSAGE,
+                um.broadcastMessageWithPerm("&2%s&c was banned from the server by &2%s&c!", module.perms().BAN_RECEIVEMESSAGE,
                             user.getName(), context.getSender().getName());
-                um.broadcastMessageWithPerm(reason, BasicsPerm.BAN_RECEIVEMESSAGE);
-                um.broadcastMessageWithPerm("&cAnd with it kicked: &2%s&c!", BasicsPerm.BAN_RECEIVEMESSAGE,
+                um.broadcastMessageWithPerm(reason, module.perms().BAN_RECEIVEMESSAGE);
+                um.broadcastMessageWithPerm("&cAnd with it kicked: &2%s&c!", module.perms().BAN_RECEIVEMESSAGE,
                             StringUtils.implode(ChatFormat.parseFormats("&c,&2"), bannedUsers));
             }
             else
@@ -178,8 +177,8 @@ public class KickBanCommands
         }
         context.sendTranslated("&cYou banned &2%s&c!", player.getName());
         um.broadcastMessageWithPerm("&2%s&c was banned from the server by &2%s&c!",
-                BasicsPerm.BAN_RECEIVEMESSAGE , player.getName(), context.getSender().getName());
-        um.broadcastMessageWithPerm(reason, BasicsPerm.BAN_RECEIVEMESSAGE);
+                module.perms().BAN_RECEIVEMESSAGE , player.getName(), context.getSender().getName());
+        um.broadcastMessageWithPerm(reason, module.perms().BAN_RECEIVEMESSAGE);
     }
 
     private String getReasonFrom(CommandContext context, int at, Permission permNeeded)
@@ -226,7 +225,7 @@ public class KickBanCommands
                 context.sendTranslated("&eThe IP &6%s&e is already banned!", address.getHostAddress());
                 return;
             }
-            String reason = this.getReasonFrom(context,1, BasicsPerm.COMMAND_IPBAN_NOREASON);
+            String reason = this.getReasonFrom(context,1, module.perms().COMMAND_IPBAN_NOREASON);
             if (reason == null) return;
             this.banManager.addBan(new IpBan(address,context.getSender().getName(), reason));
             context.sendTranslated("&cYou banned the IP &6%s &cfrom your server!", address.getHostAddress());
@@ -240,12 +239,12 @@ public class KickBanCommands
                 }
             }
             um.broadcastMessageWithPerm("&cThe IP &6%s&c was banned from the server by &2%s&c!",
-                    BasicsPerm.BAN_RECEIVEMESSAGE, ipaddress, context.getSender().getName());
-            um.broadcastMessageWithPerm(reason, BasicsPerm.BAN_RECEIVEMESSAGE);
+                    module.perms().BAN_RECEIVEMESSAGE, ipaddress, context.getSender().getName());
+            um.broadcastMessageWithPerm(reason, module.perms().BAN_RECEIVEMESSAGE);
             if (!bannedUsers.isEmpty())
             {
                 um.broadcastMessageWithPerm("&cAnd with it kicked: &2%s!",
-                        BasicsPerm.BAN_RECEIVEMESSAGE, StringUtils.implode(ChatFormat.parseFormats("&c,&2"), bannedUsers));
+                        module.perms().BAN_RECEIVEMESSAGE, StringUtils.implode(ChatFormat.parseFormats("&c,&2"), bannedUsers));
             }
         }
         catch (UnknownHostException e)
@@ -291,7 +290,7 @@ public class KickBanCommands
             context.sendTranslated("&2%s&6 has never played on this server before! Use the -force flag to ban him anyways.", player.getName());
             return;
         }
-        String reason = this.getReasonFrom(context, 2, BasicsPerm.COMMAND_TEMPBAN_NOREASON);
+        String reason = this.getReasonFrom(context, 2, module.perms().COMMAND_TEMPBAN_NOREASON);
         if (reason == null) return;
         if (this.banManager.isUserBanned(player.getName()))
         {
@@ -310,7 +309,7 @@ public class KickBanCommands
             }
             context.sendTranslated("&aYou banned &2%s&a temporarily!", player.getName());
             um.broadcastMessageWithPerm("&2%s &cwas banned temporarily from the server by &2%s&c!\n%s",
-                        BasicsPerm.BAN_RECEIVEMESSAGE, player.getName(), context.getSender().getName(), reason);
+                        module.perms().BAN_RECEIVEMESSAGE, player.getName(), context.getSender().getName(), reason);
         }
         catch (TimeConversionException ex)
         {

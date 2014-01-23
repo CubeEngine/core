@@ -31,6 +31,7 @@ public class Signmarket extends Module implements Reloadable
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
     private EditModeListener editModeListener;
+    private MarketSignPerm perms;
 
     @Override
     public void onEnable()
@@ -51,7 +52,7 @@ public class Signmarket extends Module implements Reloadable
         SignMarketCommands smCmds = new SignMarketCommands(this);
         this.getCore().getCommandManager().registerCommand(smCmds);
         this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
-        new MarketSignPerm(this, smCmds);
+        this.perms = new MarketSignPerm(this, smCmds);
         this.getLog().trace("{} ms - done", Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS));
         if (this.getCore().isStartupFinished())
         {
@@ -100,5 +101,10 @@ public class Signmarket extends Module implements Reloadable
     public EditModeListener getEditModeListener()
     {
         return this.editModeListener;
+    }
+
+    public MarketSignPerm perms()
+    {
+        return this.perms;
     }
 }

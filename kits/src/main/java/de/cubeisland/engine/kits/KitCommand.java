@@ -36,10 +36,12 @@ import de.cubeisland.engine.core.util.FileUtil;
 public class KitCommand extends ContainerCommand
 {
     private final KitManager manager;
-    
+    private Kits module;
+
     public KitCommand(Kits module)
     {
         super(module, "kit", "Manages item-kits");
+        this.module = module;
         this.manager = module.getKitManager();
         this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
         this.delegateChild(new MultiContextFilter() {
@@ -108,7 +110,7 @@ public class KitCommand extends ContainerCommand
                             item.getEnchantments()));
             }
         }
-        Kit kit = new Kit(getModule().getCore().getDB(), context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
+        Kit kit = new Kit(module, context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
             context.sendTranslated("&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
@@ -146,7 +148,7 @@ public class KitCommand extends ContainerCommand
         User user;
         Kit kit = manager.getKit(kitname);
         boolean force = false;
-        if (context.hasFlag("f") && KitsPerm.COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
+        if (context.hasFlag("f") && module.perms().COMMAND_KIT_GIVE_FORCE.isAuthorized(context.getSender()))
         {
             force = true;
         }

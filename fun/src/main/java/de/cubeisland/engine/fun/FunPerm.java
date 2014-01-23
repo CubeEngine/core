@@ -25,15 +25,15 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 import de.cubeisland.engine.core.permission.PermissionManager;
-import de.cubeisland.engine.core.permission.WildcardPermission;
 
 public class FunPerm extends PermissionContainer<Fun>
 {
-    public static boolean ARE_THROW_ITEMS_REGISTERED = false;
+    public boolean ARE_THROW_ITEMS_REGISTERED = false;
 
     public FunPerm(Fun module)
     {
-        this.registerAllPermissions(module);
+        super(module);
+        this.registerAllPermissions();
 
         if (!ARE_THROW_ITEMS_REGISTERED)
         {
@@ -42,35 +42,35 @@ public class FunPerm extends PermissionContainer<Fun>
             {
                 if (type.isSpawnable())
                 {
-                    perm.registerPermission(module, FunPerm.COMMAND_THROW.child(type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")));
+                    perm.registerPermission(module, COMMAND_THROW.child(type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")));
                 }
             }
             ARE_THROW_ITEMS_REGISTERED = true;
         }
     }
 
-    private static final WildcardPermission COMMAND = Permission.createWildcard("command");
+    private final Permission COMMAND = getBasePerm().childWildcard("command");
 
-    private static final WildcardPermission COMMAND_EXPLOSION = COMMAND.childWildcard("explosion");
-    public static final Permission COMMAND_EXPLOSION_OTHER = COMMAND_EXPLOSION.child("other");
-    public static final Permission COMMAND_EXPLOSION_PLAYER_DAMAGE = COMMAND_EXPLOSION.child("player.damage");
-    public static final Permission COMMAND_EXPLOSION_BLOCK_DAMAGE = COMMAND_EXPLOSION.child("block.damage");
-    public static final Permission COMMAND_EXPLOSION_FIRE = COMMAND_EXPLOSION.child("fire");
+    private final Permission COMMAND_EXPLOSION = COMMAND.childWildcard("explosion");
+    public final Permission COMMAND_EXPLOSION_OTHER = COMMAND_EXPLOSION.child("other");
+    public final Permission COMMAND_EXPLOSION_PLAYER_DAMAGE = COMMAND_EXPLOSION.child("player.damage");
+    public final Permission COMMAND_EXPLOSION_BLOCK_DAMAGE = COMMAND_EXPLOSION.child("block.damage");
+    public final Permission COMMAND_EXPLOSION_FIRE = COMMAND_EXPLOSION.child("fire");
 
-    private static final WildcardPermission COMMAND_HAT = COMMAND.childWildcard("hat");
-    public static final Permission COMMAND_HAT_OTHER = COMMAND_HAT.child("other");
-    public static final Permission COMMAND_HAT_ITEM = COMMAND_HAT.child("item");
-    public static final Permission COMMAND_HAT_QUIET = COMMAND_HAT.child("quit");
-    public static final Permission COMMAND_HAT_NOTIFY = COMMAND_HAT.child("notify", PermDefault.TRUE);
+    private final Permission COMMAND_HAT = COMMAND.childWildcard("hat");
+    public final Permission COMMAND_HAT_OTHER = COMMAND_HAT.child("other");
+    public final Permission COMMAND_HAT_ITEM = COMMAND_HAT.child("item");
+    public final Permission COMMAND_HAT_QUIET = COMMAND_HAT.child("quit");
+    public final Permission COMMAND_HAT_NOTIFY = COMMAND_HAT.child("notify", PermDefault.TRUE);
 
-    private static final WildcardPermission COMMAND_LIGHTNING = COMMAND.childWildcard("lightning");
-    public static final Permission COMMAND_LIGHTNING_PLAYER_DAMAGE = COMMAND_LIGHTNING.child("player.damage");
-    public static final Permission COMMAND_LIGHTNING_UNSAFE = COMMAND_LIGHTNING.child("unsafe");
+    private final Permission COMMAND_LIGHTNING = COMMAND.childWildcard("lightning");
+    public final Permission COMMAND_LIGHTNING_PLAYER_DAMAGE = COMMAND_LIGHTNING.child("player.damage");
+    public final Permission COMMAND_LIGHTNING_UNSAFE = COMMAND_LIGHTNING.child("unsafe");
 
-    public static final WildcardPermission COMMAND_THROW = COMMAND.childWildcard("throw");
-    public static final Permission COMMAND_THROW_UNSAFE = COMMAND_THROW.child("unsafe");
+    public final Permission COMMAND_THROW = COMMAND.childWildcard("throw");
+    public final Permission COMMAND_THROW_UNSAFE = COMMAND_THROW.child("unsafe");
 
-    private static final WildcardPermission COMMAND_NUKE = COMMAND.childWildcard("nuke");
-    public static final Permission COMMAND_NUKE_CHANGE_RANGE = COMMAND_NUKE.child("change_range");
-    public static final Permission COMMAND_NUKE_OTHER = COMMAND_NUKE.child("other");
+    private final Permission COMMAND_NUKE = COMMAND.childWildcard("nuke");
+    public final Permission COMMAND_NUKE_CHANGE_RANGE = COMMAND_NUKE.child("change_range");
+    public final Permission COMMAND_NUKE_OTHER = COMMAND_NUKE.child("other");
 }

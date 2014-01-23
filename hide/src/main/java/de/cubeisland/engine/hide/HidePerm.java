@@ -20,20 +20,20 @@ package de.cubeisland.engine.hide;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
-import de.cubeisland.engine.core.permission.WildcardPermission;
 
 public class HidePerm extends PermissionContainer<Hide>
 {
     public HidePerm(Hide module)
     {
-        this.registerAllPermissions(module);
+        super(module);
+        this.registerAllPermissions();
     }
 
-    private static final WildcardPermission AUTO = Permission.createWildcard("auto");
-    public static final Permission AUTO_HIDE = AUTO.child("hide", PermDefault.FALSE);
-    public static final Permission AUTO_SEEHIDDENS = AUTO.child("seehiddens", PermDefault.FALSE);
+    private final Permission AUTO = getBasePerm().childWildcard("auto");
+    public final Permission AUTO_HIDE = AUTO.child("hide", PermDefault.FALSE);
+    public final Permission AUTO_SEEHIDDENS = AUTO.child("seehiddens", PermDefault.FALSE);
 
-    public static final Permission INTERACT = Permission.create("interact", PermDefault.FALSE);
-    public static final Permission DROP = Permission.create("drop", PermDefault.FALSE);
-    public static final Permission CHAT = Permission.create("chat", PermDefault.FALSE);
+    public final Permission INTERACT = getBasePerm().child("interact", PermDefault.FALSE);
+    public final Permission DROP = getBasePerm().child("drop", PermDefault.FALSE);
+    public final Permission CHAT = getBasePerm().child("chat", PermDefault.FALSE);
 }

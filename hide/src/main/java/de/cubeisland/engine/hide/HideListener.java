@@ -19,7 +19,6 @@ package de.cubeisland.engine.hide;
 
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -89,7 +88,7 @@ public class HideListener implements Listener
     {
         final String name = event.getPlayer().getName();
         final User user = um.getExactUser(name);
-        if (HidePerm.AUTO_HIDE.isAuthorized(user))
+        if (module.perms().AUTO_HIDE.isAuthorized(user))
         {
             event.setJoinMessage(null);
             this.module.hidePlayer(user);
@@ -103,7 +102,7 @@ public class HideListener implements Listener
     {
         final String name = event.getPlayer().getName();
         final User user = um.getExactUser(name);
-        if (HidePerm.AUTO_SEEHIDDENS.isAuthorized(user) && !module.getCanSeeHiddens().contains(name))
+        if (module.perms().AUTO_SEEHIDDENS.isAuthorized(user) && !module.getCanSeeHiddens().contains(name))
         {
             canSeeHiddens.add(name);
             user.sendTranslated("&aYou can automatically see hidden players!");
@@ -145,7 +144,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event)
     {
-        if (event.getAction() != Action.PHYSICAL && hiddens.contains(event.getPlayer().getName()) && !HidePerm.INTERACT.isAuthorized(event.getPlayer()))
+        if (event.getAction() != Action.PHYSICAL && hiddens.contains(event.getPlayer().getName()) && !module.perms().INTERACT.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
             event.setUseInteractedBlock(Result.DENY);
@@ -165,7 +164,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event)
     {
-        if (hiddens.contains(event.getPlayer().getName()) && !HidePerm.CHAT.isAuthorized(event.getPlayer()))
+        if (hiddens.contains(event.getPlayer().getName()) && !module.perms().CHAT.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
         }
@@ -187,7 +186,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDropItem(PlayerDropItemEvent event)
     {
-        if (hiddens.contains(event.getPlayer().getName()) && !HidePerm.DROP.isAuthorized(event.getPlayer()))
+        if (hiddens.contains(event.getPlayer().getName()) && !module.perms().DROP.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
         }

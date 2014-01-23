@@ -58,7 +58,6 @@ import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.locker.BlockLockerConfiguration;
 import de.cubeisland.engine.locker.EntityLockerConfiguration;
 import de.cubeisland.engine.locker.Locker;
-import de.cubeisland.engine.locker.LockerPerm;
 import de.cubeisland.engine.locker.commands.CommandListener;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -398,7 +397,7 @@ public class LockManager implements Listener
      */
     public void removeLock(Lock lock, User user, boolean destroyed)
     {
-        if (destroyed || lock.isOwner(user) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user))
+        if (destroyed || lock.isOwner(user) || module.perms().CMD_REMOVE_OTHER.isAuthorized(user))
         {
             this.locksById.remove(lock.getId());
             lock.model.delete();

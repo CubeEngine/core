@@ -52,7 +52,6 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.math.MathHelper;
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -60,11 +59,11 @@ import org.joda.time.format.PeriodFormatterBuilder;
 public class InformationCommands
 {
     private final PeriodFormatter formatter;
-    private Basics basics;
+    private Basics module;
 
-    public InformationCommands(Basics basics)
+    public InformationCommands(Basics module)
     {
-        this.basics = basics;
+        this.module = module;
         this.formatter = new PeriodFormatterBuilder().appendWeeks().appendSuffix(" week"," weeks").appendSeparator(" ")
                                                      .appendDays().appendSuffix(" day", " days").appendSeparator(" ")
                                                      .appendHours().appendSuffix(" hour"," hours").appendSeparator(" ")
@@ -216,7 +215,7 @@ public class InformationCommands
             context.sendTranslated("&eI am right &cbehind &eyou!");
             return;
         }
-        int radius = this.basics.getConfiguration().commands.nearDefaultRadius;
+        int radius = this.module.getConfiguration().commands.nearDefaultRadius;
         if (context.hasArg(0))
         {
             radius = context.getArg(0, Integer.class, radius);
@@ -361,9 +360,9 @@ public class InformationCommands
     {
         if (context.hasFlag("r"))
         {
-            if (BasicsPerm.COMMAND_LAG_RESET.isAuthorized(context.getSender()))
+            if (module.perms().COMMAND_LAG_RESET.isAuthorized(context.getSender()))
             {
-                this.basics.getLagTimer().resetLowestTPS();
+                this.module.getLagTimer().resetLowestTPS();
                 context.sendTranslated("&aResetted lowest TPS!");
             }
             else
@@ -381,17 +380,17 @@ public class InformationCommands
         context.sendTranslated("&aServer is running since &6%s", df.format(start));
         context.sendTranslated("&aUptime: &6%s", formatter.print(dura.toPeriod()));
         //TPS:
-        float tps = this.basics.getLagTimer().getAverageTPS();
+        float tps = this.module.getLagTimer().getAverageTPS();
         String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : tps == 0 ? "&eNaN" : "&4";
         color = ChatFormat.parseFormats(color);
         context.sendTranslated("&aCurrent TPS: %s%.1f", color, tps);
-        Pair<Long, Float> lowestTPS = this.basics.getLagTimer().getLowestTPS();
+        Pair<Long, Float> lowestTPS = this.module.getLagTimer().getLowestTPS();
         if (lowestTPS.getRight() != 20)
         {
             color = ChatFormat.parseFormats(tps > 17 ? "&e" : tps > 10 ? "&c" : "&4");
             Date date = new Date(lowestTPS.getLeft());
             context.sendTranslated("&aLowest TPS was %s%.1f &f(&a%s&f)",color,lowestTPS.getRight(),df.format(date));
-            long timeSinceLastLowTPS = System.currentTimeMillis() - this.basics.getLagTimer().getLastLowTPS();
+            long timeSinceLastLowTPS = System.currentTimeMillis() - this.module.getLagTimer().getLastLowTPS();
             if (tps == 20 && TimeUnit.MINUTES.convert(timeSinceLastLowTPS,TimeUnit.MILLISECONDS) < 1)
             {
                 context.sendTranslated("&cTPS was low in the last minute!");

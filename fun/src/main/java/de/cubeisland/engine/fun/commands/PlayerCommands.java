@@ -34,7 +34,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
-import de.cubeisland.engine.fun.FunPerm;
 
 public class PlayerCommands
 {
@@ -75,7 +74,7 @@ public class PlayerCommands
         }
         if(context.hasParam( "player" ) )
         {
-            if(!FunPerm.COMMAND_HAT_OTHER.isAuthorized( context.getSender() ) )
+            if(!module.perms().COMMAND_HAT_OTHER.isAuthorized( context.getSender() ) )
             {
                 context.sendTranslated("&cYou can't set the hat of an other player.");
                 return;
@@ -101,7 +100,7 @@ public class PlayerCommands
         
         if(context.hasArg( 0 ) )
         {
-            if(!FunPerm.COMMAND_HAT_ITEM.isAuthorized( context.getSender() ))
+            if(!module.perms().COMMAND_HAT_ITEM.isAuthorized( context.getSender() ))
             {
                 context.sendTranslated("&cYou can only use your item in hand!");
                 return;
@@ -148,7 +147,7 @@ public class PlayerCommands
         
         userInventory.setHelmet( head );
         
-        if( !(context.hasFlag("q") && FunPerm.COMMAND_HAT_QUIET.isAuthorized(context.getSender()) ) && FunPerm.COMMAND_HAT_NOTIFY.isAuthorized( user ) )
+        if( !(context.hasFlag("q") && module.perms().COMMAND_HAT_QUIET.isAuthorized(context.getSender()) ) && module.perms().COMMAND_HAT_NOTIFY.isAuthorized( user ) )
         {
             user.sendTranslated("&aYour hat was changed");
         }        
@@ -175,7 +174,7 @@ public class PlayerCommands
 
         if (context.hasParam("player"))
         {
-            if (!FunPerm.COMMAND_EXPLOSION_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_EXPLOSION_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to use the player parameter.");
                 return;
@@ -205,17 +204,17 @@ public class PlayerCommands
             return;
         }
 
-        if (!FunPerm.COMMAND_EXPLOSION_BLOCK_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("b") || context.hasFlag("u")))
+        if (!module.perms().COMMAND_EXPLOSION_BLOCK_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("b") || context.hasFlag("u")))
         {
             context.sendTranslated("&cYou are not allowed to break blocks");
             return;
         }
-        if (!FunPerm.COMMAND_EXPLOSION_FIRE.isAuthorized(context.getSender()) && (context.hasFlag("f") || context.hasFlag("u")))
+        if (!module.perms().COMMAND_EXPLOSION_FIRE.isAuthorized(context.getSender()) && (context.hasFlag("f") || context.hasFlag("u")))
         {
             context.sendTranslated("&cYou are not allowed to set fireticks");
             return;
         }
-        if (!FunPerm.COMMAND_EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("p") || context.hasFlag("u")))
+        if (!module.perms().COMMAND_EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("p") || context.hasFlag("u")))
         {
             context.sendTranslated("&cYou are not allowed to damage an other player");
             return;
@@ -250,12 +249,12 @@ public class PlayerCommands
         Location location;
         int damage = context.getParam("damage", -1);
 
-        if (damage != -1 && !FunPerm.COMMAND_LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
+        if (damage != -1 && !module.perms().COMMAND_LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
         {
             context.sendTranslated("&cYou are not allowed the use the damage parameter");
             return;
         }
-        if (context.hasFlag("u") && !FunPerm.COMMAND_LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
+        if (context.hasFlag("u") && !module.perms().COMMAND_LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
         {
             context.sendTranslated("&cYou are not allowed to use the unsafe flag");
             return;

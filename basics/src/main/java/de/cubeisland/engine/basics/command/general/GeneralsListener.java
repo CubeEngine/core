@@ -35,7 +35,6 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.basics.BasicsUser;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
@@ -81,12 +80,12 @@ public class GeneralsListener implements Listener
     public void onLeave(PlayerQuitEvent event)
     {
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
-        if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
             bUser.setGodmode(false);
         }
         bUser.update();
-        if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
         }
@@ -96,12 +95,12 @@ public class GeneralsListener implements Listener
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
-        if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
             bUser.setGodmode(false);
         }
         bUser.update();
-        if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
         }
@@ -156,7 +155,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onPlayerInventoryClick(InventoryClickEvent event)
     {
-        if (this.module.getConfiguration().preventOverstackedItems && !BasicsPerm.OVERSTACKED_ANVIL_AND_BREWING.isAuthorized(event.getWhoClicked()))
+        if (this.module.getConfiguration().preventOverstackedItems && !module.perms().OVERSTACKED_ANVIL_AND_BREWING.isAuthorized(event.getWhoClicked()))
         {
 
             if (event.getView().getTopInventory() instanceof AnvilInventory

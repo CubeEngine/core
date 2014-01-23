@@ -33,7 +33,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.user.User;
 
 public class PaintingListener implements Listener
@@ -54,7 +53,7 @@ public class PaintingListener implements Listener
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
-            if (!BasicsPerm.CHANGEPAINTING.isAuthorized(user))
+            if (!module.perms().CHANGEPAINTING.isAuthorized(user))
             {
                 user.sendTranslated("&cYou are not allowed to change the painting.");
                 return;

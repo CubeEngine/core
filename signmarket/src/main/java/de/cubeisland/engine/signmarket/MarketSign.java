@@ -254,7 +254,7 @@ public class MarketSign
 
     public boolean openInventory(User user)
     {
-        if (this.isOwner(user) || (!this.isAdminSign() && MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
+        if (this.isOwner(user) || (!this.isAdminSign() && module.perms().SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
         {
             if (this.itemInfo.inventory == null || this.getInventory().getViewers().isEmpty())
             {
@@ -309,7 +309,7 @@ public class MarketSign
             guard.submitInventory(this.module, true);
             return true;
         }
-        if (MarketSignPerm.SIGN_INVENTORY_SHOW.isAuthorized(user) || this.isOwner(user))
+        if (module.perms().SIGN_INVENTORY_SHOW.isAuthorized(user) || this.isOwner(user))
         {
             if (this.displayInventory == null)
             {
@@ -353,7 +353,7 @@ public class MarketSign
                 {
                     if (this.isValidSign(null))
                     {
-                        if (!this.isAdminSign() && (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
+                        if (!this.isAdminSign() && (this.isOwner(user) || module.perms().SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user)))
                         {
                             if (this.isTypeBuy() && this.itemInfo.matchesItem(itemInHand))
                             {
@@ -391,7 +391,7 @@ public class MarketSign
                             user.sendTranslated("&cThis signs inventory is being edited right now!");
                             return;
                         }
-                        if (this.isOwner(user) || MarketSignPerm.SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
+                        if (this.isOwner(user) || module.perms().SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
                         {
                             if (!this.isInEditMode() && this.hasType() && this.isTypeBuy() && this.hasStock() && this.itemInfo.matchesItem(itemInHand))
                             {
@@ -416,7 +416,7 @@ public class MarketSign
                     {
                         if (this.isOwner(user))
                         {
-                            if (MarketSignPerm.SIGN_DESTROY_OWN.isAuthorized(user))
+                            if (module.perms().SIGN_DESTROY_OWN.isAuthorized(user))
                             {
                                 this.tryBreak(user);
                             }
@@ -427,7 +427,7 @@ public class MarketSign
                         }
                         else if (this.isAdminSign())
                         {
-                            if (MarketSignPerm.SIGN_DESTROY_ADMIN.isAuthorized(user))
+                            if (module.perms().SIGN_DESTROY_ADMIN.isAuthorized(user))
                             {
                                 this.tryBreak(user);
                             }
@@ -438,7 +438,7 @@ public class MarketSign
                         }
                         else
                         {
-                            if (MarketSignPerm.SIGN_DESTROY_OTHER.isAuthorized(user))
+                            if (module.perms().SIGN_DESTROY_OTHER.isAuthorized(user))
                             {
                                 this.tryBreak(user);
                             }
@@ -453,7 +453,7 @@ public class MarketSign
                     {
                         if (this.isAdminSign())
                         {
-                            if (MarketSignPerm.SIGN_DESTROY_ADMIN.isAuthorized(user))
+                            if (module.perms().SIGN_DESTROY_ADMIN.isAuthorized(user))
                             {
                                 this.tryBreak(user);
                             }
@@ -464,7 +464,7 @@ public class MarketSign
                         }
                         else if (this.isOwner(user))
                         {
-                            if (MarketSignPerm.SIGN_DESTROY_OWN.isAuthorized(user))
+                            if (module.perms().SIGN_DESTROY_OWN.isAuthorized(user))
                             {
                                 this.tryBreak(user);
                             }
@@ -476,7 +476,7 @@ public class MarketSign
                         else
                         // not owner / not admin
                         {
-                            if (MarketSignPerm.SIGN_DESTROY_OTHER.isAuthorized(user))
+                            if (module.perms().SIGN_DESTROY_OTHER.isAuthorized(user))
                             {
                                 this.tryBreak(user);
                             }
@@ -840,7 +840,7 @@ public class MarketSign
         {
             if (this.isTypeBuy())
             {
-                if (!MarketSignPerm.USE_BUY.isAuthorized(user))
+                if (!module.perms().USE_BUY.isAuthorized(user))
                 {
                     user.sendTranslated("&cYou are not allowed to use buy-marketsigns!");
                     return;
@@ -848,7 +848,7 @@ public class MarketSign
             }
             else
             {
-                if (!MarketSignPerm.USE_SELL.isAuthorized(user))
+                if (!module.perms().USE_SELL.isAuthorized(user))
                 {
                     user.sendTranslated("&cYou are not allowed to use sell-marketsigns!");
                     return;

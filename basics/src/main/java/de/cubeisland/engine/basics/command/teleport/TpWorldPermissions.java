@@ -18,40 +18,34 @@
 package de.cubeisland.engine.basics.command.teleport;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
-import de.cubeisland.engine.basics.Basics;
-
-import de.cubeisland.engine.core.permission.WildcardPermission;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
-
-import static de.cubeisland.engine.basics.BasicsPerm.COMMAND;
 
 /**
  * Dynamically registered Permissions for each world.
  */
 public class TpWorldPermissions extends PermissionContainer<Basics>
 {
-    private static final WildcardPermission COMMAND_TPWORLD = COMMAND.childWildcard("tpworld");
-    private static Map<String, Permission> permissions = new THashMap<>();
-    private static Module module;
+    private final Permission COMMAND_TPWORLD;
+    private Map<String, Permission> permissions = new THashMap<>();
 
-    public TpWorldPermissions(Basics module)
+    public TpWorldPermissions(Basics module, BasicsPerm perm)
     {
-        TpWorldPermissions.module = module;
+        super(module);
+        COMMAND_TPWORLD = perm.COMMAND.childWildcard("tpworld");
         for (final World world : module.getCore().getWorldManager().getWorlds())
         {
             initWorldPermission(world.getName());
         }
     }
 
-    private static Permission initWorldPermission(String world)
+    private Permission initWorldPermission(String world)
     {
         Permission perm = COMMAND_TPWORLD.child(world);
         permissions.put(world, perm);
@@ -59,7 +53,7 @@ public class TpWorldPermissions extends PermissionContainer<Basics>
         return perm;
     }
 
-    public static Permission getPermission(String world)
+    public Permission getPermission(String world)
     {
         Permission perm = permissions.get(world);
         if (perm == null)

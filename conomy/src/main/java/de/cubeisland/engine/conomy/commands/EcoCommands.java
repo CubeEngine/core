@@ -25,7 +25,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.conomy.Conomy;
-import de.cubeisland.engine.conomy.ConomyPermissions;
 import de.cubeisland.engine.conomy.account.Account;
 import de.cubeisland.engine.conomy.account.ConomyManager;
 
@@ -442,7 +441,7 @@ public class EcoCommands extends ContainerCommand
     {
         if (context.hasArg(0))
         {
-            if (!ConomyPermissions.ECO_CREATE_OTHER.isAuthorized(context.getSender()))
+            if (!module.perms().ECO_CREATE_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to create account for other users!");
                 return;
@@ -450,7 +449,7 @@ public class EcoCommands extends ContainerCommand
             User user = context.getUser(0);
             if (user == null)
             {
-                if (ConomyPermissions.ECO_CREATE_FORCE.isAuthorized(context.getSender()))
+                if (module.perms().ECO_CREATE_FORCE.isAuthorized(context.getSender()))
                 {
                     if (!context.hasFlag("f"))
                     {

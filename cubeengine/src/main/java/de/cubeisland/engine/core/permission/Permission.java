@@ -22,6 +22,9 @@ import java.util.Set;
 
 import org.bukkit.permissions.Permissible;
 
+import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.util.StringUtils;
+
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
 
@@ -238,5 +241,30 @@ public class Permission
     public int hashCode()
     {
         return permission != null ? permission.hashCode() : 0;
+    }
+
+    public static Permission getFor(CubeCommand command)
+    {
+        if (command.getPermission() != null && !command.getPermission().isEmpty())
+        {
+            String[] parts = StringUtils.explode(".", command.getPermission());
+            if ("cubeengine".equalsIgnoreCase(parts[0]))
+            {
+                Permission perm = BASE;
+                for (int i = 1; i < parts.length; i++)
+                {
+                    if (i + 1 == parts.length) // last
+                    {
+                        return perm.child(parts[i]);
+                    }
+                    perm = perm.childWildcard(parts[i]);
+                }
+            }
+            else
+            {
+                throw new IllegalArgumentException("CubeCommand permission is not valid!");
+            }
+        }
+        return null;
     }
 }

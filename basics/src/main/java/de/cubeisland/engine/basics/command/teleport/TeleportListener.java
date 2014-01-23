@@ -29,7 +29,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.LocationUtil;
 
@@ -58,7 +57,7 @@ public class TeleportListener implements Listener
     public void onDeath(PlayerDeathEvent event)
     {
         User user = this.module.getCore().getUserManager().getExactUser(event.getEntity().getName());
-        if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(user))
+        if (module.perms().COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
             user.get(BasicsAttachment.class).setDeathLocation(user.getLocation());
         }
@@ -78,7 +77,7 @@ public class TeleportListener implements Listener
             {
                 case LEFT_CLICK_AIR:
                 case LEFT_CLICK_BLOCK:
-                    if (BasicsPerm.COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
+                    if (module.perms().COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
                         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                         Location loc;
@@ -102,7 +101,7 @@ public class TeleportListener implements Listener
                     return;
                 case RIGHT_CLICK_AIR:
                 case RIGHT_CLICK_BLOCK:
-                    if (BasicsPerm.COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
+                    if (module.perms().COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
                         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
                         Location loc = LocationUtil.getBlockBehindWall(user, this.module.getConfiguration().navigation.thru.maxRange,
