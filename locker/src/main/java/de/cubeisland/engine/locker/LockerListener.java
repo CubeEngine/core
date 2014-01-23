@@ -116,6 +116,10 @@ public class LockerListener implements Listener
             if (lock == null) return;
             lock.handleBlockDoorUse(event, user, location);
         }
+        else // other interact e.g. repeater
+        {
+            lock.handleBlockInteract(event, user);
+        }
         if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
     }
 
