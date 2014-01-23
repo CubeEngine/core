@@ -135,6 +135,7 @@ public class BackpackAttachment extends UserAttachment
         {
             return backpack;
         }
+        if (world == null) return null;
         Map<String, BackpackInventories> map = this.backpacks.get(world);
         if (map != null)
         {
