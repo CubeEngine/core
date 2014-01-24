@@ -418,12 +418,43 @@ public class UserBase implements Player
     }
 
     @Override
+    public void removeAchievement(Achievement a)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.removeAchievement(a);
+        }
+    }
+
+    @Override
+    public boolean hasAchievement(Achievement a)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.hasAchievement(a);
+        }
+        return false;
+    }
+
+    @Override
     public void incrementStatistic(Statistic statistic)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
             player.incrementStatistic(statistic);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic);
         }
     }
 
@@ -438,6 +469,37 @@ public class UserBase implements Player
     }
 
     @Override
+    public void decrementStatistic(Statistic statistic, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, i);
+        }
+    }
+
+    @Override
+    public void setStatistic(Statistic statistic, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setStatistic(statistic, i);
+        }
+    }
+
+    @Override
+    public int getStatistic(Statistic statistic) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getStatistic(statistic);
+        }
+        return 0;
+    }
+
+    @Override
     public void incrementStatistic(Statistic ststc, Material mtrl)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
@@ -448,12 +510,114 @@ public class UserBase implements Player
     }
 
     @Override
+    public void decrementStatistic(Statistic statistic, Material material) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, material);
+        }
+    }
+
+    @Override
+    public int getStatistic(Statistic statistic, Material material) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getStatistic(statistic, material);
+        }
+        return 0;
+    }
+
+    @Override
     public void incrementStatistic(Statistic ststc, Material mtrl, int i)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
             player.incrementStatistic(ststc, mtrl, i);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic, Material material, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, material, i);
+        }
+    }
+
+    @Override
+    public void setStatistic(Statistic statistic, Material material, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setStatistic(statistic, material, i);
+        }
+    }
+
+    @Override
+    public void incrementStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.incrementStatistic(statistic, entityType);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, entityType);
+        }
+    }
+
+    @Override
+    public int getStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getStatistic(statistic, entityType);
+        }
+        return 0;
+    }
+
+    @Override
+    public void incrementStatistic(Statistic statistic, EntityType entityType, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.incrementStatistic(statistic, entityType, i);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic, EntityType entityType, int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, entityType, i);
+        }
+    }
+
+    @Override
+    public void setStatistic(Statistic statistic, EntityType entityType, int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setStatistic(statistic, entityType, i);
         }
     }
 
