@@ -19,7 +19,7 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
     <timestamp>${maven.build.timestamp}</timestamp>
     <minecraftVersion>1.7.2</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.2</bukkitVersion>
+    <bukkitVersion>${minecraftVersion}-R0.3-SNAPSHOT</bukkitVersion>
     <jdkVersion>1.7</jdkVersion>
     <projectBase>${basedir}/..</projectBase>
     <externalPackage>${project.groupId}.external</externalPackage>

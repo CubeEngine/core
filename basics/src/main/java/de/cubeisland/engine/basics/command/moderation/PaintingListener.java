@@ -133,7 +133,7 @@ public class PaintingListener implements Listener
                     }
                     if (artNumber == -1)
                     {
-                        artNumber = arts.length;
+                        artNumber = arts.length - 1;
                     }
                 }
             }
