@@ -42,6 +42,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
@@ -277,7 +278,6 @@ public class Multiverse implements Listener
     @EventHandler
     public void onEntityPortal(EntityPortalEvent event)
     {
-        // TODO cancel changing universe if entity has inventory
         World world = event.getEntity().getWorld();
         Universe universe = this.getUniverse(world);
         TravelAgent agent = event.getPortalTravelAgent();
@@ -310,6 +310,21 @@ public class Multiverse implements Listener
             {
                 event.setTo(universe.handleNetherTarget(event.getFrom(), event.getPortalTravelAgent()));
                 event.useTravelAgent(true);
+            }
+        }
+        if (this.getUniverse(event.getTo().getWorld()) != universe) // Changing universe
+        {
+            if (event.getEntity() instanceof Player)
+            {
+                return;
+            }
+            if (event.getEntity() instanceof InventoryHolder)
+            {
+                event.setCancelled(true); // TODO config allow entities with inventory to travel to other universe
+            }
+            else
+            {
+                event.setCancelled(true); // TODO config allow entities to travel to other universe
             }
         }
     }

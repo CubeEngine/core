@@ -228,7 +228,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     public boolean redo(User user)
     {
-        // TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/412
+        // implement redo TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/412
         return false;
     }
 

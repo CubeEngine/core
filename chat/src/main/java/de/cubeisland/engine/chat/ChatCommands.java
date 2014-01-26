@@ -41,7 +41,6 @@ public class ChatCommands
 
     @Command(desc = "Changes your DisplayName", usage = "<name>|-r", min = 1, max = 1)
     // TODO param change nick of other player /w perm
-    // TODO perm to take name of a player that is already Playing on the server
     public void nick(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -54,6 +53,11 @@ public class ChatCommands
             }
             else
             {
+                if (module.getCore().getUserManager().getUser(name, false) != null) // TODO perm to allow
+                {
+                    context.sendTranslated("&cThere already is another player named like this!");
+                    return;
+                }
                 context.sendTranslated("&aDisplayName changed from &2%s&a to &2%s", context.getSender().getDisplayName(), name);
                 ((User)context.getSender()).setDisplayName(name);
             }

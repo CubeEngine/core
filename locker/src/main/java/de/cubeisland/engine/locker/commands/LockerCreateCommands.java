@@ -28,6 +28,7 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 
 import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
+import static de.cubeisland.engine.locker.commands.LockerCommands.isNotUser;
 
 public class LockerCreateCommands extends ContainerCommand
 {
@@ -52,13 +53,13 @@ public class LockerCreateCommands extends ContainerCommand
         }
     }
 
-    // TODO add admin rights /w creation
     @Alias(names = "cprivate")
     @Command(names = "private",
     desc = "creates a private protection", max = 1, usage = "[password]",
     flags = @Flag(name = "key", longName = "keybook"))
     public void cPrivate(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
         this.setCreateProtection(context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
     }
 
@@ -67,6 +68,7 @@ public class LockerCreateCommands extends ContainerCommand
              desc = "creates a public protection")
     public void cPublic(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
         this.setCreateProtection(context.getSender(), C_PUBLIC, null, false);
     }
 
@@ -76,6 +78,7 @@ public class LockerCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cDonation(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
         this.setCreateProtection(context.getSender(), C_DONATION, context.getString(0), context.hasFlag("key"));
     }
 
@@ -85,6 +88,7 @@ public class LockerCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cFree(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
         this.setCreateProtection(context.getSender(), C_FREE, context.getString(0), context.hasFlag("key"));
     }
 
@@ -94,6 +98,7 @@ public class LockerCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cPassword(ParameterizedContext context) // same as private but with pw
     {
+        if (isNotUser(context.getSender())) return;
         this.setCreateProtection(context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
     }
 
@@ -103,6 +108,7 @@ public class LockerCreateCommands extends ContainerCommand
              flags = @Flag(name = "key", longName = "keybook"))
     public void cguarded(ParameterizedContext context) // same as private but with pw
     {
+        if (isNotUser(context.getSender())) return;
         this.setCreateProtection(context.getSender(), C_GUARDED, context.getString(0), context.hasFlag("key"));
     }
 }

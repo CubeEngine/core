@@ -35,6 +35,7 @@ public class WorldRoleProvider extends RoleProvider
 {
     private MirrorConfig mirrorConfig;
     private Set<Role> defaultRoles = new HashSet<>();
+    private Path folder;
 
     public WorldRoleProvider(RolesManager manager, MirrorConfig mirrorConfig)
     {

@@ -25,19 +25,23 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.cubeisland.engine.core.module.service.Selector;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.math.shape.Shape;
-// TODO make a module out of it (integrate WE if found)
+
 public class CuboidSelector implements Selector, Listener
 {
     private de.cubeisland.engine.selector.Selector module;
+    private Permission selectPerm;
 
     public CuboidSelector(de.cubeisland.engine.selector.Selector module)
     {
         this.module = module;
         this.module.getCore().getEventManager().registerListener(module, this);
         this.module.getCore().getCommandManager().registerCommand(new SelectorCommand(module));
+        this.selectPerm = module.getBasePermission().child("use-wand");
+        this.module.getCore().getPermissionManager().registerPermission(module, selectPerm);
     }
 
     @Override
@@ -85,7 +89,7 @@ public class CuboidSelector implements Selector, Listener
     {
         if (module.hasWorldEdit()) return;
         if (event.getAction().equals(Action.PHYSICAL)) return;
-        // TODO perm
+        if (!selectPerm.isAuthorized(event.getPlayer())) return;
         if (event.getClickedBlock() != null)
         {
             if (event.getPlayer().getItemInHand().hasItemMeta()

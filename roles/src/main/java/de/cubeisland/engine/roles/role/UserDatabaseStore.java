@@ -294,6 +294,22 @@ public class UserDatabaseStore extends ResolvedDataHolder
         }
     }
 
+    @Override
+    protected void roleMissing(String roleName, boolean temp)
+    {
+        super.roleMissing(roleName, temp);
+        if (temp)
+        {
+            this.attachment.getHolder().sendTranslated("&cYour temporary role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated("&4You should report this to an administrator!");
+        }
+        else
+        {
+            this.attachment.getHolder().sendTranslated("&cYour role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated("&4You should report this to an administrator!");
+        }
+    }
+
     /* TODO mass set
     @Override
     public void setRawPermissions(Map<String, Boolean> perms)

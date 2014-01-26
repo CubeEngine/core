@@ -64,7 +64,7 @@ public class Worlds extends Module
         manager.registerConverter(Environment.class, new EnvironmentConverter());
         manager.registerConverter(GameMode.class, new GameModeConverter());
         manager.registerConverter(WorldType.class, new WorldTypeConverter());
-///*TODO remove
+///*TODO remove saving into yml too
         manager.registerConverter(Inventory.class, new InventoryConverter(Bukkit.getServer()));
         manager.registerConverter(PotionEffect.class, new PotionEffectConverter());
 //*/
