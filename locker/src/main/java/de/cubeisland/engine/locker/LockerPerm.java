@@ -29,8 +29,6 @@ public class LockerPerm extends PermissionContainer<Locker>
     {
         super(module);
         CubeCommand createCmd = mainCmd.getChild("create");
-        // TODO attaching permissions
-        // TODO getting e.g. commandpermissions
         PROTECT.attach(Permission.getFor(mainCmd.getChild("info")),
                        Permission.getFor(mainCmd.getChild("persist")),
                        Permission.getFor(mainCmd.getChild("remove")),
