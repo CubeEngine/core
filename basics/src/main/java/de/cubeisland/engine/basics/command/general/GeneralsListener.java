@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.BrewerInventory;
@@ -116,7 +117,14 @@ public class GeneralsListener implements Listener
         {
             user.sendTranslated("&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
-        // TODO move this to PlayerJoin
+
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        BasicsUser bUser = this.module.getBasicsUser(user);
         if (bUser.getbUEntity().getGodmode())
         {
             user.setInvulnerable(true);
