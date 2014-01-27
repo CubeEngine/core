@@ -150,7 +150,7 @@ public class MailCommand extends ContainerCommand
         for (Mail mail : mails)
         {
             i++;
-            sb.append("\n&f").append(i).append(": ").append(mail.toString());
+            sb.append("\n&f").append(i).append(": ").append(mail.getMessage());
         }
         context.sendTranslated("&2%s's mails:%s", user.getName(), ChatFormat.parseFormats(sb.toString()));
     }
