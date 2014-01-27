@@ -66,7 +66,7 @@ public class TeleportCommands
 
     @Command(desc = "Teleport directly to a player.", usage = "<player> [player] [-unsafe]", min = 1, max = 2, flags = {
             @Flag(longName = "force", name = "f"), // is not shown directly in usage
-            @Flag(longName = "unsafe", name = "u")
+            @Flag(longName = "safe", name = "s")
     })
     public void tp(ParameterizedContext context)
     {
@@ -147,7 +147,6 @@ public class TeleportCommands
             context.sendTranslated("&cYou are not allowed to teleport to &2%s&c!", target.getName());
             return;
         }
-        boolean safe = !context.hasFlag("u");
         if (user.equals(target))
         {
             if (context.getSender() == user)
@@ -158,7 +157,7 @@ public class TeleportCommands
             context.sendTranslated("&aYou just teleported &2%s &ato &2%s... &eNot very useful right?", user.getName(), user.getName());
             return;
         }
-        if (TeleportCommands.teleport(user, target.getLocation(), safe, force, true))
+        if (TeleportCommands.teleport(user, target.getLocation(), context.hasFlag("s"), force, true))
         {
             context.sendTranslated("&aYou teleported to &2%s&a!", target.getName());
         }
@@ -167,7 +166,7 @@ public class TeleportCommands
     @Command(desc = "Teleports everyone directly to a player.",
              usage = "<player> [-unsafe]", min = 1, max = 1, flags = {
             @Flag(longName = "force", name = "f"),
-            @Flag(longName = "unsafe", name = "u")
+            @Flag(longName = "safe", name = "s")
     })
     public void tpall(ParameterizedContext context)
     {
@@ -183,7 +182,6 @@ public class TeleportCommands
             return;
         }
         boolean force = context.hasFlag("f") && module.perms().COMMAND_TPALL_FORCE.isAuthorized(context.getSender());
-        boolean safe = !context.hasFlag("u");
         if (!force && module.perms().TELEPORT_PREVENT_TPTO.isAuthorized(user))
         {
             context.sendTranslated("&cYou are not allowed to teleport to %s!", user.getName());
@@ -197,7 +195,7 @@ public class TeleportCommands
                 noTp.add(player.getName());
                 continue;
             }
-            if (!teleport(user.getCore().getUserManager().getExactUser(player.getName()), user.getLocation(), safe, force, true))
+            if (!teleport(user.getCore().getUserManager().getExactUser(player.getName()), user.getLocation(), context.hasFlag("s"), force, true))
             {
                 noTp.add(player.getName());
             }
@@ -211,7 +209,7 @@ public class TeleportCommands
 
     @Command(desc = "Teleport a player directly to you.", usage = "<player>", min = 1, max = 1, flags = {
             @Flag(longName = "force", name = "f"),
-            @Flag(longName = "unsafe", name = "u")
+            @Flag(longName = "safe", name = "s")
     })
     public void tphere(ParameterizedContext context)
     {
@@ -237,7 +235,6 @@ public class TeleportCommands
             return;
         }
         boolean force = context.hasFlag("f") && module.perms().COMMAND_TPHERE_FORCE.isAuthorized(context.getSender());
-        boolean safe = !context.hasFlag("u");
         if (sender.equals(target))
         {
             context.sendTranslated("&6You found yourself!");
@@ -248,7 +245,7 @@ public class TeleportCommands
             context.sendTranslated("&cYou are not allowed to teleport %s!", target.getName());
             return;
         }
-        if (TeleportCommands.teleport(target, sender.getLocation(), safe, force, true))
+        if (TeleportCommands.teleport(target, sender.getLocation(), context.hasFlag("s"), force, true))
         {
             context.sendTranslated("&aYou teleported %s to you!", target.getName());
             target.sendTranslated("&aYou were teleported to %s", sender.getName());
@@ -257,7 +254,7 @@ public class TeleportCommands
 
     @Command(desc = "Teleport every player directly to you.", max = 0, flags = {
             @Flag(longName = "force", name = "f"),
-            @Flag(longName = "unsafe", name = "u")
+            @Flag(longName = "safe", name = "s")
     })
     public void tphereall(ParameterizedContext context)
     {
@@ -284,8 +281,7 @@ public class TeleportCommands
                 noTp.add(player.getName());
                 continue;
             }
-            boolean safe = !context.hasFlag("u");
-            if (!teleport(sender.getCore().getUserManager().getExactUser(player.getName()), sender.getLocation(), safe, force, true))
+            if (!teleport(sender.getCore().getUserManager().getExactUser(player.getName()), sender.getLocation(), context.hasFlag("s"), force, true))
             {
                 noTp.add(player.getName());
             }
@@ -298,9 +294,10 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Direct teleport to a coordinate.", usage = "<x> [y] <z> [w <world>]", min = 2, max = 4, params = @Param(names = {
-        "world", "w"
-    }, type = World.class), flags = @Flag(longName = "unsafe", name = "u"))
+    @Command(desc = "Direct teleport to a coordinate.",
+             usage = "<x> [y] <z> [w <world>]", min = 2, max = 4,
+             params = @Param(names = { "world", "w"}, type = World.class),
+             flags = @Flag(longName = "safe", name = "s"))
     public void tppos(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -339,9 +336,8 @@ public class TeleportCommands
                 context.sendTranslated("&cCoordinates have to be numbers!");
                 return;
             }
-            boolean safe = !context.hasFlag("u");
             Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
-            if (TeleportCommands.teleport(sender, loc, safe, false, true))
+            if (TeleportCommands.teleport(sender, loc, context.hasFlag("s"), false, true))
             {
                 context.sendTranslated("&aTeleported to &eX:&6%d &eY:&6%d &eZ:&6%d &ain %s!", x, y, z, world.getName());
             }

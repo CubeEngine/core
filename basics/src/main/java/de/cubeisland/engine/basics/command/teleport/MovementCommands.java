@@ -76,7 +76,7 @@ public class MovementCommands
             {
                 block.setType(Material.GLASS);
             }
-            if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
+            if (TeleportCommands.teleport(sender, loc, false, false, true)) // is save anyway so we do not need to check again
             {
                 context.sendTranslated("&aYou just lifted!");
             }
@@ -94,7 +94,7 @@ public class MovementCommands
             Location loc = sender.getLocation();
             BlockUtil.getHighestBlockAt(loc).getLocation(loc);
             loc.add(.5, 0, .5);
-            if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
+            if (TeleportCommands.teleport(sender, loc, false, false, true)) // is save anyway so we do not need to check again
             {
                 context.sendTranslated("&aYou are now on top!");
             }
@@ -226,7 +226,7 @@ public class MovementCommands
                 sender.sendTranslated("&cNothing to pass through!");
                 return;
             }
-            if (TeleportCommands.teleport(sender, loc, true, false, true))
+            if (TeleportCommands.teleport(sender, loc, false, false, true))
             {
                 context.sendTranslated("&aYou just passed the wall!");
             }
@@ -312,7 +312,7 @@ public class MovementCommands
                 return;
             }
             loc.add(0.5, 1, 0.5);
-            if (TeleportCommands.teleport(user, loc, true, false, true))
+            if (TeleportCommands.teleport(user, loc, false, false, true))
             {
                 context.sendTranslated("&aYou just placed &2%s &awhere you were looking!", user.getName());
                 user.sendTranslated("&aYou were placed somewhere!");
@@ -372,9 +372,9 @@ public class MovementCommands
             return;
         }
         Location userLoc = user.getLocation();
-        if (TeleportCommands.teleport(user, sender.getLocation(), true, false, false))
+        if (TeleportCommands.teleport(user, sender.getLocation(), false, false, false))
         {
-            if (TeleportCommands.teleport(sender, userLoc, true, false, false))
+            if (TeleportCommands.teleport(sender, userLoc, false, false, false))
             {
                 if (context.hasArg(1))
                 {

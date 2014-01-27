@@ -153,8 +153,10 @@ public class TeleportRequestCommands
                     context.sendTranslated("&2%s &cseems to have disappeared.", name);
                     return;
                 }
-                if (!TeleportCommands.teleport(sender, user.getLocation(), true, false, true))
+                if (!TeleportCommands.teleport(sender, user.getLocation(), false, false, true))
+                {
                     return;
+                }
                 user.sendTranslated("&2%s &aaccepted your teleport-request!", sender.getName());
                 context.sendTranslated("&aYou accepted to get teleported to &2%s&a!", user.getName());
             }
@@ -167,7 +169,7 @@ public class TeleportRequestCommands
                     context.sendTranslated("&2%s &cseems to have disappeared.", name);
                     return;
                 }
-                if (!TeleportCommands.teleport(user, sender.getLocation(), true, false, true))
+                if (!TeleportCommands.teleport(user, sender.getLocation(), false, false, true))
                     return;
                 user.sendTranslated("&2%s &aaccepted your teleport-request!", sender.getName());
                 context.sendTranslated("&aYou accepted to teleport to &2%s&a!", user.getName());
