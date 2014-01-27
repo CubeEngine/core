@@ -221,7 +221,11 @@ public class Permission
         }
 
         Permission that = (Permission)o;
-// TODO add if it is a wildcard
+
+        if (wildcard != that.wildcard)
+        {
+            return false;
+        }
         if (name != null ? !name.equals(that.name) : that.name != null)
         {
             return false;
@@ -233,7 +237,9 @@ public class Permission
     @Override
     public int hashCode()
     {
-        return name != null ? name.hashCode() : 0;
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (wildcard ? 1 : 0);
+        return result;
     }
 
     public static Permission getFor(CubeCommand command)

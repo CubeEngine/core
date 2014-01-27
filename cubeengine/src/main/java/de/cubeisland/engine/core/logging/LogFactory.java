@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.logging;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.logging.DefaultLogFactory;
 import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logging.LogLevel;
 import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.filter.ExceptionFilter;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
@@ -35,6 +36,7 @@ public class LogFactory extends DefaultLogFactory
 
     protected Log coreLog;
     private Log parent;
+    private Log databaseLog;
 
     public LogFactory(Core core, java.util.logging.Logger julLogger)
     {
@@ -88,6 +90,20 @@ public class LogFactory extends DefaultLogFactory
     public Log getParent()
     {
         return this.parent;
+    }
+
+    public Log getDatabaseLog()
+    {
+        if (this.databaseLog == null)
+        {
+            this.databaseLog = this.getLog(Core.class, "Database");
+            AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Database"),
+                                                         LoggingUtil.getFileFormat(true, false),
+                                                         true, LoggingUtil.getCycler(), core.getTaskManager().getThreadFactory());
+            target.setLevel(this.core.getConfiguration().logging.logDatabaseQueries ? LogLevel.ALL : LogLevel.NONE);
+            databaseLog.addTarget(target);
+        }
+        return this.databaseLog;
     }
 
     // TODO log-cycling on shutdown ?

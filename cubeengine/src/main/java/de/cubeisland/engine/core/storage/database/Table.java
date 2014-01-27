@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.DataType;
@@ -168,9 +169,9 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
             sb.append(") ON UPDATE CASCADE ON DELETE CASCADE");
         }
         sb.append(")\n");
-        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n");// TODO
+        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n"); // TODO
         sb.append("COMMENT='").append(this.version.toString()).append("'");
-        //System.out.print("\n" + sb.toString()); // TODO remove
+        CubeEngine.getCore().getLogFactory().getDatabaseLog().info(sb.toString());
         connection.prepareStatement(sb.toString()).execute();
     }
     private static final char QUOTE = '`';
