@@ -29,6 +29,8 @@ import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 
 public class BasicsPerm extends PermissionContainer<Basics>
 {
+
+
     public TpWorldPermissions tpWorld()
     {
         return tpWorld;
@@ -172,6 +174,8 @@ public class BasicsPerm extends PermissionContainer<Basics>
      * Allows teleporting another player
      */
     public final Permission COMMAND_TP_OTHER = COMMAND_TP.child("other");
+
+    public final Permission COMMAND_TPPOS_SAFE = COMMAND.child("tppos").child("safe");
 
     private final Permission TELEPORT = getBasePerm().childWildcard("teleport");
     private final Permission TELEPORT_PREVENT = TELEPORT.newWildcard("prevent");
