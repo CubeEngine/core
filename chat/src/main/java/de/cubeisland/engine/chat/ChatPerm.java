@@ -60,4 +60,10 @@ public class ChatPerm extends PermissionContainer<Chat>
     public final Permission COLOR_UNDERLINE = COLOR.newPerm("underline");
     public final Permission COLOR_ITALIC = COLOR.newPerm("italic");
     public final Permission COLOR_RESET = COLOR.newPerm("reset");
+
+    public final Permission COMMAND_NICK_OTHER = getBasePerm().childWildcard("command").child("nick").child("other");
+    /**
+     * Allows to set the nickname to a players name that plays on this server
+     */
+    public final Permission COMMAND_NICK_OFOTHER = getBasePerm().childWildcard("command").child("nick").child("of-other");
 }

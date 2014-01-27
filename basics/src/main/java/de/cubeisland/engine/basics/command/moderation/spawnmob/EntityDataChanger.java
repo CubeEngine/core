@@ -612,7 +612,7 @@ public class EntityDataChanger<EntityInterface>
                                     }
                                 });
 
-    // TODO HORSE SPEED (Wait for bukkit ): )
+    // TODO Horse OR/AND EntitySpeed  #WaitForBukkit
 
     private EntityDataChanger(Class<EntityInterface> clazz, EntityChanger<EntityInterface, ?> changer)
     {

@@ -255,7 +255,7 @@ public class ItemCommands
                         item.setItemMeta(itemMeta);
                         return;
                     }
-                    // TODO enchant item event ?
+                    // TODO enchant item event when bukkit event is not only for enchanting via table #WaitForBukkit
                     item.addUnsafeEnchantment(ench, level);
                     context.sendTranslated("&aAdded unsafe enchantment: &6%s %d &ato your item!",
                                            Match.enchant().nameFor(ench), level);
