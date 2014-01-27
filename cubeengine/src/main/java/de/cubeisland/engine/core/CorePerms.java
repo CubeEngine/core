@@ -40,7 +40,7 @@ public class CorePerms extends PermissionContainer<CoreModule>
     public final Permission COMMAND_OP_NOTIFY = COMMAND.childWildcard("op").child("notify");
 
     private final Permission DEOP = COMMAND.childWildcard("deop");
-    public final Permission COMMAND_DEOP_NOTIFY = DEOP.child("notify"); // TODO perm not used
+    public final Permission COMMAND_DEOP_NOTIFY = DEOP.child("notify");
     public final Permission COMMAND_DEOP_OTHER = DEOP.child("other",FALSE);
     public final Permission COMMAND_RELOAD_NOTIFY = COMMAND.childWildcard("reload").child("notify");
 

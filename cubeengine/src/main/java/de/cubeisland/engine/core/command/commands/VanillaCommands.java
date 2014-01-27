@@ -286,7 +286,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendTranslated("&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated("&aUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());
