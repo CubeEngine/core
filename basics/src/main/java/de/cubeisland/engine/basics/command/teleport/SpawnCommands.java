@@ -158,7 +158,7 @@ public class SpawnCommands
                         continue;
                     }
                 }
-                if (!TeleportCommands.teleport(player, loc, false, force, true))
+                if (!TeleportCommands.teleport(player, loc, true, force, true))
                 {
                     return;
                 }
@@ -194,16 +194,15 @@ public class SpawnCommands
         final Location userLocation = user.getLocation();
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
-        if (!TeleportCommands.teleport(user, spawnLocation, false, force, true))
+        if (!TeleportCommands.teleport(user, spawnLocation, true, force, true))
         {
             context.sendTranslated("&cTeleport failed!");
         }
     }
 
     @Command(desc = "Teleports you to the spawn of given world",
-             usage = "<world>", min = 1, max = 1,
-             flags = @Flag(longName = "safe", name = "s"))
-    public void tpworld(ParameterizedContext context)
+             usage = "<world>", min = 1, max = 1)
+    public void tpworld(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
@@ -223,7 +222,7 @@ public class SpawnCommands
                 context.sendTranslated("You are not allowed to teleport to this world!");
                 return;
             }
-            if (TeleportCommands.teleport(sender, spawnLocation, context.hasFlag("s"), false, true))
+            if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
             {
                 context.sendTranslated("&aTeleported to the spawn of world &6%s&a!", world.getName());
             }
