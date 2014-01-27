@@ -55,8 +55,8 @@ public class WorldConfig extends YamlConfiguration
         public WorldType worldType = WorldType.NORMAL;
         @Comment("Whether to generate structures or not")
         public boolean generateStructures = true;
-        @Comment("Custom Generator Class NOT IMPLEMENTED YET")
-        public String customGenerator = null; // TODO not supported yet
+        @Comment("Custom Generator Class ID (consists of Plugin:generatorID)")
+        public String customGenerator = null;
     }
 
     @Override
@@ -186,7 +186,6 @@ public class WorldConfig extends YamlConfiguration
         this.generation.generateStructures = world.canGenerateStructures();
         this.generation.environment = world.getEnvironment();
         this.generation.seed = String.valueOf(world.getSeed());
-        // TODO this.generation.customGenerator = world.getGenerator();
         this.spawning.disable_animals = !world.getAllowAnimals();
         this.spawning.disable_monster = !world.getAllowMonsters();
         this.spawning.spawnLimit_ambient = world.getAmbientSpawnLimit();
@@ -231,7 +230,7 @@ public class WorldConfig extends YamlConfiguration
                 creator.seed(generation.seed.hashCode());
             }
         }
-        // TODO custom generator
+        creator.generator(generation.customGenerator);
         return creator;
     }
 
@@ -241,7 +240,6 @@ public class WorldConfig extends YamlConfiguration
         this.generation.seed = String.valueOf(world.getSeed());
         this.generation.environment = world.getEnvironment();
         this.generation.worldType = world.getWorldType();
-        // TODO generator
     }
 
     @Comment("The world where NetherPortals will lead to. (This won't work in an end world)")
