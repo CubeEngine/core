@@ -226,10 +226,9 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         return this.actionType.canRollback() && this.actionType.rollback(attachment, this, force, preview);
     }
 
-    public boolean redo(User user)
+    public boolean redo(LogAttachment attachment, boolean force, boolean preview)
     {
-        // implement redo TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/412
-        return false;
+        return this.actionType.canRedo() && this.actionType.redo(attachment, this, force, preview);
     }
 
     private Location bukkitLoc = null;

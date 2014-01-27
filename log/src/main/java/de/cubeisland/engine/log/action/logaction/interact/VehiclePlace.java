@@ -124,4 +124,10 @@ public class VehiclePlace extends SimpleLogActionType
     {
         return this.lm.getConfig(world).VEHICLE_PLACE_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

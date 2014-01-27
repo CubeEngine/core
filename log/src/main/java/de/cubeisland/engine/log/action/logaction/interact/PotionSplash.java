@@ -169,4 +169,10 @@ public class PotionSplash extends SimpleLogActionType
     {
         return this.lm.getConfig(world).POTION_SPLASH_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO could redo that but does it make sense?
+    }
 }

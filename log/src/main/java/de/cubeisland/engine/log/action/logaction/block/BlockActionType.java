@@ -270,16 +270,21 @@ public abstract class BlockActionType extends LogActionType
         Block block = logEntry.getLocation().getBlock();
         BlockState state = block.getState();
         state.setType(oldBlock.material);
-        if (oldBlock.material.equals(Material.IRON_DOOR_BLOCK) || oldBlock.material.equals(Material.WOODEN_DOOR))
+        return this.setBlock(oldBlock, state, block, attachment, logEntry, preview, force, true);
+    }
+
+    private boolean setBlock(ImmutableBlockData blockData, BlockState state, Block block, LogAttachment attachment, LogEntry logEntry, boolean preview, boolean force, boolean rollback)
+    {
+        if (blockData.material.equals(Material.IRON_DOOR_BLOCK) || blockData.material.equals(Material.WOODEN_DOOR))
         {
-            byte data = (byte)(oldBlock.data & ~8);
+            byte data = (byte)(blockData.data & ~8);
             state.setRawData(data);
         }
         else
         {
-            state.setRawData(oldBlock.data);
+            state.setRawData(blockData.data);
         }
-        if (!force && (state.getData() instanceof Attachable || BlockUtil.isDetachableFromBelow(oldBlock.material)))
+        if (!force && (state.getData() instanceof Attachable || BlockUtil.isDetachableFromBelow(blockData.material)))
         {
             return false;
         }
@@ -324,22 +329,30 @@ public abstract class BlockActionType extends LogActionType
         {
             state.update(true,false);
         }
-        switch (oldBlock.material)
+        switch (blockData.material)
         {
         case SIGN_POST:
         case WALL_SIGN:
             Sign sign = (Sign)block.getState(); // TODO ClassCastException here WHY?
             if (logEntry.getAdditional() != null)
             {
-                ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
-                if (oldSign == null)
+                ArrayNode signText;
+                if (rollback)
                 {
-                    oldSign = (ArrayNode)logEntry.getAdditional().get("sign"); // This is for old database
+                    signText = (ArrayNode)logEntry.getAdditional().get("oldSign");
+                    if (signText == null)
+                    {
+                        signText = (ArrayNode)logEntry.getAdditional().get("sign"); // This is for old database
+                    }
                 }
-                sign.setLine(0,oldSign.get(0).textValue());
-                sign.setLine(1,oldSign.get(1).textValue());
-                sign.setLine(2,oldSign.get(2).textValue());
-                sign.setLine(3,oldSign.get(3).textValue());
+                else
+                {
+                    signText = (ArrayNode)logEntry.getAdditional().get("sign");
+                }
+                sign.setLine(0, signText.get(0).textValue());
+                sign.setLine(1,signText.get(1).textValue());
+                sign.setLine(2, signText.get(2).textValue());
+                sign.setLine(3,signText.get(3).textValue());
                 if (preview)
                 {
                     attachment.addToPreview(sign);
@@ -352,7 +365,7 @@ public abstract class BlockActionType extends LogActionType
             break;
         case NOTE_BLOCK:
             NoteBlock noteBlock = (NoteBlock)block.getState();
-            noteBlock.setRawNote(oldBlock.data);
+            noteBlock.setRawNote((byte)(blockData.data - (rollback ? 0 : 1)));
             if (preview)
             {
                 attachment.addToPreview(noteBlock);
@@ -394,7 +407,7 @@ public abstract class BlockActionType extends LogActionType
             break;
         case IRON_DOOR_BLOCK:
         case WOODEN_DOOR:
-            byte data = (byte)(((oldBlock.data & 8) == 8) ? 9 : 8);
+            byte data = (byte)(((blockData.data & 8) == 8) ? 9 : 8);
             BlockState topDoor = block.getRelative(BlockFace.UP).getState();
             topDoor.setType(state.getType());
             topDoor.setRawData(data);
@@ -409,6 +422,28 @@ public abstract class BlockActionType extends LogActionType
             break;
         // TODO inventoryHolders
         }
+        return true;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        ImmutableBlockData newBlock = logEntry.getNewBlock();
+        Block block = logEntry.getLocation().getBlock();
+        BlockState state = block.getState();
+        state.setType(newBlock.material);
+        return this.setBlock(newBlock, state, block, attachment, logEntry, preview, force, false);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
         return true;
     }
 

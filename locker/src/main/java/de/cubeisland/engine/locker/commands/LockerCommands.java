@@ -46,8 +46,6 @@ public class LockerCommands extends ContainerCommand
     private Locker module;
     LockManager manager;
 
-    // TODO persist flag
-
     public LockerCommands(Locker module, LockManager manager)
     {
         super(module, "locker", "Locker commands", Arrays.asList("l"));

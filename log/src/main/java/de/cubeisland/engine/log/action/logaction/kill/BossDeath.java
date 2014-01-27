@@ -43,7 +43,6 @@ public class BossDeath extends SimpleLogActionType
         return new HashSet<>(Arrays.asList(PLAYER, ENTITY, KILL));
     }
 
-
     @Override
     public String getName()
     {
@@ -72,5 +71,17 @@ public class BossDeath extends SimpleLogActionType
     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
         return KillActionType.rollbackDeath(attachment, logEntry, force, preview);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
     }
 }

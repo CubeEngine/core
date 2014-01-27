@@ -118,4 +118,10 @@ public class VehicleBreak extends SimpleLogActionType
     {
         return this.lm.getConfig(world).VEHICLE_BREAK_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO might be possible
+    }
 }

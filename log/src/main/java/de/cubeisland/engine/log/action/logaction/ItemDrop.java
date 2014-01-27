@@ -174,4 +174,10 @@ public class ItemDrop extends SimpleLogActionType
     {
         return this.lm.getConfig(world).ITEM_DROP_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO possible but why?
+    }
 }

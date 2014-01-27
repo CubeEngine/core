@@ -43,12 +43,6 @@ public class ItemInFrameRemove extends SimpleLogActionType
         return new HashSet<>(Arrays.asList(PLAYER, ENTITY, ITEM));
     }
 
-    @Override
-    public boolean canRollback()
-    {
-        return false;
-    }
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onItemRemove(EntityDamageByEntityEvent event)
     {
@@ -112,5 +106,19 @@ public class ItemInFrameRemove extends SimpleLogActionType
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
         return super.isSimilar(logEntry, other) && logEntry.getAdditionaldata().equals(other.getAdditionaldata());
+    }
+
+    // TODO redo & rollback possible if entity still exists || or entity at position
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
     }
 }

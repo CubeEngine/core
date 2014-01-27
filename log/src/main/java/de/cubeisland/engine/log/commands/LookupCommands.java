@@ -230,6 +230,61 @@ public class LookupCommands
         }
     }
 
+    @Command(
+        desc = "Performs a rollback", usage = "",
+        flags = @Flag(longName = "preview", name = "pre"),
+        params = {
+            @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
+            @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
+            @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
+            @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
+            @Param(names = {"entity","e"}),
+            @Param(names = {"since","time","t"}), // if not given default since 3d
+            @Param(names = {"before"}),
+            @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
+        }, min = 0, max = 1)
+    public void redo(ParameterizedContext context)
+    {
+        if (context.hasArg(0))
+        {
+            if (context.getString(0).equalsIgnoreCase("params"))
+            {
+                this.params(context);
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            if (!context.hasParams())
+            {
+                context.sendTranslated("&cYou need to define parameters to redo!");
+                return;
+            }
+            User user = (User)context.getSender();
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            Lookup lookup = attachment.createNewCommandLookup();
+            QueryParameter params = lookup.getQueryParameter();
+            if (! (this.readActions(params, context.getString("action"), user)
+                && this.readRadius(params, context.getString("radius"), user)
+                && this.readUser(params, context.getString("user"), user)
+                && this.readBlocks(params, context.getString("block"), user)
+                && this.readEntities(params, context.getString("entity"), user)
+                && this.readWorld(params, context.getString("world"), context.hasParam("radius"), user)
+                && this.readTimeSince(params, context.getString("since"), user)
+                && this.readTimeBefore(params, context.getString("before"), user)))
+            {
+                return;
+            }
+            if (context.hasFlag("pre"))
+            {
+                this.module.getLogManager().fillLookupAndPreviewRedo(lookup, user);
+            }
+            else
+            {
+                this.module.getLogManager().fillLookupAndRedo(lookup, user);
+            }
+        }
+    }
+
     private boolean readTimeBefore(QueryParameter params, String beforeString, User user)
     {
         try

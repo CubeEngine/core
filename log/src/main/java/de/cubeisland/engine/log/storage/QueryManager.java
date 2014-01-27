@@ -388,10 +388,10 @@ public class QueryManager
                             lookup.rollback(user, true);
                             return;
                         case REDO:
-                            user.sendMessage("REDO is not finished yet"); // TODO
+                            lookup.redo(user, false);
                             return;
                         case REDO_PREVIEW:
-                            user.sendMessage("REDO_PREVIEW is not finished yet"); // TODO
+                            lookup.redo(user, true);
                     }
                 }
             });

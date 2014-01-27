@@ -104,4 +104,10 @@ public class PlayerJoin extends SimpleLogActionType
     {
         return this.lm.getConfig(world).PLAYER_JOIN_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

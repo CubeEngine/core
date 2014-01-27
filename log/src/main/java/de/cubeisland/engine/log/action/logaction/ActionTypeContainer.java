@@ -71,4 +71,16 @@ public class ActionTypeContainer extends LogActionType
     {
         return false;
     }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

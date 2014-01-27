@@ -229,4 +229,71 @@ public class QueryResults
             }
         }
     }
+
+    public void redo(LogAttachment attachment, boolean preview)
+    {
+        // Find the newest entry at a location
+        Map<Location,LogEntry> finalBlock = new HashMap<>();
+        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<>();
+        TreeSet<LogEntry> filteredLogs = new TreeSet<>();
+        for (LogEntry logEntry : this.logEntries)
+        {
+            if (logEntry.getActionType().canRedo()) // can redo
+            {
+                if (logEntry.getActionType().isBlockBound())
+                {
+                    if (logEntry.getActionType().isStackable())
+                    {
+                        LinkedList<LogEntry> changes = blockChanges.get(logEntry.getLocation());
+                        if (changes == null)
+                        {
+                            changes = new LinkedList<>();
+                            blockChanges.put(logEntry.getLocation(), changes);
+                        }
+                        changes.add(logEntry);
+                    }
+                    else
+                    {
+                        blockChanges.remove(logEntry.getLocation()); // Clear blockChanges when new final block
+                        finalBlock.put(logEntry.getLocation(), logEntry);
+                    }
+                }
+                else
+                {
+                    filteredLogs.add(logEntry); // Not a block change at the location -> do rollback
+                }
+            }
+        }
+        // Finished filtering! Merge back together...
+        for (LinkedList<LogEntry> entries : blockChanges.values())
+        {
+            filteredLogs.addAll(entries);
+        }
+        filteredLogs.addAll(finalBlock.values());
+        // Start Rollback 1st Round
+        Set <LogEntry> rollbackRound2 = new LinkedHashSet<>();
+        for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
+        {
+            if (logEntry.getWorld() == null)
+            {
+                this.module.getLog().warn("LogEntry #{} belongs to a deleted world!", logEntry.getId().longValue());
+                continue;
+            }
+            if (!logEntry.redo(attachment, false, preview)) // Redo failed (cannot set yet (torches etc)) try again later
+            {
+                rollbackRound2.add(logEntry);
+            }
+        }
+        ShowParameter show = new ShowParameter();
+        // Start Rollback 2nd Round (Attachables etc.)
+        for (LogEntry logEntry : rollbackRound2) // Rollback attached blocks
+        {
+            if (!logEntry.redo(attachment, true, preview))
+            {
+                attachment.getHolder().sendTranslated("&cCould not Redo:");
+                logEntry.getActionType().showLogEntry(attachment.getHolder(), null, logEntry, show);
+                CubeEngine.getLog().warn("Could not redo!");
+            }
+        }
+    }
 }

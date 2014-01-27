@@ -94,4 +94,10 @@ public class PlayerDeath extends SimpleLogActionType
     {
         return false;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

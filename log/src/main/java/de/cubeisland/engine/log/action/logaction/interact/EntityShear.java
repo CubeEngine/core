@@ -91,4 +91,10 @@ public class EntityShear extends SimpleLogActionType
     {
         return this.lm.getConfig(world).ENTITY_SHEAR_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO possible
+    }
 }

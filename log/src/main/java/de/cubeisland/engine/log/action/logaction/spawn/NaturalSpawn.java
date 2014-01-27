@@ -77,4 +77,10 @@ public class NaturalSpawn extends SimpleLogActionType
     {
         return this.lm.getConfig(world).NATURAL_SPAWN_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO possible
+    }
 }

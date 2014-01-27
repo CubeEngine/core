@@ -106,6 +106,16 @@ public class LogManager
         this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.ROLLBACK_PREVIEW);
     }
 
+    public void fillLookupAndPreviewRedo(Lookup lookup, User user)
+    {
+        this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.REDO_PREVIEW);
+    }
+
+    public void fillLookupAndRedo(Lookup lookup, User user)
+    {
+        this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.REDO);
+    }
+
     public LoggingConfiguration getConfig(World world)
     {
         if (world == null)

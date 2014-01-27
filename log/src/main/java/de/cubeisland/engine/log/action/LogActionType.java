@@ -131,12 +131,6 @@ public abstract class LogActionType extends ActionType implements Listener
     }
 
     @Override
-    public boolean canRollback()
-    {
-        return true;
-    }
-
-    @Override
     public boolean needsModel()
     {
         return true;

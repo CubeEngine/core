@@ -46,12 +46,6 @@ public class MonsterEggUse extends SimpleLogActionType
     }
 
     @Override
-    public boolean canRollback()
-    {
-        return false;
-    }
-
-    @Override
     public String getName()
     {
         return "monsteregg-use";
@@ -81,4 +75,15 @@ public class MonsterEggUse extends SimpleLogActionType
         return this.lm.getConfig(world).MONSTER_EGG_USE_enable;
     }
 
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
+    }
 }

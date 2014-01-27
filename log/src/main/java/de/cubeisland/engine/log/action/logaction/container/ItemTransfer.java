@@ -74,6 +74,12 @@ public class ItemTransfer extends SimpleLogActionType
     }
 
     @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
+
+    @Override
     public boolean isBlockBound()
     {
         return true;

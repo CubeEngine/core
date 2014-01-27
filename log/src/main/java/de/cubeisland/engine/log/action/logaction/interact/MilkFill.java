@@ -75,4 +75,10 @@ public class MilkFill extends SimpleLogActionType
     {
         return this.lm.getConfig(world).BUCKET_FILL_milk;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

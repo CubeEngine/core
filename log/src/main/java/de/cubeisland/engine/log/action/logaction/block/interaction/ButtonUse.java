@@ -50,6 +50,12 @@ public class ButtonUse extends BlockActionType
     }
 
     @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
+
+    @Override
     public String getName()
     {
         return "button-use";
