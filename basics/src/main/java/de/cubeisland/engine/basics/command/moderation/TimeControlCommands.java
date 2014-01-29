@@ -220,7 +220,7 @@ public class TimeControlCommands
             else
             {
                 user.resetPlayerTime();
-                user.setPlayerTime(time, true);
+                user.setPlayerTime(time - user.getWorld().getTime(), true);
                 context.sendTranslated("&aTime set to &6%s (%s)&a for &2%s&a!",
                                        Match.time().format(time),
                                        Match.time().getNearTimeName(time),
