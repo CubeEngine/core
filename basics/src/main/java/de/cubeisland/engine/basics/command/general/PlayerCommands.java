@@ -417,19 +417,20 @@ public class PlayerCommands
                         context.sendTranslated("&cUser %s not found or offline!", name);
                         continue;
                     }
-                    if (!user.getName().equals(context.getSender().getName()))
+                    if (this.kill(user, lightning, context, false, force, quiet))
                     {
-                        if (this.kill(user, lightning, context, false, force, quiet))
-                        {
-                            killed.add(user.getName());
-                        }
+                        killed.add(user.getName());
                     }
                 }
             }
 
             if (killed.isEmpty())
             {
-                if (names.length != 1)
+                if (names.length == 1)
+                {
+                    context.sendTranslated("&cCould not kill &2%s", names[0]);
+                }
+                else
                 {
                     context.sendTranslated("&eCould not kill any of given users!");
                 }
