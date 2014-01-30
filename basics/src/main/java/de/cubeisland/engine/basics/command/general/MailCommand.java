@@ -207,7 +207,40 @@ public class MailCommand extends ContainerCommand
         context.sendTranslated("&aMail send to everyone!");
     }
 
-    // TODO remove single mail
+    @Command(desc = "Removes a single mail", usage = "<mailId>", min = 1, max = 1)
+    public void remove(CommandContext context)
+    {
+        if (context.getSender() instanceof User)
+        {
+            User user = (User)context.getSender();
+            Integer mailId = context.getArg(0, Integer.class, null);
+            if (mailId == null)
+            {
+                context.sendTranslated("&6%s&c is not a number!", context.getString(0));
+                return;
+            }
+            BasicsUser bUser = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser();
+            if (bUser.countMail() == 0)
+            {
+                context.sendTranslated("&eYou do not have any mail!");
+                return;
+            }
+            try
+            {
+                Mail mail = bUser.getMails().get(mailId);
+                module.getCore().getDB().getDSL().delete(TABLE_MAIL).where(TABLE_MAIL.KEY.eq(mail.getKey())).execute();
+                context.sendTranslated("&aDeleted Mail #%d", mailId);
+            }
+            catch (IndexOutOfBoundsException e)
+            {
+                context.sendTranslated("&cInvalid Mail Id!");
+            }
+        }
+        else
+        {
+            context.sendTranslated("&cThe console has no mails!");
+        }
+    }
 
     @Command(names = {"clear", "remove"},
             desc = "Clears your mails.", usage = "[player]", min = 0, max = 1)
