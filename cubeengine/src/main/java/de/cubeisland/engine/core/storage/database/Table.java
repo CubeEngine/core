@@ -169,7 +169,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
             sb.append(") ON UPDATE CASCADE ON DELETE CASCADE");
         }
         sb.append(")\n");
-        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n"); // TODO
+        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n"); // TODO configurable?
         sb.append("COMMENT='").append(this.version.toString()).append("'");
         CubeEngine.getCore().getLogFactory().getDatabaseLog().info(sb.toString());
         connection.prepareStatement(sb.toString()).execute();

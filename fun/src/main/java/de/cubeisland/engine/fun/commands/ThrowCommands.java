@@ -18,6 +18,7 @@
 package de.cubeisland.engine.fun.commands;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +42,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
@@ -57,12 +59,19 @@ public class ThrowCommands
     private final Fun module;
     private final ThrowListener throwListener;
 
+    Map<EntityType, Permission> perms = new HashMap<>();
+
     public ThrowCommands(Fun module)
     {
         this.module = module;
         this.thrownItems = new THashMap<>();
         this.throwListener = new ThrowListener();
         module.getCore().getEventManager().registerListener(module, this.throwListener);
+        for (EntityType type : EntityType.values()) // TODO only entities that can be thrown
+        {
+            perms.put(type, module.perms().COMMAND_THROW.child(type.name().toLowerCase(Locale.ENGLISH).replace("_", "-")));
+            module.getCore().getPermissionManager().registerPermission(module, perms.get(type));
+        }
     }
 
     @Command
@@ -140,7 +149,7 @@ public class ThrowCommands
             return;
         }
 
-        if (!user.hasPermission(module.perms().COMMAND_THROW.getName() + "." + type.name().toLowerCase(Locale.ENGLISH).replace("_", "-"))) // TODO these should get registered!!!
+        if (!perms.get(type).isAuthorized(user))
         {
             context.sendTranslated("&cYou are not allowed to throw this");
             return;
