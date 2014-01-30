@@ -25,7 +25,7 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class ChatCommands
 {
-    private Chat module;
+    private final Chat module;
 
     public ChatCommands(Chat module)
     {

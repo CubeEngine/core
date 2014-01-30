@@ -32,8 +32,8 @@ import de.cubeisland.engine.core.util.math.shape.Shape;
 
 public class CuboidSelector implements Selector, Listener
 {
-    private de.cubeisland.engine.selector.Selector module;
-    private Permission selectPerm;
+    private final de.cubeisland.engine.selector.Selector module;
+    private final Permission selectPerm;
 
     public CuboidSelector(de.cubeisland.engine.selector.Selector module)
     {

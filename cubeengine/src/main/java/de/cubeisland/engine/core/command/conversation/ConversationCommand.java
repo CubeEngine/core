@@ -41,7 +41,7 @@ import gnu.trove.set.hash.TLongHashSet;
 
 public abstract class ConversationCommand extends CubeCommand implements Listener
 {
-    private TLongHashSet usersInMode = new TLongHashSet();
+    private final TLongHashSet usersInMode = new TLongHashSet();
 
     protected ConversationCommand(Module module, ConversationContextFactory contextFactory)
     {

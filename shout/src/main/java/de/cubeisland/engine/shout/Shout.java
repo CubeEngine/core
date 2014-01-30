@@ -30,8 +30,6 @@ import de.cubeisland.engine.shout.interactions.ShoutListener;
 
 public class Shout extends Module
 {
-    public boolean usingRoles = false;
-
     private AnnouncementManager announcementManager;
     private Announcer announcer;
     private ShoutConfiguration config;

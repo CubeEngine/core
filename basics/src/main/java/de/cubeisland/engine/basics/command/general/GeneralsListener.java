@@ -46,7 +46,7 @@ import de.cubeisland.engine.roles.RoleAppliedEvent;
 
 public class GeneralsListener implements Listener
 {
-    private Basics module;
+    private final Basics module;
 
     public GeneralsListener(Basics basics)
     {

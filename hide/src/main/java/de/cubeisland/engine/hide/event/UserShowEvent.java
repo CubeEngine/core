@@ -17,9 +17,7 @@
  */
 package de.cubeisland.engine.hide.event;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;

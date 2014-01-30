@@ -25,7 +25,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.TimeUtil;
 import de.cubeisland.engine.vote.storage.VoteModel;
-import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -34,7 +33,7 @@ import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
 public class VoteCommands
 {
     private final PeriodFormatter formatter;
-    private Vote module;
+    private final Vote module;
 
     public VoteCommands(Vote module)
     {

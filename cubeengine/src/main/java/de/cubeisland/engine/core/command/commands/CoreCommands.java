@@ -51,7 +51,7 @@ public class CoreCommands extends ContainerCommand
 
     private final BukkitCore core;
     private final BanManager banManager;
-    private ConcurrentHashMap<String, Long> fails = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Long> fails = new ConcurrentHashMap<>();
 
     public CoreCommands(Core core)
     {

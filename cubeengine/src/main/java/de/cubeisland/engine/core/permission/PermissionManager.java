@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.core.permission;
 
-import java.util.Set;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
 

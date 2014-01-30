@@ -51,7 +51,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 public class EditModeListener extends ConversationCommand
 {
     private final MarketSignFactory signFactory;
-    private Signmarket module;
+    private final Signmarket module;
 
     public EditModeListener(final Signmarket module)
     {
@@ -89,8 +89,8 @@ public class EditModeListener extends ConversationCommand
         ;
     }
 
-    private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<>();
-    private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<>();
+    private final TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<>();
+    private final TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<>();
 
     private boolean setEditingSign(User user, MarketSign marketSign)
     {

@@ -24,7 +24,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 
 public class PreventSpamKickListener implements Listener
 {
-    private BukkitCore core;
+    private final BukkitCore core;
 
     public PreventSpamKickListener(BukkitCore core)
     {

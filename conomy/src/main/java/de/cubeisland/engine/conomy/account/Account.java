@@ -21,8 +21,8 @@ import de.cubeisland.engine.conomy.account.storage.AccountModel;
 
 public abstract class Account
 {
-    protected ConomyManager manager;
-    AccountModel model; // package private!
+    protected final ConomyManager manager;
+    final AccountModel model; // package private!
 
     public Account(ConomyManager manager, AccountModel model)
     {

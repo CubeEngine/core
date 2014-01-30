@@ -38,7 +38,7 @@ import de.cubeisland.engine.core.util.InventoryGuardFactory;
  */
 public class InventoryCommands
 {
-    private Basics module;
+    private final Basics module;
 
     public InventoryCommands(Basics module)
     {
@@ -61,7 +61,7 @@ public class InventoryCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
-            boolean allowModify = false;
+            boolean denyModify = false;
             Inventory inv;
             if (context.hasFlag("e"))
             {
@@ -81,12 +81,9 @@ public class InventoryCommands
             }
             if (module.perms().COMMAND_INVSEE_MODIFY.isAuthorized(sender))
             {
-                allowModify = true;
-                if (!(context.hasFlag("f") && module.perms().COMMAND_INVSEE_MODIFY_FORCE.isAuthorized(sender))
-                    && module.perms().COMMAND_INVSEE_MODIFY_PREVENT.isAuthorized(user))
-                {
-                    allowModify = false;
-                }
+                denyModify = !( context.hasFlag("f")
+                    && module.perms().COMMAND_INVSEE_MODIFY_FORCE.isAuthorized(sender))
+                    && module.perms().COMMAND_INVSEE_MODIFY_PREVENT.isAuthorized(user);
             }
             if (module.perms().COMMAND_INVSEE_NOTIFY.isAuthorized(user))
             {
@@ -96,7 +93,7 @@ public class InventoryCommands
                 }
             }
             InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(inv, sender);
-            if (!allowModify)
+            if (denyModify)
             {
                 guard.blockPutInAll().blockTakeOutAll();
             }

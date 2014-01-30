@@ -32,9 +32,9 @@ import de.cubeisland.engine.portals.config.PortalConfig;
 
 public class Portal
 {
-    private Portals module;
-    private PortalManager manager;
-    private String name;
+    private final Portals module;
+    private final PortalManager manager;
+    private final String name;
     protected final PortalConfig config;
 
     public Portal(Portals module, PortalManager manager, String name, PortalConfig config)

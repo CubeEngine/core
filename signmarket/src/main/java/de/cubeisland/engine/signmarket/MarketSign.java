@@ -63,12 +63,10 @@ public class MarketSign
 {
     private final MarketSignFactory msFactory;
     private final Signmarket module;
-    protected Economy economy;
+    protected final Economy economy;
     private SignMarketItemModel itemInfo;
-    private SignMarketBlockModel blockInfo;
+    private final SignMarketBlockModel blockInfo;
     private WeakReference<User> userOwner;
-
-    private DSLContext dsl;
 
     private TLongLongHashMap breakingSign = new TLongLongHashMap();
 
@@ -82,11 +80,11 @@ public class MarketSign
 
     public MarketSign(Signmarket module, Location location, User owner)
     {
-        this.dsl = module.getCore().getDB().getDSL();
+        DSLContext dsl = module.getCore().getDB().getDSL();
         this.module = module;
         this.economy = module.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
-        this.blockInfo = this.dsl.newRecord(TABLE_SIGN_BLOCK).newBlockModel(location);
-        this.setItemInfo(this.dsl.newRecord(TABLE_SIGN_ITEM));
+        this.blockInfo = dsl.newRecord(TABLE_SIGN_BLOCK).newBlockModel(location);
+        this.setItemInfo(dsl.newRecord(TABLE_SIGN_ITEM));
         this.msFactory = module.getMarketSignFactory();
 
         this.blockInfo.setOwner(owner == null ? null : owner.getEntity().getKey());
@@ -789,11 +787,7 @@ public class MarketSign
     {
         if (!this.hasInfiniteSize() && this.hasStock())
         {
-            if (this.getMaxItemAmount() >= this.getStock() + this.getAmount())
-            {
-                return false;
-            }
-            return true;
+            return this.getMaxItemAmount() < this.getStock() + this.getAmount();
         }
         return false;
     }

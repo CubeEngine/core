@@ -24,12 +24,7 @@ import de.cubeisland.engine.core.user.UserAttachment;
 
 public class HomeAttachment extends UserAttachment
 {
-    Map<String, Home> homes;
-
-    public HomeAttachment()
-    {
-        homes = new HashMap<>();
-    }
+    final Map<String, Home> homes = new HashMap<>();
 
     /**
      * Will try to find a home with that name among the homes the user can access

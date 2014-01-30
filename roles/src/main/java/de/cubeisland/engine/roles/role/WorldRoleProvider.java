@@ -33,8 +33,8 @@ import de.cubeisland.engine.roles.config.RoleConfig;
 
 public class WorldRoleProvider extends RoleProvider
 {
-    private MirrorConfig mirrorConfig;
-    private Set<Role> defaultRoles = new HashSet<>();
+    private final MirrorConfig mirrorConfig;
+    private final Set<Role> defaultRoles = new HashSet<>();
     private Path folder;
 
     public WorldRoleProvider(RolesManager manager, MirrorConfig mirrorConfig)

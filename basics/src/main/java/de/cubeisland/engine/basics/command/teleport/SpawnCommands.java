@@ -37,7 +37,7 @@ import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
  */
 public class SpawnCommands
 {
-    private Basics module;
+    private final Basics module;
 
     public SpawnCommands(Basics basics)
     {

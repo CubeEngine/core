@@ -42,8 +42,8 @@ public class PortalManager implements Listener
     public final Portals module;
     protected final File portalsDir;
 
-    private Map<String, Portal> portals = new HashMap<>();
-    private Map<Long, List<Portal>> chunksWithPortals = new HashMap<>();
+    private final Map<String, Portal> portals = new HashMap<>();
+    private final Map<Long, List<Portal>> chunksWithPortals = new HashMap<>();
 
     public PortalManager(Portals module)
     {
@@ -104,7 +104,7 @@ public class PortalManager implements Listener
         }
     }
 
-    WeakHashMap<Portal, List<Entity>> entitesInPortals = new WeakHashMap<>();
+    final WeakHashMap<Portal, List<Entity>> entitesInPortals = new WeakHashMap<>();
 
     private void checkForEntitiesInPortals()
     {

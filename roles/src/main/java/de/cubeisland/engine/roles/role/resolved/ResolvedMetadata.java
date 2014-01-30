@@ -21,7 +21,7 @@ import de.cubeisland.engine.roles.role.ResolvedDataHolder;
 
 public class ResolvedMetadata extends ResolvedData
 {
-    private String value;
+    private final String value;
 
     public ResolvedMetadata(ResolvedDataHolder origin, String key, String value)
     {

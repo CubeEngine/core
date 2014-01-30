@@ -179,7 +179,6 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public void registerPermission(Module module, Permission permission)
     {
-        Set<Permission> attached = permission.getAttached();
         org.bukkit.permissions.Permission mainBPerm;
         org.bukkit.permissions.Permission mainBWCPerm = null;
         if (permission.isWildcard())

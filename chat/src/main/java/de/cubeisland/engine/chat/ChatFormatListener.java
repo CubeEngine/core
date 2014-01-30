@@ -35,7 +35,7 @@ import de.cubeisland.engine.core.util.MacroProcessor;
 public class ChatFormatListener implements Listener
 {
     private static final String DEFAULT_FORMAT = new AsyncPlayerChatEvent(true, null, null, null).getFormat();
-    protected Chat module;
+    protected final Chat module;
 
     public ChatFormatListener(Chat module)
     {

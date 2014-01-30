@@ -20,8 +20,6 @@ package de.cubeisland.engine.core.task.worker;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.cubeisland.engine.core.CubeEngine;
-
 public abstract class BaseThreadFactory implements ThreadFactory
 {
     private final AtomicInteger threadCounter;

@@ -21,13 +21,11 @@ import org.bukkit.event.Listener;
 
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.ChatFormat;
 
 public class Chat extends Module implements Listener
 {
 
     private ChatConfig config;
-    private String defaultFormat;
     private ChatPerm perms;
 
     @Override
@@ -37,11 +35,6 @@ public class Chat extends Module implements Listener
         perms = new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
         this.getCore().getCommandManager().registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
-        this.defaultFormat = this.config.format;
-        if (this.config.allowColors)
-        {
-            this.defaultFormat = ChatFormat.parseFormats(this.defaultFormat);
-        }
         if (this.getCore().getModuleManager().getModule("roles") != null)
         {
             this.getCore().getEventManager().registerListener(this, new RoleChatFormatListener(this));

@@ -38,7 +38,7 @@ import de.cubeisland.engine.core.user.User;
 public class PaintingListener implements Listener
 {
     private final Basics module;
-    private Map<String, Painting> paintingChange;
+    private final Map<String, Painting> paintingChange;
 
     public PaintingListener(Basics module)
     {
@@ -120,7 +120,7 @@ public class PaintingListener implements Listener
                 {
                     artNumber = arts.length - 1;
                 }
-                for (int i = 0; i < arts.length; i++)
+                for (Art art : arts)
                 {
                     if (painting.setArt(arts[artNumber]))
                     {

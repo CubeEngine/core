@@ -55,14 +55,14 @@ public class Universe
 
     private UniverseConfig universeConfig;
     private WorldConfig defaults = null;
-    private Map<World, WorldConfig> worldConfigs = new HashMap<>();
-    private Map<String, WorldConfig> worldConfigMap = new HashMap<>();
+    private final Map<World, WorldConfig> worldConfigs = new HashMap<>();
+    private final Map<String, WorldConfig> worldConfigMap = new HashMap<>();
 
     private World mainWorld;
-    private Set<World> worlds = new HashSet<>();
+    private final Set<World> worlds = new HashSet<>();
 
     private Permission universeAccessPerm;
-    private Map<World, Permission> worldPerms = new HashMap<>();
+    private final Map<World, Permission> worldPerms = new HashMap<>();
 
     private final File dirUniverse;
     private final File dirPlayers;
@@ -246,7 +246,7 @@ public class Universe
         {
             config.scale = 8.0; // Nether is 1:8
         }
-        if (this.defaults != null && this.universeConfig.mainWorld.equals(world.getName()))
+        if (this.defaults != null && this.universeConfig.mainWorld.getName().equals(world.getName()))
         {
             config.spawn.keepSpawnInMemory = true; // KEEP MAIN SPAWN LOADED
         }

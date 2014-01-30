@@ -54,8 +54,8 @@ import static java.text.DateFormat.SHORT;
 
 public class PlayerCommands
 {
-    private UserManager um;
-    private Basics module;
+    private final UserManager um;
+    private final Basics module;
     private AfkListener afkListener;
 
     public PlayerCommands(Basics basics)
@@ -683,7 +683,7 @@ public class PlayerCommands
     @Command(desc = "Toggles the god-mode!", usage = "[player]", max = 1)
     public void god(CommandContext context)
     {
-        User user = null;
+        User user;
         boolean other = false;
         if (context.hasArg(0))
         {

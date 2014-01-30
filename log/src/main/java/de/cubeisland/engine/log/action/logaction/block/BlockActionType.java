@@ -78,11 +78,7 @@ public abstract class BlockActionType extends LogActionType
             return false;
         }
         Material mat = Material.getMaterial(block);
-        if (this.lm.getConfig(world).block.breakNoLogging.contains(mat))
-        {
-            return true;
-        }
-        return false;
+        return this.lm.getConfig(world).block.breakNoLogging.contains(mat);
     }
     private boolean isPlacingBlockIgnored(World world, String block)
     {

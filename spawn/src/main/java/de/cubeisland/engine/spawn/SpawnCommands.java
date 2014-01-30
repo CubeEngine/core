@@ -204,7 +204,7 @@ public class SpawnCommands
                     return;
                 }
                 String rolespawn = rolesAttachment.getCurrentMetadataString("rolespawn");
-                if (rolespawn == null)
+                if (rolespawn != null)
                 {
                     spawnLocation = this.getSpawnLocation(rolespawn);
                     if (spawnLocation == null)

@@ -39,7 +39,7 @@ public class LogManager
 
     private final LoggingConfiguration globalConfig;
     private final Path worldsFolder;
-    private Map<World, LoggingConfiguration> worldConfigs = new HashMap<>();
+    private final Map<World, LoggingConfiguration> worldConfigs = new HashMap<>();
 
     private final QueryManager queryManager;
 

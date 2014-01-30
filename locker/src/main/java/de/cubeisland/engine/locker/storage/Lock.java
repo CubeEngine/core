@@ -54,7 +54,7 @@ import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_L
 public class Lock
 {
     private final Locker module;
-    private LockManager manager;
+    private final LockManager manager;
     protected final LockModel model;
     protected final ArrayList<Location> locations = new ArrayList<>();
 

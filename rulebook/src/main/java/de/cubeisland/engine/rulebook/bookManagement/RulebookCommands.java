@@ -49,7 +49,7 @@ public class RulebookCommands extends ContainerCommand
     private final RulebookManager rulebookManager;
     private final Rulebook module;
 
-    private Permission getPermission;
+    private final Permission getPermission;
     
     public RulebookCommands(Rulebook module)
     {

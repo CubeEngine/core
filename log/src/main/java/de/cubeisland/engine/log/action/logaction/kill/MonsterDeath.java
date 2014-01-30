@@ -53,7 +53,7 @@ public class MonsterDeath extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        KillActionType.showSubActionLogEntry(user, logEntry,time,loc);;
+        KillActionType.showSubActionLogEntry(user, logEntry,time,loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)

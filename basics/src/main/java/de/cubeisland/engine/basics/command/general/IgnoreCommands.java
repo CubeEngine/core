@@ -36,7 +36,7 @@ public class IgnoreCommands
 {
     private final Basics module;
     private final UserManager um;
-    private DSLContext dsl;
+    private final DSLContext dsl;
 
     public IgnoreCommands(Basics basics)
     {

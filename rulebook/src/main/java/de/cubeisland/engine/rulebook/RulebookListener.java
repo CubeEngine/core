@@ -19,13 +19,12 @@ package de.cubeisland.engine.rulebook;
 
 import java.util.Locale;
 
-import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.core.i18n.Language;
+import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.rulebook.bookManagement.RulebookManager;
 

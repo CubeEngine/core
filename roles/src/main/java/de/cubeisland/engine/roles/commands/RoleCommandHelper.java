@@ -35,9 +35,9 @@ import de.cubeisland.engine.roles.role.RolesManager;
 public abstract class RoleCommandHelper extends ContainerCommand
 {
     protected static final String GLOBAL_PREFIX = "g:";
-    protected RolesManager manager;
-    protected Roles module;
-    protected WorldManager worldManager;
+    protected final RolesManager manager;
+    protected final Roles module;
+    protected final WorldManager worldManager;
 
     protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
     protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s&f: &6%s");

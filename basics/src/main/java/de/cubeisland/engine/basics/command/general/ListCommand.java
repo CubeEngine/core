@@ -41,7 +41,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 public class ListCommand extends CubeCommand
 {
     protected static final Comparator<User> USER_COMPARATOR = new UserComparator();
-    private Basics basics;
+    private final Basics basics;
 
     public ListCommand(Basics basics)
     {

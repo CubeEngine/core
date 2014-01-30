@@ -37,7 +37,7 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 public class ToolListener implements Listener
 {
     private final Log module;
-    private Permission toolPerm;
+    private final Permission toolPerm;
 
     public ToolListener(Log module)
     {

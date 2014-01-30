@@ -34,6 +34,7 @@ import org.bukkit.inventory.InventoryHolder;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.LockType;
@@ -45,13 +46,13 @@ import static de.cubeisland.engine.locker.storage.LockType.*;
 
 public class CommandListener implements Listener
 {
-    private Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
-    private Map<String,Long> persist = new HashMap<>();
+    private final Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
+    private final Map<String,Long> persist = new HashMap<>();
 
-    private de.cubeisland.engine.locker.Locker module;
-    private LockManager manager;
+    private final Locker module;
+    private final LockManager manager;
 
-    public CommandListener(de.cubeisland.engine.locker.Locker module, LockManager manager)
+    public CommandListener(Locker module, LockManager manager)
     {
         this.module = module;
         this.manager = manager;

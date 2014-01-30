@@ -38,8 +38,8 @@ import de.cubeisland.engine.core.util.matcher.Match;
 
 public class BackpackCommands extends ContainerCommand
 {
-    private Backpack module;
-    private BackpackManager manager;
+    private final Backpack module;
+    private final BackpackManager manager;
 
     public BackpackCommands(Backpack module, BackpackManager manager)
     {

@@ -20,7 +20,6 @@ package de.cubeisland.engine.travel;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
 
 public class TravelConfig extends YamlConfiguration
 {

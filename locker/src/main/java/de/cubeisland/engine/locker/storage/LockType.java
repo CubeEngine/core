@@ -33,7 +33,7 @@ public enum LockType
     DONATION(4, CONTAINER, ENTITY_CONTAINER, ENTITY_CONTAINER_LIVING),
     FREE(5, CONTAINER, ENTITY_CONTAINER, ENTITY_CONTAINER_LIVING);
 
-    private static TByteObjectMap<LockType> lockTypes = new TByteObjectHashMap<>();
+    private final static TByteObjectMap<LockType> lockTypes = new TByteObjectHashMap<>();
 
     public final byte id;
     public final Collection<ProtectedType> supportedTypes;

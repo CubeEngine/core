@@ -23,7 +23,7 @@ import de.cubeisland.engine.conomy.account.storage.AccountModel;
 public class UserAccount extends Account
 {
     private final Conomy module;
-    private AccountAttachment attachment;
+    private final AccountAttachment attachment;
 
     public UserAccount(AccountAttachment attachment, ConomyManager manager, AccountModel model)
     {

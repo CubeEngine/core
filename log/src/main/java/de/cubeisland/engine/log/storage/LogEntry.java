@@ -49,7 +49,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     private Log module;
     private UserManager um;
-    private TreeSet<LogEntry> attached = new TreeSet<>();
+    private final TreeSet<LogEntry> attached = new TreeSet<>();
     private ActionType actionType;
     private World world;
     private BlockVector3 location;

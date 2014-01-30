@@ -38,13 +38,11 @@ import gnu.trove.set.hash.THashSet;
 
 public class BukkitBanManager implements BanManager
 {
-    private final BukkitCore core;
     private final BanList nameBans;
     private final BanList ipBans;
 
     public BukkitBanManager(BukkitCore core)
     {
-        this.core = core;
         final DedicatedPlayerList playerList = ((CraftServer)core.getServer()).getHandle();
         this.nameBans = playerList.getNameBans();
         this.ipBans = playerList.getIPBans();

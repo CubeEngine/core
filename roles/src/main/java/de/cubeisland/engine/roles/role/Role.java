@@ -264,7 +264,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     public void clearMetadata()
     {
         this.makeDirty();
-        this.config.metadata.clear();;
+        this.config.metadata.clear();
     }
 
     @Override

@@ -24,7 +24,7 @@ import de.cubeisland.engine.core.user.UserAttachment;
 
 public class WarpAttachment extends UserAttachment
 {
-    Map<String, Warp> warps;
+    final Map<String, Warp> warps;
 
     public WarpAttachment()
     {

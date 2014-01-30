@@ -36,7 +36,7 @@ import de.cubeisland.engine.conomy.account.UserAccount;
 public class BankCommands extends ContainerCommand
 {
     private final ConomyManager manager;
-    private Conomy module;
+    private final Conomy module;
 
     public BankCommands(Conomy module)
     {

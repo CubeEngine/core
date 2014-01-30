@@ -34,7 +34,7 @@ import de.cubeisland.engine.core.util.LocationUtil;
 
 public class TeleportListener implements Listener
 {
-    private Basics module;
+    private final Basics module;
 
     public TeleportListener(Basics basics)
     {

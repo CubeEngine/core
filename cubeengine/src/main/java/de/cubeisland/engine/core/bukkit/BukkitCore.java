@@ -57,6 +57,7 @@ import de.cubeisland.engine.core.command.commands.ModuleCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
+import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
@@ -103,7 +104,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private Database database;
     private BukkitPermissionManager permissionManager;
     private BukkitUserManager userManager;
-    private BukkitFileManager fileManager;
+    private FileManager fileManager;
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
@@ -182,7 +183,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            this.fileManager = new BukkitFileManager(this);
+            this.fileManager = new FileManager(this.getLogger(), this.getDataFolder().toPath());
         }
         catch (IOException e)
         {
@@ -551,7 +552,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public BukkitFileManager getFileManager()
+    public FileManager getFileManager()
     {
         return this.fileManager;
     }

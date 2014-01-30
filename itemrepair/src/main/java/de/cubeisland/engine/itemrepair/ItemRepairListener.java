@@ -37,7 +37,7 @@ import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock.RepairBlockInve
 
 public class ItemRepairListener implements Listener
 {
-    private Itemrepair module;
+    private final Itemrepair module;
     private final RepairBlockManager rbm;
     private final Map<String, RepairRequest> repairRequests;
 

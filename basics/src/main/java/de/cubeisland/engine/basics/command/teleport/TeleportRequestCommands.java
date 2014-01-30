@@ -32,7 +32,7 @@ import de.cubeisland.engine.basics.BasicsAttachment;
  */
 public class TeleportRequestCommands
 {
-    private Basics basics;
+    private final Basics basics;
 
     public TeleportRequestCommands(Basics basics)
     {

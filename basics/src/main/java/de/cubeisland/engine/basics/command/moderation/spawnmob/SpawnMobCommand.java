@@ -35,7 +35,7 @@ import static de.cubeisland.engine.basics.command.moderation.spawnmob.SpawnMob.s
  */
 public class SpawnMobCommand
 {
-    private BasicsConfiguration config;
+    private final BasicsConfiguration config;
 
     public SpawnMobCommand(Basics basics)
     {

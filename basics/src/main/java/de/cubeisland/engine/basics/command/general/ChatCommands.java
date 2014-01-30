@@ -41,9 +41,10 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 public class ChatCommands
 {
     private final DurationConverter converter = new DurationConverter();
-    private UserManager um;
+    private final UserManager um;
+    private final Basics module;
+
     private String lastWhisperOfConsole = null;
-    private Basics module;
 
     public ChatCommands(Basics basics)
     {

@@ -75,8 +75,8 @@ import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 
 public class LockerListener implements Listener
 {
-    private LockManager manager;
-    private Locker module;
+    private final LockManager manager;
+    private final Locker module;
 
     public LockerListener(Locker module, LockManager manager)
     {
@@ -383,7 +383,6 @@ public class LockerListener implements Listener
         if (lock != null)
         {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -395,7 +394,6 @@ public class LockerListener implements Listener
         if (lock != null)
         {
             event.setCancelled(true);
-            return;
         }
     }
 

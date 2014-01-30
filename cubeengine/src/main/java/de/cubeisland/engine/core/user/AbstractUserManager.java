@@ -65,7 +65,7 @@ public abstract class AbstractUserManager implements UserManager
     protected String salt;
     protected final MessageDigest messageDigest;
 
-    protected Database database;
+    protected final Database database;
 
     public AbstractUserManager(final Core core)
     {
@@ -354,7 +354,7 @@ public abstract class AbstractUserManager implements UserManager
         FileUtil.setReadOnly(file);
     }
 
-    private TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<>();
+    private final TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<>();
 
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
@@ -366,7 +366,7 @@ public abstract class AbstractUserManager implements UserManager
         Triplet<Long, String, Integer> loginFail = this.getFailedLogin(user);
         if (loginFail == null)
         {
-            loginFail = new Triplet<Long, String, Integer>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
+            loginFail = new Triplet<>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
             this.failedLogins.put(user.getId(), loginFail);
         }
         else

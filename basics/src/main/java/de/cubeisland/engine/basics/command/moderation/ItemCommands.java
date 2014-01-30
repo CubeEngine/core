@@ -55,7 +55,7 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
  */
 public class ItemCommands
 {
-    private Basics module;
+    private final Basics module;
 
     public ItemCommands(Basics module)
     {
@@ -188,14 +188,13 @@ public class ItemCommands
             }
             if (unlimited)
             {
-                sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
                 context.sendTranslated("&aYou now have unlimited items to build!");
             }
             else
             {
-                sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
                 context.sendTranslated("&eYou now no longer have unlimited items to build!");
             }
+            sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
             return;
         }
         context.sendTranslated("&cThis command can only be used by a player!");

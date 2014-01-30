@@ -30,8 +30,8 @@ import de.cubeisland.engine.conomy.account.ConomyManager;
 
 public class EcoCommands extends ContainerCommand
 {
-    private Conomy module;
-    private ConomyManager manager;
+    private final Conomy module;
+    private final ConomyManager manager;
 
     public EcoCommands(Conomy module)
     {

@@ -67,7 +67,7 @@ public class TestCore implements Core
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
     private ModuleManager moduleManager = null;
-    private ConfigurationFactory configFactory = new ConfigurationFactory();;
+    private final ConfigurationFactory configFactory = new ConfigurationFactory();
     private LogFactory logFactory;
 
     {

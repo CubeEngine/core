@@ -36,7 +36,7 @@ public class Announcer
     private ScheduledExecutorService executor;
     private Map<String, ScheduledFuture> dynamicTasks;
     private Map<String, ScheduledFuture> fixedTasks;
-    public int initDelay;
+    public final int initDelay;
 
     public Announcer(ThreadFactory factory, int initDelay)
     {

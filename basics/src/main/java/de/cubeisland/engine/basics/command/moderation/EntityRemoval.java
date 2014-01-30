@@ -24,7 +24,7 @@ import de.cubeisland.engine.core.permission.Permission;
 
 public class EntityRemoval
 {
-    private Permission perm;
+    private final Permission perm;
     public final Class<?>[] interfaces;
 
     EntityRemoval(Permission perm, Class<?>... interfaces)

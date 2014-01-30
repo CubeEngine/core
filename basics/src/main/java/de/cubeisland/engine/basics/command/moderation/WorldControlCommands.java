@@ -48,10 +48,9 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
  */
 public class WorldControlCommands
 {
-
-    private BasicsConfiguration config;
-    private Basics module;
-    private EntityRemovals entityRemovals;
+    private final BasicsConfiguration config;
+    private final Basics module;
+    private final EntityRemovals entityRemovals;
 
     public WorldControlCommands(Basics module)
     {

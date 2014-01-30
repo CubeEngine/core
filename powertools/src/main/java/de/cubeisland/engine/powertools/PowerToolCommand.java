@@ -53,7 +53,7 @@ import static java.util.Arrays.asList;
  */
 public class PowerToolCommand extends ContainerCommand implements Listener
 {
-    private Powertools module;
+    private final Powertools module;
 
     public PowerToolCommand(Powertools module)
     {

@@ -64,12 +64,12 @@ public class Multiverse implements Listener
 
     private World mainWorld;
 
-    private Map<String, Universe> universes = new HashMap<>();
-    private Map<World, Universe> worlds = new HashMap<>();
+    private final Map<String, Universe> universes = new HashMap<>();
+    private final Map<World, Universe> worlds = new HashMap<>();
 
-    private File playersDir;
+    private final File playersDir;
 
-    private Permission universeRootPerm;
+    private final Permission universeRootPerm;
 
     public Multiverse(Worlds module)
     {

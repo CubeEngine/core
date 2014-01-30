@@ -36,7 +36,7 @@ import de.cubeisland.engine.core.util.FileUtil;
 public class KitCommand extends ContainerCommand
 {
     private final KitManager manager;
-    private Kits module;
+    private final Kits module;
 
     public KitCommand(Kits module)
     {

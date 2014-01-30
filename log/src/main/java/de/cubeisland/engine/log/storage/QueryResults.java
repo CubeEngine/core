@@ -36,9 +36,9 @@ import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
 
 public class QueryResults
 {
-    private Lookup lookup;
-    private Module module;
-    private TreeSet<LogEntry> logEntries = new TreeSet<>();
+    private final Lookup lookup;
+    private final Module module;
+    private final TreeSet<LogEntry> logEntries = new TreeSet<>();
 
     public QueryResults(Lookup lookup, Module module)
     {

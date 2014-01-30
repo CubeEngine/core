@@ -38,9 +38,9 @@ import gnu.trove.map.hash.THashMap;
  */
 public class EnchantMatcher
 {
-    private THashMap<String, Enchantment> enchantments;
-    private THashMap<String, Enchantment> bukkitnames;
-    private THashMap<Enchantment, String> enchantmentName;
+    private final THashMap<String, Enchantment> enchantments;
+    private final THashMap<String, Enchantment> bukkitnames;
+    private final THashMap<Enchantment, String> enchantmentName;
 
     EnchantMatcher()
     {

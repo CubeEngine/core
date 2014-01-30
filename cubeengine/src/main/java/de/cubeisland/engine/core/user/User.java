@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -75,7 +74,7 @@ import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
  */
 public class User extends UserBase implements CommandSender, AttachmentHolder<UserAttachment>
 {
-    private UserEntity entity;
+    private final UserEntity entity;
 
     boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
@@ -275,7 +274,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     public int getPing()
     {
         Player onlinePlayer = this.getOfflinePlayer().getPlayer();
-        if (onlinePlayer == null)
+        if (onlinePlayer != null)
         {
             return BukkitUtils.getPing(onlinePlayer);
         }

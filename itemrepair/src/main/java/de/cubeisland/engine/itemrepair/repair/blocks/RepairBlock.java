@@ -50,16 +50,16 @@ public class RepairBlock
     private final RepairBlockManager repairBlockManager;
     private final Permission permission;
 
-    private Itemrepair module;
+    private final Itemrepair module;
 
     private final Map<String, RepairBlockInventory> inventoryMap;
 
-    private RepairBlockConfig config;
+    private final RepairBlockConfig config;
 
     private final Random rand;
     private final String name;
 
-    private Economy economy;
+    private final Economy economy;
 
     public RepairBlock(Itemrepair module, RepairBlockManager manager, String name, RepairBlockConfig config)
     {

@@ -194,15 +194,7 @@ public class ThrowCommands
 
         private boolean isSafe(Class entityClass)
         {
-            if (Explosive.class.isAssignableFrom(entityClass))
-            {
-                return false;
-            }
-            if (Arrow.class == entityClass)
-            {
-                return false;
-            }
-            return true;
+            return !(Explosive.class.isAssignableFrom(entityClass) || Arrow.class == entityClass);
         }
 
         public User getUser()

@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 
 public class QueuedLog
 {
-    private Object[] logdata;
+    private final Object[] logdata;
 
     private QueuedLog(Object... logdata)
     {

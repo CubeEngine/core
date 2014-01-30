@@ -21,16 +21,13 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.TaskManager;
-
 import de.cubeisland.engine.core.task.worker.CoreThreadFactory;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.map.hash.THashMap;

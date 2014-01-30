@@ -134,7 +134,7 @@ public class HangingBreak extends BlockActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location, Pair<Entity, BlockActionType>> plannedHangingBreak = new ConcurrentHashMap<>();
+    private final Map<Location, Pair<Entity, BlockActionType>> plannedHangingBreak = new ConcurrentHashMap<>();
     public void preplanHangingBreak(Location location, Entity player, BlockActionType cause)
     {
         plannedHangingBreak.put(location, new Pair<>(player, cause));

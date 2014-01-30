@@ -106,12 +106,12 @@ public class TestModuleManager implements ModuleManager
         this.reloadModule(module, false);
     }
 
-        @Override
+    @Override
     public void reloadModule(Module module, boolean fromFile) throws ModuleException
     {
         if (fromFile)
         {
-
+            // TODO missing code
         }
         else
         {

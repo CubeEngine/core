@@ -43,7 +43,7 @@ public class ListenableExecutorService implements ExecutorService
     @Override
     public void shutdown()
     {
-        this.executor.shutdown();;
+        this.executor.shutdown();
     }
 
     @Override

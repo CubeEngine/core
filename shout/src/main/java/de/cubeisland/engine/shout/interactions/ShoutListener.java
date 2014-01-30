@@ -30,8 +30,8 @@ import de.cubeisland.engine.shout.announce.AnnouncementManager;
 
 public class ShoutListener implements Listener
 {
-    private Shout module;
-    private AnnouncementManager am;
+    private final Shout module;
+    private final AnnouncementManager am;
 
     public ShoutListener(Shout module)
     {

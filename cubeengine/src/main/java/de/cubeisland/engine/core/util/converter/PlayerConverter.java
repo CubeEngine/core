@@ -30,7 +30,7 @@ import de.cubeisland.engine.core.Core;
 
 public class PlayerConverter implements Converter<OfflinePlayer>
 {
-    private Server server;
+    private final Server server;
 
     public PlayerConverter(Core core)
     {

@@ -54,7 +54,7 @@ public class ModuleLoader
    private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final Path tempPath;
-    private Registry registry;
+    private final Registry registry;
 
     protected ModuleLoader(Core core, ClassLoader parentClassLoader)
     {

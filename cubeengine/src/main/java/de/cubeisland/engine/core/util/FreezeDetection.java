@@ -35,7 +35,7 @@ public class FreezeDetection
     private int taskId;
     private long lastHeartbeat;
     private final long freezeThreshold;
-    private ConcurrentLinkedQueue<Runnable> listeners;
+    private final ConcurrentLinkedQueue<Runnable> listeners = new ConcurrentLinkedQueue<>();
     private volatile boolean freezeNotified = false;
 
     public FreezeDetection(Core core, long freezeThreshold)
@@ -50,7 +50,6 @@ public class FreezeDetection
         this.executor = null;
         this.taskId = -1;
         this.lastHeartbeat = -1;
-        this.listeners = new ConcurrentLinkedQueue<>();
         this.freezeThreshold = unit.toMillis(freezeThreshold);
     }
 

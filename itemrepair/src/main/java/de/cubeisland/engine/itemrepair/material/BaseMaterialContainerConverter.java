@@ -33,7 +33,6 @@ import de.cubeisland.engine.configuration.node.NullNode;
 
 public class BaseMaterialContainerConverter implements Converter<BaseMaterialContainer>
 {
-    private Map<Material,Double> map;
     private final Type fieldType;
 
     public BaseMaterialContainerConverter()
@@ -71,10 +70,8 @@ public class BaseMaterialContainerConverter implements Converter<BaseMaterialCon
     {
         if (node instanceof MapNode)
         {
-            map = manager.convertFromNode(node, fieldType);
-            BaseMaterialContainer container = new BaseMaterialContainer(map);
-            map = null;
-            return container;
+            Map<Material, Double> map = manager.convertFromNode(node, fieldType);
+            return new BaseMaterialContainer(map);
         }
         else if (node instanceof NullNode)
         {

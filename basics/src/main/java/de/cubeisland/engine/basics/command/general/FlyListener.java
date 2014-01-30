@@ -31,7 +31,7 @@ import de.cubeisland.engine.basics.Basics;
 
 public class FlyListener implements Listener
 {
-    private Basics module;
+    private final Basics module;
 
     public FlyListener(Basics module)
     {

@@ -66,7 +66,7 @@ public class PlayerCommands
         ItemStack head;
         boolean console = false;
         PlayerInventory senderInventory = null;
-        PlayerInventory userInventory = null;
+        PlayerInventory userInventory;
         
         if(!(context.getSender() instanceof User))
         {

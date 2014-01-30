@@ -59,7 +59,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
 public class InformationCommands
 {
     private final PeriodFormatter formatter;
-    private Basics module;
+    private final Basics module;
 
     public InformationCommands(Basics module)
     {

@@ -33,7 +33,7 @@ import gnu.trove.map.hash.THashMap;
 public class TpWorldPermissions extends PermissionContainer<Basics>
 {
     private final Permission COMMAND_TPWORLD;
-    private Map<String, Permission> permissions = new THashMap<>();
+    private final Map<String, Permission> permissions = new THashMap<>();
 
     public TpWorldPermissions(Basics module, BasicsPerm perm)
     {

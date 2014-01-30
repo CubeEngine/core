@@ -39,7 +39,7 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     private final Permission COMMAND = getBasePerm().childWildcard("command");
     private final Permission COMMAND_MONEY_PAY = COMMAND.childWildcard("money").childWildcard("pay");
     public final Permission COMMAND_MONEY_PAY_FORCE = COMMAND_MONEY_PAY.child("force");
-    public Permission COMMAND_PAY_ASOTHER = COMMAND_MONEY_PAY.child("as-other");
+    public final Permission COMMAND_PAY_ASOTHER = COMMAND_MONEY_PAY.child("as-other");
 
     private final Permission COMMAND_BANK =  COMMAND.childWildcard("bank");
     public final Permission COMMAND_BANK_BALANCE_SHOWHIDDEN = COMMAND_BANK.childWildcard("balance").child("show-hidden");
@@ -49,20 +49,20 @@ public class ConomyPermissions extends PermissionContainer<Conomy>
     public final Permission COMMAND_BANK_UNINVITE_FORCE = COMMAND_BANK.childWildcard("uninvite").child("force");
     public final Permission COMMAND_BANK_INVITE_FORCE = COMMAND_BANK.childWildcard("invite").child("force");
 
-    private Permission COMMAND_BANK_JOIN = COMMAND_BANK.childWildcard("join");
+    private final Permission COMMAND_BANK_JOIN = COMMAND_BANK.childWildcard("join");
 
-    public Permission COMMAND_BANK_JOIN_FORCE = COMMAND_BANK_JOIN.child("force");
-    public Permission COMMAND_BANK_JOIN_OTHER = COMMAND_BANK_JOIN.child("other");
-    public Permission COMMAND_BANK_LEAVE_OTHER = COMMAND_BANK.childWildcard("leave").child("other");
-    public Permission COMMAND_BANK_RENAME_FORCE = COMMAND_BANK.childWildcard("rename").child("force");
+    public final Permission COMMAND_BANK_JOIN_FORCE = COMMAND_BANK_JOIN.child("force");
+    public final Permission COMMAND_BANK_JOIN_OTHER = COMMAND_BANK_JOIN.child("other");
+    public final Permission COMMAND_BANK_LEAVE_OTHER = COMMAND_BANK.childWildcard("leave").child("other");
+    public final Permission COMMAND_BANK_RENAME_FORCE = COMMAND_BANK.childWildcard("rename").child("force");
 
-    public Permission COMMAND_BANK_SETOWNER_FORCE = COMMAND_BANK.childWildcard("setowner").child("force");
+    public final Permission COMMAND_BANK_SETOWNER_FORCE = COMMAND_BANK.childWildcard("setowner").child("force");
 
-    public Permission COMMAND_BANK_DEPOSIT_FORCE = COMMAND_BANK.childWildcard("deposit").child("force");
-    public Permission COMMAND_BANK_WITHDRAW_FORCE = COMMAND_BANK.childWildcard("withdraw").child("force");
-    public Permission COMMAND_BANK_PAY_FORCE  = COMMAND_BANK.childWildcard("pay").child("force");
+    public final Permission COMMAND_BANK_DEPOSIT_FORCE = COMMAND_BANK.childWildcard("deposit").child("force");
+    public final Permission COMMAND_BANK_WITHDRAW_FORCE = COMMAND_BANK.childWildcard("withdraw").child("force");
+    public final Permission COMMAND_BANK_PAY_FORCE  = COMMAND_BANK.childWildcard("pay").child("force");
 
-    private Permission COMMAND_BANK_DELETE = COMMAND_BANK.childWildcard("delete");
+    private final Permission COMMAND_BANK_DELETE = COMMAND_BANK.childWildcard("delete");
     public final Permission COMMAND_BANK_DELETE_OWN = COMMAND_BANK_DELETE.child("own");
     public final Permission COMMAND_BANK_DELETE_OTHER = COMMAND_BANK_DELETE.child("other");
 

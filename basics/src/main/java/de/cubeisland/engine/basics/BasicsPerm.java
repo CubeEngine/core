@@ -323,5 +323,5 @@ public class BasicsPerm extends PermissionContainer<Basics>
     public final Permission KICK_RECEIVEMESSAGE = getBasePerm().childWildcard("kick").child("receivemessage");
     public final Permission BAN_RECEIVEMESSAGE = getBasePerm().childWildcard("ban").child("receivemessage");
 
-    public Permission OVERSTACKED_ANVIL_AND_BREWING = getBasePerm().child("allow-overstacked-anvil-and-brewing");
+    public final Permission OVERSTACKED_ANVIL_AND_BREWING = getBasePerm().child("allow-overstacked-anvil-and-brewing");
 }

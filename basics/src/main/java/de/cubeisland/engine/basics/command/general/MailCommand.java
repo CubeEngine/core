@@ -44,7 +44,7 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class MailCommand extends ContainerCommand
 {
-    private Basics module;
+    private final Basics module;
 
     public MailCommand(Basics module)
     {

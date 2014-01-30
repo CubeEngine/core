@@ -34,7 +34,7 @@ import de.cubeisland.engine.roles.Roles;
 
 public class MirrorConfigConverter implements Converter<MirrorConfig>
 {
-    private Roles module;
+    private final Roles module;
 
     public MirrorConfigConverter(Roles module)
     {

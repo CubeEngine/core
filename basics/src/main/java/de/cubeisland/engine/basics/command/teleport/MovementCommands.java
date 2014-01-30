@@ -39,7 +39,7 @@ import de.cubeisland.engine.core.util.LocationUtil;
  */
 public class MovementCommands
 {
-    private Basics module;
+    private final Basics module;
 
     public MovementCommands(Basics module)
     {

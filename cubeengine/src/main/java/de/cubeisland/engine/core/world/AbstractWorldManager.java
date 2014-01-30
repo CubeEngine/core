@@ -19,12 +19,9 @@ package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.World;
@@ -33,7 +30,6 @@ import org.bukkit.generator.ChunkGenerator;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
-import gnu.trove.TLongCollection;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.jooq.DSLContext;
@@ -46,7 +42,7 @@ public abstract class AbstractWorldManager implements WorldManager
     protected final TLongObjectHashMap<World> worldIds;
     private final Map<String, Map<String, ChunkGenerator>> generatorMap;
 
-    protected Database database;
+    protected final Database database;
 
     public AbstractWorldManager(Core core)
     {

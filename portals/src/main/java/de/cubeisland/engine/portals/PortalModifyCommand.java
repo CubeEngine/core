@@ -35,7 +35,7 @@ import de.cubeisland.engine.portals.config.Destination;
 
 public class PortalModifyCommand extends ContainerCommand
 {
-    private PortalManager manager;
+    private final PortalManager manager;
 
     public PortalModifyCommand(Portals module, PortalManager manager)
     {

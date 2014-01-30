@@ -32,7 +32,7 @@ import static de.cubeisland.engine.locker.commands.LockerCommands.isNotUser;
 
 public class LockerCreateCommands extends ContainerCommand
 {
-    private LockManager manager;
+    private final LockManager manager;
 
     public LockerCreateCommands(Locker module, LockManager manager)
     {

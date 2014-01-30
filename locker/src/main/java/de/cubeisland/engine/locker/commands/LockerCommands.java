@@ -43,8 +43,8 @@ import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
 public class LockerCommands extends ContainerCommand
 {
-    private Locker module;
-    LockManager manager;
+    private final Locker module;
+    final LockManager manager;
 
     public LockerCommands(Locker module, LockManager manager)
     {

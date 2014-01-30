@@ -36,7 +36,7 @@ import de.cubeisland.engine.core.util.Triplet;
 
 public class BorderCommands extends ContainerCommand
 {
-    private Border module;
+    private final Border module;
 
     public BorderCommands(Border module)
     {
@@ -47,7 +47,6 @@ public class BorderCommands extends ContainerCommand
     private LinkedList<Triplet<Long,Integer,Integer>> chunksToGenerate;
     private LinkedList<Triplet<World,Integer,Integer>> chunksToUnload;
     private CommandSender sender = null;
-    private long tickStart;
     private int total = 0;
     private int totalDone = 0;
     private long lastNotify;
@@ -215,7 +214,7 @@ public class BorderCommands extends ContainerCommand
 
     private void generate()
     {
-        this.tickStart = System.currentTimeMillis();
+        long tickStart = System.currentTimeMillis();
         Runtime rt = Runtime.getRuntime();
         int freeMemory = (int)((rt.maxMemory() - rt.totalMemory() + rt.freeMemory()) / 1048576);// 1024*1024 = 1048576 (bytes in 1 MB)
         if (freeMemory < 300) // less than 300 MB memory left
@@ -225,7 +224,7 @@ public class BorderCommands extends ContainerCommand
             rt.gc();
             return;
         }
-        while (System.currentTimeMillis() - this.tickStart < TIMELIMIT)
+        while (System.currentTimeMillis() - tickStart < TIMELIMIT)
         {
             if (chunksToGenerate.isEmpty())
             {

@@ -35,7 +35,7 @@ public class KeyBook
     public static final String TITLE = ChatFormat.parseFormats("&r&6KeyBook &8#");
     public final ItemStack item;
     public final User currentHolder;
-    private Locker module;
+    private final Locker module;
     public final long lockID;
     private final String keyBookName;
 

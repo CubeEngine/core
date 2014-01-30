@@ -32,9 +32,9 @@ import de.cubeisland.engine.roles.role.RolesManager;
 
 public class UserCommandHelper extends ContainerCommand
 {
-    protected RolesManager manager;
-    protected WorldManager worldManager;
-    protected Roles module;
+    protected final RolesManager manager;
+    protected final WorldManager worldManager;
+    protected final Roles module;
     protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s&f: &6%s");
     protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
 

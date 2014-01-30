@@ -27,9 +27,9 @@ import de.cubeisland.engine.core.user.UserAttachment;
 
 public class BackpackAttachment extends UserAttachment
 {
-    protected Map<World, Map<String, BackpackInventories>> backpacks = new HashMap<>();
-    protected Map<World, Map<String, BackpackInventories>> groupedBackpacks = new HashMap<>();
-    protected Map<String, BackpackInventories> globalBackpacks = new HashMap<>();
+    protected final Map<World, Map<String, BackpackInventories>> backpacks = new HashMap<>();
+    protected final Map<World, Map<String, BackpackInventories>> groupedBackpacks = new HashMap<>();
+    protected final Map<String, BackpackInventories> globalBackpacks = new HashMap<>();
 
     public void loadGlobalBackpacks()
     {

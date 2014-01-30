@@ -20,7 +20,6 @@ package de.cubeisland.engine.travel.interactions;
 import java.util.Set;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.command.ArgBounds;

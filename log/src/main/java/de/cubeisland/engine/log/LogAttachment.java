@@ -41,7 +41,7 @@ public class LogAttachment extends UserAttachment
     private Lookup playerLookup; // lookup with pumpkin block
     private Lookup blockLookup; // lookup with woodlog block
     private Lookup commandLookup; // lookup with command
-    private Queue<ShowParameter> showParameters = new LinkedList<>();
+    private final Queue<ShowParameter> showParameters = new LinkedList<>();
     private ShowParameter lastShowParameter;
 
     public void clearLookups()

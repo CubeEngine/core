@@ -32,7 +32,7 @@ import de.cubeisland.engine.core.module.service.Service.Priority;
 
 public class ServiceManager
 {
-    private Core core;
+    private final Core core;
 
     private final Map<Class<?>, Service<?>> services = new HashMap<>();
 

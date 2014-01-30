@@ -50,7 +50,7 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 public class LookupCommands
 {
     private final Log module;
-    private ActionTypeManager actionTypeManager;
+    private final ActionTypeManager actionTypeManager;
 
     public LookupCommands(Log module)
     {

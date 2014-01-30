@@ -31,11 +31,11 @@ import org.apache.logging.log4j.core.Logger;
 
 public class LogFactory extends DefaultLogFactory
 {
-    protected Core core;
-    protected LogTarget exceptionTarget;
+    protected final Core core;
+    protected final LogTarget exceptionTarget;
 
     protected Log coreLog;
-    private Log parent;
+    private final Log parent;
     private Log databaseLog;
 
     public LogFactory(Core core, java.util.logging.Logger julLogger)

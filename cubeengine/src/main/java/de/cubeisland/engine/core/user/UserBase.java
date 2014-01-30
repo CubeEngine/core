@@ -1563,6 +1563,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {
@@ -1636,6 +1637,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {
@@ -1744,6 +1746,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {
@@ -1780,6 +1783,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {

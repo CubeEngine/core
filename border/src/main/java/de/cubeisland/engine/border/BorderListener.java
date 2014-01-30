@@ -39,7 +39,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 public class BorderListener implements Listener
 {
     private final UserManager um;
-    private Border module;
+    private final Border module;
     private final TObjectLongMap<String> lastNotice;
     private static final long NOTICE_DELAY = 1000 * 3;
 

@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.faq;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;

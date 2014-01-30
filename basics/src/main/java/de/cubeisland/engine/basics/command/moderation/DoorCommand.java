@@ -37,7 +37,7 @@ import de.cubeisland.engine.basics.Basics;
 
 public class DoorCommand
 {
-    private Basics basics;
+    private final Basics basics;
 
     public DoorCommand(Basics basics)
     {

@@ -63,7 +63,7 @@ public class EntityDataChanger<EntityInterface>
 {
     private final Class<EntityInterface> clazz;
     protected final EntityChanger<EntityInterface, ?> changer;
-    public static Set<EntityDataChanger> entityDataChangers = new HashSet<>();
+    public static final Set<EntityDataChanger> entityDataChangers = new HashSet<>();
 
     public static final EntityDataChanger<Pig> PIG_SADDLE =
             new EntityDataChanger<>(Pig.class,
@@ -222,7 +222,7 @@ public class EntityDataChanger<EntityInterface>
     public static  final EntityDataChanger<Colorable> SHEEP_COLOR_RANDOM =
         new EntityDataChanger<>(Colorable.class,
                  new BoolEntityChanger<Colorable>("random") {
-                     private Random random = new Random(System.nanoTime());
+                     private final Random random = new Random(System.nanoTime());
                      @Override
                      public void applyEntity(Colorable entity, Boolean input)
                      {
@@ -650,7 +650,7 @@ public class EntityDataChanger<EntityInterface>
 
     private static abstract class BoolEntityChanger<E> extends EntityChanger<E, Boolean>
     {
-        private List<String> names;
+        private final List<String> names;
         protected BoolEntityChanger(String... names)
         {
             this.names = Arrays.asList(names);
@@ -672,7 +672,7 @@ public class EntityDataChanger<EntityInterface>
 
     private static abstract class MappedEntityChanger<E, T> extends EntityChanger<E, T>
     {
-        protected Map<String, T> map = new HashMap<>();
+        protected final Map<String, T> map = new HashMap<>();
 
         protected MappedEntityChanger()
         {

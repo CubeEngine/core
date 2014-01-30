@@ -53,9 +53,9 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
  */
 public class KickBanCommands
 {
-    private Basics module;
-    private BanManager banManager;
-    private UserManager um;
+    private final Basics module;
+    private final BanManager banManager;
+    private final UserManager um;
 
     private static final String kickMessage = "&cYou got kicked from the server!\n&r";
     private static final String banMessage = "&cYou got banned from this server!\n&r";

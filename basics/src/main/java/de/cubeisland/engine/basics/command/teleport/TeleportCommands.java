@@ -42,7 +42,7 @@ import de.cubeisland.engine.basics.Basics;
  */
 public class TeleportCommands
 {
-    private Basics module;
+    private final Basics module;
 
     public TeleportCommands(Basics module)
     {

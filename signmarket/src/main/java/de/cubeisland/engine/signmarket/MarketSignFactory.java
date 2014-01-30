@@ -30,10 +30,10 @@ import gnu.trove.set.hash.TLongHashSet;
 
 public class MarketSignFactory
 {
-    private THashMap<Location, MarketSign> marketSigns = new THashMap<>();
+    private final THashMap<Location, MarketSign> marketSigns = new THashMap<>();
 
-    private SignMarketItemManager signMarketItemManager;
-    private SignMarketBlockManager signMarketBlockManager;
+    private final SignMarketItemManager signMarketItemManager;
+    private final SignMarketBlockManager signMarketBlockManager;
 
     private final Signmarket module;
 

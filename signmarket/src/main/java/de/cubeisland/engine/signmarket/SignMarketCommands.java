@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.user.User;
 
 public class SignMarketCommands extends ContainerCommand
 {
-    private Signmarket module;
+    private final Signmarket module;
 
     public SignMarketCommands(Signmarket module)
     {

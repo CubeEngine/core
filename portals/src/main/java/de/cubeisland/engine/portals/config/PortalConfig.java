@@ -33,7 +33,7 @@ public class PortalConfig extends YamlConfiguration
     public OfflinePlayer owner;
     public ConfigWorld world;
 
-    public PortalRegion location = new PortalRegion();
+    public final PortalRegion location = new PortalRegion();
 
     public class PortalRegion implements Section
     {

@@ -77,7 +77,7 @@ public class NukeCommand
     )
     public void nuke(ParameterizedContext context)
     {
-        Location location = null;
+        Location location;
         User user = null;
 
         int explosionRange = context.getParam("range", 4);
@@ -142,14 +142,15 @@ public class NukeCommand
     {
         String shapeName = context.getString("shape", "cylinder");
 
-        if(shapeName.equals("cylinder"))
+        switch (shapeName)
         {
+        case "cylinder":
             location = this.getSpawnLocation(location, locationHeight);
             int radiusX = context.getArg(0, Integer.class, 1);
-            return new Cylinder(new Vector3(location.getX(), location.getY(), location.getZ()), radiusX, context.getArg(2, Integer.class, radiusX), context.getArg(1, Integer.class, 1));
-        }
-        else if(shapeName.equals("cube") || shapeName.equals("cuboid"))
-        {
+            return new Cylinder(new Vector3(location.getX(), location.getY(), location.getZ()), radiusX, context
+                .getArg(2, Integer.class, radiusX), context.getArg(1, Integer.class, 1));
+        case "cube":
+        case "cuboid":
             int width = context.getArg(0, Integer.class, 1);
             int height = shapeName.equals("cube") ? width : context.getArg(1, Integer.class, width);
             int depth = shapeName.equals("cube") ? width : context.getArg(2, Integer.class, width);
@@ -157,16 +158,13 @@ public class NukeCommand
             location = location.subtract(width / 2d, 0, depth / 2d);
             location = this.getSpawnLocation(location, locationHeight);
             return new Cuboid(new Vector3(location.getX(), location.getY(), location.getZ()), width, height, depth);
-        }
-        else if(shapeName.equals("sphere"))
-        {
+        case "sphere":
             int radius = context.getArg(0, Integer.class, 1);
             location = this.getSpawnLocation(location, locationHeight);
             return new Sphere(new Vector3(location.getX(), location.getY(), location.getZ()), radius);
-        }
-        else
-        {
+        default:
             context.sendTranslated("The shape '%s' was not found!", shapeName);
+            break;
         }
         return null;
     }
@@ -221,7 +219,7 @@ public class NukeCommand
     private class NukeListener implements Listener
     {
         private final Set<TNTPrimed> noBlockDamageSet;
-        private TaskManager taskManager;
+        private final TaskManager taskManager;
         private int taskID;
 
         public NukeListener()
