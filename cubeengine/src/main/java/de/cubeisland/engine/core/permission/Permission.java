@@ -92,7 +92,7 @@ public class Permission
 
     public Permission childWildcard(String name)
     {
-        return this.childWildcard(name, OP);
+        return this.childWildcard(name, FALSE);
     }
 
     public Permission childWildcard(String name, PermDefault def)
