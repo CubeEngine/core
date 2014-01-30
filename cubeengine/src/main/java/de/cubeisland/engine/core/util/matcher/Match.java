@@ -21,8 +21,8 @@ import de.cubeisland.engine.core.CubeEngine;
 
 public class Match
 {
-    private final MaterialMatcher materialMatcher = new MaterialMatcher(materialDataMatcher);
     private final MaterialDataMatcher materialDataMatcher = new MaterialDataMatcher();
+    private final MaterialMatcher materialMatcher = new MaterialMatcher(materialDataMatcher);
     private final EnchantMatcher enchantMatcher = new EnchantMatcher();
     private final ProfessionMatcher professionMatcher = new ProfessionMatcher();
     private final EntityMatcher entityMatcher = new EntityMatcher();
