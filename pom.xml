@@ -60,6 +60,7 @@
     <module>vaultlink</module>
     <module>powertools</module>
     <module>kits</module>
+    <module>spawner</module>
   </modules>
 
   <build>
