@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockIgniteEvent;
@@ -54,9 +55,14 @@ public class IgniteActionType extends ActionTypeContainer
         switch (event.getCause())
         {
         case FIREBALL:
-
-            this.logIgnite(this.manager.getActionType(FireballIgnite.class),blockState,
-                   BukkitUtils.getTarget(((Fireball)event.getIgnitingEntity()).getShooter()));
+            if (((Fireball)event.getIgnitingEntity()).getShooter() instanceof LivingEntity)
+            {
+                this.logIgnite(this.manager.getActionType(FireballIgnite.class),blockState,
+                               BukkitUtils.getTarget((LivingEntity)((Fireball)event.getIgnitingEntity()).getShooter()));
+            }
+            else {
+                // TODO other shooter
+            }
             break;
         case LAVA:
             this.logIgnite(this.manager.getActionType(LavaIgnite.class),blockState,null);

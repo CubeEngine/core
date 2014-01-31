@@ -112,7 +112,12 @@ public class ExplodeActionType extends ActionTypeContainer
         else if (entity instanceof Fireball)
         {
             actionType = this.manager.getActionType(FireballExplode.class);
-            LivingEntity shooter = ((Fireball)entity).getShooter();
+            if (!(((Fireball)entity).getShooter() instanceof LivingEntity))
+            {
+                // TODO other shooter
+                return;
+            }
+            LivingEntity shooter = (LivingEntity)((Fireball)entity).getShooter();
             LivingEntity target = BukkitUtils.getTarget(shooter);
             if (target != null && target instanceof Player)
             {

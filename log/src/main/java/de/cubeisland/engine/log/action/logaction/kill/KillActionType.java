@@ -43,6 +43,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.CubeEngine;
@@ -133,13 +134,12 @@ public class KillActionType extends ActionTypeContainer
             return; // should not happen anymore (but i'll leave it in to prevent NPE)
         }
         String additionalData = actionType.serializeData(dmgEvent.getCause(), killed,null);
-        Entity causer;
         if (dmgEvent instanceof EntityDamageByEntityEvent)
         {
             Entity damager = ((EntityDamageByEntityEvent)dmgEvent).getDamager();
             if (damager instanceof Projectile)
             {
-                causer = ((Projectile) damager).getShooter();
+                ProjectileSource causer = ((Projectile) damager).getShooter();
                 if (causer instanceof Player)
                 {
                     if (false) //TODO player is Killer
@@ -164,7 +164,7 @@ public class KillActionType extends ActionTypeContainer
                         return;
                     }
                 }
-                else // Projectile shot by Dispenser
+                else // Projectile shot by Dispenser // TODO better
                 {
                     if (false)
                     {
@@ -200,7 +200,8 @@ public class KillActionType extends ActionTypeContainer
                         return;
                     }
                 }
-                causer = damager;
+                actionType.logSimple(location,damager,killed,additionalData);
+                this.logDeathDrops(event);
             }
         }
         else
@@ -210,10 +211,9 @@ public class KillActionType extends ActionTypeContainer
                 this.logDeathDrops(event);
                 return;
             }
-            causer = null;
+            actionType.logSimple(location,null,killed,additionalData);
+            this.logDeathDrops(event);
         }
-        actionType.logSimple(location,causer,killed,additionalData);
-        this.logDeathDrops(event);
     }
 
     static void showSubActionLogEntry(User user, LogEntry logEntry, String time, String loc)

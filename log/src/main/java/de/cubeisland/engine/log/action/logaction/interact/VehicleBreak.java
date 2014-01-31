@@ -77,11 +77,15 @@ public class VehicleBreak extends SimpleLogActionType
                     Projectile projectile = (Projectile) event.getAttacker();
                     if (projectile.getShooter() instanceof Player)
                     {
-                        causer = projectile.getShooter();
+                        causer = (Player)projectile.getShooter();
                     }
-                    else if (projectile.getShooter() != null)
+                    else if (projectile.getShooter() instanceof Entity)
                     {
-                        causer = projectile.getShooter();
+                        causer = (Entity)projectile.getShooter();
+                    }
+                    else
+                    {
+                        // TODO other ProjectileSources
                     }
                 }
             }

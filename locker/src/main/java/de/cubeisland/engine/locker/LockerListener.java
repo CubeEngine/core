@@ -30,7 +30,6 @@ import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Hanging;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
@@ -65,6 +64,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Door;
 import org.bukkit.material.Openable;
+import org.bukkit.projectiles.ProjectileSource;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
@@ -183,7 +183,7 @@ public class LockerListener implements Listener
         }
         else if (event.getDamager() instanceof Projectile)
         {
-            LivingEntity shooter = ((Projectile)event.getDamager()).getShooter();
+            ProjectileSource shooter = ((Projectile)event.getDamager()).getShooter();
             if (shooter != null && shooter instanceof Player)
             {
                 User user = this.module.getCore().getUserManager().getExactUser(((Player)shooter).getName());

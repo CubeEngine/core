@@ -109,7 +109,13 @@ public class HangingBreak extends BlockActionType
                 Projectile projectile = (Projectile) event.getRemover();
                 if (projectile.getShooter() != null)
                 {
-                    causer = projectile.getShooter();
+                    if (projectile.getShooter() instanceof Entity)
+                    {
+                        causer = (Entity)projectile.getShooter();
+                    }
+                    else {
+                        // TODO other shooter
+                    }
                 }
             }
             else if (event.getRemover() instanceof Player)
