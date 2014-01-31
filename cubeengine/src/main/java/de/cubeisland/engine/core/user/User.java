@@ -413,7 +413,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         else
         {
-            perm = pm.getPermission("!" + this.getName());
+            perm = pm.getPermission("-" + this.getName());
         }
         perm.getChildren().put(permission, b);
         this.recalculatePermissions();

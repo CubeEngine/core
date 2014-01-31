@@ -46,7 +46,6 @@ import static de.cubeisland.engine.core.permission.Permission.BASE;
 
 public class BukkitPermissionManager implements PermissionManager
 {
-    private static final org.bukkit.permissions.Permission CUBEENGINE_WILDCARD = new org.bukkit.permissions.Permission(BASE.getName() + ".*", PermissionDefault.FALSE);
     private final PluginManager pm;
     private final Map<String, org.bukkit.permissions.Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
@@ -86,8 +85,7 @@ public class BukkitPermissionManager implements PermissionManager
                                                   LoggingUtil.getFileFormat(false, false),
                                                   false, LoggingUtil.getCycler(),
                                                   core.getTaskManager().getThreadFactory()));
-
-        this.registerBukkitPermission(CUBEENGINE_WILDCARD);
+        this.registerPermission(core.getModuleManager().getCoreModule(), Permission.BASE);
     }
 
     private void registerBukkitPermission(org.bukkit.permissions.Permission permission)
@@ -101,7 +99,7 @@ public class BukkitPermissionManager implements PermissionManager
                 {
                     this.defaultPermTrue.add(permission);
                 }
-                if ((permission.getDefault() == PermissionDefault.NOT_OP) || (permission.getDefault() == PermissionDefault.FALSE))
+                if ((permission.getDefault() == PermissionDefault.NOT_OP) || (permission.getDefault() == PermissionDefault.TRUE))
                 {
                     this.defaultPermFalse.add(permission);
                 }
@@ -114,11 +112,11 @@ public class BukkitPermissionManager implements PermissionManager
             {
                 this.wildcards.put(permission.getName(), permission);
             }
-            this.logger.debug("successful {}", permission.getName());
+            this.logger.debug("successful {} ({})", permission.getName(), permission.getDefault().name());
         }
         catch (IllegalArgumentException ignored)
         {
-            this.logger.debug("duplicated {}", permission.getName());
+            this.logger.debug("duplicated {} ({})", permission.getName(), permission.getDefault().name());
         }
     }
 
@@ -152,11 +150,6 @@ public class BukkitPermissionManager implements PermissionManager
         assert module != null: "The module must not be null!";
         assert perm != null: "The permission must not be null!";
         assert permDefault != null: "The permission default must not be null!";
-
-        if (perm.equals(CUBEENGINE_WILDCARD.getName()))
-        {
-            return null;
-        }
 
         perm = perm.toLowerCase(Locale.ENGLISH);
         String[] parts = StringUtils.explode(".", perm);
@@ -231,7 +224,7 @@ public class BukkitPermissionManager implements PermissionManager
     {
         assert module != null: "The module must not be null!";
         assert perm != null: "The permission must not be null!";
-        assert !perm.equals(CUBEENGINE_WILDCARD.getName()): "The CubeEngine wildcard permission must not be unregistered!"; 
+        assert !perm.equals(Permission.BASE.getName() + ".*"): "The CubeEngine wildcard permission must not be unregistered!";
 
         Set<String> perms = this.modulePermissionMap.get(module);
         if (perms != null && perms.remove(perm))
