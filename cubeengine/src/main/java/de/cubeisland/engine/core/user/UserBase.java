@@ -1343,6 +1343,17 @@ public class UserBase implements Player
     }
 
     @Override
+    public <T extends Projectile> T launchProjectile(Class<? extends T> type, Vector vector)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.launchProjectile(type, vector);
+        }
+        return null;
+    }
+
+    @Override
     public int getRemainingAir()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
