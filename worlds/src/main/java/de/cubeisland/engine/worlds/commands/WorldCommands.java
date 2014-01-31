@@ -131,7 +131,7 @@ public class WorldCommands extends ContainerCommand
     }
 
     @Command(desc = "Remove a world", usage = "<world> [-f]",
-    flags = @Flag(name = "f", longName = "folder"))
+    flags = @Flag(name = "f", longName = "folder"), max = 1, min = 1)
     public void remove(CommandContext context)
     {
         World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
