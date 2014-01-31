@@ -52,7 +52,7 @@ public class BackpackCommands extends ContainerCommand
     @Command(desc = "opens a backpack", usage = "<name> [user] [w <world>]",
              params = @Param(names = {"w", "world", "for", "in"},
                               completer = WorldCompleter.class, type = World.class),
-             min = 1, max = 1)
+             min = 1, max = 2)
     public void open(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
