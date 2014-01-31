@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
@@ -47,21 +48,17 @@ import static org.bukkit.entity.EntityType.*;
 public class Spawner extends Module implements Listener
 {
     private ItemStack spawnerItem;
-    private Permission allowAllEggs;
     private Permission eggPerms;
     private Map<EntityType, Permission> perms = new HashMap<>();
 
     @Override
     public void onEnable()
     {
-        this.allowAllEggs = getBasePermission().child("all-eggs");
         this.eggPerms = getBasePermission().childWildcard("egg");
-        this.initPerms();
         PermissionManager permMan = this.getCore().getPermissionManager();
-        permMan.registerPermission(this, this.allowAllEggs);
         permMan.registerPermission(this, this.eggPerms);
+        this.initPerms();
         this.spawnerItem = new ItemStack(Material.MOB_SPAWNER, 1);
-
 
         ItemMeta meta = spawnerItem.getItemMeta();
         meta.setLore(Arrays.asList(ChatFormat.parseFormats("&5&7&a&e&r"))); // pssht i am not here
@@ -74,7 +71,7 @@ public class Spawner extends Module implements Listener
         this.initPerm(CREEPER, SKELETON, SPIDER, ZOMBIE, SLIME, GHAST,
                       PIG_ZOMBIE, ENDERMAN, CAVE_SPIDER, SILVERFISH,
                       BLAZE, MAGMA_CUBE, WITCH, BAT, PIG, SHEEP, COW,
-                      CHICKEN, COW, SQUID, WOLF, MUSHROOM_COW, OCELOT,
+                      CHICKEN, SQUID, WOLF, MUSHROOM_COW, OCELOT,
                       HORSE, VILLAGER);
     }
 
@@ -82,7 +79,9 @@ public class Spawner extends Module implements Listener
     {
         for (EntityType type : types)
         {
-            this.perms.put(type, eggPerms.child(type.name().toLowerCase().replace("_","-")));
+            Permission child = eggPerms.child(type.name().toLowerCase().replace("_", "-"));
+            this.perms.put(type, child);
+            this.getCore().getPermissionManager().registerPermission(this, child);
         }
     }
 
@@ -128,7 +127,7 @@ public class Spawner extends Module implements Listener
                 {
                     SpawnEgg egg = (SpawnEgg)event.getPlayer().getItemInHand().getData();
                     Permission perm = this.perms.get(egg.getSpawnedType());
-                    if (perm == null && !this.allowAllEggs.isAuthorized(user))
+                    if (perm == null && !this.eggPerms.isAuthorized(user))
                     {
                         user.sendTranslated("&cInvalid SpawnEgg!");
                         event.setCancelled(true);
@@ -142,6 +141,17 @@ public class Spawner extends Module implements Listener
                     }
                     state.setSpawnedType(egg.getSpawnedType());
                     state.update();
+                    if (user.getGameMode() != GameMode.CREATIVE)
+                    {
+                        if (user.getItemInHand().getAmount() - 1 == 0)
+                        {
+                            user.setItemInHand(null);
+                        }
+                        else
+                        {
+                            user.getItemInHand().setAmount(user.getItemInHand().getAmount() - 1);
+                        }
+                    }
                     user.sendTranslated("&aSpawner activated!");
                     event.setCancelled(true);
                 }

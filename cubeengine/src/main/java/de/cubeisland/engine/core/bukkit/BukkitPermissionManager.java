@@ -209,6 +209,15 @@ public class BukkitPermissionManager implements PermissionManager
                 mainBWCPerm.addParent(bPerm, true);
             }
         }
+        for (Permission attached : permission.getAttached()) // make sure attached permissions are attached
+        {
+            org.bukkit.permissions.Permission bukkitPerm = pm.getPermission(attached.getName() + (attached.isWildcard() ? ":*" : ""));
+            if (bukkitPerm != null)
+            {
+                bukkitPerm.addParent(mainBPerm, true);
+            }
+            // else Permission not registered yet -> will register itself
+        }
     }
 
     @Override

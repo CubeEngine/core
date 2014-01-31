@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>spawner</artifactId>
-  <name>spawner</name>
+  <name>Spawner</name>
   <version>1.0.0-SNAPSHOT</version>
   <description>Lets you move spawners</description>
 

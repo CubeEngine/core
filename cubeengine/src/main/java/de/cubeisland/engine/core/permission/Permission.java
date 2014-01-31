@@ -158,7 +158,7 @@ public class Permission
     {
         assert permissible != null: "The player may not be null!";
 
-        return permissible.hasPermission(this.name);
+        return permissible.hasPermission(this.name + (this.isWildcard() ? ".*" : ""));
     }
 
     public String getName()
