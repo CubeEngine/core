@@ -242,7 +242,7 @@ public class MailCommand extends ContainerCommand
         }
     }
 
-    @Command(names = {"clear", "remove"},
+    @Command(names = {"clear"},
             desc = "Clears your mails.", usage = "[player]", min = 0, max = 1)
     public void clear(CommandContext context)
     {

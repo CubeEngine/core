@@ -196,6 +196,7 @@ public class InformationCommands
     })
     public void near(ParameterizedContext context)
     {
+        // TODO console support smth is not working correctly
         User user;
         if (context.hasArg(1))
         {
