@@ -38,6 +38,7 @@ import de.cubeisland.engine.core.module.exception.IncompatibleDependencyExceptio
 import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
+import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 import de.cubeisland.engine.core.module.exception.ModuleLoadException;
 import de.cubeisland.engine.core.storage.Registry;
 import gnu.trove.set.hash.THashSet;
@@ -187,7 +188,7 @@ public class ModuleLoader
         }
         catch (Exception | Error e)
         {
-            throw new InvalidModuleException("An error occurred during onLoad() !", e);
+            throw new ModuleLoadException("An error occurred during onLoad() !", e);
         }
 
         this.classLoaders.put(info.getId(), classLoader);

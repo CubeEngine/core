@@ -26,6 +26,7 @@ import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingUtil;
+import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
@@ -277,6 +278,10 @@ public abstract class Module
             {
                 this.onEnable();
                 this.enabled = true;
+            }
+            catch (ModuleLoadError e)
+            {
+                this.getLog().error(e, "The module could not be enabled due to an unresolvable error!");
             }
             catch (Throwable t)
             {
