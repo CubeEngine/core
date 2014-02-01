@@ -98,6 +98,11 @@ public class MarketSignFactory
         {
             marketSign.setOwner(user);
         }
+        else
+        {
+            user.sendTranslated("&cYou are not allowed to create Admin or User MarketSigns!");
+            return null;
+        }
         if (marketSign.isAdminSign())
         {
             if (this.module.getConfig().allowAdminNoStock)

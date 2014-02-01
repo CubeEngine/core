@@ -210,6 +210,10 @@ public class BukkitPermissionManager implements PermissionManager
             {
                 mainBWCPerm.addParent(bPerm, true);
             }
+            if (!module.getBasePermission().equals(parentPerm))
+            {
+                this.registerPermission(module, parentPerm);
+            }
         }
         for (Permission attached : permission.getAttached()) // make sure attached permissions are attached
         {
