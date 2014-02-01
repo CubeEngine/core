@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.worlds;
 
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
@@ -28,6 +30,7 @@ import org.bukkit.potion.PotionEffect;
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 import de.cubeisland.engine.worlds.commands.WorldCommands;
 import de.cubeisland.engine.worlds.config.WorldsConfig;
 import de.cubeisland.engine.worlds.converter.DiffcultyConverter;
@@ -47,14 +50,6 @@ public class Worlds extends Module
     }
 
     private Multiverse multiverse;
-
-    public WorldsConfig getConfig()
-    {
-        return config;
-    }
-
-    private WorldsConfig config;
-
 
     @Override
     public void onLoad()
@@ -77,10 +72,16 @@ public class Worlds extends Module
     @Override
     public void onEnable()
     {
-        this.config = this.loadConfig(WorldsConfig.class);
-        multiverse = new Multiverse(this);
+        try
+        {
+            multiverse = new Multiverse(this, this.loadConfig(WorldsConfig.class));
+        }
+        catch (IOException e)
+        {
+            throw new ModuleLoadError(e);
+        }
         this.getCore().getCommandManager().registerCommand(new WorldCommands(this, multiverse));
-        perms = new WorldsPermissions(this);
+        this.perms = new WorldsPermissions(this);
     }
 
     public WorldsPermissions perms()

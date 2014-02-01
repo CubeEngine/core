@@ -135,6 +135,7 @@ public class BukkitUtils
 
     public static void disableCommandLogging()
     {
+        // TODO filter log4j instead
         if (commandFilter == null)
         {
             commandFilter = new CommandLogFilter();
