@@ -74,7 +74,7 @@ public class CommandInjector
     public synchronized void registerCommand(CubeCommand command)
     {
         expectNotNull(command.getDescription(), command.getName() + " doesn't have a description!");
-        expect(command.getDescription().isEmpty(), command.getName() + " has an empty description!");
+        expect(!command.getDescription().isEmpty(), command.getName() + " has an empty description!");
 
         SimpleCommandMap commandMap = getCommandMap();
         Command old = this.getCommand(command.getName());
