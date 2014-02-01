@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -95,18 +96,22 @@ public class Universe
     private void reload() throws IOException
     {
         this.defaults = module.getCore().getConfigFactory().load(WorldConfig.class, this.fileDefaults.toFile(), true);
-        for (Path path : Files.newDirectoryStream(this.dirUniverse, FileExtensionFilter.YAML))
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.dirUniverse, FileExtensionFilter.YAML))
         {
-            if (!(path.equals(fileDefaults) || path.equals(fileUniverse)))
+            for (Path path : stream)
             {
-                WorldConfig config = this.defaults.loadChild(path.toFile());
-                if (config.autoLoad)
+                if (!(path.equals(fileDefaults) || path.equals(fileUniverse)))
                 {
-                    this.loadOrCreateWorld(config, StringUtils.stripFileExtension(path.getFileName().toString()));
-                }
-                else
-                {
-                    this.worldConfigMap.put(StringUtils.stripFileExtension(path.getFileName().toString()), config);
+                    WorldConfig config = this.defaults.loadChild(path.toFile());
+                    if (config.autoLoad)
+                    {
+                        this.loadOrCreateWorld(config, StringUtils.stripFileExtension(path.getFileName().toString()));
+                    }
+                    else
+                    {
+                        this.worldConfigMap.put(StringUtils.stripFileExtension(path.getFileName().toString()), config);
+                    }
                 }
             }
         }
