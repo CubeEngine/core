@@ -23,6 +23,8 @@ import java.util.Set;
 
 import de.cubeisland.engine.core.command.ArgumentReader;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 public class CommandParameter
 {
     private final String name;
@@ -35,7 +37,7 @@ public class CommandParameter
 
     public CommandParameter(String name, Class<?> type)
     {
-        assert ArgumentReader.hasReader(type): "The named parameter '" + name + "' has an unreadable type: " + type.getName();
+        expect(ArgumentReader.hasReader(type), "The named parameter '" + name + "' has an unreadable type: " + type.getName());
         this.name = name;
         this.aliases = new HashSet<>(0);
         this.type = type;

@@ -42,6 +42,8 @@ import de.cubeisland.engine.core.module.exception.ModuleLoadException;
 import de.cubeisland.engine.core.storage.Registry;
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class is used to load modules and provide a centralized place for class
  * lookups.
@@ -201,7 +203,7 @@ public class ModuleLoader
      */
     void unloadModule(Module module)
     {
-        assert module != null: "The module must not be null!";
+        expectNotNull(module, "The module must not be null!");
 
         ModuleClassLoader classLoader = this.classLoaders.remove(module.getId());
         if (classLoader != null)
@@ -220,7 +222,7 @@ public class ModuleLoader
      */
     public synchronized ModuleInfo loadModuleInfo(Path file) throws InvalidModuleException
     {
-        assert file != null: "The file most not be null!";
+        expectNotNull(file, "The file most not be null!");
 
         if (!Files.exists(file))
         {
@@ -357,7 +359,7 @@ public class ModuleLoader
      */
     public void registerLibraryClassPath(Path file) throws MalformedURLException
     {
-        assert file != null: "The file must not be null!";
+        expectNotNull(file, "The file must not be null!");
 
         this.registerLibraryClassPath(file.toUri().toURL());
     }
@@ -369,7 +371,7 @@ public class ModuleLoader
      */
     public void registerLibraryClassPath(URL url)
     {
-        assert url != null: "The url must not be null!";
+        expectNotNull(url, "The url must not be null!");
 
         this.libClassLoader.addURL(url);
     }

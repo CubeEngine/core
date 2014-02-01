@@ -34,6 +34,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.jooq.DSLContext;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public abstract class AbstractWorldManager implements WorldManager
@@ -106,8 +107,8 @@ public abstract class AbstractWorldManager implements WorldManager
 
     public synchronized void registerGenerator(Module module, String id, ChunkGenerator generator)
     {
-        assert id != null : "The ID must nto be null!";
-        assert generator != null : "The generator must not be null!";
+        expectNotNull(id, "The ID must nto be null!");
+        expectNotNull(generator, "The generator must not be null!");
 
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators == null)
@@ -119,8 +120,8 @@ public abstract class AbstractWorldManager implements WorldManager
 
     public synchronized ChunkGenerator getGenerator(Module module, String id)
     {
-        assert module != null : "The module must not be null!";
-        assert id != null : "The ID must nto be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(id, "The ID must nto be null!");
 
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators != null)
@@ -132,8 +133,8 @@ public abstract class AbstractWorldManager implements WorldManager
 
     public synchronized void removeGenerator(Module module, String id)
     {
-        assert module != null : "The module must not be null!";
-        assert id != null : "The ID must nto be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(id, "The ID must nto be null!");
 
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators != null)

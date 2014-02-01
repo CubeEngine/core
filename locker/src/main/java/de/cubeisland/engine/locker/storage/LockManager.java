@@ -63,6 +63,8 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.LocationUtil.getChunkKey;
 import static de.cubeisland.engine.core.util.LocationUtil.getLocationKey;
 import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ALL;
@@ -379,7 +381,8 @@ public class LockManager implements Listener
      */
     public void extendLock(Lock lock, Location location)
     {
-        assert this.getLockAtLocation(location, null, false, false) == null : "Cannot extend Lock onto another!";
+        expectNotNull(lock, "The lock must not be null!");
+        expect(this.getLockAtLocation(location, null, false, false) == null , "Cannot extend Lock onto another!");
         lock.locations.add(location);
         LockLocationModel model = this.dsl.newRecord(TABLE_LOCK_LOCATION).newLocation(lock.model, location);
         model.insert();

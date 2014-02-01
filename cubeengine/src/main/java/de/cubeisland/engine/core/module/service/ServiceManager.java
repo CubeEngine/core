@@ -30,6 +30,8 @@ import de.cubeisland.engine.core.module.ModuleClassLoader;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.service.Service.Priority;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 public class ServiceManager
 {
     private final Core core;
@@ -63,7 +65,7 @@ public class ServiceManager
     @SuppressWarnings("unchecked")
     public <S> Service<S> registerService(Module module, Class<S> interfaceClass, S implementation, Priority priority)
     {
-        assert interfaceClass.isInterface(): "Services have to be interfaces!";
+        expect(interfaceClass.isInterface(), "Services have to be interfaces!");
 
         synchronized (this.services)
         {

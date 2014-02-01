@@ -54,6 +54,7 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
@@ -356,7 +357,7 @@ public abstract class CubeCommand extends Command
      */
     public void addChild(CubeCommand command)
     {
-        assert command != null: "The command must not be null!";
+        expectNotNull(command, "The command must not be null!");
 
         if (this == command)
         {

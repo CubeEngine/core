@@ -35,6 +35,8 @@ import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 
 /**
  * Module for CubeEngine.
@@ -248,7 +250,7 @@ public abstract class Module
      */
     public InputStream getResource(String path)
     {
-        assert path != null: "The path must not be null!";
+        expectNotNull(path, "The path must not be null!");
         return this.getClass().getResourceAsStream(path);
     }
 

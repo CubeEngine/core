@@ -34,6 +34,8 @@ import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class BukkitTaskManager implements TaskManager
 {
     private final BukkitCore corePlugin;
@@ -88,8 +90,8 @@ public class BukkitTaskManager implements TaskManager
 
     public int runTaskDelayed(Module module, Runnable runnable, long delay)
     {
-        assert module != null: "The module must not be null!";
-        assert runnable != null: "The runnable must not be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(runnable, "The runnable must not be null!");
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -104,8 +106,8 @@ public class BukkitTaskManager implements TaskManager
 
     public int runTimer(Module module, Runnable runnable, long delay, long interval)
     {
-        assert module != null: "The module must not be null!";
-        assert runnable != null: "The runnable must not be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(runnable, "The runnable must not be null!");
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -125,8 +127,8 @@ public class BukkitTaskManager implements TaskManager
 
     public int runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
-        assert module != null: "The module must not be null!";
-        assert runnable != null: "The runnable must not be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(runnable, "The runnable must not be null!");
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -141,8 +143,8 @@ public class BukkitTaskManager implements TaskManager
 
     public int runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
-        assert module != null: "The module must not be null!";
-        assert runnable != null: "The runnable must not be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(runnable, "The runnable must not be null!");
 
         final TIntSet tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
@@ -157,7 +159,7 @@ public class BukkitTaskManager implements TaskManager
 
     public <T> Future<T> callSync(Callable<T> callable)
     {
-        assert callable != null: "The callable must not be null!";
+        expectNotNull(callable, "The callable must not be null!");
         return this.bukkitScheduler.callSyncMethod(this.corePlugin, callable);
     }
 

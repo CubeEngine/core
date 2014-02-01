@@ -42,6 +42,8 @@ import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.permission.Permission.BASE;
 
 public class BukkitPermissionManager implements PermissionManager
@@ -146,10 +148,10 @@ public class BukkitPermissionManager implements PermissionManager
 
     private org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault)
     {
-        assert CubeEngine.isMainThread(): "Permissions may only be registered from the main thread!";
-        assert module != null: "The module must not be null!";
-        assert perm != null: "The permission must not be null!";
-        assert permDefault != null: "The permission default must not be null!";
+        expect(CubeEngine.isMainThread(), "Permissions may only be registered from the main thread!");
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(perm, "The permission must not be null!");
+        expectNotNull(permDefault, "The permission default must not be null!");
 
         perm = perm.toLowerCase(Locale.ENGLISH);
         String[] parts = StringUtils.explode(".", perm);
@@ -231,9 +233,9 @@ public class BukkitPermissionManager implements PermissionManager
 
     public void removePermission(Module module, String perm)
     {
-        assert module != null: "The module must not be null!";
-        assert perm != null: "The permission must not be null!";
-        assert !perm.equals(Permission.BASE.getName() + ".*"): "The CubeEngine wildcard permission must not be unregistered!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(perm, "The permission must not be null!");
+        expect(!perm.equals(Permission.BASE.getName() + ".*"), "The CubeEngine wildcard permission must not be unregistered!");
 
         Set<String> perms = this.modulePermissionMap.get(module);
         if (perms != null && perms.remove(perm))
@@ -254,7 +256,7 @@ public class BukkitPermissionManager implements PermissionManager
 
     public void removePermissions(Module module)
     {
-        assert module != null: "The module must not be null!";
+        expectNotNull(module, "The module must not be null!");
 
         Set<String> removedPerms = this.modulePermissionMap.remove(module);
         if (removedPerms != null)

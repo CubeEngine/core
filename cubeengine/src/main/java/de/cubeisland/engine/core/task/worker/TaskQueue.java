@@ -17,18 +17,20 @@
  */
 package de.cubeisland.engine.core.task.worker;
 
+import de.cubeisland.engine.core.contract.NotNull;
+
 /**
- * This interface is used for enqueing tasks.
+ * This interface is used for queuing tasks.
  */
 public interface TaskQueue
 {
     /**
-     * Adds the runnable to this taskqueue.
+     * Adds the runnable to this task queue.
      * Which will execute the runnable as soon as possible.
      *
      * @param runnable the runnable to enqueue
      */
-    void addTask(Runnable runnable);
+    void addTask(@NotNull Runnable runnable);
 
     /**
      * Starts to execute the queued tasks.
@@ -55,12 +57,12 @@ public interface TaskQueue
     /**
      * Stops the execution of this queue.
      *
-     * @param interupt whether to interupt the executor if it is running
+     * @param interrupt whether to interrupt the executor if it is running
      */
-    void stop(boolean interupt);
+    void stop(boolean interrupt);
 
     /**
-     * Returns whether the taskqueue is now running.
+     * Returns whether the task queue is now running.
      *
      * @return the running state of this queue
      */

@@ -39,6 +39,8 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logging.Log;
 import gnu.trove.map.hash.THashMap;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 public class BukkitCommandManager implements CommandManager
 {
     private final CommandInjector injector;
@@ -186,7 +188,7 @@ public class BukkitCommandManager implements CommandManager
 
     public boolean runCommand(CommandSender sender, String commandLine)
     {
-        assert CubeEngine.isMainThread(): "Commands may only be called synchronously!";
+        expect(CubeEngine.isMainThread(), "Commands may only be called synchronously!");
 
         return this.injector.dispatchCommand(sender, commandLine);
     }

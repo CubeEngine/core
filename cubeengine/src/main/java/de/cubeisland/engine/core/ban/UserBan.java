@@ -19,6 +19,8 @@ package de.cubeisland.engine.core.ban;
 
 import java.util.Date;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class UserBan extends Ban
 {
     private final String target;
@@ -36,7 +38,7 @@ public class UserBan extends Ban
     public UserBan(String target, String source, String reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
-        assert target != null: "The user must not be null!";
+        expectNotNull(target, "The user must not be null!");
         this.target = target;
     }
 

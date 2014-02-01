@@ -31,6 +31,8 @@ import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.config.MirrorConfig;
 import de.cubeisland.engine.roles.config.RoleConfig;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class WorldRoleProvider extends RoleProvider
 {
     private final MirrorConfig mirrorConfig;
@@ -113,7 +115,7 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public Role getRole(String name)
     {
-        assert name != null: "The role name may not be null!";
+        expectNotNull(name, "The role name may not be null!");
 
         name = name.toLowerCase();
         if (name.startsWith("g:"))

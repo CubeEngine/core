@@ -25,6 +25,7 @@ import org.bukkit.permissions.Permissible;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.util.StringUtils;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
 
@@ -156,7 +157,7 @@ public class Permission
 
     public boolean isAuthorized(Permissible permissible)
     {
-        assert permissible != null: "The player may not be null!";
+        expectNotNull(permissible, "The player may not be null!");
 
         return permissible.hasPermission(this.name + (this.isWildcard() ? ".*" : ""));
     }

@@ -94,6 +94,8 @@ import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import org.joda.time.Duration;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
@@ -439,7 +441,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
     public void addInitHook(Runnable runnable)
     {
-        assert runnable != null: "The runnble must not be null!";
+        expectNotNull(runnable, "The runnble must not be null!");
 
         this.initHooks.add(runnable);
     }

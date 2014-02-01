@@ -30,6 +30,8 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.util.Version;
 import org.apache.commons.lang.Validate;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class provides information about a module.
  */
@@ -87,8 +89,8 @@ public class ModuleInfo
 
     public ModuleInfo(Path path, ModuleConfig config)
     {
-        assert config != null: "The module configuration failed to loaded!";
-        assert config.name != null: "The module doesn't seem to have a name.";
+        expectNotNull(config, "The module configuration failed to loaded!");
+        expectNotNull(config.name, "The module doesn't seem to have a name.");
 
         this.name = config.name.trim();
         Validate.notEmpty(this.name, "The module name seems to be empty.");

@@ -19,6 +19,8 @@ package de.cubeisland.engine.core.ban;
 
 import java.util.Date;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public abstract class Ban
 {
     private String source;
@@ -33,9 +35,9 @@ public abstract class Ban
 
     protected Ban(String source, String reason, Date created, Date expires)
     {
-        assert source != null: "The source must not be null";
-        assert reason != null: "The reason must not be null";
-        assert created != null: "The created must not be null";
+        expectNotNull(source, "The source must not be null");
+        expectNotNull(reason, "The reason must not be null");
+        expectNotNull(created, "The created must not be null");
         this.source = source;
         this.reason = reason;
         this.created = created;
@@ -60,7 +62,7 @@ public abstract class Ban
      */
     public void setSource(String source)
     {
-        assert source != null: "The source must not be null";
+        expectNotNull(source, "The source must not be null");
         this.source = source;
     }
 
@@ -88,7 +90,7 @@ public abstract class Ban
      */
     public void setReason(String reason)
     {
-        assert reason != null: "The reason must not be null";
+        expectNotNull(reason, "The reason must not be null");
         this.reason = reason;
     }
 
@@ -109,7 +111,7 @@ public abstract class Ban
      */
     public void setCreated(Date created)
     {
-        assert created != null: "The created must not be null";
+        expectNotNull(created, "The created must not be null");
         this.created = created;
     }
 

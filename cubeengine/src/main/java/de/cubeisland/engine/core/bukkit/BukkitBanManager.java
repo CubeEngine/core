@@ -36,6 +36,8 @@ import de.cubeisland.engine.core.user.User;
 
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class BukkitBanManager implements BanManager
 {
     private final BanList nameBans;
@@ -51,7 +53,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public void addBan(Ban ban)
     {
-        assert ban != null: "Ban must not be null!";
+        expectNotNull(ban, "Ban must not be null!");
 
         if (ban.getReason().contains("\n") || ban.getReason().contains("\r"))
         {
@@ -76,7 +78,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public UserBan getUserBan(User user)
     {
-        assert user != null: "The user must not be null!";
+        expectNotNull(user, "The user must not be null!");
 
         return this.getUserBan(user.getName());
     }
@@ -96,7 +98,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public IpBan getIpBan(InetAddress address)
     {
-        assert address != null: "The address must not be null!";
+        expectNotNull(address, "The address must not be null!");
 
         BanEntry entry = (BanEntry)this.ipBans.getEntries().get(address.toString());
         if (entry != null)
@@ -109,7 +111,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean removeUserBan(User user)
     {
-        assert user != null: "The user must not be null!";
+        expectNotNull(user, "The user must not be null!");
 
         return this.removeUserBan(user.getName());
     }
@@ -124,7 +126,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean removeIpBan(InetAddress address)
     {
-        assert address != null: "The address must not be null!";
+        expectNotNull(address, "The address must not be null!");
 
         this.ipBans.remove(address.getHostAddress());
         return true;
@@ -133,7 +135,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean isUserBanned(User user)
     {
-        assert user != null: "The user must not be null!";
+        expectNotNull(user, "The user must not be null!");
 
         return this.isUserBanned(user.getName());
     }

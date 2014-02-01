@@ -45,6 +45,9 @@ import de.cubeisland.engine.worlds.config.UniverseConfig;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * Represents multiple worlds in a universe
  */
@@ -71,8 +74,8 @@ public class Universe
 
     private Universe(File universeDir, Worlds module, Multiverse multiverse)
     {
-        assert universeDir != null : "UniverseDirectory cannot be null!";
-        assert universeDir.isDirectory() : "UniverseDirectory must be a directory!";
+        expectNotNull(universeDir, "UniverseDirectory cannot be null!");
+        expect(universeDir.isDirectory(), "UniverseDirectory must be a directory!");
         this.module = module;
         this.multiverse = multiverse;
         this.dirUniverse = universeDir;

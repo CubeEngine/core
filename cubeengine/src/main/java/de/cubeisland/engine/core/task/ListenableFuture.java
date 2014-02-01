@@ -23,6 +23,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class ListenableFuture<V> implements Future<V>
 {
     private final Future<V> future;
@@ -30,8 +32,8 @@ public class ListenableFuture<V> implements Future<V>
 
     public ListenableFuture(Future<V> future, ExecutorService executor)
     {
-        assert future != null;
-        assert executor != null;
+        expectNotNull(future);
+        expectNotNull(executor);
         this.future = future;
         this.executor = executor;
     }

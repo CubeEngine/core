@@ -50,6 +50,8 @@ import de.cubeisland.engine.core.command.readers.UserReader;
 import de.cubeisland.engine.core.command.readers.WorldReader;
 import de.cubeisland.engine.core.user.User;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 public abstract class ArgumentReader
 {
     private static final Map<Class<?>, ArgumentReader> READERS = new ConcurrentHashMap<>();
@@ -85,7 +87,7 @@ public abstract class ArgumentReader
 
     public static void registerReader(ArgumentReader reader, Class<?>... classes)
     {
-        assert classes.length > 0: "At least one class must be specified!";
+        expect(classes.length > 0, "At least one class must be specified!");
 
         for (Class c : classes)
         {

@@ -20,6 +20,8 @@ package de.cubeisland.engine.core.webapi;
 import java.util.List;
 import java.util.Map;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class Parameters
 {
     private final Map<String, List<String>> data;
@@ -48,7 +50,7 @@ public class Parameters
     @SuppressWarnings("unchecked")
     public <T> T get(String name, int index, T def)
     {
-        assert def != null: "The default value must not be null!";
+        expectNotNull(def, "The default value must not be null!");
 
         T value = (T)this.get(name, index, def.getClass());
         if (value == null)

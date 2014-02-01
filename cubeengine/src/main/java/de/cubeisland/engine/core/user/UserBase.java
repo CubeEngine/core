@@ -83,6 +83,8 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
  */
@@ -1863,7 +1865,7 @@ public class UserBase implements Player
     @Override
     public boolean teleport(Location lctn)
     {
-        assert CubeEngine.isMainThread(): "Must be called from the main thread!";
+        expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
 
         if (lctn == null)
         {
@@ -1875,7 +1877,7 @@ public class UserBase implements Player
     @Override
     public boolean teleport(Location lctn, TeleportCause tc)
     {
-        assert CubeEngine.isMainThread(): "Must be called from the main thread!";
+        expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
 
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)

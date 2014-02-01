@@ -33,6 +33,8 @@ import de.cubeisland.engine.core.module.Module;
 
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class manages all Event-(Un-)Registration and fires Events.
  */
@@ -78,8 +80,8 @@ public class EventManager
      */
     public EventManager removeListener(Module module, Listener listener)
     {
-        assert module != null: "The module must not be null!";
-        assert listener != null: "The listener must not be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(listener, "The listener must not be null!");
 
         Set<Listener> listeners = this.listenerMap.get(module);
         if (listeners != null && listeners.remove(listener))
@@ -97,7 +99,7 @@ public class EventManager
      */
     public EventManager removeListeners(Module module)
     {
-        assert module != null: "The module must not be null!";
+        expectNotNull(module, "The module must not be null!");
 
         Set<Listener> listeners = this.listenerMap.remove(module);
         if (listeners != null)
