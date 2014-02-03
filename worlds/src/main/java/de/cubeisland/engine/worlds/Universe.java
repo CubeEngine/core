@@ -236,12 +236,13 @@ public class Universe
             if (new File(Bukkit.getServer().getWorldContainer(), name).exists()) // world is just not loaded yet
             {
                 module.getLog().info("Loading World {}...", name);
+                world = this.module.getCore().getWorldManager().createWorld(WorldCreator.name(name));
             }
             else // World does not exist
             {
                 module.getLog().info("Creating new World {}...", name);
+                world = this.module.getCore().getWorldManager().createWorld(config.applyToCreator(WorldCreator.name(name)));
             }
-            world = this.module.getCore().getWorldManager().createWorld(config.applyToCreator(WorldCreator.name(name)));
             if (config.spawn.spawnLocation == null)
             {
                 config.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());

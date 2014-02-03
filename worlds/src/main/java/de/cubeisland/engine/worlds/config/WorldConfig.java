@@ -51,7 +51,7 @@ public class WorldConfig extends YamlConfiguration
         @Comment("NORMAL, NETHER or THE_END")
         public Environment environment;
         public String seed = "";
-        @Comment("FLAT, DEFAULT_1_1, LARGEBIOMES or AMPLIFIED")
+        @Comment("NORMAL, FLAT, DEFAULT_1_1, LARGEBIOMES or AMPLIFIED")
         public WorldType worldType = WorldType.NORMAL;
         @Comment("Whether to generate structures or not")
         public boolean generateStructures = true;
@@ -185,7 +185,10 @@ public class WorldConfig extends YamlConfiguration
         this.generation.worldType = world.getWorldType();
         this.generation.generateStructures = world.canGenerateStructures();
         this.generation.environment = world.getEnvironment();
-        this.generation.seed = String.valueOf(world.getSeed());
+        if (this.generation.seed == null)
+        {
+            this.generation.seed = String.valueOf(world.getSeed());
+        }
         this.spawning.disable_animals = !world.getAllowAnimals();
         this.spawning.disable_monster = !world.getAllowMonsters();
         this.spawning.spawnLimit_ambient = world.getAmbientSpawnLimit();
