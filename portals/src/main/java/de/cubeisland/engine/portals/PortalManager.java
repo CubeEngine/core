@@ -177,7 +177,7 @@ public class PortalManager implements Listener
          || event.getFrom().getBlockY() != event.getTo().getBlockY()
          || event.getFrom().getBlockZ() != event.getTo().getBlockZ())
         {
-            List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getFrom()));
+            List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getTo()));
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             PortalsAttachment attachment = user.attachOrGet(PortalsAttachment.class, module);
             if (portals != null)
