@@ -172,6 +172,7 @@ public class Multiverse implements Listener
             }
             this.module.getLog().warn("No main universe set. {} is now the main universe!", universe.getName());
             this.config.mainUniverse = universe.getName();
+            this.config.save();
         }
         this.mainWorld = this.universes.get(this.config.mainUniverse).getMainWorld();
 
@@ -451,7 +452,7 @@ public class Multiverse implements Listener
         PlayerConfig config = this.module.getCore().getConfigFactory().load(PlayerConfig.class, path.toFile());
         config.lastWorld = new ConfigWorld(module.getCore().getWorldManager(), player.getWorld());
         config.save();
-        this.module.getLog().debug("Saved last world of {}: {}", player.getName(), player.getWorld().getName());
+        this.module.getLog().debug("{} is now in the world: {} ({})", player.getName(), player.getWorld().getName(), this.getUniverse(player.getWorld()).getName());
     }
 
     private WorldConfig getWorldConfig(World world)
@@ -492,12 +493,12 @@ public class Multiverse implements Listener
             try
             {
                 Files.createDirectories(dirUniverse);
+                universe = Universe.create(module, this, dirUniverse, set);
             }
             catch (IOException e)
             {
                 throw new UniverseCreationException(e);
             }
-            universe = Universe.create(module, this, dirUniverse, set);
         }
         return universe;
     }

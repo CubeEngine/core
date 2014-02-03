@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -75,13 +76,14 @@ public class Universe
     private final Path fileUniverse;
     private final Path fileDefaults;
 
-    private Universe(Worlds module, Multiverse multiverse, Path dirUniverse)
+    private Universe(Worlds module, Multiverse multiverse, Path dirUniverse) throws IOException
     {
         this.module = module;
         this.multiverse = multiverse;
 
         this.dirUniverse = dirUniverse;
         this.dirPlayers = dirUniverse.resolve("players");
+        Files.createDirectories(dirPlayers);
         this.fileDefaults = dirUniverse.resolve("default.yml");
         this.fileUniverse =  dirUniverse.resolve("config.yml");
     }
@@ -116,11 +118,19 @@ public class Universe
             }
         }
         this.universeConfig = this.module.getCore().getConfigFactory().load(UniverseConfig.class, fileUniverse.toFile());
-        if (this.universeConfig.mainWorld == null)
+        if (this.worlds.isEmpty())
         {
-            World world = this.worlds.iterator().next();
-            module.getLog().warn("The universe {} had no mainworld! {} is now the main world", dirUniverse.getFileName().toString(), world.getName());
-            this.universeConfig.save();
+            module.getLog().warn("The universe {} has no worlds!", this.getName());
+        }
+        else
+        {
+            if (this.universeConfig.mainWorld == null)
+            {
+                World world = this.worlds.iterator().next();
+                module.getLog().warn("The universe {} had no mainworld! {} is now the main world", dirUniverse.getFileName().toString(), world.getName());
+                this.universeConfig.mainWorld = new ConfigWorld(module.getCore().getWorldManager(), world);
+                this.universeConfig.save();
+            }
             for (WorldConfig worldConfig : this.worldConfigs.values())
             {
                 if (worldConfig.spawn.respawnWorld == null)
@@ -129,27 +139,27 @@ public class Universe
                     worldConfig.save();
                 }
             }
-        }
-        this.mainWorld = this.universeConfig.mainWorld.getWorld();
-        if (this.mainWorld == null)
-        {
-            if (this.worlds.isEmpty())
+            this.mainWorld = this.universeConfig.mainWorld.getWorld();
+            if (this.mainWorld == null)
             {
-                module.getLog().warn("Unknown world set as mainworld! Universe has no active worlds!");
-                this.universeConfig.mainWorld = null;
+                if (this.worlds.isEmpty())
+                {
+                    module.getLog().warn("Unknown world set as mainworld! Universe has no active worlds!");
+                    this.universeConfig.mainWorld = null;
+                }
+                else
+                {
+                    this.mainWorld = this.worlds.iterator().next();
+                    module.getLog().warn("Unknown world set as mainworld! Mainworld {} replaced with {}!", this.universeConfig.mainWorld, this.mainWorld.getName());
+                    this.universeConfig.mainWorld = new ConfigWorld(module.getCore().getWorldManager(), this.mainWorld.getName());
+                }
+                this.universeConfig.save();
             }
-            else
-            {
-                this.mainWorld = this.worlds.iterator().next();
-                module.getLog().warn("Unknown world set as mainworld! Mainworld {} replaced with {}!", this.universeConfig.mainWorld, this.mainWorld.getName());
-                this.universeConfig.mainWorld = new ConfigWorld(module.getCore().getWorldManager(), this.mainWorld.getName());
-            }
-            this.universeConfig.save();
         }
         this.generatePermissions();
     }
 
-    public static Universe create(Worlds module, Multiverse multiverse, Path dirUniverse, Set<World> worlds)
+    public static Universe create(Worlds module, Multiverse multiverse, Path dirUniverse, Set<World> worlds) throws IOException
     {
         Universe universe = new Universe(module, multiverse, dirUniverse);
         universe.create(worlds);
@@ -195,12 +205,33 @@ public class Universe
     private World loadOrCreateWorld(WorldConfig config, String name)
     {
         World world = this.module.getCore().getWorldManager().getWorld(name);
+        for (Universe universe : this.multiverse.getUniverses())
+        {
+            if (universe == this)
+            {
+                continue;
+            }
+            if (universe.hasWorld(name))
+            {
+                module.getLog().warn("The world {} is already part of an other universe {} and cannot be added to the universe {}!",
+                                     name, universe.getName(), this.getName());
+                module.getLog().warn("Please check your configuration!");
+                return null;
+            }
+        }
         if (world == null) // world loaded?
         {
-            if (config.generation.environment == null || config.generation.seed == null)
+            if (config.generation.environment == null)
             {
-                module.getLog().warn("Insufficient Generation Information to load {} in {}!", name, this.getName());
-                return null;
+                config.generation.environment = Environment.NORMAL;
+                module.getLog().warn("Environment for {} in {} was not set and defaulted to NORMAL!", name, this.getName());
+                config.save();
+            }
+            if (config.generation.seed == null)
+            {
+                config.generation.seed = StringUtils.randomString(new Random(), 16, "qwertzuiopasdfghhjjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM12345677890");
+                module.getLog().warn("{} in {} had no seed and a random seed was created!", name, this.getName());
+                config.save();
             }
             if (new File(Bukkit.getServer().getWorldContainer(), name).exists()) // world is just not loaded yet
             {
@@ -299,11 +330,12 @@ public class Universe
 
     public void savePlayer(Player player, World world)
     {
-        this.module.getLog().debug("{} saved for {} in {}" , player.getName(), this.getName(), world.getName());
         PlayerDataConfig config = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
         config.applyFromPlayer(player);
 
         config.setFile(dirPlayers.resolve(player.getName() + ".dat").toFile());
+        config.save();
+
         YamlCodec codec = this.module.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
         try
         {
@@ -313,12 +345,11 @@ public class Universe
         {
             e.printStackTrace();
         }
-        config.save();
+        this.module.getLog().debug("PlayerData for {} in {} ({}) saved", player.getName(), world.getName(), this.getName());
     }
 
     public void loadPlayer(Player player)
     {
-        this.module.getLog().debug("{} loaded for {} in {}", player.getName(), this.getName(), player.getWorld().getName());
         Path path = dirPlayers.resolve(player.getName() + ".dat");
         if (Files.exists(path))
         {
@@ -340,6 +371,7 @@ public class Universe
         {
             player.setGameMode(this.worldConfigs.get(player.getWorld()).gameMode);
         }
+        this.module.getLog().debug("PlayerData for {} in {} ({}) applied", player.getName(), player.getWorld().getName(), this.getName());
     }
 
     public World getMainWorld()

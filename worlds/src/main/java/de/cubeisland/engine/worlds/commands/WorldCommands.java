@@ -50,6 +50,7 @@ public class WorldCommands extends ContainerCommand
     {
         context.sendMessage("TODO"); // TODO
         // create name environement seed generator worldtype structures?
+        // in which universe ( create universe if missing?)
         // flag to recreate
     }
 
@@ -147,6 +148,7 @@ public class WorldCommands extends ContainerCommand
             return;
         }
         universe.removeWorld(context.getString(0));
+        context.sendTranslated("&cConfiguration for the world &6%s&c removed!", world.getName());
         // TODO folder flag permission
     }
 
