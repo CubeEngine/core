@@ -63,7 +63,7 @@ public class Backpack extends Module
         if (worlds != null && worlds instanceof Worlds)
         {
             Multiverse multiverse = ((Worlds)worlds).getMultiverse();
-            return multiverse.getUniverse(world).getMainWorld();
+            return multiverse.getUniverseFrom(world).getMainWorld();
         }
         else
         {

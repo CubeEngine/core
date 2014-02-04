@@ -31,7 +31,7 @@ import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.exception.ModuleLoadError;
-import de.cubeisland.engine.worlds.commands.WorldCommands;
+import de.cubeisland.engine.worlds.commands.WorldsCommands;
 import de.cubeisland.engine.worlds.config.WorldsConfig;
 import de.cubeisland.engine.worlds.converter.DiffcultyConverter;
 import de.cubeisland.engine.worlds.converter.EnvironmentConverter;
@@ -80,7 +80,7 @@ public class Worlds extends Module
         {
             throw new ModuleLoadError(e);
         }
-        this.getCore().getCommandManager().registerCommand(new WorldCommands(this, multiverse));
+        this.getCore().getCommandManager().registerCommand(new WorldsCommands(this, multiverse));
         this.perms = new WorldsPermissions(this);
     }
 

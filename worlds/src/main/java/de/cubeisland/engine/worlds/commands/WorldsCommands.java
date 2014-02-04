@@ -17,41 +17,154 @@
  */
 package de.cubeisland.engine.worlds.commands;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.worlds.Multiverse;
 import de.cubeisland.engine.worlds.Universe;
+import de.cubeisland.engine.worlds.Worlds;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 
-public class WorldCommands extends ContainerCommand
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
+
+public class WorldsCommands extends ContainerCommand
 {
     private final Multiverse multiverse;
 
-    public WorldCommands(Module module, Multiverse multiverse)
+    public WorldsCommands(Worlds module, Multiverse multiverse)
     {
         super(module, "worlds", "Worlds commands");
         this.multiverse = multiverse;
     }
 
-    @Command(desc = "Creates and loads a new world")
+    @Command(desc = "Creates a new world",
+             usage = "<name> {universe} [env <environement>] [seed <seed>] [type <type>] [struct <true|false>] [gen <generator>] [-recreate] [-noload]",
+    params = {
+    @Param(names = {"environment","env"}, type = Environment.class), // TODO reader
+    @Param(names = "seed"),
+    @Param(names = {"worldtype","type"}, type = WorldType.class), // TODO reader
+    @Param(names = {"structure","struct"}, type = Boolean.class),
+    @Param(names = {"generator","gen"})},
+    max = 2, min = 1, flags = {
+    @Flag(longName = "recreate",name = "r"),
+    @Flag(longName = "noload",name = "no"),
+    })
     public void create(ParameterizedContext context)
     {
-        context.sendMessage("TODO"); // TODO
-        // create name environement seed generator worldtype structures?
-        // in which universe ( create universe if missing?)
-        // flag to recreate
+        World world = this.getModule().getCore().getWorldManager().getWorld(0);
+        if (world != null)
+        {
+            if (context.hasFlag("r"))
+            {
+                context.sendTranslated("&cYou have to unload a world before recreating it!");
+            }
+            else
+            {
+                context.sendTranslated("&cA world named &6%s&c already exists and is loaded!", world.getName());
+            }
+            return;
+        }
+        Path path = Bukkit.getServer().getWorldContainer().toPath().resolve(context.getString(0));
+        if (Files.exists(path))
+        {
+            if (context.hasFlag("r"))
+            {
+                try
+                {
+                    Path newPath = path.resolveSibling(context.getString(0) + "_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
+                        .format(new Date()));
+                    Files.move(path, newPath);
+                    context.sendTranslated("&aOld world moved to &6%s", path.getFileName().toString());
+                }
+                catch (IOException e)
+                {
+                    context.sendTranslated("&4Could not backup old world folder! Aborting Worldcreation");
+                    return;
+                }
+            }
+            else
+            {
+                context.sendTranslated("&cA world named &6%s&c already exists but is not loaded!", context.getString(0));
+                return;
+            }
+        }
+        WorldConfig config = this.getModule().getCore().getConfigFactory().create(WorldConfig.class);
+        Path dir;
+        Universe universe;
+        if (context.hasArg(1))
+        {
+            universe = multiverse.getUniverse(context.getString(1));
+            if (universe == null)
+            {
+                universe = multiverse.createUniverse(context.getString(1));
+            }
+            dir = universe.getDirectory();
+        }
+        else if (context.getSender() instanceof User)
+        {
+            universe = multiverse.getUniverseFrom(((User)context.getSender()).getWorld());
+            dir = universe.getDirectory();
+        }
+        else
+        {
+            context.sendTranslated("&cYou have to provide a universe in which to create the world!");
+            context.sendMessage(context.getCommand().getUsage(context));
+            return;
+        }
+        config.setFile(dir.resolve(context.getString(0) + YAML.getExtention()).toFile());
+        if (context.hasParam("env"))
+        {
+            config.generation.environment = context.getParam("env", Environment.NORMAL);
+        }
+        if (context.hasParam("seed"))
+        {
+            config.generation.seed = context.getString("seed");
+        }
+        if (context.hasParam("type"))
+        {
+            config.generation.worldType = context.getParam("type", WorldType.NORMAL);
+        }
+        if (context.hasParam("struct"))
+        {
+            config.generation.generateStructures = context.getParam("struct", true);
+        }
+        if (context.hasParam("gen"))
+        {
+            config.generation.customGenerator = context.getString("gen");
+        }
+        config.save();
+        if (!context.hasFlag("no"))
+        {
+            try
+            {
+                universe.reload();
+            }
+            catch (IOException e)
+            {
+                context.sendTranslated("&4A critical Error occured while creating the world!");
+                this.getModule().getLog().error(e, e.getLocalizedMessage());
+            }
+        }
     }
 
     @Command(desc = "Loads a world from configuration", usage = "<world>", min = 1, max = 1)
@@ -88,7 +201,7 @@ public class WorldCommands extends ContainerCommand
         World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
         if (world != null)
         {
-            World tpWorld = this.multiverse.getUniverse(world).getMainWorld();
+            World tpWorld = this.multiverse.getUniverseFrom(world).getMainWorld();
             if (tpWorld == world)
             {
                 tpWorld = this.multiverse.getMainWorld();
@@ -205,6 +318,8 @@ public class WorldCommands extends ContainerCommand
         }
     }
 
+    // create nether & create end commands / auto link to world / only works for NORMAL Env worlds
+
     @Command(desc = "Sets the main world")
     public void setMainWorld(CommandContext context)
     {
@@ -254,7 +369,7 @@ public class WorldCommands extends ContainerCommand
                 context.sendTranslated("&cWorld &6%s&c not found!");
                 return;
             }
-            WorldConfig worldConfig = this.multiverse.getUniverse(world).getWorldConfig(world);
+            WorldConfig worldConfig = this.multiverse.getUniverseFrom(world).getWorldConfig(world);
             if (user.safeTeleport(worldConfig.spawn.spawnLocation.getLocationIn(world), TeleportCause.COMMAND, false))
             {
                 context.sendTranslated("&aYou are now at the spawn of &6%s&a!", name);

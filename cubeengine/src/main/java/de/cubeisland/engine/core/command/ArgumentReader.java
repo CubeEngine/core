@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.DyeColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager.Profession;
@@ -38,6 +40,7 @@ import de.cubeisland.engine.core.command.readers.DoubleReader;
 import de.cubeisland.engine.core.command.readers.DyeColorReader;
 import de.cubeisland.engine.core.command.readers.EnchantmentReader;
 import de.cubeisland.engine.core.command.readers.EntityTypeReader;
+import de.cubeisland.engine.core.command.readers.EnvironmentReader;
 import de.cubeisland.engine.core.command.readers.FloatReader;
 import de.cubeisland.engine.core.command.readers.IntReader;
 import de.cubeisland.engine.core.command.readers.ItemStackReader;
@@ -48,6 +51,7 @@ import de.cubeisland.engine.core.command.readers.ShortReader;
 import de.cubeisland.engine.core.command.readers.StringReader;
 import de.cubeisland.engine.core.command.readers.UserReader;
 import de.cubeisland.engine.core.command.readers.WorldReader;
+import de.cubeisland.engine.core.command.readers.WorldTypeReader;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
@@ -83,6 +87,8 @@ public abstract class ArgumentReader
         registerReader(new DyeColorReader(), DyeColor.class);
         registerReader(new ProfessionReader(), Profession.class);
         registerReader(new OfflinePlayerReader(core), OfflinePlayer.class);
+        registerReader(new EnvironmentReader(), Environment.class);
+        registerReader(new WorldTypeReader(), WorldType.class);
     }
 
     public static void registerReader(ArgumentReader reader, Class<?>... classes)

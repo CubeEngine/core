@@ -61,7 +61,7 @@ public class ChatCommands
     {
         if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
         {
-            context.sendTranslated("&cCould not find the player &2%s &cto send the message to. &eIs he offline?", context.getString(0));
+            context.sendTranslated("&cCould not find the player &2%s&c to send the message to. &eIs the player offline?", context.getString(0));
         }
     }
 

@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.worlds;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,7 +41,6 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.configuration.codec.YamlCodec;
-import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -51,6 +49,8 @@ import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.worlds.config.UniverseConfig;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.player.PlayerDataConfig;
+
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 /**
  * Represents multiple worlds in a universe
@@ -95,11 +95,11 @@ public class Universe
         return universe;
     }
 
-    private void reload() throws IOException
+    public void reload() throws IOException
     {
         this.defaults = module.getCore().getConfigFactory().load(WorldConfig.class, this.fileDefaults.toFile(), true);
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.dirUniverse, FileExtensionFilter.YAML))
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.dirUniverse, YAML))
         {
             for (Path path : stream)
             {
@@ -195,7 +195,7 @@ public class Universe
             worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
 
             worldConfig.setDefault(this.defaults);
-            worldConfig.setFile(dirUniverse.resolve(entry.getKey().getName() + ".yml").toFile());
+            worldConfig.setFile(dirUniverse.resolve(entry.getKey().getName() + YAML.getExtention()).toFile());
             worldConfig.updateInheritance();
             worldConfig.save();
         }
@@ -233,7 +233,7 @@ public class Universe
                 module.getLog().warn("{} in {} had no seed and a random seed was created!", name, this.getName());
                 config.save();
             }
-            if (new File(Bukkit.getServer().getWorldContainer(), name).exists()) // world is just not loaded yet
+            if (Files.exists(Bukkit.getServer().getWorldContainer().toPath().resolve(name))) // world is just not loaded yet
             {
                 module.getLog().info("Loading World {}...", name);
                 world = this.module.getCore().getWorldManager().createWorld(WorldCreator.name(name));
@@ -315,7 +315,7 @@ public class Universe
         {
             WorldConfig config = this.createWorldConfigFromExisting(world);
             config.setDefault(this.defaults);
-            config.setFile(dirUniverse.resolve(world.getName() + ".yml").toFile());
+            config.setFile(dirUniverse.resolve(world.getName() + YAML.getExtention()).toFile());
             config.updateInheritance();
             config.save();
             this.worldConfigs.put(world, config);
@@ -340,7 +340,7 @@ public class Universe
         YamlCodec codec = this.module.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
         try
         {
-            codec.saveConfig(config, new FileOutputStream(dirPlayers.resolve(player.getName() + ".yml").toFile()));
+            codec.saveConfig(config, new FileOutputStream(dirPlayers.resolve(player.getName() + YAML.getExtention()).toFile()));
         }
         catch (FileNotFoundException e)
         {
@@ -397,7 +397,7 @@ public class Universe
     {
         WorldConfig fromConfig = this.worldConfigs.get(from.getWorld());
         World toWorld = this.module.getCore().getWorldManager().getWorld(fromConfig.netherTarget);
-        WorldConfig toConfig = this.multiverse.getUniverse(toWorld).getWorldConfig(toWorld);
+        WorldConfig toConfig = this.multiverse.getUniverseFrom(toWorld).getWorldConfig(toWorld);
         double factor = fromConfig.scale / toConfig.scale;
         agent.setSearchRadius((int)(128 / (factor * 8)));
         agent.setCreationRadius((int)(16 / (factor * 8)));
@@ -461,7 +461,7 @@ public class Universe
             this.module.getLog().warn("Unknown respawn world for {}", world.getName());
             return this.getSpawnLocation(world);
         }
-        return this.multiverse.getUniverse(respawnWorld).getSpawnLocation(respawnWorld);
+        return this.multiverse.getUniverseFrom(respawnWorld).getSpawnLocation(respawnWorld);
     }
 
     public Location getSpawnLocation(World world)
@@ -494,5 +494,10 @@ public class Universe
     {
         WorldConfig config = this.worldConfigMap.remove(name);
         config.getFile().delete();
+    }
+
+    public Path getDirectory()
+    {
+        return this.dirUniverse;
     }
 }

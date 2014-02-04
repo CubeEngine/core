@@ -233,8 +233,8 @@ public class Multiverse implements Listener
     {
         try
         {
-            Universe oldUniverse = this.getUniverse(event.getFrom());
-            Universe newUniverse = this.getUniverse(event.getPlayer().getWorld());
+            Universe oldUniverse = this.getUniverseFrom(event.getFrom());
+            Universe newUniverse = this.getUniverseFrom(event.getPlayer().getWorld());
             if (oldUniverse != newUniverse)
             {
                 event.getPlayer().closeInventory();
@@ -274,7 +274,7 @@ public class Multiverse implements Listener
         {
             return;
         }
-        Universe universe = this.getUniverse(to.getWorld());
+        Universe universe = this.getUniverseFrom(to.getWorld());
         if (!universe.checkPlayerAccess(event.getPlayer(), to.getWorld()))
         {
             event.setCancelled(true); // TODO check old location
@@ -287,7 +287,7 @@ public class Multiverse implements Listener
     public void onPortalUse(PlayerPortalEvent event)
     {
         World world = event.getPlayer().getWorld();
-        Universe universe = this.getUniverse(world);
+        Universe universe = this.getUniverseFrom(world);
         TravelAgent agent = event.getPortalTravelAgent();
         switch (event.getCause())
         {
@@ -312,7 +312,7 @@ public class Multiverse implements Listener
     public void onEntityPortal(EntityPortalEvent event)
     {
         World world = event.getEntity().getWorld();
-        Universe universe = this.getUniverse(world);
+        Universe universe = this.getUniverseFrom(world);
         TravelAgent agent = event.getPortalTravelAgent();
         if (event.getTo() == null)
         {
@@ -345,7 +345,7 @@ public class Multiverse implements Listener
                 event.useTravelAgent(true);
             }
         }
-        if (this.getUniverse(event.getTo().getWorld()) != universe) // Changing universe
+        if (this.getUniverseFrom(event.getTo().getWorld()) != universe) // Changing universe
         {
             if (event.getEntity() instanceof Player)
             {
@@ -379,7 +379,7 @@ public class Multiverse implements Listener
     @EventHandler
     public void onQuit(PlayerQuitEvent event)
     {
-        Universe universe = this.getUniverse(event.getPlayer().getWorld());
+        Universe universe = this.getUniverseFrom(event.getPlayer().getWorld());
         universe.savePlayer(event.getPlayer(), event.getPlayer().getWorld());
         this.savePlayer(event.getPlayer());
     }
@@ -390,7 +390,7 @@ public class Multiverse implements Listener
         if (!event.isBedSpawn())
         {
             World world = event.getPlayer().getWorld();
-            Universe universe = this.getUniverse(world);
+            Universe universe = this.getUniverseFrom(world);
             event.setRespawnLocation(universe.getRespawnLocation(world));
         }
     }
@@ -404,8 +404,8 @@ public class Multiverse implements Listener
             config = this.module.getCore().getConfigFactory().load(PlayerConfig.class, path.toFile(), false);
             if (config.lastWorld != null)
             {
-                Universe universe = this.getUniverse(player.getWorld());
-                Universe expected = this.getUniverse(config.lastWorld.getWorld());
+                Universe universe = this.getUniverseFrom(player.getWorld());
+                Universe expected = this.getUniverseFrom(config.lastWorld.getWorld());
                 if (universe != expected)
                 {
                     // expectedworld-actualworld_playername.yml
@@ -452,12 +452,13 @@ public class Multiverse implements Listener
         PlayerConfig config = this.module.getCore().getConfigFactory().load(PlayerConfig.class, path.toFile());
         config.lastWorld = new ConfigWorld(module.getCore().getWorldManager(), player.getWorld());
         config.save();
-        this.module.getLog().debug("{} is now in the world: {} ({})", player.getName(), player.getWorld().getName(), this.getUniverse(player.getWorld()).getName());
+        this.module.getLog().debug("{} is now in the world: {} ({})", player.getName(), player.getWorld().getName(), this.getUniverseFrom(player
+                                                                                                                                              .getWorld()).getName());
     }
 
     private WorldConfig getWorldConfig(World world)
     {
-        return this.getUniverse(world).getWorldConfig(world);
+        return this.getUniverseFrom(world).getWorldConfig(world);
     }
 
     public Permission getUniverseRootPerm()
@@ -465,7 +466,7 @@ public class Multiverse implements Listener
         return universeRootPerm;
     }
 
-    public Universe getUniverse(World world)
+    public Universe getUniverseFrom(World world)
     {
         if (world == null)
         {
@@ -503,6 +504,23 @@ public class Multiverse implements Listener
         return universe;
     }
 
+    public Universe createUniverse(String name)
+    {
+        Universe universe = universes.get(name);
+        if (universe == null)
+        {
+            try
+            {
+                return Universe.create(module, this, dirUniverses.resolve(name), new HashSet<World>());
+            }
+            catch (IOException e)
+            {
+                throw new UniverseCreationException(e);
+            }
+        }
+        return universe;
+    }
+
     public World loadWorld(String name)
     {
         Universe universe = this.hasWorld(name);
@@ -530,5 +548,10 @@ public class Multiverse implements Listener
     public World getMainWorld()
     {
         return mainWorld;
+    }
+
+    public Universe getUniverse(String name)
+    {
+        return this.universes.get(name);
     }
 }
