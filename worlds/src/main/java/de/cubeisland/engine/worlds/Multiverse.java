@@ -51,6 +51,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
+import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.config.WorldsConfig;
@@ -65,10 +66,11 @@ import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 public class Multiverse implements Listener
 {
     private final Worlds module;
+    private final WorldManager wm;
     private WorldsConfig config;
 
-    private final Map<String, Universe> universes = new HashMap<>();
-    private final Map<World, Universe> worlds = new HashMap<>();
+    private final Map<String, Universe> universes = new HashMap<>(); // universeName -> Universe
+    private final Map<String, Universe> worlds = new HashMap<>(); // worldName -> belonging to Universe
 
     private final Path dirPlayers;
     private final Path dirUniverses;
@@ -76,11 +78,10 @@ public class Multiverse implements Listener
 
     private final Permission universeRootPerm;
 
-    private World mainWorld;
-
     public Multiverse(Worlds module, WorldsConfig config) throws IOException
     {
         this.module = module;
+        this.wm = module.getCore().getWorldManager();
         this.config = config;
         this.universeRootPerm = this.module.getBasePermission().childWildcard("universe");
 
@@ -105,7 +106,7 @@ public class Multiverse implements Listener
                     this.universes.put(universeName, Universe.load(this.module, this, universeDir));
                 }
             }
-            Set<World> missingWorlds = this.module.getCore().getWorldManager().getWorlds();
+            Set<World> missingWorlds = this.wm.getWorlds();
             Map<String, Set<World>> found = new HashMap<>();
             for (Entry<String, Universe> entry : this.universes.entrySet())
             {
@@ -146,7 +147,7 @@ public class Multiverse implements Listener
             CommandSender sender = this.module.getCore().getCommandManager().getConsoleSender();
             sender.sendTranslated("&6Scraping together Matter...");
             Map<String, Set<World>> found = new HashMap<>();
-            this.searchUniverses(found, this.module.getCore().getWorldManager().getWorlds(), sender);
+            this.searchUniverses(found, this.wm.getWorlds(), sender);
             sender.sendTranslated("&eFinishing research...");
             for (Entry<String, Set<World>> entry : found.entrySet())
             {
@@ -154,13 +155,13 @@ public class Multiverse implements Listener
                 Files.createDirectories(universeDir);
                 this.universes.put(entry.getKey(), Universe.create(this.module, this, universeDir, entry.getValue()));
             }
-            sender.sendTranslated("&eFound &6%d&e universes with &6%d&e worlds!", found.size(), this.module.getCore().getWorldManager().getWorlds().size());
+            sender.sendTranslated("&eFound &6%d&e universes with &6%d&e worlds!", found.size(), this.wm.getWorlds().size());
         }
         for (Universe universe : this.universes.values())
         {
             for (World world : universe.getWorlds())
             {
-                this.worlds.put(world, universe);
+                this.worlds.put(world.getName(), universe);
             }
         }
         if (this.config.mainUniverse == null || this.universes.get(this.config.mainUniverse) == null)
@@ -174,8 +175,6 @@ public class Multiverse implements Listener
             this.config.mainUniverse = universe.getName();
             this.config.save();
         }
-        this.mainWorld = this.universes.get(this.config.mainUniverse).getMainWorld();
-
         this.module.getCore().getEventManager().registerListener(this.module, this);
     }
 
@@ -441,7 +440,7 @@ public class Multiverse implements Listener
             this.module.getLog().debug("Created PlayerConfig for {}" , player.getName());
             config = this.module.getCore().getConfigFactory().create(PlayerConfig.class);
         }
-        config.lastWorld = new ConfigWorld(module.getCore().getWorldManager(), player.getWorld()); // update last world
+        config.lastWorld = new ConfigWorld(this.wm, player.getWorld()); // update last world
         config.setFile(path.toFile());
         config.save();
     }
@@ -450,7 +449,7 @@ public class Multiverse implements Listener
     {
         Path path = this.dirPlayers.resolve(player.getName() + YAML.getExtention());
         PlayerConfig config = this.module.getCore().getConfigFactory().load(PlayerConfig.class, path.toFile());
-        config.lastWorld = new ConfigWorld(module.getCore().getWorldManager(), player.getWorld());
+        config.lastWorld = new ConfigWorld(this.wm, player.getWorld());
         config.save();
         this.module.getLog().debug("{} is now in the world: {} ({})", player.getName(), player.getWorld().getName(), this.getUniverseFrom(player
                                                                                                                                               .getWorld()).getName());
@@ -459,6 +458,19 @@ public class Multiverse implements Listener
     private WorldConfig getWorldConfig(World world)
     {
         return this.getUniverseFrom(world).getWorldConfig(world);
+    }
+
+
+    public WorldConfig getWorldConfig(String name)
+    {
+        for (Universe universe : this.universes.values())
+        {
+            if (universe.hasWorld(name))
+            {
+                return universe.getWorldConfig(name);
+            }
+        }
+        return null;
     }
 
     public Permission getUniverseRootPerm()
@@ -547,11 +559,16 @@ public class Multiverse implements Listener
 
     public World getMainWorld()
     {
-        return mainWorld;
+        return this.getMainUniverse().getMainWorld();
     }
 
     public Universe getUniverse(String name)
     {
         return this.universes.get(name);
+    }
+
+    public Universe getMainUniverse()
+    {
+        return this.universes.get(this.config.mainUniverse);
     }
 }

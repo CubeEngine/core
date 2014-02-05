@@ -287,9 +287,15 @@ public class WorldsCommands extends ContainerCommand
     }
     // list / list worlds that you can enter
 
-    @Command(desc = "Show info about a world")
+    @Command(desc = "Show info about a world", usage = "<world>", max = 1, min = 1)
     public void info(CommandContext context)
     {
+        WorldConfig config = multiverse.getWorldConfig(context.getString(0));
+        if (config == null)
+        {
+            context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
+        }
+        context.sendTranslated("&aWorldInformation for &6%s&a:", context.getString(0));
         context.sendMessage("TODO"); // TODO
     }
     // info
