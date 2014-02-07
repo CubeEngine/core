@@ -311,7 +311,7 @@ public class Multiverse implements Listener
     public void onEntityPortal(EntityPortalEvent event)
     {
         World world = event.getEntity().getWorld();
-        Universe universe = this.getUniverseFrom(world);
+        Universe fromUniverse = this.getUniverseFrom(world);
         TravelAgent agent = event.getPortalTravelAgent();
         if (event.getTo() == null)
         {
@@ -320,43 +320,54 @@ public class Multiverse implements Listener
         switch (event.getTo().getWorld().getEnvironment())
         {
         case NETHER:
-            if (universe.hasNetherTarget(world))
+            if (fromUniverse.hasNetherTarget(world))
             {
-                event.setTo(universe.handleNetherTarget(event.getFrom(), agent));
+                event.setTo(fromUniverse.handleNetherTarget(event.getFrom(), agent));
                 event.useTravelAgent(true);
             }
             break;
         case THE_END:
-            if (universe.hasEndTarget(world))
+            if (fromUniverse.hasEndTarget(world))
             {
-                event.setTo(universe.handleEndTarget(event.getEntity().getLocation()));
+                event.setTo(fromUniverse.handleEndTarget(event.getEntity().getLocation()));
                 event.useTravelAgent(true);
             }
             break;
         case NORMAL:
             if (event.getFrom().getWorld().getEnvironment() == Environment.THE_END)
             {
-                event.setTo(universe.handleEndTarget(event.getFrom()));
+                event.setTo(fromUniverse.handleEndTarget(event.getFrom()));
             }
             else
             {
-                event.setTo(universe.handleNetherTarget(event.getFrom(), event.getPortalTravelAgent()));
+                event.setTo(fromUniverse.handleNetherTarget(event.getFrom(), event.getPortalTravelAgent()));
                 event.useTravelAgent(true);
             }
         }
-        if (this.getUniverseFrom(event.getTo().getWorld()) != universe) // Changing universe
+        if (this.getUniverseFrom(event.getTo().getWorld()) != fromUniverse) // Changing universe
         {
             if (event.getEntity() instanceof Player)
             {
                 return;
             }
-            if (event.getEntity() instanceof InventoryHolder)
+            Universe toUniverse = this.getUniverseFrom(event.getTo().getWorld());
+            if (fromUniverse.getConfig().entityTp.enable && toUniverse.getConfig().entityTp.enable)
             {
-                event.setCancelled(true); // TODO config allow entities with inventory to travel to other universe
+                if (event.getEntity() instanceof InventoryHolder)
+                {
+                    if (fromUniverse.getConfig().entityTp.inventory && toUniverse.getConfig().entityTp.inventory)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        event.setCancelled(true);
+                    }
+                }
             }
             else
             {
-                event.setCancelled(true); // TODO config allow entities to travel to other universe
+                event.setCancelled(true);
             }
         }
     }
