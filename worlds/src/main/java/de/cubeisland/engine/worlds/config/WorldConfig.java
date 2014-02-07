@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
@@ -34,8 +35,10 @@ import org.bukkit.WorldType;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
+import de.cubeisland.engine.worlds.Worlds;
 
 public class WorldConfig extends YamlConfiguration
 {
@@ -247,6 +250,20 @@ public class WorldConfig extends YamlConfiguration
         if (this.generation.environment == Environment.NETHER)
         {
             this.endTarget =  null;
+        }
+        if (this.generation.environment == Environment.NETHER && Bukkit.getServer().getAllowNether())
+        {
+            CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("Nether-Worlds are disabled on this server!" +
+                                                                                              " Disabled Auto-Loading for {}",
+                                                                                          loadedFrom.getName());
+            this.autoLoad = false;
+        }
+        if (this.generation.environment == Environment.THE_END && Bukkit.getServer().getAllowEnd())
+        {
+            CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("End-Worlds are disabled on this server! " +
+                                                                                              "Disabled Auto-Loading for {}",
+                                                                                          loadedFrom.getName());
+            this.autoLoad = false;
         }
     }
 }
