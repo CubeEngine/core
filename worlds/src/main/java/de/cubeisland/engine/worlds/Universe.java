@@ -504,4 +504,9 @@ public class Universe
     {
         return this.worldConfigs.get(name);
     }
+
+    public UniverseConfig getConfig()
+    {
+        return this.universeConfig;
+    }
 }

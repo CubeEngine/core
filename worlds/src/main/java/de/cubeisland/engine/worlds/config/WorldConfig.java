@@ -59,24 +59,6 @@ public class WorldConfig extends YamlConfiguration
         public String customGenerator = null;
     }
 
-    @Override
-    public void onLoaded(File loadedFrom)
-    {
-        if (this.getDefault() == this)
-        {
-            this.generation.environment = null;
-            this.generation.seed = null;
-        }
-        if (this.generation.environment == Environment.THE_END)
-        {
-            this.netherTarget =  null;
-        }
-        if (this.generation.environment == Environment.NETHER)
-        {
-            this.endTarget =  null;
-        }
-    }
-
     @Comment("If false this world will not load automatically")
     public boolean autoLoad = true;
     @Comment("The scale of this world (used for netherportals by default NetherWorlds are at 8.0 others at 1.0)")
@@ -141,6 +123,11 @@ public class WorldConfig extends YamlConfiguration
     public GameMode gameMode = GameMode.SURVIVAL;
     @Comment("This worlds difficulty")
     public Difficulty difficulty = Difficulty.NORMAL;
+
+    @Comment("The world where NetherPortals will lead to. (This won't work in an end world)")
+    public String netherTarget;
+    @Comment("The world where EndPortals will lead to. (This won't work in a nether world)")
+    public String endTarget;
 
     public void applyToWorld(World world)
     {// TODO if anything is null take from world ; update inheritance & save
@@ -245,8 +232,21 @@ public class WorldConfig extends YamlConfiguration
         this.generation.worldType = world.getWorldType();
     }
 
-    @Comment("The world where NetherPortals will lead to. (This won't work in an end world)")
-    public String netherTarget;
-    @Comment("The world where EndPortals will lead to. (This won't work in a nether world)")
-    public String endTarget;
+    @Override
+    public void onLoaded(File loadedFrom)
+    {
+        if (this.getDefault() == this)
+        {
+            this.generation.environment = null;
+            this.generation.seed = null;
+        }
+        if (this.generation.environment == Environment.THE_END)
+        {
+            this.netherTarget =  null;
+        }
+        if (this.generation.environment == Environment.NETHER)
+        {
+            this.endTarget =  null;
+        }
+    }
 }

@@ -40,6 +40,8 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.core.world.ConfigWorld;
+import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.worlds.Multiverse;
 import de.cubeisland.engine.worlds.Universe;
 import de.cubeisland.engine.worlds.Worlds;
@@ -50,19 +52,21 @@ import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 public class WorldsCommands extends ContainerCommand
 {
     private final Multiverse multiverse;
+    private final WorldManager wm;
 
     public WorldsCommands(Worlds module, Multiverse multiverse)
     {
         super(module, "worlds", "Worlds commands");
         this.multiverse = multiverse;
+        this.wm = module.getCore().getWorldManager();
     }
 
     @Command(desc = "Creates a new world",
              usage = "<name> {universe} [env <environement>] [seed <seed>] [type <type>] [struct <true|false>] [gen <generator>] [-recreate] [-noload]",
     params = {
-    @Param(names = {"environment","env"}, type = Environment.class), // TODO reader
+    @Param(names = {"environment","env"}, type = Environment.class),
     @Param(names = "seed"),
-    @Param(names = {"worldtype","type"}, type = WorldType.class), // TODO reader
+    @Param(names = {"worldtype","type"}, type = WorldType.class),
     @Param(names = {"structure","struct"}, type = Boolean.class),
     @Param(names = {"generator","gen"})},
     max = 2, min = 1, flags = {
@@ -71,7 +75,7 @@ public class WorldsCommands extends ContainerCommand
     })
     public void create(ParameterizedContext context)
     {
-        World world = this.getModule().getCore().getWorldManager().getWorld(0);
+        World world = this.wm.getWorld(0);
         if (world != null)
         {
             if (context.hasFlag("r"))
@@ -170,7 +174,7 @@ public class WorldsCommands extends ContainerCommand
     @Command(desc = "Loads a world from configuration", usage = "<world>", min = 1, max = 1)
     public void load(CommandContext context)
     {
-        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        World world = this.wm.getWorld(context.getString(0));
         if (world != null)
         {
             context.sendTranslated("&aThe world %s is already loaded!", world.getName());
@@ -198,7 +202,7 @@ public class WorldsCommands extends ContainerCommand
              flags = @Flag(longName = "force", name = "f"))
     public void unload(ParameterizedContext context)
     {
-        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        World world = this.wm.getWorld(context.getString(0));
         if (world != null)
         {
             World tpWorld = this.multiverse.getUniverseFrom(world).getMainWorld();
@@ -227,7 +231,7 @@ public class WorldsCommands extends ContainerCommand
                 }
                 context.sendTranslated("&aTeleported all players out of &6%s", world.getName());
             }
-            if (this.getModule().getCore().getWorldManager().unloadWorld(world, true))
+            if (this.wm.unloadWorld(world, true))
             {
                 context.sendTranslated("&aUnloaded the world &6%s&a!", world.getName());
             }
@@ -248,7 +252,7 @@ public class WorldsCommands extends ContainerCommand
     flags = @Flag(name = "f", longName = "folder"), max = 1, min = 1)
     public void remove(CommandContext context)
     {
-        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        World world = this.wm.getWorld(context.getString(0));
         if (world != null)
         {
             context.sendTranslated("&cYou have to unload the world first!");
@@ -273,7 +277,7 @@ public class WorldsCommands extends ContainerCommand
         {
             for (Pair<String, WorldConfig> pair : universe.getAllWorlds())
             {
-                World world = this.getModule().getCore().getWorldManager().getWorld(pair.getLeft());
+                World world = this.wm.getWorld(pair.getLeft());
                 if (world == null)
                 {
                     context.sendTranslated("&6%s &9%s &c(not loaded)&a in the universe &6%s", pair.getLeft(), pair.getRight().generation.environment.name(), universe.getName());
@@ -303,7 +307,7 @@ public class WorldsCommands extends ContainerCommand
     @Command(desc = "Lists the players in a world", usage = "<world>", min = 1, max = 1)
     public void listplayers(CommandContext context)
     {
-        World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+        World world = this.wm.getWorld(context.getString(0));
         if (world == null)
         {
             context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
@@ -326,10 +330,18 @@ public class WorldsCommands extends ContainerCommand
 
     // create nether & create end commands / auto link to world / only works for NORMAL Env worlds
 
-    @Command(desc = "Sets the main world")
+    @Command(desc = "Sets the main world", usage = "<world>", max = 1, min = 1)
     public void setMainWorld(CommandContext context)
     {
-        context.sendMessage("TODO"); // TODO
+        World world = this.wm.getWorld(context.getString(0));
+        if (world == null)
+        {
+            context.sendTranslated("&cWorld &6%s&c not found!");
+            return;
+        }
+        Universe universe = multiverse.getUniverseFrom(world);
+        universe.getConfig().mainWorld = new ConfigWorld(this.wm, world);
+        context.sendTranslated("&6%s&a is now the main world of the universe &6%s", world.getName(), universe.getName());
     }
     // set main world (of universe) (of universes)
     // set main universe
@@ -369,7 +381,7 @@ public class WorldsCommands extends ContainerCommand
                 context.sendTranslated("&cUniverse &6%s&c not found!", name);
                 return;
             }
-            World world = this.getModule().getCore().getWorldManager().getWorld(name);
+            World world = this.wm.getWorld(name);
             if (world == null)
             {
                 context.sendTranslated("&cWorld &6%s&c not found!");
