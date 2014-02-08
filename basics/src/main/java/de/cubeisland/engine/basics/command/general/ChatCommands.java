@@ -86,7 +86,7 @@ public class ChatCommands
         }
         if (!this.sendWhisperTo(lastWhisper, context.getStrings(0), context))
         {
-            context.sendTranslated("&cCould not find the player &2%s&c to reply to. &eIs he offline?", lastWhisper);
+            context.sendTranslated("&cCould not find the player &2%s&c to reply to. &eIs the player offline?", lastWhisper);
         }
     }
 
