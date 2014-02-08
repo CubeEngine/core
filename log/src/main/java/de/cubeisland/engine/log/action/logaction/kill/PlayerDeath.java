@@ -24,12 +24,11 @@ import java.util.Set;
 import org.bukkit.World;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.cubeisland.engine.log.action.ActionTypeCategory.*;
 
@@ -70,7 +69,15 @@ public class PlayerDeath extends SimpleLogActionType
         {
             JsonNode json = logEntry.getAdditional();
             DamageCause dmgC = DamageCause.valueOf(json.get("dmgC").asText());
-            user.sendTranslated("&2%s &adied &f(&6%s&f)",//TODO NPE why??? does it still happen
+            if (logEntry.getUserFromData() == null)
+            {
+                user.sendTranslated("&aA Player died &f(&6%s&f)",
+                                    logEntry.getUserFromData().getName(),
+                                    dmgC.name());//TODO get pretty name for dmgC
+                return;
+            }
+
+            user.sendTranslated("&2%s &adied &f(&6%s&f)",
                                 logEntry.getUserFromData().getName(),
                                 dmgC.name());//TODO get pretty name for dmgC
         }

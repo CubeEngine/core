@@ -29,10 +29,10 @@ import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.LogActionType;
 import de.cubeisland.engine.log.action.logaction.container.ContainerType;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public abstract class SimpleLogActionType extends LogActionType
 {
@@ -43,7 +43,15 @@ public abstract class SimpleLogActionType extends LogActionType
 
     public void logSimple(Location location, Entity causer, Entity data, String additional)
     {
-        this.queueLog(location, causer, null, -1L * data.getType().getTypeId(), null, null, additional);
+        if (data instanceof Player)
+        {
+            User user = this.logModule.getCore().getUserManager().getExactUser(((Player)data).getName());
+            this.queueLog(location, causer, null, user.getId(), null, null, additional);
+        }
+        else
+        {
+            this.queueLog(location, causer, null, -1L * data.getType().getTypeId(), null, null, additional);
+        }
     }
 
     public String serializeData(EntityDamageEvent.DamageCause cause, Entity entity, DyeColor newColor)
