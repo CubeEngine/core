@@ -279,7 +279,7 @@ public class BackpackCommands extends ContainerCommand
                 }
                 else
                 {
-                    enchantment = Match.enchant().enchantment(ench.substring(0, ench.indexOf(":")));
+                    enchantment = Match.enchant().enchantment(ench);
                     if (enchantment == null)
                     {
                         context.sendTranslated("&cUnknown Enchantment &6%s", ench);
