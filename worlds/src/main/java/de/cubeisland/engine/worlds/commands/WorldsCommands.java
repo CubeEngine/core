@@ -265,7 +265,7 @@ public class WorldsCommands extends ContainerCommand
             return;
         }
         universe.removeWorld(context.getString(0));
-        context.sendTranslated("&cConfiguration for the world &6%s&c removed!", world.getName());
+        context.sendTranslated("&cConfiguration for the world &6%s&c removed!", context.getString(0));
         // TODO folder flag permission
     }
 

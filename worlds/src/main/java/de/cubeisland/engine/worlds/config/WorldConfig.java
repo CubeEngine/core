@@ -251,14 +251,14 @@ public class WorldConfig extends YamlConfiguration
         {
             this.endTarget =  null;
         }
-        if (this.generation.environment == Environment.NETHER && Bukkit.getServer().getAllowNether())
+        if (this.generation.environment == Environment.NETHER && !Bukkit.getServer().getAllowNether())
         {
             CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("Nether-Worlds are disabled on this server!" +
                                                                                               " Disabled Auto-Loading for {}",
                                                                                           loadedFrom.getName());
             this.autoLoad = false;
         }
-        if (this.generation.environment == Environment.THE_END && Bukkit.getServer().getAllowEnd())
+        if (this.generation.environment == Environment.THE_END && !Bukkit.getServer().getAllowEnd())
         {
             CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("End-Worlds are disabled on this server! " +
                                                                                               "Disabled Auto-Loading for {}",
