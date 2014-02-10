@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RolesAttachment;
+import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 
 public class SpawnListener implements Listener
 {
@@ -84,10 +85,10 @@ public class SpawnListener implements Listener
                 this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
-            String spawnString = rolesAttachment.getCurrentMetadataString("rolespawn");
-            if (spawnString != null)
+            ResolvedMetadata roleSpawnMeta = rolesAttachment.getDataHolder(event.getRespawnLocation().getWorld()).getMetadata().get("rolespawn");
+            if (roleSpawnMeta != null && roleSpawnMeta.getValue() != null)
             {
-                Location spawnLoc = this.getSpawnLocation(spawnString);
+                Location spawnLoc = this.getSpawnLocation(roleSpawnMeta.getValue());
                 if (spawnLoc == null)
                 {
                     roles.getLog().warn("Invalid Location. Check your role-configuration!");
