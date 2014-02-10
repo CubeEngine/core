@@ -399,9 +399,8 @@ public class Multiverse implements Listener
     {
         if (!event.isBedSpawn())
         {
-            World world = event.getPlayer().getWorld();
-            Universe universe = this.getUniverseFrom(world);
-            event.setRespawnLocation(universe.getRespawnLocation(world));
+            World world = event.getRespawnLocation().getWorld();
+            event.setRespawnLocation(this.getUniverseFrom(world).getRespawnLocation(world));
         }
     }
 
