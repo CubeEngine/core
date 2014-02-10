@@ -50,7 +50,9 @@ public class LogFactory extends DefaultLogFactory
                                             true, LoggingUtil.getCycler(),
                                             core.getTaskManager().getThreadFactory()));
 
-        log4jProxyTarget.getHandle().addAppender(new ExceptionAppender(this.exLog));
+        ExceptionAppender exceptionAppender = new ExceptionAppender(this.exLog);
+        exceptionAppender.start();
+        log4jProxyTarget.getHandle().addAppender(exceptionAppender);
 
         log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
 
