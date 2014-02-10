@@ -21,18 +21,16 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.logging.DefaultLogFactory;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
-import de.cubeisland.engine.logging.LogTarget;
-import de.cubeisland.engine.logging.filter.ExceptionFilter;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
-import de.cubeisland.engine.logging.target.proxy.LogProxyTarget;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
 public class LogFactory extends DefaultLogFactory
 {
     protected final Core core;
-    protected final LogTarget exceptionTarget;
+
+    private final Log exLog;
 
     protected Log coreLog;
     private final Log parent;
@@ -46,14 +44,14 @@ public class LogFactory extends DefaultLogFactory
         log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
         this.parent.addTarget(log4jProxyTarget);
 
-        Log exLog = this.getLog(Core.class, "Exceptions");
+        exLog = this.getLog(Core.class, "Exceptions");
         exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Exceptions"),
-                                               LoggingUtil.getFileFormat(true, false),
-                                               true, LoggingUtil.getCycler(),
-                                               core.getTaskManager().getThreadFactory()));
-        this.exceptionTarget = new LogProxyTarget(exLog);
-        this.exceptionTarget.appendFilter(new ExceptionFilter());
-        this.parent.addTarget(exceptionTarget);
+                                            LoggingUtil.getFileFormat(true, false),
+                                            true, LoggingUtil.getCycler(),
+                                            core.getTaskManager().getThreadFactory()));
+
+        log4jProxyTarget.getHandle().addAppender(new ExceptionAppender(this.exLog));
+
         log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
 
         if (core.getConfiguration().logging.logCommands)

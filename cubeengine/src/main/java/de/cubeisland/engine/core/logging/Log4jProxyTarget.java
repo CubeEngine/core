@@ -75,4 +75,9 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
     {
         // this is not our logger! Let bukkit handle it
     }
+
+    Logger getHandle()
+    {
+        return handle;
+    }
 }
