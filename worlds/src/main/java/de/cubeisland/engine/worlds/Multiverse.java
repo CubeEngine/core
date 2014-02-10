@@ -495,7 +495,7 @@ public class Multiverse implements Listener
         {
             return null;
         }
-        Universe universe = this.worlds.get(world);
+        Universe universe = this.worlds.get(world.getName());
         if (universe == null)
         {
             HashSet<World> set = new HashSet<>();
