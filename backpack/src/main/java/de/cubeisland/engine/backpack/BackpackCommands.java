@@ -20,14 +20,11 @@ package de.cubeisland.engine.backpack;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -35,23 +32,22 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.backpack.BackpackPermissions.OPEN_OTHER_USER;
-import static de.cubeisland.engine.backpack.BackpackPermissions.OPEN_OTHER_WORLDS;
 import static java.util.Arrays.asList;
 
 public class BackpackCommands extends ContainerCommand
 {
-    private BackpackManager manager;
+    private final Backpack module;
+    private final BackpackManager manager;
 
     public BackpackCommands(Backpack module, BackpackManager manager)
     {
         super(module, "backpack", "The Backpack commands");
+        this.module = module;
         this.setAliases(new HashSet<>(asList("bp")));
         this.manager = manager;
     }
@@ -60,7 +56,7 @@ public class BackpackCommands extends ContainerCommand
     @Command(desc = "opens a backpack", usage = "<name> [user] [w <world>]",
              params = @Param(names = {"w", "world", "for", "in"},
                               completer = WorldCompleter.class, type = World.class),
-             min = 1, max = 1)
+             min = 1, max = 2)
     public void open(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -85,12 +81,12 @@ public class BackpackCommands extends ContainerCommand
                     return;
                 }
             }
-            if (context.getSender() != forUser && !OPEN_OTHER_USER.isAuthorized(context.getSender()))
+            if (context.getSender() != forUser && !module.perms().OPEN_OTHER_USER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to open the backpacks of other users!");
                 return;
             }
-            if (forUser.getWorld() != forWorld && ! OPEN_OTHER_WORLDS.isAuthorized(context.getSender()))
+            if (forUser.getWorld() != forWorld && ! module.perms().OPEN_OTHER_WORLDS.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to open backpacks from an other world!");
                 return;
@@ -118,12 +114,7 @@ public class BackpackCommands extends ContainerCommand
     {
         User forUser = null;
         World forWorld = null;
-        if (context.getSender() instanceof User)
-        {
-            forUser = (User)context.getSender();
-            forWorld = ((User)context.getSender()).getWorld();
-        }
-        else if (context.hasParam("w"))
+        if (context.hasParam("w"))
         {
             forWorld = context.getParam("w", null);
             if (forWorld == null)
@@ -131,6 +122,11 @@ public class BackpackCommands extends ContainerCommand
                 context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
                 return;
             }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            forUser = (User)context.getSender();
+            forWorld = ((User)context.getSender()).getWorld();
         }
         else if (!context.hasFlag("g"))
         {
@@ -157,14 +153,14 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "modifybp")
     @Command(desc = "modifies a backpack",
-             usage = "<name> [user] [w <world>] [pages <pages>] [blockinput <true|false>]",
+             usage = "<name> [user] [w <world>] [pages <pages>] [s <size>] [blockinput <true|false>]",
     params = {
         @Param(names = {"p","pages"}, type = Integer.class),
         @Param(names = {"s","size"}, type = Integer.class),
         @Param(names = {"b","blockinput"}, type = Boolean.class),
         @Param(names = {"w", "world", "for", "in"},
                completer = WorldCompleter.class, type = World.class),
-    })
+    }, min = 1, max = 2)
     public void modify(ParameterizedContext context)
     {
         User forUser = null;
@@ -287,7 +283,7 @@ public class BackpackCommands extends ContainerCommand
                 }
                 else
                 {
-                    enchantment = Match.enchant().enchantment(ench.substring(0, ench.indexOf(":")));
+                    enchantment = Match.enchant().enchantment(ench);
                     if (enchantment == null)
                     {
                         context.sendTranslated("&cUnknown Enchantment &6%s", ench);

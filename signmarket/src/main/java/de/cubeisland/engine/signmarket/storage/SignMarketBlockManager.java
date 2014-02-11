@@ -31,8 +31,8 @@ public class SignMarketBlockManager
 {
     private THashMap<Location,SignMarketBlockModel> blockModels;
 
-    private Signmarket module;
-    private DSLContext dsl;
+    private final Signmarket module;
+    private final DSLContext dsl;
 
     public SignMarketBlockManager(Signmarket module)
     {

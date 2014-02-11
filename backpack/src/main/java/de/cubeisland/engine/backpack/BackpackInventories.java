@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -40,8 +39,8 @@ public class BackpackInventories
     private final Backpack module;
     protected BackpackData data;
 
-    private Map<Player, Integer> viewers = new HashMap<>();
-    private Map<Integer, BackpackHolder> views = new HashMap<>();
+    private final Map<Player, Integer> viewers = new HashMap<>();
+    private final Map<Integer, BackpackHolder> views = new HashMap<>();
     
     private static final String pageString = ChatFormat.parseFormats("&6Page ");
 

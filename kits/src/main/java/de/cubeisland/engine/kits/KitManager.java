@@ -62,8 +62,8 @@ public class KitManager implements Listener
         }
     }
 
-    private THashMap<String, Kit> kitMap = new THashMap<>();
-    private THashMap<Kit, KitConfiguration> kitConfigMap = new THashMap<>();
+    private final THashMap<String, Kit> kitMap = new THashMap<>();
+    private final THashMap<Kit, KitConfiguration> kitConfigMap = new THashMap<>();
 
     public Kit getKit(String name)
     {

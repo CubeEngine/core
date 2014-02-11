@@ -157,7 +157,7 @@ public class SignMarketItemModel extends UpdatableRecordImpl<SignMarketItemModel
     }
 
     @Transient
-    private THashSet<MarketSign> sharedStockSigns = new THashSet<>();
+    private final THashSet<MarketSign> sharedStockSigns = new THashSet<>();
 
     public void removeSign(MarketSign marketSign)
     {

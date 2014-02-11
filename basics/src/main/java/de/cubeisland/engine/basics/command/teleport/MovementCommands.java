@@ -23,6 +23,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -30,9 +32,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.LocationUtil;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 /**
  * Contains commands for fast movement. /up /ascend /descend /jumpto /through
@@ -40,12 +39,11 @@ import de.cubeisland.engine.basics.BasicsPerm;
  */
 public class MovementCommands
 {
+    private final Basics module;
 
-    private Basics basics;
-
-    public MovementCommands(Basics basics)
+    public MovementCommands(Basics module)
     {
-        this.basics = basics;
+        this.module = module;
     }
 
     @Command(desc = "Teleports you x-amount of blocks into the air and puts a glassblock beneath you.", usage = "<height>", min = 1, max = 1)
@@ -196,7 +194,7 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.getTargetBlock(this.basics.getConfiguration().navigation.jumpToMaxRange).getLocation();
+            Location loc = sender.getTargetBlock(this.module.getConfiguration().navigation.jumpToMaxRange).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
                 context.sendTranslated("&cNo block in sight!");
@@ -221,8 +219,8 @@ public class MovementCommands
         {
             User sender = (User)context.getSender();
             Location loc = LocationUtil.getBlockBehindWall(sender,
-                    this.basics.getConfiguration().navigation.thru.maxRange,
-                    this.basics.getConfiguration().navigation.thru.maxWallThickness);
+                    this.module.getConfiguration().navigation.thru.maxRange,
+                    this.module.getConfiguration().navigation.thru.maxWallThickness);
             if (loc == null)
             {
                 sender.sendTranslated("&cNothing to pass through!");
@@ -245,9 +243,9 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            boolean backPerm = BasicsPerm.COMMAND_BACK.isAuthorized(sender);
+            boolean backPerm = module.perms().COMMAND_BACK_USE.isAuthorized(sender);
             boolean safe = !context.hasFlag("u");
-            if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(sender))
+            if (module.perms().COMMAND_BACK_ONDEATH.isAuthorized(sender))
             {
                 Location loc = sender.get(BasicsAttachment.class).getDeathLocation();
                 if (!backPerm && loc == null)

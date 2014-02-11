@@ -150,4 +150,47 @@ public class ItemRemove extends SimpleLogActionType
     {
         return true;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        Location loc = logEntry.getLocation();
+        Material material = logEntry.getContainerTypeFromBlock().getMaterial();
+        if (material.equals(Material.STORAGE_MINECART))
+        {
+            // TODO MinecartInventoryHolders
+        }
+        else
+        {
+            BlockState block = loc.getBlock().getState();
+            if (block instanceof InventoryHolder && block.getType().equals(material)) // Same containertype
+            {
+                ItemData itemData = logEntry.getItemData();
+                InventoryHolder holder = (InventoryHolder)block;
+                itemData.amount = -itemData.amount;
+                HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
+                if (!couldNotRemove.isEmpty())
+                {
+                    if (force)
+                    {
+                        attachment.getHolder().sendTranslated("&cCould not rollback an item-remove!");
+                    }
+                    return false;
+                }
+                return true;
+            }
+            if (force)
+            {
+                attachment.getHolder().sendTranslated("&cInvalid Container to rollback item-remove!");
+            }
+            return false;
+        }
+        return false;
+    }
 }

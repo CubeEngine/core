@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import gnu.trove.map.TObjectLongMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class helps profiling code
  */
@@ -45,7 +47,7 @@ public class Profiler
     public static long getCurrentDelta(String id)
     {
         final long nanos = System.nanoTime();
-        assert id != null: "The ID must not be null!";
+        expectNotNull(id, "The ID must not be null!");
         synchronized (startTimes)
         {
             if (!startTimes.containsKey(id))
@@ -64,7 +66,7 @@ public class Profiler
     public static long endProfiling(String id)
     {
         final long delta = System.nanoTime();
-        assert id != null: "The ID must not be null!";
+        expectNotNull(id, "The ID must not be null!");
         synchronized (startTimes)
         {
             return delta - startTimes.remove(id);

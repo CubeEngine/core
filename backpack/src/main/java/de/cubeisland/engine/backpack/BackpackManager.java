@@ -50,7 +50,12 @@ public class BackpackManager implements Listener
         BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
+            if (sender != forUser)
+            {
+                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                return;
+            }
+            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
             return;
         }
         backPack.openInventory(sender);
@@ -129,7 +134,12 @@ public class BackpackManager implements Listener
         BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
+            if (sender != forUser)
+            {
+                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                return;
+            }
+            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
             return;
         }
         backPack.addItem(itemToGive);
@@ -147,7 +157,12 @@ public class BackpackManager implements Listener
         BackpackInventories backPack = attachment.getBackpack(name, forWorld);
         if (backPack == null)
         {
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name); // TODO
+            if (sender != forUser)
+            {
+                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                return;
+            }
+            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
             return;
         }
         if (pages != null)

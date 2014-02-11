@@ -43,8 +43,8 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.LockerAttachment;
-import de.cubeisland.engine.locker.LockerPerm;
 import org.jooq.Result;
 
 import static de.cubeisland.engine.locker.storage.AccessListModel.*;
@@ -53,7 +53,8 @@ import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_L
 
 public class Lock
 {
-    private LockManager manager;
+    private final Locker module;
+    private final LockManager manager;
     protected final LockModel model;
     protected final ArrayList<Location> locations = new ArrayList<>();
 
@@ -67,6 +68,7 @@ public class Lock
      */
     public Lock(LockManager manager, LockModel model)
     {
+        this.module = manager.module;
         this.manager = manager;
         this.model = model;
         this.checkLockType();
@@ -134,7 +136,7 @@ public class Lock
             event.setCancelled(true);
             return false;
         }
-        return keyBookUsed != null || this.checkForUnlocked(user) || LockerPerm.ACCESS_OTHER.isAuthorized(user);
+        return keyBookUsed != null || this.checkForUnlocked(user) || module.perms().ACCESS_OTHER.isAuthorized(user);
     }
 
     public boolean checkForUnlocked(User user)
@@ -221,7 +223,7 @@ public class Lock
      */
     public void modifyLock(User user, String usersString)
     {
-        if (this.isOwner(user) || this.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
+        if (this.isOwner(user) || this.hasAdmin(user) || module.perms().CMD_MODIFY_OTHER.isAuthorized(user))
         {
             if (!this.isPublic())
             {
@@ -372,10 +374,10 @@ public class Lock
                 throw new IllegalStateException();
         }
         AccessListModel access = this.getAccess(user);
-        if (access == null || !(access.canIn() && access.canOut()) || LockerPerm.ACCESS_OTHER.isAuthorized(user)) // No access Or not full access
+        if (access == null || !(access.canIn() && access.canOut()) || module.perms().ACCESS_OTHER.isAuthorized(user)) // No access Or not full access
         {
             event.setCancelled(true);
-            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
                 user.sendTranslated("&cA magical lock from &2%s&c prevents you from using this door!", this.getOwner().getName());
             }
@@ -404,7 +406,7 @@ public class Lock
 
     public void handleInventoryOpen(Cancellable event, Inventory protectedInventory, Location soundLocation, User user)
     {
-        if (soundLocation != null && LockerPerm.SHOW_OWNER.isAuthorized(user))
+        if (soundLocation != null && module.perms().SHOW_OWNER.isAuthorized(user))
         {
             user.sendTranslated("&eThis inventory is protected by &2%s", this.getOwner().getName());
         }
@@ -429,10 +431,10 @@ public class Lock
                 out = true;
         }
         AccessListModel access = this.getAccess(user);
-        if (access == null && this.getLockType() == LockType.PRIVATE && !LockerPerm.ACCESS_OTHER.isAuthorized(user))
+        if (access == null && this.getLockType() == LockType.PRIVATE && !module.perms().ACCESS_OTHER.isAuthorized(user))
         {
             event.setCancelled(true); // private & no access
-            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
                 user.sendTranslated("&cA magical lock from &2%s&c prevents you from accessing this inventory!", this.getOwner().getName());
             }
@@ -449,7 +451,7 @@ public class Lock
                 out = out || access.canOut();
             }
             this.notifyUsage(user);
-            if ((in && out) || LockerPerm.ACCESS_OTHER.isAuthorized(user)) return; // Has full access
+            if ((in && out) || module.perms().ACCESS_OTHER.isAuthorized(user)) return; // Has full access
             if (protectedInventory == null) return; // Just checking else do lock
             InventoryGuardFactory inventoryGuardFactory = InventoryGuardFactory.prepareInventory(protectedInventory, user);
             if (!in)
@@ -468,7 +470,7 @@ public class Lock
 
     public void handleEntityInteract(Cancellable event, User user)
     {
-        if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+        if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
             user.sendTranslated("&eThis entity is protected by &2%s", this.getOwner().getName());
         }
@@ -486,7 +488,7 @@ public class Lock
         if (access == null && this.getLockType() == LockType.PRIVATE)
         {
             event.setCancelled(true); // private & no access
-            if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+            if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
                 user.sendTranslated("&cMagic from &2%s&c repelled your attempts to reach this entity!", this.getOwner().getName());
             }
@@ -516,7 +518,7 @@ public class Lock
 
     public void handleBlockBreak(BlockBreakEvent event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.BREAK_OTHER.isAuthorized(user))
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || module.perms().BREAK_OTHER.isAuthorized(user))
         {
             this.delete(user);
             return;
@@ -525,9 +527,26 @@ public class Lock
         user.sendTranslated("&cMagic prevents you from breaking this protection!");
     }
 
+
+    public void handleBlockInteract(Cancellable event, User user)
+    {
+        if (module.perms().SHOW_OWNER.isAuthorized(user))
+        {
+            user.sendTranslated("&eThis block is protected by &2%s", this.getOwner().getName());
+        }
+        if (this.getLockType() == PUBLIC) return;
+        if (this.handleAccess(user, null, event))
+        {
+            this.notifyUsage(user);
+            return;
+        }
+        event.setCancelled(true);
+        user.sendTranslated("&cMagic prevents you from interacting with this block!");
+    }
+
     public boolean handleEntityDamage(Cancellable event, User user)
     {
-        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || LockerPerm.BREAK_OTHER.isAuthorized(user))
+        if (this.model.getOwnerId().equals(user.getEntity().getKey()) || module.perms().BREAK_OTHER.isAuthorized(user))
         {
             user.sendTranslated("&eThe magic surrounding this entity quivers as you hit it!");
             return true;
@@ -599,7 +618,7 @@ public class Lock
 
     public void notifyUsage(User user)
     {
-        if (LockerPerm.PREVENT_NOTIFY.isAuthorized(user)) return;
+        if (module.perms().PREVENT_NOTIFY.isAuthorized(user)) return;
         if (this.hasFlag(ProtectionFlag.NOTIFY_ACCESS))
         {
             if (user.equals(this.getOwner()))
@@ -658,7 +677,7 @@ public class Lock
 
     public void showInfo(User user)
     {
-        if (this.isOwner(user) || this.hasAdmin(user) || LockerPerm.CMD_INFO_OTHER.isAuthorized(user))
+        if (this.isOwner(user) || this.hasAdmin(user) || module.perms().CMD_INFO_OTHER.isAuthorized(user))
         {
             user.sendMessage("");
             user.sendTranslated("&aProtection: &6#%d&a Type: &6%s&a by &6%s", this.getId(), this.getLockType().name(), this.getOwner().getName());
@@ -718,7 +737,7 @@ public class Lock
         }
         else
         {
-            if (LockerPerm.CMD_INFO_SHOW_OWNER.isAuthorized(user))
+            if (module.perms().CMD_INFO_SHOW_OWNER.isAuthorized(user))
             {
                 user.sendTranslated("&aProtectionType: &6%s&a Owner: &2%s", this.getLockType().name(), this.getOwner().getName());
             }
@@ -814,7 +833,7 @@ public class Lock
             user.sendTranslated("&eYou cannot open the heavy door!");
             return;
         }
-        if (LockerPerm.SHOW_OWNER.isAuthorized(user))
+        if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
             user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
         }

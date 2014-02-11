@@ -45,12 +45,12 @@ public class InventoryGuard implements Listener
     private boolean blockAllIn = false;
     private boolean blockAllOut = false;
 
-    private HashSet<GuardedItemStack> blockIn = new HashSet<>();
-    private HashSet<GuardedItemStack> blockOut = new HashSet<>();
-    private HashSet<GuardedItemStack> noBlockIn = new HashSet<>();
-    private HashSet<GuardedItemStack> noBlockOut = new HashSet<>();
-    private HashSet<Runnable> onClose = new HashSet<>();
-    private HashSet<Runnable> onChange = new HashSet<>();
+    private final HashSet<GuardedItemStack> blockIn = new HashSet<>();
+    private final HashSet<GuardedItemStack> blockOut = new HashSet<>();
+    private final HashSet<GuardedItemStack> noBlockIn = new HashSet<>();
+    private final HashSet<GuardedItemStack> noBlockOut = new HashSet<>();
+    private final HashSet<Runnable> onClose = new HashSet<>();
+    private final HashSet<Runnable> onChange = new HashSet<>();
 
     private boolean ignoreRepaircost = true;
 

@@ -33,13 +33,12 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.user.User;
 
 public class PaintingListener implements Listener
 {
     private final Basics module;
-    private Map<String, Painting> paintingChange;
+    private final Map<String, Painting> paintingChange;
 
     public PaintingListener(Basics module)
     {
@@ -54,7 +53,7 @@ public class PaintingListener implements Listener
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
 
-            if (!BasicsPerm.CHANGEPAINTING.isAuthorized(user))
+            if (!module.perms().CHANGEPAINTING.isAuthorized(user))
             {
                 user.sendTranslated("&cYou are not allowed to change the painting.");
                 return;
@@ -109,20 +108,34 @@ public class PaintingListener implements Listener
                     return;
                 }
 
+                Art[] arts = Art.values();
                 int artNumber = painting.getArt().ordinal();
-                do
+                int change = this.compareSlots(event.getPreviousSlot(), event.getNewSlot());
+                artNumber += change;
+                if (artNumber >= arts.length)
                 {
-                    artNumber += this.compareSlots(event.getPreviousSlot(), event.getNewSlot());
-                    if (artNumber >= Art.values().length)
+                    artNumber = 0;
+                }
+                else if(artNumber < 0)
+                {
+                    artNumber = arts.length - 1;
+                }
+                for (Art art : arts)
+                {
+                    if (painting.setArt(arts[artNumber]))
+                    {
+                        return;
+                    }
+                    artNumber += change;
+                    if (artNumber >= arts.length)
                     {
                         artNumber = 0;
                     }
-                    else if(artNumber < 0)
+                    if (artNumber == -1)
                     {
-                        artNumber = Art.values().length - 1;
+                        artNumber = arts.length - 1;
                     }
                 }
-                while (!painting.setArt(Art.values()[artNumber]));
             }
         }
     }

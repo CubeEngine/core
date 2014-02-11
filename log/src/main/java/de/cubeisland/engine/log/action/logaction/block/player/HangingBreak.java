@@ -109,7 +109,13 @@ public class HangingBreak extends BlockActionType
                 Projectile projectile = (Projectile) event.getRemover();
                 if (projectile.getShooter() != null)
                 {
-                    causer = projectile.getShooter();
+                    if (projectile.getShooter() instanceof Entity)
+                    {
+                        causer = (Entity)projectile.getShooter();
+                    }
+                    else {
+                        // TODO other shooter
+                    }
                 }
             }
             else if (event.getRemover() instanceof Player)
@@ -134,7 +140,7 @@ public class HangingBreak extends BlockActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location, Pair<Entity, BlockActionType>> plannedHangingBreak = new ConcurrentHashMap<>();
+    private final Map<Location, Pair<Entity, BlockActionType>> plannedHangingBreak = new ConcurrentHashMap<>();
     public void preplanHangingBreak(Location location, Entity player, BlockActionType cause)
     {
         plannedHangingBreak.put(location, new Pair<>(player, cause));

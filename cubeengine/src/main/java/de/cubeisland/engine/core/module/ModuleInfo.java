@@ -30,6 +30,8 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.util.Version;
 import org.apache.commons.lang.Validate;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class provides information about a module.
  */
@@ -87,8 +89,8 @@ public class ModuleInfo
 
     public ModuleInfo(Path path, ModuleConfig config)
     {
-        assert config != null: "The module configuration failed to loaded!";
-        assert config.name != null: "The module doesn't seem to have a name.";
+        expectNotNull(config, "The module configuration failed to loaded!");
+        expectNotNull(config.name, "The module doesn't seem to have a name.");
 
         this.name = config.name.trim();
         Validate.notEmpty(this.name, "The module name seems to be empty.");
@@ -289,48 +291,13 @@ public class ModuleInfo
 
         ModuleInfo that = (ModuleInfo)o;
 
-        if (!minCoreVersion.equals(that.minCoreVersion))
-        {
-            return false;
-        }
-        if (!version.equals(that.version))
-        {
-            return false;
-        }
-        if (!dependencies.equals(that.dependencies))
-        {
-            return false;
-        }
-        if (description != null ? !description.equals(that.description) : that.description != null)
-        {
-            return false;
-        }
-        if (!id.equals(that.id))
-        {
-            return false;
-        }
-        if (!loadAfter.equals(that.loadAfter))
-        {
-            return false;
-        }
-        if (!main.equals(that.main))
-        {
-            return false;
-        }
-        if (!name.equals(that.name))
-        {
-            return false;
-        }
-        if (!pluginDependencies.equals(that.pluginDependencies))
-        {
-            return false;
-        }
-        if (!softDependencies.equals(that.softDependencies))
-        {
-            return false;
-        }
-
-        return true;
+        return minCoreVersion.equals(that.minCoreVersion)
+            && version.equals(that.version)
+            && dependencies.equals(that.dependencies)
+            && !(description != null ? !description.equals(that.description) : that.description != null)
+            && id.equals(that.id) && loadAfter.equals(that.loadAfter) && main.equals(that.main)
+            && name.equals(that.name) && pluginDependencies.equals(that.pluginDependencies)
+            && softDependencies.equals(that.softDependencies);
     }
 
     @Override

@@ -25,7 +25,6 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Step;
 import org.bukkit.material.WoodenStep;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.user.User;
 

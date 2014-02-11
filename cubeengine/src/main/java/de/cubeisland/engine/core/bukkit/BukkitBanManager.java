@@ -28,6 +28,7 @@ import net.minecraft.server.v1_7_R1.BanList;
 import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
 import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
@@ -36,15 +37,17 @@ import de.cubeisland.engine.core.user.User;
 
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.CubeEngine.isMainThread;
+import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class BukkitBanManager implements BanManager
 {
-    private final BukkitCore core;
     private final BanList nameBans;
     private final BanList ipBans;
 
     public BukkitBanManager(BukkitCore core)
     {
-        this.core = core;
         final DedicatedPlayerList playerList = ((CraftServer)core.getServer()).getHandle();
         this.nameBans = playerList.getNameBans();
         this.ipBans = playerList.getIPBans();
@@ -53,7 +56,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public void addBan(Ban ban)
     {
-        assert ban != null: "Ban must not be null!";
+        expectNotNull(ban, "Ban must not be null!");
+        expect(isMainThread());
 
         if (ban.getReason().contains("\n") || ban.getReason().contains("\r"))
         {
@@ -78,7 +82,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public UserBan getUserBan(User user)
     {
-        assert user != null: "The user must not be null!";
+        expectNotNull(user, "The user must not be null!");
+        expect(isMainThread());
 
         return this.getUserBan(user.getName());
     }
@@ -86,6 +91,7 @@ public class BukkitBanManager implements BanManager
     @Override
     public UserBan getUserBan(String name)
     {
+        expect(isMainThread());
 
         BanEntry entry = (BanEntry)this.nameBans.getEntries().get(name);
         if (entry != null)
@@ -98,7 +104,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public IpBan getIpBan(InetAddress address)
     {
-        assert address != null: "The address must not be null!";
+        expectNotNull(address, "The address must not be null!");
+        expect(isMainThread());
 
         BanEntry entry = (BanEntry)this.ipBans.getEntries().get(address.toString());
         if (entry != null)
@@ -111,7 +118,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean removeUserBan(User user)
     {
-        assert user != null: "The user must not be null!";
+        expectNotNull(user, "The user must not be null!");
+        expect(isMainThread());
 
         return this.removeUserBan(user.getName());
     }
@@ -119,6 +127,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean removeUserBan(String name)
     {
+        expect(isMainThread());
+
         this.nameBans.remove(name);
         return true;
     }
@@ -126,7 +136,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean removeIpBan(InetAddress address)
     {
-        assert address != null: "The address must not be null!";
+        expectNotNull(address, "The address must not be null!");
+        expect(isMainThread());
 
         this.ipBans.remove(address.getHostAddress());
         return true;
@@ -135,20 +146,25 @@ public class BukkitBanManager implements BanManager
     @Override
     public boolean isUserBanned(User user)
     {
-        assert user != null: "The user must not be null!";
-
+        expectNotNull(user, "The user must not be null!");
+        expect(isMainThread());
+        
         return this.isUserBanned(user.getName());
     }
 
     @Override
     public boolean isUserBanned(String name)
     {
+        expect(isMainThread());
+
         return this.nameBans.isBanned(name);
     }
 
     @Override
     public boolean isIpBanned(InetAddress address)
     {
+        expect(isMainThread());
+
         return this.ipBans.isBanned(address.toString());
     }
 
@@ -156,6 +172,8 @@ public class BukkitBanManager implements BanManager
     @SuppressWarnings("unchecked")
     public Set<IpBan> getIpBans()
     {
+        expect(isMainThread());
+
         Map ipBans = this.ipBans.getEntries();
         Set<IpBan> bans = new THashSet<>(ipBans.size());
 
@@ -178,6 +196,8 @@ public class BukkitBanManager implements BanManager
     @SuppressWarnings("unchecked")
     public Set<UserBan> getUserBans()
     {
+        expect(isMainThread());
+
         Map nameBans = this.nameBans.getEntries();
         Set<UserBan> bans = new THashSet<>(nameBans.size());
 
@@ -191,6 +211,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public Set<Ban> getBans()
     {
+        expect(isMainThread());
+        
         Set<Ban> bans = new THashSet<>();
         bans.addAll(this.getIpBans());
         bans.addAll(this.getUserBans());
@@ -200,6 +222,8 @@ public class BukkitBanManager implements BanManager
     @Override
     public synchronized void reloadBans()
     {
+        expect(isMainThread());
+        
         this.nameBans.getEntries().clear();
         this.nameBans.load();
 

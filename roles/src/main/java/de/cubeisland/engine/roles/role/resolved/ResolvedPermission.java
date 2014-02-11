@@ -22,8 +22,8 @@ import de.cubeisland.engine.roles.role.ResolvedDataHolder;
 
 public class ResolvedPermission extends ResolvedData
 {
-    private boolean value;
-    private String originPerm;
+    private final boolean value;
+    private final String originPerm;
 
     public ResolvedPermission(ResolvedDataHolder origin, String key, boolean value, String originPerm)
     {

@@ -25,7 +25,6 @@ import javax.persistence.Transient;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
 import org.joda.time.Duration;
 
@@ -66,9 +65,9 @@ public class KitConfiguration extends YamlConfiguration
         }
     }
 
-    public Kit getKit(Module module)
+    public Kit getKit(Kits module)
     {
-        return new Kit(module.getCore().getDB(), this.kitName, this.giveOnFirstJoin,
+        return new Kit(module, this.kitName, this.giveOnFirstJoin,
            this.limitUsage, this.limitUsageDelay == null ? -1L : this.limitUsageDelay.getMillis(),
            this.usePerm, this.customReceiveMsg, this.kitCommands, this.kitItems);
     }

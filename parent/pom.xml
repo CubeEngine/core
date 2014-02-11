@@ -16,8 +16,10 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
+    <timestamp>${maven.build.timestamp}</timestamp>
     <minecraftVersion>1.7.2</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.2</bukkitVersion>
+    <bukkitVersion>${minecraftVersion}-R0.3-SNAPSHOT</bukkitVersion>
     <jdkVersion>1.7</jdkVersion>
     <projectBase>${basedir}/..</projectBase>
     <externalPackage>${project.groupId}.external</externalPackage>
@@ -104,19 +106,6 @@
             <groupId>org.ocpsoft.prettytime</groupId>
             <artifactId>prettytime</artifactId>
           </exclusion>
-          <!-- JANSI -->
-          <exclusion>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi-native</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi-project</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi-website</artifactId>
-          </exclusion>
           <exclusion>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
@@ -192,6 +181,15 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <build>
     <finalName>${project.artifactId}</finalName>
@@ -382,6 +380,11 @@
             </includes>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -456,6 +459,12 @@
                 </execution>
             </executions>
             -->
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <version>2.5.3</version>
           </plugin>
 
           <plugin>

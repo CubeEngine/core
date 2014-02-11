@@ -17,13 +17,15 @@
  */
 package de.cubeisland.engine.worlds.config;
 
+import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.core.world.ConfigWorld;
 
 public class UniverseConfig extends YamlConfiguration
 {
     @Comment("The main world in this universe")
-    public String mainWorld;
+    public ConfigWorld mainWorld;
 
     @Comment("Players will keep their gamemode when changing worlds in this universe")
     public boolean keepGameMode = false; // if false can use perm
@@ -32,4 +34,14 @@ public class UniverseConfig extends YamlConfiguration
 
     @Comment("If true players do not need permissions to enter this universe")
     public boolean freeAccess = true; // if false generate permission
+
+    public EntityTp entityTp;
+
+    public class EntityTp implements Section
+    {
+        @Comment("If 2 universes have this option set to true entities can travel from one universe to the other")
+        public boolean enable = false;
+        @Comment("If 2 universes have this option set to true entities with inventories can travel from one universe to the other too")
+        public boolean inventory = false;
+    }
 }

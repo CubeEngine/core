@@ -57,4 +57,9 @@ public class PortalsAttachment extends UserAttachment
             this.getHolder().sendTranslated("&aYou are no longer in portal debug mode!");
         }
     }
+
+    public boolean isDebug()
+    {
+        return debug;
+    }
 }

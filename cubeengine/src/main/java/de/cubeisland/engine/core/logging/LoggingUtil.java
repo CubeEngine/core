@@ -59,6 +59,6 @@ public class LoggingUtil
 
     public static FilesizeCycler getCycler()
     {
-        return new FilesizeCycler(5000000L, "{name}\\\\{name}_{date}{_i}{ending}");
+        return new FilesizeCycler(5000000L, "{name}/{name}_{date}{_i}{ending}");
     }
 }

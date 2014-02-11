@@ -124,12 +124,7 @@ public class ContainerType
 
         ContainerType that = (ContainerType)o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null)
-        {
-            return false;
-        }
-
-        return true;
+        return !(name != null ? !name.equals(that.name) : that.name != null);
     }
 
     @Override

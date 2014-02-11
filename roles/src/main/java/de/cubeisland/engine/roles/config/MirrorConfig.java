@@ -29,10 +29,10 @@ import de.cubeisland.engine.roles.Roles;
 
 public class MirrorConfig
 {
-    public ConfigWorld mainWorld;
+    public final ConfigWorld mainWorld;
     private final Roles module;
     //mirror roles / assigned / users
-    protected Map<ConfigWorld, Triplet<Boolean, Boolean, Boolean>> mirrors = new HashMap<>();
+    protected final Map<ConfigWorld, Triplet<Boolean, Boolean, Boolean>> mirrors = new HashMap<>();
 
     public MirrorConfig(Roles module, World world)
     {

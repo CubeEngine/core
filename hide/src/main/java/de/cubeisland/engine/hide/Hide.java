@@ -35,7 +35,13 @@ public class Hide extends Module implements Reloadable
     private HideConfig config;
     private Set<String> hiddenUsers;
     private Set<String> canSeeHiddens;
-    private HidePerm perm;
+
+    public HidePerm perms()
+    {
+        return perms;
+    }
+
+    private HidePerm perms;
 
     @Override
     public void onEnable()
@@ -45,7 +51,7 @@ public class Hide extends Module implements Reloadable
         this.getCore().getCommandManager().registerCommands(this, new HideCommands(this));
         this.getCore().getEventManager().registerListener(this, new HideListener(this));
 
-        this.perm = new HidePerm(this);
+        this.perms = new HidePerm(this);
 
         Plugin p = Bukkit.getPluginManager().getPlugin("dynmap");
         if (p != null && p.isEnabled() && p instanceof DynmapAPI)

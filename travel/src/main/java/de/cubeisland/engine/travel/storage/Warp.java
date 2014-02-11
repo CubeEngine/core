@@ -33,8 +33,8 @@ public class Warp extends TeleportPoint
         if (teleportPoint.getVisibility() == VISIBILITY_PUBLIC)
         {
             this.permission = module.getBasePermission().
-                createAbstractChild("warps").createAbstractChild("access").
-                                        createChild(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+                childWildcard("warps").childWildcard("access").
+                child(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
         }
         else

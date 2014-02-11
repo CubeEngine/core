@@ -108,7 +108,7 @@ public class BukkitUserManager extends AbstractUserManager
         return this.findUser(name, false);
     }
 
-    public User findUser(String name, boolean database)
+    public User findUser(String name, boolean searchDatabase)
     {
         if (name == null)
         {
@@ -129,7 +129,7 @@ public class BukkitUserManager extends AbstractUserManager
             {
                 //Looking up saved users
                 UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
-                if (entity == null) // Not found try matching
+                if (entity == null && searchDatabase) // Not found try matching
                 {
                     entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.like("%"+ name + "%")).limit(1).fetchOne();
                 }

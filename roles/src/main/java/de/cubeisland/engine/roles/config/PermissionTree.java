@@ -26,7 +26,7 @@ import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
 
 public class PermissionTree
 {
-    private Map<String, Boolean> permissions = new TreeMap<>();
+    private final Map<String, Boolean> permissions = new TreeMap<>();
 
     private void loadFromMap(Map<String, ?> map, String path)
     {

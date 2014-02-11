@@ -26,7 +26,7 @@ import de.cubeisland.engine.core.user.User;
 
 public class ConomyInterface implements Economy
 {
-    private ConomyManager manager;
+    private final ConomyManager manager;
 
     public ConomyInterface(ConomyManager manager)
     {
@@ -156,7 +156,7 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
-            throw new IllegalArgumentException("There is no bankaccount named: " + bankAccount);
+            throw new IllegalArgumentException("There is no bankaccount named: " + name);
         return bankAccount.balance();
     }
 
@@ -165,7 +165,7 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
-            throw new IllegalArgumentException("There is no bankaccount named: " + bankAccount);
+            throw new IllegalArgumentException("There is no bankaccount named: " + name);
         return bankAccount.has(amount);
     }
 
@@ -174,7 +174,7 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
-            throw new IllegalArgumentException("There is no bankaccount named: " + bankAccount);
+            throw new IllegalArgumentException("There is no bankaccount named: " + name);
         bankAccount.withdraw(amount);
         return true;
     }
@@ -184,7 +184,7 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
-            throw new IllegalArgumentException("There is no bankaccount named: " + bankAccount);
+            throw new IllegalArgumentException("There is no bankaccount named: " + name);
         bankAccount.deposit(amount);
         return true;
     }
@@ -194,7 +194,7 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
-            throw new IllegalArgumentException("There is no bankaccount named: " + bankAccount);
+            throw new IllegalArgumentException("There is no bankaccount named: " + name);
         User user = this.manager.module.getCore().getUserManager().getUser(playerName, false);
         if (user == null)
         {
@@ -208,7 +208,7 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
-            throw new IllegalArgumentException("There is no bankaccount named: " + bankAccount);
+            throw new IllegalArgumentException("There is no bankaccount named: " + name);
         User user = this.manager.module.getCore().getUserManager().getUser(playerName, false);
         if (user == null)
         {

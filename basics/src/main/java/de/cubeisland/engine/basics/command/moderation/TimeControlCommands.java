@@ -27,7 +27,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -43,14 +42,14 @@ import de.cubeisland.engine.core.util.matcher.Match;
 public class TimeControlCommands
 {
 
-    private final Basics basics;
+    private final Basics module;
     private final TaskManager taskmgr;
     private final LockTask lockTask;
 
-    public TimeControlCommands(Basics basics)
+    public TimeControlCommands(Basics module)
     {
-        this.basics = basics;
-        this.taskmgr = basics.getCore().getTaskManager();
+        this.module = module;
+        this.taskmgr = module.getCore().getTaskManager();
         this.lockTask = new LockTask();
     }
 
@@ -185,7 +184,7 @@ public class TimeControlCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(1));
                 return;
             }
-            if (!BasicsPerm.COMMAND_PTIME_OTHER.
+            if (!module.perms().COMMAND_PTIME_OTHER.
                     isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to change the time of other players!");
@@ -221,7 +220,7 @@ public class TimeControlCommands
             else
             {
                 user.resetPlayerTime();
-                user.setPlayerTime(time, true);
+                user.setPlayerTime(time - user.getWorld().getTime(), true);
                 context.sendTranslated("&aTime set to &6%s (%s)&a for &2%s&a!",
                                        Match.time().format(time),
                                        Match.time().getNearTimeName(time),
@@ -252,7 +251,7 @@ public class TimeControlCommands
             this.worlds.put(world.getName(), world.getTime());
             if (this.taskid == -1)
             {
-                this.taskid = taskmgr.runTimer(basics, this, 10, 10);
+                this.taskid = taskmgr.runTimer(module, this, 10, 10);
             }
         }
 
@@ -261,7 +260,7 @@ public class TimeControlCommands
             this.worlds.remove(world.getName());
             if (this.taskid != -1 && this.worlds.isEmpty())
             {
-                taskmgr.cancelTask(basics, this.taskid);
+                taskmgr.cancelTask(module, this.taskid);
                 this.taskid = -1;
             }
         }
@@ -288,7 +287,7 @@ public class TimeControlCommands
             }
             if (this.taskid != -1 && this.worlds.isEmpty())
             {
-                taskmgr.cancelTask(basics, this.taskid);
+                taskmgr.cancelTask(module, this.taskid);
                 this.taskid = -1;
             }
         }

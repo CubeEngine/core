@@ -22,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * this class wrapps the data which will be send to the client
  *
@@ -65,7 +67,7 @@ public final class ApiResponse
      */
     public ApiResponse setHeader(String name, String value)
     {
-        assert name != null: "name must not be null!";
+        expectNotNull(name, "name must not be null!");
 
         if (value == null)
         {
@@ -82,8 +84,8 @@ public final class ApiResponse
 
     public ApiResponse addHeader(String name, String value)
     {
-        assert name != null: "The name must not be null!";
-        assert value != null: "The value must not be null!";
+        expectNotNull(name, "The name must not be null!");
+        expectNotNull(value, "The value must not be null!");
 
         List<String> values = this.headers.get(name);
         if (values == null)

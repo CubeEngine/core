@@ -131,13 +131,13 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class ActionTypeManager
 {
-    private Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<>();
-    private Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<>();
-    private TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<>();
-    private Map<String, ActionTypeCategory> categories = new HashMap<>();
+    private final Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<>();
+    private final Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<>();
+    private final TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<>();
+    private final Map<String, ActionTypeCategory> categories = new HashMap<>();
     private final Log module;
 
-    private Map<String,ActionTypeModel> actionTypeModels;
+    private final Map<String,ActionTypeModel> actionTypeModels;
 
     public ActionTypeManager(Log module)
     {

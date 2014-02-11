@@ -46,19 +46,16 @@ public class InvasionCommand
             context.sendTranslated("&cEntityType %s not found", context.getString(0));
             return;
         }
-        else
+        final Location helperLocation = new Location(null, 0, 0, 0);
+        for (Player player : Bukkit.getOnlinePlayers())
         {
-            final Location helperLocation = new Location(null, 0, 0, 0);
-            for (Player player : Bukkit.getOnlinePlayers())
+            Location location = player.getTargetBlock(null, this.module.getConfig().command.invasion.distance).getLocation(helperLocation);
+            if (location.getBlock().getType() != Material.AIR)
             {
-                Location location = player.getTargetBlock(null, this.module.getConfig().command.invasion.distance).getLocation(helperLocation);
-                if (location.getBlock().getType() != Material.AIR)
-                {
-                    location = location.clone();
-                    location.subtract(player.getLocation(helperLocation).getDirection().multiply(2));
-                }
-                player.getWorld().spawnEntity(location, entityType);
+                location = location.clone();
+                location.subtract(player.getLocation(helperLocation).getDirection().multiply(2));
             }
+            player.getWorld().spawnEntity(location, entityType);
         }
     }
 }

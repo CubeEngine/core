@@ -39,6 +39,8 @@ import de.cubeisland.engine.core.module.Module;
 
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
@@ -75,7 +77,8 @@ public class CommandInjector
 
     public synchronized void registerCommand(CubeCommand command)
     {
-        assert command.getDescription() != null && !command.getDescription().isEmpty(): command.getName() + " doesn't have a description!";
+        expectNotNull(command.getDescription(), command.getName() + " doesn't have a description!");
+        expect(!command.getDescription().isEmpty(), command.getName() + " has an empty description!");
 
         Command newCommand = wrapCommand(command);
         SimpleCommandMap commandMap = getCommandMap();

@@ -21,9 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.configuration.convert.Converter;
@@ -32,14 +30,15 @@ import de.cubeisland.engine.configuration.node.MapNode;
 import de.cubeisland.engine.configuration.node.Node;
 import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.world.WorldManager;
 
 public class LocationConverter implements Converter<Location>
 {
-    private Server server;
+    private final WorldManager wm;
 
     public LocationConverter(Core core)
     {
-        this.server = ((Plugin)core).getServer();
+        wm = core.getWorldManager();
     }
 
     @Override
@@ -62,7 +61,7 @@ public class LocationConverter implements Converter<Location>
         if (node instanceof MapNode)
         {
             Map<String, Node> input = ((MapNode)node).getMappedNodes();
-            World world = server.getWorld(((StringNode)input.get("world")).getValue());
+            World world = wm.getWorld(((StringNode)input.get("world")).getValue());
             double x = manager.convertFromNode(input.get("x"), double.class);
             double y = manager.convertFromNode(input.get("y"), double.class);
             double z = manager.convertFromNode(input.get("z"), double.class);

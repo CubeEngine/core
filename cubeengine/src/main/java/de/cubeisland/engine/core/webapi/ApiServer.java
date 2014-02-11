@@ -48,6 +48,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang.Validate;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class represents the API server and provides methods to configure and
  * controll it
@@ -123,7 +125,7 @@ public class ApiServer
 
     public void configure(final ApiConfig config)
     {
-        assert config != null: "The config must not be null!";
+        expectNotNull(config, "The config must not be null!");
 
         try
         {
@@ -219,7 +221,7 @@ public class ApiServer
 
     public void registerApiHandlers(final ApiHolder holder)
     {
-        assert holder != null: "The API holder must not be null!";
+        expectNotNull(holder, "The API holder must not be null!");
 
         String route;
         Action actionAnnotation;
@@ -286,7 +288,7 @@ public class ApiServer
      */
     public void setBindAddress(InetAddress address)
     {
-        assert address != null: "The address must not be null!";
+        expectNotNull(address, "The address must not be null!");
 
         this.bindAddress.set(address);
     }
@@ -451,7 +453,7 @@ public class ApiServer
 
     public void setWhitelist(Set<String> newWhitelist)
     {
-        assert newWhitelist != null: "The whitelist must not be null!";
+        expectNotNull(newWhitelist, "The whitelist must not be null!");
         Validate.noNullElements(newWhitelist, "The whitelist must not contain null values!");
 
         this.whitelist.clear();
@@ -533,7 +535,7 @@ public class ApiServer
 
     public void setBlacklist(Set<String> newBlacklist)
     {
-        assert newBlacklist != null: "The blacklist must not be null!";
+        expectNotNull(newBlacklist, "The blacklist must not be null!");
         Validate.noNullElements(newBlacklist, "The blacklist must not contain null values!");
 
         this.blacklist.clear();
@@ -623,8 +625,8 @@ public class ApiServer
 
     public void subscribe(String event, ApiRequestHandler requestHandler)
     {
-        assert event != null: "The event name must not be null!";
-        assert requestHandler != null: "The request handler must not be null!";
+        expectNotNull(event, "The event name must not be null!");
+        expectNotNull(requestHandler, "The request handler must not be null!");
         event = event.toLowerCase(Locale.ENGLISH);
 
         List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
@@ -637,8 +639,8 @@ public class ApiServer
 
     public void unsubscribe(String event, ApiRequestHandler requestHandler)
     {
-        assert event != null: "The event name must not be null!";
-        assert requestHandler != null: "The request handler must not be null!";
+        expectNotNull(event, "The event name must not be null!");
+        expectNotNull(requestHandler, "The request handler must not be null!");
         event = event.toLowerCase(Locale.ENGLISH);
 
         List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
@@ -654,7 +656,7 @@ public class ApiServer
 
     public void unsubscribe(String event)
     {
-        assert event != null: "The event name must not be null!";
+        expectNotNull(event, "The event name must not be null!");
         event = event.toLowerCase(Locale.ENGLISH);
 
         this.subscriptions.remove(event);
@@ -662,7 +664,7 @@ public class ApiServer
 
     public void unsubscribe(ApiRequestHandler handler)
     {
-        assert handler != null: "The event name must not be null!";
+        expectNotNull(handler, "The event name must not be null!");
 
         Iterator<Map.Entry<String, List<ApiRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
 
@@ -688,7 +690,7 @@ public class ApiServer
 
     public void fireEvent(String event, Map<String, Object> data)
     {
-        assert event != null: "The event name must not be null!";
+        expectNotNull(event, "The event name must not be null!");
         event = event.toLowerCase(Locale.ENGLISH);
 
         List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);

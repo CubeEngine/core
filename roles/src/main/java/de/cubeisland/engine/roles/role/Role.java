@@ -51,7 +51,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     {
         super(manager, provider);
         this.config = config;
-        this.rolePermission = provider.basePerm.createChild(config.roleName);
+        this.rolePermission = provider.basePerm.child(config.roleName);
         this.module.getCore().getPermissionManager().registerPermission(this.module, this.rolePermission);
     }
 
@@ -264,7 +264,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
     public void clearMetadata()
     {
         this.makeDirty();
-        this.config.metadata.clear();;
+        this.config.metadata.clear();
     }
 
     @Override

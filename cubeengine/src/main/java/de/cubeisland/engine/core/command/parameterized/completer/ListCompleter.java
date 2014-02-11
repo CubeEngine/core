@@ -30,7 +30,7 @@ import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 public abstract class ListCompleter<T> implements Completer
 {
-    private T[] stringConvertables;
+    private final T[] stringConvertables;
 
     protected ListCompleter(T[] stringConvertables)
     {

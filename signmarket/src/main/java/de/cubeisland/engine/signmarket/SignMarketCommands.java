@@ -30,7 +30,7 @@ import static java.util.Arrays.asList;
 
 public class SignMarketCommands extends ContainerCommand
 {
-    private Signmarket module;
+    private final Signmarket module;
 
     public SignMarketCommands(Signmarket module)
     {

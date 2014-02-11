@@ -34,7 +34,7 @@ import org.bukkit.inventory.InventoryHolder;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
-import de.cubeisland.engine.locker.LockerPerm;
+import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.LockType;
@@ -46,13 +46,13 @@ import static de.cubeisland.engine.locker.storage.LockType.*;
 
 public class CommandListener implements Listener
 {
-    private Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
-    private Map<String,Long> persist = new HashMap<>();
+    private final Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
+    private final Map<String,Long> persist = new HashMap<>();
 
-    private de.cubeisland.engine.locker.Locker module;
-    private LockManager manager;
+    private final Locker module;
+    private final LockManager manager;
 
-    public CommandListener(de.cubeisland.engine.locker.Locker module, LockManager manager)
+    public CommandListener(Locker module, LockManager manager)
     {
         this.module = module;
         this.manager = manager;
@@ -299,7 +299,7 @@ public class CommandListener implements Listener
             }
             break;
         case KEYS:
-            if (lock.isOwner(user) || LockerPerm.CMD_KEY_OTHER.isAuthorized(user))
+            if (lock.isOwner(user) || module.perms().CMD_KEY_OTHER.isAuthorized(user))
             {
                 if (lock.isPublic())
                 {
@@ -316,7 +316,7 @@ public class CommandListener implements Listener
             }
             break;
         case GIVE:
-            if (lock.isOwner(user) || LockerPerm.CMD_GIVE_OTHER.isAuthorized(user))
+            if (lock.isOwner(user) || module.perms().CMD_GIVE_OTHER.isAuthorized(user))
             {
                 User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
@@ -327,7 +327,7 @@ public class CommandListener implements Listener
                 user.sendTranslated("&cThis is not your protection!");
             }
         case FLAGS_SET:
-            if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
+            if (lock.isOwner(user) || lock.hasAdmin(user) || module.perms().CMD_MODIFY_OTHER.isAuthorized(user))
             {
                 short flags = 0;
                 for (ProtectionFlag protectionFlag : ProtectionFlag.matchFlags(second))
@@ -343,7 +343,7 @@ public class CommandListener implements Listener
             }
             break;
         case FLAGS_UNSET:
-            if (lock.isOwner(user) || lock.hasAdmin(user) || LockerPerm.CMD_MODIFY_OTHER.isAuthorized(user))
+            if (lock.isOwner(user) || lock.hasAdmin(user) || module.perms().CMD_MODIFY_OTHER.isAuthorized(user))
             {
                 if ("all".equalsIgnoreCase(second))
                 {

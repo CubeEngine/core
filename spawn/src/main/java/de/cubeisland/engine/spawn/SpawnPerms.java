@@ -25,23 +25,20 @@ public class SpawnPerms extends PermissionContainer<Spawn>
     public SpawnPerms(Spawn module)
     {
         super(module);
-        this.bindToModule(COMMAND);
         this.registerAllPermissions();
     }
-    private static final Permission COMMAND = Permission.createAbstractPermission("command");
-
-    private static final Permission COMMAND_SPAWN = COMMAND.createAbstractChild("spawn");
+    private final Permission COMMAND_SPAWN = getBasePerm().childWildcard("command").childWildcard("spawn");
     /**
      * Allows to teleport all online players to the spawn of the main world
      */
-    public static final Permission COMMAND_SPAWN_ALL = COMMAND_SPAWN.createChild("all");
+    public final Permission COMMAND_SPAWN_ALL = COMMAND_SPAWN.child("all");
     /**
      * Prevents from being teleported to spawn by someone else
      */
-    public static final Permission COMMAND_SPAWN_PREVENT = COMMAND_SPAWN.createChild("prevent");
+    public final Permission COMMAND_SPAWN_PREVENT = COMMAND_SPAWN.child("prevent");
     /**
      * Allows teleporting a player to spawn even if the player has the prevent permission
      */
-    public static final Permission COMMAND_SPAWN_FORCE = COMMAND_SPAWN.createChild("force");
+    public final Permission COMMAND_SPAWN_FORCE = COMMAND_SPAWN.child("force");
 
 }

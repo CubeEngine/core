@@ -25,6 +25,8 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.util.Cleanable;
 import gnu.trove.map.hash.THashMap;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class is a generic language that loads its translations from files.
  */
@@ -40,9 +42,9 @@ public class NormalLanguage implements Cleanable, Language
 
     public NormalLanguage(Core core, LocaleConfig config, Path languagePath, Language parent)
     {
-        assert config.locale != null: "The code must not be null!";
-        assert config.name != null: "The name must not be null!";
-        assert config.localName != null: "The local name must not be null!";
+        expectNotNull(config.locale, "The code must not be null!");
+        expectNotNull(config.name, "The name must not be null!");
+        expectNotNull(config.localName, "The local name must not be null!");
 
         this.core = core;
 

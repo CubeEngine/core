@@ -244,7 +244,7 @@ public abstract class ResolvedDataHolder extends TempDataStore
         }
     }
 
-    protected void roleMissing(String roleName, boolean temp) // TODO override send to user
+    protected void roleMissing(String roleName, boolean temp)
     {
         if (temp)
         {
@@ -254,11 +254,6 @@ public abstract class ResolvedDataHolder extends TempDataStore
         {
             this.module.getLog().warn("The role {} is not available in {}", roleName, provider.getMainWorld().getName());
         }
-        //this.getHolder().sendTranslated("&cYour role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
-        //this.getHolder().sendTranslated("&4You should report this to an administrator!");
-
-        //this.getHolder().sendTranslated("&cYour temporary role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
-        //this.getHolder().sendTranslated("&4You should report this to an administrator!");
     }
 
     @Override

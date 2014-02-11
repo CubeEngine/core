@@ -19,12 +19,9 @@ package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.World;
@@ -33,11 +30,11 @@ import org.bukkit.generator.ChunkGenerator;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
-import gnu.trove.TLongCollection;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import org.jooq.DSLContext;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public abstract class AbstractWorldManager implements WorldManager
@@ -46,7 +43,7 @@ public abstract class AbstractWorldManager implements WorldManager
     protected final TLongObjectHashMap<World> worldIds;
     private final Map<String, Map<String, ChunkGenerator>> generatorMap;
 
-    protected Database database;
+    protected final Database database;
 
     public AbstractWorldManager(Core core)
     {
@@ -110,8 +107,8 @@ public abstract class AbstractWorldManager implements WorldManager
 
     public synchronized void registerGenerator(Module module, String id, ChunkGenerator generator)
     {
-        assert id != null : "The ID must nto be null!";
-        assert generator != null : "The generator must not be null!";
+        expectNotNull(id, "The ID must nto be null!");
+        expectNotNull(generator, "The generator must not be null!");
 
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators == null)
@@ -123,8 +120,8 @@ public abstract class AbstractWorldManager implements WorldManager
 
     public synchronized ChunkGenerator getGenerator(Module module, String id)
     {
-        assert module != null : "The module must not be null!";
-        assert id != null : "The ID must nto be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(id, "The ID must nto be null!");
 
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators != null)
@@ -136,8 +133,8 @@ public abstract class AbstractWorldManager implements WorldManager
 
     public synchronized void removeGenerator(Module module, String id)
     {
-        assert module != null : "The module must not be null!";
-        assert id != null : "The ID must nto be null!";
+        expectNotNull(module, "The module must not be null!");
+        expectNotNull(id, "The ID must nto be null!");
 
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators != null)

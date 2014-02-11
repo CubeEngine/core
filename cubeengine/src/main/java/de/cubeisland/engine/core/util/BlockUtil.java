@@ -29,9 +29,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.MaterialData;
-import org.bukkit.util.Vector;
 
-import static net.minecraft.server.v1_7_R1.Block.*;
+import static net.minecraft.server.v1_7_R1.Block.REGISTRY;
 import static org.bukkit.Material.*;
 
 /**

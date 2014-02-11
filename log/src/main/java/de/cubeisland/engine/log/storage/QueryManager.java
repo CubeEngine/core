@@ -66,8 +66,8 @@ public class QueryManager
     private final ExecutorService lookupExecutor;
     private final Runnable lookupRunner;
 
-    Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<>();
-    Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
+    final Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<>();
+    final Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
 
     private int batchSize;
     private Future<?> futureStore = null;
@@ -79,15 +79,15 @@ public class QueryManager
     private long timeSpendFullLoad = 0;
     private long logsLoggedFullLoad = 1;
 
-    private Semaphore latch = new Semaphore(1);
+    private final Semaphore latch = new Semaphore(1);
     private CountDownLatch shutDownLatch = new CountDownLatch(0);
 
-    private int cleanUpTaskId;
+    private final int cleanUpTaskId;
 
     private Connection insertConnection = null;
-    private DSLContext dsl;
-    private DSLContext cleanUpDsl;
-    private Database database;
+    private final DSLContext dsl;
+    private final DSLContext cleanUpDsl;
+    private final Database database;
 
     private TableLogEntry CURRENT_TABLE;
     private TableLogEntry OPTIMIZE_TABLE;
@@ -388,10 +388,10 @@ public class QueryManager
                             lookup.rollback(user, true);
                             return;
                         case REDO:
-                            user.sendMessage("REDO is not finished yet"); // TODO
+                            lookup.redo(user, false);
                             return;
                         case REDO_PREVIEW:
-                            user.sendMessage("REDO_PREVIEW is not finished yet"); // TODO
+                            lookup.redo(user, true);
                     }
                 }
             });

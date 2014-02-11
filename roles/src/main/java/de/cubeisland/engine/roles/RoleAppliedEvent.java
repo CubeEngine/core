@@ -25,8 +25,8 @@ import de.cubeisland.engine.roles.role.RolesAttachment;
 
 public class RoleAppliedEvent extends UserEvent
 {
-    private RolesAttachment attachment;
-    private Roles roles;
+    private final RolesAttachment attachment;
+    private final Roles roles;
 
     public RoleAppliedEvent(Roles roles, User user, RolesAttachment attachment)
     {

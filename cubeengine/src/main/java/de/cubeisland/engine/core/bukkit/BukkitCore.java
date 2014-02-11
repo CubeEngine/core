@@ -57,6 +57,7 @@ import de.cubeisland.engine.core.command.commands.ModuleCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
+import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
@@ -93,6 +94,8 @@ import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import org.joda.time.Duration;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
@@ -103,7 +106,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private Database database;
     private BukkitPermissionManager permissionManager;
     private BukkitUserManager userManager;
-    private BukkitFileManager fileManager;
+    private FileManager fileManager;
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
@@ -182,7 +185,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try
         {
-            this.fileManager = new BukkitFileManager(this);
+            this.fileManager = new FileManager(this.getLogger(), this.getDataFolder().toPath());
         }
         catch (IOException e)
         {
@@ -330,7 +333,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.config.preventSpamKick)
         {
-            this.getServer().getPluginManager().registerEvents(new PreventSpamKickListener(), this);
+            this.getServer().getPluginManager().registerEvents(new PreventSpamKickListener(this), this);
         }
 
         this.getServer().getPluginManager().registerEvents(new CoreListener(this), this);
@@ -433,16 +436,12 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.logFactory.shutdown();
         }
 
-        if (this.fileManager != null)
-        {
-            this.fileManager.cycleLogs();
-        }
         this.fileManager = null;
     }
 
     public void addInitHook(Runnable runnable)
     {
-        assert runnable != null: "The runnble must not be null!";
+        expectNotNull(runnable, "The runnble must not be null!");
 
         this.initHooks.add(runnable);
     }
@@ -555,7 +554,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public BukkitFileManager getFileManager()
+    public FileManager getFileManager()
     {
         return this.fileManager;
     }
@@ -641,6 +640,11 @@ public final class BukkitCore extends JavaPlugin implements Core
     public ConfigurationFactory getConfigFactory()
     {
         return configFactory;
+    }
+
+    public CorePerms perms()
+    {
+        return corePerms;
     }
     //endregion
 }

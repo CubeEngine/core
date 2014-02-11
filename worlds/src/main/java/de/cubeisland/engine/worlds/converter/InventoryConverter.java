@@ -39,7 +39,7 @@ import de.cubeisland.engine.core.bukkit.NBTUtils;
 
 public class InventoryConverter implements Converter<Inventory>
 {
-    private Server server;
+    private final Server server;
 
     public InventoryConverter(Server server)
     {

@@ -17,42 +17,24 @@
  */
 package de.cubeisland.engine.chat;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.MacroProcessor;
-
-import static de.cubeisland.engine.chat.ChatPerm.*;
 
 public class Chat extends Module implements Listener
 {
 
     private ChatConfig config;
-    private String defaultFormat;
+    private ChatPerm perms;
 
     @Override
     public void onEnable()
     {
         this.config = this.loadConfig(ChatConfig.class);
-        new ChatPerm(this);
+        perms = new ChatPerm(this);
         this.getCore().getEventManager().registerListener(this, this);
         this.getCore().getCommandManager().registerCommands(this, new ChatCommands(this), ReflectedCommand.class);
-        this.defaultFormat = this.config.format;
-        if (this.config.allowColors)
-        {
-            this.defaultFormat = ChatFormat.parseFormats(this.defaultFormat);
-        }
         if (this.getCore().getModuleManager().getModule("roles") != null)
         {
             this.getCore().getEventManager().registerListener(this, new RoleChatFormatListener(this));
@@ -67,5 +49,10 @@ public class Chat extends Module implements Listener
     protected ChatConfig getConfig()
     {
         return config;
+    }
+
+    public ChatPerm perms()
+    {
+        return perms;
     }
 }

@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.core.permission;
 
-import java.util.Set;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
 
@@ -27,18 +25,6 @@ import de.cubeisland.engine.core.util.Cleanable;
  */
 public interface PermissionManager extends Cleanable
 {
-
-    /**
-     * Registers a String as a permission
-     *
-     * @param module
-     * @param perm the permission node
-     * @param permDefault the default value
-     * @param parent the parent permission-node
-     * @param bundles all permissions creating a bundle with this permission
-     */
-    org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault, String parent, Set<String> bundles);
-
     /**
      * Registers a permission
      *

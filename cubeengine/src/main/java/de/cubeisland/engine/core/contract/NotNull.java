@@ -15,9 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.backpack;
+package de.cubeisland.engine.core.contract;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public class BackpackConfig extends YamlConfiguration
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
+
+@Documented
+@Retention(SOURCE)
+@Target({METHOD, PARAMETER})
+public @interface NotNull
 {}

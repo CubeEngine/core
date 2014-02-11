@@ -94,6 +94,8 @@ public class CoreConfiguration extends YamlConfiguration
 
         @Comment("Whether to log commands executed by players.")
         public boolean logCommands = false;
+
+        public boolean logDatabaseQueries = false;
     }
 
     @Comment("Whether to enable the Web API server")

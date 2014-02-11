@@ -23,6 +23,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
@@ -226,14 +229,33 @@ public class ModuleCommands extends ContainerCommand
         Map<String, Version> dependencies = moduleInfo.getDependencies();
         Map<String, Version> softDependencies = moduleInfo.getSoftDependencies();
         Set<String> pluginDependencies = moduleInfo.getPluginDependencies();
-        // TODO colorcode if dependency etc. is missing
-        // TODO add service dependencies
+        Set<String> services = moduleInfo.getServices();
+        Set<String> providedServices = moduleInfo.getProvidedServices();
+
+        String green = ChatFormat.parseFormats("   &a- ");
+        String red = ChatFormat.parseFormats("   &c- ");
+        if (!providedServices.isEmpty())
+        {
+            context.sendTranslated("&aProvided services:");
+            for (String service : providedServices)
+            {
+                context.sendMessage(green + service);
+            }
+        }
         if (!dependencies.isEmpty())
         {
             context.sendTranslated("&aModule dependencies:");
             for (String dependency : dependencies.keySet())
             {
-                context.sendMessage("   - " + dependency);
+                Module dep = this.mm.getModule(dependency);
+                if (dep != null && dep.isEnabled())
+                {
+                    context.sendMessage(green + dependency);
+                }
+                else
+                {
+                    context.sendMessage(red + dependency);
+                }
             }
         }
         if (!softDependencies.isEmpty())
@@ -241,7 +263,15 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated("&aModule soft-dependencies:");
             for (String dependency : softDependencies.keySet())
             {
-                context.sendMessage("   - " + dependency);
+                Module dep = this.mm.getModule(dependency);
+                if (dep != null && dep.isEnabled())
+                {
+                    context.sendMessage(green + dependency);
+                }
+                else
+                {
+                    context.sendMessage(red + dependency);
+                }
             }
         }
         if (!pluginDependencies.isEmpty())
@@ -249,8 +279,25 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated("&aPlugin dependencies:");
             for (String dependency : pluginDependencies)
             {
-                context.sendMessage("   - " + dependency);
+                Plugin dep = Bukkit.getPluginManager().getPlugin(dependency);
+                if (dep != null && dep.isEnabled())
+                {
+                    context.sendMessage(green + dependency);
+                }
+                else
+                {
+                    context.sendMessage(red + dependency);
+                }
             }
         }
+        if (!services.isEmpty())
+        {
+            context.sendTranslated("&aService dependencies:");
+            for (String service : services)
+            {
+                context.sendMessage(green + service); // TODO colors to show if service is found OR NOT
+            }
+        }
+        // TODO dont forget to add soft service dependencies when they're there
     }
 }

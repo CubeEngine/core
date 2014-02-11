@@ -33,8 +33,8 @@ import de.cubeisland.engine.configuration.node.NullNode;
 
 public class BaseMaterialContainerConverter implements Converter<BaseMaterialContainer>
 {
-    private Map<Material,Double> map;
     private final Type fieldType;
+    private Map<Material, Double> map; // Needed for GenericType
 
     public BaseMaterialContainerConverter()
     {

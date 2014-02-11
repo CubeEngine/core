@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.stats.StatsManager;
 import de.cubeisland.engine.stats.annotations.Scheduled;
 
 public class LagStat extends Stat

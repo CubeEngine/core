@@ -31,12 +31,11 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.MacroProcessor;
 
-import static de.cubeisland.engine.chat.ChatPerm.*;
 
 public class ChatFormatListener implements Listener
 {
     private static final String DEFAULT_FORMAT = new AsyncPlayerChatEvent(true, null, null, null).getFormat();
-    protected Chat module;
+    protected final Chat module;
 
     public ChatFormatListener(Chat module)
     {
@@ -54,13 +53,19 @@ public class ChatFormatListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (module.getConfig().allowColors)
         {
-            if (ChatPerm.COLOR.isAuthorized(user))
+            if (module.perms().COLOR.isAuthorized(user))
             {
                 event.setMessage(ChatFormat.parseFormats(event.getMessage()));
             }
             else
             {
-                event.setMessage(this.stripFormat(event.getMessage(), user));
+                String message = this.stripFormat(event.getMessage(), user);
+                if (message.trim().isEmpty())
+                {
+                    event.setCancelled(true);
+                    return;
+                }
+                event.setMessage(message);
             }
         }
         MacroProcessor processor = new MacroProcessor();
@@ -96,91 +101,91 @@ public class ChatFormatListener implements Listener
     private String stripFormat(String message, Player player)
     {
         String toStrip = "";
-        if( !COLOR_BLACK.isAuthorized(player))
+        if( !module.perms().COLOR_BLACK.isAuthorized(player))
         {
             toStrip += "0";
         }
-        if( !COLOR_DARK_BLUE.isAuthorized(player))
+        if( !module.perms().COLOR_DARK_BLUE.isAuthorized(player))
         {
             toStrip += "1";
         }
-        if( !COLOR_DARK_GREEN.isAuthorized(player))
+        if( !module.perms().COLOR_DARK_GREEN.isAuthorized(player))
         {
             toStrip += "2";
         }
-        if( !COLOR_DARK_AQUA.isAuthorized(player))
+        if( !module.perms().COLOR_DARK_AQUA.isAuthorized(player))
         {
             toStrip += "3";
         }
-        if( !COLOR_DARK_RED.isAuthorized(player))
+        if( !module.perms().COLOR_DARK_RED.isAuthorized(player))
         {
             toStrip += "4";
         }
-        if( !COLOR_DARK_PURPLE.isAuthorized(player))
+        if( !module.perms().COLOR_DARK_PURPLE.isAuthorized(player))
         {
             toStrip += "5";
         }
-        if( !COLOR_GOLD.isAuthorized(player))
+        if( !module.perms().COLOR_GOLD.isAuthorized(player))
         {
             toStrip += "6";
         }
-        if( !COLOR_GRAY.isAuthorized(player))
+        if( !module.perms().COLOR_GRAY.isAuthorized(player))
         {
             toStrip += "7";
         }
-        if( !COLOR_DARK_GRAY.isAuthorized(player))
+        if( !module.perms().COLOR_DARK_GRAY.isAuthorized(player))
         {
             toStrip += "8";
         }
-        if( !COLOR_BLUE.isAuthorized(player))
+        if( !module.perms().COLOR_BLUE.isAuthorized(player))
         {
             toStrip += "9";
         }
-        if( !COLOR_GREEN.isAuthorized(player))
+        if( !module.perms().COLOR_GREEN.isAuthorized(player))
         {
             toStrip += "aA";
         }
-        if( !COLOR_AQUA.isAuthorized(player))
+        if( !module.perms().COLOR_AQUA.isAuthorized(player))
         {
             toStrip += "bB";
         }
-        if( !COLOR_RED.isAuthorized(player))
+        if( !module.perms().COLOR_RED.isAuthorized(player))
         {
             toStrip += "cC";
         }
-        if( !COLOR_LIGHT_PURPLE.isAuthorized(player))
+        if( !module.perms().COLOR_LIGHT_PURPLE.isAuthorized(player))
         {
             toStrip += "dD";
         }
-        if( !COLOR_YELLOW.isAuthorized(player))
+        if( !module.perms().COLOR_YELLOW.isAuthorized(player))
         {
             toStrip += "eE";
         }
-        if( !COLOR_WHITE.isAuthorized(player))
+        if( !module.perms().COLOR_WHITE.isAuthorized(player))
         {
             toStrip += "fF";
         }
-        if( !COLOR_OBFUSCATED.isAuthorized(player))
+        if( !module.perms().COLOR_OBFUSCATED.isAuthorized(player))
         {
             toStrip += "kK";
         }
-        if( !COLOR_BOLD.isAuthorized(player))
+        if( !module.perms().COLOR_BOLD.isAuthorized(player))
         {
             toStrip += "lL";
         }
-        if( !COLOR_STRIKE.isAuthorized(player))
+        if( !module.perms().COLOR_STRIKE.isAuthorized(player))
         {
             toStrip += "mM";
         }
-        if( !COLOR_UNDERLINE.isAuthorized(player))
+        if( !module.perms().COLOR_UNDERLINE.isAuthorized(player))
         {
             toStrip += "nN";
         }
-        if( !COLOR_ITALIC.isAuthorized(player))
+        if( !module.perms().COLOR_ITALIC.isAuthorized(player))
         {
             toStrip += "oO";
         }
-        if( !COLOR_RESET.isAuthorized(player))
+        if( !module.perms().COLOR_RESET.isAuthorized(player))
         {
             toStrip += "rR";
         }

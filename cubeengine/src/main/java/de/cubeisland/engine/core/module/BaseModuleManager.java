@@ -56,6 +56,8 @@ import de.cubeisland.engine.logging.Log;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
 import static java.util.Map.Entry;
 
@@ -150,7 +152,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized Module loadModule(Path modulePath) throws ModuleException
     {
-        assert modulePath != null: "The file must not be null!";
+        expectNotNull(modulePath, "The file must not be null!");
         if (!Files.isRegularFile(modulePath))
         {
             throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
@@ -160,8 +162,8 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized void loadModules(Path directory)
     {
-        assert directory != null: "The directory must not be null!";
-        assert Files.isDirectory(directory): "The given File is no directory!";
+        expectNotNull(directory, "The directory must not be null!");
+        expect(Files.isDirectory(directory), "The given File is no directory!");
 
         Module module;
         ModuleInfo info;

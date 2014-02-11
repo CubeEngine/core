@@ -43,12 +43,12 @@ import gnu.trove.map.hash.TShortObjectHashMap;
  */
 public class MaterialMatcher
 {
-    private THashMap<String, ImmutableItemStack> items;
-    private THashMap<Material, TShortObjectHashMap<String>> itemnames;
+    private final THashMap<String, ImmutableItemStack> items;
+    private final THashMap<Material, TShortObjectHashMap<String>> itemnames;
 
-    private THashMap<String, ImmutableItemStack> bukkitnames;
+    private final THashMap<String, ImmutableItemStack> bukkitnames;
 
-    private MaterialDataMatcher materialDataMatcher;
+    private final MaterialDataMatcher materialDataMatcher;
 
     private final Set<Material> repairableMaterials = Collections.synchronizedSet(
         EnumSet.of(

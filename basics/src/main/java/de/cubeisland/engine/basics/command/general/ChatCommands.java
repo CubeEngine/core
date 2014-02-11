@@ -41,9 +41,10 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 public class ChatCommands
 {
     private final DurationConverter converter = new DurationConverter();
-    private UserManager um;
+    private final UserManager um;
+    private final Basics module;
+
     private String lastWhisperOfConsole = null;
-    private Basics module;
 
     public ChatCommands(Basics basics)
     {
@@ -60,7 +61,7 @@ public class ChatCommands
     {
         if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
         {
-            context.sendTranslated("&cCould not find the player &2%s &cto send the message to. &eIs he offline?", context.getString(0));
+            context.sendTranslated("&cCould not find the player &2%s&c to send the message to. &eIs the player offline?", context.getString(0));
         }
     }
 
@@ -85,7 +86,7 @@ public class ChatCommands
         }
         if (!this.sendWhisperTo(lastWhisper, context.getStrings(0), context))
         {
-            context.sendTranslated("&cCould not find the player &2%s&c to reply to. &eIs he offline?", lastWhisper);
+            context.sendTranslated("&cCould not find the player &2%s&c to reply to. &eIs the player offline?", lastWhisper);
         }
     }
 

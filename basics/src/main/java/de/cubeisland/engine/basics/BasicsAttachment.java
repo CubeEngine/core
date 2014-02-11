@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.basics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 

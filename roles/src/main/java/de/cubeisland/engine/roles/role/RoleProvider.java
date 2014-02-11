@@ -44,7 +44,6 @@ public abstract class RoleProvider
 
     protected THashMap<String, RoleConfig> configs;
     protected THashMap<String, Role> roles;
-    protected Path folder;
 
     protected RoleProvider(RolesManager manager, Permission basePerm)
     {
@@ -168,7 +167,7 @@ public abstract class RoleProvider
         config.roleName = roleName;
         this.configs.put(roleName,config);
         config.onLoaded(null);
-        config.setFile(this.folder.resolve(roleName + ".yml").toFile()); // TODO it's not guaranteed implementations set the folder
+        config.setFile(this.getFolder().resolve(roleName + ".yml").toFile());
         config.save();
         Role role = new Role(manager, this, config);
         this.roles.put(roleName, role);

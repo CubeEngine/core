@@ -27,6 +27,7 @@ public class Spawn extends Module
 {
     private SpawnConfig config;
     @Inject private Roles roles;
+    private SpawnPerms perms;
 
     @Override
     public void onEnable()
@@ -37,11 +38,16 @@ public class Spawn extends Module
         cm.removeCommand("setSpawn", true); // unregister basics commands
         cm.removeCommand("spawn", true); // unregister basics commands
         cm.registerCommands(this, new SpawnCommands(roles, this), ReflectedCommand.class);
-        new SpawnPerms(this); // PermContainer registers itself
+        perms = new SpawnPerms(this);// PermContainer registers itself
     }
 
     public SpawnConfig getConfiguration()
     {
         return config;
+    }
+
+    public SpawnPerms perms()
+    {
+        return this.perms;
     }
 }

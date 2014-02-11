@@ -24,10 +24,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.stats.StatsManager;
-import de.cubeisland.engine.stats.annotations.Configured;
-
 public class PlayTimeStat extends Stat
 {
     private Map<String, Long> joined;

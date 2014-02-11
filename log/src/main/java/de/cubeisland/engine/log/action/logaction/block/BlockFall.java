@@ -91,7 +91,7 @@ public class BlockFall extends BlockActionType
         }
     }
 
-    private Map<Location,Pair<Entity,BlockActionType>> plannedFall = new ConcurrentHashMap<>();
+    private final Map<Location,Pair<Entity,BlockActionType>> plannedFall = new ConcurrentHashMap<>();
     public void preplanBlockFall(final Location location, Entity player, BlockActionType reason)
     {
         plannedFall.put(location, new Pair<>(player, reason));

@@ -39,7 +39,7 @@ import gnu.trove.map.hash.TObjectLongHashMap;
 public class BorderListener implements Listener
 {
     private final UserManager um;
-    private Border module;
+    private final Border module;
     private final TObjectLongMap<String> lastNotice;
     private static final long NOTICE_DELAY = 1000 * 3;
 
@@ -76,7 +76,7 @@ public class BorderListener implements Listener
             return;
         }
         BorderConfig config = this.module.getConfig(event.getTo().getWorld());
-        if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
+        if (config.allowBypass && module.perms().BYPASS.isAuthorized(event.getPlayer()))
         {
             return;
         }
@@ -151,7 +151,7 @@ public class BorderListener implements Listener
             return;
         }
         BorderConfig config = this.module.getConfig(event.getTo().getWorld());
-        if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
+        if (config.allowBypass && module.perms().BYPASS.isAuthorized(event.getPlayer()))
         {
             return;
         }
@@ -177,5 +177,5 @@ public class BorderListener implements Listener
         return !(spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= (config.radius -2) * (config.radius -2));
     }
 
-    // TODO prevent chunk generation behind the border, not possible with Bukkit atm
+    // TODO prevent chunk generation behind the border, not possible with Bukkit atm   #WaitForBukkit
 }

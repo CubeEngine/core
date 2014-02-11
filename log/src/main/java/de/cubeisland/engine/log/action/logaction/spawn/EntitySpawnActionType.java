@@ -75,7 +75,6 @@ public class EntitySpawnActionType extends ActionTypeContainer
             {
                 otherSpawn.logSimple(event.getEntity(),null);
             }
-            return;
         //case SPAWNER_EGG: //is already done
         }
     }

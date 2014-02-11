@@ -38,7 +38,7 @@ public class InviteManager
 {
     private final Travel module;
     private final DSLContext dsl;
-    private Collection<TeleportInvite> invites;
+    private final Collection<TeleportInvite> invites;
     private final Map<TeleportPointModel, Set<String>> cachedInvites;
 
     public InviteManager(Database database, Travel module)
@@ -46,7 +46,7 @@ public class InviteManager
         this.dsl = database.getDSL();
         this.module = module;
         this.cachedInvites = new HashMap<>();
-        this.invites = this.dsl.selectFrom(TABLE_INVITE).fetch();
+        this.invites = this.dsl.selectFrom(TABLE_INVITE).fetch(); // TODO this can be a big query :S
     }
 
     public void invite(TeleportPointModel tPP, User user)

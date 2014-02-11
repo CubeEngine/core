@@ -76,4 +76,10 @@ public class SoupFill extends SimpleLogActionType
     {
         return this.lm.getConfig(world).BOWL_FILL_SOUP;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

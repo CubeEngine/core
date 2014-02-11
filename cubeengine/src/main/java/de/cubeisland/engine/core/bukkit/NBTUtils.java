@@ -51,7 +51,6 @@ import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.configuration.node.ShortNode;
 import de.cubeisland.engine.configuration.node.StringNode;
 
-// TODO FIXME NBT has changed...
 public class NBTUtils
 {
     public static NBTTagCompound getTileEntityNBTAt(Location location)
@@ -186,7 +185,6 @@ public class NBTUtils
         throw new IllegalStateException("Unknown NbtTag-Type! "+ nbtBase.getClass().getName());
     }
 
-    // TODO verify this
     @SuppressWarnings("unchecked")
     public static NBTBase convertNodeToNBT(Node node)
     {

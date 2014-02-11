@@ -23,7 +23,7 @@ import de.cubeisland.engine.roles.role.Role;
 public class ResolvedData
 {
     private final ResolvedDataHolder origin;
-    private String key;
+    private final String key;
 
     public ResolvedData(ResolvedDataHolder origin, String key)
     {

@@ -22,10 +22,8 @@ import org.bukkit.plugin.PluginManager;
 import de.cubeisland.engine.core.module.BaseModuleManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
-import de.cubeisland.engine.core.module.ModuleLoader;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
-import de.cubeisland.engine.core.module.service.ServiceManager;
 
 public class BukkitModuleManager extends BaseModuleManager
 {

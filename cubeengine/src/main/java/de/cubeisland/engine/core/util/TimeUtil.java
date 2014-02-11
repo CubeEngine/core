@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
+import org.ocpsoft.prettytime.units.Millisecond;
 
 public class TimeUtil
 {
@@ -35,8 +36,9 @@ public class TimeUtil
     public static String format(Locale locale, Date timeFromNow)
     {
         PrettyTime format = new PrettyTime(locale);
-        format.getUnit(JustNow.class).setMaxQuantity(1000);
-        // TODO remove Milliseconds.class https://github.com/ocpsoft/prettytime/issues/56
+        //format.getUnit(JustNow.class).setMaxQuantity(1000);
+        format.removeUnit(JustNow.class);
+        format.removeUnit(Millisecond.class);
         return format.format(format.calculatePreciseDuration(timeFromNow));
     }
 }

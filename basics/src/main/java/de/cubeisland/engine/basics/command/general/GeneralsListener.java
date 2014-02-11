@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.BrewerInventory;
@@ -35,7 +36,6 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.basics.BasicsUser;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
@@ -46,7 +46,7 @@ import de.cubeisland.engine.roles.RoleAppliedEvent;
 
 public class GeneralsListener implements Listener
 {
-    private Basics module;
+    private final Basics module;
 
     public GeneralsListener(Basics basics)
     {
@@ -81,12 +81,12 @@ public class GeneralsListener implements Listener
     public void onLeave(PlayerQuitEvent event)
     {
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
-        if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
             bUser.setGodmode(false);
         }
         bUser.update();
-        if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
         }
@@ -96,12 +96,12 @@ public class GeneralsListener implements Listener
     public void onWorldChange(PlayerChangedWorldEvent event)
     {
         BasicsUserEntity bUser = this.module.getBasicsUser(event.getPlayer()).getbUEntity();
-        if (!BasicsPerm.COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
             bUser.setGodmode(false);
         }
         bUser.update();
-        if (!BasicsPerm.COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
+        if (!module.perms().COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
         {
             event.getPlayer().setGameMode(Bukkit.getServer().getDefaultGameMode()); // reset gamemode to default on the server
         }
@@ -117,7 +117,14 @@ public class GeneralsListener implements Listener
         {
             user.sendTranslated("&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
-        // TODO move this to PlayerJoin
+
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        BasicsUser bUser = this.module.getBasicsUser(user);
         if (bUser.getbUEntity().getGodmode())
         {
             user.setInvulnerable(true);
@@ -156,7 +163,7 @@ public class GeneralsListener implements Listener
     @EventHandler
     public void onPlayerInventoryClick(InventoryClickEvent event)
     {
-        if (this.module.getConfiguration().preventOverstackedItems && !BasicsPerm.OVERSTACKED_ANVIL_AND_BREWING.isAuthorized(event.getWhoClicked()))
+        if (this.module.getConfiguration().preventOverstackedItems && !module.perms().OVERSTACKED_ANVIL_AND_BREWING.isAuthorized(event.getWhoClicked()))
         {
 
             if (event.getView().getTopInventory() instanceof AnvilInventory

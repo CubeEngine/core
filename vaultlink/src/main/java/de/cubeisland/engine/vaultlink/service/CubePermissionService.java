@@ -26,7 +26,6 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
@@ -41,7 +40,6 @@ public class CubePermissionService extends Permission
 {
     private final Vaultlink module;
     private final Roles roles;
-    private final UserManager um;
     private final WorldManager wm;
     private final PermissionManager pm;
 
@@ -49,7 +47,6 @@ public class CubePermissionService extends Permission
     {
         this.module = module;
         this.roles = roles;
-        this.um = roles.getCore().getUserManager();
         this.wm = roles.getCore().getWorldManager();
         this.pm = roles.getCore().getPermissionManager();
     }

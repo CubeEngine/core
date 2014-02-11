@@ -31,7 +31,7 @@ import gnu.trove.map.hash.THashMap;
 
 public abstract class SignType<T extends SignType, I extends SignTypeInfo>
 {
-    private Map<String,String> lowerCasedNames = new THashMap<>();
+    private final Map<String,String> lowerCasedNames = new THashMap<>();
     protected SignManager manager;
     protected Powersigns module;
 

@@ -28,9 +28,9 @@ public class SignMarketItemManager
 {
     private TLongObjectHashMap<SignMarketItemModel> itemInfoModels;
 
-    private Signmarket module;
+    private final Signmarket module;
 
-    private DSLContext dsl;
+    private final DSLContext dsl;
 
     public SignMarketItemManager(Signmarket module)
     {

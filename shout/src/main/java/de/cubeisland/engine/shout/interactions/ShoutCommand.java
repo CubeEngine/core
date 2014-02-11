@@ -49,7 +49,7 @@ import static java.util.Arrays.asList;
 
 public class ShoutCommand extends ContainerCommand
 {
-    private Shout module;
+    private final Shout module;
 
     public ShoutCommand(Shout module)
     {

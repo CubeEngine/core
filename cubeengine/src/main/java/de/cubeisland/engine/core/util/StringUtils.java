@@ -30,6 +30,8 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 
 /**
  * This class contains some utillities to work with Strings.
@@ -441,7 +443,7 @@ public final class StringUtils
 
     public static String randomString(Random random, int length, String charset)
     {
-        assert length > 0: "The length must be creater than zero!";
+        expect(length > 0, "The length must be greater than zero!");
 
         int upperLimit = charset.length();
         StringBuilder sb = new StringBuilder();

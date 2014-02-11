@@ -25,7 +25,7 @@ import org.bukkit.Material;
 
 public class BaseMaterialContainer
 {
-    private Map<Material,BaseMaterial> baseMaterials = new HashMap<>();
+    private final Map<Material,BaseMaterial> baseMaterials = new HashMap<>();
 
     public BaseMaterialContainer()
     {

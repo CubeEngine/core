@@ -21,11 +21,13 @@ import java.nio.file.Path;
 
 import org.bukkit.World;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class GlobalRoleProvider extends RoleProvider
 {
     public GlobalRoleProvider(RolesManager manager)
     {
-        super(manager, manager.module.getBasePermission().createAbstractChild("global"));
+        super(manager, manager.module.getBasePermission().childWildcard("global"));
     }
 
     @Override
@@ -48,7 +50,7 @@ public class GlobalRoleProvider extends RoleProvider
     @Override
     public Role getRole(String name)
     {
-        assert name != null: "The role name may not be null!";
+        expectNotNull(name, "The role name may not be null!");
 
         name = name.toLowerCase();
         if (name.startsWith("g:"))

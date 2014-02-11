@@ -34,8 +34,8 @@ public class Home extends TeleportPoint
         if (teleportPoint.getVisibility() == VISIBILITY_PUBLIC)
         {
             this.permission = module.getBasePermission().
-                createAbstractChild("publichomes").createAbstractChild("access").
-                                        createChild(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+                childWildcard("publichomes").childWildcard("access").
+                child(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
         }
         else
@@ -64,8 +64,8 @@ public class Home extends TeleportPoint
         if (visibility == VISIBILITY_PUBLIC)
         {
             this.permission = module.getBasePermission().
-                createAbstractChild("publichomes").createAbstractChild("access").
-                                        createChild(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+                childWildcard("publichomes").childWildcard("access").
+                child(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
             this.inviteManager.removeInvites(this);
         }

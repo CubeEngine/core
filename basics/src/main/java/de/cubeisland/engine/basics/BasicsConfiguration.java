@@ -55,7 +55,6 @@ public class BasicsConfiguration extends YamlConfiguration
 
         public Collection<ItemStack> itemBlacklist = new LinkedList<ItemStack>()
         {
-
             {
                 this.add(new ItemStack(Material.BEDROCK));
                 this.add(new ItemStack(Material.WATER));
@@ -76,7 +75,6 @@ public class BasicsConfiguration extends YamlConfiguration
                 this.add(new ItemStack(Material.CAKE_BLOCK));
                 this.add(new ItemStack(Material.DIODE_BLOCK_OFF));
                 this.add(new ItemStack(Material.DIODE_BLOCK_ON));
-                this.add(new ItemStack(Material.LOCKED_CHEST));
                 this.add(new ItemStack(Material.PUMPKIN_STEM));
                 this.add(new ItemStack(Material.MELON_STEM));
                 this.add(new ItemStack(Material.NETHER_WARTS));

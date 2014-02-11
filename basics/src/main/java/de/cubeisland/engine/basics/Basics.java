@@ -62,6 +62,13 @@ public class Basics extends Module
     private BasicsConfiguration config;
     private LagTimer lagTimer;
 
+    public BasicsPerm perms()
+    {
+        return perms;
+    }
+
+    private BasicsPerm perms;
+
     @Override
     public void onEnable()
     {
@@ -75,10 +82,10 @@ public class Basics extends Module
         final CommandManager cm = this.getCore().getCommandManager();
         final EventManager em = this.getCore().getEventManager();
         this.getLog().trace("{} ms - Basics.Permission", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
-        new BasicsPerm(this);
+        perms = new BasicsPerm(this);
         this.getCore().getUserManager().addDefaultAttachment(BasicsAttachment.class, this);
 
-        em.registerListener(this, new ColoredSigns());
+        em.registerListener(this, new ColoredSigns(this));
 
         this.getLog().trace("{} ms - General-Commands", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         //General:
@@ -121,7 +128,7 @@ public class Basics extends Module
         cm.registerCommands(this, new TeleportRequestCommands(this), ReflectedCommand.class);
         this.getLog().trace("{} ms - Teleport/Fly-Listener", Profiler.getCurrentDelta("basicsEnable", TimeUnit.MILLISECONDS));
         em.registerListener(this, new TeleportListener(this));
-        em.registerListener(this, new FlyListener());
+        em.registerListener(this, new FlyListener(this));
 
         this.lagTimer = new LagTimer(this);
 

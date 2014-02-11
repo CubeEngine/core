@@ -30,8 +30,6 @@ import de.cubeisland.engine.shout.interactions.ShoutListener;
 
 public class Shout extends Module
 {
-    public boolean usingRoles = false;
-
     private AnnouncementManager announcementManager;
     private Announcer announcer;
     private ShoutConfiguration config;
@@ -46,7 +44,7 @@ public class Shout extends Module
     @Override
     public void onEnable()
     {
-        this.announcePerm = this.getBasePermission().createAbstract("announcement");
+        this.announcePerm = this.getBasePermission().newWildcard("announcement");
 
         this.config = this.loadConfig(ShoutConfiguration.class);
 

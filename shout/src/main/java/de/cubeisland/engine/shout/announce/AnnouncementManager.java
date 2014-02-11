@@ -70,9 +70,9 @@ public class AnnouncementManager
     private final Shout module;
     private final Announcer announcer;
     private final Path announcementFolder;
-    private Map<String, Receiver> receivers;
-    private Map<String, Announcement> dynamicAnnouncements;
-    private Map<String, Announcement> fixedCycleAnnouncements;
+    private final Map<String, Receiver> receivers;
+    private final Map<String, Announcement> dynamicAnnouncements;
+    private final Map<String, Announcement> fixedCycleAnnouncements;
     private final I18n i18n;
     private MessageOfTheDay motd;
 

@@ -25,28 +25,26 @@ import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 
 public class CorePerms extends PermissionContainer<CoreModule>
 {
-
     public CorePerms(CoreModule module)
     {
         super(module);
-        this.bindToModule(COMMAND,SPAM);
         this.registerAllPermissions();
     }
 
-    private static final Permission COMMAND = Permission.createAbstractPermission("command");
-    private static final Permission CLEARPASSWORD = COMMAND.createAbstractChild("clearpassword");
-    public static final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.createChild("all");
-    public static final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.createChild("other");
+    private final Permission COMMAND = getBasePerm().childWildcard("command");
+    private final Permission CLEARPASSWORD = COMMAND.childWildcard("clearpassword");
+    public final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.child("all");
+    public final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.child("other");
 
-    public static final Permission COMMAND_SETPASSWORD_OTHER = COMMAND.createChild("other");
-    public static final Permission COMMAND_OP_NOTIFY = COMMAND.createChild("op.notify");
+    public final Permission COMMAND_SETPASSWORD_OTHER = COMMAND.childWildcard("setpassword").child("other");
+    public final Permission COMMAND_OP_NOTIFY = COMMAND.childWildcard("op").child("notify");
 
-    private static final Permission DEOP = COMMAND.createAbstractChild("deop");
-    public static final Permission COMMAND_DEOP_NOTIFY = DEOP.createChild("notify");
-    public static final Permission COMMAND_DEOP_OTHER = DEOP.createChild("other",FALSE);
-    public static final Permission COMMAND_RELOAD_NOTIFY = COMMAND.createChild("reload.notify");
+    private final Permission DEOP = COMMAND.childWildcard("deop");
+    public final Permission COMMAND_DEOP_NOTIFY = DEOP.child("notify");
+    public final Permission COMMAND_DEOP_OTHER = DEOP.child("other",FALSE);
+    public final Permission COMMAND_RELOAD_NOTIFY = COMMAND.childWildcard("reload").child("notify");
 
-    public static final Permission COMMAND_VERSION_PLUGINS = COMMAND.createChild("version.plugins");
+    public final Permission COMMAND_VERSION_PLUGINS = COMMAND.childWildcard("version").child("plugins");
 
-    public static final Permission SPAM = Permission.createPermission("spam");
+    public final Permission SPAM = getBasePerm().child("spam");
 }

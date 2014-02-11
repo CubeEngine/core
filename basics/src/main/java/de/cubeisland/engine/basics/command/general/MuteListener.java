@@ -31,7 +31,7 @@ import de.cubeisland.engine.basics.Basics;
 public class MuteListener implements Listener
 {
     private final Basics basics;
-    private IgnoreCommands ignore;
+    private final IgnoreCommands ignore;
 
     public MuteListener(Basics basics, IgnoreCommands ignore)
     {

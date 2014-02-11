@@ -15,9 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.portals;
+package de.cubeisland.engine.worlds;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-
-public class PortalsConfig extends YamlConfiguration
-{}
+public class UniverseCreationException extends RuntimeException
+{
+    public UniverseCreationException(Throwable cause)
+    {
+        super(cause);
+    }
+}

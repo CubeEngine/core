@@ -37,12 +37,12 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 public class ToolListener implements Listener
 {
     private final Log module;
-    private Permission toolPerm;
+    private final Permission toolPerm;
 
     public ToolListener(Log module)
     {
         this.module = module;
-        toolPerm = module.getBasePermission().createChild("use-logtool");
+        toolPerm = module.getBasePermission().child("use-logtool");
     }
 
     @EventHandler

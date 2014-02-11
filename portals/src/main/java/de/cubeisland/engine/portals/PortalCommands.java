@@ -43,8 +43,8 @@ import static de.cubeisland.engine.core.command.Commands.aliases;
 
 public class PortalCommands extends ContainerCommand
 {
-    private Portals module;
-    private PortalManager manager;
+    private final Portals module;
+    private final PortalManager manager;
 
     public PortalCommands(Portals module, PortalManager manager)
     {
@@ -130,13 +130,37 @@ public class PortalCommands extends ContainerCommand
         {
             ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module).setPortal(portal);
             context.sendTranslated("&aPortal selected: &6%s", context.getString(0));
+            return;
         }
         context.sendTranslated("&cYou have to be ingame to do this!");
     }
 
-    public void info()
+    @Alias(names ="mvpi")
+    @Command(desc = "Show info about a portal", usage = "[portal]", max = 1)
+    public void info(CommandContext context)
     {
-        // TODO
+        Portal portal = null;
+        if (context.hasArg(0))
+        {
+            portal = manager.getPortal(context.getString(0));
+            if (portal == null)
+            {
+                context.sendTranslated("&cPortal &6%s&c not found!", context.getString(0));
+                return;
+            }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            portal = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, getModule()).getPortal();
+        }
+        if (portal == null)
+        {
+            context.sendTranslated("&cYou need to define a portal to use!");
+            context.sendMessage(context.getCommand().getUsage(context));
+            return;
+        }
+        context.sendTranslated("&aPortal Information for: &6%s", portal.getName());
+        portal.showInfo(context.getSender());
     }
 
     @Alias(names = "mvpr")
@@ -153,12 +177,42 @@ public class PortalCommands extends ContainerCommand
         context.sendTranslated("&aPortal &6%s&a deleted", portal.getName());
     }
 
-    @Command(desc = "Shows debug portal information instead of teleporting", usage = "on|off", max = 1, min = 1)
+    @Command(desc = "Shows debug portal information instead of teleporting", usage = "[on|off]", max = 1)
     public void debug(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
-            ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module).toggleDebug();
+            PortalsAttachment attachment = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module);
+            if (context.hasArg(0))
+            {
+                if (context.getString(0).equalsIgnoreCase("on"))
+                {
+                    if (!attachment.isDebug())
+                    {
+                        attachment.toggleDebug();
+                    }
+                }
+                else if (context.getString(0).equalsIgnoreCase("off"))
+                {
+                    if (attachment.isDebug())
+                    {
+                        attachment.toggleDebug();
+                    }
+                    context.sendTranslated("&e[Portals] Debug &6OFF");
+                }
+            }
+            else
+            {
+                attachment.toggleDebug();
+            }
+            if (attachment.isDebug())
+            {
+                context.sendTranslated("&e[Portals] Debug &6ON");
+            }
+            else
+            {
+                context.sendTranslated("&aToggled debug mode!");
+            }
             return;
         }
         context.sendTranslated("&cYou have to be ingame to do this!");

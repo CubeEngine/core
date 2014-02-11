@@ -25,12 +25,11 @@ public class BackpackPermissions extends PermissionContainer<Backpack>
     public BackpackPermissions(Backpack module)
     {
         super(module);
-        this.bindToModule(OPEN_OTHER_USER, OPEN_OTHER_WORLDS);
         this.registerAllPermissions();
     }
 
-    private static final Permission COMMAND = Permission.createAbstractPermission("command");
-    private static final Permission COMMAND_OPEN = COMMAND.createAbstractChild("open");
-    public static final Permission OPEN_OTHER_USER = COMMAND_OPEN.createChild("other-user");
-    public static final Permission OPEN_OTHER_WORLDS = COMMAND_OPEN.createChild("other-worlds");
+    private final Permission COMMAND = getBasePerm().childWildcard("command");
+    private final Permission COMMAND_OPEN = COMMAND.childWildcard("open");
+    public final Permission OPEN_OTHER_USER = COMMAND_OPEN.child("other-user");
+    public final Permission OPEN_OTHER_WORLDS = COMMAND_OPEN.child("other-worlds");
 }

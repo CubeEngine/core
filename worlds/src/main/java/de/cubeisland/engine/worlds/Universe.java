@@ -17,15 +17,19 @@
  */
 package de.cubeisland.engine.worlds;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -39,13 +43,15 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.configuration.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.world.ConfigWorld;
+import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.worlds.config.UniverseConfig;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 
-import static de.cubeisland.engine.worlds.WorldsPermissions.KEEP_FLYMODE;
-import static de.cubeisland.engine.worlds.WorldsPermissions.KEEP_GAMEMODE;
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 /**
  * Represents multiple worlds in a universe
@@ -54,113 +60,191 @@ public class Universe
 {
     private final Worlds module;
     private final Multiverse multiverse;
+    private final WorldManager wm;
 
     private UniverseConfig universeConfig;
-    private WorldConfig defaults = null;
-    private Map<World, WorldConfig> worldConfigs = new HashMap<>();
-    private Map<String, WorldConfig> worldConfigMap = new HashMap<>();
+    private WorldConfig defaultConfig = null;
 
-    private World mainWorld;
-    private Set<World> worlds = new HashSet<>();
+    private final Map<String, WorldConfig> worldConfigs = new HashMap<>();
+    private final Set<World> worlds = new HashSet<>();
+    private final Map<String, Permission> worldPerms = new HashMap<>();
 
     private Permission universeAccessPerm;
-    private Map<World, Permission> worldPerms = new HashMap<>();
 
-    private final File dirUniverse;
-    private final File dirPlayers;
-    private final File fileUniverse;
-    private final File fileDefaults;
+    private final Path dirUniverse;
+    private final Path dirPlayers;
+    private final Path fileUniverse;
+    private final Path fileDefaults;
 
-    private Universe(File universeDir, Worlds module, Multiverse multiverse)
+    private Universe(Worlds module, Multiverse multiverse, Path dirUniverse) throws IOException
     {
-        assert universeDir != null : "UniverseDirectory cannot be null!";
-        assert universeDir.isDirectory() : "UniverseDirectory must be a directory!";
         this.module = module;
+        this.wm = module.getCore().getWorldManager();
         this.multiverse = multiverse;
-        this.dirUniverse = universeDir;
-        this.dirPlayers = new File(universeDir, "players");
-        this.dirPlayers.mkdir();
-        this.fileDefaults = new File(universeDir, "defaults.yml");
-        this.fileUniverse =  new File(universeDir, "config.yml");
+
+        this.dirUniverse = dirUniverse;
+        this.dirPlayers = dirUniverse.resolve("players");
+        Files.createDirectories(dirPlayers);
+        this.fileDefaults = dirUniverse.resolve("default.yml");
+        this.fileUniverse =  dirUniverse.resolve("config.yml");
     }
 
-    // For Loading
-    public Universe(File universeDir, Multiverse multiverse, Worlds module)
+    public static Universe load(Worlds module, Multiverse multiverse, Path dirUniverse) throws IOException
     {
-        this(universeDir, module, multiverse);
-        if (!fileDefaults.exists())
+        Universe universe = new Universe(module, multiverse, dirUniverse);
+        universe.reload();
+        return universe;
+    }
+
+    public void reload() throws IOException
+    {
+        this.defaultConfig = module.getCore().getConfigFactory().load(WorldConfig.class, this.fileDefaults.toFile(), true);
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(this.dirUniverse, YAML))
         {
-            module.getLog().warn("defaults.yml is missing for the universe {}! Regenerating...", universeDir.getName());
-        }
-        this.defaults = module.getCore().getConfigFactory().load(WorldConfig.class, fileDefaults, true);
-        for (File file : universeDir.listFiles())
-        {
-            if (!file.equals(fileDefaults) && !file.equals(fileUniverse) && !file.isDirectory() && file.getName().endsWith(".yml"))
+            for (Path path : stream)
             {
-                WorldConfig config = this.defaults.loadChild(file);
-                if (config.autoLoad)
+                if (!(path.equals(fileDefaults) || path.equals(fileUniverse)))
                 {
-                    this.loadOrCreateWorld(config, file.getName().substring(0, file.getName().indexOf(".yml")));
-                }
-                else
-                {
-                    this.worldConfigMap.put(file.getName().substring(0, file.getName().indexOf(".yml")), config);
+                    WorldConfig config = this.defaultConfig.loadChild(path.toFile());
+                    if (config.autoLoad)
+                    {
+                        this.loadOrCreateWorld(config, StringUtils.stripFileExtension(path.getFileName().toString()));
+                    }
+                    else
+                    {
+                        this.worldConfigs.put(StringUtils.stripFileExtension(path.getFileName().toString()), config);
+                    }
                 }
             }
         }
-        this.universeConfig = this.module.getCore().getConfigFactory().load(UniverseConfig.class, fileUniverse);
-        if (this.universeConfig.mainWorld == null)
+        this.universeConfig = this.module.getCore().getConfigFactory().load(UniverseConfig.class, fileUniverse.toFile());
+        if (this.worlds.isEmpty())
         {
-            World world = this.worlds.iterator().next();
-            module.getLog().warn("The universe {} had no mainworld! {} is now the main world", universeDir.getName(), world.getName());
-            this.universeConfig.save();
+            module.getLog().warn("The universe {} has no worlds!", this.getName());
+        }
+        else
+        {
+            if (this.universeConfig.mainWorld == null)
+            {
+                World world = this.worlds.iterator().next();
+                module.getLog().warn("The universe {} had no mainworld! {} is now the main world", dirUniverse.getFileName().toString(), world.getName());
+                this.universeConfig.mainWorld = new ConfigWorld(this.wm, world);
+                this.universeConfig.save();
+            }
             for (WorldConfig worldConfig : this.worldConfigs.values())
             {
                 if (worldConfig.spawn.respawnWorld == null)
                 {
-                    worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
+                    worldConfig.spawn.respawnWorld = new ConfigWorld(this.wm, this.universeConfig.mainWorld.getName());
                     worldConfig.save();
                 }
             }
+            World mainWorld = this.universeConfig.mainWorld.getWorld();
+            if (mainWorld == null)
+            {
+                if (this.worlds.isEmpty())
+                {
+                    module.getLog().warn("Unknown world set as mainworld! Universe has no active worlds!");
+                    this.universeConfig.mainWorld = null;
+                }
+                else
+                {
+                    mainWorld = this.worlds.iterator().next();
+                    module.getLog().warn("Unknown world set as mainworld! Mainworld {} replaced with {}!", this.universeConfig.mainWorld, mainWorld
+                        .getName());
+                    this.universeConfig.mainWorld = new ConfigWorld(this.wm, mainWorld);
+                }
+                this.universeConfig.save();
+            }
         }
-        this.mainWorld = this.universeConfig.mainWorld == null ? null : this.module.getCore().getWorldManager().getWorld(this.universeConfig.mainWorld);
-        if (this.mainWorld == null)
+        this.generatePermissions();
+    }
+
+    public static Universe create(Worlds module, Multiverse multiverse, Path dirUniverse, Set<World> worlds) throws IOException
+    {
+        Universe universe = new Universe(module, multiverse, dirUniverse);
+        universe.create(worlds);
+        return universe;
+    }
+
+    private void create(Set<World> worlds)
+    {
+        this.universeConfig = this.module.getCore().getConfigFactory().create(UniverseConfig.class);
+        this.universeConfig.setFile(this.fileUniverse.toFile());
+
+        for (World world : worlds)
         {
-            if (this.worlds.isEmpty())
+            if (world.getName().equals(this.getName()))
             {
-                module.getLog().warn("Unknown world set as mainworld! Universe has no active worlds!");
-                this.universeConfig.mainWorld = null;
+                this.universeConfig.mainWorld = new ConfigWorld(this.wm, world.getName());
+                this.universeConfig.save();
+
+                this.defaultConfig = this.createWorldConfigFromExisting(world);
+                this.defaultConfig.spawn.spawnLocation = null;
+                this.defaultConfig.generation.worldType = null;
+                this.defaultConfig.generation.seed = null;
+                this.defaultConfig.spawn.respawnWorld = new ConfigWorld(this.wm, this.universeConfig.mainWorld.getName());
+                this.defaultConfig.setFile(fileDefaults.toFile());
+
+                this.defaultConfig.save();
             }
-            else
-            {
-                this.mainWorld = this.worlds.iterator().next();
-                module.getLog().warn("Unknown world set as mainworld! Mainworld {} replaced with {}!", this.universeConfig.mainWorld, this.mainWorld.getName());
-                this.universeConfig.mainWorld = this.mainWorld.getName();
-            }
-            this.universeConfig.save();
+            this.worldConfigs.put(world.getName(), this.createWorldConfigFromExisting(world));
+        }
+        for (Entry<String, WorldConfig> entry : worldConfigs.entrySet())
+        {
+            WorldConfig worldConfig = entry.getValue();
+            worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
+
+            worldConfig.setDefault(this.defaultConfig);
+            worldConfig.setFile(dirUniverse.resolve(entry.getKey() + YAML.getExtention()).toFile());
+            worldConfig.updateInheritance();
+            worldConfig.save();
         }
         this.generatePermissions();
     }
 
     private World loadOrCreateWorld(WorldConfig config, String name)
     {
-        World world = this.module.getCore().getWorldManager().getWorld(name);
-        if (world == null) // world loaded?
+        World world = this.wm.getWorld(name);
+        for (Universe universe : this.multiverse.getUniverses())
         {
-            if (config.generation.environment == null || config.generation.seed == null)
+            if (universe == this)
             {
-                module.getLog().warn("Insufficient Generation Information to load {} in {}!", name, this.getName());
+                continue;
+            }
+            if (universe.hasWorld(name))
+            {
+                module.getLog().warn("The world {} is already part of an other universe {} and cannot be added to the universe {}!",
+                                     name, universe.getName(), this.getName());
+                module.getLog().warn("Please check your configuration!");
                 return null;
             }
-            if (new File(Bukkit.getServer().getWorldContainer(), name).exists()) // world is just not loaded yet
+        }
+        if (world == null) // world loaded?
+        {
+            if (config.generation.environment == null)
+            {
+                config.generation.environment = Environment.NORMAL;
+                module.getLog().warn("Environment for {} in {} was not set and defaulted to NORMAL!", name, this.getName());
+                config.save();
+            }
+            if (config.generation.seed == null)
+            {
+                config.generation.seed = StringUtils.randomString(new Random(), 16, "qwertzuiopasdfghhjjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM12345677890");
+                module.getLog().warn("{} in {} had no seed and a random seed was created!", name, this.getName());
+                config.save();
+            }
+            if (Files.exists(Bukkit.getServer().getWorldContainer().toPath().resolve(name))) // world is just not loaded yet
             {
                 module.getLog().info("Loading World {}...", name);
+                world = this.wm.createWorld(WorldCreator.name(name));
             }
             else // World does not exist
             {
                 module.getLog().info("Creating new World {}...", name);
+                world = this.wm.createWorld(config.applyToCreator(WorldCreator.name(name)));
             }
-            world = this.module.getCore().getWorldManager().createWorld(config.applyToCreator(WorldCreator.name(name)));
             if (config.spawn.spawnLocation == null)
             {
                 config.spawn.spawnLocation = new WorldLocation(world.getSpawnLocation());
@@ -177,8 +261,7 @@ public class Universe
         }
         config.applyToWorld(world); // apply configured
         this.worlds.add(world);
-        this.worldConfigs.put(world, config);
-        this.worldConfigMap.put(world.getName(), config);
+        this.worldConfigs.put(world.getName(), config);
         return world;
     }
 
@@ -186,58 +269,20 @@ public class Universe
     {
         if (!this.universeConfig.freeAccess)
         {
-            this.universeAccessPerm = this.multiverse.getUniverseRootPerm().createAbstractChild("access").createChild(dirUniverse.getName());
+            this.universeAccessPerm = this.multiverse.getUniverseRootPerm().childWildcard("access").child(this.getName());
             this.module.getCore().getPermissionManager().registerPermission(module, this.universeAccessPerm);
         }
-        Permission worldAccess = this.multiverse.getUniverseRootPerm().createAbstractChild("world-access");
-        for (Entry<World, WorldConfig> entry : this.worldConfigs.entrySet())
+        Permission worldAccess = this.multiverse.getUniverseRootPerm().childWildcard("world-access");
+        for (Entry<String, WorldConfig> entry : this.worldConfigs.entrySet())
         {
             if (!entry.getValue().access.free)
             {
-                Permission perm = worldAccess.createChild(entry.getKey().getName());
+                Permission perm = worldAccess.child(entry.getKey());
                 this.module.getCore().getPermissionManager().registerPermission(module, perm);
                 this.worldPerms.put(entry.getKey(), perm);
             }
 
         }
-    }
-
-    // For creating new Universe
-    public Universe(Worlds module, Multiverse multiverse, File universeDir, Set<World> worlds)
-    {
-        this(universeDir, module, multiverse);
-        this.universeConfig = this.module.getCore().getConfigFactory().create(UniverseConfig.class);
-        this.universeConfig.setFile(this.fileUniverse);
-
-        for (World world : worlds)
-        {
-            if (world.getName().equals(universeDir.getName()))
-            {
-                this.universeConfig.mainWorld = world.getName();
-                this.universeConfig.save();
-
-                this.defaults = this.createWorldConfigFromExisting(world);
-                this.defaults.spawn.spawnLocation = null;
-                this.defaults.generation.worldType = null;
-                this.defaults.generation.seed = null;
-                this.defaults.spawn.respawnWorld = this.universeConfig.mainWorld;
-                this.defaults.setFile(new File(universeDir, "defaults.yml"));
-
-                this.defaults.save();
-            }
-            this.worldConfigs.put(world, this.createWorldConfigFromExisting(world));
-        }
-        for (Entry<World, WorldConfig> entry : worldConfigs.entrySet())
-        {
-            WorldConfig worldConfig = entry.getValue();
-            worldConfig.spawn.respawnWorld = this.universeConfig.mainWorld;
-
-            worldConfig.setDefault(this.defaults);
-            worldConfig.setFile(new File(universeDir, entry.getKey().getName() + ".yml"));
-            worldConfig.updateInheritance();
-            worldConfig.save();
-        }
-        this.generatePermissions();
     }
 
     private WorldConfig createWorldConfigFromExisting(World world)
@@ -247,7 +292,7 @@ public class Universe
         {
             config.scale = 8.0; // Nether is 1:8
         }
-        if (this.defaults != null && this.universeConfig.mainWorld.equals(world.getName()))
+        if (this.defaultConfig != null && this.universeConfig.mainWorld.getName().equals(world.getName()))
         {
             config.spawn.keepSpawnInMemory = true; // KEEP MAIN SPAWN LOADED
         }
@@ -257,7 +302,7 @@ public class Universe
 
     public String getName()
     {
-        return this.dirUniverse.getName();
+        return this.dirUniverse.getFileName().toString();
     }
 
     public Set<World> getWorlds()
@@ -270,12 +315,11 @@ public class Universe
         for (World world : worlds)
         {
             WorldConfig config = this.createWorldConfigFromExisting(world);
-            config.setDefault(this.defaults);
-            config.setFile(new File(dirUniverse, world.getName() + ".yml"));
+            config.setDefault(this.defaultConfig);
+            config.setFile(dirUniverse.resolve(world.getName() + YAML.getExtention()).toFile());
             config.updateInheritance();
             config.save();
-            this.worldConfigs.put(world, config);
-            this.worldConfigMap.put(world.getName(), config);
+            this.worldConfigs.put(world.getName(), config);
             this.worlds.add(world);
         }
     }
@@ -287,31 +331,30 @@ public class Universe
 
     public void savePlayer(Player player, World world)
     {
-        this.module.getLog().debug("{} saved for {} in {}" , player.getName(), this.getName(), world.getName());
         PlayerDataConfig config = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
         config.applyFromPlayer(player);
 
-        config.setFile(new File(dirPlayers, player.getName() +".dat"));
+        config.setFile(dirPlayers.resolve(player.getName() + ".dat").toFile());
+        config.save();
+
         YamlCodec codec = this.module.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
         try
         {
-            codec.saveConfig(config, new FileOutputStream(new File(dirUniverse, "players" + File.separator +player.getName() +".yml")));
+            codec.saveConfig(config, new FileOutputStream(dirPlayers.resolve(player.getName() + YAML.getExtention()).toFile()));
         }
         catch (FileNotFoundException e)
         {
             e.printStackTrace();
         }
-        config.save();
+        this.module.getLog().debug("PlayerData for {} in {} ({}) saved", player.getName(), world.getName(), this.getName());
     }
 
     public void loadPlayer(Player player)
     {
-        this.module.getLog().debug("{} loaded for {} in {}", player.getName(), this.getName(), player.getWorld()
-                                                                                                     .getName());
-        File file = new File(dirPlayers, player.getName() +".dat");
-        if (file.exists())
+        Path path = dirPlayers.resolve(player.getName() + ".dat");
+        if (Files.exists(path))
         {
-            PlayerDataConfig load = this.module.getCore().getConfigFactory().load(PlayerDataConfig.class, file);
+            PlayerDataConfig load = this.module.getCore().getConfigFactory().load(PlayerDataConfig.class, path.toFile());
             load.applyToPlayer(player);
         }
         else
@@ -321,26 +364,27 @@ public class Universe
             save.applyToPlayer(player);
             this.savePlayer(player, player.getWorld());
         }
-        if (!(this.universeConfig.keepFlyMode || KEEP_FLYMODE.isAuthorized(player)))
+        if (!(this.universeConfig.keepFlyMode || module.perms().KEEP_FLYMODE.isAuthorized(player)))
         {
             player.setFlying(player.isFlying());
         }
-        if (!(this.universeConfig.keepGameMode || KEEP_GAMEMODE.isAuthorized(player)))
+        if (!(this.universeConfig.keepGameMode || module.perms().KEEP_GAMEMODE.isAuthorized(player)))
         {
-            player.setGameMode(this.worldConfigs.get(player.getWorld()).gameMode);
+            player.setGameMode(this.worldConfigs.get(player.getWorld().getName()).gameMode);
         }
+        this.module.getLog().debug("PlayerData for {} in {} ({}) applied", player.getName(), player.getWorld().getName(), this.getName());
     }
 
     public World getMainWorld()
     {
-        return this.mainWorld;
+        return this.universeConfig.mainWorld.getWorld();
     }
 
     public boolean checkPlayerAccess(Player player, World world)
     {
         if (this.universeConfig.freeAccess || this.universeAccessPerm.isAuthorized(player))
         {
-            Permission permission = this.worldPerms.get(world);
+            Permission permission = this.worldPerms.get(world.getName());
             if (permission == null || permission.isAuthorized(player))
             {
                 return true;
@@ -351,9 +395,9 @@ public class Universe
 
     public Location handleNetherTarget(Location from, TravelAgent agent)
     {
-        WorldConfig fromConfig = this.worldConfigs.get(from.getWorld());
-        World toWorld = this.module.getCore().getWorldManager().getWorld(fromConfig.netherTarget);
-        WorldConfig toConfig = this.multiverse.getUniverse(toWorld).getWorldConfig(toWorld);
+        WorldConfig fromConfig = this.worldConfigs.get(from.getWorld().getName());
+        World toWorld = this.wm.getWorld(fromConfig.netherTarget);
+        WorldConfig toConfig = this.multiverse.getUniverseFrom(toWorld).getWorldConfig(toWorld);
         double factor = fromConfig.scale / toConfig.scale;
         agent.setSearchRadius((int)(128 / (factor * 8)));
         agent.setCreationRadius((int)(16 / (factor * 8)));
@@ -362,8 +406,8 @@ public class Universe
 
     public Location handleEndTarget(Location from)
     {
-        WorldConfig fromConfig = this.worldConfigs.get(from.getWorld());
-        World toWorld = this.module.getCore().getWorldManager().getWorld(fromConfig.endTarget);
+        WorldConfig fromConfig = this.worldConfigs.get(from.getWorld().getName());
+        World toWorld = this.wm.getWorld(fromConfig.endTarget);
         if (toWorld.getEnvironment() == Environment.THE_END)
         {
             return new Location(toWorld, 100, 50, 0, from.getYaw(), from.getPitch()); // everything else wont work when using the TravelAgent
@@ -376,17 +420,17 @@ public class Universe
 
     public boolean hasNetherTarget(World world)
     {
-        WorldConfig worldConfig = this.worldConfigs.get(world);
+        WorldConfig worldConfig = this.worldConfigs.get(world.getName());
         return worldConfig.netherTarget != null &&
-            this.module.getCore().getWorldManager().getWorld(worldConfig.netherTarget) != null;
+            this.wm.getWorld(worldConfig.netherTarget) != null;
     }
 
     public boolean hasEndTarget(World world)
     {
-        WorldConfig worldConfig = this.worldConfigs.get(world);
+        WorldConfig worldConfig = this.worldConfigs.get(world.getName());
         if (worldConfig.endTarget != null)
         {
-            World target = this.module.getCore().getWorldManager().getWorld(worldConfig.endTarget);
+            World target = this.wm.getWorld(worldConfig.endTarget);
             if (target != null)
             {
                 if (world.getEnvironment() != Environment.THE_END)
@@ -411,13 +455,13 @@ public class Universe
         {
             return this.getSpawnLocation(this.getMainWorld());
         }
-        World respawnWorld = this.module.getCore().getWorldManager().getWorld(worldConfig.spawn.respawnWorld);
+        World respawnWorld = worldConfig.spawn.respawnWorld.getWorld();
         if (respawnWorld == null)
         {
             this.module.getLog().warn("Unknown respawn world for {}", world.getName());
             return this.getSpawnLocation(world);
         }
-        return this.multiverse.getUniverse(respawnWorld).getSpawnLocation(respawnWorld);
+        return this.multiverse.getUniverseFrom(respawnWorld).getSpawnLocation(respawnWorld);
     }
 
     public Location getSpawnLocation(World world)
@@ -427,22 +471,42 @@ public class Universe
 
     public boolean hasWorld(String name)
     {
-        WorldConfig worldConfig = this.worldConfigMap.get(name);
-        return worldConfig == null;
+        return this.worldConfigs.containsKey(name);
     }
 
     public World loadWorld(String name)
     {
-        return this.loadOrCreateWorld(this.worldConfigMap.get(name), name);
+        return this.loadOrCreateWorld(this.worldConfigs.get(name), name);
     }
 
     public List<Pair<String, WorldConfig>> getAllWorlds()
     {
         ArrayList<Pair<String, WorldConfig>> list = new ArrayList<>();
-        for (Entry<String, WorldConfig> entry : this.worldConfigMap.entrySet())
+        for (Entry<String, WorldConfig> entry : this.worldConfigs.entrySet())
         {
             list.add(new Pair<>(entry.getKey(), entry.getValue()));
         }
         return list;
+    }
+
+    public void removeWorld(String name)
+    {
+        WorldConfig config = this.worldConfigs.remove(name);
+        config.getFile().delete();
+    }
+
+    public Path getDirectory()
+    {
+        return this.dirUniverse;
+    }
+
+    public WorldConfig getWorldConfig(String name)
+    {
+        return this.worldConfigs.get(name);
+    }
+
+    public UniverseConfig getConfig()
+    {
+        return this.universeConfig;
     }
 }

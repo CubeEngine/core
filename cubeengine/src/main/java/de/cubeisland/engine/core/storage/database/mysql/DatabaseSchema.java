@@ -25,12 +25,11 @@ import org.jooq.impl.SchemaImpl;
 
 class DatabaseSchema extends SchemaImpl
 {
-    private List<Table<?>> tables;
+    private final List<Table<?>> tables = new ArrayList<>();
 
     DatabaseSchema(String name)
     {
         super(name);
-        this.tables = new ArrayList<>();
     }
 
     @Override

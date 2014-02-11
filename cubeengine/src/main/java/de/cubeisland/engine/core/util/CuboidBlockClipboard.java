@@ -186,8 +186,8 @@ public class CuboidBlockClipboard
             }
             ListNode tileEntities = ListNode.emptyList();
             result.setExactNode("tileentities",tileEntities);
-            Map<Material,Byte> materials = new HashMap<Material, Byte>();
-            object.mappedMaterials = new HashMap<Byte, Material>();
+            Map<Material,Byte> materials = new HashMap<>();
+            object.mappedMaterials = new HashMap<>();
             Byte[] blocks = new Byte[object.size.x * object.size.y * object.size.z];
             Byte[] bData = new Byte[object.size.x * object.size.y * object.size.z];
             int i = 0;
@@ -236,7 +236,7 @@ public class CuboidBlockClipboard
                     Map<Byte,Material> mappedMaterials = manager.convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
                     Byte[] blocks = manager.convertFromNode(mappedNodes.get("blocks"),Byte[].class);
                     Byte[] data = manager.convertFromNode(mappedNodes.get("data"),Byte[].class);
-                    Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<BlockVector3, NBTTagCompound>();
+                    Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<>();
                     Node tileE = mappedNodes.get("tileentities");
                     if (tileE != null && tileE instanceof ListNode)
                     {

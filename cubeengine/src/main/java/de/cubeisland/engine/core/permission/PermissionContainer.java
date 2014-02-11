@@ -22,55 +22,30 @@ import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import de.cubeisland.engine.core.module.Module;
-
 import gnu.trove.set.hash.THashSet;
 
 public abstract class PermissionContainer<T extends Module>
 {
-    private final PermissionManager permissionManager;
-    private final T module;
+    public final T module;
 
-    protected PermissionContainer(T module)
+    public PermissionContainer(T module)
     {
-        this.permissionManager = module.getCore().getPermissionManager();
         this.module = module;
     }
 
-    protected final void bindToModule(Permission... perms)
-    {
-        Permission modulePerm = this.module.getBasePermission();
-        for (Permission perm : perms)
-        {
-            modulePerm.addChildren(perm);
-        }
-    }
-
-    protected final void prependModulePerm(Permission... perms)
-    {
-        Permission modulePerm = this.module.getBasePermission();
-        for (Permission perm : perms)
-        {
-            perm.prepend(modulePerm);
-        }
-    }
-
-    public Set<Permission> getPermissions()
+    private Set<Permission> getPermissions()
     {
         THashSet<Permission> perms = new THashSet<>();
         for (Field field : this.getClass().getFields())
         {
             int mask = field.getModifiers();
-            if ((((mask & Modifier.STATIC) == Modifier.STATIC)))
+            if (!((mask & Modifier.STATIC) == Modifier.STATIC)) // ignore static
             {
                 if (Permission.class.isAssignableFrom(field.getType()))
                 {
                     try
                     {
-                        Permission perm = (Permission)field.get(this);
-                        if (perm.isRegistrable())
-                        {
-                            perms.add(perm);
-                        }
+                        perms.add((Permission)field.get(this));
                     }
                     catch (IllegalAccessException ignored)
                     {}
@@ -82,14 +57,14 @@ public abstract class PermissionContainer<T extends Module>
 
     public void registerAllPermissions()
     {
-        String prefix = "cubeengine." + this.module.getId()+ ".";
         for (Permission perm : getPermissions())
         {
-            if (!perm.getName().startsWith(prefix))
-            {
-                throw new IllegalArgumentException("Permissions must start with 'cubeengine."+ module.getId() +"' ! Actual perm: " + perm.getName());
-            }
-            this.permissionManager.registerPermission(module,perm);
+            module.getCore().getPermissionManager().registerPermission(module, perm);
         }
+    }
+
+    public final Permission getBasePerm()
+    {
+        return module.getBasePermission();
     }
 }

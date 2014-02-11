@@ -50,6 +50,8 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class MySQLDatabase extends AbstractPooledDatabase
 {
     private final MySQLDatabaseConfiguration config;
@@ -282,7 +284,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
      */
     public static String prepareTableName(String name)
     {
-        assert name != null: "The name must not be null!";
+        expectNotNull(name, "The name must not be null!");
 
         return NAME_QUOTE + tableprefix + name + NAME_QUOTE;
     }
@@ -295,7 +297,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
      */
     public static String prepareColumnName(String name)
     {
-        assert name != null: "The name must not be null!";
+        expectNotNull(name, "The name must not be null!");
 
         int dotOffset = name.indexOf('.');
         if (dotOffset >= 0)

@@ -55,12 +55,19 @@ public class RolesListCommand extends ListCommand
             else
             {
                 Role role = attachment.getDominantRole();
-                Set<User> list = groupedRoles.get(role);
-                if (list == null)
+                if (role == null)
                 {
-                    groupedRoles.put(role, list = new THashSet<>());
+                    noRoleSet.add(user);
                 }
-                list.add(user);
+                else
+                {
+                    Set<User> list = groupedRoles.get(role);
+                    if (list == null)
+                    {
+                        groupedRoles.put(role, list = new THashSet<>());
+                    }
+                    list.add(user);
+                }
             }
         }
 

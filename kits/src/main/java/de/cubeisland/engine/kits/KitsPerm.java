@@ -25,13 +25,10 @@ public class KitsPerm extends PermissionContainer<Kits>
     public KitsPerm(Kits module)
     {
         super(module);
-        
-        bindToModule(COMMAND, KITS);
-        
         this.registerAllPermissions();
     }
 
-    public static final Permission COMMAND = Permission.createAbstractPermission("command");
-    public static final Permission KITS = Permission.createAbstractPermission("kits");
-    public static final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.createChild("kit.give.force");
+    private final Permission COMMAND = getBasePerm().childWildcard("command");
+    public final Permission KITS = getBasePerm().childWildcard("kits");
+    public final Permission COMMAND_KIT_GIVE_FORCE = COMMAND.child("kit.give.force");
 }

@@ -101,4 +101,10 @@ public class PlayerCommand extends SimpleLogActionType
     {
         return this.lm.getConfig(world).PLAYER_COMMAND_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO posssible but why
+    }
 }

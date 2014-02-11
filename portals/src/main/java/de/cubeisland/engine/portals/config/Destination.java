@@ -19,29 +19,33 @@ package de.cubeisland.engine.portals.config;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.Portal;
 import de.cubeisland.engine.portals.PortalManager;
 
 public class Destination
 {
     public Type type;
-    public World world;
+    public ConfigWorld world;
     public WorldLocation location;
     public String portal;
 
     public Destination(Location location)
     {
         this.location = new WorldLocation(location);
-        this.world = location.getWorld();
+        this.world = new ConfigWorld(CubeEngine.getCore().getWorldManager(), location.getWorld());
         this.type = Type.LOCATION;
     }
 
     public Destination(World world)
     {
-        this.world = world;
+        this.world = new ConfigWorld(CubeEngine.getCore().getWorldManager(), world);
         this.type = Type.WORLD;
     }
 
@@ -54,7 +58,7 @@ public class Destination
     protected Destination()
     {}
 
-    public void teleport(User user, PortalManager manager)
+    public void teleport(final Entity entity, PortalManager manager, boolean safe)
     {
         Location loc = null;
         switch (type)
@@ -63,26 +67,43 @@ public class Destination
             Portal destPortal = manager.getPortal(portal);
             if (destPortal == null)
             {
-                user.sendTranslated("&cDestination portal &6%s&c does not exist!", portal);
+                if (entity instanceof User)
+                {
+                    ((User)entity).sendTranslated("&cDestination portal &6%s&c does not exist!", portal);
+                }
                 return;
             }
             loc = destPortal.getPortalPos();
             break;
         case WORLD:
-            loc = world.getSpawnLocation();
+            loc = world.getWorld().getSpawnLocation();
             loc.setX(loc.getBlockX() + 0.5);
             loc.setZ(loc.getBlockZ() + 0.5);
             break;
         case LOCATION:
-            loc = location.getLocationIn(world);
+            loc = location.getLocationIn(world.getWorld());
             break;
         }
-        user.teleport(loc);
-        user.sendTranslated("TPed");
+        if (entity.isInsideVehicle())
+        {
+            if (entity instanceof User)
+            {
+                ((User)entity).sendTranslated("&cYou have to leave your current vehicle to pass a portal!");
+            }
+            return;
+        }
+        if (safe && entity instanceof User)
+        {
+            ((User)entity).safeTeleport(loc, TeleportCause.PLUGIN, false);
+        }
+        else
+        {
+            entity.teleport(loc, TeleportCause.PLUGIN);
+        }
     }
 
     public enum Type
     {
-        PORTAL, WORLD, LOCATION;
+        PORTAL, WORLD, LOCATION
     }
 }

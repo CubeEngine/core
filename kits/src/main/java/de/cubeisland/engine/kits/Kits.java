@@ -22,7 +22,14 @@ import de.cubeisland.engine.core.module.Module;
 public class Kits extends Module
 {
     private KitManager kitManager;
-    
+
+    public KitsPerm perms()
+    {
+        return perms;
+    }
+
+    private KitsPerm perms;
+
     @Override
     public void onEnable()
     {
@@ -31,7 +38,7 @@ public class Kits extends Module
             registerConverter(KitItem.class, new KitItemConverter());
 
         this.kitManager = new KitManager(this);
-        new KitsPerm(this);
+        perms = new KitsPerm(this);
         this.kitManager.loadKits();
         this.getCore().getUserManager().addDefaultAttachment(KitsAttachment.class, this);
         getCore().getCommandManager().registerCommand(new KitCommand(this));

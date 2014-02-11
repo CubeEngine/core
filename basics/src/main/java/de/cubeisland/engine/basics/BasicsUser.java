@@ -33,7 +33,7 @@ import static de.cubeisland.engine.basics.storage.TableMail.TABLE_MAIL;
 
 public class BasicsUser
 {
-    private DSLContext dsl;
+    private final DSLContext dsl;
 
     public BasicsUserEntity getbUEntity()
     {

@@ -28,7 +28,7 @@ import de.cubeisland.engine.core.world.ConfigWorld;
 
 public class PortalConfig extends YamlConfiguration
 {
-    public boolean safeTeleport = true;
+    public boolean safeTeleport = false;
     public boolean teleportNonPlayers = false;
     public OfflinePlayer owner;
     public ConfigWorld world;

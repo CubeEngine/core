@@ -24,7 +24,7 @@ import de.cubeisland.engine.core.user.UserAttachment;
 
 public class KitsAttachment extends UserAttachment
 {
-    private Map<String, Long> kitUsages = new HashMap<>();
+    private final Map<String, Long> kitUsages = new HashMap<>();
 
     public void setKitUsage(String name)
     {

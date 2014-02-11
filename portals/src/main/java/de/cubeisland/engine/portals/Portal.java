@@ -17,17 +17,24 @@
  */
 package de.cubeisland.engine.portals;
 
-import org.bukkit.Location;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.portals.config.PortalConfig;
 
 public class Portal
 {
-    private Portals module;
-    private PortalManager manager;
-    private String name;
+    private final Portals module;
+    private final PortalManager manager;
+    private final String name;
     protected final PortalConfig config;
 
     public Portal(Portals module, PortalManager manager, String name, PortalConfig config)
@@ -56,16 +63,19 @@ public class Portal
         return b > a ? x >= a && x <= b : x >= b && x <= a;
     }
 
-    public void teleport(User user)
+    public void teleport(Entity entity)
     {
         if (this.config.destination == null)
         {
-            user.sendTranslated("&eThis portal \"&6%s&e\" has no destination yet!", this.getName());
-            user.attachOrGet(PortalsAttachment.class, module).setInPortal(true);
+            if (entity instanceof User)
+            {
+                ((User)entity).sendTranslated("&eThis portal \"&6%s&e\" has no destination yet!", this.getName());
+                ((User)entity).attachOrGet(PortalsAttachment.class, module).setInPortal(true);
+            }
         }
         else
         {
-            this.config.destination.teleport(user, this.manager);
+            this.config.destination.teleport(entity, this.manager, this.config.safeTeleport);
         }
     }
 
@@ -83,5 +93,79 @@ public class Portal
     {
         this.manager.removePortal(this);
         this.config.getFile().delete();
+    }
+
+    public void showInfo(CommandSender user)
+    {
+        user.sendTranslated("&aPortal Information for &6%s", this.getName());
+        if (this.config.safeTeleport)
+        {
+            user.sendTranslated("&aThis Portal has safe-teleport enabled");
+        }
+        if (this.config.teleportNonPlayers)
+        {
+            user.sendTranslated("&aThis Portal will teleport non-players too");
+        }
+        user.sendTranslated("&2%s&a is the owner of this portal", this.config.owner.getName());
+        user.sendTranslated("&aLocation: &6%d:%d:%d&a to &6%d:%d:%d&a in &6%s",
+                            this.config.location.from.x, this.config.location.from.y,this.config.location.from.z,
+                            this.config.location.to.x, this.config.location.to.y, this.config.location.to.z,
+                            this.config.world.getName());
+        if (this.config.destination == null)
+        {
+            user.sendTranslated("&aThis portal has no destination yet");
+        }
+        else
+        {
+            switch (config.destination.type)
+            {
+            case PORTAL:
+                user.sendTranslated("&aThis portal teleports to another portal: &6%s", config.destination.portal);
+                break;
+            case WORLD:
+                user.sendTranslated("&aThis portal teleports to the spawn of &6%s", config.destination.world.getName());
+                break;
+            case LOCATION:
+                user.sendTranslated("&aThis portal teleports to &6%d:%d:%d&a in &6%s",
+                    config.destination.location.x, config.destination.location.y, config.destination.location.z,
+                    config.destination.world.getName());
+                break;
+            }
+
+        }
+    }
+
+    public List<Pair<Integer,Integer>> getChunks()
+    {
+        List<Pair<Integer,Integer>> result = new ArrayList<>();
+        int chunkXFrom = config.location.from.x >> 4;
+        int chunkZFrom =  config.location.from.z >> 4;
+        int chunkXTo =  config.location.to.x >> 4;
+        int chunkZTo = config.location.to.z >> 4;
+        if (chunkXFrom > chunkXTo) // if from is greater swap
+        {
+            chunkXFrom = chunkXFrom + chunkXTo;
+            chunkXTo = chunkXFrom - chunkXTo;
+            chunkXFrom = chunkXFrom - chunkXTo;
+        }
+        if (chunkZFrom > chunkZTo) // if from is greater swap
+        {
+            chunkZFrom = chunkZFrom + chunkZTo;
+            chunkZTo = chunkZFrom - chunkZTo;
+            chunkZFrom = chunkZFrom - chunkZTo;
+        }
+        for (int x = chunkXFrom; x <= chunkXTo; x++)
+        {
+            for (int z = chunkZFrom; z <= chunkZTo; z++)
+            {
+                result.add(new Pair<>(x,z));
+            }
+        }
+        return result;
+    }
+
+    public World getWorld()
+    {
+        return this.config.world.getWorld();
     }
 }

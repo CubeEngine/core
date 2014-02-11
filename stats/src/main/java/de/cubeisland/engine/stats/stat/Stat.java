@@ -19,10 +19,8 @@ package de.cubeisland.engine.stats.stat;
 
 import org.bukkit.event.Listener;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.stats.StatsManager;
 
 /**

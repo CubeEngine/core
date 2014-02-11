@@ -46,10 +46,8 @@ import static java.util.Arrays.asList;
 
 public class LockerCommands extends ContainerCommand
 {
-    private Locker module;
-    LockManager manager;
-
-    // TODO persist flag
+    private final Locker module;
+    final LockManager manager;
 
     public LockerCommands(Locker module, LockManager manager)
     {
@@ -60,61 +58,60 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cinfo")
-    @Command(desc = "Shows information about a protection")
+    @Command(desc = "Shows information about a protection",
+    flags = @Flag(longName = "persist", name = "p"))
     public void info(ParameterizedContext context)
     {
-        if (context.getSender() instanceof User)
+        if (isNotUser(context.getSender())) return;
+        if (context.hasFlag("p"))
         {
-            User user = (User)context.getSender();
-            KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender(), this.module);
-            if (keyBook != null)
+            this.persist(context);
+        }
+        User user = (User)context.getSender();
+        KeyBook keyBook = KeyBook.getKeyBook(((User)context.getSender()).getItemInHand(), (User)context.getSender(), this.module);
+        if (keyBook != null)
+        {
+            Lock lock = this.manager.getLockById(keyBook.lockID);
+            if (lock != null && keyBook.isValidFor(lock))
             {
-                Lock lock = this.manager.getLockById(keyBook.lockID);
-                if (lock != null && keyBook.isValidFor(lock))
+                context.sendTranslated("&aThe strong magic surrounding this KeyBook allows you to access the designated protection");
+                if (lock.isBlockLock())
                 {
-                    context.sendTranslated("&aThe strong magic surrounding this KeyBook allows you to access the designated protection");
-                    if (lock.isBlockLock())
-                    {
-                        Location loc = lock.getFirstLocation();
-                        context.sendTranslated("&aThe protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s",
-                                               loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
-                    }
-                    else
-                    {
-                        for (Entity entity : user.getWorld().getEntities())
-                        {
-                            if (entity.getUniqueId().equals(lock.getEntityUID()))
-                            {
-                                Location loc = entity.getLocation();
-                                context.sendTranslated("&aThe entity-protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s",
-                                                       loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
-                                return;
-                            }
-                        }
-                        context.sendTranslated("&aYour magic is not strong enough to locate the corresponding entity-protection!");
-                    }
+                    Location loc = lock.getFirstLocation();
+                    context.sendTranslated("&aThe protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s",
+                                           loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
                 }
                 else
                 {
-                    context.sendTranslated("&eAs you inspect the KeyBook closer you realize that its magic power has disappeared!");
-                    keyBook.invalidate();
+                    for (Entity entity : user.getWorld().getEntities())
+                    {
+                        if (entity.getUniqueId().equals(lock.getEntityUID()))
+                        {
+                            Location loc = entity.getLocation();
+                            context.sendTranslated("&aThe entity-protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s",
+                                                   loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                            return;
+                        }
+                    }
+                    context.sendTranslated("&aYour magic is not strong enough to locate the corresponding entity-protection!");
                 }
-                return;
             }
-            manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
-            context.sendTranslated("&aRightclick to show protection-info");
+            else
+            {
+                context.sendTranslated("&eAs you inspect the KeyBook closer you realize that its magic power has disappeared!");
+                keyBook.invalidate();
+            }
+            return;
         }
-        else
-        {
-            context.sendTranslated("cThis command can only be used ingame");
-        }
-
+        manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
+        context.sendTranslated("&aRightclick to show protection-info");
     }
 
     @Alias(names = "cpersist")
     @Command(desc = "persists your last locker command")
     public void persist(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
         if (this.manager.commandListener.persist((User)context.getSender()))
         {
             context.sendTranslated("&aYour commands will now persist!");
@@ -126,34 +123,45 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cremove")
-    @Command(desc = "Shows information about a protection")
+    @Command(desc = "Shows information about a protection",
+             flags = @Flag(longName = "persist", name = "p"))
     public void remove(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
+        if (context.hasFlag("p"))
+        {
+            this.persist(context);
+        }
         this.manager.commandListener.setCommandType(context.getSender(), CommandType.REMOVE, null);
         context.sendTranslated("&aRightclick a protection to remove it!");
     }
 
     @Alias(names = "cunlock")
-    @Command(desc = "Unlocks a password protected chest", max = 1, min = 1)
+    @Command(desc = "Unlocks a password protected chest", max = 1, min = 1,
+             flags = @Flag(longName = "persist", name = "p"))
     public void unlock(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
+        if (context.hasFlag("p"))
+        {
+            this.persist(context);
+        }
         this.manager.commandListener.setCommandType(context.getSender(), CommandType.UNLOCK, context.getString(0));
         context.sendTranslated("&aRightclick to unlock a password protected chest!");
     }
-
-
 
     @Alias(names = "cmodify")
     @Command(names = "modify",
              desc = "adds or removes player from the accesslist",
                 usage = "<players...>", min = 1, max = 1,
-    flags = @Flag(name = "g", longName = "global"))
+    flags = {@Flag(name = "g", longName = "global"),
+             @Flag(longName = "persist", name = "p")})
     public void modify(ParameterizedContext context)
     {
-        if (!(context.getSender() instanceof User))
+        if (isNotUser(context.getSender())) return;
+        if (context.hasFlag("p"))
         {
-            context.sendTranslated("&cThis command can only be used ingame!");
-            return;
+            this.persist(context);
         }
         String[] explode = StringUtils.explode(",", context.getString(0));
         for (String name : explode)
@@ -186,9 +194,15 @@ public class LockerCommands extends ContainerCommand
 
     @Alias(names = "cgive")
     @Command(desc = "gives a protection to someone else",
-    usage = "<player>", min = 1, max = 1)
+    usage = "<player>", min = 1, max = 1,
+    flags = @Flag(longName = "persist", name = "p"))
     public void give(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
+        if (context.hasFlag("p"))
+        {
+            this.persist(context);
+        }
         User user = context.getUser(0);
         if (user == null)
         {
@@ -202,13 +216,19 @@ public class LockerCommands extends ContainerCommand
     @Command(names = "key",
              desc = "creates a KeyBook or invalidates previous KeyBooks",
              usage = "[-invalidate]",
-             flags = @Flag(longName = "invalidate", name = "i"))
+             flags = { @Flag(longName = "invalidate", name = "i"),
+                       @Flag(longName = "persist", name = "p")})
     public void key(ParameterizedContext context)
     {
         if (!this.module.getConfig().allowKeyBooks)
         {
             context.sendTranslated("&cKeyBooks are deactivated!");
             return;
+        }
+        if (isNotUser(context.getSender())) return;
+        if (context.hasFlag("p"))
+        {
+            this.persist(context);
         }
         if (context.hasFlag("i"))
         {
@@ -228,9 +248,11 @@ public class LockerCommands extends ContainerCommand
              params = {
                  @Param(names = "set", completer = FlagCompleter.class),
                  @Param(names = "unset", completer = FlagCompleter.class),
-             })
+             },
+             flags = @Flag(longName = "persist", name = "p"))
     public void flag(ParameterizedContext context)
     {
+        if (isNotUser(context.getSender())) return;
         if (context.getParams().isEmpty())
         {
             context.sendTranslated("&eYou need to define which flags to &6set&e or &6unSet&a!");
@@ -242,6 +264,10 @@ public class LockerCommands extends ContainerCommand
             }
             context.sendTranslated("&eYou can also unset \"&6all&e\"");
             return;
+        }
+        if (context.hasFlag("p"))
+        {
+            this.persist(context);
         }
         if (context.hasParam("set") && context.hasParam("unSet"))
         {

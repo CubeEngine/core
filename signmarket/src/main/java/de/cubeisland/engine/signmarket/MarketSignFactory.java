@@ -30,10 +30,10 @@ import gnu.trove.set.hash.TLongHashSet;
 
 public class MarketSignFactory
 {
-    private THashMap<Location, MarketSign> marketSigns = new THashMap<>();
+    private final THashMap<Location, MarketSign> marketSigns = new THashMap<>();
 
-    private SignMarketItemManager signMarketItemManager;
-    private SignMarketBlockManager signMarketBlockManager;
+    private final SignMarketItemManager signMarketItemManager;
+    private final SignMarketBlockManager signMarketBlockManager;
 
     private final Signmarket module;
 
@@ -90,13 +90,18 @@ public class MarketSignFactory
             return marketSign;
         }
         marketSign = new MarketSign(this.module, location);
-        if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user) && module.getConfig().enableAdmin)
+        if (module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user) && module.getConfig().enableAdmin)
         {
             marketSign.setAdminSign();
         }
-        else if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user) && module.getConfig().enableUser)
+        else if (module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user) && module.getConfig().enableUser)
         {
             marketSign.setOwner(user);
+        }
+        else
+        {
+            user.sendTranslated("&cYou are not allowed to create Admin or User MarketSigns!");
+            return null;
         }
         if (marketSign.isAdminSign())
         {

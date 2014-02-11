@@ -37,7 +37,6 @@ import static de.cubeisland.engine.log.action.ActionTypeCategory.*;
  * <p>Events: {@link KillActionType}</p>
  */
 public class NpcDeath extends SimpleLogActionType
-
 {
     @Override
     protected Set<ActionTypeCategory> getCategories()
@@ -74,5 +73,17 @@ public class NpcDeath extends SimpleLogActionType
     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
         return KillActionType.rollbackDeath(attachment, logEntry, force, preview);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
     }
 }

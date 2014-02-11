@@ -84,4 +84,10 @@ public class EntityDye extends SimpleLogActionType
     {
         return this.lm.getConfig(world).ENTITY_DYE_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO possible
+    }
 }

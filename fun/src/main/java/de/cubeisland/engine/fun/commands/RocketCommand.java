@@ -62,7 +62,7 @@ public class RocketCommand
     public void rocket(ParameterizedContext context)
     {
         int height = context.getArg(0, Integer.class, 10);
-        User user = null;
+        User user;
         if (context.hasParam("player"))
         {
             user = context.getParam("player");

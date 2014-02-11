@@ -76,7 +76,7 @@ public enum ProtectionFlag
         this.flagValue = (short)flag;
     }
 
-    private static Map<String, ProtectionFlag> flags;
+    private final static Map<String, ProtectionFlag> flags;
 
     static
     {

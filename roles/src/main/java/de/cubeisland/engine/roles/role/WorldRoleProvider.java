@@ -27,19 +27,22 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.util.Triplet;
-import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.RolesConfig;
 import de.cubeisland.engine.roles.config.MirrorConfig;
 import de.cubeisland.engine.roles.config.RoleConfig;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class WorldRoleProvider extends RoleProvider
 {
-    private MirrorConfig mirrorConfig;
-    private Set<Role> defaultRoles = new HashSet<>();
+    private final MirrorConfig mirrorConfig;
+    private final Set<Role> defaultRoles = new HashSet<>();
+    private Path folder;
 
     public WorldRoleProvider(RolesManager manager, MirrorConfig mirrorConfig)
     {
-        super(manager, manager.module.getBasePermission().createAbstractChild("world").createAbstractChild(mirrorConfig.mainWorld.getName()));
+        super(manager, manager.module.getBasePermission().childWildcard("world").childWildcard(mirrorConfig.mainWorld
+                                                                                                           .getName()));
         this.mirrorConfig = mirrorConfig;
     }
 
@@ -112,7 +115,7 @@ public class WorldRoleProvider extends RoleProvider
     @Override
     public Role getRole(String name)
     {
-        assert name != null: "The role name may not be null!";
+        expectNotNull(name, "The role name may not be null!");
 
         name = name.toLowerCase();
         if (name.startsWith("g:"))

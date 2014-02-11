@@ -40,7 +40,6 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -55,10 +54,13 @@ import static java.util.Arrays.asList;
  */
 public class PowerToolCommand extends ContainerCommand implements Listener
 {
-    public PowerToolCommand(Module module)
+    private final Powertools module;
+
+    public PowerToolCommand(Powertools module)
     {
         super(module, "powertool", "Binding shortcuts to an item.");
         this.setAliases(new HashSet<>(asList("pt")));
+        this.module = module;
         this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
 
         this.delegateChild(new MultiContextFilter() {
@@ -336,7 +338,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         {
             Player player = event.getPlayer();
             if (!player.getItemInHand().getType().equals(Material.AIR)
-                    && PowertoolsPerm.POWERTOOL_USE.isAuthorized(event.getPlayer()))
+                    && module.perms().POWERTOOL_USE.isAuthorized(event.getPlayer()))
             {
                 List<String> powerTool = this.getPowerTools(player.getItemInHand());
                 for (String command : powerTool)

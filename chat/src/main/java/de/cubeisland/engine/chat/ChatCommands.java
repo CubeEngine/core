@@ -25,7 +25,7 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class ChatCommands
 {
-    private Chat module;
+    private final Chat module;
 
     public ChatCommands(Chat module)
     {
@@ -39,26 +39,48 @@ public class ChatCommands
         this.module.getCore().getUserManager().broadcastStatus(message, context.getSender());
     }
 
-    @Command(desc = "Changes your DisplayName", usage = "<name>|-r", min = 1, max = 1)
-    // TODO param change nick of other player /w perm
-    // TODO perm to take name of a player that is already Playing on the server
+    @Command(desc = "Changes your DisplayName", usage = "<name>|-r [player]", min = 1, max = 2)
     public void nick(CommandContext context)
     {
-        if (context.getSender() instanceof User)
+        User forUser;
+        if (context.hasArg(1))
         {
-            String name = context.getString(0);
-            if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
+            forUser = context.getUser(1);
+            if (forUser == null)
             {
-                ((User)context.getSender()).setDisplayName(context.getSender().getName());
-                context.sendTranslated("&aDisplayName reset to &2%s", context.getSender().getName());
-            }
-            else
-            {
-                context.sendTranslated("&aDisplayName changed from &2%s&a to &2%s", context.getSender().getDisplayName(), name);
-                ((User)context.getSender()).setDisplayName(name);
-            }
+                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                return;
+           }
+           if (forUser != context.getSender() && !module.perms().COMMAND_NICK_OTHER.isAuthorized(context.getSender()))
+           {
+               context.sendTranslated("&cYou are not allowed to change the nickname of another player!");
+               return;
+           }
+        }
+        else if (context.getSender() instanceof User)
+        {
+            forUser = (User)context.getSender();
+        }
+        else
+        {
+            context.sendMessage("&cYou cannot change the consoles DisplayName");
             return;
         }
-        context.sendMessage("&cYou cannot change the consoles DisplayName");
+        String name = context.getString(0);
+        if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
+        {
+            forUser.setDisplayName(context.getSender().getName());
+            context.sendTranslated("&aDisplayName reset to &2%s", context.getSender().getName());
+        }
+        else
+        {
+            if (module.getCore().getUserManager().getUser(name, false) != null && !module.perms().COMMAND_NICK_OFOTHER.isAuthorized(context.getSender()))
+            {
+                context.sendTranslated("&cThere already is another player named like this!");
+                return;
+            }
+            context.sendTranslated("&aDisplayName changed from &2%s&a to &2%s", context.getSender().getDisplayName(), name);
+            ((User)context.getSender()).setDisplayName(name);
+        }
     }
 }

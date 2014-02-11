@@ -25,11 +25,8 @@ public class PowertoolsPerm extends PermissionContainer<Powertools>
     public PowertoolsPerm(Powertools module)
     {
         super(module);
-        
-        bindToModule(POWERTOOL_USE);
-        
         this.registerAllPermissions();
     }
 
-    public static final Permission POWERTOOL_USE = Permission.createPermission("powertool.use");
+    public final Permission POWERTOOL_USE = getBasePerm().child("use");
 }

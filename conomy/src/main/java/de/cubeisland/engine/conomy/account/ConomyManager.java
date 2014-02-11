@@ -52,16 +52,16 @@ public class ConomyManager
     protected final Conomy module;
     private final ThreadFactory threadFactory;
 
-    private Map<String,BankAccount> bankaccounts = new THashMap<>();
-    private Map<Long,BankAccount> bankaccountsID = new THashMap<>();
+    private final Map<String,BankAccount> bankaccounts = new THashMap<>();
+    private final Map<Long,BankAccount> bankaccountsID = new THashMap<>();
 
     protected final Log logger;
     protected final ConomyConfiguration config;
-    private Economy conomyInterface;
+    private final Economy conomyInterface;
 
     protected final DSLContext dsl;
 
-    protected UserManager um;
+    protected final UserManager um;
 
     public ConomyManager(Conomy module)
     {

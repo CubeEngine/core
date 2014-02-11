@@ -28,8 +28,8 @@ import de.cubeisland.engine.core.util.StringUtils;
 
 public class EcoBankCommands extends ContainerCommand
 {
-    private Conomy module;
-    private ConomyManager manager;
+    private final Conomy module;
+    private final ConomyManager manager;
 
     public EcoBankCommands(Conomy module)
     {

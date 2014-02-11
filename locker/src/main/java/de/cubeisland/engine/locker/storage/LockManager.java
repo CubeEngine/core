@@ -58,12 +58,13 @@ import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.locker.BlockLockerConfiguration;
 import de.cubeisland.engine.locker.EntityLockerConfiguration;
 import de.cubeisland.engine.locker.Locker;
-import de.cubeisland.engine.locker.LockerPerm;
 import de.cubeisland.engine.locker.commands.CommandListener;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.LocationUtil.getChunkKey;
 import static de.cubeisland.engine.core.util.LocationUtil.getLocationKey;
 import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ALL;
@@ -380,7 +381,8 @@ public class LockManager implements Listener
      */
     public void extendLock(Lock lock, Location location)
     {
-        assert this.getLockAtLocation(location, null, false, false) == null : "Cannot extend Lock onto another!";
+        expectNotNull(lock, "The lock must not be null!");
+        expect(this.getLockAtLocation(location, null, false, false) == null , "Cannot extend Lock onto another!");
         lock.locations.add(location);
         LockLocationModel model = this.dsl.newRecord(TABLE_LOCK_LOCATION).newLocation(lock.model, location);
         model.insert();
@@ -398,7 +400,7 @@ public class LockManager implements Listener
      */
     public void removeLock(Lock lock, User user, boolean destroyed)
     {
-        if (destroyed || lock.isOwner(user) || LockerPerm.CMD_REMOVE_OTHER.isAuthorized(user))
+        if (destroyed || lock.isOwner(user) || module.perms().CMD_REMOVE_OTHER.isAuthorized(user))
         {
             this.locksById.remove(lock.getId());
             lock.model.delete();
