@@ -17,25 +17,72 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import java.util.logging.Filter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.message.Message;
 
 public class CommandLogFilter implements Filter
 {
     private final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+", Pattern.CASE_INSENSITIVE);
 
     @Override
-    public boolean isLoggable(LogRecord record)
+    public Result getOnMismatch()
     {
-        if (record.getLevel() == Level.INFO)
+        return Result.DENY;
+    }
+
+    @Override
+    public Result getOnMatch()
+    {
+        return Result.NEUTRAL;
+    }
+
+    @Override
+    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, String s, Object... objects)
+    {
+        if (level == org.apache.logging.log4j.Level.INFO)
         {
-            if (DETECTION_PATTERN.matcher(record.getMessage()).find())
+            if (DETECTION_PATTERN.matcher(s).find())
             {
-                return false;
+                return Result.DENY;
             }
         }
-        return true;
+        return Result.NEUTRAL;
+    }
+
+    @Override
+    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, Object o, Throwable throwable)
+    {
+        return Result.NEUTRAL;
+    }
+
+    @Override
+    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, Message message, Throwable throwable)
+    {
+        if (level == org.apache.logging.log4j.Level.INFO)
+        {
+            if (DETECTION_PATTERN.matcher(message.getFormattedMessage()).find())
+            {
+                return Result.DENY;
+            }
+        }
+        return Result.NEUTRAL;
+    }
+
+    @Override
+    public Result filter(LogEvent logEvent)
+    {
+        if (logEvent.getLevel() == org.apache.logging.log4j.Level.INFO)
+        {
+            if (DETECTION_PATTERN.matcher(logEvent.getMessage().getFormattedMessage()).find())
+            {
+                return Result.DENY;
+            }
+        }
+        return Result.NEUTRAL;
     }
 }
