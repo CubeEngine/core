@@ -378,7 +378,7 @@ public class Universe
     public World getMainWorld()
     {
         return this.universeConfig.mainWorld.getWorld();
-    }s
+    }
 
     public boolean checkPlayerAccess(Player player, World world)
     {
