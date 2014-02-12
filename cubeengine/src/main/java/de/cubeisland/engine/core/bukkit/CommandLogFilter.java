@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
@@ -27,7 +28,7 @@ import org.apache.logging.log4j.message.Message;
 
 public class CommandLogFilter implements Filter
 {
-    private final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+", Pattern.CASE_INSENSITIVE);
+    private final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+");
 
     @Override
     public Result getOnMismatch()
@@ -42,16 +43,9 @@ public class CommandLogFilter implements Filter
     }
 
     @Override
-    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, String s, Object... objects)
+    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, String message, Object... args)
     {
-        if (level == org.apache.logging.log4j.Level.INFO)
-        {
-            if (DETECTION_PATTERN.matcher(s).find())
-            {
-                return Result.DENY;
-            }
-        }
-        return Result.NEUTRAL;
+        return isCommandLog(message, level, null, args);
     }
 
     @Override
@@ -63,22 +57,20 @@ public class CommandLogFilter implements Filter
     @Override
     public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, Message message, Throwable throwable)
     {
-        if (level == org.apache.logging.log4j.Level.INFO)
-        {
-            if (DETECTION_PATTERN.matcher(message.getFormattedMessage()).find())
-            {
-                return Result.DENY;
-            }
-        }
-        return Result.NEUTRAL;
+        return isCommandLog(message.getFormat(), level, throwable, null);
     }
 
     @Override
     public Result filter(LogEvent logEvent)
     {
-        if (logEvent.getLevel() == org.apache.logging.log4j.Level.INFO)
+        return isCommandLog(logEvent.getMessage().getFormat(), logEvent.getLevel(), logEvent.getThrown(), logEvent.getMessage().getParameters());
+    }
+
+    private Result isCommandLog(String message, Level level, Throwable t, Object... args)
+    {
+        if (level == Level.INFO && t == null && (args == null || args.length == 0))
         {
-            if (DETECTION_PATTERN.matcher(logEvent.getMessage().getFormattedMessage()).find())
+            if (DETECTION_PATTERN.matcher(message).find())
             {
                 return Result.DENY;
             }
