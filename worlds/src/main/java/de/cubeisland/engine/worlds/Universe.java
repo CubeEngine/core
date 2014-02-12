@@ -326,7 +326,7 @@ public class Universe
 
     public WorldConfig getWorldConfig(World world)
     {
-        return this.worldConfigs.get(world);
+        return this.worldConfigs.get(world.getName());
     }
 
     public void savePlayer(Player player, World world)
@@ -378,7 +378,7 @@ public class Universe
     public World getMainWorld()
     {
         return this.universeConfig.mainWorld.getWorld();
-    }
+    }s
 
     public boolean checkPlayerAccess(Player player, World world)
     {
