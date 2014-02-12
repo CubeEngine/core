@@ -22,17 +22,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -171,7 +175,7 @@ public class WorldsCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Loads a world from configuration", usage = "<world>", min = 1, max = 1)
+    @Command(desc = "Loads a world from configuration", usage = "<world> {universe}", min = 1, max = 2)
     public void load(CommandContext context)
     {
         World world = this.wm.getWorld(context.getString(0));
@@ -182,6 +186,10 @@ public class WorldsCommands extends ContainerCommand
         }
         if (multiverse.hasWorld(context.getString(0)) != null)
         {
+            if (context.hasArg(1))
+            {
+                throw new IncorrectUsageException("You've given too many arguments.");
+            }
             world = multiverse.loadWorld(context.getString(0));
             if (world != null)
             {
@@ -191,6 +199,34 @@ public class WorldsCommands extends ContainerCommand
             {
                 context.sendTranslated("&cCould not load &6%s", context.getString(0));
             }
+        }
+        else if (Files.exists(Bukkit.getServer().getWorldContainer().toPath().resolve(context.getString(0))))
+        {
+
+            Universe universe;
+            if (context.hasArg(1))
+            {
+                universe = this.multiverse.getUniverse(context.getString(1));
+                if (universe == null)
+                {
+                    context.sendTranslated("&cUniverse &6%s&c not found!", context.getString(1));
+                    return;
+                }
+            }
+            else if (context.getSender() instanceof User)
+            {
+                universe = this.multiverse.getUniverseFrom(((User)context.getSender()).getWorld());
+            }
+            else
+            {
+                context.sendTranslated("&cYou need to specify a universe to load the world into!");
+                return;
+            }
+            world = this.wm.createWorld(new WorldCreator(context.getString(0)));
+            Set<World> worldToAdd = new HashSet<>();
+            worldToAdd.add(world);
+            universe.addWorlds(worldToAdd);
+            context.sendTranslated("&aWorld &6%s&a loaded!" , world.getName());
         }
         else
         {
