@@ -143,7 +143,15 @@ public class QueryResults
         {
             if (cpage == show.page)
             {
-                logEntry.getActionType().showLogEntry(user,parameter,logEntry, show);
+                try
+                {
+                    logEntry.getActionType().showLogEntry(user,parameter,logEntry, show);
+                }
+                catch (Exception e)
+                {
+                    module.getLog().error(e, "An error occurred while showing LogEntries!");
+                    user.sendTranslated("&4Internal Error! Could not show LogEntry");
+                }
             }
             i++;
             if (i % show.pagelimit == 0)
