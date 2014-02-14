@@ -65,6 +65,14 @@ public class WorldsCommands extends ContainerCommand
         this.wm = module.getCore().getWorldManager();
     }
 
+    @Command(desc = "Creates a new universe", usage = "<name>", max = 1, min = 1)
+    public void createuniverse(ParameterizedContext context)
+    {
+        context.sendMessage("TODO");
+    }
+
+    // TODO universe create cmd
+
     @Command(desc = "Creates a new world",
              usage = "<name> {universe} [env <environement>] [seed <seed>] [type <type>] [struct <true|false>] [gen <generator>] [-recreate] [-noload]",
     params = {
@@ -133,6 +141,7 @@ public class WorldsCommands extends ContainerCommand
             universe = multiverse.getUniverseFrom(((User)context.getSender()).getWorld());
             dir = universe.getDirectory();
         }
+
         else
         {
             context.sendTranslated("&cYou have to provide a universe in which to create the world!");
@@ -336,7 +345,7 @@ public class WorldsCommands extends ContainerCommand
             context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
         }
         context.sendTranslated("&aWorldInformation for &6%s&a:", context.getString(0));
-        context.sendMessage("TODO"); // TODO
+        context.sendMessage("TODO"); // TODO finish worlds info cmd
     }
     // info
 
@@ -385,7 +394,7 @@ public class WorldsCommands extends ContainerCommand
     @Command(desc = "Moves a world into another universe")
     public void move(CommandContext context)
     {
-        context.sendMessage("TODO"); // TODO
+        context.sendMessage("TODO"); // TODO implement worlds move cmd
     }
     // move to other universe
 

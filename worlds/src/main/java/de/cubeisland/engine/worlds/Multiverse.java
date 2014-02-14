@@ -38,6 +38,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -240,6 +241,7 @@ public class Multiverse implements Listener
                 oldUniverse.savePlayer(event.getPlayer(), event.getFrom());
                 newUniverse.loadPlayer(event.getPlayer());
             }
+            // TODO else need to change gamemode?
             this.savePlayer(event.getPlayer());
         }
         catch (UniverseCreationException e)
@@ -276,7 +278,7 @@ public class Multiverse implements Listener
         Universe universe = this.getUniverseFrom(to.getWorld());
         if (!universe.checkPlayerAccess(event.getPlayer(), to.getWorld()))
         {
-            event.setCancelled(true); // TODO check old location
+            event.setCancelled(true); // TODO check if player has access to the world he is currently in
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             user.sendTranslated("&cYou are not allowed to enter the universe &6%s&c!", universe.getName());
         }
@@ -401,6 +403,25 @@ public class Multiverse implements Listener
         {
             World world = event.getRespawnLocation().getWorld();
             event.setRespawnLocation(this.getUniverseFrom(world).getRespawnLocation(world));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBedLeave(final PlayerBedLeaveEvent event)
+    {
+        // TODO #waitingForBukkit for a better solution https://bukkit.atlassian.net/browse/BUKKIT-1916
+        if (!this.getUniverseFrom(event.getBed().getWorld()).getWorldConfig(event.getBed().getWorld()).spawn.allowBedRespawn)
+        {
+            // Wait until spawn is set & reset it
+            final Location spawnLocation = event.getPlayer().getBedSpawnLocation();
+            this.module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                      event.getPlayer().setBedSpawnLocation(spawnLocation, true);
+                }
+            }, 1);
         }
     }
 

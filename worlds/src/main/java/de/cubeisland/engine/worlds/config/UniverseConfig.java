@@ -29,11 +29,16 @@ public class UniverseConfig extends YamlConfiguration
 
     @Comment("Players will keep their gamemode when changing worlds in this universe")
     public boolean keepGameMode = false; // if false can use perm
+
+    // TODO enforce gamemode?
+
     @Comment("Players will keep their flymode when changing worlds in this universe")
     public boolean keepFlyMode = false; // if false can use perm
 
     @Comment("If true players do not need permissions to enter this universe")
     public boolean freeAccess = true; // if false generate permission
+
+
 
     public EntityTp entityTp;
 

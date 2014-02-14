@@ -87,7 +87,6 @@ public class WorldConfig extends YamlConfiguration
     {
         @Comment("If true players wont need permissions to access this world")
         public boolean free = true;
-        public boolean interceptTeleport = false; // TODO
     }
 
     @Comment("Mob Spawing Settings of this world")
@@ -190,7 +189,6 @@ public class WorldConfig extends YamlConfiguration
         this.pvp = world.getPVP();
         this.autosave = world.isAutoSave();
         this.difficulty = world.getDifficulty();
-        // TODO gamemode
         for (String rule : world.getGameRules())
         {
             String value = world.getGameRuleValue(rule);
