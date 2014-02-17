@@ -75,7 +75,7 @@ public class WorldConfig extends YamlConfiguration
                      "Empty means main world of this universe")
         public ConfigWorld respawnWorld; // empty means main universe world
         @Comment("If false sleeping in a bed will not set a players spawn. Not implemented yet")
-        public boolean allowBedRespawn = true; // TODO implement bedspawn
+        public boolean allowBedRespawn = true;
         @Comment("Keeps the spawn of this world loaded.")
         public boolean keepSpawnInMemory = false;
         @Comment("This worlds spawn")
