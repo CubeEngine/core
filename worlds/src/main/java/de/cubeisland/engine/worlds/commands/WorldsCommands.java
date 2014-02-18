@@ -391,10 +391,53 @@ public class WorldsCommands extends ContainerCommand
     // set main world (of universe) (of universes)
     // set main universe
 
-    @Command(desc = "Moves a world into another universe")
+    @Command(desc = "Moves a world into another universe", usage = "<world> <universe>",
+    min = 2, max = 2)
     public void move(CommandContext context)
     {
-        context.sendMessage("TODO"); // TODO implement worlds move cmd
+        World world = context.getArg(0, World.class, null);
+        if (world == null)
+        {
+            context.sendTranslated("&cWorld &6%s&c not found!", context.getString(0));
+            return;
+        }
+        Universe universe = this.multiverse.getUniverse(context.getString(1));
+        if (universe == null)
+        {
+            context.sendTranslated("&cUniverse &6%s&c not found!", context.getString(1));
+            return;
+        }
+        if (universe.hasWorld(world.getName()))
+        {
+            context.sendTranslated("&6%s&c is already in the universe &6%s", world.getName(), universe.getName());
+            return;
+        }
+        Universe oldUniverse = multiverse.getUniverseFrom(world);
+        WorldConfig worldConfig = multiverse.getWorldConfig(world.getName());
+        try
+        {
+            oldUniverse.removeWorld(world.getName());
+            oldUniverse.reload();
+
+            worldConfig.setFile(universe.getDirectory().resolve(world.getName() + YAML.getExtention()).toFile());
+            worldConfig.save();
+
+            universe.reload();
+        }
+        catch (IOException e)
+        {
+            context.sendTranslated("&4Could not reload the universes");
+            this.getModule().getLog().error(e, "Error while reloading after moving world to universe");
+            return;
+        }
+        for (Player player : world.getPlayers())
+        {
+            User user = this.getModule().getCore().getUserManager().getExactUser(player.getName());
+            user.sendTranslated("&aThe world you are in got moved into an other universe!");
+            oldUniverse.savePlayer(user, world);
+            universe.loadPlayer(user);
+        }
+        context.sendTranslated("&aWorld successfully moved!");
     }
     // move to other universe
 
