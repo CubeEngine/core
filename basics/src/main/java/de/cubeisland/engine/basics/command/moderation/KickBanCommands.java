@@ -184,7 +184,7 @@ public class KickBanCommands
     private String getReasonFrom(CommandContext context, int at, Permission permNeeded)
     {
         String reason = "";
-        if (context.hasArg(1))
+        if (context.hasArg(at))
         {
             reason = ChatFormat.parseFormats(context.getStrings(at));
         }
@@ -273,7 +273,7 @@ public class KickBanCommands
 
     @Command(names = {"tempban","tban"},
              desc = "Bans a player for a given time.",
-             min = 2, max = 3,
+             min = 2, max = NO_MAX,
              usage = "<player> <time> [reason]",
              flags = @Flag(longName = "force", name = "f"))
     public void tempban(ParameterizedContext context)
