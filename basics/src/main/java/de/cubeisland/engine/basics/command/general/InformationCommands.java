@@ -196,7 +196,6 @@ public class InformationCommands
     })
     public void near(ParameterizedContext context)
     {
-        // TODO console support smth is not working correctly
         User user;
         if (context.hasArg(1))
         {
@@ -305,13 +304,14 @@ public class InformationCommands
             String result;
             result = StringUtils.implode("&f, ", outputlist);
             result += groupedOutput.toString();
+            result = ChatFormat.parseFormats(result);
             if (context.getSender().getName().equals(user.getName()))
             {
                 context.sendTranslated("&eFound those nearby you:\n%s", result);
             }
             else
             {
-                context.sendTranslated("&eFound those nearby %s:\n%s", user.getName(), StringUtils.implode("&f, ", outputlist));
+                context.sendTranslated("&eFound those nearby %s:\n%s", user.getName(), result);
             }
         }
     }
