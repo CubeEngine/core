@@ -485,4 +485,32 @@ public class WorldsCommands extends ContainerCommand
         }
         context.sendTranslated("&cThis command can only be used ingame!");
     }
+
+    @Command(desc = "Loads a players inventory etc. for his current world", usage = "<user>", min = 1, max = 1)
+    public void loadPlayer(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser &2%s%c not found!", context.getString(0));
+            return;
+        }
+        Universe universe = multiverse.getUniverseFrom(user.getWorld());
+        universe.loadPlayer(user);
+        context.sendTranslated("&aLoaded &2%s's&a data from file!", user.getName());
+    }
+
+    @Command(desc = "Save a players inventory etc. for his current world", usage = "<user>", min = 1, max = 1)
+    public void savePlayer(CommandContext context)
+    {
+        User user = context.getUser(0);
+        if (user == null)
+        {
+            context.sendTranslated("&cUser &2%s%c not found!", context.getString(0));
+            return;
+        }
+        Universe universe = multiverse.getUniverseFrom(user.getWorld());
+        universe.savePlayer(user, user.getWorld());
+        context.sendTranslated("&aSaved &2%s's&a data to file!", user.getName());
+    }
 }
