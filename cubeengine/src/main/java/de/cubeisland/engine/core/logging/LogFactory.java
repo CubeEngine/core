@@ -41,7 +41,6 @@ public class LogFactory extends DefaultLogFactory
         this.core = core;
         this.parent = this.getLog(core.getClass());
         Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget((Logger)LogManager.getLogger(julLogger.getName()));
-        log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
         this.parent.addTarget(log4jProxyTarget);
 
         exLog = this.getLog(Core.class, "Exceptions");
@@ -55,6 +54,8 @@ public class LogFactory extends DefaultLogFactory
         ((Logger)LogManager.getLogger("Minecraft")).addAppender(exceptionAppender); // TODO add filter to log only our stuff?
         log4jProxyTarget.getHandle().addAppender(exceptionAppender);
         log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
+
+        log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
 
         if (core.getConfiguration().logging.logCommands)
         {
