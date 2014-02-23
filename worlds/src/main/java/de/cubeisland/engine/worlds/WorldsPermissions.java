@@ -22,6 +22,8 @@ import de.cubeisland.engine.core.permission.PermissionContainer;
 
 public class WorldsPermissions extends PermissionContainer<Worlds>
 {
+
+
     public WorldsPermissions(Worlds module)
     {
         super(module);
@@ -30,4 +32,5 @@ public class WorldsPermissions extends PermissionContainer<Worlds>
 
     public final Permission KEEP_GAMEMODE = getBasePerm().child("keep-gamemode");
     public final Permission KEEP_FLYMODE = getBasePerm().child("keep-flymode");
+    public final Permission REMOVE_WORLDFOLDER = getBasePerm().child("remove-worldfolder");
 }

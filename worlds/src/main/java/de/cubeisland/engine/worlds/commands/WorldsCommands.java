@@ -55,12 +55,14 @@ import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 public class WorldsCommands extends ContainerCommand
 {
+    private Worlds module;
     private final Multiverse multiverse;
     private final WorldManager wm;
 
     public WorldsCommands(Worlds module, Multiverse multiverse)
     {
         super(module, "worlds", "Worlds commands");
+        this.module = module;
         this.multiverse = multiverse;
         this.wm = module.getCore().getWorldManager();
     }
@@ -257,7 +259,7 @@ public class WorldsCommands extends ContainerCommand
                 if (tpWorld == world)
                 {
                     context.sendTranslated("&cCannot unload main world of main universe!");
-                    // TODO how to change main world
+                    context.sendTranslated("&e/worlds setMainWorld <world>");
                     return;
                 }
             }
@@ -295,7 +297,7 @@ public class WorldsCommands extends ContainerCommand
 
     @Command(desc = "Remove a world", usage = "<world> [-f]",
     flags = @Flag(name = "f", longName = "folder"), max = 1, min = 1)
-    public void remove(CommandContext context)
+    public void remove(ParameterizedContext context)
     {
         World world = this.wm.getWorld(context.getString(0));
         if (world != null)
@@ -310,8 +312,23 @@ public class WorldsCommands extends ContainerCommand
             return;
         }
         universe.removeWorld(context.getString(0));
-        context.sendTranslated("&cConfiguration for the world &6%s&c removed!", context.getString(0));
-        // TODO folder flag permission
+        if (context.hasFlag("f") && module.perms().REMOVE_WORLDFOLDER.isAuthorized(context.getSender()))
+        {
+            Path path = Bukkit.getServer().getWorldContainer().toPath().resolve(context.getString(0));
+            try
+            {
+                Files.delete(path);
+            }
+            catch (IOException e)
+            {
+                module.getLog().error(e, "Error while deleting world folder!");
+            }
+            context.sendTranslated("&cConfiguration and folder for the world &6%s&c removed!", context.getString(0));
+        }
+        else
+        {
+            context.sendTranslated("&cConfiguration for the world &6%s&c removed!", context.getString(0));
+        }
     }
 
     @Command(desc = "Lists all worls")
