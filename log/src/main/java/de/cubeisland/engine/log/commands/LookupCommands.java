@@ -20,7 +20,6 @@ package de.cubeisland.engine.log.commands;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -83,22 +82,6 @@ public class LookupCommands
 
         context.sendMessage("");
         context.sendTranslated("Use &6!&f to exclude the parameters instead of including them.");
-    }
-
-    /**
-     * Returns the Selection or null if nothing is selected
-     *
-     * @param context
-     * @return
-     */
-    //TODO change return to a selection See WE how they did it
-    private Location getSelection(ParameterizedContext context)
-    {
-        if (!context.hasFlag("sel"))
-        {
-            throw new IllegalStateException("Did not choose selection!");
-        }
-        return null;
     }
 
     @Command(
