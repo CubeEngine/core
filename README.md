@@ -5,7 +5,7 @@ CubeEngine Minecraft module framework
 
 Website
 -------
-http://engine.cubeisland.de \[[Downloads\](http://engine.cubeisland.de/download)]
+http://engine.cubeisland.de \[[Downloads](http://engine.cubeisland.de/download)\]
 
 
 Bug Tracking
