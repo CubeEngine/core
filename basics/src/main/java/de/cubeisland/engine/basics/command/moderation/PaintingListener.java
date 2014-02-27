@@ -61,7 +61,11 @@ public class PaintingListener implements Listener
             Painting painting = (Painting)event.getRightClicked();
 
             Painting playerPainting = this.paintingChange.get(user.getName());
-            if (playerPainting == null)
+            if(playerPainting == null && this.paintingChange.containsValue(painting))
+            {
+                user.sendTranslated("&cThis painting is used by another player at the moment.");
+            }
+            else if (playerPainting == null)
             {
                 this.paintingChange.put(user.getName(), painting);
                 user.sendTranslated("&aYou can now cycle through the paintings using your mousewheel.");
