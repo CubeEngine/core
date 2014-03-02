@@ -208,6 +208,7 @@ public class PortalModifyCommand extends ContainerCommand
             }
             portal.config.location.destination = new WorldLocation(location);
             portal.config.save();
+            context.sendTranslated("&aThe portal exit of portal &6%s&a was set to your current location!", portal.getName());
             return;
         }
         context.sendTranslated("&cYou have to be ingame to do this!");
