@@ -157,7 +157,6 @@ public class PortalCommands extends ContainerCommand
             context.sendMessage(context.getCommand().getUsage(context));
             return;
         }
-        context.sendTranslated("&aPortal Information for: &6%s", portal.getName());
         portal.showInfo(context.getSender());
     }
 
