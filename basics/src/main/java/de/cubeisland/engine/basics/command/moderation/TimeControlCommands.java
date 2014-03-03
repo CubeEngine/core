@@ -34,6 +34,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 /**
@@ -73,7 +74,7 @@ public class TimeControlCommands
                 {
                     if (world == null)
                     {
-                        context.sendTranslated("&cCould not match all worlds! %s", context.getString("w"));
+                        context.sendTranslated(MessageType.NEGATIVE, "Could not match all worlds! %s", context.getString("w"));
                         return;
                     }
                 }
@@ -87,7 +88,7 @@ public class TimeControlCommands
             }
             else
             {
-                throw new IncorrectUsageException(context.getSender().composeMessage(, "&cYou have to specify a world when using this command from the console!"));
+                throw new IncorrectUsageException(context.getSender().composeMessage(MessageType.NEGATIVE, "You have to specify a world when using this command from the console!"));
             }
         }
         if (context.hasArg(0))
@@ -95,27 +96,20 @@ public class TimeControlCommands
             final Long time = Match.time().matchTimeValue(context.getString(0));
             if (time == null)
             {
-                context.sendTranslated("&cThe time you entered is not valid!");
+                context.sendTranslated(MessageType.NEGATIVE, "The time you entered is not valid!");
                 return;
             }
             if (worlds.size() == 1)
             {
-                context.sendTranslated("&aThe time of &e%s&a has been set to &6%s (%s)&a!",
-                                       worlds.get(0).getName(),
-                                       Match.time().format(time),
-                                       Match.time().getNearTimeName(time));
+                context.sendTranslated(MessageType.POSITIVE, "The time of &e%s&a has been set to &6%s (%s)&a!", worlds.get(0).getName(), Match.time().format(time), Match.time().getNearTimeName(time));
             }
             else if ("*".equals(context.getString("w")))
             {
-                context.sendTranslated("&aThe time of all worlds has been set to &6%s (%s)&a!",
-                                       Match.time().format(time),
-                                       Match.time().getNearTimeName(time));
+                context.sendTranslated(MessageType.POSITIVE, "The time of all worlds has been set to &6%s (%s)&a!", Match.time().format(time), Match.time().getNearTimeName(time));
             }
             else
             {
-                context.sendTranslated("&aThe time of &6%s &aworlds have been set to &6%s (%s)&a!",
-                                       worlds.size(),Match.time().format(time),
-                                       Match.time().getNearTimeName(time));
+                context.sendTranslated(MessageType.POSITIVE, "The time of &6%s &aworlds have been set to &6%s (%s)&a!", worlds.size(), Match.time().format(time), Match.time().getNearTimeName(time));
             }
             for (World world : worlds)
             {
@@ -125,25 +119,22 @@ public class TimeControlCommands
                     if (this.lockTask.worlds.containsKey(world.getName()))
                     {
                         this.lockTask.remove(world);
-                        context.sendTranslated("&aTime unlocked for &6%s&a!", world.getName());
+                        context.sendTranslated(MessageType.POSITIVE, "Time unlocked for &6%s&a!", world.getName());
                     }
                     else
                     {
                         this.lockTask.add(world);
-                        context.sendTranslated("&aTime locked for &6%s&a!", world.getName());
+                        context.sendTranslated(MessageType.POSITIVE, "Time locked for &6%s&a!", world.getName());
                     }
                 }
             }
         }
         else
         {
-            context.sendTranslated("&aThe current time is:");
+            context.sendTranslated(MessageType.POSITIVE, "The current time is:");
             for (World world : worlds)
             {
-                context.sendTranslated("&e%s (%s)&a in &6%s.",
-                                       Match.time().format(world.getTime()),
-                                       Match.time().getNearTimeName(world.getTime()),
-                                       world.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "%s (%s)&a in &6%s.", Match.time().format(world.getTime()), Match.time().getNearTimeName(world.getTime()), world.getName());
             }
         }
     }
@@ -166,7 +157,7 @@ public class TimeControlCommands
             time = Match.time().matchTimeValue(timeString);
             if (time == null)
             {
-                context.sendTranslated("&cInvalid time-format!");
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid time-format!");
                 return;
             }
         }
@@ -181,29 +172,29 @@ public class TimeControlCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(1));
                 return;
             }
             if (!module.perms().COMMAND_PTIME_OTHER.
                     isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cYou are not allowed to change the time of other players!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the time of other players!");
                 return;
             }
             other = true;
         }
         else if (user == null)
         {
-            context.sendTranslated("&cYou need to define a player!");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to define a player!");
             return;
         }
         if (reset)
         {
             user.resetPlayerTime();
-            context.sendTranslated("&aReseted the time for &2%s&a!", user.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Reseted the time for &2%s&a!", user.getName());
             if (other)
             {
-                user.sendTranslated(, "&eYour time was reseted!");
+                user.sendTranslated(MessageType.NEUTRAL, "Your time was reseted!");
             }
         }
         else
@@ -212,25 +203,17 @@ public class TimeControlCommands
             {
                 user.resetPlayerTime();
                 user.setPlayerTime(time, false);
-                context.sendTranslated("&aTime locked to &6%s (%s)&a for &2%s&a!",
-                                       Match.time().format(time),
-                                       Match.time().getNearTimeName(time),
-                                       user.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Time locked to &6%s (%s)&a for &2%s&a!", Match.time().format(time), Match.time().getNearTimeName(time), user.getName());
             }
             else
             {
                 user.resetPlayerTime();
                 user.setPlayerTime(time - user.getWorld().getTime(), true);
-                context.sendTranslated("&aTime set to &6%s (%s)&a for &2%s&a!",
-                                       Match.time().format(time),
-                                       Match.time().getNearTimeName(time),
-                                       user.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Time set to &6%s (%s)&a for &2%s&a!", Match.time().format(time), Match.time().getNearTimeName(time), user.getName());
             }
             if (other)
             {
-                context.sendTranslated("&aYour time was set to &6%s (%s)&a!",
-                                       Match.time().format(time),
-                                       Match.time().getNearTimeName(time));
+                context.sendTranslated(MessageType.POSITIVE, "Your time was set to &6%s (%s)&a!", Match.time().format(time), Match.time().getNearTimeName(time));
             }
         }
     }

@@ -32,6 +32,7 @@ import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -145,11 +146,11 @@ public class PotionSplash extends SimpleLogActionType
                     amountAffected += entry.getAdditional().get("amount").asInt();
                 }
             }
-            user.sendTranslated(, "%s&2%s&a used &6%d splash potions &a&f(%s&f)&a onto &6%d&a entities in total%s", time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1, effects, amountAffected, loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a used &6%d splash potions &a&f(%s&f)&a onto &6%d&a entities in total%s", time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1, effects, amountAffected, loc);
         }
         else
         {
-            user.sendTranslated(, "%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
                 .getCauserUser().getName(), effects, amountAffected, loc);
         }
     }

@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -55,11 +56,11 @@ public class CakeEat extends BlockActionType
         int piecesLeft = 6 - logEntry.getNewBlock().data;
         if (piecesLeft == 0)
         {
-            user.sendTranslated(, "%s&aThe cake is a lie%s&a! Ask &2%s&a he knows it!", time, loc, logEntry.getCauserUser().getDisplayName());
+            user.sendTranslated(MessageType.POSITIVE, "%s&aThe cake is a lie%s&a! Ask &2%s&a he knows it!", time, loc, logEntry.getCauserUser().getDisplayName());
         }
         else
         {
-            user.sendTranslated(, "%s&2%s &aate a piece of cake%s", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aate a piece of cake%s", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

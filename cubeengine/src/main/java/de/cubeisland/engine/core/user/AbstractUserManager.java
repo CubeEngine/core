@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 import org.jooq.Record1;
@@ -294,10 +295,10 @@ public abstract class AbstractUserManager implements UserManager
         {
             if (perm == null || perm.isAuthorized(user))
             {
-                user.sendTranslated(, message, params);
+                user.sendTranslated(MessageType.NONE, message, params);
             }
         }
-        this.core.getCommandManager().getConsoleSender().sendTranslated(, message, params);
+        this.core.getCommandManager().getConsoleSender().sendTranslated(MessageType.NONE, message, params);
     }
 
     public void broadcastMessage(String message, Object... args)
@@ -315,7 +316,7 @@ public abstract class AbstractUserManager implements UserManager
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(, starColor.toString() + "* &2%s &f%s", name, message);
+            user.sendTranslated(MessageType.NONE, starColor.toString() + "* &2%s &f%s", name, message);
         }
     }
 
@@ -394,7 +395,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUsers.values())
         {
-            user.kickPlayer(user.composeMessage(, message, params));
+            user.kickPlayer(user.composeMessage(MessageType.NONE, message, params));
         }
     }
 

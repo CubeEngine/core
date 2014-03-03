@@ -32,6 +32,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -104,7 +105,7 @@ public class VehiclePlace extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         // TODO NPE here
-        user.sendTranslated(, "%s&2%s &aplaced a &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aplaced a &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
     }
 
 

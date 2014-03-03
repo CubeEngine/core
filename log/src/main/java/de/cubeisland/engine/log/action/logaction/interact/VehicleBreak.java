@@ -30,6 +30,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -100,7 +101,7 @@ public class VehicleBreak extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(, "%s&2%s&a broke a &6%s%s", time, logEntry.getCauserUser() == null ?
+        user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a broke a &6%s%s", time, logEntry.getCauserUser() == null ?
         logEntry.getCauserEntity() :
         logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
     }

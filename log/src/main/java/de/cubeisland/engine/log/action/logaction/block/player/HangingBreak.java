@@ -38,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.ItemData;
@@ -164,11 +165,11 @@ public class HangingBreak extends BlockActionType
     {
         if (logEntry.getItemData() == null)
         {
-            user.sendTranslated(, "%s&6%s&a got removed by &2%s%s", time, logEntry.getOldBlock(), logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got removed by &2%s%s", time, logEntry.getOldBlock(), logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {
-            user.sendTranslated(, "%s&2%s &abroke an&6 item-frame &acontaining &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &abroke an&6 item-frame &acontaining &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc);
         }
     }
 

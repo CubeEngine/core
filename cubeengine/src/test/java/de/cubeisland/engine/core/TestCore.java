@@ -48,6 +48,7 @@ import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
+import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.DefaultLogFactory;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
@@ -237,5 +238,11 @@ public class TestCore implements Core
     public boolean isStartupFinished()
     {
         return false;
+    }
+
+    @Override
+    public MessageCompositor getMessageCompositor()
+    {
+        return new MessageCompositor();
     }
 }

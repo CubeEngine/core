@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -53,13 +54,14 @@ public class PlayerDeath extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
+        // TODO missing time & loc
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated(, "&2%s &agot slaughtered by &2%s", logEntry.getUserFromData().getDisplayName(), logEntry.getCauserUser().getDisplayName());
+            user.sendTranslated(MessageType.POSITIVE, "&2%s &agot slaughtered by &2%s", logEntry.getUserFromData().getDisplayName(), logEntry.getCauserUser().getDisplayName());
         }
         else if (logEntry.hasCauserEntity())
         {
-            user.sendTranslated(, "&2%s &acould not escape &6%s", logEntry.getUserFromData().getDisplayName(), logEntry.getCauserEntity());
+            user.sendTranslated(MessageType.POSITIVE, "&2%s &acould not escape &6%s", logEntry.getUserFromData().getDisplayName(), logEntry.getCauserEntity());
         }
         else // something else
         {
@@ -67,11 +69,11 @@ public class PlayerDeath extends SimpleLogActionType
             DamageCause dmgC = DamageCause.valueOf(json.get("dmgC").asText());
             if (logEntry.getUserFromData() == null)
             {
-                user.sendTranslated(, "&aA Player died &f(&6%s&f)", logEntry.getUserFromData().getName(), dmgC.name());//TODO get pretty name for dmgC
+                user.sendTranslated(MessageType.POSITIVE, "A Player died &f(&6%s&f)", logEntry.getUserFromData().getName(), dmgC.name());//TODO get pretty name for dmgC
                 return;
             }
 
-            user.sendTranslated(, "&2%s &adied &f(&6%s&f)", logEntry.getUserFromData().getName(), dmgC.name());//TODO get pretty name for dmgC
+            user.sendTranslated(MessageType.POSITIVE, "&2%s &adied &f(&6%s&f)", logEntry.getUserFromData().getName(), dmgC.name());//TODO get pretty name for dmgC
         }
     }
 

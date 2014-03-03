@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
@@ -65,20 +66,20 @@ public class PetDeath extends SimpleLogActionType
                 User owner = this.um.getExactUser(json.get("owner").asText());
                 if (logEntry.hasCauserUser())
                 {
-                    user.sendTranslated(, "%s&aThe &6%s&a of &2%s &agot slaughtered by &2%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserUser().getDisplayName(), loc);
+                    user.sendTranslated(MessageType.POSITIVE, "%s&aThe &6%s&a of &2%s &agot slaughtered by &2%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserUser().getDisplayName(), loc);
                 }
                 else if (logEntry.hasCauserEntity())
                 {
-                    user.sendTranslated(, "%s&aThe &6%s&a of &2%s &acould not escape &6%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserEntity(), loc);
+                    user.sendTranslated(MessageType.POSITIVE, "%s&aThe &6%s&a of &2%s &acould not escape &6%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserEntity(), loc);
                 }
                 else // something else
                 {
-                    user.sendTranslated(, "%s&aThe &6%s&a of &2%s &adied%s", time, killed, owner.getDisplayName(), loc);
+                    user.sendTranslated(MessageType.POSITIVE, "%s&aThe &6%s&a of &2%s &adied%s", time, killed, owner.getDisplayName(), loc);
                 }
                 return;
             }
         }
-        user.sendTranslated(, "&6%s &adied! &4(Pet without owner)", logEntry.getEntityFromData());
+        user.sendTranslated(MessageType.POSITIVE, "&6%s &adied! &4(Pet without owner)", logEntry.getEntityFromData());
     }
 
     @Override

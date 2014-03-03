@@ -41,6 +41,7 @@ import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.roles.RoleAppliedEvent;
 
@@ -115,7 +116,7 @@ public class GeneralsListener implements Listener
         int amount = bUser.countMail();
         if (amount > 0)
         {
-            user.sendTranslated(, "&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
+            user.sendTranslated(MessageType.POSITIVE, "You have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
 
     }
@@ -140,7 +141,7 @@ public class GeneralsListener implements Listener
             if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
             {
                 User clicker = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                clicker.sendTranslated(, "&aThis &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()), tamed.getOwner().getName());
+                clicker.sendTranslated(MessageType.POSITIVE, "This &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()), tamed.getOwner().getName());
             }
         }
     }

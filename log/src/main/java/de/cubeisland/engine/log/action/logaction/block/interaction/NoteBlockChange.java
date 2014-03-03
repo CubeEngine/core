@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -63,11 +64,11 @@ public class NoteBlockChange extends BlockActionType
         }
         if (oldClicks.intValue() == newClicks)
         {
-            user.sendTranslated(, "%s&2&s &afiddled around with the noteblock but did not change anything%s", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2&s &afiddled around with the noteblock but did not change anything%s", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {
-            user.sendTranslated(, "%s&2%s &aset the noteblock to &6%d&a clicks%s", time, logEntry.getCauserUser().getDisplayName(), newClicks, loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aset the noteblock to &6%d&a clicks%s", time, logEntry.getCauserUser().getDisplayName(), newClicks, loc);
         }
     }
 

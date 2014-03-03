@@ -24,13 +24,14 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 /**
  * Contains commands to teleport to players/worlds/position.
@@ -78,12 +79,12 @@ public class TeleportCommands
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
             return;
         }
         if (!target.isOnline())
         {
-            context.sendTranslated("&cTeleportation only works with online players!");
+            context.sendTranslated(MessageType.NEGATIVE, "Teleportation only works with online players!");
             return;
         }
         boolean force = context.hasFlag("f") && module.perms().COMMAND_TP_FORCE.isAuthorized(context.getSender());
@@ -93,17 +94,17 @@ public class TeleportCommands
             target = context.getUser(1);
             if (target == null)
             {
-                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(1));
                 return;
             }
             if (!target.isOnline())
             {
-                context.sendTranslated("&cTeleportation only works with online players!");
+                context.sendTranslated(MessageType.NEGATIVE, "Teleportation only works with online players!");
                 return;
             }
             if (target != context.getSender() && !module.perms().COMMAND_TP_OTHER.isAuthorized(context.getSender())) // teleport other persons
             {
-                context.sendTranslated("&cYou are not allowed to teleport other persons!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport other persons!");
                 return;
             }
             if (!force) // if force no need to check
@@ -112,7 +113,7 @@ public class TeleportCommands
                 {
                     if (module.perms().TELEPORT_PREVENT_TP.isAuthorized(user)) // teleport the user
                     {
-                        context.sendTranslated("&cYou are not allowed to teleport &2%s&c!", user.getName());
+                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport &2%s&c!", user.getName());
                         return;
                     }
                 } // else equals tp -> no need to check tp perm
@@ -122,9 +123,9 @@ public class TeleportCommands
                     {
                         if (module.perms().COMMAND_TP_FORCE.isAuthorized(context.getSender()))
                         {
-                            context.sendTranslated("&aUse the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
+                            context.sendTranslated(MessageType.POSITIVE, "Use the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
                         }
-                        context.sendTranslated("&cYou are not allowed to teleport to &2%s&c!", target.getName());
+                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to &2%s&c!", target.getName());
                         return;
                     }
                 } // else equals tphere -> no need to check tpto perm
@@ -134,7 +135,7 @@ public class TeleportCommands
         {
             if (user == null) // if not tp other persons console cannot use this
             {
-                context.sendTranslated("&cTeleport to &4hell &cinitiated...");
+                context.sendTranslated(MessageType.NEGATIVE, "Teleport to &4hell &cinitiated...");
                 return;
             }
         }
@@ -142,9 +143,9 @@ public class TeleportCommands
         {
             if (module.perms().COMMAND_TP_FORCE.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&aUse the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
+                context.sendTranslated(MessageType.POSITIVE, "Use the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
             }
-            context.sendTranslated("&cYou are not allowed to teleport to &2%s&c!", target.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to &2%s&c!", target.getName());
             return;
         }
         boolean safe = !context.hasFlag("u");
@@ -152,15 +153,15 @@ public class TeleportCommands
         {
             if (context.getSender() == user)
             {
-                context.sendTranslated("&6You found yourself!");
+                context.sendTranslated(MessageType.NEUTRAL, "&6You found yourself!");
                 return;
             }
-            context.sendTranslated("&aYou just teleported &2%s &ato &2%s... &eNot very useful right?", user.getName(), user.getName());
+            context.sendTranslated(MessageType.POSITIVE, "You just teleported &2%s &ato &2%s... &eNot very useful right?", user.getName(), user.getName());
             return;
         }
         if (TeleportCommands.teleport(user, target.getLocation(), safe, force, true))
         {
-            context.sendTranslated("&aYou teleported to &2%s&a!", target.getName());
+            context.sendTranslated(MessageType.POSITIVE, "You teleported to &2%s&a!", target.getName());
         }
     }
 
@@ -174,19 +175,19 @@ public class TeleportCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
             return;
         }
         if (!user.isOnline())
         {
-            context.sendTranslated("&cYou cannot teleport to an offline player!");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot teleport to an offline player!");
             return;
         }
         boolean force = context.hasFlag("f") && module.perms().COMMAND_TPALL_FORCE.isAuthorized(context.getSender());
         boolean safe = !context.hasFlag("u");
         if (!force && module.perms().TELEPORT_PREVENT_TPTO.isAuthorized(user))
         {
-            context.sendTranslated("&cYou are not allowed to teleport to %s!", user.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to %s!", user.getName());
             return;
         }
         ArrayList<String> noTp = new ArrayList<>();
@@ -205,7 +206,7 @@ public class TeleportCommands
         context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", user.getName());
         if (!noTp.isEmpty())
         {
-            context.sendTranslated("&eThe following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));
+            context.sendTranslated(MessageType.NEUTRAL, "The following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));
         }
     }
 
@@ -222,36 +223,36 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "&6ProTip: &cTeleport does not work IRL!");
             return;
         }
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
             return;
         }
         if (!target.isOnline())
         {
-            context.sendTranslated("&cYou cannot teleport an offline player to you!");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot teleport an offline player to you!");
             return;
         }
         boolean force = context.hasFlag("f") && module.perms().COMMAND_TPHERE_FORCE.isAuthorized(context.getSender());
         boolean safe = !context.hasFlag("u");
         if (sender.equals(target))
         {
-            context.sendTranslated("&6You found yourself!");
+            context.sendTranslated(MessageType.NEUTRAL, "&6You found yourself!");
             return;
         }
         if (!force && module.perms().TELEPORT_PREVENT_TP.isAuthorized(target))
         {
-            context.sendTranslated("&cYou are not allowed to teleport %s!", target.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport %s!", target.getName());
             return;
         }
         if (TeleportCommands.teleport(target, sender.getLocation(), safe, force, true))
         {
-            context.sendTranslated("&aYou teleported %s to you!", target.getName());
-            target.sendTranslated(, "&aYou were teleported to %s", sender.getName());
+            context.sendTranslated(MessageType.POSITIVE, "You teleported %s to you!", target.getName());
+            target.sendTranslated(MessageType.POSITIVE, "You were teleported to %s", sender.getName());
         }
     }
 
@@ -268,7 +269,7 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "&6ProTip: &cTeleport does not work IRL!");
             return;
         }
         boolean force = false;
@@ -290,11 +291,11 @@ public class TeleportCommands
                 noTp.add(player.getName());
             }
         }
-        context.sendTranslated("&aYou teleported everyone to you!");
+        context.sendTranslated(MessageType.POSITIVE, "You teleported everyone to you!");
         context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", sender.getName());
         if (!noTp.isEmpty())
         {
-            context.sendTranslated("&eThe following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));
+            context.sendTranslated(MessageType.NEUTRAL, "The following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));
         }
     }
 
@@ -316,7 +317,7 @@ public class TeleportCommands
                 world = context.getParam("world");
                 if (world == null)
                 {
-                    context.sendTranslated("&cWorld not found!");
+                    context.sendTranslated(MessageType.NEGATIVE, "World not found!");
                     return;
                 }
             }
@@ -330,23 +331,23 @@ public class TeleportCommands
                 z = context.getArg(1, Integer.class, null);
                 if (x == null || z == null)
                 {
-                    context.sendTranslated("&cCoordinates have to be numbers!");
+                    context.sendTranslated(MessageType.NEGATIVE, "Coordinates have to be numbers!");
                     return;
                 }
                 y = sender.getWorld().getHighestBlockAt(x, z).getY() + 1;
             }
             if (x == null || y == null || z == null)
             {
-                context.sendTranslated("&cCoordinates have to be numbers!");
+                context.sendTranslated(MessageType.NEGATIVE, "Coordinates have to be numbers!");
                 return;
             }
             Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
             if (TeleportCommands.teleport(sender, loc, context.hasFlag("s") && module.perms().COMMAND_TPPOS_SAFE.isAuthorized(context.getSender()), false, true))
             {
-                context.sendTranslated("&aTeleported to &eX:&6%d &eY:&6%d &eZ:&6%d&a in %s!", x, y, z, world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Teleported to &eX:&6%d &eY:&6%d &eZ:&6%d&a in %s!", x, y, z, world.getName());
             }
             return;
         }
-        context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
+        context.sendTranslated(MessageType.NEGATIVE, "&6ProTip: &cTeleport does not work IRL!");
     }
 }

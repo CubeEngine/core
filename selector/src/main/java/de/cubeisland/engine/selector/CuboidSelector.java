@@ -28,6 +28,7 @@ import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.shape.Shape;
 
 public class CuboidSelector implements Selector, Listener
@@ -102,12 +103,12 @@ public class CuboidSelector implements Selector, Listener
                 if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
                 {
                     logAttachment.setPoint(0, clicked);
-                    user.sendTranslated(, "&aFirst position set to (%d, %d, %d).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
+                    user.sendTranslated(MessageType.POSITIVE, "First position set to (%d, %d, %d).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 else
                 {
                     logAttachment.setPoint(1, clicked);
-                    user.sendTranslated(, "&aSecond position set to (%d, %d, %d).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
+                    user.sendTranslated(MessageType.POSITIVE, "Second position set to (%d, %d, %d).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 event.setCancelled(true);
                 event.setUseItemInHand(Result.DENY);

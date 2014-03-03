@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -51,14 +52,15 @@ public class WaterBucket extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
+        // TODO missing time & loc
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated(, "&2%s &aemptied &6&d&a water-buckets", logEntry.getCauserUser().getDisplayName(), amount);
+            user.sendTranslated(MessageType.POSITIVE, "&2%s &aemptied &6&d&a water-buckets", logEntry.getCauserUser().getDisplayName(), amount);
         }
         else
         {
-            user.sendTranslated(, "&2%s &aemptied a water-bucket", logEntry.getCauserUser().getDisplayName());
+            user.sendTranslated(MessageType.POSITIVE, "&2%s &aemptied a water-bucket", logEntry.getCauserUser().getDisplayName());
         }
     }
 

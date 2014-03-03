@@ -84,7 +84,7 @@ public class TestConsoleSender implements CommandSender
     @Override
     public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.composeMessage(, message, params));
+        this.sendMessage(this.composeMessage(type, message, params));
     }
 
     @Override

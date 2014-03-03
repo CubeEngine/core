@@ -272,10 +272,6 @@ public class I18n implements Cleanable
         {
             throw new NullPointerException("The language must not be null!");
         }
-        if (params == null)
-        {
-            params = NO_PARAMS;
-        }
         if (message == null)
         {
             return null;
@@ -308,12 +304,6 @@ public class I18n implements Cleanable
             {
                 translation = this.sourceLanguage.getTranslation( message);
             }
-        }
-
-        if (params.length > 0)
-        {
-            // Gets Formatted with this: http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html
-            return String.format(locale, translation, params);
         }
         return translation;
     }

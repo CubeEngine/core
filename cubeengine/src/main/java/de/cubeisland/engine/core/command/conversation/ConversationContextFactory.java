@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -82,7 +83,7 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                     }
                     catch (InvalidArgumentException ex)
                     {
-                        sender.sendTranslated(, "&cInvalid argument for &6%s&c: %s", param.getName(), sender.composeMessage(, ex.getMessage(), ex
+                        sender.sendTranslated(MessageType.NEGATIVE, "Invalid argument for &6%s&c: %s", param.getName(), sender.composeMessage(MessageType.NONE, ex.getMessage(), ex
                             .getMessageArgs()));
                     }
                     continue;

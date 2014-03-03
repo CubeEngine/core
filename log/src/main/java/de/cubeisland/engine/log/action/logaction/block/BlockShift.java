@@ -31,6 +31,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.material.PistonExtensionMaterial;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -116,36 +117,37 @@ public class BlockShift extends BlockActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         String times = "";
+        // TODO redo messages
         if (logEntry.hasAttached())
         {
-            times = String.format(user.composeMessage(, " &6%d times"), logEntry.getAttached().size() + 1);
+            times = String.format(user.composeMessage(MessageType.POSITIVE, " &6%d times"), logEntry.getAttached().size() + 1);
         }
         if (logEntry.getOldBlock().material == AIR )
         {
-            user.sendTranslated(, "%s&aA piston moved &6%s&a in place%s%s", time, logEntry.getNewblock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&aA piston moved &6%s&a in place%s%s", time, logEntry.getNewblock(), times, loc);
         }
         else if (logEntry.getOldBlock().material == PISTON_EXTENSION)
         {
             if (logEntry.getNewBlock().material == AIR)
             {
-                user.sendTranslated(, "%s&aA piston retracted%s%s", time, times, loc);
+                user.sendTranslated(MessageType.POSITIVE, "%s&aA piston retracted%s%s", time, times, loc);
             }
             else
             {
-                user.sendTranslated(, "%s&aA piston retracted a moving &6%s&a in place%s%s", time, logEntry.getNewBlock(), times, loc);
+                user.sendTranslated(MessageType.POSITIVE, "%s&aA piston retracted a moving &6%s&a in place%s%s", time, logEntry.getNewBlock(), times, loc);
             }
         }
         else if (logEntry.getNewBlock().material == PISTON_EXTENSION)
         {
-            user.sendTranslated(, "%s&6%s&a got moved away by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got moved away by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
         }
         else if (logEntry.getNewBlock().material == AIR)
         {
-            user.sendTranslated(, "%s&6%s&a got retracted by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got retracted by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
         }
         else
         {
-            user.sendTranslated(, "%s&aA piston moved &6%s&a in to replace &6%s%s%s", time, logEntry.getOldBlock(), logEntry.getNewblock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&aA piston moved &6%s&a in to replace &6%s%s%s", time, logEntry.getOldBlock(), logEntry.getNewblock(), times, loc);
         }
     }
 

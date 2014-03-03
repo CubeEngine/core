@@ -33,11 +33,10 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.i18n.Language;
-
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.rulebook.Rulebook;
-
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -72,7 +71,7 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User) && !context.hasParam("player"))
         {
-            context.sendTranslated("&cThe post office will give you your book!");
+            context.sendTranslated(MessageType.NEGATIVE, "The post office will give you your book!");
             return;
         }
         
@@ -82,13 +81,13 @@ public class RulebookCommands extends ContainerCommand
         {
             if(!getPermission.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cYou do not have the permissions to add the rulebook to the inventory of an other player");
+                context.sendTranslated(MessageType.NEGATIVE, "You do not have the permissions to add the rulebook to the inventory of an other player");
                 return;
             }
             user = context.getParam("player");
             if(user == null)
             {
-                context.sendTranslated("&cThe given user was not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "The given user was not found!");
                 return;
             }
         }
@@ -99,7 +98,7 @@ public class RulebookCommands extends ContainerCommand
 
         if(this.rulebookManager.getLocales().isEmpty())
         {
-            context.sendTranslated("&eIt does not exist a rulebook yet");
+            context.sendTranslated(MessageType.NEUTRAL, "It does not exist a rulebook yet");
             return;
         }
 
@@ -109,7 +108,7 @@ public class RulebookCommands extends ContainerCommand
 
             if(language == null)
             {
-                context.sendTranslated("&cCan't match the language");
+                context.sendTranslated(MessageType.NEGATIVE, "Can't match the language");
                 return;
             }
             
@@ -117,7 +116,7 @@ public class RulebookCommands extends ContainerCommand
             
             if(!this.rulebookManager.contains(locale))
             {
-                context.sendTranslated("&eThe language %s is not supported yet.", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+                context.sendTranslated(MessageType.NEUTRAL, "The language %s is not supported yet.", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
                 return;
             }
         }
@@ -143,10 +142,10 @@ public class RulebookCommands extends ContainerCommand
         }
 
         user.getInventory().addItem(this.rulebookManager.getBook(locale));
-        user.sendTranslated(, "&aLot's of fun with your rulebook.");
+        user.sendTranslated(MessageType.POSITIVE, "Lot's of fun with your rulebook.");
         if(!books.isEmpty())
         {
-            user.sendTranslated(, "&aYour old was removed");
+            user.sendTranslated(MessageType.POSITIVE, "Your old was removed");
         }
     }
 
@@ -168,7 +167,7 @@ public class RulebookCommands extends ContainerCommand
             }
             else
             {
-                context.sendTranslated("&6available languages:");
+                context.sendTranslated(MessageType.NEUTRAL, "&6available languages:");
                 for(Locale locale : this.rulebookManager.getLocales())
                 {
                     context.sendMessage("&e* " + locale.getDisplayLanguage(context.getSender().getLocale()));
@@ -177,7 +176,7 @@ public class RulebookCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&6supported languages:");
+            context.sendTranslated(MessageType.NEUTRAL, "&6supported languages:");
             for(Language language : this.getModule().getCore().getI18n().getLanguages())
             {
                 context.sendMessage("&e* " + language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
@@ -198,23 +197,23 @@ public class RulebookCommands extends ContainerCommand
 
         if(language == null)
         {
-            context.sendTranslated("&cMore than one or no language is matched with %s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with %s", context.getString(0));
             return;
         }
         if(!this.rulebookManager.contains(language.getLocale()))
         {
-            context.sendTranslated("&aThe languagefile of %s doesn't exist at the moment", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.POSITIVE, "The languagefile of %s doesn't exist at the moment", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             return;
         }
         
         try
         {
             this.rulebookManager.removeBook(language.getLocale());
-            context.sendTranslated("&aThe languagefiles of %s was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.POSITIVE, "The languagefiles of %s was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         catch(IOException ex)
         {
-            context.sendTranslated("%cThe language file of %s couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.NEGATIVE, "The language file of %s couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             this.getModule().getLog().error(ex, "Error when deleting the files!");
         }
 
@@ -231,7 +230,7 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User))
         {
-            context.sendTranslated("&eYou are not able to write, aren't you?");
+            context.sendTranslated(MessageType.NEUTRAL, "You are not able to write, aren't you?");
         }
         User user = (User) context.getSender();
 
@@ -239,14 +238,14 @@ public class RulebookCommands extends ContainerCommand
 
         if(!item.getType().equals(Material.WRITTEN_BOOK) && !item.getType().equals(Material.BOOK_AND_QUILL))
         {
-            context.sendTranslated("&cI would try it with a book as item in hand");
+            context.sendTranslated(MessageType.NEGATIVE, "I would try it with a book as item in hand");
             return;
         }
 
         Language language = this.rulebookManager.getLanguage(context.getString(0));
         if(language == null)
         {
-            context.sendTranslated("&cMore than one or no language is matched with %s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with %s", context.getString(0));
             return;
         }
         Locale locale = language.getLocale();
@@ -257,18 +256,18 @@ public class RulebookCommands extends ContainerCommand
             {
                 this.rulebookManager.removeBook(locale);
                 this.rulebookManager.addBook(item, locale);
-                context.sendTranslated("&aThe rulebook %s was succesful modified.", locale
+                context.sendTranslated(MessageType.POSITIVE, "The rulebook %s was succesful modified.", locale
                     .getDisplayLanguage(context.getSender().getLocale()));
             }
             catch(IOException ex)
             {
-                context.sendTranslated("&eAn error ocurred by deleting the old rulebook");
+                context.sendTranslated(MessageType.NEUTRAL, "An error ocurred by deleting the old rulebook");
                 this.getModule().getLog().error(ex, "Error when deleting the files!");
             }
         }
         else
         {
-            context.sendTranslated("&cYou can't modify a book which does not exist.");
+            context.sendTranslated(MessageType.NEGATIVE, "You can't modify a book which does not exist.");
         }
     }
 
@@ -283,7 +282,7 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User))
         {
-            context.sendTranslated("&eI thought you are an analphabet?");
+            context.sendTranslated(MessageType.NEUTRAL, "I thought you are an analphabet?");
         }
         User user = (User) context.getSender();
 
@@ -291,14 +290,14 @@ public class RulebookCommands extends ContainerCommand
 
         if(!item.getType().equals(Material.WRITTEN_BOOK) && !item.getType().equals(Material.BOOK_AND_QUILL))
         {
-            context.sendTranslated("&cI would try it with a book as item in hand");
+            context.sendTranslated(MessageType.NEGATIVE, "I would try it with a book as item in hand");
             return;
         }
 
         Language language = this.rulebookManager.getLanguage(context.getString(0));
         if(language == null)
         {
-            context.sendTranslated("&cMore than one or no language is matched with %s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with %s", context.getString(0));
             return;
         }
         Locale locale = language.getLocale();
@@ -306,7 +305,7 @@ public class RulebookCommands extends ContainerCommand
         if(!this.rulebookManager.contains(locale))
         {
             this.rulebookManager.addBook(item, locale);
-            context.sendTranslated("&aRulebook for the language %s was added succesfully", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.POSITIVE, "Rulebook for the language %s was added succesfully", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         else
         {

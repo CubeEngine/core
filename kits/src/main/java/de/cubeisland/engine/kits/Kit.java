@@ -88,7 +88,7 @@ public class Kit
         {
             if (!this.getPermission().isAuthorized(sender))
             {
-                sender.sendTranslated(, "You are not allowed to give this kit.");
+                sender.sendTranslated(MessageType.NEGATIVE, "You are not allowed to give this kit.");
                 throw new PermissionDeniedException();
             }
         }
@@ -100,7 +100,7 @@ public class Kit
                     where(TableKitsGiven.TABLE_KITS.KITNAME.like(this.name), TableKitsGiven.TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
                 if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
                 {
-                    sender.sendTranslated(, "&cKit-limit reached.");
+                    sender.sendTranslated(MessageType.NEGATIVE, "Kit-limit reached.");
                     throw new PermissionDeniedException();
                 }
             }
@@ -109,7 +109,7 @@ public class Kit
                 Long lastUsage = user.get(KitsAttachment.class).getKitUsage(this.name);
                 if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
                 {
-                    sender.sendTranslated(, "&eThis kit not available at the moment. &aTry again later!");
+                    sender.sendTranslated(MessageType.NEUTRAL, "This kit not available at the moment. &aTry again later!");
                     throw new PermissionDeniedException();
                 }
             }
@@ -216,13 +216,13 @@ public class Kit
         @Override
         public String composeMessage(MessageType type, String message, Object... params)
         {
-            return this.user.composeMessage(, message, params);
+            return this.user.composeMessage(type, message, params);
         }
 
         @Override
         public void sendTranslated(MessageType type, String message, Object... params)
         {
-            this.user.sendTranslated(, message, params);
+            this.user.sendTranslated(type, message, params);
         }
 
         @Override

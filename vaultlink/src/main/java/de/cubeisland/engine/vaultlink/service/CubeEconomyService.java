@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.vaultlink.Vaultlink;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -127,7 +128,7 @@ public class CubeEconomyService implements Economy
         User user = module.getCore().getUserManager().getUser(player);
         if (user != null)
         {
-            message = user.composeMessage(, message);
+            message = user.composeMessage(MessageType.NONE, message); // TODO
         }
         return new EconomyResponse(amount, getBalance(player), result ? SUCCESS : FAILURE, message);
     }

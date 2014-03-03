@@ -34,6 +34,7 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class BackpackCommands extends ContainerCommand
@@ -63,7 +64,7 @@ public class BackpackCommands extends ContainerCommand
                 forUser = context.getUser(1);
                 if (forUser == null)
                 {
-                    context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                    context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
                     return;
                 }
             }
@@ -73,24 +74,24 @@ public class BackpackCommands extends ContainerCommand
                 forWorld = context.getParam("w", null);
                 if (forWorld == null)
                 {
-                    context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                    context.sendTranslated(MessageType.NEGATIVE, "Unknown World &6%s&c!", context.getString("w"));
                     return;
                 }
             }
             if (context.getSender() != forUser && !module.perms().OPEN_OTHER_USER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cYou are not allowed to open the backpacks of other users!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to open the backpacks of other users!");
                 return;
             }
             if (forUser.getWorld() != forWorld && ! module.perms().OPEN_OTHER_WORLDS.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cYou are not allowed to open backpacks from an other world!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to open backpacks from an other world!");
                 return;
             }
             manager.openBackpack((User)context.getSender(), forUser, forWorld, context.getString(0));
             return;
         }
-        context.sendTranslated("&cYou cannot open a inventory in console!"); // TODO perhaps save inventory to yml
+        context.sendTranslated(MessageType.NEGATIVE, "You cannot open a inventory in console!"); // TODO perhaps save inventory to yml
     }
 
     @Alias(names = "createbp")
@@ -115,7 +116,7 @@ public class BackpackCommands extends ContainerCommand
             forWorld = context.getParam("w", null);
             if (forWorld == null)
             {
-                context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                context.sendTranslated(MessageType.NEGATIVE, "Unknown World &6%s&c!", context.getString("w"));
                 return;
             }
         }
@@ -126,7 +127,7 @@ public class BackpackCommands extends ContainerCommand
         }
         else if (!context.hasFlag("g"))
         {
-            context.sendTranslated("&aYou have to specify a world for non global backpacks!");
+            context.sendTranslated(MessageType.POSITIVE, "You have to specify a world for non global backpacks!");
             return;
         }
         if (context.hasArg(1))
@@ -134,13 +135,13 @@ public class BackpackCommands extends ContainerCommand
             forUser = context.getUser(1);
             if (forUser == null)
             {
-                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
                 return;
             }
         }
         else if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated("&cYou need to specify a User");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a User");
             return;
         }
         manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld, context
@@ -171,13 +172,13 @@ public class BackpackCommands extends ContainerCommand
             forWorld = context.getParam("w", null);
             if (forWorld == null)
             {
-                context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                context.sendTranslated(MessageType.NEGATIVE, "Unknown World &6%s&c!", context.getString("w"));
                 return;
             }
         }
         else if (!context.hasFlag("g"))
         {
-            context.sendTranslated("&aYou have to specify a world for non global backpacks!");
+            context.sendTranslated(MessageType.POSITIVE, "You have to specify a world for non global backpacks!");
             return;
         }
         if (context.hasArg(1))
@@ -185,13 +186,13 @@ public class BackpackCommands extends ContainerCommand
             forUser = context.getUser(1);
             if (forUser == null)
             {
-                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
                 return;
             }
         }
         else if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated("&cYou need to specify a User");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a User");
             return;
         }
         manager.modifyBackpack(context.getSender(), forUser, context.getString(0), forWorld,
@@ -227,7 +228,7 @@ public class BackpackCommands extends ContainerCommand
             forWorld = context.getParam("w", null);
             if (forWorld == null)
             {
-                context.sendTranslated("&cUnknown World &6%s&c!", context.getString("w"));
+                context.sendTranslated(MessageType.NEGATIVE, "Unknown World &6%s&c!", context.getString("w"));
                 return;
             }
         }
@@ -236,19 +237,19 @@ public class BackpackCommands extends ContainerCommand
             forUser = context.getUser(1);
             if (forUser == null)
             {
-                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
                 return;
             }
         }
         else if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated("&cYou need to specify a User");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a User");
             return;
         }
         ItemStack matchedItem = Match.material().itemStack(context.getString("i"));
         if (matchedItem == null)
         {
-            context.sendTranslated("&cCould not match item &6%s", context.getString("i"));
+            context.sendTranslated(MessageType.NEGATIVE, "Could not match item &6%s", context.getString("i"));
             return;
         }
         ItemMeta itemMeta = matchedItem.getItemMeta();
@@ -272,7 +273,7 @@ public class BackpackCommands extends ContainerCommand
                     enchantment = Match.enchant().enchantment(ench.substring(0, ench.indexOf(":")));
                     if (enchantment == null)
                     {
-                        context.sendTranslated("&cUnknown Enchantment &6%s", ench);
+                        context.sendTranslated(MessageType.NEGATIVE, "Unknown Enchantment &6%s", ench);
                         return;
                     }
                     power = Integer.parseInt(ench.substring(ench.indexOf(":")+1));
@@ -282,7 +283,7 @@ public class BackpackCommands extends ContainerCommand
                     enchantment = Match.enchant().enchantment(ench);
                     if (enchantment == null)
                     {
-                        context.sendTranslated("&cUnknown Enchantment &6%s", ench);
+                        context.sendTranslated(MessageType.NEGATIVE, "Unknown Enchantment &6%s", ench);
                         return;
                     }
                     power = enchantment.getMaxLevel();
@@ -297,7 +298,7 @@ public class BackpackCommands extends ContainerCommand
             amount = context.getParam("a", null);
             if (amount == null)
             {
-                context.sendTranslated("&cInvalid amount &6%s", context.getString("a"));
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid amount &6%s", context.getString("a"));
                 return;
             }
         }

@@ -29,6 +29,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
@@ -57,19 +58,19 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated("&cThere are no global roles!");
+                context.sendTranslated(MessageType.NEGATIVE, "There are no global roles!");
                 return;
             }
-            context.sendTranslated("&cThere are no roles in &6%s&c!", world.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "There are no roles in &6%s&c!", world.getName());
             return;
         }
         if (global)
         {
-            context.sendTranslated("&aThe following global roles are available:");
+            context.sendTranslated(MessageType.POSITIVE, "The following global roles are available:");
         }
         else
         {
-            context.sendTranslated("&aThe following roles are available in &6%s&a:", world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The following roles are available in &6%s&a:", world.getName());
         }
         for (Role role : provider.getRoles())
         {
@@ -100,50 +101,44 @@ public class RoleInformationCommands extends RoleCommandHelper
             {
                 if (global)
                 {
-                    context.sendTranslated("&6%s&a is set to &2true&a for the global role &6%s&a.",
-                                           permission, role.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "&6%s&a is set to &2true&a for the global role &6%s&a.", permission, role.getName());
                 }
                 else
                 {
-                    context.sendTranslated("&6%s&a is set to &2true&a for the role &6%s&a in &6%s&a.",
-                                           permission, role.getName(), world.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "&6%s&a is set to &2true&a for the role &6%s&a in &6%s&a.", permission, role.getName(), world.getName());
                 }
             }
             else
             {
                 if (global)
                 {
-                    context.sendTranslated("&6%s&c is set to &4false&c for the global role &6%s&c.",
-                                           permission, role.getName());
+                    context.sendTranslated(MessageType.NEGATIVE, "&6%s&c is set to &4false&c for the global role &6%s&c.", permission, role.getName());
                 }
                 else
                 {
-                    context.sendTranslated("&6%s&c is set to &4false&c for the role &6%s&c in &6%s&c.",
-                                           permission, role.getName(), world.getName());
+                    context.sendTranslated(MessageType.NEGATIVE, "&6%s&c is set to &4false&c for the role &6%s&c in &6%s&c.", permission, role.getName(), world.getName());
                 }
             }
             if (!(myPerm.getOriginPermission() == null && myPerm.getOrigin() == role))
             {
-                context.sendTranslated("&ePermission inherited from:");
+                context.sendTranslated(MessageType.NEUTRAL, "Permission inherited from:");
                 if (myPerm.getOriginPermission() == null)
                 {
-                    context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getKey(), myPerm.getOrigin().getName());
+                    context.sendTranslated(MessageType.NEUTRAL, "&6%s&e in the role &6%s&e!", myPerm.getKey(), myPerm.getOrigin().getName());
                 }
                 else
                 {
-                    context.sendTranslated("&6%s&e in the role &6%s&e!", myPerm.getOriginPermission(), myPerm.getOrigin().getName());
+                    context.sendTranslated(MessageType.NEUTRAL, "&6%s&e in the role &6%s&e!", myPerm.getOriginPermission(), myPerm.getOrigin().getName());
                 }
             }
             return;
         }
         if (global)
         {
-            context.sendTranslated("&eThe permission &6%s&e is not assigned to the global role &6%s&e.",
-                                   permission, role.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "The permission &6%s&e is not assigned to the global role &6%s&e.", permission, role.getName());
             return;
         }
-        context.sendTranslated("&eThe permission &6%s&e is not assigned to the role &6%s&e in &6%s&e.",
-                               permission, role.getName(), world.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "The permission &6%s&e is not assigned to the role &6%s&e in &6%s&e.", permission, role.getName(), world.getName());
     }
 
     @Alias(names = "listrperm")
@@ -167,23 +162,23 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated("&eNo permissions set for the global role &6%s&e.", role.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "No permissions set for the global role &6%s&e.", role.getName());
                 return;
             }
-            context.sendTranslated("&eNo permissions set for the role &6%s&e in &6%s&e.", role.getName(), world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "No permissions set for the role &6%s&e in &6%s&e.", role.getName(), world.getName());
             return;
         }
         if (global)
         {
-            context.sendTranslated("&aPermissions of the global role &6%s&a.", role.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Permissions of the global role &6%s&a.", role.getName());
         }
         else
         {
-            context.sendTranslated("&aPermissions of the role &6%s&a in &6%s&a:", role.getName(), world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Permissions of the role &6%s&a in &6%s&a:", role.getName(), world.getName());
         }
         if (context.hasFlag("a"))
         {
-            context.sendTranslated("&a(Including inherited permissions)");
+            context.sendTranslated(MessageType.POSITIVE, "(Including inherited permissions)");
         }
         for (String perm : rawPerms.keySet())
         {
@@ -219,23 +214,23 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated("&eNo metadata set for the global role &6%s&e.", role.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "No metadata set for the global role &6%s&e.", role.getName());
                 return;
             }
-            context.sendTranslated("&eNo metadata set for the role &6%s&e in &6%s&e.", role.getName(), world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "No metadata set for the role &6%s&e in &6%s&e.", role.getName(), world.getName());
             return;
         }
         if (global)
         {
-            context.sendTranslated("&aMetadata of the global role &6%s&a:", role.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Metadata of the global role &6%s&a:", role.getName());
         }
         else
         {
-            context.sendTranslated("&aMetadata of the role &6%s&a in &6%s&a:", role.getName(), world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Metadata of the role &6%s&a in &6%s&a:", role.getName(), world.getName());
         }
         if (context.hasFlag("a"))
         {
-            context.sendTranslated("&a(Including inherited metadata)");
+            context.sendTranslated(MessageType.POSITIVE, "(Including inherited metadata)");
         }
         for (Entry<String, String> data : rawMetadata.entrySet())
         {
@@ -261,19 +256,19 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated("&eThe global role &6%s&e has no parent roles.", role.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "The global role &6%s&e has no parent roles.", role.getName());
                 return;
             }
-            context.sendTranslated("&eThe role &6%s&e in &6%s&e has no parent roles.", role.getName(), world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "The role &6%s&e in &6%s&e has no parent roles.", role.getName(), world.getName());
             return;
         }
         if (global)
         {
-            context.sendTranslated("&eThe global role &6%s &ehas following parent roles:", role.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "The global role &6%s &ehas following parent roles:", role.getName());
         }
         else
         {
-            context.sendTranslated("&eThe role &6%s&e in &6%s &ehas following parent roles:", role.getName(), world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "The role &6%s&e in &6%s &ehas following parent roles:", role.getName(), world.getName());
         }
         for (Role parent : role.getRoles())
         {
@@ -297,10 +292,10 @@ public class RoleInformationCommands extends RoleCommandHelper
         if (role == null) return;
         if (global)
         {
-            context.sendTranslated("&eThe priority of the global role &6%s&e is: &6%d", role.getName(), role.getPriorityValue());
+            context.sendTranslated(MessageType.NEUTRAL, "The priority of the global role &6%s&e is: &6%d", role.getName(), role.getPriorityValue());
             return;
         }
-        context.sendTranslated("&eThe priority of the role &6%s&e in &6%s&e is: &6%d", role.getName(), world.getName(), role.getPriorityValue());
+        context.sendTranslated(MessageType.NEUTRAL, "The priority of the role &6%s&e in &6%s&e is: &6%d", role.getName(), world.getName(), role.getPriorityValue());
     }
 
     @Command(names = {"default","defaultroles","listdefroles", "listdefaultroles"},
@@ -315,10 +310,10 @@ public class RoleInformationCommands extends RoleCommandHelper
         Set<Role> defaultRoles = provider.getDefaultRoles();
         if (defaultRoles.isEmpty())
         {
-            context.sendTranslated("&cThere are no default roles set for &6%s&c!", world.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "There are no default roles set for &6%s&c!", world.getName());
             return;
         }
-        context.sendTranslated("&aThe following roles are default roles in &6%s&a!", world.getName());
+        context.sendTranslated(MessageType.POSITIVE, "The following roles are default roles in &6%s&a!", world.getName());
         for (Role role : defaultRoles)
         {
             context.sendMessage(String.format(this.LISTELEM,role.getName()));

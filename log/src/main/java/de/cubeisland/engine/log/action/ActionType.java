@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.storage.ActionTypeModel;
@@ -154,7 +155,7 @@ public abstract class ActionType
     {
         if (this.canRollback())
         {
-            attachment.getHolder().sendTranslated(, "&4Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.getActionType().getName());
+            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.getActionType().getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;
@@ -164,7 +165,7 @@ public abstract class ActionType
     {
         if (this.canRedo())
         {
-            attachment.getHolder().sendTranslated(, "&4Encountered an unimplemented LogAction-Redo: &6%s", logEntry.getActionType().getName());
+            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Redo: &6%s", logEntry.getActionType().getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;

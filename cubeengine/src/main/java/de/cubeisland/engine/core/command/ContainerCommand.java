@@ -25,7 +25,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFacto
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.ChatFormat;
-
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 
 /**
@@ -116,22 +116,22 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     public void help(HelpContext context) throws Exception
     {
         CommandSender sender = context.getSender();
-        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
+        context.sendTranslated(MessageType.NONE, "&7Usage: &f%s", this.getUsage(context));
         context.sendMessage(" ");
-        context.sendTranslated("The following actions are available:");
+        context.sendTranslated(MessageType.NEUTRAL, "The following actions are available:");
         context.sendMessage(" ");
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
             if (command.testPermissionSilent(sender))
             {
-                context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.composeMessage(, command
+                context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.composeMessage(MessageType.NONE, command
                                                                                                                                                      .getDescription()));
             }
         }
 
         context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated(MessageType.NONE, "&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 
     private class ChildDelegation

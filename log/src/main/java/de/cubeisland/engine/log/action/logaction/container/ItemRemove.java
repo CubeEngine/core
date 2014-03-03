@@ -30,6 +30,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
@@ -70,15 +71,15 @@ public class ItemRemove extends SimpleLogActionType
         }
         if (amount > 0)
         {
-            user.sendTranslated(, "%s&2%s&a placed &6%d %s&a into &6%s%s", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a placed &6%d %s&a into &6%s%s", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else if (amount < 0)
         {
-            user.sendTranslated(, "%s&2%s&a took &6%d %s&a out of &6%s%s", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a took &6%d %s&a out of &6%s%s", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else
         {
-            user.sendTranslated(, "%s&2%s&a did not change the amount of &6%s&a in &6%s%s", time, logEntry.getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a did not change the amount of &6%s&a in &6%s%s", time, logEntry.getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
     }
     @Override
@@ -115,7 +116,7 @@ public class ItemRemove extends SimpleLogActionType
                 {
                     if (force)
                     {
-                        attachment.getHolder().sendTranslated(, "&cCould not rollback an item-remove!");
+                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
                     }
                     return false;
                 }
@@ -123,7 +124,7 @@ public class ItemRemove extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(, "&cInvalid Container to rollback item-remove!");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
             }
             return false;
         }
@@ -171,7 +172,7 @@ public class ItemRemove extends SimpleLogActionType
                 {
                     if (force)
                     {
-                        attachment.getHolder().sendTranslated(, "&cCould not rollback an item-remove!");
+                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
                     }
                     return false;
                 }
@@ -179,7 +180,7 @@ public class ItemRemove extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(, "&cInvalid Container to rollback item-remove!");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
             }
             return false;
         }

@@ -34,6 +34,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class PaintingListener implements Listener
 {
@@ -55,7 +56,7 @@ public class PaintingListener implements Listener
 
             if (!module.perms().CHANGEPAINTING.isAuthorized(user))
             {
-                user.sendTranslated(, "&cYou are not allowed to change the painting.");
+                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the painting.");
                 return;
             }
             Painting painting = (Painting)event.getRightClicked();
@@ -63,17 +64,17 @@ public class PaintingListener implements Listener
             Painting playerPainting = this.paintingChange.get(user.getName());
             if(playerPainting == null && this.paintingChange.containsValue(painting))
             {
-                user.sendTranslated(, "&cThis painting is used by another player at the moment.");
+                user.sendTranslated(MessageType.NEGATIVE, "This painting is used by another player at the moment.");
             }
             else if (playerPainting == null)
             {
                 this.paintingChange.put(user.getName(), painting);
-                user.sendTranslated(, "&aYou can now cycle through the paintings using your mousewheel.");
+                user.sendTranslated(MessageType.POSITIVE, "You can now cycle through the paintings using your mousewheel.");
             }
             else
             {
                 this.paintingChange.remove(user.getName());
-                user.sendTranslated(, "&aPainting is locked now");
+                user.sendTranslated(MessageType.POSITIVE, "Painting is locked now");
             }
         }
     }
@@ -108,7 +109,7 @@ public class PaintingListener implements Listener
                             .distanceSquared(user.getLocation().toVector()) > maxDistanceSquared)
                 {
                     this.paintingChange.remove(user.getName());
-                    user.sendTranslated(, "&aPainting is locked now");
+                    user.sendTranslated(MessageType.POSITIVE, "Painting is locked now");
                     return;
                 }
 
@@ -160,7 +161,7 @@ public class PaintingListener implements Listener
             Entry<String, Painting> entry = paintingIterator.next();
             if(entry.getValue().equals(painting))
             {
-                this.module.getCore().getUserManager().getExactUser(entry.getKey()).sendTranslated(, "&cThe painting broke");
+                this.module.getCore().getUserManager().getExactUser(entry.getKey()).sendTranslated(MessageType.NEGATIVE, "The painting broke");
                 paintingIterator.remove();
             }
         }
