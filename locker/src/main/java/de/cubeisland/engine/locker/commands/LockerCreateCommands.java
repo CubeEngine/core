@@ -45,11 +45,11 @@ public class LockerCreateCommands extends ContainerCommand
         this.manager.commandListener.setCommandType(sender, type, password, createKeyBook);
         if (createKeyBook)
         {
-            sender.sendTranslated("&aRightclick what you want to protect with a book in your hand!");
+            sender.sendTranslated(, "&aRightclick what you want to protect with a book in your hand!");
         }
         else
         {
-            sender.sendTranslated("&aRightclick what you want to protect!");
+            sender.sendTranslated(, "&aRightclick what you want to protect!");
         }
     }
 

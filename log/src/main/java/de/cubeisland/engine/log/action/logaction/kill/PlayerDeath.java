@@ -55,15 +55,11 @@ public class PlayerDeath extends SimpleLogActionType
     {
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("&2%s &agot slaughtered by &2%s",
-                                logEntry.getUserFromData().getDisplayName(),
-                                logEntry.getCauserUser().getDisplayName());
+            user.sendTranslated(, "&2%s &agot slaughtered by &2%s", logEntry.getUserFromData().getDisplayName(), logEntry.getCauserUser().getDisplayName());
         }
         else if (logEntry.hasCauserEntity())
         {
-            user.sendTranslated("&2%s &acould not escape &6%s",
-                                logEntry.getUserFromData().getDisplayName(),
-                                logEntry.getCauserEntity());
+            user.sendTranslated(, "&2%s &acould not escape &6%s", logEntry.getUserFromData().getDisplayName(), logEntry.getCauserEntity());
         }
         else // something else
         {
@@ -71,15 +67,11 @@ public class PlayerDeath extends SimpleLogActionType
             DamageCause dmgC = DamageCause.valueOf(json.get("dmgC").asText());
             if (logEntry.getUserFromData() == null)
             {
-                user.sendTranslated("&aA Player died &f(&6%s&f)",
-                                    logEntry.getUserFromData().getName(),
-                                    dmgC.name());//TODO get pretty name for dmgC
+                user.sendTranslated(, "&aA Player died &f(&6%s&f)", logEntry.getUserFromData().getName(), dmgC.name());//TODO get pretty name for dmgC
                 return;
             }
 
-            user.sendTranslated("&2%s &adied &f(&6%s&f)",
-                                logEntry.getUserFromData().getName(),
-                                dmgC.name());//TODO get pretty name for dmgC
+            user.sendTranslated(, "&2%s &adied &f(&6%s&f)", logEntry.getUserFromData().getName(), dmgC.name());//TODO get pretty name for dmgC
         }
     }
 

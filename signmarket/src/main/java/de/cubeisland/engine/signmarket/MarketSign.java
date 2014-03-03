@@ -344,7 +344,7 @@ public class MarketSign
             case LEFT_CLICK_BLOCK:
                 if (this.isInEditMode())
                 {
-                    user.sendTranslated("&cThis sign is being edited right now!");
+                    user.sendTranslated(, "&cThis sign is being edited right now!");
                     return;
                 }
                 if (sneaking)
@@ -357,25 +357,25 @@ public class MarketSign
                             {
                                 if (!this.getInventory().getViewers().isEmpty())
                                 {
-                                    user.sendTranslated("&cThis signs inventory is being edited right now!");
+                                    user.sendTranslated(, "&cThis signs inventory is being edited right now!");
                                     return;
                                 }
                                 int amount = this.putItems(user, true);
                                 if (amount != 0)
                                 {
-                                    user.sendTranslated("&aAdded all (&6%d&a) &6%s&a to the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
+                                    user.sendTranslated(, "&aAdded all (&6%d&a) &6%s&a to the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
                                 }
                                 return;
                             }
                         }
                         if (!this.openInventory(user))
                         {
-                            user.sendTranslated("&cYou are not allowed to see the market-signs inventories");
+                            user.sendTranslated(, "&cYou are not allowed to see the market-signs inventories");
                         }
                     }
                     else
                     {
-                        user.sendTranslated("&cInvalid sign!");
+                        user.sendTranslated(, "&cInvalid sign!");
                     }
                     return;
                 }
@@ -386,7 +386,7 @@ public class MarketSign
                     {
                         if (!this.getInventory().getViewers().isEmpty())
                         {
-                            user.sendTranslated("&cThis signs inventory is being edited right now!");
+                            user.sendTranslated(, "&cThis signs inventory is being edited right now!");
                             return;
                         }
                         if (this.isOwner(user) || module.perms().SIGN_INVENTORY_ACCESS_OTHER.isAuthorized(user))
@@ -395,17 +395,17 @@ public class MarketSign
                             {
                                 if (!this.getInventory().getViewers().isEmpty())
                                 {
-                                    user.sendTranslated("&cThis signs inventory is being edited right now!");
+                                    user.sendTranslated(, "&cThis signs inventory is being edited right now!");
                                     return;
                                 }
                                 int amount = this.putItems(user, false);
                                 if (amount != 0)
-                                    user.sendTranslated("&aAdded &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
+                                    user.sendTranslated(, "&aAdded &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
                                 return;
                             }
                             else if (itemInHand.getTypeId() != 0)
                             {
-                                user.sendTranslated("&cUse bare hands to break the sign!");
+                                user.sendTranslated(, "&cUse bare hands to break the sign!");
                                 return;
                             }
                         }
@@ -420,7 +420,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated("&cYou are not allowed to break your own market-signs!");
+                                user.sendTranslated(, "&cYou are not allowed to break your own market-signs!");
                             }
                         }
                         else if (this.isAdminSign())
@@ -431,7 +431,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated("&cYou are not allowed to break admin-market-signs!");
+                                user.sendTranslated(, "&cYou are not allowed to break admin-market-signs!");
                             }
                         }
                         else
@@ -442,7 +442,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated("&cYou are not allowed to break others market-signs!");
+                                user.sendTranslated(, "&cYou are not allowed to break others market-signs!");
                             }
                         }
                     }
@@ -457,7 +457,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated("&cYou are not allowed to break admin-signs!");
+                                user.sendTranslated(, "&cYou are not allowed to break admin-signs!");
                             }
                         }
                         else if (this.isOwner(user))
@@ -468,7 +468,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated("&cYou are not allowed to break your own market-signs!");
+                                user.sendTranslated(, "&cYou are not allowed to break your own market-signs!");
                             }
                         }
                         else
@@ -480,7 +480,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated("&cYou are not allowed to destroy others market-signs!");
+                                user.sendTranslated(, "&cYou are not allowed to destroy others market-signs!");
                             }
                         }
                     }
@@ -495,14 +495,14 @@ public class MarketSign
                 {
                     if (this.isInEditMode())
                     {
-                        user.sendTranslated("&cThis sign is being edited right now!");
+                        user.sendTranslated(, "&cThis sign is being edited right now!");
                         return;
                     }
                     if (this.isValidSign(null))
                     {
                         if (!this.getInventory().getViewers().isEmpty())
                         {
-                            user.sendTranslated("&cThis signs inventory is being edited right now!");
+                            user.sendTranslated(, "&cThis signs inventory is being edited right now!");
                             return;
                         }
                         if (this.isOwner(user))
@@ -520,11 +520,11 @@ public class MarketSign
     {
         if (this.isInEditMode())
         {
-            user.sendTranslated("\n-- &5Sign Market - Edit Mode &f--");
+            user.sendTranslated(, "\n-- &5Sign Market - Edit Mode &f--");
         }
         else
         {
-            user.sendTranslated("\n--------- &6Sign Market &f---------");
+            user.sendTranslated(, "\n--------- &6Sign Market &f---------");
         }
         if (!this.hasType())
         {
@@ -535,33 +535,33 @@ public class MarketSign
         {
             if (this.isAdminSign())
             {
-                user.sendTranslated("&3Buy: &6%d &ffor &6%s &ffrom &6%s", this.getAmount(), this.parsePrice(), "Server");
+                user.sendTranslated(, "&3Buy: &6%d &ffor &6%s &ffrom &6%s", this.getAmount(), this.parsePrice(), "Server");
             }
             else
             {
-                user.sendTranslated("&3Buy: &6%d &ffor &6%s &ffrom &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
+                user.sendTranslated(, "&3Buy: &6%d &ffor &6%s &ffrom &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
             }
         }
         else
         {
             if (this.isAdminSign())
             {
-                user.sendTranslated("&3Sell: &6%d &ffor &6%s&f to &6%s", this.getAmount(), this.parsePrice(), "Server");
+                user.sendTranslated(, "&3Sell: &6%d &ffor &6%s&f to &6%s", this.getAmount(), this.parsePrice(), "Server");
             }
             else
             {
-                user.sendTranslated("&3Sell: &6%d &ffor &6%s&f to &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
+                user.sendTranslated(, "&3Sell: &6%d &ffor &6%s&f to &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
             }
         }
         if (this.getItem() == null)
         {
             if (this.isInEditMode())
             {
-                user.sendTranslated("&5No Item");
+                user.sendTranslated(, "&5No Item");
             }
             else
             {
-                user.sendTranslated("&4No Item");
+                user.sendTranslated(, "&4No Item");
             }
         }
         else
@@ -591,7 +591,7 @@ public class MarketSign
             }
             if (!meta.getEnchants().isEmpty())
             {
-                user.sendTranslated("&6Enchantments:");
+                user.sendTranslated(, "&6Enchantments:");
             }
             for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
             {
@@ -601,7 +601,7 @@ public class MarketSign
             {
                 if (!((EnchantmentStorageMeta)meta).getStoredEnchants().isEmpty())
                 {
-                    user.sendTranslated("&6Book-Enchantments:");
+                    user.sendTranslated(, "&6Book-Enchantments:");
                     for (Map.Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta)meta).getStoredEnchants().entrySet())
                     {
                         user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
@@ -613,15 +613,15 @@ public class MarketSign
         {
             if (!this.hasDemand() && this.hasInfiniteSize())
             {
-                user.sendTranslated("&3In stock: &6%d&f/&6Infinite", this.getStock());
+                user.sendTranslated(, "&3In stock: &6%d&f/&6Infinite", this.getStock());
             }
             else if (this.getItem() == null || this.getAmount() == 0)
             {
-                user.sendTranslated("&3In stock: &6%d&f/&cUnkown", this.getStock());
+                user.sendTranslated(, "&3In stock: &6%d&f/&cUnkown", this.getStock());
             }
             else
             {
-                user.sendTranslated("&3In stock: &6%d&f/&6%d", this.getStock(), this.getMaxItemAmount());
+                user.sendTranslated(, "&3In stock: &6%d&f/&6%d", this.getStock(), this.getMaxItemAmount());
             }
         }
     }
@@ -744,7 +744,7 @@ public class MarketSign
         }
         if (amountToTake <= 0)
         {
-            user.sendTranslated("&cThere are no more items stored in the sign!");
+            user.sendTranslated(, "&cThere are no more items stored in the sign!");
             return;
         }
         ItemStack item = this.getItem().clone();
@@ -775,11 +775,11 @@ public class MarketSign
             }
             this.breakSign(user);
             this.breakingSign.remove(user.getId());
-            user.sendTranslated("&aMarketSign destroyed!");
+            user.sendTranslated(, "&aMarketSign destroyed!");
             return true;
         }
         this.breakingSign.put(user.getId(), System.currentTimeMillis());
-        user.sendTranslated("&eDoubleclick to break the sign!");
+        user.sendTranslated(, "&eDoubleclick to break the sign!");
         return false;
     }
 
@@ -836,7 +836,7 @@ public class MarketSign
             {
                 if (!module.perms().USE_BUY.isAuthorized(user))
                 {
-                    user.sendTranslated("&cYou are not allowed to use buy-marketsigns!");
+                    user.sendTranslated(, "&cYou are not allowed to use buy-marketsigns!");
                     return;
                 }
             }
@@ -844,7 +844,7 @@ public class MarketSign
             {
                 if (!module.perms().USE_SELL.isAuthorized(user))
                 {
-                    user.sendTranslated("&cYou are not allowed to use sell-marketsigns!");
+                    user.sendTranslated(, "&cYou are not allowed to use sell-marketsigns!");
                     return;
                 }
             }
@@ -858,13 +858,13 @@ public class MarketSign
                 {
                     if (!this.allowBuyIfEmpty())
                     {
-                        user.sendTranslated("&cThis market-sign is &4&lSold Out&c!");
+                        user.sendTranslated(, "&cThis market-sign is &4&lSold Out&c!");
                         return;
                     }
                 }
                 if (!this.canAfford(user))
                 {
-                    user.sendTranslated("&cYou cannot afford the price of these items!");
+                    user.sendTranslated(, "&cYou cannot afford the price of these items!");
                     return;
                 }
                 //Account userAccount = this.economy.getUserAccount(user, true);
@@ -890,31 +890,31 @@ public class MarketSign
                     }
                     user.getInventory().addItem(item);
                     user.updateInventory();
-                    user.sendTranslated("&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
+                    user.sendTranslated(, "&aYou bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
                     return;
                 }
-                user.sendTranslated("&cYou do not have enough space for these items!");
+                user.sendTranslated(, "&cYou do not have enough space for these items!");
                 return;
             } // else Sell
             if (this.hasDemand() && this.isSatisfied())
             {
-                user.sendTranslated("&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
+                user.sendTranslated(, "&cThis market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
                 return;
             }
             if (this.isFull())
             {
-                user.sendTranslated("&cThis market-sign is &4&lfull&c! You can no longer sell items to it.");
+                user.sendTranslated(, "&cThis market-sign is &4&lfull&c! You can no longer sell items to it.");
                 return;
             }
             if (!this.isAdminSign() && !this.canAfford(this.getOwner()))
             {
-                user.sendTranslated("&cThe owner cannot afford the money to acquire your items!");
+                user.sendTranslated(, "&cThe owner cannot afford the money to acquire your items!");
                 return;
             }
             this.itemInfo.matchesItem(user.getItemInHand()); // adapt to item in hand (if it has repair-cost)
             if (getAmountOf(user.getInventory(), this.getItem()) < this.getAmount())
             {
-                user.sendTranslated("&cYou do not have enough items to sell!");
+                user.sendTranslated(, "&cYou do not have enough items to sell!");
                 return;
             }
             ItemStack item = this.getItem().clone();
@@ -932,7 +932,7 @@ public class MarketSign
                 this.saveToDatabase();
             } // else admin sign -> no change
             user.updateInventory();
-            user.sendTranslated("&aYou sold &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
+            user.sendTranslated(, "&aYou sold &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
         }
     }
 
@@ -957,25 +957,25 @@ public class MarketSign
         if (!this.hasType())
         {
             if (user != null)
-                user.sendTranslated("&cNo sign-type given!");
+                user.sendTranslated(, "&cNo sign-type given!");
             result = false;
         }
         if (this.blockInfo.getAmount() == null || this.blockInfo.getAmount().longValue() <= 0)
         {
             if (user != null)
-                user.sendTranslated("&cInvalid amount!");
+                user.sendTranslated(, "&cInvalid amount!");
             result = false;
         }
         if (this.blockInfo.getPrice() == null || this.blockInfo.getPrice().longValue() <= 0)
         {
             if (user != null)
-                user.sendTranslated("&cInvalid price!");
+                user.sendTranslated(, "&cInvalid price!");
             result = false;
         }
         if (this.itemInfo.getItemStack() == null)
         {
             if (user != null)
-                user.sendTranslated("&cNo item given!");
+                user.sendTranslated(, "&cNo item given!");
             result = false;
         }
         return result;

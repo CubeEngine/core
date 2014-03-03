@@ -100,7 +100,7 @@ public class MarketSignFactory
         }
         else
         {
-            user.sendTranslated("&cYou are not allowed to create Admin or User MarketSigns!");
+            user.sendTranslated(, "&cYou are not allowed to create Admin or User MarketSigns!");
             return null;
         }
         if (marketSign.isAdminSign())

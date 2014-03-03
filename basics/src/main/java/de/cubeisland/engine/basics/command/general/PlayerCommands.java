@@ -126,7 +126,7 @@ public class PlayerCommands
             {
                 if (!all)
                 {
-                    user.sendTranslated("&aYou got fed by &2%s&a!", context.getSender().getName());
+                    user.sendTranslated(, "&aYou got fed by &2%s&a!", context.getSender().getName());
                 }
                 user.setFoodLevel(20);
                 user.setSaturation(20);
@@ -196,7 +196,7 @@ public class PlayerCommands
             {
                 if (!all)
                 {
-                    user.sendTranslated("&eYou are suddenly starving!");
+                    user.sendTranslated(, "&eYou are suddenly starving!");
                 }
                 user.setFoodLevel(0);
                 user.setSaturation(0);
@@ -266,7 +266,7 @@ public class PlayerCommands
             {
                 if (!all)
                 {
-                    user.sendTranslated("&aYou got healed by &2%s&a!", context.getSender().getName());
+                    user.sendTranslated(, "&aYou got healed by &2%s&a!", context.getSender().getName());
                 }
                 user.setHealth(user.getMaxHealth());
             }
@@ -276,7 +276,7 @@ public class PlayerCommands
         {
             User sender = (User)context.getSender();
             sender.setHealth(sender.getMaxHealth());
-            sender.sendTranslated("&aYou are now healed!");
+            sender.sendTranslated(, "&aYou are now healed!");
             return;
         }
         context.sendTranslated("&cOnly time can heal your wounds!");
@@ -364,12 +364,15 @@ public class PlayerCommands
         target.setGameMode(newMode);
         if (sender != target)
         {
-            context.sendTranslated("&aYou changed the game mode of &2%s &ato &6%s&a!", target.getDisplayName(), sender.translate(newMode.toString()));
-            target.sendTranslated("&eYour game mode has been changed to &6%s&a!", target.translate(newMode.toString()));
+            context.sendTranslated("&aYou changed the game mode of &2%s &ato &6%s&a!", target.getDisplayName(), sender.composeMessage(, newMode
+                                                                                                                                            .toString()));
+            target.sendTranslated(, "&eYour game mode has been changed to &6%s&a!", target.composeMessage(, newMode
+                                                                                                                .toString()));
         }
         else
         {
-            context.sendTranslated("&aYou changed your game mode to &6%s&a!", sender.translate(newMode.toString()));
+            context.sendTranslated("&aYou changed your game mode to &6%s&a!", sender.composeMessage(, newMode
+                                                                                                          .toString()));
         }
     }
 
@@ -488,7 +491,7 @@ public class PlayerCommands
         }
         if (!quiet && module.perms().COMMAND_KILL_NOTIFY.isAuthorized(user))
         {
-            user.sendTranslated("&eYou were killed by &2%s",context.getSender().getDisplayName());
+            user.sendTranslated(, "&eYou were killed by &2%s", context.getSender().getDisplayName());
         }
         return true;
     }
@@ -674,7 +677,7 @@ public class PlayerCommands
             }
             else
             {
-                expires = context.getSender().translate("for ever");
+                expires = context.getSender().composeMessage(, "for ever");
             }
             context.sendTranslated("&eBanned by &2%s&e on &6%s&e: &6%s&e (&6%s&f)", ban.getSource(), format.format(ban.getCreated()), ban.getReason(), expires);
         }
@@ -715,7 +718,7 @@ public class PlayerCommands
         {
             if (other)
             {
-                user.sendTranslated("&aYou are now invincible!");
+                user.sendTranslated(, "&aYou are now invincible!");
                 context.sendTranslated("&2%s&a is now invincible!", user.getName());
                 return;
             }
@@ -724,7 +727,7 @@ public class PlayerCommands
         }
         if (other)
         {
-            user.sendTranslated("&eYou are no longer invincible!");
+            user.sendTranslated(, "&eYou are no longer invincible!");
             context.sendTranslated("&2%s&e is no longer invincible!", user.getName());
             return;
         }
@@ -769,14 +772,14 @@ public class PlayerCommands
         if (speed != null && speed >= 0 && speed <= 10)
         {
             user.setWalkSpeed(speed / 10f);
-            user.sendTranslated("&aYou can now walk at &6%.2f&a.", speed);
+            user.sendTranslated(, "&aYou can now walk at &6%.2f&a.", speed);
             return;
         }
         if (speed != null && speed > 9000)
         {
-            user.sendTranslated("&cIt's over 9000!");
+            user.sendTranslated(, "&cIt's over 9000!");
         }
-        user.sendTranslated("&eWalkspeed has to be a Number between &60 &eand &610&e!");
+        user.sendTranslated(, "&eWalkspeed has to be a Number between &60 &eand &610&e!");
     }
 
     @Command(desc = "Lets you fly away", max = 2,

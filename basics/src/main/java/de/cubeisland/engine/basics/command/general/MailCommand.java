@@ -279,7 +279,7 @@ public class MailCommand extends ContainerCommand
             user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().addMail(from, message);
             if (user.isOnline())
             {
-                user.sendTranslated("&eYou just got a mail from &2%s&e!", from.getName());
+                user.sendTranslated(, "&eYou just got a mail from &2%s&e!", from.getName());
             }
         }
     }

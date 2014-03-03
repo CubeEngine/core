@@ -106,7 +106,7 @@ public class EditModeListener extends ConversationCommand
             }
             if (!checkAllowedEditing(marketSign, user)) return true;
             marketSign.enterEditMode();
-            user.sendTranslated("&aChanged active sign!");
+            user.sendTranslated(, "&aChanged active sign!");
             return true;
         }
         if (!checkAllowedEditing(marketSign, user)) return true;
@@ -118,19 +118,19 @@ public class EditModeListener extends ConversationCommand
     {
         if (marketSign.isAdminSign() && !module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
         {
-            user.sendTranslated("&cYou are not allowed to edit Admin-Signs!");
+            user.sendTranslated(, "&cYou are not allowed to edit Admin-Signs!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
         else if (!marketSign.isAdminSign() && !module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
         {
-            user.sendTranslated("&cYou are not allowed to edit User-Signs!");
+            user.sendTranslated(, "&cYou are not allowed to edit User-Signs!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
         if (!marketSign.isAdminSign() && !marketSign.isOwner(user) && !module.perms().SIGN_CREATE_USER_OTHER.isAuthorized(user))
         {
-            user.sendTranslated("&cYou are not allowed to edit Signs of other Users!");
+            user.sendTranslated(, "&cYou are not allowed to edit Signs of other Users!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
@@ -141,7 +141,7 @@ public class EditModeListener extends ConversationCommand
     public void removeUser(User user)
     {
         super.removeUser(user);
-        user.sendTranslated("&aEdit mode quit!");
+        user.sendTranslated(, "&aEdit mode quit!");
     }
 
     @EventHandler
@@ -152,7 +152,7 @@ public class EditModeListener extends ConversationCommand
             User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
             {
-                user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                user.sendTranslated(, "&eMarketSigns are disabled in the configuration for this world!");
                 this.removeUser(user);
                 this.currentSignLocation.remove(user.getId());
             }
@@ -171,13 +171,13 @@ public class EditModeListener extends ConversationCommand
                 this.removeUser(user);
                 return null;
             }
-            user.sendTranslated("&cPlease do select a sign to edit.");
+            user.sendTranslated(, "&cPlease do select a sign to edit.");
             return null;
         }
         MarketSign marketSign = this.signFactory.getSignAt(loc);
         if (marketSign == null)
         {
-            user.sendTranslated("&4No market-sign at position! This should not happen!");
+            user.sendTranslated(, "&4No market-sign at position! This should not happen!");
             return null;
         }
         this.setEditingSign(user, marketSign);
@@ -186,19 +186,19 @@ public class EditModeListener extends ConversationCommand
             MarketSign prevMarketSign = this.previousMarketSign.get(user.getId());
             if (prevMarketSign == null)
             {
-                user.sendTranslated("&cNo market-sign at previous position.");
+                user.sendTranslated(, "&cNo market-sign at previous position.");
                 return null;
             }
             else
             {
                 if (prevMarketSign.isAdminSign() && !module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
                 {
-                    user.sendTranslated("&cYou are not allowed to copy Admin-Signs!");
+                    user.sendTranslated(, "&cYou are not allowed to copy Admin-Signs!");
                     return null;
                 }
                 else if (!prevMarketSign.isAdminSign() && !module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
                 {
-                    user.sendTranslated("&cYou are not allowed to copy User-Signs!");
+                    user.sendTranslated(, "&cYou are not allowed to copy User-Signs!");
                     return null;
                 }
                 marketSign.copyValuesFrom(prevMarketSign);
@@ -266,12 +266,12 @@ public class EditModeListener extends ConversationCommand
             }
             if (marketSign.isTypeBuy())
             {
-                user.sendTranslated("&cBuy signs cannot have a demand!");
+                user.sendTranslated(, "&cBuy signs cannot have a demand!");
                 return null;
             }
             else if (marketSign.isAdminSign())
             {
-                user.sendTranslated("&cAdmin signs cannot have a demand!");
+                user.sendTranslated(, "&cAdmin signs cannot have a demand!");
                 return null;
             }
             else
@@ -343,7 +343,7 @@ public class EditModeListener extends ConversationCommand
                 User owner = context.getParam("owner",null);
                 if (owner == null)
                 {
-                    user.sendTranslated("&cUser &2%s&c not found!", context.getString("owner"));
+                    user.sendTranslated(, "&cUser &2%s&c not found!", context.getString("owner"));
                     return null;
                 }
                 else
@@ -434,13 +434,13 @@ public class EditModeListener extends ConversationCommand
             Double dPrice = marketSign.economy.parseFor(context.getString("price"), context.getSender().getLocale());
             if (dPrice == null)
             {
-                user.sendTranslated("&cInvalid price!");
+                user.sendTranslated(, "&cInvalid price!");
                 marketSign.setPrice(0);
                 return null;
             }
             else if (dPrice < 0)
             {
-                user.sendTranslated("&cA negative price!? Are you serious?");
+                user.sendTranslated(, "&cA negative price!? Are you serious?");
                 return null;
             }
             else
@@ -453,12 +453,12 @@ public class EditModeListener extends ConversationCommand
             Integer amount = context.getParam("amount",null);
             if (amount == null)
             {
-                user.sendTranslated("&cInvalid amount %s!", context.getString("amount"));
+                user.sendTranslated(, "&cInvalid amount %s!", context.getString("amount"));
                 return null;
             }
             else if (amount < 0)
             {
-                user.sendTranslated("&cNegative amounts could be unfair! &eJust sayin'");
+                user.sendTranslated(, "&cNegative amounts could be unfair! &eJust sayin'");
                 return null;
             }
             else
@@ -471,7 +471,7 @@ public class EditModeListener extends ConversationCommand
             ItemStack item = context.getParam("item", null);
             if (item == null)
             {
-                user.sendTranslated("&cItem not found!");
+                user.sendTranslated(, "&cItem not found!");
             }
             else if (marketSign.isAdminSign())
             {
@@ -479,7 +479,7 @@ public class EditModeListener extends ConversationCommand
             }
             else if (marketSign.hasStock() && marketSign.getStock() != 0)
             {
-                user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
+                user.sendTranslated(, "&cYou have to take all items out of the market-sign to be able to change the item in it!");
                 return null;
             }
         }
@@ -562,7 +562,7 @@ public class EditModeListener extends ConversationCommand
         {
             if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
             {
-                user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                user.sendTranslated(, "&eMarketSigns are disabled in the configuration for this world!");
                 return;
             }
             if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
@@ -576,7 +576,7 @@ public class EditModeListener extends ConversationCommand
                     {
                         if (this.currentSignLocation.valueCollection().contains(newLoc))
                         {
-                            user.sendTranslated("&cSomeone else is editing this sign!");
+                            user.sendTranslated(, "&cSomeone else is editing this sign!");
                             return;
                         }
                     }
@@ -585,7 +585,7 @@ public class EditModeListener extends ConversationCommand
                     {
                         if (!user.isSneaking())
                         {
-                            user.sendTranslated("&cThis is not a market-sign!\n&eUse shift leftclick to convert the sign.");
+                            user.sendTranslated(, "&cThis is not a market-sign!\n&eUse shift leftclick to convert the sign.");
                             return;
                         }
                         curSign = this.signFactory.createSignAt(user, newLoc);
@@ -626,7 +626,7 @@ public class EditModeListener extends ConversationCommand
                 MarketSign curSign = this.signFactory.getSignAt(curLoc);
                 if (curSign == null)
                 {
-                    user.sendTranslated("&eThis sign is not a market-sign!");
+                    user.sendTranslated(, "&eThis sign is not a market-sign!");
                     return; // not a market-sign
                 }
                 if (!this.setEditingSign(user, curSign))
@@ -634,12 +634,12 @@ public class EditModeListener extends ConversationCommand
                     if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0) return;
                     if (!curSign.isAdminSign() && curSign.hasStock() && curSign.getStock() != 0)
                     {
-                        user.sendTranslated("&cYou have to take all items out of the market-sign to be able to change the item in it!");
+                        user.sendTranslated(, "&cYou have to take all items out of the market-sign to be able to change the item in it!");
                         return;
                     }
                     curSign.setItemStack(user.getItemInHand(), true);
                     curSign.updateSignText();
-                    user.sendTranslated("&aItem in sign updated!");
+                    user.sendTranslated(, "&aItem in sign updated!");
                 }
             }
         }
@@ -655,14 +655,14 @@ public class EditModeListener extends ConversationCommand
             {
                 if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
                 {
-                    user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                    user.sendTranslated(, "&eMarketSigns are disabled in the configuration for this world!");
                     return;
                 }
                 if (!module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
                 {
                     if (!module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
                     {
-                        user.sendTranslated("&cYou are not allowed to create market-signs!");
+                        user.sendTranslated(, "&cYou are not allowed to create market-signs!");
                         event.setCancelled(true);
                         return;
                     }
@@ -680,7 +680,7 @@ public class EditModeListener extends ConversationCommand
         {
             if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
             {
-                user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
+                user.sendTranslated(, "&eMarketSigns are disabled in the configuration for this world!");
                 return;
             }
             Location loc = event.getBlock().getLocation();

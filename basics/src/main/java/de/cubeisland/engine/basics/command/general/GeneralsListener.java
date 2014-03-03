@@ -115,7 +115,7 @@ public class GeneralsListener implements Listener
         int amount = bUser.countMail();
         if (amount > 0)
         {
-            user.sendTranslated("&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
+            user.sendTranslated(, "&aYou have &6%d &anew mails!\n&eUse &6/mail read &eto display them.", amount);
         }
 
     }
@@ -140,7 +140,7 @@ public class GeneralsListener implements Listener
             if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
             {
                 User clicker = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                clicker.sendTranslated("&aThis &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()),tamed.getOwner().getName());
+                clicker.sendTranslated(, "&aThis &6%s &abelongs to &2%s&a!", Match.entity().getNameFor(event.getRightClicked().getType()), tamed.getOwner().getName());
             }
         }
     }

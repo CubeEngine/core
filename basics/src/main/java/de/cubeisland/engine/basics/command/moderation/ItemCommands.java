@@ -351,7 +351,7 @@ public class ItemCommands
         user.updateInventory();
         String matname = Match.material().getNameFor(item);
         context.sendTranslated("&aYou gave &2%s &e%d %s&a!", user.getName(), amount, matname);
-        user.sendTranslated("&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
+        user.sendTranslated(, "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
     }
 
     @Command(names = {
@@ -414,7 +414,7 @@ public class ItemCommands
             item.setAmount(amount);
             sender.getInventory().addItem(item);
             sender.updateInventory();
-            sender.sendTranslated("&eReceived: %d %s ", amount, Match.material().getNameFor(item));
+            sender.sendTranslated(, "&eReceived: %d %s ", amount, Match.material().getNameFor(item));
             return;
         }
         context.sendTranslated("&eDid you try to use &6/give &eon your new I-Tem?");
@@ -447,7 +447,7 @@ public class ItemCommands
                     item.setAmount(64);
                 }
             }
-            sender.sendTranslated("&aRefilled all stacks!");
+            sender.sendTranslated(, "&aRefilled all stacks!");
         }
         else
         {
@@ -464,10 +464,10 @@ public class ItemCommands
                 {
                     sender.getInventory().addItem(sender.getItemInHand());
                 }
-                sender.sendTranslated("&aRefilled &6%s &astacks in hand!", context.getString(0));
+                sender.sendTranslated(, "&aRefilled &6%s &astacks in hand!", context.getString(0));
                 return;
             }
-            sender.sendTranslated("&aRefilled stack in hand!");
+            sender.sendTranslated(, "&aRefilled stack in hand!");
         }
     }
 
@@ -496,10 +496,10 @@ public class ItemCommands
                 }
                 if (repaired == 0)
                 {
-                    sender.sendTranslated("&eNo items to repair!");
+                    sender.sendTranslated(, "&eNo items to repair!");
                     return;
                 }
-                sender.sendTranslated("&aRepaired %d items!", repaired);
+                sender.sendTranslated(, "&aRepaired %d items!", repaired);
                 return;
             }
             ItemStack item = sender.getItemInHand();
@@ -507,14 +507,14 @@ public class ItemCommands
             {
                 if (item.getDurability() == 0)
                 {
-                    sender.sendTranslated("&eNo need to repair this!");
+                    sender.sendTranslated(, "&eNo need to repair this!");
                     return;
                 }
                 item.setDurability((short)0);
-                sender.sendTranslated("&aItem repaired!");
+                sender.sendTranslated(, "&aItem repaired!");
                 return;
             }
-            sender.sendTranslated("&eItem cannot be repaired!");
+            sender.sendTranslated(, "&eItem cannot be repaired!");
             return;
         }
         context.sendTranslated("&eIf you do this you'll &cloose &eyour warranty!");

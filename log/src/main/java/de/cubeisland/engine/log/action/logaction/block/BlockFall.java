@@ -111,14 +111,11 @@ public class BlockFall extends BlockActionType
         if (logEntry.getCauserUser() == null)
         {
             ActionType type = this.manager.getActionType(logEntry.getAdditional().get("cause").asInt());
-            user.sendTranslated("%s&6%s&a did fall to a lower place %s&a because of &6%s",
-                                time,logEntry.getOldBlock(), loc,type.getName());
+            user.sendTranslated(, "%s&6%s&a did fall to a lower place %s&a because of &6%s", time, logEntry.getOldBlock(), loc, type.getName());
         }
         else
         {
-            user.sendTranslated("%s&2%s &acaused &6%s&a to fall to a lower place%s",
-                                time,logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getOldBlock(),loc);
+            user.sendTranslated(, "%s&2%s &acaused &6%s&a to fall to a lower place%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
         }
     }
 

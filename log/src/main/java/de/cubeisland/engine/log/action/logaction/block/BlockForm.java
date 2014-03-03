@@ -72,13 +72,11 @@ public class BlockForm extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&6%dx %s &aformed naturally%s",
-                                time,amount,logEntry.getNewBlock(),loc);
+            user.sendTranslated(, "%s&6%dx %s &aformed naturally%s", time, amount, logEntry.getNewBlock(), loc);
         }
         else
         {
-            user.sendTranslated("%s&6%s &aformed naturally%s",
-                                time,logEntry.getNewBlock(),loc);
+            user.sendTranslated(, "%s&6%s &aformed naturally%s", time, logEntry.getNewBlock(), loc);
         }
     }
 

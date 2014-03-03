@@ -96,27 +96,18 @@ public class PlayerTeleport extends SimpleLogActionType
                 locTo = locFrom;
                 locFrom = temp;
             }
-            user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s&a to &6%d&f:&6%d&f:&6%d&a in &6%s",
-                                time, logEntry.getCauserUser().getName(),
-                                locFrom.getBlockX(), locFrom.getBlockY(), locFrom.getBlockZ(), locFrom.getWorld().getName(),
-                                locTo.getBlockX(), locTo.getBlockY(), locTo.getBlockZ(), locTo.getWorld().getName());
+            user.sendTranslated(, "%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s&a to &6%d&f:&6%d&f:&6%d&a in &6%s", time, logEntry.getCauserUser().getName(), locFrom.getBlockX(), locFrom.getBlockY(), locFrom.getBlockZ(), locFrom.getWorld().getName(), locTo.getBlockX(), locTo.getBlockY(), locTo.getBlockZ(), locTo.getWorld().getName());
         }
         else
         {
             if (json.get("dir").asText().equals("from"))
             {
-                user.sendTranslated("%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s",
-                                    time,logEntry.getCauserUser().getName(),
-                                    json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
-                                    world.getName(), loc);
+                user.sendTranslated(, "%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s", time, logEntry.getCauserUser().getName(), json.get("x").asInt(), json.get("y").asInt(), json.get("z").asInt(), world.getName(), loc);
             }
             else
             {
 
-                user.sendTranslated("%s&2%s&a teleported to &6%d&f:&6%d&f:&6%d&a in &6%s%s!",
-                                    time,logEntry.getCauserUser().getDisplayName(),
-                                    json.get("x").asInt(),json.get("y").asInt(),json.get("z").asInt(),
-                                    world.getName(), loc);
+                user.sendTranslated(, "%s&2%s&a teleported to &6%d&f:&6%d&f:&6%d&a in &6%s%s!", time, logEntry.getCauserUser().getDisplayName(), json.get("x").asInt(), json.get("y").asInt(), json.get("z").asInt(), world.getName(), loc);
             }
         }
     }

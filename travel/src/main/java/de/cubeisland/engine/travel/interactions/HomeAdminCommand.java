@@ -64,7 +64,7 @@ public class HomeAdminCommand extends ContainerCommand
             Home home;
             if (user == null)
             {
-                sender.sendTranslated("&2%s&c is not an user on this server!", context.getString(0));
+                sender.sendTranslated(, "&2%s&c is not an user on this server!", context.getString(0));
                 return null;
             }
 
@@ -73,7 +73,7 @@ public class HomeAdminCommand extends ContainerCommand
                 home = tpManager.getHome(user, context.getString(1));
                 if (home == null)
                 {
-                    sender.sendTranslated("&2%s&c does not have a home named &6%s&c!", user.getName(), context.getString(1));
+                    sender.sendTranslated(, "&2%s&c does not have a home named &6%s&c!", user.getName(), context.getString(1));
                     return null;
                 }
             }
@@ -82,7 +82,7 @@ public class HomeAdminCommand extends ContainerCommand
                 home = tpManager.getHome(user, "home");
                 if (home == null)
                 {
-                    sender.sendTranslated("&2%s&c does not have a home!", user.getName());
+                    sender.sendTranslated(, "&2%s&c does not have a home!", user.getName());
                     return null;
                 }
             }
@@ -99,7 +99,7 @@ public class HomeAdminCommand extends ContainerCommand
             }
             else
             {
-                sender.sendTranslated("&aYou have been teleported to &2%s&a's home!", user.getName());
+                sender.sendTranslated(, "&aYou have been teleported to &2%s&a's home!", user.getName());
             }
             return null;
         }

@@ -70,9 +70,7 @@ public class CraftItem extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a crafted &6%s%s",
-                            time,logEntry.getCauserUser().getDisplayName(),
-                            logEntry.getItemData(),loc);
+        user.sendTranslated(, "%s&2%s&a crafted &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc);
     }
 
     @Override

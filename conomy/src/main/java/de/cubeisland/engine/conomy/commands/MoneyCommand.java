@@ -255,7 +255,7 @@ public class MoneyCommand extends ContainerCommand
                 {
                     context.sendTranslated("&6%s&a transferred to &2%s's&a account!", format, user.getName());
                 }
-                user.sendTranslated("&2%s&a just payed you &6%s!", sender.getName(), format);
+                user.sendTranslated(, "&2%s&a just payed you &6%s!", sender.getName(), format);
             }
             else
             {

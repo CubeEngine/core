@@ -52,10 +52,10 @@ public class BackpackManager implements Listener
         {
             if (sender != forUser)
             {
-                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                sender.sendTranslated(, "&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
                 return;
             }
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
+            sender.sendTranslated(, "&cYou don't have a backpack named &6%s&c in this world!", name);
             return;
         }
         backPack.openInventory(sender);
@@ -71,28 +71,28 @@ public class BackpackManager implements Listener
             if (global)
             {
                 attachment.createGlobalBackpack(name, blockInput, pages, size);
-                sender.sendTranslated("&aCreated global backpack &6%s&a for &2%s", name, forUser.getName());
+                sender.sendTranslated(, "&aCreated global backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else if (single)
             {
                 attachment.createBackpack(name, forWorld, blockInput, pages, size);
-                sender.sendTranslated("&aCreated singleworld backpack &6%s&a for &2%s", name, forUser.getName());
+                sender.sendTranslated(, "&aCreated singleworld backpack &6%s&a for &2%s", name, forUser.getName());
             }
             else
             {
                 attachment.createGroupedBackpack(name, forWorld, blockInput, pages, size);
-                sender.sendTranslated("&aCreated grouped backpack &6%s&a in &6%s&a for &2%s", name, forWorld.getName(), forUser.getName());
+                sender.sendTranslated(, "&aCreated grouped backpack &6%s&a in &6%s&a for &2%s", name, forWorld.getName(), forUser.getName());
             }
         }
         else
         {
             if (sender == forUser)
             {
-                sender.sendTranslated("&cA backpack named &6%s&c already exists in &6%s", name, forWorld.getName());
+                sender.sendTranslated(, "&cA backpack named &6%s&c already exists in &6%s", name, forWorld.getName());
             }
             else
             {
-                sender.sendTranslated("&2%s&c already had a backpack named &6%s&c in &6%s", forUser.getName(), name, forWorld.getName());
+                sender.sendTranslated(, "&2%s&c already had a backpack named &6%s&c in &6%s", forUser.getName(), name, forWorld.getName());
             }
         }
     }
@@ -136,17 +136,17 @@ public class BackpackManager implements Listener
         {
             if (sender != forUser)
             {
-                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                sender.sendTranslated(, "&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
                 return;
             }
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
+            sender.sendTranslated(, "&cYou don't have a backpack named &6%s&c in this world!", name);
             return;
         }
         backPack.addItem(itemToGive);
-        sender.sendTranslated("&aItem added to backpack!");
+        sender.sendTranslated(, "&aItem added to backpack!");
         if (sender != forUser && forUser.isOnline())
         {
-            forUser.sendTranslated("&aYou received items in your backpack &6%s", name);
+            forUser.sendTranslated(, "&aYou received items in your backpack &6%s", name);
         }
     }
 
@@ -159,17 +159,17 @@ public class BackpackManager implements Listener
         {
             if (sender != forUser)
             {
-                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                sender.sendTranslated(, "&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
                 return;
             }
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
+            sender.sendTranslated(, "&cYou don't have a backpack named &6%s&c in this world!", name);
             return;
         }
         if (pages != null)
         {
             if (backPack.data.contents.size() > pages * backPack.data.size)
             {
-                sender.sendTranslated("&cCould not change page amount! Not enough space!");
+                sender.sendTranslated(, "&cCould not change page amount! Not enough space!");
             }
             else
             {
@@ -184,14 +184,14 @@ public class BackpackManager implements Listener
                     }
                 }
                 backPack.data.pages = pages;
-                sender.sendTranslated("&aPages changed!");
+                sender.sendTranslated(, "&aPages changed!");
             }
         }
         if (size != null)
         {
             if (backPack.data.contents.size() > size * backPack.data.pages)
             {
-                sender.sendTranslated("&cCould not change page size! Not enough space!");
+                sender.sendTranslated(, "&cCould not change page size! Not enough space!");
             }
             else
             {
@@ -206,7 +206,7 @@ public class BackpackManager implements Listener
                     }
                 }
                 backPack.data.size = size;
-                sender.sendTranslated("&aPageSize changed!");
+                sender.sendTranslated(, "&aPageSize changed!");
             }
         }
         if (blockInput != null)
@@ -214,11 +214,11 @@ public class BackpackManager implements Listener
             backPack.data.allowItemsIn = !blockInput;
             if (blockInput)
             {
-                sender.sendTranslated("&aItems are not allowed to go in!");
+                sender.sendTranslated(, "&aItems are not allowed to go in!");
             }
             else
             {
-                sender.sendTranslated("&aItems are allowed to go in!");
+                sender.sendTranslated(, "&aItems are allowed to go in!");
             }
         }
         backPack.data.save();

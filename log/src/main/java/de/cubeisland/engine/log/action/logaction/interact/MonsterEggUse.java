@@ -55,9 +55,7 @@ public class MonsterEggUse extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         EntityType entityType = EntityType.fromId(logEntry.getItemData().dura); // Dura is entityTypeId
-        user.sendTranslated("%s&2%s &aspawned &6%s%s",
-                            time, logEntry.getCauserUser().getDisplayName(),
-                            new EntityData(entityType,null),loc);
+        user.sendTranslated(, "%s&2%s &aspawned &6%s%s", time, logEntry.getCauserUser().getDisplayName(), new EntityData(entityType,null), loc);
     }
 
     @Override

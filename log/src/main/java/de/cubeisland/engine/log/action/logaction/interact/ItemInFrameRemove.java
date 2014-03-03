@@ -66,26 +66,22 @@ public class ItemInFrameRemove extends SimpleLogActionType
         {
             if (logEntry.hasAttached())
             {
-                user.sendTranslated("%s&aSomething removed &6%d %s&a from itemframes%s",
-                                    time, logEntry.getAttached().size() +1, itemData, loc);
+                user.sendTranslated(, "%s&aSomething removed &6%d %s&a from itemframes%s", time, logEntry.getAttached().size() +1, itemData, loc);
             }
             else
             {
-                user.sendTranslated("%s&aaSomething removed &6%s&a from an itemframe%s",
-                                    time, itemData, loc);
+                user.sendTranslated(, "%s&aaSomething removed &6%s&a from an itemframe%s", time, itemData, loc);
             }
         }
         else
         {
             if (logEntry.hasAttached())
             {
-                user.sendTranslated("%s&2%s&a removed &6%d %s&a from itemframes%s",
-                                    time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() +1, itemData, loc);
+                user.sendTranslated(, "%s&2%s&a removed &6%d %s&a from itemframes%s", time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() +1, itemData, loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s&a removed &6%s&a from an itemframe%s",
-                                    time, logEntry.getCauserUser().getName(), itemData, loc);
+                user.sendTranslated(, "%s&2%s&a removed &6%s&a from an itemframe%s", time, logEntry.getCauserUser().getName(), itemData, loc);
             }
         }
     }

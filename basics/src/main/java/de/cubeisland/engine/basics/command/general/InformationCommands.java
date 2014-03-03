@@ -147,7 +147,7 @@ public class InformationCommands
             int direction = Math.round(((User)sender).getLocation().getYaw() + 180f + 360f) % 360;
             String dir;
             dir = Direction.matchDirection(direction).name();
-            sender.sendTranslated("&eYou are looking to &6%s&e!", sender.translate(dir));
+            sender.sendTranslated(, "&eYou are looking to &6%s&e!", sender.composeMessage(, dir));
         }
         else
         {

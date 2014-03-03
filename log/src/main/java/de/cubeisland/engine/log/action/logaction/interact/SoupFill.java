@@ -58,8 +58,7 @@ public class SoupFill extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &amade soup with a mooshroom",
-                            time, logEntry.getCauserUser().getDisplayName(),loc);
+        user.sendTranslated(, "%s&2%s &amade soup with a mooshroom", time, logEntry.getCauserUser().getDisplayName(), loc);
     }
 
     @Override

@@ -110,7 +110,7 @@ public final class RulebookManager
             ItemStack ruleBook = new ItemStack(Material.WRITTEN_BOOK);
             BookMeta meta = ((BookMeta) ruleBook.getItemMeta());
             meta.setAuthor(Bukkit.getServerName());
-            meta.setTitle(this.module.getCore().getI18n().translate(locale, "rulebook", "Rulebook"));
+            meta.setTitle(this.module.getCore().getI18n().translate(locale, "rulebook"));
             meta.setPages(this.getPages(locale));
 
             List<String> lore = new ArrayList<>();

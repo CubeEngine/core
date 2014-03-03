@@ -195,37 +195,35 @@ public class RepairBlock
             String format = economy.format(price);
             if (this.config.breakPercentage > 0)
             {
-                user.sendTranslated("&cItems will break with a chance of &6%.2f%%",this.config.breakPercentage);
+                user.sendTranslated(, "&cItems will break with a chance of &6%.2f%%", this.config.breakPercentage);
             }
             if (this.config.failPercentage > 0)
             {
-                user.sendTranslated("&cItems will not repair with a chance of &6%.2f%%",this.config.failPercentage);
+                user.sendTranslated(, "&cItems will not repair with a chance of &6%.2f%%", this.config.failPercentage);
             }
             if (this.config.looseEnchantmentsPercentage > 0)
             {
-                user.sendTranslated("&cItems will loose all enchantments with a chance of &6%.2f%%",this.config.looseEnchantmentsPercentage);
+                user.sendTranslated(, "&cItems will loose all enchantments with a chance of &6%.2f%%", this.config.looseEnchantmentsPercentage);
             }
             if (this.config.costPercentage > 100)
             {
-                user.sendTranslated("&eThe repair would cost &b%s &e(&4+%.2f%%&e)",
-                        format, this.config.costPercentage - 100);
+                user.sendTranslated(, "&eThe repair would cost &b%s &e(&4+%.2f%%&e)", format, this.config.costPercentage - 100);
             }
             else if (this.config.costPercentage < 100)
             {
-                user.sendTranslated("&eThe repair would cost &b%s &e(&2-%.2f%%&e)",
-                                    format, 100 - this.config.costPercentage);
+                user.sendTranslated(, "&eThe repair would cost &b%s &e(&2-%.2f%%&e)", format, 100 - this.config.costPercentage);
             }
             else
             {
-                user.sendTranslated("&eThe repair would cost &b%s", format);
+                user.sendTranslated(, "&eThe repair would cost &b%s", format);
             }
-            user.sendTranslated("&eYou currently have &b%s", economy.format(user.getLocale(), economy.getBalance(user.getName())));
-            user.sendTranslated("&bLeftclick&a again to repair all your damaged items.");
+            user.sendTranslated(, "&eYou currently have &b%s", economy.format(user.getLocale(), economy.getBalance(user.getName())));
+            user.sendTranslated(, "&bLeftclick&a again to repair all your damaged items.");
             return new RepairRequest(this, inventory, items, price);
         }
         else
         {
-            user.sendTranslated("&cThere are no items to repair!");
+            user.sendTranslated(, "&cThere are no items to repair!");
         }
         return null;
     }
@@ -284,32 +282,32 @@ public class RepairBlock
             }
             if (itemsBroken)
             {
-                user.sendTranslated("&cYou broke some of your items when repairing!");
+                user.sendTranslated(, "&cYou broke some of your items when repairing!");
                 user.playSound(user.getLocation(),Sound.ANVIL_BREAK,1,0);
             }
             if (repairFail)
             {
-                user.sendTranslated("&cYou failed to repair some of your items!");
+                user.sendTranslated(, "&cYou failed to repair some of your items!");
                 user.playSound(user.getLocation(),Sound.BURP,1,0);
             }
             if (looseEnch)
             {
-                user.sendTranslated("&cYou feel that some of your items lost their magical power!");
+                user.sendTranslated(, "&cYou feel that some of your items lost their magical power!");
                 user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
             }
-            user.sendTranslated("&aYou paid &b%s&a to repair your items!", economy.format(price));
+            user.sendTranslated(, "&aYou paid &b%s&a to repair your items!", economy.format(price));
             if (this.config.costPercentage > 100)
             {
-                user.sendTranslated("&aThats %.2f%% of the normal price!", this.config.costPercentage);
+                user.sendTranslated(, "&aThats %.2f%% of the normal price!", this.config.costPercentage);
             }
             else if (this.config.costPercentage < 100)
             {
-                user.sendTranslated("&aThats %.2f%% less then the normal price", 100 - this.config.costPercentage);
+                user.sendTranslated(, "&aThats %.2f%% less then the normal price", 100 - this.config.costPercentage);
             }
         }
         else
         {
-           user.sendTranslated("&cYou don't have enough money to repair these items!");
+           user.sendTranslated(, "&cYou don't have enough money to repair these items!");
         }
     }
 

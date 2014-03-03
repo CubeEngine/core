@@ -141,7 +141,7 @@ public class ConfirmManager
         @Override
         public void run()
         {
-            sender.sendTranslated("&cYour confirmation timed out....");
+            sender.sendTranslated(, "&cYour confirmation timed out....");
             pendingConfirmations.remove(sender);
         }
     }

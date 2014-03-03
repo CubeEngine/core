@@ -299,7 +299,7 @@ public class LockerCommands extends ContainerCommand
     {
         if (!(sender instanceof User))
         {
-            sender.sendTranslated("&cThis command can only be used ingame");
+            sender.sendTranslated(, "&cThis command can only be used ingame");
             return true;
         }
         return false;

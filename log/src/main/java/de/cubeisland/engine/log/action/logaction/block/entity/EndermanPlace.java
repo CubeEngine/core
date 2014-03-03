@@ -55,13 +55,11 @@ public class EndermanPlace extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&6Enderman &aplaced &6%s&6 x%d%s!",
-                time, logEntry.getNewBlock().toString(), logEntry.getAttached().size()+1, loc);
+            user.sendTranslated(, "%s&6Enderman &aplaced &6%s&6 x%d%s!", time, logEntry.getNewBlock().toString(), logEntry.getAttached().size()+1, loc);
         }
         else
         {
-            user.sendTranslated("%s&6Enderman &aplaced &6%s%s!",
-                time, logEntry.getNewBlock().toString(), loc);
+            user.sendTranslated(, "%s&6Enderman &aplaced &6%s%s!", time, logEntry.getNewBlock().toString(), loc);
         }
     }
 

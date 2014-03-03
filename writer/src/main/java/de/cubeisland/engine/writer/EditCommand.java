@@ -72,7 +72,7 @@ public class EditCommand
             item.setItemMeta(meta);
             item.setType(Material.BOOK_AND_QUILL);
 
-            user.sendTranslated("Your book is now unsigned and ready to be edited");
+            user.sendTranslated(, "Your book is now unsigned and ready to be edited");
         }
         else
         {
@@ -104,11 +104,11 @@ public class EditCommand
                     sign.setLine(i, lines[i]);
                 }
                 sign.update();
-                user.sendTranslated("The sign has been changed");
+                user.sendTranslated(, "The sign has been changed");
             }
             else
             {
-                user.sendTranslated("&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away");
+                user.sendTranslated(, "&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away");
             }
         }
     }

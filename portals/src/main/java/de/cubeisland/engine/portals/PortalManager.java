@@ -96,7 +96,7 @@ public class PortalManager implements Listener
                 attachment.setInPortal(true);
                 if (attachment.isDebug())
                 {
-                    user.sendTranslated("&e[Portals] Debug: &aTeleported into portal: &6%s", portal.getName());
+                    user.sendTranslated(, "&e[Portals] Debug: &aTeleported into portal: &6%s", portal.getName());
                 }
                 return;
             }
@@ -190,11 +190,11 @@ public class PortalManager implements Listener
                         {
                             if (attachment.isInPortal())
                             {
-                                user.sendTranslated("&e[Portals] Debug: &aMove in portal: &6%s", portal.getName());
+                                user.sendTranslated(, "&e[Portals] Debug: &aMove in portal: &6%s", portal.getName());
                             }
                             else
                             {
-                                user.sendTranslated("&e[Portals] Debug: &aEntered portal: &6%s", portal.getName());
+                                user.sendTranslated(, "&e[Portals] Debug: &aEntered portal: &6%s", portal.getName());
                                 portal.showInfo(user);
                                 attachment.setInPortal(true);
                             }

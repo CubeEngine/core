@@ -67,15 +67,11 @@ public class EntityForm extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&6%s &aformed &6%s&6 x%d%s",
-                                time,logEntry.getCauserEntity(),
-                                logEntry.getNewBlock(), logEntry.getAttached().size() +1, loc);
+            user.sendTranslated(, "%s&6%s &aformed &6%s&6 x%d%s", time, logEntry.getCauserEntity(), logEntry.getNewBlock(), logEntry.getAttached().size() +1, loc);
         }
         else
         {
-            user.sendTranslated("%s&6%s &aformed &6%s%s",
-                                time, logEntry.getCauserEntity(),
-                                logEntry.getNewBlock(), loc);
+            user.sendTranslated(, "%s&6%s &aformed &6%s%s", time, logEntry.getCauserEntity(), logEntry.getNewBlock(), loc);
         }
     }
 

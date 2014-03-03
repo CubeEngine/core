@@ -117,7 +117,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                throw new IncorrectUsageException(context.getSender().translate("&cIf not used ingame you have to specify a world!"));
+                throw new IncorrectUsageException(context.getSender().composeMessage(, "&cIf not used ingame you have to specify a world!"));
             }
             world = sender.getWorld();
         }

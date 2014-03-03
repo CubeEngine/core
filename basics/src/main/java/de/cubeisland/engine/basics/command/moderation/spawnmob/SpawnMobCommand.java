@@ -112,9 +112,11 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = context.getSender().translate("%s &ariding &e%s", Match.entity().getNameFor(entitySpawned.getType()), message);
+                message = context.getSender().composeMessage(, "%s &ariding &e%s", Match.entity()
+                                                                                        .getNameFor(entitySpawned
+                                                                                                        .getType()), message);
             }
-            message = context.getSender().translate("&aSpawned %d &e%s!", amount, message);
+            message = context.getSender().composeMessage(, "&aSpawned %d &e%s!", amount, message);
             context.sendMessage(message);
         }
     }

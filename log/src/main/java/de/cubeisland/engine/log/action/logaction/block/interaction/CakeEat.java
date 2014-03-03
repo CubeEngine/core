@@ -55,13 +55,11 @@ public class CakeEat extends BlockActionType
         int piecesLeft = 6 - logEntry.getNewBlock().data;
         if (piecesLeft == 0)
         {
-            user.sendTranslated("%s&aThe cake is a lie%s&a! Ask &2%s&a he knows it!",
-                                time,loc,logEntry.getCauserUser().getDisplayName());
+            user.sendTranslated(, "%s&aThe cake is a lie%s&a! Ask &2%s&a he knows it!", time, loc, logEntry.getCauserUser().getDisplayName());
         }
         else
         {
-            user.sendTranslated("%s&2%s &aate a piece of cake%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(, "%s&2%s &aate a piece of cake%s", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

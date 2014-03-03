@@ -294,10 +294,10 @@ public abstract class AbstractUserManager implements UserManager
         {
             if (perm == null || perm.isAuthorized(user))
             {
-                user.sendTranslated(message, params);
+                user.sendTranslated(, message, params);
             }
         }
-        this.core.getCommandManager().getConsoleSender().sendTranslated(message, params);
+        this.core.getCommandManager().getConsoleSender().sendTranslated(, message, params);
     }
 
     public void broadcastMessage(String message, Object... args)
@@ -315,7 +315,7 @@ public abstract class AbstractUserManager implements UserManager
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(starColor.toString() + "* &2%s &f%s", name, message);
+            user.sendTranslated(, starColor.toString() + "* &2%s &f%s", name, message);
         }
     }
 
@@ -394,7 +394,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUsers.values())
         {
-            user.kickPlayer(user.translate(message, params));
+            user.kickPlayer(user.composeMessage(, message, params));
         }
     }
 

@@ -74,7 +74,7 @@ public class EcoBankCommands extends ContainerCommand
                 {
                     if (target.isOwner(user))
                     {
-                        user.sendTranslated("&2%s&a granted &6%s&a to your bank &6%s&a!", context.getSender().getName(), format, bankString);
+                        user.sendTranslated(, "&2%s&a granted &6%s&a to your bank &6%s&a!", context.getSender().getName(), format, bankString);
                     }
                 }
             }
@@ -117,7 +117,7 @@ public class EcoBankCommands extends ContainerCommand
                 {
                     if (target.isOwner(onlineUser))
                     {
-                        onlineUser.sendTranslated("&2%s&a charged your bank &6%s&a for &6%s&a!", context.getSender().getName(), bankString, format);
+                        onlineUser.sendTranslated(, "&2%s&a charged your bank &6%s&a for &6%s&a!", context.getSender().getName(), bankString, format);
                     }
                 }
             }
@@ -152,7 +152,7 @@ public class EcoBankCommands extends ContainerCommand
                 {
                     if (target.isOwner(onlineUser))
                     {
-                        onlineUser.sendTranslated("&2%s&a resetted the money of your bank &6%s&a to &6%s&a!", context.getSender().getName(), bankString, format);
+                        onlineUser.sendTranslated(, "&2%s&a resetted the money of your bank &6%s&a to &6%s&a!", context.getSender().getName(), bankString, format);
                     }
                 }
             }
@@ -194,7 +194,7 @@ public class EcoBankCommands extends ContainerCommand
                 {
                     if (target.isOwner(onlineUser))
                     {
-                        onlineUser.sendTranslated("&2%s&a set the money of your bank &6%s&a to &6%s&a!", context.getSender().getName(), bankString, format);
+                        onlineUser.sendTranslated(, "&2%s&a set the money of your bank &6%s&a to &6%s&a!", context.getSender().getName(), bankString, format);
                     }
                 }
             }
@@ -233,7 +233,7 @@ public class EcoBankCommands extends ContainerCommand
             {
                 if (account.isOwner(onlineUser))
                 {
-                    onlineUser.sendTranslated("&2%s&a scaled the money of your bank &6%s&a by &6%f&a!", context.getSender().getName(), bankString, factor);
+                    onlineUser.sendTranslated(, "&2%s&a scaled the money of your bank &6%s&a by &6%f&a!", context.getSender().getName(), bankString, factor);
                 }
             }
         }

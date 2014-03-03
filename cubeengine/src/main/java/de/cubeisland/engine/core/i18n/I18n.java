@@ -255,18 +255,18 @@ public class I18n implements Cleanable
      */
     public String translate(String message, Object... params)
     {
-        return this.translate(Locale.getDefault(), message, params);
+        return this.translate(Locale.getDefault(), message);
     }
 
     /**
      * This method translates a messages
      *
+     *
      * @param locale the language to translate to
      * @param message  the message to translate
-     * @param params   the parameters to insert into the language after translation
      * @return the translated language
      */
-    public String translate(Locale locale, String message, Object... params)
+    public String translate(Locale locale, String message)
     {
         if (locale == null)
         {

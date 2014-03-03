@@ -54,13 +54,11 @@ public class LavaBucket  extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&2%s &aemptied &6&d&a lava-buckets%s",
-                               time, logEntry.getCauserUser().getDisplayName(),amount, loc);
+            user.sendTranslated(, "%s&2%s &aemptied &6&d&a lava-buckets%s", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aemptied a lava-bucket%s",
-                                time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(, "%s&2%s &aemptied a lava-bucket%s", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

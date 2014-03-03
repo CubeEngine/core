@@ -118,40 +118,34 @@ public class BlockShift extends BlockActionType
         String times = "";
         if (logEntry.hasAttached())
         {
-            times = String.format(user.translate(" &6%d times"), logEntry.getAttached().size() + 1);
+            times = String.format(user.composeMessage(, " &6%d times"), logEntry.getAttached().size() + 1);
         }
         if (logEntry.getOldBlock().material == AIR )
         {
-            user.sendTranslated("%s&aA piston moved &6%s&a in place%s%s",
-                                time,logEntry.getNewblock(), times ,loc);
+            user.sendTranslated(, "%s&aA piston moved &6%s&a in place%s%s", time, logEntry.getNewblock(), times, loc);
         }
         else if (logEntry.getOldBlock().material == PISTON_EXTENSION)
         {
             if (logEntry.getNewBlock().material == AIR)
             {
-                user.sendTranslated("%s&aA piston retracted%s%s",
-                                    time,times ,loc);
+                user.sendTranslated(, "%s&aA piston retracted%s%s", time, times, loc);
             }
             else
             {
-                user.sendTranslated("%s&aA piston retracted a moving &6%s&a in place%s%s",
-                                    time, logEntry.getNewBlock(), times ,loc);
+                user.sendTranslated(, "%s&aA piston retracted a moving &6%s&a in place%s%s", time, logEntry.getNewBlock(), times, loc);
             }
         }
         else if (logEntry.getNewBlock().material == PISTON_EXTENSION)
         {
-            user.sendTranslated("%s&6%s&a got moved away by a Piston%s%s",
-                                time,logEntry.getOldBlock(),times,loc);
+            user.sendTranslated(, "%s&6%s&a got moved away by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
         }
         else if (logEntry.getNewBlock().material == AIR)
         {
-            user.sendTranslated("%s&6%s&a got retracted by a Piston%s%s",
-                                time,logEntry.getOldBlock(),times,loc);
+            user.sendTranslated(, "%s&6%s&a got retracted by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
         }
         else
         {
-            user.sendTranslated("%s&aA piston moved &6%s&a in to replace &6%s%s%s",
-                                time,logEntry.getOldBlock(), logEntry.getNewblock(), times ,loc);
+            user.sendTranslated(, "%s&aA piston moved &6%s&a in to replace &6%s%s%s", time, logEntry.getOldBlock(), logEntry.getNewblock(), times, loc);
         }
     }
 

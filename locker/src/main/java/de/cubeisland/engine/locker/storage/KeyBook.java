@@ -71,7 +71,7 @@ public class KeyBook
             // Validate book
             if (this.isValidFor(lock))
             {
-                if (effectLocation != null) currentHolder.sendTranslated("&aAs you approach with your KeyBook the magic lock disappears!");
+                if (effectLocation != null) currentHolder.sendTranslated(, "&aAs you approach with your KeyBook the magic lock disappears!");
                 currentHolder.playSound(effectLocation, Sound.PISTON_EXTEND, 1, 2);
                 currentHolder.playSound(effectLocation, Sound.PISTON_EXTEND, 1, (float)1.5);
                 if (effectLocation != null) lock.notifyKeyUsage(currentHolder);
@@ -79,7 +79,7 @@ public class KeyBook
             }
             else
             {
-                currentHolder.sendTranslated("&cYou try to open the container with your KeyBook\n" +
+                currentHolder.sendTranslated(, "&cYou try to open the container with your KeyBook\n" +
                                         "but forcefully get pushed away!");
                 this.invalidate();
                 currentHolder.playSound(effectLocation, Sound.GHAST_SCREAM, 1, 1);
@@ -91,7 +91,7 @@ public class KeyBook
         }
         else
         {
-            currentHolder.sendTranslated("&eYou try to open the container with your KeyBook but nothing happens!");
+            currentHolder.sendTranslated(, "&eYou try to open the container with your KeyBook but nothing happens!");
             currentHolder.playSound(effectLocation, Sound.BLAZE_HIT, 1, 1);
             currentHolder.playSound(effectLocation, Sound.BLAZE_HIT, 1, (float)0.8);
             return false;
@@ -103,11 +103,11 @@ public class KeyBook
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(ChatFormat.parseFormats("&4Broken KeyBook"));
         itemMeta.setLore(Arrays.asList(ChatFormat
-               .parseFormats(currentHolder.translate("&eThis KeyBook")), ChatFormat
-               .parseFormats(currentHolder.translate("&elooks old and")), ChatFormat
-               .parseFormats(currentHolder.translate("&eused up. It")), ChatFormat
-               .parseFormats(currentHolder.translate("&ewont let you")), ChatFormat
-               .parseFormats(currentHolder.translate("&eopen any containers!"))));
+               .parseFormats(currentHolder.composeMessage(, "&eThis KeyBook")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(, "&elooks old and")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(, "&eused up. It")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(, "&ewont let you")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(, "&eopen any containers!"))));
         item.setItemMeta(itemMeta);
         item.setType(Material.PAPER);
         currentHolder.updateInventory();

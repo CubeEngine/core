@@ -56,23 +56,23 @@ public class HideCommands implements CommandHolder
             this.module.hidePlayer(target);
             if (target == sender)
             {
-                target.sendTranslated("&aYou are now hidden!");
+                target.sendTranslated(, "&aYou are now hidden!");
             }
             else
             {
-                target.sendTranslated("&aYou were hidden by &e%s&a!", sender.getDisplayName());
-                sender.sendTranslated("&a%s&a is now hidden!", target.getDisplayName());
+                target.sendTranslated(, "&aYou were hidden by &e%s&a!", sender.getDisplayName());
+                sender.sendTranslated(, "&a%s&a is now hidden!", target.getDisplayName());
             }
         }
         else
         {
             if (target == sender)
             {
-                target.sendTranslated("&eYou are already hidden!");
+                target.sendTranslated(, "&eYou are already hidden!");
             }
             else
             {
-                sender.sendTranslated("&e%s&a is already hidden!", target.getDisplayName());
+                sender.sendTranslated(, "&e%s&a is already hidden!", target.getDisplayName());
             }
         }
     }
@@ -91,23 +91,23 @@ public class HideCommands implements CommandHolder
             this.module.showPlayer(target);
             if (target == sender)
             {
-                target.sendTranslated("&aYou are now visible!");
+                target.sendTranslated(, "&aYou are now visible!");
             }
             else
             {
-                target.sendTranslated("&aYou were unhidden by &e%s&a!", sender.getDisplayName());
-                sender.sendTranslated("&a%s&a is now visible!", target.getDisplayName());
+                target.sendTranslated(, "&aYou were unhidden by &e%s&a!", sender.getDisplayName());
+                sender.sendTranslated(, "&a%s&a is now visible!", target.getDisplayName());
             }
         }
         else
         {
             if (target == sender)
             {
-                target.sendTranslated("&eYou are already visible!");
+                target.sendTranslated(, "&eYou are already visible!");
             }
             else
             {
-                sender.sendTranslated("&e%s&a is already visible!", target.getDisplayName());
+                sender.sendTranslated(, "&e%s&a is already visible!", target.getDisplayName());
             }
         }
     }
@@ -180,7 +180,7 @@ public class HideCommands implements CommandHolder
             }
             else
             {
-                target.sendTranslated("&aYou can now see hidden users! (Enabled by &e%s&a)", sender.getDisplayName());
+                target.sendTranslated(, "&aYou can now see hidden users! (Enabled by &e%s&a)", sender.getDisplayName());
                 context.sendTranslated("&e%s&a can now see hidden users!", target.getDisplayName());
             }
         }
@@ -192,7 +192,7 @@ public class HideCommands implements CommandHolder
             }
             else
             {
-                target.sendTranslated("&aYou can no longer see hidden users! (Disabled by &e%s&a)", sender.getDisplayName());
+                target.sendTranslated(, "&aYou can no longer see hidden users! (Disabled by &e%s&a)", sender.getDisplayName());
                 context.sendTranslated("&e%s&a can no longer see hidden users!", target.getDisplayName());
             }
         }

@@ -51,7 +51,7 @@ public class LavaIgnite extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&aFire got set by lava%s",time,loc);
+        user.sendTranslated(, "%s&aFire got set by lava%s", time, loc);
     }
 
 

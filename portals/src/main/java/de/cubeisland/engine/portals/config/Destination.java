@@ -69,7 +69,7 @@ public class Destination
             {
                 if (entity instanceof User)
                 {
-                    ((User)entity).sendTranslated("&cDestination portal &6%s&c does not exist!", portal);
+                    ((User)entity).sendTranslated(, "&cDestination portal &6%s&c does not exist!", portal);
                 }
                 return;
             }
@@ -88,7 +88,7 @@ public class Destination
         {
             if (entity instanceof User)
             {
-                ((User)entity).sendTranslated("&cYou have to leave your current vehicle to pass a portal!");
+                ((User)entity).sendTranslated(, "&cYou have to leave your current vehicle to pass a portal!");
             }
             return;
         }

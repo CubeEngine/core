@@ -80,8 +80,7 @@ public class XpPickup extends SimpleLogActionType
                 amount += entry.getAdditional().iterator().next().asInt();
             }
         }
-        user.sendTranslated("%s&2%s&a earned &6%d experience%s",
-                            time, logEntry.getCauserUser().getDisplayName(), amount,loc);
+        user.sendTranslated(, "%s&2%s&a earned &6%d experience%s", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
     }
 
     @Override

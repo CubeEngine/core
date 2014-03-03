@@ -89,7 +89,7 @@ public class InventoryCommands
             {
                 if (!(context.hasFlag("q") && module.perms().COMMAND_INVSEE_QUIET.isAuthorized(context.getSender())))
                 {
-                    user.sendTranslated("&2%s&e is looking into your inventory.", sender.getName());
+                    user.sendTranslated(, "&2%s&e is looking into your inventory.", sender.getName());
                 }
             }
             InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(inv, sender);
@@ -138,7 +138,7 @@ public class InventoryCommands
                 sender.getInventory().setHelmet(null);
             }
             sender.get(BasicsAttachment.class).setStashedArmor(armorToStash);
-            sender.sendTranslated("&aSwapped stashed Inventory!");
+            sender.sendTranslated(, "&aSwapped stashed Inventory!");
             return;
         }
         context.sendTranslated("&cYeah you better put it away!");
@@ -158,7 +158,7 @@ public class InventoryCommands
             target = context.getArg(0, User.class);
             if (target == null)
             {
-                sender.sendTranslated("&cThe specified user was not found!");
+                sender.sendTranslated(, "&cThe specified user was not found!");
                 return;
             }
         }
@@ -168,7 +168,7 @@ public class InventoryCommands
         }
         else
         {
-            sender.sendTranslated("&cThat awkward moment when you realize you do not have an inventory!");
+            sender.sendTranslated(, "&cThat awkward moment when you realize you do not have an inventory!");
             return;
         }
         if (sender != target && !module.perms().COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
@@ -195,7 +195,7 @@ public class InventoryCommands
         target.updateInventory();
         if (sender == target)
         {
-            sender.sendTranslated("&aYour inventory has been cleared!");
+            sender.sendTranslated(, "&aYour inventory has been cleared!");
         }
         else
         {
@@ -203,10 +203,10 @@ public class InventoryCommands
             {
                 if (!(module.perms().COMMAND_CLEARINVENTORY_QUIET.isAuthorized(sender) && context.hasFlag("q"))) // quiet
                 {
-                    target.sendTranslated("&eYour inventory has been cleared by &6%s&e!", sender.getName());
+                    target.sendTranslated(, "&eYour inventory has been cleared by &6%s&e!", sender.getName());
                 }
             }
-            sender.sendTranslated("&aThe inventory of &6%s&a has been cleared!", target.getName());
+            sender.sendTranslated(, "&aThe inventory of &6%s&a has been cleared!", target.getName());
         }
     }
 }

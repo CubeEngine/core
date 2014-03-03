@@ -223,7 +223,7 @@ public class MovementCommands
                     this.module.getConfiguration().navigation.thru.maxWallThickness);
             if (loc == null)
             {
-                sender.sendTranslated("&cNothing to pass through!");
+                sender.sendTranslated(, "&cNothing to pass through!");
                 return;
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true))
@@ -257,7 +257,7 @@ public class MovementCommands
                 {
                     if (TeleportCommands.teleport(sender, loc, safe, true, true))
                     {
-                        sender.sendTranslated("&aTeleported to your death point!");
+                        sender.sendTranslated(, "&aTeleported to your death point!");
                     }
                     else
                     {
@@ -276,7 +276,7 @@ public class MovementCommands
                 }
                 if (TeleportCommands.teleport(sender, loc, safe, true, true))
                 {
-                    sender.sendTranslated("&aTeleported to your last location!");
+                    sender.sendTranslated(, "&aTeleported to your last location!");
                 }
                 return;
             }
@@ -315,7 +315,7 @@ public class MovementCommands
             if (TeleportCommands.teleport(user, loc, true, false, true))
             {
                 context.sendTranslated("&aYou just placed &2%s &awhere you were looking!", user.getName());
-                user.sendTranslated("&aYou were placed somewhere!");
+                user.sendTranslated(, "&aYou were placed somewhere!");
             }
             return;
         }

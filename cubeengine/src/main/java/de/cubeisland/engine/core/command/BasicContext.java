@@ -89,7 +89,7 @@ public class BasicContext implements CommandContext
     @Override
     public void sendTranslated(String message, Object... args)
     {
-        this.sender.sendTranslated(message, args);
+        this.sender.sendTranslated(, message, args);
     }
 
     @Override

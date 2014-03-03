@@ -95,7 +95,7 @@ public class TeleportListener implements Listener
                             loc = block.getLocation().add(0.5, 1, 0.5);
                         }
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                        user.sendTranslated("&ePoof!");
+                        user.sendTranslated(, "&ePoof!");
                         event.setCancelled(true);
                     }
                     return;
@@ -108,12 +108,12 @@ public class TeleportListener implements Listener
                                 this.module.getConfiguration().navigation.thru.maxWallThickness);
                         if (loc == null)
                         {
-                            user.sendTranslated("&cNothing to pass through!");
+                            user.sendTranslated(, "&cNothing to pass through!");
                             return;
                         }
                         loc.setY(loc.getY() + 1);
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                        user.sendTranslated("&eYou passed the wall");
+                        user.sendTranslated(, "&eYou passed the wall");
                         event.setCancelled(true);
                     }
             }

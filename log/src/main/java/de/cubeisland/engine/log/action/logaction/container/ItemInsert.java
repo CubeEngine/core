@@ -70,23 +70,15 @@ public class ItemInsert extends SimpleLogActionType
         }
         if (amount > 0)
         {
-            user.sendTranslated("%s&2%s&a placed &6%d %s&a into &6%s%s",
-                                time, logEntry.getCauserUser().getName(),
-                                amount,itemData,
-                                logEntry.getContainerTypeFromBlock(),loc);
+            user.sendTranslated(, "%s&2%s&a placed &6%d %s&a into &6%s%s", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else if (amount < 0)
         {
-            user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s",
-                                time, logEntry.getCauserUser().getName(),
-                                -amount,itemData,
-                                logEntry.getContainerTypeFromBlock(),loc);
+            user.sendTranslated(, "%s&2%s&a took &6%d %s&a out of &6%s%s", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a did not change the amount of &6%s&a in &6%s%s",
-                                time , logEntry.getCauserUser().getName(), itemData,
-                                logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(, "%s&2%s&a did not change the amount of &6%s&a in &6%s%s", time, logEntry.getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
     }
 
@@ -121,14 +113,14 @@ public class ItemInsert extends SimpleLogActionType
                 HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
-                    attachment.getHolder().sendTranslated("&cCould not rollback an item-insert!");
+                    attachment.getHolder().sendTranslated(, "&cCould not rollback an item-insert!");
                     return false;
                 }
                 return true;
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated("&cInvalid Container to rollback item-insert!");
+                attachment.getHolder().sendTranslated(, "&cInvalid Container to rollback item-insert!");
             }
             return false;
         }
@@ -174,14 +166,14 @@ public class ItemInsert extends SimpleLogActionType
                 HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
-                    attachment.getHolder().sendTranslated("&cCould not rollback an item-insert!");
+                    attachment.getHolder().sendTranslated(, "&cCould not rollback an item-insert!");
                     return false;
                 }
                 return true;
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated("&cInvalid Container to rollback item-insert!");
+                attachment.getHolder().sendTranslated(, "&cInvalid Container to rollback item-insert!");
             }
             return false;
         }

@@ -195,17 +195,17 @@ public class WarpCommand extends ContainerCommand
         Warp warp = telePointManager.getWarp(user, context.getString(0));
         if (warp == null)
         {
-            user.sendTranslated("&cThat warp could not be found!");
+            user.sendTranslated(, "&cThat warp could not be found!");
             return;
         }
         if (!warp.isOwner(user))
         {
-            user.sendTranslated("&cYou are not allowed to edit that warp!");
+            user.sendTranslated(, "&cYou are not allowed to edit that warp!");
             return;
         }
         warp.setLocation(user.getLocation());
         warp.update();
-        user.sendTranslated("&aThe warp is now moved to your current location");
+        user.sendTranslated(, "&aThe warp is now moved to your current location");
     }
 
     @Command(permDefault = PermDefault.TRUE, desc = "Search for a warp", min = 1, max = 2)

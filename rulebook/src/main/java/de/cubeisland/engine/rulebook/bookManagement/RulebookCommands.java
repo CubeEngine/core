@@ -143,10 +143,10 @@ public class RulebookCommands extends ContainerCommand
         }
 
         user.getInventory().addItem(this.rulebookManager.getBook(locale));
-        user.sendTranslated("&aLot's of fun with your rulebook.");
+        user.sendTranslated(, "&aLot's of fun with your rulebook.");
         if(!books.isEmpty())
         {
-            user.sendTranslated("&aYour old was removed");
+            user.sendTranslated(, "&aYour old was removed");
         }
     }
 

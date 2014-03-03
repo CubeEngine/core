@@ -279,7 +279,7 @@ public class LookupCommands
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated("&6%s&c is not a valid time value!", beforeString);
+            user.sendTranslated(, "&6%s&c is not a valid time value!", beforeString);
             return false;
         }
     }
@@ -301,7 +301,7 @@ public class LookupCommands
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated("&6%s&c is not a valid time value!", sinceString);
+            user.sendTranslated(, "&6%s&c is not a valid time value!", sinceString);
             return false;
         }
     }
@@ -311,13 +311,13 @@ public class LookupCommands
         if (worldString == null) return true;
         if (hasRadius)
         {
-            user.sendTranslated("&cYou cannot define a radius or selection and a world.");
+            user.sendTranslated(, "&cYou cannot define a radius or selection and a world.");
             return false;
         }
         World world = user.getServer().getWorld(worldString);
         if (world == null)
         {
-            user.sendTranslated("&cUnkown world: &6%s", worldString);
+            user.sendTranslated(, "&cUnkown world: &6%s", worldString);
             return false;
         }
         params.setWorld(world);
@@ -332,14 +332,14 @@ public class LookupCommands
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
             if (!logAttachment.applySelection(params))
             {
-                user.sendTranslated("&cYou have to select a region first!");
+                user.sendTranslated(, "&cYou have to select a region first!");
                 if (module.hasWorldEdit())
                 {
-                    user.sendTranslated("&eUse worldedit to select a cuboid region!");
+                    user.sendTranslated(, "&eUse worldedit to select a cuboid region!");
                 }
                 else
                 {
-                    user.sendTranslated("&eUse this selection wand.");
+                    user.sendTranslated(, "&eUse this selection wand.");
                     LogCommands.giveSelectionTool(user);
                 }
                 return false;
@@ -358,8 +358,8 @@ public class LookupCommands
                 radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
                 if (radiusUser == null)
                 {
-                    user.sendTranslated("&cInvalid radius/location selection");
-                    user.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    user.sendTranslated(, "&cInvalid radius/location selection");
+                    user.sendTranslated(, "&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
                     return false;
                 }
                 radiusString = radiusString.substring(radiusString.indexOf(":")+1);
@@ -378,8 +378,8 @@ public class LookupCommands
                 radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
                 if (radiusUser == null)
                 {
-                    user.sendTranslated("&cInvalid radius/location selection");
-                    user.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    user.sendTranslated(, "&cInvalid radius/location selection");
+                    user.sendTranslated(, "&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
                     return false;
                 }
                 params.setWorld(radiusUser.getWorld());
@@ -462,7 +462,7 @@ public class LookupCommands
             User user = this.module.getCore().getUserManager().getUser(name, false);
             if (user == null)
             {
-                sender.sendTranslated("&cUser &2%s&c not found!", name);
+                sender.sendTranslated(, "&cUser &2%s&c not found!", name);
                 return false;
             }
             if (negate)
@@ -498,7 +498,7 @@ public class LookupCommands
                 }
                 catch (NumberFormatException ex)
                 {
-                    user.sendTranslated("&cInvalid BlockData: &6%s", sub);
+                    user.sendTranslated(, "&cInvalid BlockData: &6%s", sub);
                     return false;
                 }
                 name = name.substring(0,name.indexOf(":"));
@@ -506,7 +506,7 @@ public class LookupCommands
             Material material = Match.material().material(name);
             if (material == null)
             {
-                user.sendTranslated("&cUnknown Material: &6%s", name);
+                user.sendTranslated(, "&cUnknown Material: &6%s", name);
                 return false;
             }
             ImmutableBlockData blockData = new ImmutableBlockData(material, data);
@@ -536,7 +536,7 @@ public class LookupCommands
             EntityType entityType = Match.entity().living(name);
             if (entityType == null)
             {
-                user.sendTranslated("&cUnknown EntityType: &6%s", name);
+                user.sendTranslated(, "&cUnknown EntityType: &6%s", name);
                 return false;
             }
             if (negate)
@@ -566,7 +566,7 @@ public class LookupCommands
             Set<ActionType> actionTypes = this.actionTypeManager.getActionType(actionString);
             if (actionTypes == null)
             {
-                user.sendTranslated("&cUnkown action-type: &6%s",actionString);
+                user.sendTranslated(, "&cUnkown action-type: &6%s", actionString);
                 return false;
             }
             if (negate)

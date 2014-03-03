@@ -33,9 +33,12 @@ import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.core.util.formatter.CEMessageCompositor;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
+import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.Log;
 
 /**
@@ -183,4 +186,6 @@ public interface Core
      * @return false if the startup has not finished yet
      */
     boolean isStartupFinished();
+
+    CEMessageCompositor getMessageCompositor(MessageType messageType);
 }

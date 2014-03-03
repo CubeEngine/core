@@ -110,19 +110,19 @@ public class Lock
         switch (this.getLockType())
         {
         case PRIVATE:
-            user.sendTranslated("&aPrivate Lock created!");
+            user.sendTranslated(, "&aPrivate Lock created!");
             break;
         case PUBLIC:
-            user.sendTranslated("&aPublic Lock created!");
+            user.sendTranslated(, "&aPublic Lock created!");
             break;
         case GUARDED:
-            user.sendTranslated("&aGuarded Lock created!");
+            user.sendTranslated(, "&aGuarded Lock created!");
             break;
         case DONATION:
-            user.sendTranslated("&aDonation Lock created!");
+            user.sendTranslated(, "&aDonation Lock created!");
             break;
         case FREE:
-            user.sendTranslated("&aFree Lock created!");
+            user.sendTranslated(, "&aFree Lock created!");
             break;
         }
     }
@@ -150,7 +150,7 @@ public class Lock
         if (this.getLockType() == PUBLIC) return; // ignore
         if (!this.manager.module.getConfig().allowKeyBooks)
         {
-            user.sendTranslated("&aKeyBooks are not enabled!");
+            user.sendTranslated(, "&aKeyBooks are not enabled!");
             return;
         }
         if (third)
@@ -161,9 +161,9 @@ public class Lock
                 ItemStack itemStack = new ItemStack(Material.ENCHANTED_BOOK, 1);
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(this.getColorPass() + KeyBook.TITLE + this.getId());
-                itemMeta.setLore(Arrays.asList(user.translate(ChatFormat.parseFormats("&eThis book can")), user
-                    .translate(ChatFormat.parseFormats("&eunlock a magically")), user
-                                                   .translate(ChatFormat.parseFormats("&elocked protection"))));
+                itemMeta.setLore(Arrays.asList(user.composeMessage(, ChatFormat.parseFormats("&eThis book can")), user
+                    .composeMessage(, ChatFormat.parseFormats("&eunlock a magically")), user
+                                                   .composeMessage(, ChatFormat.parseFormats("&elocked protection"))));
                 itemStack.setItemMeta(itemMeta);
                 user.setItemInHand(itemStack);
                 HashMap<Integer, ItemStack> full = user.getInventory().addItem(new ItemStack(Material.BOOK, amount));
@@ -176,7 +176,7 @@ public class Lock
             }
             else
             {
-                user.sendTranslated("&cCould not create KeyBook! You need to hold a book in your hand in order to do this!");
+                user.sendTranslated(, "&cCould not create KeyBook! You need to hold a book in your hand in order to do this!");
             }
         }
     }
@@ -255,16 +255,16 @@ public class Lock
                         {
                             if (admin)
                             {
-                                user.sendTranslated("&aGranted &2%s&a admin access to this protection!", modifyUser.getName());
+                                user.sendTranslated(, "&aGranted &2%s&a admin access to this protection!", modifyUser.getName());
                             }
                             else
                             {
-                                user.sendTranslated("&aGranted &2%s&a access to this protection!", modifyUser.getName());
+                                user.sendTranslated(, "&aGranted &2%s&a access to this protection!", modifyUser.getName());
                             }
                         }
                         else
                         {
-                            user.sendTranslated("&aRemoved &2%s's&a access to this protection!", modifyUser.getName());
+                            user.sendTranslated(, "&aRemoved &2%s's&a access to this protection!", modifyUser.getName());
                         }
                     }
                     else
@@ -273,25 +273,25 @@ public class Lock
                         {
                             if (admin)
                             {
-                                user.sendTranslated("&aUdated &2%s's&a access to admin access!", modifyUser.getName());
+                                user.sendTranslated(, "&aUdated &2%s's&a access to admin access!", modifyUser.getName());
                             }
                             else
                             {
-                                user.sendTranslated("&aUdated &2%s's&a access to normal access!", modifyUser.getName());
+                                user.sendTranslated(, "&aUdated &2%s's&a access to normal access!", modifyUser.getName());
                             }
                         }
                         else
                         {
-                            user.sendTranslated("&2%s&a had no access to this protection!", modifyUser.getName());
+                            user.sendTranslated(, "&2%s&a had no access to this protection!", modifyUser.getName());
                         }
                     }
                 }
                 return;
             }
-            user.sendTranslated("&eThis protection is public and so accessible to everyone");
+            user.sendTranslated(, "&eThis protection is public and so accessible to everyone");
             return;
         }
-        user.sendTranslated("&cYou are not allowed to modify the access-list of this protection!");
+        user.sendTranslated(, "&cYou are not allowed to modify the access-list of this protection!");
     }
 
     /**
@@ -379,11 +379,11 @@ public class Lock
             event.setCancelled(true);
             if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated("&cA magical lock from &2%s&c prevents you from using this door!", this.getOwner().getName());
+                user.sendTranslated(, "&cA magical lock from &2%s&c prevents you from using this door!", this.getOwner().getName());
             }
             else
             {
-                user.sendTranslated("&cA magical lock prevents you from using this door!");
+                user.sendTranslated(, "&cA magical lock prevents you from using this door!");
             }
             return;
         } // else has access
@@ -408,7 +408,7 @@ public class Lock
     {
         if (soundLocation != null && module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated("&eThis inventory is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(, "&eThis inventory is protected by &2%s", this.getOwner().getName());
         }
         if (this.handleAccess(user, soundLocation, event) || event.isCancelled()) return;
         boolean in;
@@ -436,11 +436,11 @@ public class Lock
             event.setCancelled(true); // private & no access
             if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated("&cA magical lock from &2%s&c prevents you from accessing this inventory!", this.getOwner().getName());
+                user.sendTranslated(, "&cA magical lock from &2%s&c prevents you from accessing this inventory!", this.getOwner().getName());
             }
             else
             {
-                user.sendTranslated("&cA magical lock prevents you from accessing this inventory!");
+                user.sendTranslated(, "&cA magical lock prevents you from accessing this inventory!");
             }
         }
         else // Has access access -> new InventoryGuard
@@ -472,7 +472,7 @@ public class Lock
     {
         if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated("&eThis entity is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(, "&eThis entity is protected by &2%s", this.getOwner().getName());
         }
         if (this.getLockType() == PUBLIC) return;
         if (this.handleAccess(user, null, event))
@@ -490,11 +490,11 @@ public class Lock
             event.setCancelled(true); // private & no access
             if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated("&cMagic from &2%s&c repelled your attempts to reach this entity!", this.getOwner().getName());
+                user.sendTranslated(, "&cMagic from &2%s&c repelled your attempts to reach this entity!", this.getOwner().getName());
             }
             else
             {
-                user.sendTranslated("&cMagic repelled your attempts to reach this entity!");
+                user.sendTranslated(, "&cMagic repelled your attempts to reach this entity!");
             }
         }
         this.notifyUsage(user);
@@ -524,7 +524,7 @@ public class Lock
             return;
         }
         event.setCancelled(true);
-        user.sendTranslated("&cMagic prevents you from breaking this protection!");
+        user.sendTranslated(, "&cMagic prevents you from breaking this protection!");
     }
 
 
@@ -532,7 +532,7 @@ public class Lock
     {
         if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated("&eThis block is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(, "&eThis block is protected by &2%s", this.getOwner().getName());
         }
         if (this.getLockType() == PUBLIC) return;
         if (this.handleAccess(user, null, event))
@@ -541,18 +541,18 @@ public class Lock
             return;
         }
         event.setCancelled(true);
-        user.sendTranslated("&cMagic prevents you from interacting with this block!");
+        user.sendTranslated(, "&cMagic prevents you from interacting with this block!");
     }
 
     public boolean handleEntityDamage(Cancellable event, User user)
     {
         if (this.model.getOwnerId().equals(user.getEntity().getKey()) || module.perms().BREAK_OTHER.isAuthorized(user))
         {
-            user.sendTranslated("&eThe magic surrounding this entity quivers as you hit it!");
+            user.sendTranslated(, "&eThe magic surrounding this entity quivers as you hit it!");
             return true;
         }
         event.setCancelled(true); // private & no access
-        user.sendTranslated("&cMagic repelled your attempts to hit this entity!");
+        user.sendTranslated(, "&cMagic repelled your attempts to hit this entity!");
         return false;
     }
 
@@ -610,7 +610,7 @@ public class Lock
         if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
         {
             this.lastKeyNotify.put(owner.getName(), System.currentTimeMillis());
-            owner.sendTranslated("&2%s&e used a KeyBook to access one of your protections!", user.getName());
+            owner.sendTranslated(, "&2%s&e used a KeyBook to access one of your protections!", user.getName());
         }
     }
 
@@ -636,10 +636,9 @@ public class Lock
                 this.lastNotify.put(owner.getName(), System.currentTimeMillis());
                 if (this.isBlockLock())
                 {
-                    owner.sendTranslated("&2%s&e accessed one your protection with the id &6%d!", user.getName(), this.getId());
+                    owner.sendTranslated(, "&2%s&e accessed one your protection with the id &6%d!", user.getName(), this.getId());
                     Location loc = this.getFirstLocation();
-                    owner.sendTranslated("&ewhich is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!",
-                         loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                    owner.sendTranslated(, "&ewhich is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
                 }
                 else
                 {
@@ -647,14 +646,13 @@ public class Lock
                     {
                         if (entity.getUniqueId().equals(this.getEntityUID()))
                         {
-                            owner.sendTranslated("&2%s&e accessed one of your protected entities!", user.getName());
+                            owner.sendTranslated(, "&2%s&e accessed one of your protected entities!", user.getName());
                             Location loc = entity.getLocation();
-                            owner.sendTranslated("&ewhich is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!",
-                                                 loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                            owner.sendTranslated(, "&ewhich is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
                             return;
                         }
                     }
-                    owner.sendTranslated("&2%s&e accessed one of your protected entities somewhere!", user.getName());
+                    owner.sendTranslated(, "&2%s&e accessed one of your protected entities somewhere!", user.getName());
                 }
             }
         }
@@ -680,18 +678,18 @@ public class Lock
         if (this.isOwner(user) || this.hasAdmin(user) || module.perms().CMD_INFO_OTHER.isAuthorized(user))
         {
             user.sendMessage("");
-            user.sendTranslated("&aProtection: &6#%d&a Type: &6%s&a by &6%s", this.getId(), this.getLockType().name(), this.getOwner().getName());
-            user.sendTranslated("&aprotects &6%s&a since &6%s", this.getProtectedType().name(), this.model.getCreated().toString());
-            user.sendTranslated("&alast access was &6%s", this.model.getLastAccess().toString());
+            user.sendTranslated(, "&aProtection: &6#%d&a Type: &6%s&a by &6%s", this.getId(), this.getLockType().name(), this.getOwner().getName());
+            user.sendTranslated(, "&aprotects &6%s&a since &6%s", this.getProtectedType().name(), this.model.getCreated().toString());
+            user.sendTranslated(, "&alast access was &6%s", this.model.getLastAccess().toString());
             if (this.hasPass())
             {
                 if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
-                    user.sendTranslated("&aHas a password and is currently &eunlocked");
+                    user.sendTranslated(, "&aHas a password and is currently &eunlocked");
                 }
                 else
                 {
-                    user.sendTranslated("&aHas a password and is currently &clocked");
+                    user.sendTranslated(, "&aHas a password and is currently &clocked");
                 }
             }
 
@@ -706,7 +704,7 @@ public class Lock
             }
             if (!flags.isEmpty())
             {
-                user.sendTranslated("&aThe following flags are set:");
+                user.sendTranslated(, "&aThe following flags are set:");
                 String format = ChatFormat.parseFormats("  &7- &e%s");
                 for (String flag : flags)
                 {
@@ -716,7 +714,7 @@ public class Lock
             List<AccessListModel> accessors = this.getAccessors();
             if (!accessors.isEmpty())
             {
-                user.sendTranslated("&aThe following users do have direct access to this protection");
+                user.sendTranslated(, "&aThe following users do have direct access to this protection");
                 for (AccessListModel listModel : accessors)
                 {
                     User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId().longValue());
@@ -732,34 +730,34 @@ public class Lock
             }
             if (!this.locations.isEmpty())
             {
-                user.sendTranslated("&aThis protections covers &6%d&a blocks!", this.locations.size());
+                user.sendTranslated(, "&aThis protections covers &6%d&a blocks!", this.locations.size());
             }
         }
         else
         {
             if (module.perms().CMD_INFO_SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated("&aProtectionType: &6%s&a Owner: &2%s", this.getLockType().name(), this.getOwner().getName());
+                user.sendTranslated(, "&aProtectionType: &6%s&a Owner: &2%s", this.getLockType().name(), this.getOwner().getName());
             }
             else
             {
-                user.sendTranslated("&aProtectionType: &6%s", this.getLockType().name());
+                user.sendTranslated(, "&aProtectionType: &6%s", this.getLockType().name());
             }
             AccessListModel access = this.getAccess(user);
             if (this.hasPass())
             {
                 if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
-                    user.sendTranslated("&aAs you memorize the pass-phrase the magic aura protecting this allows you to interact");
+                    user.sendTranslated(, "&aAs you memorize the pass-phrase the magic aura protecting this allows you to interact");
                 }
                 else
                 {
-                    user.sendTranslated("&aYou sense that the strong magic aura protecting this wont let you through without the right pass-phrase");
+                    user.sendTranslated(, "&aYou sense that the strong magic aura protecting this wont let you through without the right pass-phrase");
                 }
             }
             else
             {
-                user.sendTranslated("&aYou sense a strong magic aura protecting this");
+                user.sendTranslated(, "&aYou sense a strong magic aura protecting this");
             }
             if (access != null)
             {
@@ -770,22 +768,22 @@ public class Lock
                         || this.getProtectedType() == ProtectedType.ENTITY_CONTAINER
                         || this.getProtectedType() == ProtectedType.ENTITY_CONTAINER_LIVING)
                     {
-                        user.sendTranslated("&abut is does not hinder you to put/take items in/out");
+                        user.sendTranslated(, "&abut is does not hinder you to put/take items in/out");
                     }
                     else
                     {
-                        user.sendTranslated("&abut it lets you interact as if you were not there");
+                        user.sendTranslated(, "&abut it lets you interact as if you were not there");
                     }
                 }
             }
         }
         if (this.manager.module.getConfig().protectWhenOnlyOffline && this.getOwner().isOnline())
         {
-            user.sendTranslated("&eThe protection is currently not active because its owner is online!");
+            user.sendTranslated(, "&eThe protection is currently not active because its owner is online!");
         }
         if (this.manager.module.getConfig().protectWhenOnlyOnline && !this.getOwner().isOnline())
         {
-            user.sendTranslated("&eThe protection is currently not active because its owner is offline!");
+            user.sendTranslated(, "&eThe protection is currently not active because its owner is offline!");
         }
     }
 
@@ -801,20 +799,20 @@ public class Lock
         {
             if (this.checkPass(pass))
             {
-                user.sendTranslated("&aUpon hearing the right pass-phrase the magic surrounding the container gets thinner and lets you pass!");
+                user.sendTranslated(, "&aUpon hearing the right pass-phrase the magic surrounding the container gets thinner and lets you pass!");
                 user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, 2);
                 user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, (float)1.5);
                 user.attachOrGet(LockerAttachment.class, this.manager.module).addUnlock(this);
             }
             else
             {
-                user.sendTranslated("&eSudden pain makes you realize this was not the right pass-phrase!");
+                user.sendTranslated(, "&eSudden pain makes you realize this was not the right pass-phrase!");
                 user.damage(0);
             }
         }
         else
         {
-            user.sendTranslated("&eYou try to open the container with a pass-phrase but nothing changes!");
+            user.sendTranslated(, "&eYou try to open the container with a pass-phrase but nothing changes!");
         }
     }
 
@@ -830,12 +828,12 @@ public class Lock
         Block block = doorClicked.getBlock();
         if (block.getType() == Material.IRON_DOOR_BLOCK && !this.manager.module.getConfig().openIronDoorWithClick)
         {
-            user.sendTranslated("&eYou cannot open the heavy door!");
+            user.sendTranslated(, "&eYou cannot open the heavy door!");
             return;
         }
         if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated("&eThis door is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(, "&eThis door is protected by &2%s", this.getOwner().getName());
         }
         if (block.getState().getData() instanceof Door)
         {

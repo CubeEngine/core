@@ -591,14 +591,14 @@ public class QueryManager
             switch (action)
             {
             case SHOW:
-                user.sendTranslated("&eLookups cannot return all data while cleaning up the database!");
+                user.sendTranslated(, "&eLookups cannot return all data while cleaning up the database!");
                 break;
             case ROLLBACK:
             case REDO:
             case ROLLBACK_PREVIEW:
             case REDO_PREVIEW:
-                user.sendTranslated("&cThis action is not possible while cleaning up the database!");
-                user.sendTranslated("&ePleas");
+                user.sendTranslated(, "&cThis action is not possible while cleaning up the database!");
+                user.sendTranslated(, "&ePleas");
                 return;
             }
         }

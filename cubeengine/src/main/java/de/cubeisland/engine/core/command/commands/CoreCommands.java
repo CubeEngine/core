@@ -95,7 +95,7 @@ public class CoreCommands extends ContainerCommand
             target = context.getUser(1);
             if (target == null)
             {
-                sender.sendTranslated("&cUser %s not found!");
+                sender.sendTranslated(, "&cUser %s not found!");
                 return;
             }
         }
@@ -105,7 +105,7 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            sender.sendTranslated("&cNo user given!");
+            sender.sendTranslated(, "&cNo user given!");
             return;
         }
 
@@ -117,11 +117,11 @@ public class CoreCommands extends ContainerCommand
         core.getUserManager().setPassword(target, context.getString(0));
         if (sender == target)
         {
-            sender.sendTranslated("&aThe user's password has been set!");
+            sender.sendTranslated(, "&aThe user's password has been set!");
         }
         else
         {
-            sender.sendTranslated("&aYour password has been set!");
+            sender.sendTranslated(, "&aYour password has been set!");
         }
     }
 
@@ -137,7 +137,7 @@ public class CoreCommands extends ContainerCommand
             {
                 final UserManager um = this.getModule().getCore().getUserManager();
                 um.resetAllPasswords();
-                sender.sendTranslated("&All passwords reset!");
+                sender.sendTranslated(, "&All passwords reset!");
             }
             else
             {
@@ -155,7 +155,7 @@ public class CoreCommands extends ContainerCommand
             if (target != null)
             {
                 this.core.getUserManager().resetPassword(target);
-                sender.sendTranslated("&aThe user's password has been reset!");
+                sender.sendTranslated(, "&aThe user's password has been reset!");
             }
             else
             {
@@ -165,7 +165,7 @@ public class CoreCommands extends ContainerCommand
         else if (sender instanceof User)
         {
             this.core.getUserManager().resetPassword((User)sender);
-            sender.sendTranslated("Your password has been reset!");
+            sender.sendTranslated(, "Your password has been reset!");
         }
     }
 
@@ -184,18 +184,18 @@ public class CoreCommands extends ContainerCommand
             boolean isLoggedIn = core.getUserManager().login(user, context.getString(0));
             if (isLoggedIn)
             {
-                user.sendTranslated("&aYou logged in successfully!");
+                user.sendTranslated(, "&aYou logged in successfully!");
             }
             else
             {
-                user.sendTranslated("&cWrong password!");
+                user.sendTranslated(, "&cWrong password!");
                 if (this.core.getConfiguration().security.fail2ban)
                 {
                     if (fails.get(user.getName()) != null)
                     {
                         if (fails.get(user.getName()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                         {
-                            String msg = user.translate("&cToo many wrong passwords! \nFor your security you were banned 10 seconds.");
+                            String msg = user.composeMessage(, "&cToo many wrong passwords! \nFor your security you were banned 10 seconds.");
                             this.banManager.addBan(new UserBan(user.getName(),user.getName(),msg,
                                  new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                             if (!Bukkit.getServer().getOnlineMode())
@@ -212,7 +212,7 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            sender.sendTranslated("&cOnly players can log in!");
+            sender.sendTranslated(, "&cOnly players can log in!");
         }
     }
 
@@ -225,17 +225,17 @@ public class CoreCommands extends ContainerCommand
             User user = (User)sender;
             if (!user.isLoggedIn())
             {
-                sender.sendTranslated("&eYou're not logged in!");
+                sender.sendTranslated(, "&eYou're not logged in!");
             }
             else
             {
                 user.logout();
-                sender.sendTranslated("&aYou're now logged out.");
+                sender.sendTranslated(, "&aYou're now logged out.");
             }
         }
         else if (sender instanceof ConsoleCommandSender)
         {
-            sender.sendTranslated("&eYou might use /stop for this.");
+            sender.sendTranslated(, "&eYou might use /stop for this.");
         }
     }
 

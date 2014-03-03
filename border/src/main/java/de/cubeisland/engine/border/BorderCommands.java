@@ -177,7 +177,7 @@ public class BorderCommands extends ContainerCommand
             curLen++;
             dir = -dir;
         }
-        sender.sendTranslated("&aAdded &6%d &achunks to generate in &6%s", chunksAdded, world.getName());
+        sender.sendTranslated(, "&aAdded &6%d &achunks to generate in &6%s", chunksAdded, world.getName());
     }
 
     private boolean addIfInBorder(BorderConfig config, long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)
@@ -220,7 +220,7 @@ public class BorderCommands extends ContainerCommand
         if (freeMemory < 300) // less than 300 MB memory left
         {
             this.scheduleGeneration(20 * 10); // Take a 10 second break
-            sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
+            sender.sendTranslated(, "&cAvailiable Memory getting low! Pausing ChunkGeneration");
             rt.gc();
             return;
         }
@@ -252,7 +252,7 @@ public class BorderCommands extends ContainerCommand
             {
                 this.lastNotify = System.currentTimeMillis();
                 int percentNow = totalDone * 100 / total;
-                this.sender.sendTranslated("&aChunkgeneration is at &6%d%% &a(&6%d/%d&a)", percentNow, totalDone, total);
+                this.sender.sendTranslated(, "&aChunkgeneration is at &6%d%% &a(&6%d/%d&a)", percentNow, totalDone, total);
             }
         }
         if (!chunksToGenerate.isEmpty())
@@ -265,7 +265,7 @@ public class BorderCommands extends ContainerCommand
             {
                 triplet.getFirst().unloadChunkRequest(triplet.getSecond(), triplet.getThird());
             }
-            sender.sendTranslated("&aChunkgeneration completed! Generated &6%d&a chunks", generated);
+            sender.sendTranslated(, "&aChunkgeneration completed! Generated &6%d&a chunks", generated);
             rt.gc();
             this.running = false;
         }

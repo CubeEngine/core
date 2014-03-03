@@ -299,7 +299,7 @@ public abstract class CubeCommand extends Command
     public String getUsage(CommandSender sender)
     {
         return (sender instanceof User ? "/" : "") + this
-            .implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.translate(super.getUsage()));
+            .implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.composeMessage(, super.getUsage()));
     }
 
     /**
@@ -314,7 +314,7 @@ public abstract class CubeCommand extends Command
         final CommandSender sender = context.getSender();
         return (sender instanceof User ? "/" : "") + StringUtils
             .implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender
-            .translate(super.getUsage()));
+            .composeMessage(, super.getUsage()));
     }
 
     /**
@@ -330,7 +330,7 @@ public abstract class CubeCommand extends Command
         StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "");
         usage.append(StringUtils.implode(" ", parentLabels)).append(' ')
             .append(this.getName()).append(' ')
-            .append(sender.translate(super.getUsage()));
+            .append(sender.composeMessage(, super.getUsage()));
         return usage.toString();
     }
 
@@ -567,8 +567,8 @@ public abstract class CubeCommand extends Command
 
     private void permissionDenied(CommandSender sender)
     {
-        sender.sendTranslated("&cYou're not allowed to do this!");
-        sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
+        sender.sendTranslated(, "&cYou're not allowed to do this!");
+        sender.sendTranslated(, "&cContact an administrator if you think this is a mistake!");
     }
 
     private void handleCommandException(final CommandSender sender, Throwable t)
@@ -593,12 +593,12 @@ public abstract class CubeCommand extends Command
         }
         if (t instanceof MissingParameterException)
         {
-            sender.sendTranslated("&cThe parameter &6%s&c is missing!", t.getMessage());
+            sender.sendTranslated(, "&cThe parameter &6%s&c is missing!", t.getMessage());
         }
         else if (t instanceof IncorrectUsageException)
         {
             sender.sendMessage(t.getMessage());
-            sender.sendTranslated("&eProper usage: &f%s", this.getUsage(sender));
+            sender.sendTranslated(, "&eProper usage: &f%s", this.getUsage(sender));
         }
         else if (t instanceof PermissionDeniedException)
         {
@@ -606,8 +606,8 @@ public abstract class CubeCommand extends Command
         }
         else
         {
-            sender.sendTranslated("&4An unknown error occurred while executing this command!");
-            sender.sendTranslated("&4Please report this error to an administrator.");
+            sender.sendTranslated(, "&4An unknown error occurred while executing this command!");
+            sender.sendTranslated(, "&4Please report this error to an administrator.");
             this.module.getLog().debug(t, t.getLocalizedMessage());
         }
     }
@@ -725,7 +725,8 @@ public abstract class CubeCommand extends Command
             {
                 if (command.testPermissionSilent(sender))
                 {
-                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.translate(command.getDescription()));
+                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.composeMessage(, command
+                                                                                                                                                        .getDescription()));
                 }
             }
         }

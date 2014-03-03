@@ -57,8 +57,7 @@ public class OtherSpawn extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {//TODO get player in data once possible
-        user.sendTranslated("%s&6%s &aspawned%s",
-                           time, logEntry.getCauserEntity(),loc);
+        user.sendTranslated(, "%s&6%s &aspawned%s", time, logEntry.getCauserEntity(), loc);
     }
 
     @Override

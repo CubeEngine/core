@@ -191,7 +191,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             String cmd = context.getStrings(0);
             if (user.getItemInHand().getType().equals(Material.AIR))
             {
-                user.sendTranslated("&eYou do not have an item in your hand to bind the command to!");
+                user.sendTranslated(, "&eYou do not have an item in your hand to bind the command to!");
                 return;
             }
             if (!context.hasFlag("c"))

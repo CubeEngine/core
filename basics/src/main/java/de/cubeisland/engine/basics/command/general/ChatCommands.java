@@ -105,7 +105,7 @@ public class ChatCommands
                 if (context.getSender() instanceof User)
                 {
                     ConsoleCommandSender console = context.getCore().getCommandManager().getConsoleSender();
-                    console.sendTranslated("&e%s -> You: &f%s", context.getSender().getDisplayName(), message);
+                    console.sendTranslated(, "&e%s -> You: &f%s", context.getSender().getDisplayName(), message);
                     context.sendTranslated("&eYou &6-> &2%s&e: &f%s", console.getName(), message);
                     this.lastWhisperOfConsole = context.getSender().getName();
                     ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper("#console");
@@ -126,7 +126,7 @@ public class ChatCommands
             context.sendTranslated("&eTalking to yourself?");
             return true;
         }
-        user.sendTranslated("&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
+        user.sendTranslated(, "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
         if (user.get(BasicsAttachment.class).isAfk())
         {
             context.sendTranslated("&2%s &7is afk!", user.getName());
@@ -186,8 +186,8 @@ public class ChatCommands
         basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() +
             (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
-        String timeString = dura.getMillis() == 0 ? user.translate("ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
-        user.sendTranslated("&cYou are now muted for &6%s&c!", timeString);
+        String timeString = dura.getMillis() == 0 ? user.composeMessage(, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
+        user.sendTranslated(, "&cYou are now muted for &6%s&c!", timeString);
         context.sendTranslated("&eYou muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
     }
 

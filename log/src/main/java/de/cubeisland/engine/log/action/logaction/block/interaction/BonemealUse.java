@@ -54,15 +54,11 @@ public class BonemealUse extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&2%s &aused bonemeal on &6%s x%d%s",
-                                time, logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getOldBlock(), logEntry.getAttached().size() +1 , loc);
+            user.sendTranslated(, "%s&2%s &aused bonemeal on &6%s x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), logEntry.getAttached().size() +1, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aused bonemeal on &6%s%s",
-                                time, logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getOldBlock(), loc);
+            user.sendTranslated(, "%s&2%s &aused bonemeal on &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
         }
     }
 

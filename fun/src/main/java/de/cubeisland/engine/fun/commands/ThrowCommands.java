@@ -226,8 +226,8 @@ public class ThrowCommands
         {
             if (this.amount == -1 && notify)
             {
-                this.user.sendTranslated("&aStarted throwing!");
-                this.user.sendTranslated("&aYou will keep throwing until you run this command again.");
+                this.user.sendTranslated(, "&aStarted throwing!");
+                this.user.sendTranslated(, "&aYou will keep throwing until you run this command again.");
             }
             this.taskId = module.getCore().getTaskManager().runTimer(module, this, 0, this.interval);
             return this.taskId != -1;
@@ -246,11 +246,11 @@ public class ThrowCommands
                 {
                     if (this.amount == -1)
                     {
-                        this.user.sendTranslated("&aYou are no longer throwing.");
+                        this.user.sendTranslated(, "&aYou are no longer throwing.");
                     }
                     else
                     {
-                        this.user.sendTranslated("&aAll objects thrown.");
+                        this.user.sendTranslated(, "&aAll objects thrown.");
                     }
                 }
                 module.getCore().getTaskManager().cancelTask(module, this.taskId);

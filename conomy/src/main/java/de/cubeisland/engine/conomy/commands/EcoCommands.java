@@ -96,7 +96,7 @@ public class EcoCommands extends ContainerCommand
                     context.sendTranslated("&aYou gave &6%s&a to &2%s&a!", format, user.getName());
                     if (!context.getSender().getName().equals(user.getName()))
                     {
-                        user.sendTranslated("&aYou were granted &6%s&a.", format);
+                        user.sendTranslated(, "&aYou were granted &6%s&a.", format);
                     }
                 }
                 else
@@ -162,7 +162,7 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&aYou took &6%s &afrom &2%s&a!", format, user.getName());
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated("&eWithdrawed &6%s &efrom your account.", format);
+                    user.sendTranslated(, "&eWithdrawed &6%s &efrom your account.", format);
                 }
             }
         }
@@ -216,7 +216,7 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&2%s &aaccount reset to &6%s&a!", user.getName(), format);
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated("&eYour balance got resetted to &6%s&e.", format);
+                    user.sendTranslated(, "&eYour balance got resetted to &6%s&e.", format);
                 }
             }
         }
@@ -277,7 +277,7 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated("&2%s &aaccount set to &6%s&a!", user.getName(), format);
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated("&eYour balance got set to &6%s&e.", format);
+                    user.sendTranslated(, "&eYour balance got set to &6%s&e.", format);
                 }
             }
         }

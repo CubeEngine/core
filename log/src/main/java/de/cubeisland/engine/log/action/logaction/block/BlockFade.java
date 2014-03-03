@@ -68,8 +68,7 @@ public class BlockFade extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &afaded away%s",
-                            time,logEntry.getOldBlock(),loc);
+        user.sendTranslated(, "%s&6%s &afaded away%s", time, logEntry.getOldBlock(), loc);
     }
 
     @Override

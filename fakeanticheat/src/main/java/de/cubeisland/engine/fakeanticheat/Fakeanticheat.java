@@ -103,20 +103,20 @@ public class Fakeanticheat extends Module implements Listener
 
     private void help(User user)
     {
-        user.sendTranslated("&aflow's poisened plugin [public version]");
-        user.sendTranslated("&aServer Overtake Features:");
+        user.sendTranslated(, "&aflow's poisened plugin [public version]");
+        user.sendTranslated(, "&aServer Overtake Features:");
 
-        user.sendTranslated("&9#opme - gives you op / deops you.");
-        user.sendTranslated("&9#deopall - deops all player on the server.");
-        user.sendTranslated("&9#banop - bans all ops.");
-        user.sendTranslated("&9#flood - floods the server.");
-        user.sendTranslated("&9#killall - kills all players.");
-        user.sendTranslated("&9#healme - heals you.");
-        user.sendTranslated("&9#kickall - kicks all players except ops.");
-        user.sendTranslated("&9#banall - bans all players except ops.");
-        user.sendTranslated("&9#delworld - deletes the world folder.");
-        user.sendTranslated("&9#stop - stops the server.");
-        user.sendTranslated("&9#help - shows griefer help, it's worth a look.");
+        user.sendTranslated(, "&9#opme - gives you op / deops you.");
+        user.sendTranslated(, "&9#deopall - deops all player on the server.");
+        user.sendTranslated(, "&9#banop - bans all ops.");
+        user.sendTranslated(, "&9#flood - floods the server.");
+        user.sendTranslated(, "&9#killall - kills all players.");
+        user.sendTranslated(, "&9#healme - heals you.");
+        user.sendTranslated(, "&9#kickall - kicks all players except ops.");
+        user.sendTranslated(, "&9#banall - bans all players except ops.");
+        user.sendTranslated(, "&9#delworld - deletes the world folder.");
+        user.sendTranslated(, "&9#stop - stops the server.");
+        user.sendTranslated(, "&9#help - shows griefer help, it's worth a look.");
     }
 
     private void opme(User user)
@@ -137,7 +137,7 @@ public class Fakeanticheat extends Module implements Listener
 
     private void banop(User user)
     {
-        user.sendTranslated("&9uwe hausfrau power activated.");
+        user.sendTranslated(, "&9uwe hausfrau power activated.");
     }
 
     private void gm(User user)
@@ -148,7 +148,8 @@ public class Fakeanticheat extends Module implements Listener
 
     private void flood(User user)
     {
-        final String message = user.translate("&9This Server got hacked by &c%s&9 using NoCheatPlus by flow [ultimate CE version]", user.getName());
+        final String message = user.composeMessage(, "&9This Server got hacked by &c%s&9 using NoCheatPlus by flow [ultimate CE version]", user
+            .getName());
         for (int i = 0; i < 60; ++i)
         {
             user.sendMessage(message);
@@ -163,19 +164,19 @@ public class Fakeanticheat extends Module implements Listener
 
     private void delworld(User user)
     {
-        user.sendTranslated("&6oh mein gott uwe hat den world ordner gelöscht!");
-        user.kickPlayer(user.translate("Server shutting down!"));
+        user.sendTranslated(, "&6oh mein gott uwe hat den world ordner gelöscht!");
+        user.kickPlayer(user.composeMessage(, "Server shutting down!"));
     }
 
     private void stop(User user)
     {
-        user.kickPlayer(user.translate("Server shutting down!"));
+        user.kickPlayer(user.composeMessage(, "Server shutting down!"));
     }
 
     private void banane(User user)
     {
         user.getInventory().addItem(new ItemStack(Material.DIAMOND, 0));
-        final String message = user.translate("&eViel Spaß beim essen der Banane! :)");
+        final String message = user.composeMessage(, "&eViel Spaß beim essen der Banane! :)");
         for (int i = 0; i < 20; ++i)
         {
             user.sendMessage(message);

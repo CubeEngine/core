@@ -145,13 +145,11 @@ public class PotionSplash extends SimpleLogActionType
                     amountAffected += entry.getAdditional().get("amount").asInt();
                 }
             }
-            user.sendTranslated("%s&2%s&a used &6%d splash potions &a&f(%s&f)&a onto &6%d&a entities in total%s",
-                            time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1 ,
-                            effects, amountAffected, loc);
+            user.sendTranslated(, "%s&2%s&a used &6%d splash potions &a&f(%s&f)&a onto &6%d&a entities in total%s", time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1, effects, amountAffected, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
+            user.sendTranslated(, "%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
                 .getCauserUser().getName(), effects, amountAffected, loc);
         }
     }

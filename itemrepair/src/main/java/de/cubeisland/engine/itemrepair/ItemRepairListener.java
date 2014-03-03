@@ -75,7 +75,7 @@ public class ItemRepairListener implements Listener
 
         if (!repairBlock.getPermission().isAuthorized(user))
         {
-            user.sendTranslated("&cYou are not allowed to use this repair block!");
+            user.sendTranslated(, "&cYou are not allowed to use this repair block!");
             return;
         }
 
@@ -129,7 +129,7 @@ public class ItemRepairListener implements Listener
             final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.repairRequests.containsKey(user.getName()))
             {
-                user.sendTranslated("&eThe repair has been cancelled!");
+                user.sendTranslated(, "&eThe repair has been cancelled!");
                 this.repairRequests.remove(user.getName());
                 event.setCancelled(true);
             }

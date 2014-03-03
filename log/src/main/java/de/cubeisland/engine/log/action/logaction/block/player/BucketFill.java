@@ -87,19 +87,16 @@ public class BucketFill extends BlockActionType
             if (logEntry.getOldBlock().material.equals(Material.LAVA) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_LAVA))
             {
-                user.sendTranslated("%s&2%s &afilled &6%d&a buckets with lava%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),amount,loc);
+                user.sendTranslated(, "%s&2%s &afilled &6%d&a buckets with lava%s", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
             }
             else if (logEntry.getOldBlock().material.equals(Material.WATER) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_WATER))
             {
-                user.sendTranslated("%s&2%s &afilled &6%s&a buckets with water%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),amount,loc);
+                user.sendTranslated(, "%s&2%s &afilled &6%s&a buckets with water%s", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &afilled &6%s buckets with some random fluids%s!",
-                                    time,logEntry.getCauserUser().getDisplayName(),amount,loc);
+                user.sendTranslated(, "%s&2%s &afilled &6%s buckets with some random fluids%s!", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
             }
         }
         else
@@ -107,19 +104,16 @@ public class BucketFill extends BlockActionType
             if (logEntry.getOldBlock().material.equals(Material.LAVA) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_LAVA))
             {
-                user.sendTranslated("%s&2%s &afilled a bucket with lava%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),loc);
+                user.sendTranslated(, "%s&2%s &afilled a bucket with lava%s", time, logEntry.getCauserUser().getDisplayName(), loc);
             }
             else if (logEntry.getOldBlock().material.equals(Material.WATER) ||
                 logEntry.getOldBlock().material.equals(Material.STATIONARY_WATER))
             {
-                user.sendTranslated("%s&2%s &afilled a bucket with water%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),loc);
+                user.sendTranslated(, "%s&2%s &afilled a bucket with water%s", time, logEntry.getCauserUser().getDisplayName(), loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &afilled a bucket with some random fluids%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),loc);
+                user.sendTranslated(, "%s&2%s &afilled a bucket with some random fluids%s", time, logEntry.getCauserUser().getDisplayName(), loc);
             }
         }
     }

@@ -54,13 +54,11 @@ public class TntPrime extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&2%s &aignited &6%d &aTNT!%s",
-                                time,logEntry.getCauserUser().getDisplayName(),amount,loc);
+            user.sendTranslated(, "%s&2%s &aignited &6%d &aTNT!%s", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aignited TNT!%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(, "%s&2%s &aignited TNT!%s", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

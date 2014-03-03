@@ -215,12 +215,7 @@ public class BlockBreak extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = 1+logEntry.getAttached().size();
-            user.sendTranslated("%s&2%s &abroke &6%dx %s%s",
-                                time,
-                                logEntry.getCauserUser().getDisplayName(),
-                                amount,
-                                logEntry.getOldBlock(),
-                                loc);
+            user.sendTranslated(, "%s&2%s &abroke &6%dx %s%s", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
         }
         else
         {
@@ -234,19 +229,11 @@ public class BlockBreak extends BlockActionType
                 {
                     lines[i++] = jsonNode.asText();
                 }
-                user.sendTranslated("%s&2%s &abroke &6%s&a \n   with &7[&f%s&7]&a written on it%s",
-                                    time,
-                                    logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(), StringUtils.implode(delim, lines),
-                                    loc);
+                user.sendTranslated(, "%s&2%s &abroke &6%s&a \n   with &7[&f%s&7]&a written on it%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), StringUtils.implode(delim, lines), loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &abroke &6%s%s",
-                                    time,
-                                    logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(),
-                                    loc);
+                user.sendTranslated(, "%s&2%s &abroke &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
         }
     }

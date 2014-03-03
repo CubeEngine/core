@@ -117,9 +117,9 @@ public class Multiverse implements Listener
             if (!missingWorlds.isEmpty())
             {
                 CommandSender sender = this.module.getCore().getCommandManager().getConsoleSender();
-                sender.sendTranslated("&eDiscovering unknown worlds...");
+                sender.sendTranslated(, "&eDiscovering unknown worlds...");
                 this.searchUniverses(found, missingWorlds, sender);
-                sender.sendTranslated("&eFinishing research...");
+                sender.sendTranslated(, "&eFinishing research...");
                 for (Entry<String, Set<World>> entry : found.entrySet())
                 {
                     Universe universe = this.universes.get(entry.getKey());
@@ -138,7 +138,7 @@ public class Multiverse implements Listener
                         }
                         universe.addWorlds(foundWorlds);
                     }
-                    sender.sendTranslated("&eFound &6%d&e new worlds in the universe &6%s&e!", foundWorlds.size(), entry.getKey());
+                    sender.sendTranslated(, "&eFound &6%d&e new worlds in the universe &6%s&e!", foundWorlds.size(), entry.getKey());
                 }
             }
         }
@@ -146,17 +146,17 @@ public class Multiverse implements Listener
         {
             this.module.getLog().info("No previous Universes found! Initializing...");
             CommandSender sender = this.module.getCore().getCommandManager().getConsoleSender();
-            sender.sendTranslated("&6Scraping together Matter...");
+            sender.sendTranslated(, "&6Scraping together Matter...");
             Map<String, Set<World>> found = new HashMap<>();
             this.searchUniverses(found, this.wm.getWorlds(), sender);
-            sender.sendTranslated("&eFinishing research...");
+            sender.sendTranslated(, "&eFinishing research...");
             for (Entry<String, Set<World>> entry : found.entrySet())
             {
                 Path universeDir = dirUniverses.resolve(entry.getKey());
                 Files.createDirectories(universeDir);
                 this.universes.put(entry.getKey(), Universe.create(this.module, this, universeDir, entry.getValue()));
             }
-            sender.sendTranslated("&eFound &6%d&e universes with &6%d&e worlds!", found.size(), this.wm.getWorlds().size());
+            sender.sendTranslated(, "&eFound &6%d&e universes with &6%d&e worlds!", found.size(), this.wm.getWorlds().size());
         }
         for (Universe universe : this.universes.values())
         {
@@ -196,7 +196,7 @@ public class Multiverse implements Listener
             Set<World> worlds = found.get(universeName);
             if (worlds == null)
             {
-                sender.sendTranslated("&eDiscovered a new Universe! Heating up stars...");
+                sender.sendTranslated(, "&eDiscovered a new Universe! Heating up stars...");
                 worlds = new HashSet<>();
                 found.put(universeName, worlds);
             }
@@ -204,13 +204,13 @@ public class Multiverse implements Listener
             switch (world.getEnvironment())
             {
             case NORMAL:
-                sender.sendTranslated("&6%s&e gets formed by crushing rocks together in the universe &6%s", world.getName(), universeName);
+                sender.sendTranslated(, "&6%s&e gets formed by crushing rocks together in the universe &6%s", world.getName(), universeName);
                 break;
             case NETHER:
-                sender.sendTranslated("&eCooling plasma a bit to make &6%s&e in the universe &6%s", world.getName(), universeName);
+                sender.sendTranslated(, "&eCooling plasma a bit to make &6%s&e in the universe &6%s", world.getName(), universeName);
                 break;
             case THE_END:
-                sender.sendTranslated("&eFound a cold rock named &6%s&e in the universe &6%s", world.getName(), universeName);
+                sender.sendTranslated(, "&eFound a cold rock named &6%s&e in the universe &6%s", world.getName(), universeName);
                 break;
             }
         }
@@ -280,7 +280,7 @@ public class Multiverse implements Listener
         {
             event.setCancelled(true); // TODO check if player has access to the world he is currently in
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            user.sendTranslated("&cYou are not allowed to enter the universe &6%s&c!", universe.getName());
+            user.sendTranslated(, "&cYou are not allowed to enter the universe &6%s&c!", universe.getName());
         }
     }
 

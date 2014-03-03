@@ -121,16 +121,16 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
                 {
                     if (this.rbm.attachRepairBlock(block))
                     {
-                        user.sendTranslated("&aRepair block successfully added!");
+                        user.sendTranslated(, "&aRepair block successfully added!");
                     }
                     else
                     {
-                        user.sendTranslated("&cThis block can't be used as a repair block!");
+                        user.sendTranslated(, "&cThis block can't be used as a repair block!");
                     }
                 }
                 else
                 {
-                    user.sendTranslated("&cThis block is already a repair block!");
+                    user.sendTranslated(, "&cThis block is already a repair block!");
                 }
             }
             if (event.getAction() != Action.PHYSICAL)
@@ -151,11 +151,11 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
             {
                 if (this.rbm.detachRepairBlock(event.getClickedBlock()))
                 {
-                    user.sendTranslated("&aRepair block successfully removed!");
+                    user.sendTranslated(, "&aRepair block successfully removed!");
                 }
                 else
                 {
-                    user.sendTranslated("&cThis block is not a repair block!");
+                    user.sendTranslated(, "&cThis block is not a repair block!");
                 }
             }
             if (event.getAction() != Action.PHYSICAL)

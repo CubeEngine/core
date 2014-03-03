@@ -65,28 +65,20 @@ public class PetDeath extends SimpleLogActionType
                 User owner = this.um.getExactUser(json.get("owner").asText());
                 if (logEntry.hasCauserUser())
                 {
-                    user.sendTranslated("%s&aThe &6%s&a of &2%s &agot slaughtered by &2%s%s",
-                                       time ,killed,
-                                        owner.getDisplayName(),
-                                        logEntry.getCauserUser().getDisplayName(),loc);
+                    user.sendTranslated(, "%s&aThe &6%s&a of &2%s &agot slaughtered by &2%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserUser().getDisplayName(), loc);
                 }
                 else if (logEntry.hasCauserEntity())
                 {
-                    user.sendTranslated("%s&aThe &6%s&a of &2%s &acould not escape &6%s%s",
-                                        time,killed,
-                                        owner.getDisplayName(),
-                                        logEntry.getCauserEntity(),loc);
+                    user.sendTranslated(, "%s&aThe &6%s&a of &2%s &acould not escape &6%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserEntity(), loc);
                 }
                 else // something else
                 {
-                    user.sendTranslated("%s&aThe &6%s&a of &2%s &adied%s",
-                                        time,killed,
-                                        owner.getDisplayName(),loc);
+                    user.sendTranslated(, "%s&aThe &6%s&a of &2%s &adied%s", time, killed, owner.getDisplayName(), loc);
                 }
                 return;
             }
         }
-        user.sendTranslated("&6%s &adied! &4(Pet without owner)", logEntry.getEntityFromData());
+        user.sendTranslated(, "&6%s &adied! &4(Pet without owner)", logEntry.getEntityFromData());
     }
 
     @Override

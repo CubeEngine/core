@@ -94,7 +94,7 @@ public class Spawner extends Module implements Listener
         {
             event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), spawnerItem.clone());
             User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            user.sendTranslated("&aSpawner dropped!");
+            user.sendTranslated(, "&aSpawner dropped!");
         }
     }
 
@@ -108,7 +108,7 @@ public class Spawner extends Module implements Listener
                 CreatureSpawner spawner = (CreatureSpawner)event.getBlock().getState();
                 spawner.setSpawnedType(EntityType.SNOWBALL);
                 User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                user.sendTranslated("&aInactive Spawner placed!");
+                user.sendTranslated(, "&aInactive Spawner placed!");
             }
         }
     }
@@ -129,13 +129,13 @@ public class Spawner extends Module implements Listener
                     Permission perm = this.perms.get(egg.getSpawnedType());
                     if (perm == null && !this.eggPerms.isAuthorized(user))
                     {
-                        user.sendTranslated("&cInvalid SpawnEgg!");
+                        user.sendTranslated(, "&cInvalid SpawnEgg!");
                         event.setCancelled(true);
                         return;
                     }
                     if (perm != null && !perm.isAuthorized(user))
                     {
-                        user.sendTranslated("&cYou are not allowed to change spawners to this EntityType!");
+                        user.sendTranslated(, "&cYou are not allowed to change spawners to this EntityType!");
                         event.setCancelled(true);
                         return;
                     }
@@ -152,12 +152,12 @@ public class Spawner extends Module implements Listener
                             user.getItemInHand().setAmount(user.getItemInHand().getAmount() - 1);
                         }
                     }
-                    user.sendTranslated("&aSpawner activated!");
+                    user.sendTranslated(, "&aSpawner activated!");
                     event.setCancelled(true);
                 }
                 else
                 {
-                    user.sendTranslated("&cYou can only change inactive spawners!");
+                    user.sendTranslated(, "&cYou can only change inactive spawners!");
                     event.setCancelled(true);
                 }
             }

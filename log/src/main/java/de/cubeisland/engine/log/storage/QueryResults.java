@@ -66,7 +66,7 @@ public class QueryResults
         }
 
         int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
-        user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
+        user.sendTranslated(, "&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
@@ -94,11 +94,11 @@ public class QueryResults
                 totalPages = (compressedEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
                 if (totalPages > 1)
                 {
-                    user.sendTranslated("&aCompressed into &6%d&a logs! (&6%d&a pages)", compressedEntries.size(), totalPages);
+                    user.sendTranslated(, "&aCompressed into &6%d&a logs! (&6%d&a pages)", compressedEntries.size(), totalPages);
                 }
                 else
                 {
-                    user.sendTranslated("&aCompressed into &6%d&a logs!", compressedEntries.size());
+                    user.sendTranslated(, "&aCompressed into &6%d&a logs!", compressedEntries.size());
                 }
             }
         }
@@ -121,11 +121,11 @@ public class QueryResults
         }
         if (show.page == 1)
         {
-            user.sendTranslated("&aShowing %d most recent logs:", showing);
+            user.sendTranslated(, "&aShowing %d most recent logs:", showing);
         }
         else
         {
-            user.sendTranslated("&aShowing %d logs (Page %d):", showing, show.page);
+            user.sendTranslated(, "&aShowing %d logs (Page %d):", showing, show.page);
         }
         int i = 0;
         int cpage = 1;
@@ -150,7 +150,7 @@ public class QueryResults
                 catch (Exception e)
                 {
                     module.getLog().error(e, "An error occurred while showing LogEntries!");
-                    user.sendTranslated("&4Internal Error! Could not show LogEntry");
+                    user.sendTranslated(, "&4Internal Error! Could not show LogEntry");
                 }
             }
             i++;
@@ -231,7 +231,7 @@ public class QueryResults
         {
             if (!logEntry.rollback(attachment, true, preview))
             {
-                attachment.getHolder().sendTranslated("&cCould not Rollback:");
+                attachment.getHolder().sendTranslated(, "&cCould not Rollback:");
                 logEntry.getActionType().showLogEntry(attachment.getHolder(), null, logEntry, show);
                 CubeEngine.getLog().warn("Could not rollback!");
             }
@@ -298,7 +298,7 @@ public class QueryResults
         {
             if (!logEntry.redo(attachment, true, preview))
             {
-                attachment.getHolder().sendTranslated("&cCould not Redo:");
+                attachment.getHolder().sendTranslated(, "&cCould not Redo:");
                 logEntry.getActionType().showLogEntry(attachment.getHolder(), null, logEntry, show);
                 CubeEngine.getLog().warn("Could not redo!");
             }

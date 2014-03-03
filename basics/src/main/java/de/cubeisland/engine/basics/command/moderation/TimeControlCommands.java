@@ -87,7 +87,7 @@ public class TimeControlCommands
             }
             else
             {
-                throw new IncorrectUsageException(context.getSender().translate("&cYou have to specify a world when using this command from the console!"));
+                throw new IncorrectUsageException(context.getSender().composeMessage(, "&cYou have to specify a world when using this command from the console!"));
             }
         }
         if (context.hasArg(0))
@@ -203,7 +203,7 @@ public class TimeControlCommands
             context.sendTranslated("&aReseted the time for &2%s&a!", user.getName());
             if (other)
             {
-                user.sendTranslated("&eYour time was reseted!");
+                user.sendTranslated(, "&eYour time was reseted!");
             }
         }
         else

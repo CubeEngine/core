@@ -53,12 +53,11 @@ public class FireballIgnite extends BlockActionType
     {
         if (logEntry.hasCauserUser())
         {
-            user.sendTranslated("%s&aFire got set by a FireBall shot at &2%s%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(, "%s&aFire got set by a FireBall shot at &2%s%s", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {
-            user.sendTranslated("%s&aFire got set by a FireBall%s",time,loc);
+            user.sendTranslated(, "%s&aFire got set by a FireBall%s", time, loc);
         }
     }
 

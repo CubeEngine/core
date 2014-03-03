@@ -50,11 +50,11 @@ public class PortalsAttachment extends UserAttachment
         this.debug = !this.debug;
         if (debug)
         {
-            this.getHolder().sendTranslated("&aYou are now in portal debug mode!");
+            this.getHolder().sendTranslated(, "&aYou are now in portal debug mode!");
         }
         else
         {
-            this.getHolder().sendTranslated("&aYou are no longer in portal debug mode!");
+            this.getHolder().sendTranslated(, "&aYou are no longer in portal debug mode!");
         }
     }
 

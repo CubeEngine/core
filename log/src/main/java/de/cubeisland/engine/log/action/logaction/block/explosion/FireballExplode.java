@@ -56,29 +56,22 @@ public class FireballExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Fireball flying towards &2%s &ablasted away &6%dx %s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(), amount,
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(, "%s&aA Fireball flying towards &2%s &ablasted away &6%dx %s%s", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&aA Fireball blasted away &6%dx %s%s",
-                                    time, amount,
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(, "%s&aA Fireball blasted away &6%dx %s%s", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Fireball flying towards &2%s &ablasted away &6%s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(, "%s&aA Fireball flying towards &2%s &ablasted away &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&aA Fireball blasted away &6%s%s",
-                                    time,logEntry.getOldBlock(),loc);
+                user.sendTranslated(, "%s&aA Fireball blasted away &6%s%s", time, logEntry.getOldBlock(), loc);
             }
         }
     }

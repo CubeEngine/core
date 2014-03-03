@@ -130,7 +130,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated("&aReceived a new Log-Tool!");
+            user.sendTranslated(, "&aReceived a new Log-Tool!");
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class,this.module);
             logAttachment.createNewLookup(material);
 
@@ -141,7 +141,7 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated("&aFound a Log-Tool in your inventory!");
+        user.sendTranslated(, "&aFound a Log-Tool in your inventory!");
     }
 
     @Alias(names = "lb")
@@ -228,7 +228,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated("&aReceived a new Region-Selector Tool");
+            user.sendTranslated(, "&aReceived a new Region-Selector Tool");
             return;
         }
         user.getInventory().removeItem(found);
@@ -236,7 +236,7 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated("&aFound a Region-Selector Tool in your inventory!");
+        user.sendTranslated(, "&aFound a Region-Selector Tool in your inventory!");
     }
 
     @Command(desc = "Gives you a item to select a region with.")

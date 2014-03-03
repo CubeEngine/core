@@ -75,15 +75,11 @@ public class PlayerCommand extends SimpleLogActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&2%s&a used the command &f\"&6%s&f\" &6x%d%s",
-                                time, logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getAdditional().iterator().next().asText(), logEntry.getAttached().size()+1, loc);
+            user.sendTranslated(, "%s&2%s&a used the command &f\"&6%s&f\" &6x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), logEntry.getAttached().size()+1, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a used the command &f\"&6%s&f\"%s",
-                                time, logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getAdditional().iterator().next().asText(), loc);
+            user.sendTranslated(, "%s&2%s&a used the command &f\"&6%s&f\"%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), loc);
         }
     }
 

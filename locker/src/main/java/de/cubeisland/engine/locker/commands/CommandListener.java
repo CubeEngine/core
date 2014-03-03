@@ -74,7 +74,7 @@ public class CommandListener implements Listener
         map.put(sender.getName(), new Triplet<>(commandType, s, b));
         if (this.doesPersist(sender.getName()))
         {
-            sender.sendTranslated("&ePersist mode is active. Your command will be repeated until reusing &6/cpersist");
+            sender.sendTranslated(, "&ePersist mode is active. Your command will be repeated until reusing &6/cpersist");
         }
     }
 
@@ -169,7 +169,7 @@ public class CommandListener implements Listener
         {
             if (lock != null)
             {
-                user.sendTranslated("&eThere is already a protection here!");
+                user.sendTranslated(, "&eThere is already a protection here!");
                 this.cmdUsed(user);
                 event.setCancelled(true);
                 return true;
@@ -183,7 +183,7 @@ public class CommandListener implements Listener
                     case C_DONATION:
                     case C_FREE:
                     case C_GUARDED:
-                        user.sendTranslated("&eYou can only apply guarded, donation and free protections to inventory-holders!");
+                        user.sendTranslated(, "&eYou can only apply guarded, donation and free protections to inventory-holders!");
                         event.setCancelled(true);
                         this.cmdUsed(user);
                         return true;
@@ -192,7 +192,7 @@ public class CommandListener implements Listener
                 if (!canProtect)
                 {
                     this.cmdUsed(user);
-                    user.sendTranslated("&cYou cannot protect this!");
+                    user.sendTranslated(, "&cYou cannot protect this!");
                     event.setCancelled(true);
                     return true; // do nothing entity is not protectable
                 }
@@ -200,7 +200,7 @@ public class CommandListener implements Listener
         }
         else if (lock == null)
         {
-            user.sendTranslated("&6No protection detected here!");
+            user.sendTranslated(, "&6No protection detected here!");
             event.setCancelled(true);
             this.cmdUsed(user);
             return true;
@@ -256,8 +256,8 @@ public class CommandListener implements Listener
         catch (Exception ex)
         {
             this.module.getLog().error(ex, "Error with CommandInteract!");
-            user.sendTranslated("&4An unknown error occurred!");
-            user.sendTranslated("&4Please report this error to an administrator.");
+            user.sendTranslated(, "&4An unknown error occurred!");
+            user.sendTranslated(, "&4Please report this error to an administrator.");
         }
     }
 
@@ -280,11 +280,11 @@ public class CommandListener implements Listener
         case INVALIDATE_KEYS:
             if (!lock.isOwner(user))
             {
-                user.sendTranslated("&cThis is not your protection!");
+                user.sendTranslated(, "&cThis is not your protection!");
             }
             else if (lock.hasPass())
             {
-                user.sendTranslated("&eYou cannot invalidate KeyBooks for password protected locks. &aChange the password to invalidate them!");
+                user.sendTranslated(, "&eYou cannot invalidate KeyBooks for password protected locks. &aChange the password to invalidate them!");
             }
             else
             {
@@ -303,7 +303,7 @@ public class CommandListener implements Listener
             {
                 if (lock.isPublic())
                 {
-                    user.sendTranslated("&eThis protection is public!");
+                    user.sendTranslated(, "&eThis protection is public!");
                 }
                 else
                 {
@@ -312,7 +312,7 @@ public class CommandListener implements Listener
             }
             else
             {
-                user.sendTranslated("&cThis is not your protection!");
+                user.sendTranslated(, "&cThis is not your protection!");
             }
             break;
         case GIVE:
@@ -320,11 +320,11 @@ public class CommandListener implements Listener
             {
                 User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
-                user.sendTranslated("&2%s&e is now the owner of this protection.", newOwner.getName());
+                user.sendTranslated(, "&2%s&e is now the owner of this protection.", newOwner.getName());
             }
             else
             {
-                user.sendTranslated("&cThis is not your protection!");
+                user.sendTranslated(, "&cThis is not your protection!");
             }
         case FLAGS_SET:
             if (lock.isOwner(user) || lock.hasAdmin(user) || module.perms().CMD_MODIFY_OTHER.isAuthorized(user))
@@ -335,11 +335,11 @@ public class CommandListener implements Listener
                     flags |= protectionFlag.flagValue;
                 }
                 lock.setFlags((short)(flags | lock.getFlags()));
-                user.sendTranslated("&eFlags set!");
+                user.sendTranslated(, "&eFlags set!");
             }
             else
             {
-                user.sendTranslated("&cYou are not allowed to modify this protections flags!");
+                user.sendTranslated(, "&cYou are not allowed to modify this protections flags!");
             }
             break;
         case FLAGS_UNSET:
@@ -348,7 +348,7 @@ public class CommandListener implements Listener
                 if ("all".equalsIgnoreCase(second))
                 {
                     lock.setFlags(ProtectionFlag.NONE);
-                    user.sendTranslated("&aAll flags are now unset!");
+                    user.sendTranslated(, "&aAll flags are now unset!");
                 }
                 else
                 {
@@ -358,12 +358,12 @@ public class CommandListener implements Listener
                         flags |= protectionFlag.flagValue;
                     }
                     lock.setFlags((short)(lock.getFlags() & ~flags));
-                    user.sendTranslated("&eFlags unset!");
+                    user.sendTranslated(, "&eFlags unset!");
                 }
             }
             else
             {
-                user.sendTranslated("&cYou are not allowed to modify this protections flags!");
+                user.sendTranslated(, "&cYou are not allowed to modify this protections flags!");
             }
             break;
         default: throw new IllegalArgumentException();

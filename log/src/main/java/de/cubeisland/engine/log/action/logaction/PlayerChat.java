@@ -80,24 +80,16 @@ public class PlayerChat extends SimpleLogActionType
         {
             if (logEntry.getAttached().size() >= 4)
             {
-                user.sendTranslated("%s&2%s&a spammed &f\"&6%s&f\" &6x%d%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getAdditional().iterator().next().asText(),
-                                    logEntry.getAttached().size()+1, loc);
+                user.sendTranslated(, "%s&2%s&a spammed &f\"&6%s&f\" &6x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), logEntry.getAttached().size()+1, loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\" &6x%d%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getAdditional().iterator().next().asText(),
-                                    logEntry.getAttached().size()+1, loc);
+                user.sendTranslated(, "%s&2%s&a chatted &f\"&6%s&f\" &6x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), logEntry.getAttached().size()+1, loc);
             }
         }
         else
         {
-            user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\"%s",
-                                time,logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getAdditional().iterator().next().asText(), loc);
+            user.sendTranslated(, "%s&2%s&a chatted &f\"&6%s&f\"%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), loc);
         }
     }
 

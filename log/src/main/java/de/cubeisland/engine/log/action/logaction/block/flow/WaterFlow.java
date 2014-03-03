@@ -135,11 +135,11 @@ public class WaterFlow extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size();
-            user.sendTranslated("%s&aWater flooded &6%dx&a the block%s",time,amount,loc);
+            user.sendTranslated(, "%s&aWater flooded &6%dx&a the block%s", time, amount, loc);
         }
         else
         {
-            user.sendTranslated("%s&aWater flooded the block%s",time,loc);
+            user.sendTranslated(, "%s&aWater flooded the block%s", time, loc);
         }
     }
 

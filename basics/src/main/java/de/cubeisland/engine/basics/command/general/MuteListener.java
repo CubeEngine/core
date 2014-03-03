@@ -52,7 +52,7 @@ public class MuteListener implements Listener
                 if (bUser.getMuted() != null && System.currentTimeMillis() < bUser.getMuted().getTime())
                 {
                     event.setCancelled(true);
-                    sender.sendTranslated("&cYou try to speak but nothing happens!");
+                    sender.sendTranslated(, "&cYou try to speak but nothing happens!");
                 }
             }
             // ignored?

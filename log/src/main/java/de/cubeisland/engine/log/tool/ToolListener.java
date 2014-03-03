@@ -62,7 +62,7 @@ public class ToolListener implements Listener
                     Lookup lookup = attachment.getLookup(item.getType());
                     if (lookup == null)
                     {
-                        user.sendTranslated("&cInvalid LoggingTool-Block!");
+                        user.sendTranslated(, "&cInvalid LoggingTool-Block!");
                         return;
                     }
                     Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)

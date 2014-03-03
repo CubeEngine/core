@@ -226,33 +226,26 @@ public class QueryParameter implements Cloneable
         {
             if (this.location2 != null)
             {
-                user.sendTranslated("&eNo logs found in between &3%d&f:&3%d&f:&3%d&e and &3%d&f:&3%d&f:&3%d&e in &3%s&e!",
-                                    this.location1.x, this.location1.y, this.location1.z,
-                                    this.location2.x, this.location2.y, this.location2.z,
-                                    this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                user.sendTranslated(, "&eNo logs found in between &3%d&f:&3%d&f:&3%d&e and &3%d&f:&3%d&f:&3%d&e in &3%s&e!", this.location1.x, this.location1.y, this.location1.z, this.location2.x, this.location2.y, this.location2.z, this.module.getCore().getWorldManager().getWorld(worldID).getName());
             }
             else if (this.radius == null)
             {
-                user.sendTranslated("&eNo logs found at &3%s&f:&3%d&f:&3%d&f:&3%d&e!",
-                                    this.module.getCore().getWorldManager().getWorld(worldID).getName(),
-                                    this.location1.x, this.location1.y, this.location1.z);
+                user.sendTranslated(, "&eNo logs found at &3%s&f:&3%d&f:&3%d&f:&3%d&e!", this.module.getCore().getWorldManager().getWorld(worldID).getName(), this.location1.x, this.location1.y, this.location1.z);
             }
             else if (user.getLocation().getBlockX() == location1.x
                   && user.getLocation().getBlockY() == location1.y
                   && user.getLocation().getBlockZ() == location1.z)
             {
-                user.sendTranslated("&eNo logs found in a radius of &3%d&e around you!", radius);
+                user.sendTranslated(, "&eNo logs found in a radius of &3%d&e around you!", radius);
             }
             else
             {
-                user.sendTranslated("&eNo logs found in a radius of &3%d around %d&f:&3%d&f:&3%d&e in &3%s&e!",
-                                    this.radius,this.location1.x, this.location1.y, this.location1.z,
-                                    this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                user.sendTranslated(, "&eNo logs found in a radius of &3%d around %d&f:&3%d&f:&3%d&e in &3%s&e!", this.radius, this.location1.x, this.location1.y, this.location1.z, this.module.getCore().getWorldManager().getWorld(worldID).getName());
             }
         }
         else
         {
-            user.sendTranslated("&eNo logs found for your given parameters");
+            user.sendTranslated(, "&eNo logs found for your given parameters");
         }
     }
 

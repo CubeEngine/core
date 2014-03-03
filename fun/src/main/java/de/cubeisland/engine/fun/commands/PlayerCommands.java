@@ -149,7 +149,7 @@ public class PlayerCommands
         
         if( !(context.hasFlag("q") && module.perms().COMMAND_HAT_QUIET.isAuthorized(context.getSender()) ) && module.perms().COMMAND_HAT_NOTIFY.isAuthorized( user ) )
         {
-            user.sendTranslated("&aYour hat was changed");
+            user.sendTranslated(, "&aYour hat was changed");
         }        
     }
 

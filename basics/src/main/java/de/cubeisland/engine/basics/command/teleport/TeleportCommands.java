@@ -251,7 +251,7 @@ public class TeleportCommands
         if (TeleportCommands.teleport(target, sender.getLocation(), safe, force, true))
         {
             context.sendTranslated("&aYou teleported %s to you!", target.getName());
-            target.sendTranslated("&aYou were teleported to %s", sender.getName());
+            target.sendTranslated(, "&aYou were teleported to %s", sender.getName());
         }
     }
 

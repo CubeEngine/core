@@ -174,7 +174,7 @@ public class KitCommand extends ContainerCommand
                         else
                         {
                             context.sendTranslated("&aYou gave &2%s &athe &6%s &akit!", receiver.getName(), kit.getKitName());
-                            receiver.sendTranslated("&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
+                            receiver.sendTranslated(, "&aReceived the &6%s &akit. Enjoy it!", kit.getKitName());
                         }
                         gaveKit = true;
                     }
@@ -238,7 +238,7 @@ public class KitCommand extends ContainerCommand
                     context.sendTranslated("&aYou gave &2%s &athe &6%s&a kit!", user.getName(), kit.getKitName());
                     if (kit.getCustomMessage().equals(""))
                     {
-                        user.sendTranslated("&aReceived the &6%s&a kit. Enjoy it!", kit.getKitName());
+                        user.sendTranslated(, "&aReceived the &6%s&a kit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {

@@ -109,7 +109,7 @@ public class VanillaCommands implements CommandHolder
         {
             context.sendTranslated("&eReloading the whole server... (this may take some time)");
             // pre-translate to avoid a NPE
-            final String preTranslated = context.getSender().translate("&aThe reload is completed after %d seconds");
+            final String preTranslated = context.getSender().composeMessage(, "&aThe reload is completed after %d seconds");
 
             long time = System.currentTimeMillis();
             this.core.getServer().reload();
@@ -148,7 +148,7 @@ public class VanillaCommands implements CommandHolder
                 difficulty = Difficulty.getByValue(difficultyLevel);
                 if (difficulty == null)
                 {
-                    sender.sendTranslated("&cThe given difficulty level is unknown!");
+                    sender.sendTranslated(, "&cThe given difficulty level is unknown!");
                     return;
                 }
             }
@@ -157,7 +157,7 @@ public class VanillaCommands implements CommandHolder
                 difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.US));
                 if (difficulty == null)
                 {
-                    sender.sendTranslated("&c'%s' is not a known difficulty!", context.getString(0));
+                    sender.sendTranslated(, "&c'%s' is not a known difficulty!", context.getString(0));
                     return;
                 }
             }
@@ -166,7 +166,9 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated("The current difficulty level: %s", sender.translate(world.getDifficulty().toString().toLowerCase(Locale.US)));
+            context.sendTranslated("The current difficulty level: %s", sender.composeMessage(, world.getDifficulty()
+                                                                                                    .toString()
+                                                                                                    .toLowerCase(Locale.US)));
             if (this.core.getServer().isHardcore())
             {
                 context.sendTranslated("Your server has the hardcore mode enabled.");
@@ -198,7 +200,8 @@ public class VanillaCommands implements CommandHolder
                 final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, sender.getLocale());
                 for (OfflinePlayer player : ops)
                 {
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.translate("Last seen: %s", dateFormat.format(new Date(player.getLastPlayed()))) + ")");
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.composeMessage(, "Last seen: %s", dateFormat
+                        .format(new Date(player.getLastPlayed()))) + ")");
                 }
             }
             return;
@@ -225,7 +228,7 @@ public class VanillaCommands implements CommandHolder
         user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendTranslated("&aYou were opped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated(, "&aYou were opped by &2%s&a.", context.getSender().getName());
         }
         context.sendTranslated("&2%s &ais now an operator!", offlinePlayer.getName());
 
@@ -235,7 +238,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendTranslated("&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated(, "&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getLog().info("Player {} has been opped by {}", offlinePlayer.getName(), context.getSender().getName());
@@ -263,20 +266,20 @@ public class VanillaCommands implements CommandHolder
 
         if (!sender.getName().equals(offlinePlayer.getName()) && !core.perms().COMMAND_DEOP_OTHER.isAuthorized(sender))
         {
-            sender.sendTranslated("&cYou are not allowed to deop others!");
+            sender.sendTranslated(, "&cYou are not allowed to deop others!");
             return;
         }
 
         if (!offlinePlayer.isOp())
         {
-            sender.sendTranslated("&cThe player you tried to deop is not an operator.");
+            sender.sendTranslated(, "&cThe player you tried to deop is not an operator.");
             return;
         }
         offlinePlayer.setOp(false);
         User user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendTranslated("&aYou were deopped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated(, "&aYou were deopped by &2%s&a.", context.getSender().getName());
         }
         context.sendTranslated("&2%s&a is no operator anymore!", offlinePlayer.getName());
 
@@ -286,7 +289,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendTranslated("&aUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated(, "&aUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());

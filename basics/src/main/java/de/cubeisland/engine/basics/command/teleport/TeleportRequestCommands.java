@@ -59,7 +59,7 @@ public class TeleportRequestCommands
             context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
             return;
         }
-        user.sendTranslated("&2%s &awants to teleport to you!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
+        user.sendTranslated(, "&2%s &awants to teleport to you!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
         user.get(BasicsAttachment.class).setPendingTpToRequest(sender.getName());
         user.get(BasicsAttachment.class).removePendingTpFromRequest();
         context.sendTranslated("&aTeleport request send to &2%s&a!", user.getName());
@@ -73,8 +73,8 @@ public class TeleportRequestCommands
                 {
                     user.get(BasicsAttachment.class).removeTpRequestCancelTask();
                     user.get(BasicsAttachment.class).removePendingTpToRequest();
-                    sendingUser.sendTranslated("&2%s &cdid not accept your teleport-request.", user.getName());
-                    user.sendTranslated("&cTeleport-request of &2%s &ctimed out.", sendingUser.getName());
+                    sendingUser.sendTranslated(, "&2%s &cdid not accept your teleport-request.", user.getName());
+                    user.sendTranslated(, "&cTeleport-request of &2%s &ctimed out.", sendingUser.getName());
                 }
             }, waitTime); // wait x - seconds
             Integer oldtaskID = user.get(BasicsAttachment.class).getTpRequestCancelTask();
@@ -99,7 +99,7 @@ public class TeleportRequestCommands
                 context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
                 return;
             }
-            user.sendTranslated("&2%s &awants to teleport you to them!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
+            user.sendTranslated(, "&2%s &awants to teleport you to them!\nUse &e/tpaccept &ato accept or &c/tpdeny &ato deny the request!", sender.getName());
             user.get(BasicsAttachment.class).setPendingTpFromRequest(sender.getName());
             user.get(BasicsAttachment.class).removePendingTpToRequest();
             context.sendTranslated("&aTeleport request send to &2%s!", user.getName());
@@ -113,8 +113,8 @@ public class TeleportRequestCommands
                     {
                         user.get(BasicsAttachment.class).removeTpRequestCancelTask();
                         user.get(BasicsAttachment.class).removePendingTpFromRequest();
-                        sendingUser.sendTranslated("&2%s &cdid not accept your teleport-request.", user.getName());
-                        user.sendTranslated("&cTeleport-request of &2%s &ctimed out.", sendingUser.getName());
+                        sendingUser.sendTranslated(, "&2%s &cdid not accept your teleport-request.", user.getName());
+                        user.sendTranslated(, "&cTeleport-request of &2%s &ctimed out.", sendingUser.getName());
                     }
                 }, waitTime); // wait x - seconds
                 Integer oldtaskID = user.get(BasicsAttachment.class).getTpRequestCancelTask();
@@ -155,7 +155,7 @@ public class TeleportRequestCommands
                 }
                 if (!TeleportCommands.teleport(sender, user.getLocation(), true, false, true))
                     return;
-                user.sendTranslated("&2%s &aaccepted your teleport-request!", sender.getName());
+                user.sendTranslated(, "&2%s &aaccepted your teleport-request!", sender.getName());
                 context.sendTranslated("&aYou accepted to get teleported to &2%s&a!", user.getName());
             }
             else
@@ -169,7 +169,7 @@ public class TeleportRequestCommands
                 }
                 if (!TeleportCommands.teleport(user, sender.getLocation(), true, false, true))
                     return;
-                user.sendTranslated("&2%s &aaccepted your teleport-request!", sender.getName());
+                user.sendTranslated(, "&2%s &aaccepted your teleport-request!", sender.getName());
                 context.sendTranslated("&aYou accepted to teleport to &2%s&a!", user.getName());
             }
             Integer taskID = sender.get(BasicsAttachment.class).getTpRequestCancelTask();
@@ -206,7 +206,7 @@ public class TeleportRequestCommands
             {
                 throw new IllegalStateException("User saved in \"pendingTpToRequest\" was not found!");
             }
-            user.sendTranslated("&2%s &cdenied your teleport-request!", sender.getName());
+            user.sendTranslated(, "&2%s &cdenied your teleport-request!", sender.getName());
             context.sendTranslated("&cYou denied &a%s's &cteleport-request!", user.getName());
         }
         else if (tpahere != null)
@@ -217,7 +217,7 @@ public class TeleportRequestCommands
             {
                 throw new IllegalStateException("User saved in \"pendingTpFromRequest\" was not found!");
             }
-            user.sendTranslated("&2%s &cdenied your request!", sender.getName());
+            user.sendTranslated(, "&2%s &cdenied your request!", sender.getName());
             context.sendTranslated("&cYou denied &2%s's &cteleport-request", user.getName());
         }
         else
