@@ -223,7 +223,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     private String format(MessageType type, String message, Object[] params)
     {
-        return this.core.getMessageCompositor().composeMessage(this.getLocale(), message, params);
+        return this.core.getMessageCompositor().composeMessage(this.getLocale(), type, message, params);
     }
 
     /**

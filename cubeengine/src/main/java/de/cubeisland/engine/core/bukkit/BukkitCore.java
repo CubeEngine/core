@@ -26,12 +26,10 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Location;
@@ -84,8 +82,6 @@ import de.cubeisland.engine.core.util.converter.UserConverter;
 import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.converter.WorldLocationConverter;
-import de.cubeisland.engine.core.util.formatter.CEMessageCompositor;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.webapi.ApiConfig;
@@ -94,6 +90,7 @@ import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.core.world.TableWorld;
+import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import org.joda.time.Duration;
@@ -126,7 +123,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitBanManager banManager;
     private LogFactory logFactory;
     private ConfigurationFactory configFactory;
-    private Map<MessageType, CEMessageCompositor> messageCompositors = new HashMap<>();
+    private MessageCompositor messageCompositor;
     //endregion
 
     private List<Runnable> initHooks;
@@ -201,6 +198,8 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: file manager
         this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
+
+        this.messageCompositor = new MessageCompositor();
 
         this.fileManager.clearTempDir();
 
@@ -653,15 +652,9 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public CEMessageCompositor getMessageCompositor(MessageType messageType)
+    public MessageCompositor getMessageCompositor()
     {
-        CEMessageCompositor ceMessageCompositor = this.messageCompositors.get(messageType);
-        if (ceMessageCompositor == null)
-        {
-            this.messageCompositors.put(messageType, ceMessageCompositor = new CEMessageCompositor(messageType));
-        }
-        return ceMessageCompositor;
+        return this.messageCompositor;
     }
-
-    //endregion
+//endregion
 }
