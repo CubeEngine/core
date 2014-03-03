@@ -90,7 +90,7 @@ public class WrappedCommandSender implements CommandSender
 
     public String composeMessage(MessageType type, String message, Object... params)
     {
-        return this.getCore().getMessageCompositor().composeMessage(type, this.getCore().getI18n().translate(this.getLocale(), message), params);
+        return this.getCore().getMessageCompositor().composeMessage(type, this.getLocale(), this.getCore().getI18n().translate(this.getLocale(), message), params);
     }
 
     @Override

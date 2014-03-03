@@ -218,12 +218,8 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public String composeMessage(MessageType type, String message, Object... params)
     {
-        return this.format(type, this.core.getI18n().translate(this.getLocale(), message), params);
-    }
-
-    private String format(MessageType type, String message, Object[] params)
-    {
-        return this.core.getMessageCompositor().composeMessage(this.getLocale(), type, message, params);
+        return this.core.getMessageCompositor().composeMessage(type, this.getLocale(),
+                                       this.core.getI18n().translate(this.getLocale(), message), params);
     }
 
     /**
