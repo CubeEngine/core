@@ -82,7 +82,7 @@ import de.cubeisland.engine.core.util.converter.UserConverter;
 import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.converter.WorldConverter;
 import de.cubeisland.engine.core.util.converter.WorldLocationConverter;
-import de.cubeisland.engine.core.util.formatter.CubeCompositor;
+import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.webapi.ApiConfig;
@@ -91,6 +91,7 @@ import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.core.world.TableWorld;
+import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import org.joda.time.Duration;
@@ -123,7 +124,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitBanManager banManager;
     private LogFactory logFactory;
     private ConfigurationFactory configFactory;
-    private CubeCompositor messageCompositor;
+    private MessageCompositor messageCompositor;
     //endregion
 
     private List<Runnable> initHooks;
@@ -198,8 +199,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: file manager
         this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
-
-        this.messageCompositor = new CubeCompositor();
+        this.messageCompositor = new ColoredMessageCompositor(this);
 
         this.fileManager.clearTempDir();
 
@@ -652,7 +652,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public CubeCompositor getMessageCompositor()
+    public MessageCompositor getMessageCompositor()
     {
         return this.messageCompositor;
     }

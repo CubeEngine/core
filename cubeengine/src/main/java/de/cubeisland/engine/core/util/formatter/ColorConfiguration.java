@@ -20,31 +20,20 @@ package de.cubeisland.engine.core.util.formatter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessageType
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.core.util.ChatFormat;
+
+public class ColorConfiguration extends YamlConfiguration
 {
-    public final static MessageType POSITIVE = new MessageType("POSITIVE");
-    public final static MessageType NEUTRAL = new MessageType("NEUTRAL");
-    public final static MessageType NEGATIVE = new MessageType("NEGATICE");
-    public final static MessageType CRITICAL = new MessageType("CRITICAL");
-    public final static MessageType NONE = new MessageType("NONE");
-
-    private static final Map<String,MessageType> messageTypes = new HashMap<>();
-
-    public static MessageType valueOf(String s)
+    // TODO converters
+    public Map<MessageType, ChatFormat> colorMap = new HashMap<>();
     {
-        return messageTypes.get(s.toUpperCase());
+        this.colorMap.put(MessageType.POSITIVE, ChatFormat.BRIGHT_GREEN);
+        this.colorMap.put(MessageType.NEUTRAL, ChatFormat.YELLOW);
+        this.colorMap.put(MessageType.NEGATIVE, ChatFormat.RED);
+        this.colorMap.put(MessageType.CRITICAL, ChatFormat.DARK_RED);
+        this.colorMap.put(MessageType.NONE, null);
     }
 
-    private final String name;
-
-    private MessageType(String name)
-    {
-        this.name = name;
-        messageTypes.put(name, this);
-    }
-
-    public final String getName()
-    {
-        return name;
-    }
+    public Map<ChatFormat, ChatFormat> colorRemap = new HashMap<>();
 }

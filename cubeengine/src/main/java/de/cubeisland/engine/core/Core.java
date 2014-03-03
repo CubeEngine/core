@@ -33,10 +33,11 @@ import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.util.formatter.CubeCompositor;
+import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
+import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.Log;
 
 /**
@@ -185,5 +186,5 @@ public interface Core
      */
     boolean isStartupFinished();
 
-    CubeCompositor getMessageCompositor();
+    MessageCompositor getMessageCompositor();
 }
