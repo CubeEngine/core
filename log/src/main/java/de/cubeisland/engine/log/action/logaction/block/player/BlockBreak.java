@@ -190,7 +190,7 @@ public class BlockBreak extends BlockActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location,Pair<Entity,BlockActionType>> plannedPyhsics = new ConcurrentHashMap<>();
+    private final Map<Location,Pair<Entity,BlockActionType>> plannedPyhsics = new ConcurrentHashMap<>();
     public void preplanBlockPhyiscs(Location location, Entity player, BlockActionType reason)
     {
         plannedPyhsics.put(location,new Pair<>(player,reason));

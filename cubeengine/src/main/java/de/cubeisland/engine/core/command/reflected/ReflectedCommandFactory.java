@@ -38,6 +38,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.Permission;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -155,9 +156,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             }
             else
             {
-                de.cubeisland.engine.core.permission.Permission perm =
-                    module.getBasePermission().createAbstractChild("command");
-                perm = perm.createChild(node,annotation.permDefault());
+                Permission perm = module.getBasePermission().childWildcard("command").child(node, annotation.permDefault());
                 module.getCore().getPermissionManager().registerPermission(module, perm);
                 cmd.setPermission(perm.getName());
             }

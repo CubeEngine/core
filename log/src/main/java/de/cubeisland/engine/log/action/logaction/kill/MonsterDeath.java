@@ -53,7 +53,7 @@ public class MonsterDeath extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        KillActionType.showSubActionLogEntry(user, logEntry,time,loc);;
+        KillActionType.showSubActionLogEntry(user, logEntry,time,loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
@@ -71,5 +71,17 @@ public class MonsterDeath extends SimpleLogActionType
     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
         return KillActionType.rollbackDeath(attachment, logEntry, force, preview);
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
     }
 }

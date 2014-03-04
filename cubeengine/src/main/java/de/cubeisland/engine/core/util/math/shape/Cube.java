@@ -21,13 +21,13 @@ import de.cubeisland.engine.core.util.math.Vector3;
 
 public class Cube extends Cuboid
 {
-    public Cube(Vector3 point, int width)
+    public Cube(Vector3 point, int length)
     {
-        super(point, width, width, width);
+        super(point, length, length, length);
     }
     
-    public Cube(Vector3 point, int width, Vector3 centerOfRotation, Vector3 rotationAngle)
+    public Cube(Vector3 point, int length, Vector3 centerOfRotation, Vector3 rotationAngle)
     {
-        super(point, width, width, width, centerOfRotation, rotationAngle);
+        super(point, length, length, length, centerOfRotation, rotationAngle);
     }
 }

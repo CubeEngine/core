@@ -27,6 +27,8 @@ import java.util.concurrent.Executors;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.task.worker.AsyncTaskQueue;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * Abstract Database implementing most of the database methods.
  * Extend this class and complement it to use the database.
@@ -158,14 +160,14 @@ public abstract class AbstractPooledDatabase implements Database
     @Override
     public PreparedStatement prepareStatement(String statement) throws SQLException
     {
-        assert statement != null : "The statement must not be null!";
+        expectNotNull(statement, "The statement must not be null!");
         return this.getConnection().prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
     @Override
     public PreparedStatement prepareStatement(String statement, Connection withConnection) throws SQLException
     {
-        assert statement != null : "The statement must not be null!";
+        expectNotNull(statement, "The statement must not be null!");
         return withConnection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 }

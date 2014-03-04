@@ -26,7 +26,7 @@ import java.util.Set;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
 import de.cubeisland.engine.configuration.annotations.Name;
-import de.cubeisland.engine.roles.config.RoleMirror;
+import de.cubeisland.engine.roles.config.MirrorConfig;
 
 public class RolesConfig extends YamlConfiguration
 {
@@ -56,5 +56,5 @@ public class RolesConfig extends YamlConfiguration
              "      - assigned\n" +
              "      - users\n")
     @Name("mirrors")
-    public List<RoleMirror> mirrors = new ArrayList<>();
+    public List<MirrorConfig> mirrors = new ArrayList<>();
 }

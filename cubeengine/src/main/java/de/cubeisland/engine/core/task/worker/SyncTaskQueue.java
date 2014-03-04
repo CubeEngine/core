@@ -25,6 +25,8 @@ import org.bukkit.scheduler.BukkitScheduler;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This TaskQueue will execute one task every serverTick.
  */
@@ -68,7 +70,7 @@ public class SyncTaskQueue implements TaskQueue
         {
             return;
         }
-        assert runnable != null: "The runnable must not be null!";
+        expectNotNull(runnable, "The runnable must not be null!");
 
         this.taskQueue.offer(runnable);
         this.start();

@@ -36,16 +36,16 @@ import de.cubeisland.engine.core.user.UserManager;
 
 public class FlyListener implements Listener
 {
-    private UserManager usermanager;
-    private HashMap<Player, Task> tasks = new HashMap<>();
-    private Fly fly;
+    private final UserManager usermanager;
+    private final HashMap<Player, Task> tasks = new HashMap<>();
+    private final Fly fly;
     private final Location helperLocation = new Location(null, 0, 0, 0);
 
     private final Permission FLY_FEATHER;
 
     public FlyListener(Fly fly)
     {
-        this.FLY_FEATHER = fly.getBasePermission().createChild("feather");
+        this.FLY_FEATHER = fly.getBasePermission().child("feather");
         fly.getCore().getPermissionManager().registerPermission(fly,FLY_FEATHER);
         this.fly = fly;
         this.usermanager = fly.getCore().getUserManager();

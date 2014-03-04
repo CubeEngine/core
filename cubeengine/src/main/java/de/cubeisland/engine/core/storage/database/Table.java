@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.mysql.Keys;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.DataType;
@@ -39,11 +40,11 @@ import org.jooq.types.UShort;
 
 public abstract class Table<R extends Record> extends TableImpl<R> implements TableCreator<R>
 {
-    public static final DataType<UInteger> U_INTEGER = new DefaultDataType<UInteger>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "integer unsigned", "integer unsigned");
-    public static final DataType<UShort> U_SMALLINT = new DefaultDataType<UShort>(SQLDialect.MYSQL, SQLDataType.SMALLINTUNSIGNED, "smallint unsigned", "smallint unsigned");
-    public static final DataType<UInteger> U_MEDIUMINT = new DefaultDataType<UInteger>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "mediumint unsigned", "mediumint unsigned");
-    public static final DataType<Boolean> BOOLEAN = new DefaultDataType<Boolean>(SQLDialect.MYSQL, SQLDataType.BOOLEAN, "boolean", "boolean");
-    public static final DataType<String> LONGTEXT = new DefaultDataType<String>(SQLDialect.MYSQL, SQLDataType.CLOB, "longtext", "longtext");
+    public static final DataType<UInteger> U_INTEGER = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "integer unsigned", "integer unsigned");
+    public static final DataType<UShort> U_SMALLINT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.SMALLINTUNSIGNED, "smallint unsigned", "smallint unsigned");
+    public static final DataType<UInteger> U_MEDIUMINT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "mediumint unsigned", "mediumint unsigned");
+    public static final DataType<Boolean> BOOLEAN = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.BOOLEAN, "boolean", "boolean");
+    public static final DataType<String> LONGTEXT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.CLOB, "longtext", "longtext");
 
     public Table(String name, Version version)
     {
@@ -53,10 +54,10 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
 
     private final Version version;
     private UniqueKey<R> primaryKey;
-    private List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
-    private List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
+    private final List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
+    private final List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
 
-    private List<TableField<R, ? >[]> indices = new ArrayList<>();
+    private final List<TableField<R, ? >[]> indices = new ArrayList<>();
 
     private TableField<R, ?>[] fields;
 
@@ -168,9 +169,9 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
             sb.append(") ON UPDATE CASCADE ON DELETE CASCADE");
         }
         sb.append(")\n");
-        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n");// TODO
+        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n"); // TODO configurable?
         sb.append("COMMENT='").append(this.version.toString()).append("'");
-        //System.out.print("\n" + sb.toString()); // TODO remove
+        CubeEngine.getCore().getLogFactory().getDatabaseLog().info(sb.toString());
         connection.prepareStatement(sb.toString()).execute();
     }
     private static final char QUOTE = '`';

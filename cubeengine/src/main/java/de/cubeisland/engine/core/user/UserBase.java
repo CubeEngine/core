@@ -83,6 +83,8 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 /**
  * Wrapper around the BukkitPlayer/OfflinePlayer
  */
@@ -418,12 +420,43 @@ public class UserBase implements Player
     }
 
     @Override
+    public void removeAchievement(Achievement a)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.removeAchievement(a);
+        }
+    }
+
+    @Override
+    public boolean hasAchievement(Achievement a)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.hasAchievement(a);
+        }
+        return false;
+    }
+
+    @Override
     public void incrementStatistic(Statistic statistic)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
             player.incrementStatistic(statistic);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic);
         }
     }
 
@@ -438,6 +471,37 @@ public class UserBase implements Player
     }
 
     @Override
+    public void decrementStatistic(Statistic statistic, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, i);
+        }
+    }
+
+    @Override
+    public void setStatistic(Statistic statistic, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setStatistic(statistic, i);
+        }
+    }
+
+    @Override
+    public int getStatistic(Statistic statistic) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getStatistic(statistic);
+        }
+        return 0;
+    }
+
+    @Override
     public void incrementStatistic(Statistic ststc, Material mtrl)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
@@ -448,12 +512,114 @@ public class UserBase implements Player
     }
 
     @Override
+    public void decrementStatistic(Statistic statistic, Material material) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, material);
+        }
+    }
+
+    @Override
+    public int getStatistic(Statistic statistic, Material material) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getStatistic(statistic, material);
+        }
+        return 0;
+    }
+
+    @Override
     public void incrementStatistic(Statistic ststc, Material mtrl, int i)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
             player.incrementStatistic(ststc, mtrl, i);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic, Material material, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, material, i);
+        }
+    }
+
+    @Override
+    public void setStatistic(Statistic statistic, Material material, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setStatistic(statistic, material, i);
+        }
+    }
+
+    @Override
+    public void incrementStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.incrementStatistic(statistic, entityType);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, entityType);
+        }
+    }
+
+    @Override
+    public int getStatistic(Statistic statistic, EntityType entityType) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getStatistic(statistic, entityType);
+        }
+        return 0;
+    }
+
+    @Override
+    public void incrementStatistic(Statistic statistic, EntityType entityType, int i) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.incrementStatistic(statistic, entityType, i);
+        }
+    }
+
+    @Override
+    public void decrementStatistic(Statistic statistic, EntityType entityType, int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.decrementStatistic(statistic, entityType, i);
+        }
+    }
+
+    @Override
+    public void setStatistic(Statistic statistic, EntityType entityType, int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setStatistic(statistic, entityType, i);
         }
     }
 
@@ -784,9 +950,13 @@ public class UserBase implements Player
     @Override
     public void hidePlayer(Player playerToHide)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
+        final Player player = this.getPlayer();
         if (player != null)
         {
+            if (playerToHide instanceof User)
+            {
+                playerToHide = playerToHide.getPlayer();
+            }
             player.hidePlayer(playerToHide);
         }
     }
@@ -794,9 +964,13 @@ public class UserBase implements Player
     @Override
     public void showPlayer(Player playerToShow)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
+        final Player player = this.getPlayer();
         if (player != null)
         {
+            if (playerToShow instanceof User)
+            {
+                playerToShow = playerToShow.getPlayer();
+            }
             player.showPlayer(playerToShow);
         }
     }
@@ -1014,19 +1188,24 @@ public class UserBase implements Player
     public GameMode getGameMode()
     {
         final Player player = this.getOfflinePlayer().getPlayer();
+        GameMode mode = null;
         if (player != null)
         {
-            return player.getGameMode();
+            mode = player.getGameMode();
         }
         else
         {
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return GameMode.getByValue(data.getInt("playerGameType"));
+                mode = GameMode.getByValue(data.getInt("playerGameType"));
             }
         }
-        return null;
+        if (mode == null)
+        {
+            mode = GameMode.SURVIVAL;
+        }
+        return mode;
     }
 
     @Override
@@ -1058,7 +1237,7 @@ public class UserBase implements Player
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
-            return player.getMaxHealth();
+            return player.getEyeHeight();
         }
         return 0;
     }
@@ -1161,6 +1340,17 @@ public class UserBase implements Player
         if (player != null)
         {
             return player.launchProjectile(type);
+        }
+        return null;
+    }
+
+    @Override
+    public <T extends Projectile> T launchProjectile(Class<? extends T> type, Vector vector)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.launchProjectile(type, vector);
         }
         return null;
     }
@@ -1386,6 +1576,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {
@@ -1459,6 +1650,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {
@@ -1567,6 +1759,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {
@@ -1603,6 +1796,7 @@ public class UserBase implements Player
         }
         else
         {
+            // TODO
 //            NBTTagCompound data = this.getData();
 //            if (data != null)
 //            {
@@ -1662,8 +1856,7 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return this.getServer()
-                           .getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
+                return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
             }
         }
         return null;
@@ -1672,7 +1865,7 @@ public class UserBase implements Player
     @Override
     public boolean teleport(Location lctn)
     {
-        assert CubeEngine.isMainThread(): "Must be called from the main thread!";
+        expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
 
         if (lctn == null)
         {
@@ -1684,7 +1877,7 @@ public class UserBase implements Player
     @Override
     public boolean teleport(Location lctn, TeleportCause tc)
     {
-        assert CubeEngine.isMainThread(): "Must be called from the main thread!";
+        expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
 
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
@@ -2447,6 +2640,16 @@ public class UserBase implements Player
         if (player != null)
         {
             player.setTexturePack(string);
+        }
+    }
+
+    @Override
+    public void setResourcePack(String string)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setResourcePack(string);
         }
     }
 

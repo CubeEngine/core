@@ -49,7 +49,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     private Log module;
     private UserManager um;
-    private TreeSet<LogEntry> attached = new TreeSet<>();
+    private final TreeSet<LogEntry> attached = new TreeSet<>();
     private ActionType actionType;
     private World world;
     private BlockVector3 location;
@@ -226,10 +226,9 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         return this.actionType.canRollback() && this.actionType.rollback(attachment, this, force, preview);
     }
 
-    public boolean redo(User user)
+    public boolean redo(LogAttachment attachment, boolean force, boolean preview)
     {
-        // TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/412
-        return false;
+        return this.actionType.canRedo() && this.actionType.redo(attachment, this, force, preview);
     }
 
     private Location bukkitLoc = null;

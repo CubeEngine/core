@@ -29,9 +29,10 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
-import de.cubeisland.engine.roles.role.RawDataStore;
 import de.cubeisland.engine.roles.role.Role;
+import de.cubeisland.engine.roles.role.TempDataStore;
 import de.cubeisland.engine.roles.role.RolesAttachment;
+import de.cubeisland.engine.roles.role.UserDatabaseStore;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
 
@@ -56,8 +57,8 @@ public class UserInformationCommands extends UserCommandHelper
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // List all assigned roles
         context.sendTranslated("&eRoles of &2%s&e in &6%s&e:", user.getName(), world.getName());
-        for (Role pRole : rolesAttachment.getAssignedRoles(this.worldManager.getWorldId(world)))
-        {
+        for (Role pRole : rolesAttachment.getDataHolder(world).getRoles())
+            {
             if (pRole.isGlobal())
             {
                 context.sendMessage(String.format(this.LISTELEM_VALUE,"global",pRole.getName()));
@@ -86,8 +87,7 @@ public class UserInformationCommands extends UserCommandHelper
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // Search for permission
         String permission = context.getString(1);
-        ResolvedPermission resolvedPermission = rolesAttachment.getPermissions(
-            this.worldManager.getWorldId(world)).get(permission);
+        ResolvedPermission resolvedPermission = rolesAttachment.getDataHolder(world).getPermissions().get(permission);
         if (user.isOp())
         {
             context.sendTranslated("&2%s&a is Op!", user.getName());
@@ -117,7 +117,7 @@ public class UserInformationCommands extends UserCommandHelper
                                    + " in &6%s", user.getName(), permission, world.getName());
 
         // Display origin
-        RawDataStore store = resolvedPermission.getOrigin();
+        TempDataStore store = resolvedPermission.getOrigin();
         if (resolvedPermission.getOriginPermission() != null) // indirect permission
         {
             permission = resolvedPermission.getOriginPermission();
@@ -133,8 +133,8 @@ public class UserInformationCommands extends UserCommandHelper
 
     @Alias(names = "listuperm")
     @Command(names = {"listperm", "listpermission"},
-             desc = "List permission of a user [in world]",
-             usage = "[player] [in <world>]",
+             desc = "List permission assigned to a user in a world",
+             usage = "[player] [in <world>] [-all]",
              params = @Param(names = "in", type = World.class),
              flags = @Flag(longName = "all", name = "a"),
              max = 1)
@@ -145,7 +145,7 @@ public class UserInformationCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
-        RawDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
+        UserDatabaseStore rawData = rolesAttachment.getDataHolder(world);
         Map<String,Boolean> perms = context.hasFlag("a") ? rawData.getAllRawPermissions() : rawData.getRawPermissions();
         if (perms.isEmpty())
         {
@@ -178,22 +178,27 @@ public class UserInformationCommands extends UserCommandHelper
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // Check metadata
         String metaKey = context.getString(1);
-        Map<String,ResolvedMetadata> metadata = rolesAttachment.getMetadata(this.worldManager.getWorldId(world));
+        UserDatabaseStore dataHolder = rolesAttachment.getDataHolder(world);
+        Map<String,ResolvedMetadata> metadata = dataHolder.getMetadata();
         if (!metadata.containsKey(metaKey))
         {
             context.sendTranslated("&6%s &is not set for &2%s&e in &6%s&e.", metaKey, user.getName(), world.getName());
             return;
         }
         context.sendTranslated("&6%s&e: &6%s&e is set for &2%s&e in &6%s&e.", metaKey, metadata.get(metaKey).getValue(), user.getName(), world.getName());
-        if (metadata.get(metaKey).getOrigin() != rolesAttachment.getRawData(this.worldManager.getWorldId(world)))
+        if (metadata.get(metaKey).getOrigin() != dataHolder)
         {
-            context.sendTranslated("&eOrigin: &6%s&e.", metadata.get(metaKey).getOrigin().getName());
+            context.sendTranslated("&eOrigin: &6%s&e", metadata.get(metaKey).getOrigin().getName());
+        }
+        else
+        {
+            context.sendTranslated("&eOrigin: &6directly assigned");
         }
     }
 
     @Alias(names = "listumeta")
     @Command(names = {"listdata", "listmeta", "listmetadata"},
-             desc = "List metadata of a user [in world]",
+             desc = "Lists assigned metadata from a user [in world]",
              usage = "[player] [in <world>]",
              params = @Param(names = "in", type = World.class),
              flags = @Flag(longName = "all", name = "a"),
@@ -205,7 +210,7 @@ public class UserInformationCommands extends UserCommandHelper
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
-        RawDataStore rawData = rolesAttachment.getRawData(this.worldManager.getWorldId(world));
+        UserDatabaseStore rawData = rolesAttachment.getDataHolder(world);
         Map<String, String> metadata = context.hasFlag("a") ? rawData.getAllRawMetadata() : rawData.getRawMetadata();
         // List all metadata
         context.sendTranslated("&eMetadata of &2%s&e in &6%s&e.:", user.getName(), world.getName());

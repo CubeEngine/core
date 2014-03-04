@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Name;
 import de.cubeisland.engine.core.util.Version;
 
 /**

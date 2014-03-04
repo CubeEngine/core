@@ -40,7 +40,7 @@ import de.cubeisland.engine.rulebook.Rulebook;
 public final class RulebookManager
 {
     private final Rulebook module;
-    private Map<Locale, String[]> rulebooks;
+    private final Map<Locale, String[]> rulebooks;
 
     public RulebookManager(Rulebook module)
     {

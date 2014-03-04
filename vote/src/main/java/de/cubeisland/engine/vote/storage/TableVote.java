@@ -38,6 +38,7 @@ public class TableVote extends Table<VoteModel>
         this.setPrimaryKey(USERID);
         this.addForeignKey(TABLE_USER.getPrimaryKey(), USERID);
         this.addFields(USERID, LASTVOTE, VOTEAMOUNT);
+        TABLE_VOTE = this;
     }
 
     public final TableField<VoteModel, UInteger> USERID = createField("userid", U_INTEGER.nullable(false), this);

@@ -17,296 +17,164 @@
  */
 package de.cubeisland.engine.core.permission;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.permissions.Permissible;
 
-import gnu.trove.set.hash.THashSet;
+import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.util.StringUtils;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
 
 public class Permission
 {
-    private String permission;
-    private PermDefault def;
+    private final String name;
+    private final PermDefault def;
+    private final Set<Permission> parents = new HashSet<>(); // bound as children or attached
 
-    private Set<Permission> bundle = null;
+    private final Set<Permission> children = new HashSet<>(); // bound onto name.*
+    private final Set<Permission> attached = new HashSet<>(); // bound onto name
 
-    private Permission parent = null;
-    private Set<Permission> children = null;
+    private final boolean wildcard;
 
-    private final boolean registrable;
+    public static final Permission BASE = new Permission(null, "cubeengine", FALSE, true); // cubeengine.*
 
-    public static final Permission BASE = createAbstractPermission("cubeengine", FALSE);
-
-    public static Permission createAbstractPermission(String name)
+    private Permission(String parentName, String name, PermDefault def)
     {
-        return new Permission(false, name, OP);
+       this(parentName, name, def, false);
     }
 
-    public static Permission createAbstractPermission(String name, PermDefault def)
+    private Permission(String parentName, String name, PermDefault def, boolean wildcard)
     {
-        return new Permission(false, name, def);
-    }
-
-    public static Permission createPermission(String name)
-    {
-        return new Permission(true, name, OP);
-    }
-
-    public static Permission createPermission(String name, PermDefault def)
-    {
-        return new Permission(true, name, def);
-    }
-
-    /**
-     * Creates a new permission
-     *
-     * @param registrable false to make an abstract permission that will not register
-     */
-    private Permission(boolean registrable, String parentName, String name, PermDefault def)
-    {
-        this.permission = parentName.toLowerCase() + "." + name.toLowerCase();
-        this.registrable = registrable;
+        if (parentName != null)
+        {
+            this.name = parentName.toLowerCase() + "." + name.toLowerCase();
+        }
+        else
+        {
+            this.name = name.toLowerCase();
+        }
         this.def = def;
+        this.wildcard = wildcard;
     }
 
-    /**
-     * Creates a new permission
-     *
-     * @param registrable false to make an abstract permission that will not register
-     */
-    private Permission(boolean registrable, String name, PermDefault def)
+    public Permission newPerm(String name)
     {
-        assert !name.contains("*") : "* permissions are generated automatically!";
-        this.permission = name.toLowerCase();
-        this.registrable = registrable;
-        this.def = def;
+        return this.newPerm(name, OP);
     }
 
-    public boolean isRegistrable()
+    public Permission newPerm(String name, PermDefault def)
     {
-        return registrable;
+        return new Permission(this.name, name, def);
     }
 
-    protected Permission(String name)
+    public Permission newWildcard(String name)
     {
-        this(name, OP);
+        return this.newWildcard(name, FALSE);
     }
 
-    protected Permission(String name, PermDefault def)
+    public Permission newWildcard(String name, PermDefault def)
     {
-        this(true, name, def);
+        return new Permission(this.name, name, def, true);
     }
 
-    protected Permission(String parentName, String name, PermDefault def)
+    public Permission child(String name)
     {
-        this(true, parentName, name, def);
+        return this.child(name, OP);
     }
 
-    protected Permission(String parentName, String name)
+    public Permission child(String name, PermDefault def)
     {
-        this(parentName, name, OP);
+        return this.getChild(name, def, false);
     }
 
-    /**
-     * Adds this permission to given bundle-permission.
-     * This will not affect any name of the permissions.
-     *
-     * @return fluent interface
-     */
-    public Permission attachTo(Permission bundlePermission)
+    public Permission childWildcard(String name)
     {
-        bundlePermission.addBundle(this);
-        return this;
+        return this.childWildcard(name, FALSE);
     }
 
-    /**
-     * Adds given permissions to this bundle-permission to form a bundle.
-     * This will not affect any name of the permissions.
-     *
-     * @return fluent interface
-     */
-    public Permission attach(Permission... toAttach)
+    public Permission childWildcard(String name, PermDefault def)
+    {
+        return this.getChild(name, def, true);
+    }
+
+    private Permission getChild(String name, PermDefault def, boolean wildcard)
+    {
+        for (Permission child : children)
+        {
+            if (child.name.equals(name) && child.wildcard == wildcard)
+            {
+                if (child.def != def)
+                {
+                    throw new IllegalArgumentException("Duplicate Permission with different PermDefault");
+                }
+                return child;
+            }
+        }
+        Permission perm;
+        if (wildcard)
+        {
+            perm = this.newWildcard(name, def);
+        }
+        else
+        {
+            perm = this.newPerm(name, def);
+        }
+        checkForCircularDependency(perm);
+        this.children.add(perm);
+        perm.parents.add(this);
+        return perm;
+    }
+
+    private void checkForCircularDependency(Permission perm)
+    {
+        if (this.parents.isEmpty())
+        {
+            return;
+        }
+        if (this.parents.contains(perm))
+        {
+            throw new IllegalStateException("Circular PermissionDependency!");
+        }
+        for (Permission parent : this.parents)
+        {
+            parent.checkForCircularDependency(perm);
+        }
+    }
+
+    public void attach(Permission... toAttach)
     {
         for (Permission perm : toAttach)
         {
-            perm.attachTo(this);
-        }
-        return this;
-    }
-
-    /**
-     * Sets this permission as child of given parent-permission.
-     * The child-permission and all its children will prepend the parents-permission
-     *
-     * @return fluent interface
-     */
-    public Permission setAsChildOf(Permission parentPermission)
-    {
-        this.parent = parentPermission;
-        this.permission = parentPermission.permission + "." + this.permission;
-        if (!parentPermission.hasChildren())
-        {
-            parentPermission.children = new THashSet<>();
-        }
-        parentPermission.children.add(this);
-        if (children != null)
-        {
-            for (Permission childPerm : children)
-            {
-                childPerm.prepend(parentPermission.permission);
-            }
-        }
-        return this;
-    }
-
-    /**
-     * Prepends the parent-permission-name to this permission and all child permissions.
-     * <p>This permission will not be included in the parents * permission!
-     *
-     * @param prependPermission the permission to prepend
-     * @return fluent interface
-     */
-    public Permission prepend(Permission prependPermission)
-    {
-        this.permission = prependPermission.permission + "." + this.permission;
-        for (Permission child : this.children)
-        {
-            child.prepend(prependPermission.permission);
-        }
-        return this;
-    }
-
-    /**
-     * Sets the given permission as child of this parent-permission.
-     * The child-permission and all its children will prepend the parents-permission
-     *
-     * @return fluent interface
-     */
-    public Permission addChildren(Permission... childPerms)
-    {
-        for (Permission child : childPerms)
-        {
-            child.setAsChildOf(this);
-        }
-        return this;
-    }
-
-    /**
-     * Prepends given string to this permission and all child permissions
-     */
-    private void prepend(String s)
-    {
-        this.permission = s + "." + this.permission;
-        if (this.hasChildren())
-        {
-            for (Permission childPerm : children)
-            {
-                childPerm.prepend(s);
-            }
+            checkForCircularDependency(perm);
+            this.attached.add(perm);
+            perm.parents.add(this);
         }
     }
 
-    /**
-     * Creates a child-permission
-     */
-    public Permission createChild(String name)
+    public boolean isAuthorized(Permissible permissible)
     {
-        return this.createChild(name, OP);
-    }
+        expectNotNull(permissible, "The player may not be null!");
 
-    /**
-     * Creates an independent abstract permission that begins with the path of this permission.
-     * This permission will not be registered.
-     */
-    public Permission createAbstract(String name)
-    {
-        return new Permission(false, this.permission, name, FALSE);
-    }
-
-    /**
-     * Creates an abstract child-permission.
-     * This permission will not be registered.
-     * A wildcard permission however will be registered if needed.
-     */
-    public Permission createAbstractChild(String name)
-    {
-        Permission newPermission = this.createAbstract(name);
-        newPermission.parent = this;
-        if (!this.hasChildren())
-        {
-            this.children = new THashSet<>();
-        }
-        this.children.add(newPermission);
-        return newPermission;
-    }
-
-
-    /**
-     * Creates an independent permission that begins with the path of this permission
-     */
-    public Permission createNew(String name)
-    {
-        return this.createNew(name, OP);
-    }
-
-    /**
-     * Creates an independent permission that begins with the path of this permission
-     */
-    public Permission createNew(String name, PermDefault def)
-    {
-        return new Permission(this.permission, name, def);
-    }
-
-    /**
-     * Creates a child-permission
-     */
-    public Permission createChild(String name, PermDefault def)
-    {
-        Permission newPermission = new Permission(this.permission, name, def);
-        newPermission.parent = this;
-        if (!this.hasChildren())
-        {
-            this.children = new THashSet<>();
-        }
-        this.children.add(newPermission);
-        return newPermission;
-    }
-
-    public Set<Permission> getBundles()
-    {
-        return this.bundle;
-    }
-
-    public Permission getParent()
-    {
-        return this.parent;
-    }
-
-    public boolean isAuthorized(Permissible player)
-    {
-        return player.hasPermission(this.permission);
+        return permissible.hasPermission(this.name + (this.isWildcard() ? ".*" : ""));
     }
 
     public String getName()
     {
-        return this.permission;
+        return name;
     }
 
     public PermDefault getDefault()
     {
-        return this.def;
+        return def;
     }
 
-    private void addBundle(Permission bundlePermission)
+    public Set<Permission> getParents()
     {
-        if (bundle == null)
-        {
-            bundle = new THashSet<>();
-        }
-        bundle.add(bundlePermission);
+        return parents;
     }
 
     public Set<Permission> getChildren()
@@ -314,19 +182,31 @@ public class Permission
         return children;
     }
 
+    public Set<Permission> getAttached()
+    {
+        return attached;
+    }
+
+    public boolean isWildcard()
+    {
+        return wildcard;
+    }
+
     public boolean hasChildren()
     {
-        return children != null && !children.isEmpty();
+        return !this.children.isEmpty();
     }
 
-    public boolean hasParent()
+    public boolean hasAttached()
     {
-        return this.parent != null;
+        return !this.attached.isEmpty();
     }
 
-    public boolean hasBundles()
+    public void detach(Permission perm)
     {
-        return this.bundle != null && !this.bundle.isEmpty();
+        this.children.remove(perm);
+        this.attached.remove(perm);
+        perm.parents.remove(this);
     }
 
     @Override
@@ -343,22 +223,43 @@ public class Permission
 
         Permission that = (Permission)o;
 
-        if (permission != null ? !permission.equals(that.permission) : that.permission != null)
+        if (wildcard != that.wildcard)
         {
             return false;
         }
-
-        return true;
+        return !(name != null ? !name.equals(that.name) : that.name != null);
     }
 
     @Override
     public int hashCode()
     {
-        return permission != null ? permission.hashCode() : 0;
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (wildcard ? 1 : 0);
+        return result;
     }
 
-    public void removeChild(Permission permission)
+    public static Permission getFor(CubeCommand command)
     {
-        this.children.remove(permission);
+        if (command.getPermission() != null && !command.getPermission().isEmpty())
+        {
+            String[] parts = StringUtils.explode(".", command.getPermission());
+            if ("cubeengine".equalsIgnoreCase(parts[0]))
+            {
+                Permission perm = BASE;
+                for (int i = 1; i < parts.length; i++)
+                {
+                    if (i + 1 == parts.length) // last
+                    {
+                        return perm.child(parts[i]);
+                    }
+                    perm = perm.childWildcard(parts[i]);
+                }
+            }
+            else
+            {
+                throw new IllegalArgumentException("CubeCommand permission is not valid!");
+            }
+        }
+        return null;
     }
 }

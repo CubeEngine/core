@@ -29,7 +29,7 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 
 public abstract class LogActionType extends ActionType implements Listener
 {
-    private static final SimpleDateFormat timeOnly = new SimpleDateFormat("hh:mm:ss");
+    private static final SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
     private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
@@ -128,12 +128,6 @@ public abstract class LogActionType extends ActionType implements Listener
             }
         }
         this.showLogEntry(user,logEntry,time,loc);
-    }
-
-    @Override
-    public boolean canRollback()
-    {
-        return true;
     }
 
     @Override

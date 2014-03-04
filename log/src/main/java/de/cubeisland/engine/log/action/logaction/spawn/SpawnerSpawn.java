@@ -76,4 +76,10 @@ public class SpawnerSpawn extends SimpleLogActionType
     {
         return this.lm.getConfig(world).SPAWNER_SPAWN_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO possible but why
+    }
 }

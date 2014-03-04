@@ -19,25 +19,53 @@ package de.cubeisland.engine.border;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.math.BlockVector2;
+import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
 
 public class BorderListener implements Listener
 {
     private final UserManager um;
-    private Border module;
+    private final Border module;
+    private final TObjectLongMap<String> lastNotice;
+    private static final long NOTICE_DELAY = 1000 * 3;
 
     public BorderListener(Border module)
     {
         this.module = module;
         this.um = module.getCore().getUserManager();
+        this.lastNotice = new TObjectLongHashMap<>();
+    }
+
+    private boolean mayNotice(Player player)
+    {
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime - this.lastNotice.get(player.getName()) > NOTICE_DELAY)
+        {
+            this.lastNotice.put(player.getName(), currentTime);
+            return true;
+        }
+        return false;
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        this.lastNotice.remove(event.getPlayer().getName());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -48,7 +76,7 @@ public class BorderListener implements Listener
             return;
         }
         BorderConfig config = this.module.getConfig(event.getTo().getWorld());
-        if (config.allowBypass && BorderPerms.BYPASS.isAuthorized(event.getPlayer()))
+        if (config.allowBypass && module.perms().BYPASS.isAuthorized(event.getPlayer()))
         {
             return;
         }
@@ -74,7 +102,10 @@ public class BorderListener implements Listener
             else
             {
                 event.setTo(event.getFrom()); // no movement!
-                this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
+                if (mayNotice(event.getPlayer()))
+                {
+                    this.um.getExactUser(event.getPlayer().getName()).sendTranslated("&cYou've reached the border!");
+                }
             }
         }
         else if (!(event instanceof PlayerTeleportEvent) && isChunkAlmostOutOfRange(event.getTo().getChunk(), config))
@@ -99,6 +130,39 @@ public class BorderListener implements Listener
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPortalEvent(EntityPortalEvent event)
+    {
+        if (event.getTo() == null)
+        {
+            return;
+        }
+        if (!isChunkInRange(event.getTo().getChunk(), this.module.getConfig(event.getTo().getWorld())))
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerPortalEvent(PlayerPortalEvent event)
+    {
+        if (event.getTo() == null)
+        {
+            return;
+        }
+        BorderConfig config = this.module.getConfig(event.getTo().getWorld());
+        if (config.allowBypass && module.perms().BYPASS.isAuthorized(event.getPlayer()))
+        {
+            return;
+        }
+        if (!isChunkInRange(event.getTo().getChunk(),config))
+        {
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            user.sendTranslated("&cThis portal would teleport you behind the border!");
+            event.setCancelled(true);
+        }
+    }
+
     public static boolean isChunkInRange(Chunk to, BorderConfig config)
     {
         final Chunk centerChunk = to.getWorld().getChunkAt(config.center.chunkX, config.center.chunkZ);
@@ -113,5 +177,5 @@ public class BorderListener implements Listener
         return !(spawnPos.squaredDistance(new BlockVector2(to.getX(), to.getZ())) <= (config.radius -2) * (config.radius -2));
     }
 
-    // TODO prevent chunk generation behind the border, not possible with Bukkit atm
+    // TODO prevent chunk generation behind the border, not possible with Bukkit atm   #WaitForBukkit
 }

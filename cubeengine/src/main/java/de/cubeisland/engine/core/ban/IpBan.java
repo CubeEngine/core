@@ -20,6 +20,8 @@ package de.cubeisland.engine.core.ban;
 import java.net.InetAddress;
 import java.util.Date;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 public class IpBan extends Ban
 {
     private InetAddress address;
@@ -37,7 +39,7 @@ public class IpBan extends Ban
     public IpBan(InetAddress address, String source, String reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
-        assert address != null: "The address must not be null!";
+        expectNotNull(address, "The address must not be null!");
         this.address = address;
     }
 

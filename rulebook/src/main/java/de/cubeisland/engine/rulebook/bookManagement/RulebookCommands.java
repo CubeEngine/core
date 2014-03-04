@@ -49,14 +49,14 @@ public class RulebookCommands extends ContainerCommand
     private final RulebookManager rulebookManager;
     private final Rulebook module;
 
-    private Permission getPermission;
+    private final Permission getPermission;
     
     public RulebookCommands(Rulebook module)
     {
         super(module, "rulebook", "shows all commands of the rulebook module");
         this.rulebookManager = module.getRuleBookManager();
         this.module = module;
-        this.getPermission = module.getBasePermission().createAbstractChild("command").createAbstractChild("get").createChild("other");
+        this.getPermission = module.getBasePermission().childWildcard("command").childWildcard("get").child("other");
         this.module.getCore().getPermissionManager().registerPermission(module, getPermission);
     }
 

@@ -21,7 +21,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -38,7 +37,7 @@ import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
  */
 public class SpawnCommands
 {
-    private Basics module;
+    private final Basics module;
 
     public SpawnCommands(Basics basics)
     {
@@ -124,7 +123,7 @@ public class SpawnCommands
             world = user.getWorld();
         }
         boolean force = false;
-        if (context.hasFlag("f") && BasicsPerm.COMMAND_SPAWN_FORCE.isAuthorized(context.getSender()))
+        if (context.hasFlag("f") && module.perms().COMMAND_SPAWN_FORCE.isAuthorized(context.getSender()))
         {
             force = true; // if not allowed ignore flag
         }
@@ -144,7 +143,7 @@ public class SpawnCommands
         }
         if (context.hasFlag("a"))
         {
-            if (!BasicsPerm.COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to spawn everyone!");
                 return;
@@ -154,13 +153,15 @@ public class SpawnCommands
             {
                 if (!force)
                 {
-                    if (BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(player))
+                    if (module.perms().COMMAND_SPAWN_PREVENT.isAuthorized(player))
                     {
                         continue;
                     }
                 }
                 if (!TeleportCommands.teleport(player, loc, true, force, true))
+                {
                     return;
+                }
             }
             this.module.getCore().getUserManager().broadcastMessage("&aTeleported everyone to the spawn of %s!", world.getName());
             return;
@@ -183,7 +184,7 @@ public class SpawnCommands
                 context.sendTranslated("&cYou cannot teleport an offline player to spawn!");
                 return;
             }
-            if (!force && BasicsPerm.COMMAND_SPAWN_PREVENT.isAuthorized(user))
+            if (!force && module.perms().COMMAND_SPAWN_PREVENT.isAuthorized(user))
             {
                 context.sendTranslated("&cYou are not allowed to spawn %s!", user.getName());
                 return;
@@ -193,7 +194,10 @@ public class SpawnCommands
         final Location userLocation = user.getLocation();
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
-        TeleportCommands.teleport(user, spawnLocation, true, force, true);
+        if (!TeleportCommands.teleport(user, spawnLocation, true, force, true))
+        {
+            context.sendTranslated("&cTeleport failed!");
+        }
     }
 
     @Command(desc = "Teleports you to the spawn of given world",
@@ -213,13 +217,15 @@ public class SpawnCommands
             final Location userLocation = sender.getLocation();
             spawnLocation.setPitch(userLocation.getPitch());
             spawnLocation.setYaw(userLocation.getYaw());
-            if (!TpWorldPermissions.getPermission(world.getName()).isAuthorized(sender))
+            if (!module.perms().tpWorld().getPermission(world.getName()).isAuthorized(sender))
             {
                 context.sendTranslated("You are not allowed to teleport to this world!");
                 return;
             }
             if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
+            {
                 context.sendTranslated("&aTeleported to the spawn of world &6%s&a!", world.getName());
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");

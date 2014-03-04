@@ -138,4 +138,15 @@ public class Lookup implements Cloneable
             attachment.sendPreview();
         }
     }
+
+    public void redo(User user, boolean preview)
+    {
+        LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
+        attachment.setLastLookup(this);
+        this.queryResults.redo(attachment, preview);
+        if (preview)
+        {
+            attachment.sendPreview();
+        }
+    }
 }

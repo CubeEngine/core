@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.basics;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,17 +54,6 @@ public class BasicsAttachment extends UserAttachment
     public boolean isAfk()
     {
         return afk;
-    }
-
-    private Map<String,Long> kitUsages = new HashMap<>();
-
-    public void setKitUsage(String name)
-    {
-        this.kitUsages.put(name,System.currentTimeMillis());
-    }
-
-    public Long getKitUsage(String name) {
-        return this.kitUsages.get(name);
     }
 
     private boolean unlimitedItems = false;
@@ -169,7 +155,7 @@ public class BasicsAttachment extends UserAttachment
     /**
      * Also nulls the location
      *
-     * @return
+     * @return the location
      */
     public Location getDeathLocation()
     {

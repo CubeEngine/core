@@ -52,16 +52,16 @@ public class ConomyManager
     protected final Conomy module;
     private final ThreadFactory threadFactory;
 
-    private Map<String,BankAccount> bankaccounts = new THashMap<>();
-    private Map<Long,BankAccount> bankaccountsID = new THashMap<>();
+    private final Map<String,BankAccount> bankaccounts = new THashMap<>();
+    private final Map<Long,BankAccount> bankaccountsID = new THashMap<>();
 
     protected final Log logger;
     protected final ConomyConfiguration config;
-    private Economy conomyInterface;
+    private final Economy conomyInterface;
 
     protected final DSLContext dsl;
 
-    protected UserManager um;
+    protected final UserManager um;
 
     public ConomyManager(Conomy module)
     {
@@ -74,7 +74,7 @@ public class ConomyManager
         this.logger = module.getCore().getLogFactory().getLog(Conomy.class, "Conomy-Transactions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(module.getCore(), "Conomy-Transactions"),
                                                   LoggingUtil.getFileFormat(false, false),
-                                                  false, LoggingUtil.getCycler(),
+                                                  true, LoggingUtil.getCycler(),
                                                   module.getCore().getTaskManager().getThreadFactory()));
         if (!this.module.getConfig().enableLogging)
         {

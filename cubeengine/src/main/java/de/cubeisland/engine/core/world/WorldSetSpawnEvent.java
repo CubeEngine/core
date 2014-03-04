@@ -26,8 +26,8 @@ import de.cubeisland.engine.core.bukkit.CubeEvent;
 
 public class WorldSetSpawnEvent extends CubeEvent
 {
-    private World world;
-    private Location location;
+    private final World world;
+    private final Location location;
 
     public WorldSetSpawnEvent(Core core, World world, Location location)
     {

@@ -29,7 +29,7 @@ import de.cubeisland.engine.log.storage.LogEntry;
 
 public class ActionTypeContainer extends LogActionType
 {
-    private String name;
+    private final String name;
     public ActionTypeContainer(String name)
     {
         this.setModel(null);
@@ -68,6 +68,18 @@ public class ActionTypeContainer extends LogActionType
 
     @Override
     public boolean needsModel()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean canRedo()
     {
         return false;
     }

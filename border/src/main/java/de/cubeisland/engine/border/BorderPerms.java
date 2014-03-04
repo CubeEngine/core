@@ -25,9 +25,8 @@ public class BorderPerms extends PermissionContainer<Border>
     public BorderPerms(Border module)
     {
         super(module);
-        this.bindToModule(BYPASS);
         this.registerAllPermissions();
     }
 
-    public static final Permission BYPASS = Permission.createPermission("bypass");
+    public final Permission BYPASS = getBasePerm().child("bypass");
 }

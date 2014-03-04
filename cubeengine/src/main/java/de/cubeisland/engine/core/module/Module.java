@@ -23,11 +23,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import de.cubeisland.engine.configuration.Configuration;
-import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingUtil;
+import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
@@ -36,6 +35,8 @@ import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 
 /**
@@ -53,6 +54,9 @@ public abstract class Module
     private Path folder;
     private boolean enabled;
     private Permission modulePermission;
+
+    protected Module()
+    {}
 
     void initialize(Core core, ModuleInfo info, Path folder, ModuleLoader loader, ClassLoader classLoader)
     {
@@ -247,7 +251,7 @@ public abstract class Module
      */
     public InputStream getResource(String path)
     {
-        assert path != null: "The path must not be null!";
+        expectNotNull(path, "The path must not be null!");
         return this.getClass().getResourceAsStream(path);
     }
 
@@ -275,6 +279,10 @@ public abstract class Module
                 this.onEnable();
                 this.enabled = true;
             }
+            catch (ModuleLoadError e)
+            {
+                this.getLog().error(e, "The module could not be enabled due to an unresolvable error!");
+            }
             catch (Throwable t)
             {
                 this.getLog().error(t, "{} while enabling!", t.getClass().getSimpleName());
@@ -285,8 +293,10 @@ public abstract class Module
 
     /**
      * This method disables the module
+     *
+     * @return true if and only if the module has been disabled
      */
-    final void disable()
+    final boolean disable()
     {
         if (this.enabled)
         {
@@ -295,7 +305,7 @@ public abstract class Module
                 this.onDisable();
                 if (this.modulePermission != null)
                 {
-                    Permission.BASE.removeChild(this.modulePermission);
+                    Permission.BASE.detach(this.modulePermission);
                     this.modulePermission = null;
                 }
             }
@@ -304,7 +314,9 @@ public abstract class Module
                 this.getLog().warn(t, "{} while disabling!", t.getClass().getSimpleName());
             }
             this.enabled = false;
+            return true;
         }
+        return false;
     }
 
     public ModuleRegistry getRegistry()
@@ -320,7 +332,7 @@ public abstract class Module
     {
         if (modulePermission == null)
         {
-            modulePermission = Permission.BASE.createAbstractChild(this.getId());
+            modulePermission = Permission.BASE.childWildcard(this.getId());
         }
         return modulePermission;
     }
@@ -331,20 +343,13 @@ public abstract class Module
      * @param clazz the configurations class
      * @return the loaded configuration
      */
-    public <T extends Configuration> T loadConfig(Class<T> clazz)
+    protected final <T extends Configuration> T loadConfig(Class<T> clazz)
     {
         T config = this.core.getConfigFactory().create(clazz);
         config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
-        try
+        if (config.reload(true))
         {
-            if (config.reload(true))
-            {
-                this.getLog().info("Saved new configuration file! config.{}" , config.getCodec().getExtension());
-            }
-        }
-        catch (InvalidConfigurationException ex)
-        {
-            CubeEngine.getLog().error(ex, "Failed to load the configuration for {}", config.getFile().getAbsolutePath());
+            this.getLog().info("Saved new configuration file! config.{}" , config.getCodec().getExtension());
         }
         return config;
     }

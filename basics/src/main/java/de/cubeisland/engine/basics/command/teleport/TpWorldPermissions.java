@@ -18,54 +18,42 @@
 package de.cubeisland.engine.basics.command.teleport;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsPerm;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
-import de.cubeisland.engine.basics.Basics;
-
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
-
-import static de.cubeisland.engine.basics.BasicsPerm.COMMAND;
 
 /**
  * Dynamically registered Permissions for each world.
  */
 public class TpWorldPermissions extends PermissionContainer<Basics>
 {
-    private static final Permission COMMAND_TPWORLD = COMMAND.createAbstractChild("tpworld");
-    private static Map<String, Permission> permissions = new THashMap<>();
-    private static Module module;
+    private final Permission COMMAND_TPWORLD;
+    private final Map<String, Permission> permissions = new THashMap<>();
 
-    public TpWorldPermissions(Basics module)
+    public TpWorldPermissions(Basics module, BasicsPerm perm)
     {
         super(module);
-        TpWorldPermissions.module = module;
+        COMMAND_TPWORLD = perm.COMMAND.childWildcard("tpworld");
         for (final World world : module.getCore().getWorldManager().getWorlds())
         {
             initWorldPermission(world.getName());
         }
     }
 
-    private static Permission initWorldPermission(String world)
+    private Permission initWorldPermission(String world)
     {
-        Permission perm = COMMAND_TPWORLD.createChild(world);
+        Permission perm = COMMAND_TPWORLD.child(world);
         permissions.put(world, perm);
         module.getCore().getPermissionManager().registerPermission(module,perm);
         return perm;
     }
 
-    @Override
-    public Set<Permission> getPermissions()
-    {
-        return new THashSet<>(permissions.values());
-    }
-
-    public static Permission getPermission(String world)
+    public Permission getPermission(String world)
     {
         Permission perm = permissions.get(world);
         if (perm == null)

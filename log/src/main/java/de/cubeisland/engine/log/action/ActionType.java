@@ -106,6 +106,7 @@ public abstract class ActionType
 
     public abstract String getName();
     public abstract boolean canRollback();
+    public abstract boolean canRedo();
     protected abstract Set<ActionTypeCategory> getCategories();
     public abstract void enable();
 
@@ -154,6 +155,16 @@ public abstract class ActionType
         if (this.canRollback())
         {
             attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.getActionType().getName());
+            throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
+        }
+        return false;
+    }
+
+    public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        if (this.canRedo())
+        {
+            attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Redo: &6%s", logEntry.getActionType().getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;

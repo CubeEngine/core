@@ -55,7 +55,13 @@ public class HomeCommand extends ContainerCommand
         this.module = module;
         this.tpManager = module.getTelepointManager();
         this.inviteManager = module.getInviteManager();
+    }
 
+    /**
+     * We need this because the children aren't available before the command is registered.
+     */
+    public void initChildren()
+    {
         if (module.getConfig().homes.multipleHomes)
         {
             this.setUsage("<<owner:>home>");

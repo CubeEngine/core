@@ -32,9 +32,15 @@ public class BukkitModuleManager extends BaseModuleManager
 
     public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
     {
-        super(core, parentClassLoader);
+        super(core, new BukkitServiceManager(core), new BukkitModuleLoader(core, parentClassLoader));
         this.pluginManager = core.getServer().getPluginManager();
         this.core = core;
+    }
+
+    @Override
+    public BukkitServiceManager getServiceManager()
+    {
+        return (BukkitServiceManager)super.getServiceManager();
     }
 
     void init()

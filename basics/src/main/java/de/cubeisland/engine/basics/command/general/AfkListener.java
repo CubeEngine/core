@@ -30,23 +30,22 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserManager;
 
 public class AfkListener implements Listener, Runnable
 {
-    private final Basics basics;
+    private final Basics module;
     private final UserManager um;
     private final long autoAfk;
     private final long afkCheck;
 
-    public AfkListener(Basics basics, long autoAfk, long afkCheck)
+    public AfkListener(Basics module, long autoAfk, long afkCheck)
     {
-        this.basics = basics;
-        this.um = basics.getCore().getUserManager();
+        this.module = module;
+        this.um = module.getCore().getUserManager();
         this.autoAfk = autoAfk;
         this.afkCheck = afkCheck;
     }
@@ -120,7 +119,7 @@ public class AfkListener implements Listener, Runnable
         BasicsAttachment basicsAttachment = this.um.getExactUser(player.getName()).get(BasicsAttachment.class);
         if (basicsAttachment != null)
         {
-            if (basicsAttachment.isAfk() && BasicsPerm.PREVENT_AUTOUNAFK.isAuthorized(player))
+            if (basicsAttachment.isAfk() && module.perms().PREVENT_AUTOUNAFK.isAuthorized(player))
             {
                 return;
             }
@@ -132,11 +131,11 @@ public class AfkListener implements Listener, Runnable
     public void run()
     {
         BasicsAttachment basicsAttachment;
-        for (User user : this.basics.getCore().getUserManager().getLoadedUsers())
+        for (User user : this.module.getCore().getUserManager().getLoadedUsers())
         {
             if (user.isOnline())
             {
-                basicsAttachment = user.attachOrGet(BasicsAttachment.class, this.basics);
+                basicsAttachment = user.attachOrGet(BasicsAttachment.class, this.module);
                 long lastAction = basicsAttachment.getLastAction();
                 if (lastAction == 0)
                 {
@@ -152,7 +151,7 @@ public class AfkListener implements Listener, Runnable
                 }
                 else if (System.currentTimeMillis() - lastAction > this.autoAfk)
                 {
-                    if (!BasicsPerm.PREVENT_AUTOAFK.isAuthorized(user))
+                    if (!module.perms().PREVENT_AUTOAFK.isAuthorized(user))
                     {
                         basicsAttachment.setAfk(true);
                         this.um.broadcastStatus("is now afk!" ,user);

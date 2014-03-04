@@ -39,6 +39,8 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.core.util.Cleanable;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * Manages all the configurations of the CubeEngine.
  */
@@ -55,7 +57,7 @@ public class FileManager implements Cleanable
 
     public FileManager(Logger logger, Path dataPath) throws IOException
     {
-        assert dataPath != null : "The CubeEngine plugin folder must not be null!";
+        expectNotNull(dataPath, "The CubeEngine plugin folder must not be null!");
         dataPath = dataPath.toAbsolutePath();
 
         this.logger = logger;
@@ -210,7 +212,7 @@ public class FileManager implements Cleanable
      */
     public Path getResourceFile(Resource resource)
     {
-        assert resource != null : "The resource must not be null!";
+        expectNotNull(resource, "The resource must not be null!");
 
         try
         {
@@ -232,7 +234,7 @@ public class FileManager implements Cleanable
      */
     public void dropResources(Resource[] resources)
     {
-        assert resources != null : "The resources must not be null!";
+        expectNotNull(resources, "The resources must not be null!");
 
         for (Resource resource : resources)
         {
@@ -252,9 +254,9 @@ public class FileManager implements Cleanable
      */
     public Path dropResource(Class clazz, String resPath, Path file, boolean overwrite) throws IOException
     {
-        assert clazz != null : "The class must not be null!";
-        assert resPath != null : "The resource path must not be null!";
-        assert file != null : "The file must not be null!";
+        expectNotNull(clazz, "The class must not be null!");
+        expectNotNull(resPath, "The resource path must not be null!");
+        expectNotNull(file, "The file must not be null!");
         if (Files.exists(file) && !Files.isRegularFile(file))
         {
             throw new IOException("The given file exists, but is no file!");

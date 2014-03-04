@@ -23,13 +23,14 @@ import java.util.HashSet;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.MaterialData;
 
-import static net.minecraft.server.v1_7_R1.Block.*;
+import static net.minecraft.server.v1_7_R1.Block.REGISTRY;
 import static org.bukkit.Material.*;
 
 /**
@@ -258,5 +259,23 @@ public class BlockUtil
         net.minecraft.server.v1_7_R1.Block block = getBlockForId(material.getId());
         // called in ItemDoor.place(...)
         return block.r(); // return (this.material.k()) && (d()) && (!isPowerSource());
+    }
+
+    public static Block getHighestBlockAt(Location loc)
+    {
+        return getHighestBlockAt(loc.getWorld(), loc.getBlockX(), loc.getBlockZ());
+    }
+    
+    @SuppressWarnings("deprecation")
+    public static Block getHighestBlockAt(World world, final int x, final int z)
+    {
+        int y = world.getMaxHeight() - 1;
+        
+        while (world.getBlockTypeIdAt(x, y, z) == 0 && y > 0)
+        {
+            --y;
+        }
+        
+        return world.getBlockAt(x, y, z);
     }
 }

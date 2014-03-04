@@ -96,4 +96,10 @@ public class VehicleEnter extends SimpleLogActionType
     {
         return this.lm.getConfig(world).VEHICLE_ENTER_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

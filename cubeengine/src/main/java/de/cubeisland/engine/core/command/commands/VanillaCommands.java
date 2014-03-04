@@ -32,7 +32,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -97,7 +96,7 @@ public class VanillaCommands implements CommandHolder
         final String message = context.getStrings(0);
         if (message != null)
         {
-            context.getCore().getUserManager().broadcastMessageWithPerm(message, CorePerms.COMMAND_RELOAD_NOTIFY);
+            context.getCore().getUserManager().broadcastMessageWithPerm(message, core.perms().COMMAND_RELOAD_NOTIFY);
         }
 
         if (context.hasFlag("m"))
@@ -232,7 +231,7 @@ public class VanillaCommands implements CommandHolder
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
-            if (onlineUser == user || onlineUser == context.getSender() || !CorePerms.COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser == user || onlineUser == context.getSender() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
@@ -262,7 +261,7 @@ public class VanillaCommands implements CommandHolder
             return;
         }
 
-        if (!sender.getName().equals(offlinePlayer.getName()) && !CorePerms.COMMAND_DEOP_OTHER.isAuthorized(sender))
+        if (!sender.getName().equals(offlinePlayer.getName()) && !core.perms().COMMAND_DEOP_OTHER.isAuthorized(sender))
         {
             sender.sendTranslated("&cYou are not allowed to deop others!");
             return;
@@ -283,11 +282,11 @@ public class VanillaCommands implements CommandHolder
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
-            if (onlineUser == user || onlineUser == context.getSender() || !CorePerms.COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser == user || onlineUser == context.getSender() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated("&eUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated("&aUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
         }
 
         this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());
@@ -358,7 +357,7 @@ public class VanillaCommands implements CommandHolder
         Server server = this.core.getServer();
         if (context.hasArgs())
         {
-            if (!CorePerms.COMMAND_VERSION_PLUGINS.isAuthorized(context.getSender()))
+            if (!core.perms().COMMAND_VERSION_PLUGINS.isAuthorized(context.getSender()))
             {
                 throw new PermissionDeniedException();
             }

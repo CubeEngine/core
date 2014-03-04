@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.Material;
-
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -31,7 +29,7 @@ import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 public abstract class ListCompleter<T> implements Completer
 {
-    private T[] stringConvertables;
+    private final T[] stringConvertables;
 
     protected ListCompleter(T[] stringConvertables)
     {

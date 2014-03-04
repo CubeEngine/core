@@ -19,8 +19,10 @@ package de.cubeisland.engine.log.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,6 +33,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -40,10 +43,9 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
-import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
-import gnu.trove.TLongCollection;
+import org.joda.time.Duration;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -64,8 +66,8 @@ public class QueryManager
     private final ExecutorService lookupExecutor;
     private final Runnable lookupRunner;
 
-    Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<>();
-    Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
+    final Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<>();
+    final Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
 
     private int batchSize;
     private Future<?> futureStore = null;
@@ -77,15 +79,15 @@ public class QueryManager
     private long timeSpendFullLoad = 0;
     private long logsLoggedFullLoad = 1;
 
-    private CountDownLatch latch = new CountDownLatch(0);
+    private final Semaphore latch = new Semaphore(1);
     private CountDownLatch shutDownLatch = new CountDownLatch(0);
 
-    private int cleanUpTaskId;
+    private final int cleanUpTaskId;
 
     private Connection insertConnection = null;
-    private DSLContext dsl;
-    private DSLContext cleanUpDsl;
-    private Database database;
+    private final DSLContext dsl;
+    private final DSLContext cleanUpDsl;
+    private final Database database;
 
     private TableLogEntry CURRENT_TABLE;
     private TableLogEntry OPTIMIZE_TABLE;
@@ -105,7 +107,7 @@ public class QueryManager
                 try {
                     doEmptyLogs(batchSize);
                 } catch (Exception ex) {
-                    QueryManager.this.module.getLog().error(ex, "Error while logging!");
+                    QueryManager.this.module.getLog().error(ex, "Fatal Error while logging!");
                 }
             }
         };
@@ -126,6 +128,7 @@ public class QueryManager
         };
         this.lookupExecutor = Executors.newSingleThreadExecutor(factory);
 
+        long delay = this.module.getConfiguration().cleanup.delay.getStandardSeconds() * 20;
         this.cleanUpTaskId = this.module.getCore().getTaskManager().runAsynchronousTimer(this.module, new Runnable()
         {
             @Override
@@ -133,8 +136,7 @@ public class QueryManager
             {
                 cleanUpLogs();
             }
-        }, this.module.getConfiguration().cleanup.delay.toTicks(), this.module.getConfiguration().cleanup.delay
-                                                                                                         .toTicks());
+        }, delay, delay);
     }
 
     /**
@@ -146,7 +148,7 @@ public class QueryManager
         try
         {
             this.module.getLog().debug("Analyze - Step 1/6: Wait for inserts to finish then pause inserts");
-            this.awaitAndResetLatch(); // Wait for batch insert to finish!
+            this.latch.acquire(); // Wait for batch insert to finish!
         }
         catch (InterruptedException ex)
         {
@@ -157,12 +159,12 @@ public class QueryManager
         this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
         this.CURRENT_TABLE = temporaryTable;
         this.module.getLog().debug("Analyze - Step 3/6: Optimize Table and continue logging into temporary table");
-        latch.countDown();
+        this.latch.release();
         this.cleanUpDsl.execute("ANALYZE TABLE " + OPTIMIZE_TABLE.getName());
         try
         {
             this.module.getLog().debug("Analyze - Step 4/6: Wait for inserts to finish then pause inserts");
-            this.awaitAndResetLatch();
+            this.latch.acquire();
         }
         catch (InterruptedException ex)
         {
@@ -178,7 +180,7 @@ public class QueryManager
         this.dsl.execute("DROP TABLE " + temporaryTable.getName());
         this.module.getLog().debug("Analyze - Step 6/6: Return back to normal logging. Table optimized!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
-        latch.countDown(); // Start normal logging again
+        this.latch.release(); // Start normal logging again
     }
 
     private boolean optimizeRunning = false;
@@ -215,7 +217,7 @@ public class QueryManager
             this.module.getLog().debug("!! Started automatic log_entries table cleanup !!");
             this.module.getLog().debug("(The CleanUp can take a VERY long time)");
             this.module.getLog().debug("CleanUp - Step 1/7: Wait for inserts to finish then pause inserts");
-            this.awaitAndResetLatch(); // Wait for batch insert to finish!
+            this.latch.acquire(); // Wait for batch insert to finish!
             this.cleanUpRunning = true;
         }
         catch (InterruptedException ex)
@@ -227,11 +229,11 @@ public class QueryManager
         this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
         this.CURRENT_TABLE = temporaryTable;
 
-        latch.countDown();
+        latch.release();
         if (this.module.getConfiguration().cleanup.oldLogs.enable)
         {
             this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of old logs");
-            this.cleanUpOldLogs(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanup.oldLogs.time.toMillis()));
+            this.cleanUpOldLogs(new Timestamp(System.currentTimeMillis() - module.getConfiguration().cleanup.oldLogs.time.getMillis()));
         }
         else
         {
@@ -240,10 +242,10 @@ public class QueryManager
         if (this.module.getConfiguration().cleanup.deletedWorlds)
         {
             this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of deleted worlds");
-            TLongCollection loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
+            long[] loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
             for (UInteger dbWorld : cleanUpDsl.select(TABLE_WORLD.KEY).from(TABLE_WORLD).fetch().getValues(TABLE_WORLD.KEY))
             {
-                if (loadedworlds.contains(dbWorld.longValue()))
+                if (Arrays.binarySearch(loadedworlds, dbWorld.longValue()) >= 0)
                 {
                     continue;
                 }
@@ -274,7 +276,7 @@ public class QueryManager
         try
         {
             this.module.getLog().debug("CleanUp - Step 5/7: Wait for inserts to finish then pause inserts");
-            this.awaitAndResetLatch();
+            this.latch.acquire();
         }
         catch (InterruptedException ex)
         {
@@ -290,15 +292,9 @@ public class QueryManager
         this.dsl.execute("DROP TABLE " + temporaryTable.getName());
         this.module.getLog().debug("CleanUp - Step 7/7: Re-Analyze Indices and then return back to normal logging. Table cleaned up!");
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
-        latch.countDown(); // Start normal logging again
+        this.latch.release(); // Start normal logging again
         this.analyze();
         this.cleanUpRunning = false;
-    }
-
-    synchronized private void awaitAndResetLatch() throws InterruptedException
-    {
-        this.latch.await();
-        this.latch = new CountDownLatch(1);
     }
 
     private void cleanUpOldLogs(Timestamp until)
@@ -351,7 +347,7 @@ public class QueryManager
             int del = this.cleanUpOldLogsPart(from, half, totalCount, depth +1);
             del += this.cleanUpOldLogsPart(half, to, totalCount, depth +1);
             this.module.getLog().debug("{}- Step 3/7: Deleted {} old logs in {}", StringUtils.repeat(" ", depth),
-                           del, new Duration(startTime, System.currentTimeMillis()).format("%ww%dd%hh%mm%ss%SS"));
+                           del, new Duration(startTime, System.currentTimeMillis()).toString());
             return del;
         }
     }
@@ -392,10 +388,10 @@ public class QueryManager
                             lookup.rollback(user, true);
                             return;
                         case REDO:
-                            user.sendMessage("REDO is not finished yet"); // TODO
+                            lookup.redo(user, false);
                             return;
                         case REDO_PREVIEW:
-                            user.sendMessage("REDO_PREVIEW is not finished yet"); // TODO
+                            lookup.redo(user, true);
                     }
                 }
             });
@@ -411,7 +407,7 @@ public class QueryManager
         final Queue<QueuedLog> logs = new LinkedList<>();
         try
         {
-            this.awaitAndResetLatch();  // Wait if still doing inserts
+            this.latch.acquire();  // Wait if still doing inserts
             if (queuedLogs.isEmpty())
             {
                 return;
@@ -462,45 +458,74 @@ public class QueryManager
                                          TimeUnit.NANOSECONDS.toMicros(timeSpend / logsLogged),
                             TimeUnit.NANOSECONDS.toMicros(timeSpendFullLoad / logsLoggedFullLoad));
             }
-            latch.countDown();
-            if (!queuedLogs.isEmpty())
-            {
-                this.futureStore = this.storeExecutor.submit(this.storeRunner);
-            }
-            else
-            {
-                this.insertConnection.setAutoCommit(true);
-                this.insertConnection.close();
-                this.insertConnection = null;
-                this.shutDownLatch.countDown();
-            }
         }
         catch (Exception ex)
         {
             module.getLog().error(ex, "Error while logging!");
             this.queuedLogs.addAll(logs);
-            if (latch.getCount() == 1)
+            if (latch.availablePermits() == 0)
             {
-                latch.countDown();
+                this.latch.release();
             }
             Profiler.endProfiling("logging"); // end profiling so we can start again later
             try
             {
                 insertConnection.close();
             }
-            catch (Exception ignored)
-            {}
+            catch (SQLException e)
+            {
+                module.getLog().error(e, "Error when closing connection!");
+            }
             finally
             {
                 insertConnection = null;
             }
+        }
+        finally
+        {
+            if (latch.availablePermits() == 0)
+            {
+                latch.release();
+            }
+            if (!queuedLogs.isEmpty())
+            {
+                this.futureStore = this.storeExecutor.submit(this.storeRunner);
+            }
+            else
+            {
+                if (insertConnection != null)
+                {
+                    try
+                    {
+                        this.insertConnection.setAutoCommit(true);
+                        this.insertConnection.close();
+                    }
+                    catch (SQLException e)
+                    {
+                        module.getLog().error(e, "Error when closing connection!");
+                    }
+                    this.insertConnection = null;
+                }
+                if (shutDownLatch != null)
+                {
+                    this.shutDownLatch.countDown();
+                }
+            }
+        }
+    }
+
+    private void release()
+    {
+        if (this.latch.availablePermits() == 1)
+        {
+            this.latch.release();
         }
     }
 
     protected void queueLog(QueuedLog log)
     {
         this.queuedLogs.offer(log);
-        if (this.latch.getCount() != 1 && (this.futureStore == null || this.futureStore.isDone()))
+        if (this.latch.availablePermits() == 1 && (this.futureStore == null || this.futureStore.isDone()))
         {
             this.futureStore = storeExecutor.submit(storeRunner);
         }
@@ -546,8 +571,12 @@ public class QueryManager
     public void logStatus()
     {
         this.module.getLog().info("{} logs queued!", this.queuedLogs.size());
-        this.module.getLog().info("Latch: {}", this.latch.getCount(), this.latch.toString());
-        this.module.getLog().info("FutureStore is {}done! {}", this.futureStore.isDone() ? "" : "NOT ", this.futureStore.toString());
+        this.module.getLog().info("Permit availiable? {}", this.latch.availablePermits() == 1);
+
+        if (this.futureStore != null)
+        {
+            this.module.getLog().info("FutureStore is {}done!", this.futureStore.isDone() ? "" : "NOT ");
+        }
     }
 
     public enum QueryAction

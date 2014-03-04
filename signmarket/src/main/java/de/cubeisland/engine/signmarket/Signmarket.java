@@ -31,6 +31,8 @@ public class Signmarket extends Module implements Reloadable
     private MarketSignFactory marketSignFactory;
     private SignMarketConfig config;
     private EditModeListener editModeListener;
+    private MarketSignPerm perms;
+    private SignMarketCommands smCmds;
 
     @Override
     public void onEnable()
@@ -48,10 +50,10 @@ public class Signmarket extends Module implements Reloadable
         this.getLog().trace("{} ms - MarketSignListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
         this.getLog().trace("{} ms - Command", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
-        SignMarketCommands smCmds = new SignMarketCommands(this);
+        smCmds = new SignMarketCommands(this);
         this.getCore().getCommandManager().registerCommand(smCmds);
         this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
-        new MarketSignPerm(this, smCmds);
+        this.perms = new MarketSignPerm(this, smCmds);
         this.getLog().trace("{} ms - done", Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS));
         if (this.getCore().isStartupFinished())
         {
@@ -76,15 +78,16 @@ public class Signmarket extends Module implements Reloadable
         this.config = this.loadConfig(SignMarketConfig.class);
         this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);
-        this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
+        this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler
+            .getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.marketSignFactory.loadInAllSigns();
         this.getLog().trace("{} ms - EditModeListener", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.editModeListener = new EditModeListener(this);
         this.getLog().trace("{} ms - MarketSignListener", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
         this.getLog().trace("{} ms - Command", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
-        this.getCore().getCommandManager().registerCommand(new SignMarketCommands(this));
         this.getLog().trace("{} ms - done", Profiler.endProfiling("msreload", TimeUnit.MILLISECONDS));
+        this.perms = new MarketSignPerm(this, smCmds);
     }
 
     public MarketSignFactory getMarketSignFactory()
@@ -100,5 +103,10 @@ public class Signmarket extends Module implements Reloadable
     public EditModeListener getEditModeListener()
     {
         return this.editModeListener;
+    }
+
+    public MarketSignPerm perms()
+    {
+        return this.perms;
     }
 }

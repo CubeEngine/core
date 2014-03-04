@@ -19,7 +19,6 @@ package de.cubeisland.engine.shout;
 
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
 
 public class ShoutConfiguration extends YamlConfiguration
 {

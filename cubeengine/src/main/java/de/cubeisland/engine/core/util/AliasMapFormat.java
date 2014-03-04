@@ -26,6 +26,8 @@ import java.util.TreeMap;
 
 import de.cubeisland.engine.core.filesystem.FileUtil;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+
 /**
  * This class provides methods to convert the AliasMaps used for items.txt etc. into a TreeMap and back.
  */
@@ -43,8 +45,8 @@ public class AliasMapFormat
 
     public static boolean parseStringList(List<String> input, TreeMap<String, List<String>> map, boolean update) throws IOException
     {
-        assert input != null: "Invalid input! File or Reader was null!";
-        assert map != null: "Map to parse into was null!";
+        expectNotNull(input, "Invalid input! File or Reader was null!");
+        expectNotNull(map, "Map to parse into was null!");
         boolean updated = false;
         ArrayList<String> names = new ArrayList<>();
         for (String line : input)

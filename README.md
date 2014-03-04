@@ -5,20 +5,14 @@ CubeEngine Minecraft module framework
 
 Website
 -------
-
-http://engine.cubeisland.de
+http://engine.cubeisland.de \[[Downloads](http://engine.cubeisland.de/download)\]
 
 
 Bug Tracking
 ------------
+http://github.com/CubeEngineDev/CubeEngine/issues
 
-http://bugs.engine.cubeisland.de
-
-IRC
----
-
-[#cubeengine on EsperNet](https://webchat.esper.net/?channels=cubeengine&nick=)
-
-Stable download
----------------
-http://static.cubeisland.de/CubeEngine/CubeEngine.7z
+Chat
+----
+- IRC: [#cubeengine on EsperNet](https://webchat.esper.net/?channels=cubeengine&nick=)
+- Gitter: [![Gitter chat](https://badges.gitter.im/CubeEngineDev.png)](https://gitter.im/CubeEngineDev)

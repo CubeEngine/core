@@ -28,67 +28,65 @@ public class LockerPerm extends PermissionContainer<Locker>
     public LockerPerm(Locker module, LockerCommands mainCmd)
     {
         super(module);
-        this.bindToModule(PROTECT, MODERATOR, ADMIN, LOCKER_COMMAND, SHOW_OWNER, BREAK_OTHER, EXPAND_OTHER, ACCESS_OTHER, PREVENT_NOTIFY);
-        this.prependModulePerm(DENY);
         CubeCommand createCmd = mainCmd.getChild("create");
-        PROTECT.attach(Permission.createPermission(mainCmd.getChild("info").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("persist").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("remove").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("unlock").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("modify").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("unlock").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("key").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("flag").getPermission()),
-                       Permission.createPermission(mainCmd.getChild("give").getPermission()),
-                       Permission.createPermission(createCmd.getChild("private").getPermission()),
-                       Permission.createPermission(createCmd.getChild("public").getPermission()),
-                       Permission.createPermission(createCmd.getChild("donation").getPermission()),
-                       Permission.createPermission(createCmd.getChild("free").getPermission()),
-                       Permission.createPermission(createCmd.getChild("password").getPermission()),
-                       Permission.createPermission(createCmd.getChild("guarded").getPermission()),
+        PROTECT.attach(Permission.getFor(mainCmd.getChild("info")),
+                       Permission.getFor(mainCmd.getChild("persist")),
+                       Permission.getFor(mainCmd.getChild("remove")),
+                       Permission.getFor(mainCmd.getChild("unlock")),
+                       Permission.getFor(mainCmd.getChild("modify")),
+                       Permission.getFor(mainCmd.getChild("unlock")),
+                       Permission.getFor(mainCmd.getChild("key")),
+                       Permission.getFor(mainCmd.getChild("flag")),
+                       Permission.getFor(mainCmd.getChild("give")),
+                       Permission.getFor(createCmd.getChild("private")),
+                       Permission.getFor(createCmd.getChild("public")),
+                       Permission.getFor(createCmd.getChild("donation")),
+                       Permission.getFor(createCmd.getChild("free")),
+                       Permission.getFor(createCmd.getChild("password")),
+                       Permission.getFor(createCmd.getChild("guarded")),
                        CMD_INFO_SHOW_OWNER);
         MODERATOR.attach(PROTECT, SHOW_OWNER, CMD_INFO_OTHER, ACCESS_OTHER, CMD_REMOVE_OTHER);
         CubeCommand adminCmd = mainCmd.getChild("admin");
         ADMIN.attach(BREAK_OTHER, EXPAND_OTHER, CMD_REMOVE_OTHER, CMD_KEY_OTHER, CMD_MODIFY_OTHER, CMD_GIVE_OTHER, EXPAND_OTHER,
-                     Permission.createPermission(adminCmd.getChild("view").getPermission()),
-                     Permission.createPermission(adminCmd.getChild("remove").getPermission()),
-                     Permission.createPermission(adminCmd.getChild("tp").getPermission()),
-                     Permission.createPermission(adminCmd.getChild("purge").getPermission()),
-            //         Permission.createPermission(adminCmd.getChild("cleanup").getPermission()),
-              //       Permission.createPermission(adminCmd.getChild("list").getPermission()),
+                     Permission.getFor(adminCmd.getChild("view")),
+                     Permission.getFor(adminCmd.getChild("remove")),
+                     Permission.getFor(adminCmd.getChild("tp")),
+                     Permission.getFor(adminCmd.getChild("purge")),
+            //         Permission.getFor(adminCmd.getChild("cleanup")),
+              //       Permission.getFor(adminCmd.getChild("list")),
             MODERATOR);
         this.registerAllPermissions();
     }
 
-    private static final Permission DENY = Permission.createAbstractPermission("deny", PermDefault.FALSE);
+    private final Permission DENY = getBasePerm().childWildcard("deny", PermDefault.FALSE);
 
-    public static final Permission DENY_CONTAINER = DENY.createChild("container", PermDefault.FALSE);
-    public static final Permission DENY_DOOR = DENY.createChild("door", PermDefault.FALSE);
-    public static final Permission DENY_ENTITY = DENY.createChild("entity", PermDefault.FALSE);
-    public static final Permission DENY_HANGING = DENY.createChild("hanging", PermDefault.FALSE);
+    public final Permission DENY_CONTAINER = DENY.child("container", PermDefault.FALSE);
+    public final Permission DENY_DOOR = DENY.child("door", PermDefault.FALSE);
+    public final Permission DENY_ENTITY = DENY.child("entity", PermDefault.FALSE);
+    public final Permission DENY_HANGING = DENY.child("hanging", PermDefault.FALSE);
 
-    public static final Permission SHOW_OWNER = Permission.createPermission("show-owner");
-    public static final Permission BREAK_OTHER = Permission.createPermission("break-other");
-    public static final Permission ACCESS_OTHER = Permission.createPermission("access-other");
-    public static final Permission EXPAND_OTHER = Permission.createPermission("break-other");
+    public final Permission SHOW_OWNER = getBasePerm().child("show-owner");
+    public final Permission BREAK_OTHER = getBasePerm().child("break-other");
+    public final Permission ACCESS_OTHER = getBasePerm().child("access-other");
+    public final Permission EXPAND_OTHER = getBasePerm().child("break-other");
 
-    public static final Permission PREVENT_NOTIFY = Permission.createPermission("prevent-notify");
+    public final Permission PREVENT_NOTIFY = getBasePerm().child("prevent-notify");
 
-    private static final Permission LOCKER_COMMAND = Permission.createAbstractPermission("command").createAbstractChild("locker");
+    private final Permission LOCKER_COMMAND = getBasePerm().childWildcard("command").childWildcard("locker");
 
-    public static final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.createAbstractChild("remove").createChild("other");
-    public static final Permission CMD_KEY_OTHER = LOCKER_COMMAND.createAbstractChild("key").createChild("other");
-    public static final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.createAbstractChild("modify").createChild("other");
-    public static final Permission CMD_GIVE_OTHER = LOCKER_COMMAND.createAbstractChild("give").createChild("other");
+    public final Permission CMD_REMOVE_OTHER = LOCKER_COMMAND.childWildcard("remove").child("other");
+    public final Permission CMD_KEY_OTHER = LOCKER_COMMAND.childWildcard("key").child("other");
+    public final Permission CMD_MODIFY_OTHER = LOCKER_COMMAND.childWildcard("modify").child("other");
+    public final Permission CMD_GIVE_OTHER = LOCKER_COMMAND.childWildcard("give").child("other");
 
-    private static final Permission CMD_INFO = LOCKER_COMMAND.createAbstractChild("info");
+    private final Permission CMD_INFO = LOCKER_COMMAND.childWildcard("info");
 
-    public static final Permission CMD_INFO_OTHER = CMD_INFO.createChild("other");
-    public static final Permission CMD_INFO_SHOW_OWNER = CMD_INFO.createChild("show-owner");
+    public final Permission CMD_INFO_OTHER = CMD_INFO.child("other");
+    public final Permission CMD_INFO_SHOW_OWNER = CMD_INFO.child("show-owner");
 
-    public static final Permission PROTECT = Permission.createPermission("protect");
-    public static final Permission ADMIN = Permission.createPermission("admin");
-    public static final Permission MODERATOR = Permission.createPermission("moderator");
+    public final Permission PROTECT = getBasePerm().child("protect");
+    public final Permission ADMIN = getBasePerm().child("admin");
+    public final Permission MODERATOR = getBasePerm().child("moderator");
 
 
 }

@@ -53,6 +53,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Colorable;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -63,7 +64,7 @@ public class EntityDataChanger<EntityInterface>
 {
     private final Class<EntityInterface> clazz;
     protected final EntityChanger<EntityInterface, ?> changer;
-    public static Set<EntityDataChanger> entityDataChangers = new HashSet<>();
+    public static final Set<EntityDataChanger> entityDataChangers = new HashSet<>();
 
     public static final EntityDataChanger<Pig> PIG_SADDLE =
             new EntityDataChanger<>(Pig.class,
@@ -222,7 +223,7 @@ public class EntityDataChanger<EntityInterface>
     public static  final EntityDataChanger<Colorable> SHEEP_COLOR_RANDOM =
         new EntityDataChanger<>(Colorable.class,
                  new BoolEntityChanger<Colorable>("random") {
-                     private Random random = new Random(System.nanoTime());
+                     private final Random random = new Random(System.nanoTime());
                      @Override
                      public void applyEntity(Colorable entity, Boolean input)
                      {
@@ -349,6 +350,7 @@ public class EntityDataChanger<EntityInterface>
                                     public void applyEntity(Horse entity, Integer input)
                                     {
                                         entity.setJumpStrength(input);
+
                                     }
 
                                     @Override
@@ -370,6 +372,46 @@ public class EntityDataChanger<EntityInterface>
                                         return null;
                                     }
                                 });
+
+    // TODO EntitySpeed using Bukkit-API #WaitForBukkit
+    public static final EntityDataChanger<LivingEntity> ENTITY_SPEED =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, Double>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, Double input)
+                                    {
+                                        BukkitUtils.setEntitySpeed(entity, input);
+                                    }
+
+                                    @Override
+                                    public Double getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("speed"))
+                                        {
+                                            try
+                                            {
+                                                double speed = Double.parseDouble(input.substring(5, input.length()));
+                                                if (speed >= 0 && speed <= 2)
+                                                {
+                                                    return speed;
+                                                }
+                                            }
+                                            catch (NumberFormatException ignored)
+                                            {}
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    /*
+    BukkitUtils.setEntitySpeed(entity, input);
+    Default speed for horse:
+                                        return (0.44999998807907104D +
+                                            this.random.nextDouble() * 0.3D +
+                                            this.random.nextDouble() * 0.3D
+                                            + this.random.nextDouble() * 0.3D)
+                                            * 0.25D;
+     */
 
     public static final EntityDataChanger<LivingEntity> ENTITY_NAME =
         new EntityDataChanger<>(LivingEntity.class,
@@ -580,7 +622,7 @@ public class EntityDataChanger<EntityInterface>
                                     {
                                         this.map.put("horse", Variant.HORSE);
                                         this.map.put("donkey", Variant.DONKEY);
-                                        this.map.put("chestnut", Variant.MULE);
+                                        this.map.put("mule", Variant.MULE);
                                         this.map.put("undead", Variant.UNDEAD_HORSE);
                                         this.map.put("skeleton", Variant.SKELETON_HORSE);
                                     }
@@ -612,7 +654,6 @@ public class EntityDataChanger<EntityInterface>
                                     }
                                 });
 
-    // TODO HORSE SPEED (Wait for bukkit ): )
 
     private EntityDataChanger(Class<EntityInterface> clazz, EntityChanger<EntityInterface, ?> changer)
     {
@@ -650,7 +691,7 @@ public class EntityDataChanger<EntityInterface>
 
     private static abstract class BoolEntityChanger<E> extends EntityChanger<E, Boolean>
     {
-        private List<String> names;
+        private final List<String> names;
         protected BoolEntityChanger(String... names)
         {
             this.names = Arrays.asList(names);
@@ -659,13 +700,20 @@ public class EntityDataChanger<EntityInterface>
         @Override
         public Boolean getTypeValue(String input)
         {
-            return Match.string().matchString(input, this.names) != null;
+            for (String name : names)
+            {
+                if (name.equalsIgnoreCase(input))
+                {
+                    return true;
+                }
+            }
+            return null;
         }
     }
 
     private static abstract class MappedEntityChanger<E, T> extends EntityChanger<E, T>
     {
-        protected Map<String, T> map = new HashMap<>();
+        protected final Map<String, T> map = new HashMap<>();
 
         protected MappedEntityChanger()
         {
@@ -675,8 +723,7 @@ public class EntityDataChanger<EntityInterface>
         @Override
         public T getTypeValue(String input)
         {
-            String match = Match.string().matchString(input, map.keySet());
-            return match != null ? map.get(match) : null;
+            return map.get(input);
         }
 
         abstract void fillValues();

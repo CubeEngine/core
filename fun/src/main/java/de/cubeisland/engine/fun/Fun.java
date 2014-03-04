@@ -30,13 +30,14 @@ import de.cubeisland.engine.fun.commands.ThrowCommands;
 public class Fun extends Module
 {
     private FunConfiguration config;
+    private FunPerm perms;
 
     @Override
     public void onEnable()
     {
         this.config = this.loadConfig(FunConfiguration.class);
         // this.getCore().getFileManager().dropResources(FunResource.values());
-        new FunPerm(this);
+        perms = new FunPerm(this);
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommands(this, new ThrowCommands(this), ReflectedCommand.class);
@@ -50,5 +51,10 @@ public class Fun extends Module
     public FunConfiguration getConfig()
     {
         return this.config;
+    }
+
+    public FunPerm perms()
+    {
+        return perms;
     }
 }

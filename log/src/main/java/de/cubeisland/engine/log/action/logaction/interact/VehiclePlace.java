@@ -80,7 +80,7 @@ public class VehiclePlace extends SimpleLogActionType
     }
 
     private volatile boolean clearPlanned = false;
-    private Map<Location,Entity> plannedVehiclePlace = new ConcurrentHashMap<>();
+    private final Map<Location,Entity> plannedVehiclePlace = new ConcurrentHashMap<>();
 
     public void preplanVehiclePlacement(Location location, Player player)
     {
@@ -123,5 +123,11 @@ public class VehiclePlace extends SimpleLogActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).VEHICLE_PLACE_enable;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
     }
 }

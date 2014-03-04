@@ -104,4 +104,10 @@ public class ItemPickup extends SimpleLogActionType
     {
         return this.lm.getConfig(world).ITEM_PICKUP_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

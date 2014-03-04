@@ -34,7 +34,7 @@
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>configuration</artifactId>
-      <version>1.0.3</version>
+      <version>1.0.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
@@ -42,37 +42,30 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <version>51.1</version>
-    </dependency>
-    <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.24</version>
+      <version>5.1.28</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-codec-http</artifactId>
-      <version>4.0.4.Final</version>
+      <version>5.0.0.Alpha1</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.ocpsoft.prettytime</groupId>
       <artifactId>prettytime</artifactId>
-      <version>3.0.1.Final</version>
+      <version>3.2.4.Final</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.fusesource.jansi</groupId>
-      <artifactId>jansi</artifactId>
-      <version>1.10</version>
-      <type>jar</type>
-      <scope>compile</scope>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.3</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -85,7 +78,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>14.0.1</version>
+      <version>16.0-rc1</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -99,6 +92,24 @@
       <version>${bukkitVersion}</version>
       <type>jar</type>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.fusesource.jansi</groupId>
+          <artifactId>jansi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.fusesource.jansi</groupId>
+          <artifactId>jansi-native</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.fusesource.jansi</groupId>
+          <artifactId>jansi-project</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.fusesource.jansi</groupId>
+          <artifactId>jansi-website</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
@@ -108,9 +119,19 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.5</version>
+      <groupId>org.jooq</groupId>
+      <artifactId>jooq</artifactId>
+      <version>3.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mchange</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.9.5-pre6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.spout</groupId>
+      <artifactId>simplenbt</artifactId>
+      <version>1.0.5-SNAPSHOT</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -125,21 +146,6 @@
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jooq</groupId>
-      <artifactId>jooq</artifactId>
-      <version>3.2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>c3p0</groupId>
-      <artifactId>c3p0</artifactId>
-      <version>0.9.1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.spout</groupId>
-      <artifactId>simplenbt</artifactId>
-      <version>1.0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -169,6 +175,17 @@
     </resources>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>de.cubeisland.engine.core.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>

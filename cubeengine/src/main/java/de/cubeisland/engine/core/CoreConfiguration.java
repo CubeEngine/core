@@ -17,14 +17,16 @@
  */
 package de.cubeisland.engine.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.core.util.time.Duration;
 import de.cubeisland.engine.logging.LogLevel;
+import org.joda.time.Duration;
 
 /**
  * This Configuration holds all basic settings for CubeEngine.
@@ -44,6 +46,9 @@ public class CoreConfiguration extends YamlConfiguration
 
         @Comment("The maximum number of offers given for a tab completion request (pressing tab).")
         public int maxTabCompleteOffers = 5;
+
+        @Comment("A List of commands CubeEngine will not try to override")
+        public List<String> noOverride = new ArrayList<>();
     }
 
     public ExecutorSection executor;
@@ -78,10 +83,10 @@ public class CoreConfiguration extends YamlConfiguration
 
     public class LoggingSection implements Section
     {
-        @Comment({"Logging into Console", "ALL > TRACE > DEBUG > INFO > WARN > ERROR > OFF"})
+        @Comment({"Logging into Console", "ALL > TRACE > DEBUG > INFO > WARN > ERROR > NONE"})
         public LogLevel consoleLevel = LogLevel.INFO;
 
-        @Comment({"Logging to the main log file", "ALL > DEBUG > INFO > WARN > ERROR > OFF"})
+        @Comment({"Logging to the main log file", "ALL > DEBUG > INFO > WARN > ERROR > NONE"})
         public LogLevel fileLevel = LogLevel.INFO;
 
         @Comment("Zip all old logs to zip archives")
@@ -89,6 +94,8 @@ public class CoreConfiguration extends YamlConfiguration
 
         @Comment("Whether to log commands executed by players.")
         public boolean logCommands = false;
+
+        public boolean logDatabaseQueries = false;
     }
 
     @Comment("Whether to enable the Web API server")

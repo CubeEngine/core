@@ -56,6 +56,8 @@ import de.cubeisland.engine.logging.Log;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
 import static java.util.Map.Entry;
 
@@ -73,18 +75,18 @@ public abstract class BaseModuleManager implements ModuleManager
 
     private final Map<String, LinkedList<String>> serviceProviders;
 
-    public BaseModuleManager(Core core, ClassLoader parentClassLoader)
+    protected BaseModuleManager(Core core, ServiceManager serviceManager, ModuleLoader loader)
     {
         this.core = core;
         this.logger = core.getLog();
-        this.loader = new ModuleLoader(core, parentClassLoader);
+        this.loader = loader;
         this.modules = new LinkedHashMap<>();
         this.moduleInfoMap = new THashMap<>();
         this.classMap = new THashMap<>();
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null);
-        this.serviceManager = new ServiceManager(core);
+        this.serviceManager = serviceManager;
     }
 
     @Override
@@ -150,7 +152,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized Module loadModule(Path modulePath) throws ModuleException
     {
-        assert modulePath != null: "The file must not be null!";
+        expectNotNull(modulePath, "The file must not be null!");
         if (!Files.isRegularFile(modulePath))
         {
             throw new IllegalArgumentException("The given File is does not exist is not a normal file!");
@@ -160,8 +162,8 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized void loadModules(Path directory)
     {
-        assert directory != null: "The directory must not be null!";
-        assert Files.isDirectory(directory): "The given File is no directory!";
+        expectNotNull(directory, "The directory must not be null!");
+        expect(Files.isDirectory(directory), "The given File is no directory!");
 
         Module module;
         ModuleInfo info;
@@ -191,9 +193,9 @@ public abstract class BaseModuleManager implements ModuleManager
                 }
                 catch (ModuleAlreadyLoadedException ignored)
                 {}
-                catch (InvalidModuleException ex)
+                catch (InvalidModuleException e)
                 {
-                    this.logger.error(ex, "Failed to load the module from {}!", file);
+                    this.logger.error(e, "Failed to load the module from {}!", file);
                 }
             }
         }
@@ -399,6 +401,17 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized boolean enableModule(Module module)
     {
+        boolean result = this.enableModule0(module);
+        if (!result)
+        {
+            module.getLog().error("Module failed to enable, unloading it now.");
+            this.unloadModule(module);
+        }
+        return result;
+    }
+
+    protected synchronized boolean enableModule0(Module module)
+    {
         module.getLog().info("Enabling version {}...", module.getVersion());
         Profiler.startProfiling("enable-module");
         boolean result = module.enable();
@@ -412,47 +425,60 @@ public abstract class BaseModuleManager implements ModuleManager
             }
             module.getLog().info("Successfully enabled within {} microseconds!", enableTime);
         }
-        else
-        {
-            module.getLog().error("Module failed to load.");
-        }
         return result;
     }
 
     public synchronized void enableModules()
     {
+        List<Module> brokenModules = new ArrayList<>();
         for (Module module : this.modules.values())
         {
-            this.enableModule(module);
+            if (!this.enableModule0(module))
+            {
+                brokenModules.add(module);
+                module.getLog().error("Module failed to enable, queued for unloading...");
+            }
+        }
+
+        for (Module module : brokenModules)
+        {
+            this.unloadModule(module);
         }
     }
 
     public synchronized void disableModule(Module module)
     {
-        Profiler.startProfiling("disable-module");
-        try
+        boolean wasEnabled = module.isEnabled();
+        if (wasEnabled)
         {
-            module.disable();
-            this.core.getUserManager().cleanup(module);
-            this.core.getEventManager().removeListeners(module);
-            this.core.getPermissionManager().removePermissions(module);
-            this.core.getTaskManager().clean(module);
-            this.core.getCommandManager().removeCommands(module);
-            this.core.getApiServer().unregisterApiHandlers(module);
-
-            this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
-
-            Iterator<Entry<String, LinkedList<String>>> it = this.serviceProviders.entrySet().iterator();
-            while (it.hasNext())
-            {
-                if (it.next().getValue().remove(module.getId()))
-                {
-                    it.remove();
-                }
-            }
-            this.core.getModuleManager().getServiceManager().unregisterServices(module);
+            Profiler.startProfiling("disable-module");
         }
-        finally
+
+        module.disable();
+        this.core.getUserManager().cleanup(module);
+        this.core.getEventManager().removeListeners(module);
+        this.core.getPermissionManager().removePermissions(module);
+        this.core.getTaskManager().clean(module);
+        this.core.getCommandManager().removeCommands(module);
+        this.core.getApiServer().unregisterApiHandlers(module);
+
+        if (wasEnabled)
+        {
+            this.core.getEventManager().fireEvent(new ModuleDisabledEvent(this.core, module));
+        }
+
+        Iterator<Entry<String, LinkedList<String>>> it = this.serviceProviders.entrySet().iterator();
+        while (it.hasNext())
+        {
+            if (it.next().getValue().remove(module.getId()))
+            {
+                it.remove();
+            }
+        }
+        this.core.getModuleManager().getServiceManager().unregisterServices(module);
+        this.core.getModuleManager().getServiceManager().removeImplementations(module);
+
+        if (wasEnabled)
         {
             module.getLog().info("Module disabled within {} microseconds", Profiler.endProfiling("disable-module", TimeUnit.MICROSECONDS));
         }
@@ -461,9 +487,9 @@ public abstract class BaseModuleManager implements ModuleManager
     /**
      * Resolves the module that need to unload or reload when unloading given module
      *
-     * @param module
+     * @param module the module
      * @param willReload true if the module will be reloaded
-     * @param modules
+     * @param modules the collection of modules
      * @param out the list of modules that need to be unloaded
      */
     private void resolveModulesForUnload(Module module, boolean willReload, Collection<Module> modules, LinkedList<Pair<Module, Boolean>> out)
@@ -585,7 +611,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.modules.remove(module.getId());
         this.moduleInfoMap.remove(module.getId());
 
-        // TODO this.core.getLogFactory().shutdown(module.getLog());
+        this.core.getLogFactory().shutdown(module.getLog());
 
         // null all the fields referencing this module
         for (Module m : this.modules.values())
@@ -601,8 +627,7 @@ public abstract class BaseModuleManager implements ModuleManager
                         field.set(m, null);
                     }
                     catch (ReflectiveOperationException ignored)
-                    {
-                    }
+                    {}
                 }
             }
         }

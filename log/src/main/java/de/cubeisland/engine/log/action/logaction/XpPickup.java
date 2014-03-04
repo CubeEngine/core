@@ -98,4 +98,10 @@ public class XpPickup extends SimpleLogActionType
     {
         return this.lm.getConfig(world).XP_PICKUP_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

@@ -36,6 +36,8 @@ import gnu.trove.set.hash.THashSet;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class BukkitWorldManager extends AbstractWorldManager
@@ -80,13 +82,9 @@ public class BukkitWorldManager extends AbstractWorldManager
         });
     }
 
-    void loadWorlds()
-    {
-    }
-
     public World createWorld(WorldCreator creator)
     {
-        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
 
         return this.server.createWorld(creator);
     }
@@ -94,7 +92,8 @@ public class BukkitWorldManager extends AbstractWorldManager
     @Override
     public World getWorld(String name)
     {
-        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
+        expectNotNull(name, "The world name must not be null!");
 
         return this.server.getWorld(name);
     }
@@ -102,7 +101,8 @@ public class BukkitWorldManager extends AbstractWorldManager
     @Override
     public World getWorld(UUID uid)
     {
-        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
+        expectNotNull(uid, "The world UUID must not be null!");
 
         return this.server.getWorld(uid);
     }
@@ -110,7 +110,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     @Override
     public boolean unloadWorld(World world, boolean save)
     {
-        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
         if (!save)
         {
             this.core.getLog().warn(new IllegalArgumentException(), "This is unstable on CraftBukkit servers");
@@ -142,7 +142,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     @Override
     public Set<World> getWorlds()
     {
-        assert CubeEngine.isMainThread() : "Must be executed from main thread!";
+        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
 
         return new THashSet<>(this.server.getWorlds());
     }

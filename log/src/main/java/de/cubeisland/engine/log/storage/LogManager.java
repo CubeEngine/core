@@ -39,7 +39,7 @@ public class LogManager
 
     private final LoggingConfiguration globalConfig;
     private final Path worldsFolder;
-    private Map<World, LoggingConfiguration> worldConfigs = new HashMap<>();
+    private final Map<World, LoggingConfiguration> worldConfigs = new HashMap<>();
 
     private final QueryManager queryManager;
 
@@ -104,6 +104,16 @@ public class LogManager
     public void fillLookupAndPreviewRollback(Lookup lookup, User user)
     {
         this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.ROLLBACK_PREVIEW);
+    }
+
+    public void fillLookupAndPreviewRedo(Lookup lookup, User user)
+    {
+        this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.REDO_PREVIEW);
+    }
+
+    public void fillLookupAndRedo(Lookup lookup, User user)
+    {
+        this.queryManager.prepareLookupQuery(lookup.clone(), user, QueryAction.REDO);
     }
 
     public LoggingConfiguration getConfig(World world)

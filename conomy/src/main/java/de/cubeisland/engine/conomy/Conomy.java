@@ -33,6 +33,7 @@ public class Conomy extends Module
 {
     private ConomyConfiguration config;
     private ConomyManager manager;
+    private ConomyPermissions perms;
 
     @Override
     public void onEnable()
@@ -43,13 +44,13 @@ public class Conomy extends Module
 
         this.config = this.loadConfig(ConomyConfiguration.class);
         this.manager = new ConomyManager(this);
-        new ConomyPermissions(this);
+        perms = new ConomyPermissions(this);
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommand(new MoneyCommand(this));
         cm.registerCommand(new EcoCommands(this));
         cm.registerCommand(new BankCommands(this));
         cm.registerCommand(new EcoBankCommands(this), "eco");
-        this.getCore().getModuleManager().getServiceManager().registerService(Economy.class, manager.getInterface(), this);
+        this.getCore().getModuleManager().getServiceManager().registerService(this, Economy.class, manager.getInterface());
     }
 
     public ConomyConfiguration getConfig()
@@ -60,5 +61,10 @@ public class Conomy extends Module
     public ConomyManager getManager()
     {
         return manager;
+    }
+
+    public ConomyPermissions perms()
+    {
+        return this.perms;
     }
 }

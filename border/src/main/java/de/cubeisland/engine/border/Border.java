@@ -33,6 +33,7 @@ public class Border extends Module
     private Map<Long, BorderConfig> worldConfigs;
     private WorldManager wm;
     private File folder;
+    private BorderPerms perms;
 
     @Override
     public void onEnable()
@@ -46,7 +47,7 @@ public class Border extends Module
         {
             this.loadConfig(world);
         }
-        new BorderPerms(this);
+        perms = new BorderPerms(this);
         this.getCore().getEventManager().registerListener(this, new BorderListener(this));
         this.getCore().getCommandManager().registerCommand(new BorderCommands(this));
 
@@ -72,5 +73,10 @@ public class Border extends Module
             return this.loadConfig(world);
         }
         return worldConfig;
+    }
+
+    public BorderPerms perms()
+    {
+        return perms;
     }
 }

@@ -25,7 +25,7 @@ import de.cubeisland.engine.core.user.UserAttachment;
 
 public class LockerAttachment extends UserAttachment
 {
-    private Set<Long> unlockedProtections = new HashSet<>();
+    private final Set<Long> unlockedProtections = new HashSet<>();
 
     public void addUnlock(Lock locker)
     {

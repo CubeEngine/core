@@ -73,4 +73,16 @@ public class AnimalDeath extends SimpleLogActionType
     {
         return KillActionType.rollbackDeath(attachment, logEntry, force, preview);
     }
+
+    @Override
+    public boolean canRollback()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

@@ -27,7 +27,7 @@ import org.jooq.impl.SQLDataType;
 
 public class Registry extends Table<RegistryModel>
 {
-    private THashMap<String, THashMap<String, String>> data = new THashMap<>();
+    private final THashMap<String, THashMap<String, String>> data = new THashMap<>();
 
     public void merge(Module module, String key, String value)
     {

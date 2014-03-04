@@ -49,12 +49,6 @@ public class PlayerTeleport extends SimpleLogActionType
     }
 
     @Override
-    public boolean canRollback()
-    {
-        return false;
-    }
-
-    @Override
     public String getName()
     {
         return "player-teleport";
@@ -156,5 +150,17 @@ public class PlayerTeleport extends SimpleLogActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).PLAYER_TELEPORT_enable;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean canRollback()
+    {
+        return false;
     }
 }

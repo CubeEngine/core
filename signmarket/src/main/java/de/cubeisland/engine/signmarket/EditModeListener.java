@@ -51,15 +51,13 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 public class EditModeListener extends ConversationCommand
 {
     private final MarketSignFactory signFactory;
-    private final SignMarketConfig config;
-    private Signmarket module;
+    private final Signmarket module;
 
-    public EditModeListener(Signmarket module)
+    public EditModeListener(final Signmarket module)
     {
         super(module, new ConversationContextFactory());
         this.module = module;
         this.signFactory = module.getMarketSignFactory();
-        this.config = module.getConfig();
 
         this.getContextFactory()
                 .addFlag(new CommandFlag("exit", "exit"))
@@ -81,7 +79,7 @@ public class EditModeListener extends ConversationCommand
                     @Override
                     public List<String> complete(CommandSender sender, String token)
                     {
-                        if (MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(sender))
+                        if (module.perms().SIGN_SIZE_INFINITE.isAuthorized(sender))
                         {
                             return Arrays.asList("6", "5", "4", "3", "2", "1", "-1");
                         }
@@ -91,8 +89,8 @@ public class EditModeListener extends ConversationCommand
         ;
     }
 
-    private TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<>();
-    private TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<>();
+    private final TLongObjectHashMap<Location> currentSignLocation = new TLongObjectHashMap<>();
+    private final TLongObjectHashMap<MarketSign> previousMarketSign = new TLongObjectHashMap<>();
 
     private boolean setEditingSign(User user, MarketSign marketSign)
     {
@@ -118,19 +116,19 @@ public class EditModeListener extends ConversationCommand
 
     private boolean checkAllowedEditing(MarketSign marketSign, User user)
     {
-        if (marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+        if (marketSign.isAdminSign() && !module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
         {
             user.sendTranslated("&cYou are not allowed to edit Admin-Signs!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
-        else if (!marketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+        else if (!marketSign.isAdminSign() && !module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
         {
             user.sendTranslated("&cYou are not allowed to edit User-Signs!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
-        if (!marketSign.isAdminSign() && !marketSign.isOwner(user) && !MarketSignPerm.SIGN_CREATE_USER_OTHER.isAuthorized(user))
+        if (!marketSign.isAdminSign() && !marketSign.isOwner(user) && !module.perms().SIGN_CREATE_USER_OTHER.isAuthorized(user))
         {
             user.sendTranslated("&cYou are not allowed to edit Signs of other Users!");
             this.currentSignLocation.remove(user.getId());
@@ -149,7 +147,7 @@ public class EditModeListener extends ConversationCommand
     @EventHandler
     public void changeWorld(PlayerChangedWorldEvent event)
     {
-        if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+        if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
         {
             User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
@@ -193,12 +191,12 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                if (prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+                if (prevMarketSign.isAdminSign() && !module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
                 {
                     user.sendTranslated("&cYou are not allowed to copy Admin-Signs!");
                     return null;
                 }
-                else if (!prevMarketSign.isAdminSign() && !MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+                else if (!prevMarketSign.isAdminSign() && !module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
                 {
                     user.sendTranslated("&cYou are not allowed to copy User-Signs!");
                     return null;
@@ -210,7 +208,7 @@ public class EditModeListener extends ConversationCommand
         {
             if (marketSign.isAdminSign())
             {
-                if (MarketSignPerm.SIGN_CREATE_ADMIN_BUY.isAuthorized(user))
+                if (module.perms().SIGN_CREATE_ADMIN_BUY.isAuthorized(user))
                 {
                     marketSign.setTypeBuy();
                 }
@@ -222,7 +220,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                if (MarketSignPerm.SIGN_CREATE_USER_BUY.isAuthorized(user))
+                if (module.perms().SIGN_CREATE_USER_BUY.isAuthorized(user))
                 {
                     marketSign.setTypeBuy();
                 }
@@ -237,7 +235,7 @@ public class EditModeListener extends ConversationCommand
         {
             if (marketSign.isAdminSign())
             {
-                if (MarketSignPerm.SIGN_CREATE_ADMIN_SELL.isAuthorized(user))
+                if (module.perms().SIGN_CREATE_ADMIN_SELL.isAuthorized(user))
                 {
                     marketSign.setTypeSell();
                 }
@@ -249,7 +247,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                if (MarketSignPerm.SIGN_CREATE_USER_SELL.isAuthorized(user))
+                if (module.perms().SIGN_CREATE_USER_SELL.isAuthorized(user))
                 {
                     marketSign.setTypeSell();
                 }
@@ -285,7 +283,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else if (demand != null && demand > 0)
                 {
-                    if (MarketSignPerm.SIGN_CREATE_USER_DEMAND.isAuthorized(user))
+                    if (module.perms().SIGN_CREATE_USER_DEMAND.isAuthorized(user))
                     {
                         marketSign.setDemand(demand);
                     }
@@ -308,12 +306,12 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasFlag("admin"))
         {
-            if (MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+            if (module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
             {
                 marketSign.setAdminSign();
-                if (this.config.maxAdminStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.config.maxAdminStock))
+                if (this.module.getConfig().maxAdminStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.module.getConfig().maxAdminStock))
                 {
-                    marketSign.setSize(this.config.maxAdminStock);
+                    marketSign.setSize(this.module.getConfig().maxAdminStock);
                 }
             }
             else
@@ -324,12 +322,12 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasFlag("user"))
         {
-            if (MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+            if (module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
             {
                 marketSign.setOwner(user);
-                if (this.config.maxUserStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.config.maxUserStock))
+                if (this.module.getConfig().maxUserStock != -1 && (marketSign.hasInfiniteSize() || marketSign.getChestSize() > this.module.getConfig().maxUserStock))
                 {
-                    marketSign.setSize(this.config.maxUserStock);
+                    marketSign.setSize(this.module.getConfig().maxUserStock);
                 }
             }
             else
@@ -340,7 +338,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("owner"))
         {
-            if (MarketSignPerm.SIGN_CREATE_USER_OTHER.isAuthorized(user))
+            if (module.perms().SIGN_CREATE_USER_OTHER.isAuthorized(user))
             {
                 User owner = context.getParam("owner",null);
                 if (owner == null)
@@ -365,9 +363,9 @@ public class EditModeListener extends ConversationCommand
             {
                 if (marketSign.hasStock())
                 {
-                    if (this.config.allowAdminNoStock)
+                    if (this.module.getConfig().allowAdminNoStock)
                     {
-                        if (MarketSignPerm.SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
+                        if (module.perms().SIGN_CREATE_ADMIN_NOSTOCK.isAuthorized(user))
                         {
                             marketSign.setNoStock();
                         }
@@ -385,9 +383,9 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    if (this.config.allowAdminStock)
+                    if (this.module.getConfig().allowAdminStock)
                     {
-                        if (MarketSignPerm.SIGN_CREATE_ADMIN_STOCK.isAuthorized(user))
+                        if (module.perms().SIGN_CREATE_ADMIN_STOCK.isAuthorized(user))
                         {
                             marketSign.setStock(0);
                         }
@@ -412,7 +410,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("setstock"))
         {
-            if (MarketSignPerm.SIGN_SETSTOCK.isAuthorized(user))
+            if (module.perms().SIGN_SETSTOCK.isAuthorized(user))
             {
                 if (marketSign.hasStock())
                 {
@@ -487,7 +485,7 @@ public class EditModeListener extends ConversationCommand
         }
         if (context.hasParam("size"))
         {
-            if (MarketSignPerm.SIGN_SIZE_CHANGE.isAuthorized(user))
+            if (module.perms().SIGN_SIZE_CHANGE.isAuthorized(user))
             {
                 Integer size = context.getParam("size",null);
                 if (size == null || size == 0 || size > 6 || size < -1)
@@ -497,7 +495,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    if (size == -1 && !MarketSignPerm.SIGN_SIZE_CHANGE_INFINITE.isAuthorized(user))
+                    if (size == -1 && !module.perms().SIGN_SIZE_INFINITE.isAuthorized(user))
                     {
                         context.sendTranslated("&cYou are not allowed to set infinite inventories!");
                         return null;
@@ -506,7 +504,7 @@ public class EditModeListener extends ConversationCommand
                     {
                         if (marketSign.isAdminSign())
                         {
-                            int maxAdmin = this.config.maxAdminStock;
+                            int maxAdmin = this.module.getConfig().maxAdminStock;
                             if (maxAdmin != -1 && (size > maxAdmin || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of admin-signs is set to &6%d&c!", maxAdmin);
@@ -520,7 +518,7 @@ public class EditModeListener extends ConversationCommand
                         }
                         else // user-sign
                         {
-                            int maxUser = this.config.maxUserStock;
+                            int maxUser = this.module.getConfig().maxUserStock;
                             if (maxUser != -1 && (size > maxUser || size == -1))
                             {
                                 context.sendTranslated("&cThe maximum size of user-signs is set to &6%d&c!", maxUser);
@@ -562,7 +560,7 @@ public class EditModeListener extends ConversationCommand
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.hasUser(user))
         {
-            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
             {
                 user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                 return;
@@ -655,14 +653,14 @@ public class EditModeListener extends ConversationCommand
             User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.hasUser(user))
             {
-                if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+                if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
                 {
                     user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                     return;
                 }
-                if (!MarketSignPerm.SIGN_CREATE_ADMIN.isAuthorized(user))
+                if (!module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
                 {
-                    if (!MarketSignPerm.SIGN_CREATE_USER.isAuthorized(user))
+                    if (!module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
                     {
                         user.sendTranslated("&cYou are not allowed to create market-signs!");
                         event.setCancelled(true);
@@ -680,7 +678,7 @@ public class EditModeListener extends ConversationCommand
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (this.hasUser(user))
         {
-            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld()))
+            if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
             {
                 user.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                 return;

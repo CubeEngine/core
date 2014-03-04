@@ -31,7 +31,7 @@ public class LagTimer implements Runnable
     private long lowestTPSTime = 0;
 
     private long lastLowTps = 0;
-    private Basics module;
+    private final Basics module;
 
     public LagTimer(Basics module)
     {

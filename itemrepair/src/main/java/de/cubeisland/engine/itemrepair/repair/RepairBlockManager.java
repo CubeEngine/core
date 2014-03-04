@@ -46,14 +46,14 @@ import static de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock.TA
 
 public class RepairBlockManager implements Listener
 {
-    private Map<Material, RepairBlock> repairBlocks;
-    private Map<Block, Material> blockMap;
-    private RepairBlockPersister persister;
+    private final Map<Material, RepairBlock> repairBlocks;
+    private final Map<Block, Material> blockMap;
+    private final RepairBlockPersister persister;
 
     protected final Itemrepair module;
-    private RepairItemContainer itemProvider;
+    private final RepairItemContainer itemProvider;
 
-    private DSLContext dsl;
+    private final DSLContext dsl;
 
     public RepairBlockManager(Itemrepair module)
     {

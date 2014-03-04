@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.user.User;
 
 public class SignMarketCommands extends ContainerCommand
 {
-    private Signmarket module;
+    private final Signmarket module;
 
     public SignMarketCommands(Signmarket module)
     {
@@ -48,7 +48,7 @@ public class SignMarketCommands extends ContainerCommand
             }
             else
             {
-                if (this.module.getConfig().disableInWorlds.contains(((User)context.getSender()).getWorld()))
+                if (this.module.getConfig().disableInWorlds.contains(((User)context.getSender()).getWorld().getName()))
                 {
                     context.sendTranslated("&eMarketSigns are disabled in the configuration for this world!");
                     return;

@@ -37,6 +37,13 @@ public class Locker extends Module implements Reloadable
     private LockManager manager;
     private LockerListener listener;
 
+    public LockerPerm perms()
+    {
+        return perms;
+    }
+
+    private LockerPerm perms;
+
     @Override
     public void onEnable()
     {
@@ -53,7 +60,7 @@ public class Locker extends Module implements Reloadable
         this.getCore().getCommandManager().registerCommand(mainCmd);
         this.getCore().getCommandManager().registerCommand(new LockerCreateCommands(this, manager), "locker");
         this.getCore().getCommandManager().registerCommand(new LockerAdminCommands(this, manager), "locker");
-        new LockerPerm(this, mainCmd);
+        perms = new LockerPerm(this, mainCmd);
         listener = new LockerListener(this, manager);
     }
 

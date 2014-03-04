@@ -147,4 +147,44 @@ public class ItemInsert extends SimpleLogActionType
     {
         return true;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return true;
+    }
+
+    // TODO remove duplicated logic from itemInsert & ItemRemove
+    @Override
+    public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        Location loc = logEntry.getLocation();
+        Material material = logEntry.getContainerTypeFromBlock().getMaterial();
+        if (material.equals(Material.STORAGE_MINECART))
+        {
+            // TODO MinecartInventoryHolders  // would need UUID
+        }
+        else
+        {
+            BlockState block = loc.getBlock().getState();
+            if (block instanceof InventoryHolder && block.getType().equals(material)) // Same container
+            {
+                ItemData itemData = logEntry.getItemData();
+                InventoryHolder holder = (InventoryHolder)block;
+                HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
+                if (!couldNotRemove.isEmpty())
+                {
+                    attachment.getHolder().sendTranslated("&cCould not rollback an item-insert!");
+                    return false;
+                }
+                return true;
+            }
+            if (force)
+            {
+                attachment.getHolder().sendTranslated("&cInvalid Container to rollback item-insert!");
+            }
+            return false;
+        }
+        return false;
+    }
 }

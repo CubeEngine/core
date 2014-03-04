@@ -35,9 +35,9 @@ import de.cubeisland.engine.roles.role.RolesManager;
 public abstract class RoleCommandHelper extends ContainerCommand
 {
     protected static final String GLOBAL_PREFIX = "g:";
-    protected RolesManager manager;
-    protected Roles module;
-    protected WorldManager worldManager;
+    protected final RolesManager manager;
+    protected final Roles module;
+    protected final WorldManager worldManager;
 
     protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
     protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s&f: &6%s");
@@ -59,26 +59,25 @@ public abstract class RoleCommandHelper extends ContainerCommand
             if (sender instanceof User)
             {
                 User user = (User)sender;
-                Long worldId = user.attachOrGet(RolesAttachment.class,this.module).getWorkingWorldId();
-                if (worldId == null)
+                world = user.attachOrGet(RolesAttachment.class,this.module).getWorkingWorld();
+                if (world == null)
                 {
                     world = user.getWorld();
                 }
                 else
                 {
-                    world = this.worldManager.getWorld(worldId);
                     context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
                 }
             }
             else
             {
-                if (ManagementCommands.curWorldIdOfConsole == null)
+                if (ManagementCommands.curWorldOfConsole == null)
                 {
                     context.sendTranslated("&cYou have to provide a world with &6[in <world]&c!");
                     context.sendTranslated("&eOr you can define a default-world with &6/roles admin defaultworld <world>");
                     return null;
                 }
-                world = this.worldManager.getWorld(ManagementCommands.curWorldIdOfConsole);
+                world = ManagementCommands.curWorldOfConsole;
                 context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
             }
         }

@@ -34,6 +34,6 @@ public class EntityData
     @Override
     public String toString()
     {
-        return entityType.name();  //TODO pretty name CE-294 http://bugs.engine.cubeisland.de/browse/CE-294
+        return entityType.name();  //TODO pretty name CE-294 http://git.cubeisland.de/cubeengine/cubeengine/issues/289
     }
 }

@@ -30,7 +30,7 @@ import de.cubeisland.engine.locker.storage.LockManager;
 
 public class LockerAdminCommands extends ContainerCommand
 {
-    private LockManager manager;
+    private final LockManager manager;
 
     public LockerAdminCommands(Locker module, LockManager manager)
     {

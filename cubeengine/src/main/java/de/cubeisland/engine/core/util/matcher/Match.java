@@ -21,27 +21,14 @@ import de.cubeisland.engine.core.CubeEngine;
 
 public class Match
 {
-
-    private MaterialMatcher materialMatcher;
-    private MaterialDataMatcher materialDataMatcher;
-    private EnchantMatcher enchantMatcher;
-    private ProfessionMatcher professionMatcher;
-    private EntityMatcher entityMatcher;
-    private StringMatcher stringMatcher;
-    private TimeMatcher timeMatcher;
-    private WorldMatcher worldMatcher;
-
-    public Match()
-    {
-        this.materialDataMatcher = new MaterialDataMatcher();
-        this.materialMatcher = new MaterialMatcher(materialDataMatcher);
-        this.enchantMatcher = new EnchantMatcher();
-        this.professionMatcher = new ProfessionMatcher();
-        this.entityMatcher = new EntityMatcher();
-        this.stringMatcher = new StringMatcher();
-        this.timeMatcher = new TimeMatcher();
-        this.worldMatcher = new WorldMatcher();
-    }
+    private final MaterialDataMatcher materialDataMatcher = new MaterialDataMatcher();
+    private final MaterialMatcher materialMatcher = new MaterialMatcher(materialDataMatcher);
+    private final EnchantMatcher enchantMatcher = new EnchantMatcher();
+    private final ProfessionMatcher professionMatcher = new ProfessionMatcher();
+    private final EntityMatcher entityMatcher = new EntityMatcher();
+    private final StringMatcher stringMatcher = new StringMatcher();
+    private final TimeMatcher timeMatcher = new TimeMatcher();
+    private final WorldMatcher worldMatcher = new WorldMatcher();
 
     public static MaterialMatcher material()
     {

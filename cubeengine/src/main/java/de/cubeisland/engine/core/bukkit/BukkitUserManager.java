@@ -19,6 +19,8 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -80,12 +82,33 @@ public class BukkitUserManager extends AbstractUserManager
         });
     }
 
+    @Override
+    public synchronized Set<User> getOnlineUsers()
+    {
+        Set<User> users = super.getOnlineUsers();
+        Iterator<User> it = users.iterator();
+
+        User user;
+        while (it.hasNext())
+        {
+            user = it.next();
+            if (!user.isOnline())
+            {
+                core.getLog().warn("Found an offline user in the online users list: {}({})", user.getName(), user.getUniqueId());
+                this.onlineUsers.remove(user);
+                it.remove();
+            }
+        }
+
+        return users;
+    }
+
     public User findUser(String name)
     {
         return this.findUser(name, false);
     }
 
-    public User findUser(String name, boolean database)
+    public User findUser(String name, boolean searchDatabase)
     {
         if (name == null)
         {
@@ -106,7 +129,7 @@ public class BukkitUserManager extends AbstractUserManager
             {
                 //Looking up saved users
                 UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
-                if (entity == null) // Not found try matching
+                if (entity == null && searchDatabase) // Not found try matching
                 {
                     entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.like("%"+ name + "%")).limit(1).fetchOne();
                 }
@@ -175,7 +198,10 @@ public class BukkitUserManager extends AbstractUserManager
                 @Override
                 public void run()
                 {
-                    onlineUsers.remove(user);
+                    synchronized (BukkitUserManager.this)
+                    {
+                        onlineUsers.remove(user);
+                    }
                 }
             });
 
@@ -187,11 +213,10 @@ public class BukkitUserManager extends AbstractUserManager
                     scheduledForRemoval.remove(user.getName());
                     user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
                     user.getEntity().update();
-                    if (!user.isOnline())
+                    if (user.isOnline())
                     {
-                        return;
+                        removeCachedUser(user);
                     }
-                    removeCachedUser(user);
                 }
             }, core.getConfiguration().usermanager.keepInMemory);
 

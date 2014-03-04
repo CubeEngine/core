@@ -42,6 +42,7 @@ import java.util.Set;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static java.nio.file.attribute.PosixFilePermissions.fromString;
 
 
@@ -63,7 +64,7 @@ public class FileUtil
      */
     public static List<String> readStringList(Path file) throws IOException
     {
-        assert file != null: "The file must not be null!";
+        expectNotNull(file, "The file must not be null!");
         try (BufferedReader reader = Files.newBufferedReader(file, Core.CHARSET))
         {
             return readStringList(reader);
@@ -78,7 +79,7 @@ public class FileUtil
      */
     public static List<String> readStringList(InputStream stream) throws IOException
     {
-        assert stream != null: "The stream may not be null!";
+        expectNotNull(stream, "The stream may not be null!");
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(stream)))
         {

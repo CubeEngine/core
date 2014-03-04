@@ -17,25 +17,64 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import java.util.logging.Filter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.message.Message;
 
 public class CommandLogFilter implements Filter
 {
-    private final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+", Pattern.CASE_INSENSITIVE);
+    private final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+");
 
     @Override
-    public boolean isLoggable(LogRecord record)
+    public Result getOnMismatch()
     {
-        if (record.getLevel() == Level.INFO)
+        return Result.DENY;
+    }
+
+    @Override
+    public Result getOnMatch()
+    {
+        return Result.NEUTRAL;
+    }
+
+    @Override
+    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, String message, Object... args)
+    {
+        return isCommandLog(message, level, null, args);
+    }
+
+    @Override
+    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, Object o, Throwable throwable)
+    {
+        return Result.NEUTRAL;
+    }
+
+    @Override
+    public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, Message message, Throwable throwable)
+    {
+        return isCommandLog(message.getFormat(), level, throwable, null);
+    }
+
+    @Override
+    public Result filter(LogEvent logEvent)
+    {
+        return isCommandLog(logEvent.getMessage().getFormat(), logEvent.getLevel(), logEvent.getThrown(), logEvent.getMessage().getParameters());
+    }
+
+    private Result isCommandLog(String message, Level level, Throwable t, Object... args)
+    {
+        if (level == Level.INFO && t == null && (args == null || args.length == 0))
         {
-            if (DETECTION_PATTERN.matcher(record.getMessage()).find())
+            if (DETECTION_PATTERN.matcher(message).find())
             {
-                return false;
+                return Result.DENY;
             }
         }
-        return true;
+        return Result.NEUTRAL;
     }
 }

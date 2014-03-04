@@ -32,9 +32,9 @@ import static de.cubeisland.engine.itemrepair.repair.storage.TableRepairBlock.TA
 
 public class RepairBlockPersister
 {
-    private Map<Block,RepairBlockModel> models = new HashMap<>();
+    private final Map<Block,RepairBlockModel> models = new HashMap<>();
     private final Module module;
-    private DSLContext dsl;
+    private final DSLContext dsl;
 
     public RepairBlockPersister(Module module)
     {

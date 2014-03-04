@@ -33,9 +33,8 @@ import com.sk89q.worldedit.bukkit.BukkitWorld;
 
 public class LogEditSession extends EditSession
 {
-
-    private LocalPlayer player;
-    private Log module;
+    private final LocalPlayer player;
+    private final Log module;
 
     public LogEditSession(LocalWorld world, int maxBlocks, LocalPlayer player, Log module)
     {

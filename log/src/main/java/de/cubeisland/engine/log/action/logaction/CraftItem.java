@@ -89,4 +89,10 @@ public class CraftItem extends SimpleLogActionType
     {
         return this.lm.getConfig(world).CRAFT_ITEM_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

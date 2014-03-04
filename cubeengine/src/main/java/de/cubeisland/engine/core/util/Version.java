@@ -21,8 +21,8 @@ import java.util.Locale;
 
 public class Version implements Comparable<Version>
 {
-    public static Version ZERO = new Version(0);
-    public static Version ONE = new Version(1);
+    public final static Version ZERO = new Version(0);
+    public final static Version ONE = new Version(1);
 
     private final int major;
     private final int minor;

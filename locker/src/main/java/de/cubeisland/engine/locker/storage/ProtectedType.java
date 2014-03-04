@@ -41,7 +41,7 @@ public enum ProtectedType
     ENTITY_CONTAINER_LIVING(8),
     ;
 
-    private static TByteObjectMap<ProtectedType> protectedTypes = new TByteObjectHashMap<>();
+    private final static TByteObjectMap<ProtectedType> protectedTypes = new TByteObjectHashMap<>();
 
     public final byte id;
     public final Collection<ProtectionFlag> supportedFlags;

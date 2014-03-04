@@ -45,7 +45,7 @@ public class Fakeanticheat extends Module implements Listener
         this.getCore().getUserManager().addDefaultAttachment(FakeInfo.class, this);
         this.getCore().getCommandManager().registerCommands(this, this, ReflectedCommand.class);
 
-        this.skipPermission = this.getBasePermission().createChild("skip");
+        this.skipPermission = this.getBasePermission().child("skip");
         this.getCore().getPermissionManager().registerPermission(this, this.skipPermission);
     }
 

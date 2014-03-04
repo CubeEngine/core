@@ -94,4 +94,10 @@ public class PlayerQuit extends SimpleLogActionType
     {
         return this.lm.getConfig(world).PLAYER_QUIT_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

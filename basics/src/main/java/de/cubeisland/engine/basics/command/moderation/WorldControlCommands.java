@@ -31,7 +31,7 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsConfiguration;
-import de.cubeisland.engine.basics.BasicsPerm;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -41,8 +41,6 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.basics.command.moderation.EntityRemoval.DIRECT_ENTITY_REMOVAL;
-import static de.cubeisland.engine.basics.command.moderation.EntityRemoval.GROUPED_ENTITY_REMOVAL;
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 /**
@@ -50,15 +48,20 @@ import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
  */
 public class WorldControlCommands
 {
-
-    private BasicsConfiguration config;
+    private final BasicsConfiguration config;
+    private final Basics module;
+    private final EntityRemovals entityRemovals;
 
     public WorldControlCommands(Basics module)
     {
+        this.module = module;
         this.config = module.getConfiguration();
+        this.entityRemovals = new EntityRemovals(module);
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3, usage = "<sun|rain|storm> [duration] [in <world>]", params = @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather", min = 1, max = 3,
+             usage = "<sun|rain|storm> [duration] [in <world>]",
+             params = @Param(names = "in", type = World.class))
     public void weather(ParameterizedContext context)
     {
         User sender = null;
@@ -72,7 +75,7 @@ public class WorldControlCommands
         String weather = Match.string().matchString(context.getString(0), "sun", "rain", "storm");
         if (weather == null)
         {
-            context.sendTranslated("&cInvalid weather!\n&eUse &6sun&e, &6rain &eor &6storm&e!");
+            context.sendTranslated("&cInvalid weather!\n&eUse &6sun&e, &6rain&e or &6storm&e!");
             return;
         }
         if (weather.equalsIgnoreCase("sun"))
@@ -114,14 +117,10 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                context.sendTranslated("&cIf not used ingame you have to specify a world!");
-                return;
+                throw new IncorrectUsageException(context.getSender().translate("&cIf not used ingame you have to specify a world!"));
             }
             world = sender.getWorld();
         }
-        world.setStorm(!sunny);
-        world.setThundering(!noThunder);
-        world.setWeatherDuration(duration);
         if (world.isThundering() != noThunder && world.hasStorm() != sunny) // weather is not changing
         {
             context.sendTranslated("&aWeather in &6%s &awas already set to &e%s&a!", world.getName(), weather);
@@ -130,6 +129,9 @@ public class WorldControlCommands
         {
             context.sendTranslated("&aChanged weather in &6%s &ato &e%s&a!", world.getName(), weather);
         }
+        world.setStorm(!sunny);
+        world.setThundering(!noThunder);
+        world.setWeatherDuration(duration);
     }
 
     @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags = @Flag(longName = "all", name = "a"), params = @Param(names = {
@@ -304,18 +306,19 @@ public class WorldControlCommands
         if (context.hasArg(1))
         {
             radius = context.getArg(1, Integer.class, 0);
-            if (radius < 0 && !(radius == -1 && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender())))
+            if (radius < 0 && !(radius == -1 && module.perms().COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context
+                                                                                                         .getSender())))
             {
                 context.sendTranslated("&cThe radius has to be a number greater than 0!");
                 return;
             }
         }
-        if (context.hasFlag("a") && BasicsPerm.COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender()))
+        if (context.hasFlag("a") && module.perms().COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context.getSender()))
         {
             radius = -1;
         }
         boolean lightning = false;
-        if (context.hasFlag("l") && BasicsPerm.COMMAND_BUTCHER_FLAG_LIGHTNING.isAuthorized(context.getSender()))
+        if (context.hasFlag("l") && module.perms().COMMAND_BUTCHER_FLAG_LIGHTNING.isAuthorized(context.getSender()))
         {
             lightning = true;
         }
@@ -335,7 +338,7 @@ public class WorldControlCommands
             if (context.getString(0).equals("*"))
             {
                 allTypes = true;
-                if (!BasicsPerm.COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender()))
+                if (!module.perms().COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender()))
                 {
                     context.sendTranslated("&cYou are not allowed to butcher all types of living entities at once!");
                     return;
@@ -351,7 +354,7 @@ public class WorldControlCommands
         {
             for (String s_type : s_types)
             {
-                String match = Match.string().matchString(s_type, GROUPED_ENTITY_REMOVAL.keySet());
+                String match = Match.string().matchString(s_type, this.entityRemovals.GROUPED_ENTITY_REMOVAL.keySet());
                 EntityType directEntityMatch = null;
                 if (match == null)
                 {
@@ -361,16 +364,16 @@ public class WorldControlCommands
                         context.sendTranslated("&cUnkown entity &6%s", s_type);
                         return;
                     }
-                    if (DIRECT_ENTITY_REMOVAL.get(directEntityMatch) == null) throw new IllegalStateException("Missing Entity? " + directEntityMatch);
+                    if (this.entityRemovals.DIRECT_ENTITY_REMOVAL.get(directEntityMatch) == null) throw new IllegalStateException("Missing Entity? " + directEntityMatch);
                 }
                 EntityRemoval entityRemoval;
                 if (directEntityMatch != null)
                 {
-                    entityRemoval = DIRECT_ENTITY_REMOVAL.get(directEntityMatch);
+                    entityRemoval = this.entityRemovals.DIRECT_ENTITY_REMOVAL.get(directEntityMatch);
                 }
                 else
                 {
-                    entityRemoval = GROUPED_ENTITY_REMOVAL.get(match);
+                    entityRemoval = this.entityRemovals.GROUPED_ENTITY_REMOVAL.get(match);
                 }
                 for (Entity entity : list)
                 {

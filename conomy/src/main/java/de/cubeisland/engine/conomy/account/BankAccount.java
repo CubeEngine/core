@@ -31,9 +31,9 @@ import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_
 
 public class BankAccount extends Account
 {
-    private Map<Long, BankAccessModel> owner;
-    private Map<Long, BankAccessModel> member;
-    private Map<Long, BankAccessModel> invites;
+    private final Map<Long, BankAccessModel> owner;
+    private final Map<Long, BankAccessModel> member;
+    private final Map<Long, BankAccessModel> invites;
 
     protected BankAccount(ConomyManager manager, AccountModel model)
     {

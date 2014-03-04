@@ -49,19 +49,27 @@ public class Travel extends Module
         Database db = this.getCore().getDB();
         db.registerTable(TableTeleportPoint.class);
         db.registerTable(TableInvite.class);
+
         Log log = this.getLog();
         log.trace("{} ms - TelePointManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager = new TelePointManager(this);
+
         log.trace("{} ms - InviteManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.inviteManager = new InviteManager(db, this);
+
         log.trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.telePointManager.load(this.inviteManager);
         final CommandManager cm = this.getCore().getCommandManager();
+
         log.trace("{} ms - register commands", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        cm.registerCommand(new HomeCommand(this));
+        HomeCommand home = new HomeCommand(this);
+        cm.registerCommand(home);
+        home.initChildren();
         cm.registerCommand(new HomeAdminCommand(this), "home");
         cm.registerCommand(new WarpCommand(this));
         cm.registerCommand(new WarpAdminCommand(this), "warp");
+
+
         log.trace("{} ms - register listener", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new HomeListener(this));
         log.trace("{} ms - Done", Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS));

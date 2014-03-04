@@ -23,15 +23,15 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.LocationUtil;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsAttachment;
-import de.cubeisland.engine.basics.BasicsPerm;
 
 /**
  * Contains commands for fast movement. /up /ascend /descend /jumpto /through
@@ -39,12 +39,11 @@ import de.cubeisland.engine.basics.BasicsPerm;
  */
 public class MovementCommands
 {
+    private final Basics module;
 
-    private Basics basics;
-
-    public MovementCommands(Basics basics)
+    public MovementCommands(Basics module)
     {
-        this.basics = basics;
+        this.module = module;
     }
 
     @Command(desc = "Teleports you x-amount of blocks into the air and puts a glassblock beneath you.", usage = "<height>", min = 1, max = 1)
@@ -78,7 +77,9 @@ public class MovementCommands
                 block.setType(Material.GLASS);
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
+            {
                 context.sendTranslated("&aYou just lifted!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -91,9 +92,12 @@ public class MovementCommands
         {
             User sender = (User)context.getSender();
             Location loc = sender.getLocation();
-            loc.getWorld().getHighestBlockAt(loc).getLocation(loc);
+            BlockUtil.getHighestBlockAt(loc).getLocation(loc);
+            loc.add(.5, 0, .5);
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
+            {
                 context.sendTranslated("&aYou are now on top!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -105,34 +109,42 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            final Location userLocation = sender.getLocation();
-            final Location currentLocation = userLocation.clone();
-            currentLocation.add(0,2,0);
+            Location userLocation = sender.getLocation();
+            Block curBlock = userLocation.add(0,2,0).getBlock();
             //go upwards until hitting solid blocks
-            while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight()+1)
+            while (curBlock.getType() == Material.AIR)
             {
-                currentLocation.add(0, 1, 0);
+                Block rel = curBlock.getRelative(BlockFace.UP);
+                if (rel.getY() < userLocation.getBlockY())
+                {
+                    context.sendTranslated("&cYou cannot ascend here");
+                    return;
+                }
+                curBlock = rel;
             }
+            Block standOn = curBlock;
+            curBlock = curBlock.getRelative(BlockFace.UP);
             // go upwards until hitting 2 airblocks again
-            while (!((currentLocation.getBlock().getType().equals(Material.AIR))
-                    && (currentLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)))
-                    && currentLocation.getBlockY() + 1 < currentLocation.getWorld().getMaxHeight()+1)
+            while (!(curBlock.getType() == Material.AIR
+                && curBlock.getRelative(BlockFace.DOWN).getType() == Material.AIR))
             {
-                currentLocation.add(0, 1, 0);
+                Block rel = curBlock.getRelative(BlockFace.UP);
+                if (rel.getY() == 0)
+                {
+                    break;
+                }
+                curBlock = rel;
             }
-            if (currentLocation.getY() > currentLocation.getWorld().getMaxHeight() // currentLocation is higher than the world
-                && currentLocation.getWorld().getHighestBlockYAt(currentLocation) < currentLocation.getBlockY())
-            {
-                currentLocation.setY(currentLocation.getWorld().getHighestBlockYAt(currentLocation)); // set to highest point
-            }
-            if (currentLocation.getY() <= userLocation.getY()) // highest point is equal/below current location
+            if (userLocation.getY() + 0.5 > curBlock.getY())
             {
                 context.sendTranslated("&cYou cannot ascend here");
                 return;
             }
-            //reached new location
-            context.sendTranslated("&aAscended a level!");
-            TeleportCommands.teleport(sender, currentLocation, true, false, true);
+            userLocation.setY(standOn.getY() + 1);
+            if (TeleportCommands.teleport(sender, userLocation, true, false, true))
+            {
+                context.sendTranslated("&aAscended a level!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -165,8 +177,10 @@ public class MovementCommands
                 return;
             }
             //reached new location
-            context.sendTranslated("&aDescended a level!");
-            TeleportCommands.teleport(sender, currentLocation, true, false, true);
+            if (TeleportCommands.teleport(sender, currentLocation, true, false, true))
+            {
+                context.sendTranslated("&aDescended a level!");
+            }
             return;
         }
         context.sendTranslated("&eProTip: Teleport does not work IRL!");
@@ -180,7 +194,7 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Location loc = sender.getTargetBlock(null, this.basics.getConfiguration().navigation.jumpToMaxRange).getLocation();
+            Location loc = sender.getTargetBlock(this.module.getConfiguration().navigation.jumpToMaxRange).getLocation();
             if (loc.getBlock().getType().equals(Material.AIR))
             {
                 context.sendTranslated("&cNo block in sight!");
@@ -188,7 +202,9 @@ public class MovementCommands
             }
             loc.add(0.5, 1, 0.5);
             if (TeleportCommands.teleport(sender, loc, true, false, true))
+            {
                 context.sendTranslated("&aYou just jumped!");
+            }
             return;
         }
         context.sendTranslated("&eJumping in the console is not allowed! Go play outside!");
@@ -203,15 +219,17 @@ public class MovementCommands
         {
             User sender = (User)context.getSender();
             Location loc = LocationUtil.getBlockBehindWall(sender,
-                    this.basics.getConfiguration().navigation.thru.maxRange,
-                    this.basics.getConfiguration().navigation.thru.maxWallThickness);
+                    this.module.getConfiguration().navigation.thru.maxRange,
+                    this.module.getConfiguration().navigation.thru.maxWallThickness);
             if (loc == null)
             {
                 sender.sendTranslated("&cNothing to pass through!");
                 return;
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true))
+            {
                 context.sendTranslated("&aYou just passed the wall!");
+            }
             return;
         }
         context.sendTranslated("&ePassing through firewalls in the console is not allowed! Go play outside!");
@@ -225,9 +243,9 @@ public class MovementCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            boolean backPerm = BasicsPerm.COMMAND_BACK.isAuthorized(sender);
+            boolean backPerm = module.perms().COMMAND_BACK_USE.isAuthorized(sender);
             boolean safe = !context.hasFlag("u");
-            if (BasicsPerm.COMMAND_BACK_ONDEATH.isAuthorized(sender))
+            if (module.perms().COMMAND_BACK_ONDEATH.isAuthorized(sender))
             {
                 Location loc = sender.get(BasicsAttachment.class).getDeathLocation();
                 if (!backPerm && loc == null)

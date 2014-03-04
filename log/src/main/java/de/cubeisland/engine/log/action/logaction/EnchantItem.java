@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.EnchantItemEvent;
@@ -94,5 +93,11 @@ public class EnchantItem extends SimpleLogActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).ENCHANT_ITEM_enable;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
     }
 }

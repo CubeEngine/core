@@ -97,4 +97,10 @@ public class VehicleExit extends SimpleLogActionType
     {
         return this.lm.getConfig(world).VEHICLE_EXIT_enable;
     }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false;
+    }
 }

@@ -19,13 +19,12 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Field;
 import java.util.Locale;
-import java.util.logging.Filter;
-import java.util.logging.Logger;
 
 import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
 import net.minecraft.server.v1_7_R1.DedicatedServer;
 import net.minecraft.server.v1_7_R1.EntityLiving;
 import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.GenericAttributes;
 import net.minecraft.server.v1_7_R1.Item;
 import net.minecraft.server.v1_7_R1.MinecraftServer;
 import net.minecraft.server.v1_7_R1.PlayerInteractManager;
@@ -49,10 +48,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.packethook.PacketHookInjector;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
+import org.apache.logging.log4j.LogManager;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -131,30 +130,24 @@ public class BukkitUtils
         return ((CraftServer)server).getCommandMap();
     }
 
-    private static Filter filter = null;
     private static CommandLogFilter commandFilter = null;
 
     public static void disableCommandLogging()
     {
+        org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger)LogManager.getLogger("Minecraft");
         if (commandFilter == null)
         {
-            commandFilter = new CommandLogFilter();
+            commandFilter = new CommandLogFilter(); // TODO configurable filter
         }
-        Logger logger = Bukkit.getLogger();
-        filter = logger.getFilter();
-        logger.setFilter(commandFilter);
+        logger.addFilter(commandFilter);
     }
 
     static void resetCommandLogging()
     {
         if (commandFilter != null)
         {
-            Logger logger = Bukkit.getLogger();
-            if (logger.getFilter() == commandFilter)
-            {
-                logger.setFilter(filter);
-            }
-            filter = null;
+            org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger)LogManager.getLogger("Minecraft");
+            logger.getContext().removeFilter(commandFilter); // TODO test if this is working?
         }
     }
 
@@ -194,8 +187,6 @@ public class BukkitUtils
 
     public static synchronized void cleanup()
     {
-        PacketHookInjector.shutdown();
-
         dragonTarget = null;
         ghastTarget = null;
         resetCommandLogging();
@@ -383,6 +374,16 @@ public class BukkitUtils
             CubeEngine.getCore().getLog().warn(ex, "Could not get Target of Ghast or Enderdragon");
             return null;
         }
+    }
+
+    public static double getEntitySpeed(LivingEntity entity)
+    {
+        return (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).getValue();
+    }
+
+    public static void setEntitySpeed(LivingEntity entity, double value)
+    {
+        (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).setValue(value);
     }
 
     static boolean isAnsiSupported(Server server)

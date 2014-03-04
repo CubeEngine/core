@@ -38,9 +38,15 @@ public class LogEditSessionFactory extends EditSessionFactory
         this.oldFactory = oldFactory;
     }
 
-    public static void initialize(WorldEdit worldEdit, Log module)
+    public static boolean initialize(Log module)
     {
-        worldEdit.setEditSessionFactory(new LogEditSessionFactory(module, worldEdit.getEditSessionFactory()));
+        WorldEdit worldEdit = WorldEdit.getInstance();
+        if (worldEdit != null)
+        {
+            worldEdit.setEditSessionFactory(new LogEditSessionFactory(module, worldEdit.getEditSessionFactory()));
+            return true;
+        }
+        return false;
     }
 
     private boolean ignoreWorldEdit(LocalWorld world)
@@ -100,4 +106,17 @@ public class LogEditSessionFactory extends EditSessionFactory
         }
     }
 
+    public static void shutdown()
+    {
+        WorldEdit instance = WorldEdit.getInstance();
+        if (instance != null)
+        {
+            EditSessionFactory editSessionFactory = instance.getEditSessionFactory();
+            if (editSessionFactory instanceof LogEditSessionFactory)
+            {
+                ((LogEditSessionFactory)editSessionFactory).module.getLog().debug("WorldEdit EditSessionFactory restored!");
+                instance.setEditSessionFactory(((LogEditSessionFactory)editSessionFactory).oldFactory);
+            }
+        }
+    }
 }

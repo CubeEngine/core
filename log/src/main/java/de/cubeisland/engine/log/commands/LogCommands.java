@@ -42,7 +42,7 @@ public class LogCommands extends ContainerCommand
     // TODO command to show current params on a lookup-tool
     // TODO command to change params on a lookup-tool (only further limiting)
 
-    private Log module;
+    private final Log module;
 
     public LogCommands(Log module)
     {

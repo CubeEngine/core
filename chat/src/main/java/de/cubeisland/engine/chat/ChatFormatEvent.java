@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -69,7 +68,7 @@ public class ChatFormatEvent extends Event
         name = name.toUpperCase(Locale.ENGLISH);
         if (value == null)
         {
-            this.variables.remove(name);
+            this.variables.put(name, "");
         }
         else
         {

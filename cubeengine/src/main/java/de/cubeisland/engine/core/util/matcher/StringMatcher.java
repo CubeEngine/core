@@ -33,12 +33,7 @@ import com.google.common.collect.Ordering;
 
 public class StringMatcher
 {
-    private DamerauLevenshteinAlgorithm editDistance;
-
-    public StringMatcher()
-    {
-        this.editDistance = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
-    }
+    private final DamerauLevenshteinAlgorithm editDistance = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
 
     /**
      * Returns all matches with their editDistance, having an editDistance <= maxDistance

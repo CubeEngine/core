@@ -30,7 +30,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.conomy.Conomy;
-import de.cubeisland.engine.conomy.ConomyPermissions;
 import de.cubeisland.engine.conomy.account.Account;
 import de.cubeisland.engine.conomy.account.ConomyManager;
 import de.cubeisland.engine.conomy.account.UserAccount;
@@ -38,8 +37,8 @@ import de.cubeisland.engine.conomy.account.storage.AccountModel;
 
 public class MoneyCommand extends ContainerCommand
 {
-    private Conomy module;
-    private ConomyManager manager;
+    private final Conomy module;
+    private final ConomyManager manager;
 
     public MoneyCommand(Conomy module)
     {
@@ -72,7 +71,7 @@ public class MoneyCommand extends ContainerCommand
     public void balance(ParameterizedContext context)
     {
         User user;
-        boolean showHidden = context.hasFlag("f") && ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender());
+        boolean showHidden = context.hasFlag("f") && module.perms().USER_SHOWHIDDEN.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
             user = context.getUser(0);
@@ -112,7 +111,7 @@ public class MoneyCommand extends ContainerCommand
         boolean showHidden = context.hasFlag("f");
         if (showHidden)
         {
-            if (!ConomyPermissions.USER_SHOWHIDDEN.isAuthorized(context.getSender()))
+            if (!module.perms().USER_SHOWHIDDEN.isAuthorized(context.getSender()))
                 showHidden = false;
         }
         int fromRank = 1;
@@ -149,7 +148,7 @@ public class MoneyCommand extends ContainerCommand
         {
             context.sendTranslated("&a%d &f- &2%s&f: &6%s", i++,
                    this.module.getCore().getUserManager().getUser(account.getUserId().longValue()).getName()
-                   , manager.format(account.getValue() / manager.fractionalDigitsFactor()));
+                   , manager.format((double)account.getValue() / manager.fractionalDigitsFactor()));
         }
     }
 
@@ -179,7 +178,7 @@ public class MoneyCommand extends ContainerCommand
         boolean asSomeOneElse = false;
         if (context.hasParam("as"))
         {
-            if (!ConomyPermissions.COMMAND_PAY_ASOTHER.isAuthorized(context.getSender()))
+            if (!module.perms().COMMAND_PAY_ASOTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated("&cYou are not allowed to pay money as someone else!");
                 return;
@@ -204,8 +203,15 @@ public class MoneyCommand extends ContainerCommand
         Account source = this.manager.getUserAccount(sender, false);
         if (source == null)
         {
-            context.sendTranslated("&2%s &cdoes not have an account!",
-                                   sender.getName());
+            if (asSomeOneElse)
+            {
+                context.sendTranslated("&2%s &cdoes not have an account!",
+                                       sender.getName());
+            }
+            else
+            {
+                context.sendTranslated("&cYou do not have an account!");
+            }
             return;
         }
         String[] users = StringUtils.explode(",", context.getString(0));
@@ -221,10 +227,10 @@ public class MoneyCommand extends ContainerCommand
             if (target == null)
             {
                 context.sendTranslated("&2%s &cdoes not have an account!",
-                                       sender.getName());
+                                       user.getName());
                 continue;
             }
-            if (!(context.hasFlag("f") && ConomyPermissions.COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
+            if (!(context.hasFlag("f") && module.perms().COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
             {
                 if (!source.has(amount))
                 {

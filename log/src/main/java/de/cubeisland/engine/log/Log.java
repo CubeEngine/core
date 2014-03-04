@@ -63,6 +63,7 @@ public class Log extends Module implements Listener
         try
         {
             Class.forName("com.sk89q.worldedit.WorldEdit");
+            LogEditSessionFactory.initialize(this);
             this.getCore().getEventManager().registerListener(this, this); // only register if worldEdit is available
         }
         catch (ClassNotFoundException ignored)
@@ -77,7 +78,7 @@ public class Log extends Module implements Listener
     {
         if (event.getPlugin() instanceof WorldEditPlugin)
         {
-            LogEditSessionFactory.initialize(((WorldEditPlugin)event.getPlugin()).getWorldEdit(), this);
+            LogEditSessionFactory.initialize(this);
             worldEditFound = true;
         }
     }
@@ -86,6 +87,10 @@ public class Log extends Module implements Listener
     public void onDisable()
     {
         this.logManager.disable();
+        if (worldEditFound)
+        {
+            LogEditSessionFactory.shutdown();
+        }
         super.onDisable();
     }
 

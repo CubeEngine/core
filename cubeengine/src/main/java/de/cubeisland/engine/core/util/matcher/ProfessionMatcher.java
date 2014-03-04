@@ -25,7 +25,7 @@ import org.bukkit.entity.Villager.Profession;
 
 public class ProfessionMatcher
 {
-    private List<String> professions;
+    private final List<String> professions;
 
     public ProfessionMatcher()
     {

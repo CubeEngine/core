@@ -27,8 +27,11 @@ import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.BasicContextFactory;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.contract.NotNull;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Pair;
+
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 public class ConfirmManager
 {
@@ -80,9 +83,9 @@ public class ConfirmManager
      * @param sender
      * @return
      */
-    public synchronized int countPendingConfirmations(CommandSender sender)
+    public synchronized int countPendingConfirmations(@NotNull CommandSender sender)
     {
-        assert sender != null;
+        expectNotNull(sender);
         Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender);
         if (pendingConfirmations == null)
         {

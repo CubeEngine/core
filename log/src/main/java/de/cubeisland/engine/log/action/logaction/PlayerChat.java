@@ -67,6 +67,7 @@ public class PlayerChat extends SimpleLogActionType
         {
             ArrayNode json = this.om.createArrayNode();
             json.add(event.getMessage());
+            json.add(event.getFormat());
             this.logSimple(event.getPlayer(),json.toString());
         }
     }
@@ -115,5 +116,11 @@ public class PlayerChat extends SimpleLogActionType
     public boolean isActive(World world)
     {
         return this.lm.getConfig(world).PLAYER_CHAT_enable;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+        return false; // TODO possible but why?
     }
 }

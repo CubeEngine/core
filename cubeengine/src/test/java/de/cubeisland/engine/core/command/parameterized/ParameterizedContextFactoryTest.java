@@ -51,7 +51,7 @@ public class ParameterizedContextFactoryTest extends TestCase
     public void testReadString()
     {
         StringBuilder sb;
-        int argsRead = -1;
+        int argsRead;
 
         argsRead = readString(sb = new StringBuilder(), explode(" ", "'  '"), 0);
         assertEquals(3, argsRead);

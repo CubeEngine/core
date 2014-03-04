@@ -19,6 +19,8 @@ package de.cubeisland.engine.core.util;
 
 import java.lang.reflect.Field;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
+
 public class ReflectionUtils
 {
     public static Field getField(Class<?> clazz, String name)
@@ -87,7 +89,7 @@ public class ReflectionUtils
 
     public static Field findFirstField(Class holder, Class<?> type, int superLevels)
     {
-        assert superLevels >= 0: "The super levels must be positive!";
+        expect(superLevels >= 0, "The super levels must be positive!");
 
         do
         {

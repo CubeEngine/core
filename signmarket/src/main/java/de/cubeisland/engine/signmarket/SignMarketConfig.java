@@ -33,7 +33,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.world.WorldManager;
 import org.jooq.types.UInteger;
 
-public class SignMarketConfig extends YamlConfiguration
+public class  SignMarketConfig extends YamlConfiguration
 {
     @Name("sign.admin.enable")
     public boolean enableAdmin = true;
@@ -70,7 +70,7 @@ public class SignMarketConfig extends YamlConfiguration
     @Name("sign.user.stock.max")
     public int maxUserStock = 6;
 
-    public List<World> disableInWorlds = new ArrayList<>();
+    public List<String> disableInWorlds = new ArrayList<>();
 
     @Comment({"If empty all signs in all worlds can sync.",
     "Example:",
@@ -80,7 +80,7 @@ public class SignMarketConfig extends YamlConfiguration
     "world2:",
     "  - world2_the_end",
     "  - world2_nether",})
-    public Map<World, List<World>> syncWorlds = new HashMap<>();
+    public Map<String, List<String>> syncWorlds = new HashMap<>();
 
     @Override
     public void onLoaded(File loadFrom)
@@ -97,17 +97,17 @@ public class SignMarketConfig extends YamlConfiguration
 
     public boolean canSync(WorldManager manager, UInteger world1, UInteger world2)
     {
-        if (syncWorlds == null || syncWorlds.isEmpty())
+        if (world1.equals(world2) || syncWorlds == null || syncWorlds.isEmpty())
         {
             return true;
         }
         World w1 = manager.getWorld(world1.longValue());
         World w2 = manager.getWorld(world2.longValue());
-        for (Entry<World, List<World>> entry : syncWorlds.entrySet())
+        for (Entry<String, List<String>> entry : syncWorlds.entrySet())
         {
-            List<World> list = new ArrayList<>(entry.getValue());
+            List<String> list = new ArrayList<>(entry.getValue());
             list.add(entry.getKey());
-            if (list.contains(w1) && list.contains(w2))
+            if (list.contains(w1.getName()) && list.contains(w2.getName()))
             {
                 return true;
             }

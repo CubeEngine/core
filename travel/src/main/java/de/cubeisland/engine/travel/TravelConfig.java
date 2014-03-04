@@ -20,12 +20,15 @@ package de.cubeisland.engine.travel;
 import de.cubeisland.engine.configuration.Section;
 import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
 
 public class TravelConfig extends YamlConfiguration
 {
 
     public HomesSection homes;
+
+    @Comment({"If this is set to true the commands /clearhomes and /clearwarps can only be used from the console.",
+              "This will also affect \"/home admin clear\" and \"/warp admin clear\""})
+    public boolean clearOnlyFromConsole = false;
 
     public class HomesSection implements Section
     {
