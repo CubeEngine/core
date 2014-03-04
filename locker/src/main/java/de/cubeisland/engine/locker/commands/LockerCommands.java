@@ -172,7 +172,7 @@ public class LockerCommands extends ContainerCommand
             User user = this.getModule().getCore().getUserManager().getUser(name, false);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", name);
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
                 return;
             }
         } // All users do exist!
@@ -201,7 +201,7 @@ public class LockerCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         this.manager.commandListener.setCommandType(context.getSender(), CommandType.GIVE, context.getString(0));

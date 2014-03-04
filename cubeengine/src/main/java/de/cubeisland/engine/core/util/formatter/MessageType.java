@@ -22,13 +22,13 @@ import java.util.Map;
 
 public class MessageType
 {
+    private static final Map<String,MessageType> messageTypes = new HashMap<>();
+
     public final static MessageType POSITIVE = new MessageType("POSITIVE");
     public final static MessageType NEUTRAL = new MessageType("NEUTRAL");
-    public final static MessageType NEGATIVE = new MessageType("NEGATICE");
+    public final static MessageType NEGATIVE = new MessageType("NEGATIVE");
     public final static MessageType CRITICAL = new MessageType("CRITICAL");
     public final static MessageType NONE = new MessageType("NONE");
-
-    private static final Map<String,MessageType> messageTypes = new HashMap<>();
 
     public static MessageType valueOf(String s)
     {

@@ -71,7 +71,7 @@ msgid "&6ProTip: &cTeleport does not work IRL!"
 msgstr ""
 
 #: de/cubeisland/engine/spawn/SpawnCommands.java:242
-msgid "&cUser &2%s &cnot found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/spawn/SpawnCommands.java:247

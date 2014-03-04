@@ -17,25 +17,37 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.formatter.formatter.ConstantMacro;
 
-public class ColorConfiguration extends YamlConfiguration
+import static de.cubeisland.engine.formatter.formatter.AbstractFormatter.toSet;
+
+public class TextMacro implements ConstantMacro
 {
-    // TODO converters
-    public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
-    {
-        {
-            this.put(MessageType.POSITIVE, ChatFormat.BRIGHT_GREEN);
-            this.put(MessageType.NEUTRAL, ChatFormat.YELLOW);
-            this.put(MessageType.NEGATIVE, ChatFormat.RED);
-            this.put(MessageType.CRITICAL, ChatFormat.DARK_RED);
-            this.put(MessageType.NONE, null);
-        }
-    };
+    private final Set<String> names;
 
-    public Map<ChatFormat, ChatFormat> colorRemap = new HashMap<>();
+    public TextMacro()
+    {
+        this.names = toSet("text");
+    }
+
+    @Override
+    public String process(MacroContext macroContext)
+    {
+        ChatFormat color = macroContext.getMapped("color", ChatFormat.class);
+        if (color == null)
+        {
+            color = ChatFormat.GOLD;
+        }
+        return color + macroContext.getArg(0);
+    }
+
+    @Override
+    public Set<String> names()
+    {
+        return this.names;
+    }
 }

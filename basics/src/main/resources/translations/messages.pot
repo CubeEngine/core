@@ -79,7 +79,7 @@ msgstr ""
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:232
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:59
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:99
-msgid "&cUser &2%s &cnot found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:142
@@ -545,7 +545,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:609
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:79
-msgid "&cUser &2%s&c not found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:614

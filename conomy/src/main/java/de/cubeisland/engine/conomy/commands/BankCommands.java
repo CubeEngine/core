@@ -96,7 +96,7 @@ public class BankCommands extends ContainerCommand
             User user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
             Set<BankAccount> bankAccounts = this.manager.getBankAccounts(user);
@@ -134,7 +134,7 @@ public class BankCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         boolean force = context.hasFlag("f")
@@ -203,7 +203,7 @@ public class BankCommands extends ContainerCommand
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
             }
             other = true;
@@ -277,7 +277,7 @@ public class BankCommands extends ContainerCommand
                 user = context.getUser(1);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
+                    context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                     return;
                 }
                 other = true;
@@ -343,7 +343,7 @@ public class BankCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user ==  null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
             return;
         }
         BankAccount bankAccount = this.getBankAccount(context.getString(1));
@@ -484,7 +484,7 @@ public class BankCommands extends ContainerCommand
         User user = context.getUser(1);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
             return;
         }
         BankAccount account = this.getBankAccount(context.getString(0));
@@ -693,7 +693,7 @@ public class BankCommands extends ContainerCommand
             User user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
             }
             target = this.manager.getUserAccount(user, this.manager.getAutoCreateUserAccount());

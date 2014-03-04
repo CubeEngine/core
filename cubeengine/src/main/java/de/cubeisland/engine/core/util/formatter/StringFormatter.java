@@ -17,25 +17,24 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.formatter.context.MacroContext;
 
-public class ColorConfiguration extends YamlConfiguration
+public class StringFormatter extends ColoredFormatter<String>
 {
-    // TODO converters
-    public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
+    public StringFormatter()
     {
-        {
-            this.put(MessageType.POSITIVE, ChatFormat.BRIGHT_GREEN);
-            this.put(MessageType.NEUTRAL, ChatFormat.YELLOW);
-            this.put(MessageType.NEGATIVE, ChatFormat.RED);
-            this.put(MessageType.CRITICAL, ChatFormat.DARK_RED);
-            this.put(MessageType.NONE, null);
-        }
-    };
+        super(toSet("name","input","message"));
+    }
 
-    public Map<ChatFormat, ChatFormat> colorRemap = new HashMap<>();
+    @Override
+    public String process(ChatFormat color, String object, MacroContext context)
+    {
+        if (color == null)
+        {
+            color = ChatFormat.GOLD;
+        }
+        return color + object;
+    }
 }

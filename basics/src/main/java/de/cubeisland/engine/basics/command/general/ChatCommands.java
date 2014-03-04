@@ -55,20 +55,21 @@ public class ChatCommands
 
 
 
-    @Command(desc = "Sends a private message to someone", names = {
-        "tell", "message", "msg", "pm", "m", "t", "whisper", "w"
-    }, min = 2, max = NO_MAX, usage = "<player> <message>")
+    @Command(desc = "Sends a private message to someone",
+             names = {"tell", "message", "msg", "pm", "m", "t", "whisper", "w"},
+             usage = "<player> <message>",
+             min = 2, max = NO_MAX)
     public void msg(CommandContext context)
     {
         if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player &2%s&c to send the message to. &eIs the player offline?", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to send the message to. &eIs the player offline?", context.getString(0));
         }
     }
 
-    @Command(names = {
-        "reply", "r"
-    }, desc = "Replies to the last person that whispered to you.", usage = "<message>", min = 1, max = NO_MAX)
+    @Command(names = {"reply", "r"}, usage = "<message>",
+             desc = "Replies to the last person that whispered to you.",
+             min = 1, max = NO_MAX)
     public void reply(CommandContext context)
     {
         String lastWhisper;
@@ -87,7 +88,7 @@ public class ChatCommands
         }
         if (!this.sendWhisperTo(lastWhisper, context.getStrings(0), context))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player &2%s&c to reply to. &eIs the player offline?", lastWhisper);
+            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to reply to. &eIs the player offline?", lastWhisper);
         }
     }
 
@@ -106,8 +107,8 @@ public class ChatCommands
                 if (context.getSender() instanceof User)
                 {
                     ConsoleCommandSender console = context.getCore().getCommandManager().getConsoleSender();
-                    console.sendTranslated(MessageType.NEUTRAL, "%s -> You: &f%s", context.getSender().getDisplayName(), message);
-                    context.sendTranslated(MessageType.NEUTRAL, "You &6-> &2%s&e: &f%s", console.getName(), message);
+                    console.sendTranslated(MessageType.NEUTRAL, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender(), message);
+                    context.sendTranslated(MessageType.NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", console.getName(), message);
                     this.lastWhisperOfConsole = context.getSender().getName();
                     ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper("#console");
                     return true;
@@ -115,7 +116,7 @@ public class ChatCommands
                 context.sendTranslated(MessageType.NONE, "Who are you!?");
                 return true;
             }
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", whisperTarget);
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", whisperTarget);
             return true;
         }
         if (!user.isOnline())
@@ -127,12 +128,12 @@ public class ChatCommands
             context.sendTranslated(MessageType.NEUTRAL, "Talking to yourself?");
             return true;
         }
-        user.sendTranslated(MessageType.NONE, "&2%s &6-> &eYou: &f%s", context.getSender().getName(), message);
+        user.sendTranslated(MessageType.NONE, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender().getName(), message);
         if (user.get(BasicsAttachment.class).isAfk())
         {
-            context.sendTranslated(MessageType.NONE, "&2%s &7is afk!", user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "{user} is afk!", user.getName());
         }
-        context.sendTranslated(MessageType.NEUTRAL, "You &6-> &2%s&e: &f%s", user.getName(), message);
+        context.sendTranslated(MessageType.NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", user.getName(), message);
         if (context.getSender() instanceof User)
         {
             ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper(user.getName());
@@ -154,7 +155,7 @@ public class ChatCommands
         {
             sb.append(context.getString(i++)).append(" ");
         }
-        this.um.broadcastMessage("&2[&cBroadcast&2] &e" + sb.toString());
+        this.um.broadcastMessage("&2[&cBroadcast&2] &e" + sb.toString()); // TODO change method
     }
 
     @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1, max = 2)
@@ -163,13 +164,13 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         if (basicsUserEntity.getMuted() != null && basicsUserEntity.getMuted().getTime() < System.currentTimeMillis())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "&2%s &ewas already muted!", user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "{user} was already muted!", user.getName());
         }
         Duration dura = module.getConfiguration().commands.defaultMuteTime;
         if (context.hasArg(1))
@@ -188,8 +189,8 @@ public class ChatCommands
             (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
         String timeString = dura.getMillis() == 0 ? user.composeMessage(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
-        user.sendTranslated(MessageType.NEGATIVE, "You are now muted for &6%s&c!", timeString);
-        context.sendTranslated(MessageType.NEUTRAL, "You muted &2%s &eglobally for &6%s&c!", user.getName(), timeString);
+        user.sendTranslated(MessageType.NEGATIVE, "You are now muted for &6%s&c!", timeString); // TODO formatter for time
+        context.sendTranslated(MessageType.NEUTRAL, "You muted  {user} globally for &6%s&c!", user.getName(), timeString); // TODO formatter for time
     }
 
     @Command(desc = "Unmutes a player", usage = "<player>", min = 1, max = 1)
@@ -198,25 +199,25 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         basicsUserEntity.setMuted(null);
         basicsUserEntity.update();
-        context.sendTranslated(MessageType.POSITIVE, "&2%s&a is no longer muted!", user.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is no longer muted!", user.getName());
     }
 
     @Command(names = {"rand","roll"},desc = "Shows a random number from 0 to 100")
     public void rand(CommandContext context)
     {
-        this.um.broadcastStatus(ChatFormat.YELLOW,"rolled a &6%d&f!", context.getSender(), new Random().nextInt(100));
+        this.um.broadcastStatus(ChatFormat.YELLOW,"rolled a {integer}!", context.getSender(), new Random().nextInt(100));
     }
 
     @Command(desc = "Displays the colors")
     public void chatcolors(CommandContext context)
     {
-        context.sendMessage("&aThe following chat-codes are available:");
+        context.sendTranslated(MessageType.POSITIVE, "The following chat-codes are available:");
         StringBuilder builder = new StringBuilder();
         int i = 0;
         String reset = ChatFormat.parseFormats("&r");
@@ -229,7 +230,7 @@ public class ChatCommands
             builder.append(" ").append(chatFormat.getChar()).append(" ").append(chatFormat.toString()).append(chatFormat.name()).append(reset);
         }
         context.sendMessage(builder.toString());
-        context.sendTranslated(MessageType.POSITIVE, "To use these type &6&&a followed by the code above");
+        context.sendTranslated(MessageType.POSITIVE, "To use these type {text:&} followed by the code above");
 
        /*context.sendMessage(
             "&00 black &11 darkblue &22 darkgreen &33 darkaqua\n"

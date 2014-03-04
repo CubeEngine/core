@@ -463,7 +463,7 @@ public class LookupCommands
             User user = this.module.getCore().getUserManager().getUser(name, false);
             if (user == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", name);
+                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
                 return false;
             }
             if (negate)

@@ -51,7 +51,7 @@ msgstr ""
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:343
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:484
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:695
-msgid "&cUser &2%s&c not found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:102

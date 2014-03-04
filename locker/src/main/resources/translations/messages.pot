@@ -110,7 +110,7 @@ msgstr ""
 #: de/cubeisland/engine/locker/commands/LockerAdminCommands.java:113
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:168
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:191
-msgid "&cUser &2%s&c not found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerAdminCommands.java:117

@@ -172,7 +172,7 @@ public class TimeControlCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
             }
             if (!module.perms().COMMAND_PTIME_OTHER.

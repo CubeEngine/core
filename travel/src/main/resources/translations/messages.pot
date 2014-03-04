@@ -334,7 +334,7 @@ msgid "&cYou can't invite a person to a public home >:("
 msgstr ""
 
 #: de/cubeisland/engine/travel/interactions/HomeCommand.java:526
-msgid "&cUser &2%s&c not found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/travel/interactions/HomeCommand.java:531

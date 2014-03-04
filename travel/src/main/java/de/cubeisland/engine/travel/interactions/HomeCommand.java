@@ -528,7 +528,7 @@ public class HomeCommand extends ContainerCommand
                 User invited = context.getUser(0);
                 if (invited == null)
                 {
-                    sender.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                     return;
                 }
                 if (invited.equals(sender))

@@ -80,7 +80,7 @@ public class ListCommand extends CubeCommand
         }
 
         SortedMap<String, Set<User>> grouped = this.groupUsers(users);
-        sender.sendTranslated(MessageType.NONE, "&9Players online: &a%d&f/&e%d", users.size(), Bukkit.getMaxPlayers());
+        sender.sendTranslated(MessageType.NONE, "&9Players online: &a%d&f/&e%d", users.size(), Bukkit.getMaxPlayers()); // TODO custom MessageColors
 
         for (Entry<String, Set<User>> entry : grouped.entrySet())
         {

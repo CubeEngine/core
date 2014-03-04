@@ -111,7 +111,7 @@ public class PlayerCommands
                     User user = this.um.findUser(name);
                     if (user == null || !user.isOnline())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", name);
+                        context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
                         continue;
                     }
                     users.add(user);
@@ -181,7 +181,7 @@ public class PlayerCommands
                     User user = this.um.findUser(name);
                     if (user == null || !user.isOnline())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", name);
+                        context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
                         continue;
                     }
                     users.add(user);
@@ -251,7 +251,7 @@ public class PlayerCommands
                     User user = this.um.findUser(name);
                     if (user == null || !user.isOnline())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", name);
+                        context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
                         continue;
                     }
                     users.add(user);
@@ -503,7 +503,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         if (user.isOnline())
@@ -530,7 +530,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         String s = context.getStrings(1);
@@ -572,7 +572,7 @@ public class PlayerCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
             if (!user.isOnline())
@@ -609,7 +609,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         if (!user.isOnline())
@@ -698,7 +698,7 @@ public class PlayerCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
             other = true;
@@ -808,7 +808,7 @@ public class PlayerCommands
         }
         if (target == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!");
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!");
             return;
         }
         // PermissionChecks

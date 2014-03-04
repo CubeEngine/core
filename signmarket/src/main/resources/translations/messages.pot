@@ -105,7 +105,7 @@ msgid "&cYou are not allowed to create user-signs"
 msgstr ""
 
 #: de/cubeisland/engine/signmarket/EditModeListener.java:348
-msgid "&cUser &2%s&c not found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/signmarket/EditModeListener.java:348

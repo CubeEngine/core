@@ -17,25 +17,24 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.formatter.formatter.ReflectedFormatter;
+import de.cubeisland.engine.formatter.formatter.reflected.Format;
+import de.cubeisland.engine.formatter.formatter.reflected.Names;
 
-public class ColorConfiguration extends YamlConfiguration
+@Names({"amount","integer","long"})
+public class IntegerFormatter extends ReflectedFormatter
 {
-    // TODO converters
-    public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
+    @Format
+    public String format(Integer i, MacroContext context)
     {
-        {
-            this.put(MessageType.POSITIVE, ChatFormat.BRIGHT_GREEN);
-            this.put(MessageType.NEUTRAL, ChatFormat.YELLOW);
-            this.put(MessageType.NEGATIVE, ChatFormat.RED);
-            this.put(MessageType.CRITICAL, ChatFormat.DARK_RED);
-            this.put(MessageType.NONE, null);
-        }
-    };
+        return ChatFormat.GOLD + String.valueOf(i);
+    }
 
-    public Map<ChatFormat, ChatFormat> colorRemap = new HashMap<>();
+    @Format
+    public String format(Long l, MacroContext context)
+    {
+        return ChatFormat.GOLD + String.valueOf(l);
+    }
 }

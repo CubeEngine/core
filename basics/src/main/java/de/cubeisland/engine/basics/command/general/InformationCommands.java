@@ -52,6 +52,8 @@ import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.core.util.math.BlockVector2;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.util.math.MathHelper;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
@@ -72,7 +74,8 @@ public class InformationCommands
                                                      .appendSeconds().appendSuffix(" second", " seconds").toFormatter();
     }
 
-    @Command(desc = "Displays the Biome-Type you are standing in.", usage = "{world} {block-x} {block-z}", max = 3)
+    @Command(desc = "Displays the Biome-Type you are standing in.",
+             usage = "{world} {block-x} {block-z}", max = 3)
     public void biome(CommandContext context)
     {
         World world;
@@ -83,7 +86,7 @@ public class InformationCommands
             world = context.getArg(0,World.class,null);
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Unknown world %s!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Unknown world {input#world}!", context.getString(0));
                 return;
             }
             x = context.getArg(1,Integer.class,null);
@@ -108,7 +111,7 @@ public class InformationCommands
             return;
         }
         Biome biome = world.getBiome(x, z);
-        context.sendTranslated(MessageType.NEUTRAL, "Biome at x=&6%d &ez=&6%d&e: &9%s", x, z, biome.name());
+        context.sendTranslated(MessageType.NEUTRAL, "Biome at {vector:x\\=:z\\=}: {biome}", new BlockVector2(x, z), biome);
     }
 
     @Command(desc = "Displays the seed of a world.", usage = "{world}", max = 1)
@@ -120,7 +123,7 @@ public class InformationCommands
             world = context.getArg(0, World.class, null);
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World %s not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input#world} not found!", context.getString(0));
                 return;
             }
         }
@@ -136,7 +139,7 @@ public class InformationCommands
                 return;
             }
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Seed of &6%s&e is &6%d", world.getName(), world.getSeed());
+        context.sendTranslated(MessageType.NEUTRAL, "Seed of {world} is {long#seed}", world, world.getSeed());
     }
 
     @Command(desc = "Displays the direction in which you are looking.")
@@ -148,11 +151,11 @@ public class InformationCommands
             int direction = Math.round(((User)sender).getLocation().getYaw() + 180f + 360f) % 360;
             String dir;
             dir = Direction.matchDirection(direction).name();
-            sender.sendTranslated(MessageType.NEUTRAL, "You are looking to &6%s&e!", sender.composeMessage(MessageType.NONE, dir));
+            sender.sendTranslated(MessageType.NEUTRAL, "You are looking to {input#direction}!", dir); // TODO translate direction
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "&6ProTip: &eI assume you are looking right at your screen. Right?");
+            context.sendTranslated(MessageType.NEUTRAL, "{text:ProTip}: I assume you are looking right at your screen. Right?");
         }
     }
 
@@ -164,11 +167,11 @@ public class InformationCommands
             final int height = ((User)context.getSender()).getLocation().getBlockY();
             if (height > 62)
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are on heightlevel %d (%d above sealevel)", height, height - 62);
+                context.sendTranslated(MessageType.POSITIVE, "You are on heightlevel {integer#blocks} ({amount#blocks} above sealevel)", height, height - 62);
             }
             else
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are on heightlevel %d (%d below sealevel)", height, 62 - height);
+                context.sendTranslated(MessageType.POSITIVE, "You are on heightlevel {integer#blocks} ({amount#blocks} below sealevel)", height, 62 - height);
             }
         }
         else
@@ -183,18 +186,18 @@ public class InformationCommands
         if (context.getSender() instanceof User)
         {
             final Location loc = ((User)context.getSender()).getLocation();
-            context.sendTranslated(MessageType.NEUTRAL, "Your position is &6X:&f%d &6Y:&f%d &6Z:&f%d", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+            context.sendTranslated(MessageType.NEUTRAL, "Your position is {vector:x\\=:y\\=:z\\=}", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Your position: &cRight in front of your screen!");
+            context.sendTranslated(MessageType.NEUTRAL, "Your position: {text:Right in front of your screen!:color=RED}");
         }
     }
 
-    @Command(desc = "Displays near players(entities/mobs) to you.", max = 2, usage = "[radius] [player] [-entity]|[-mob]", flags = {
-        @Flag(longName = "entity", name = "e"),
-        @Flag(longName = "mob", name = "m")
-    })
+    @Command(desc = "Displays near players(entities/mobs) to you.",
+             max = 2, usage = "[radius] [player] [-entity]|[-mob]",
+             flags = {@Flag(longName = "entity", name = "e"),
+                      @Flag(longName = "mob", name = "m")})
     public void near(ParameterizedContext context)
     {
         User user;
@@ -203,7 +206,7 @@ public class InformationCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
             }
         }
@@ -213,7 +216,7 @@ public class InformationCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "I am right &cbehind &eyou!");
+            context.sendTranslated(MessageType.NEUTRAL, "I am right {text:behind:color=RED} you!");
             return;
         }
         int radius = this.module.getConfiguration().commands.nearDefaultRadius;
@@ -298,7 +301,7 @@ public class InformationCommands
         }
         if (outputlist.isEmpty())
         {
-            context.sendMessage("Nothing detected nearby!");
+            context.sendTranslated(MessageType.NEGATIVE, "Nothing detected nearby!");
         }
         else
         {
@@ -308,11 +311,11 @@ public class InformationCommands
             result = ChatFormat.parseFormats(result);
             if (context.getSender().getName().equals(user.getName()))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby you:\n%s", result);
+                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby you:\n{}", result);
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby %s:\n%s", user.getName(), result);
+                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby %s:\n{}", user.getName(), result);
             }
         }
     }
@@ -340,15 +343,13 @@ public class InformationCommands
         }
     }
 
-    @Command(names = {
-        "ping", "pong"
-    }, desc = "Pong!", max = 0)
+    @Command(names = {"ping", "pong"}, desc = "Pong!", max = 0)
     public void ping(CommandContext context)
     {
         final String label = context.getLabel().toLowerCase(Locale.ENGLISH);
         if (context.getSender() instanceof ConsoleCommandSender)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "" + label + " in the console?");
+            context.sendTranslated(MessageType.NEUTRAL, label + " in the console?");
         }
         else
         {
@@ -356,8 +357,8 @@ public class InformationCommands
         }
     }
 
-    @Command(desc = "Displays chunk, memory, and world information.", max = 0
-        , flags = @Flag(longName = "reset" , name = "r"))
+    @Command(desc = "Displays chunk, memory, and world information.",
+             max = 0, flags = @Flag(longName = "reset" , name = "r"))
     public void lag(ParameterizedContext context)
     {
         if (context.hasFlag("r"))

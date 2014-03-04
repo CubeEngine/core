@@ -79,7 +79,7 @@ public class TeleportCommands
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         if (!target.isOnline())
@@ -94,7 +94,7 @@ public class TeleportCommands
             target = context.getUser(1);
             if (target == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
             }
             if (!target.isOnline())
@@ -175,7 +175,7 @@ public class TeleportCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         if (!user.isOnline())
@@ -229,7 +229,7 @@ public class TeleportCommands
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         if (!target.isOnline())

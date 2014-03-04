@@ -17,25 +17,20 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.formatter.formatter.ReflectedFormatter;
+import de.cubeisland.engine.formatter.formatter.reflected.Format;
+import de.cubeisland.engine.formatter.formatter.reflected.Names;
 
-public class ColorConfiguration extends YamlConfiguration
+@Names("world")
+public class WorldFormatter extends ReflectedFormatter
 {
-    // TODO converters
-    public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
+    @Format
+    public String format(World world, MacroContext context)
     {
-        {
-            this.put(MessageType.POSITIVE, ChatFormat.BRIGHT_GREEN);
-            this.put(MessageType.NEUTRAL, ChatFormat.YELLOW);
-            this.put(MessageType.NEGATIVE, ChatFormat.RED);
-            this.put(MessageType.CRITICAL, ChatFormat.DARK_RED);
-            this.put(MessageType.NONE, null);
-        }
-    };
-
-    public Map<ChatFormat, ChatFormat> colorRemap = new HashMap<>();
+        return ChatFormat.GOLD + world.getName();
+    }
 }

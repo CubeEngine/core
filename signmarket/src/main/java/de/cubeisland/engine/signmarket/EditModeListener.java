@@ -343,7 +343,7 @@ public class EditModeListener extends ConversationCommand
                 User owner = context.getParam("owner",null);
                 if (owner == null)
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString("owner"));
+                    user.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString("owner"));
                     return null;
                 }
                 else

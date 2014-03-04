@@ -17,25 +17,33 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.AnimalTamer;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.formatter.formatter.ReflectedFormatter;
+import de.cubeisland.engine.formatter.formatter.reflected.Format;
+import de.cubeisland.engine.formatter.formatter.reflected.Names;
 
-public class ColorConfiguration extends YamlConfiguration
+@Names({"user","sender","tamer"})
+public class CommandSenderFormatter extends ReflectedFormatter
 {
-    // TODO converters
-    public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
+    @Format
+    public String format(String string, MacroContext context)
     {
-        {
-            this.put(MessageType.POSITIVE, ChatFormat.BRIGHT_GREEN);
-            this.put(MessageType.NEUTRAL, ChatFormat.YELLOW);
-            this.put(MessageType.NEGATIVE, ChatFormat.RED);
-            this.put(MessageType.CRITICAL, ChatFormat.DARK_RED);
-            this.put(MessageType.NONE, null);
-        }
-    };
+        return ChatFormat.DARK_GREEN + string;
+    }
 
-    public Map<ChatFormat, ChatFormat> colorRemap = new HashMap<>();
+    @Format
+    public String format(CommandSender sender, MacroContext context)
+    {
+        return this.format(sender.getName(), context);
+    }
+
+    @Format
+    public String format(AnimalTamer tamer, MacroContext context)
+    {
+        return this.format(tamer.getName(), context);
+    }
 }

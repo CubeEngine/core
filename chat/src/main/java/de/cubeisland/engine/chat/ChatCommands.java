@@ -49,7 +49,7 @@ public class ChatCommands
             forUser = context.getUser(1);
             if (forUser == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &2%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
            }
            if (forUser != context.getSender() && !module.perms().COMMAND_NICK_OTHER.isAuthorized(context.getSender()))

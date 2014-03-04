@@ -77,7 +77,7 @@ public class MailCommand extends ContainerCommand
             {
                 if (!context.getString(0).equalsIgnoreCase("CONSOLE"))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+                    context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                     return;
                 }
                 nameMailOf = "CONSOLE";
@@ -137,7 +137,7 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         List<Mail> mails = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().getMails();
@@ -163,7 +163,7 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         String message = context.getStrings(1);
@@ -266,11 +266,11 @@ public class MailCommand extends ContainerCommand
         User from = context.getUser(0);
         if (from == null && !context.getString(0).equalsIgnoreCase("Console"))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s &cnot found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMailFrom(from);
-        context.sendTranslated(MessageType.NEUTRAL, "Cleared all mails from &2%s&e!", from == null ? "console" : from.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "Cleared all mails from {user}!", from == null ? "console" : from.getName());
     }
 
     private void mail(String message, CommandSender from, User... users)
@@ -280,7 +280,7 @@ public class MailCommand extends ContainerCommand
             user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().addMail(from, message);
             if (user.isOnline())
             {
-                user.sendTranslated(MessageType.NEUTRAL, "You just got a mail from &2%s&e!", from.getName());
+                user.sendTranslated(MessageType.NEUTRAL, "You just got a mail from {user}!", from.getName());
             }
         }
     }

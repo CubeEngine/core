@@ -904,7 +904,7 @@ msgid "&cInvalid page!"
 msgstr ""
 
 #: de/cubeisland/engine/log/commands/LookupCommands.java:427
-msgid "&cUser &2%s&c not found!"
+msgid "&cUser {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/log/commands/LookupCommands.java:463
