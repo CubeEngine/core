@@ -226,27 +226,7 @@
         <artifactId>messagecatalog-maven-plugin</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <configuration>
-          <source>
-            <translatables>
-              <methods>
-                <method>translate</method>
-                <method>translateN:1,2</method>
-                <method>getTranslation</method>
-                <method>getTranslationN:1,2</method>
-                <method>sendTranslated</method>
-                <method>sendTranslatedN:1,2</method>
-                <method>_</method>
-              </methods>
-              <annotations>
-                <annotation>de.cubeisland.engine.core.command.reflected.Command:desc,usage</annotation>
-              </annotations>
-            </translatables>
-          </source>
-          <catalog>
-            <templateFile>${basedir}/src/main/resources/translations/messages</templateFile>
-            <removeUnusedMessages>false</removeUnusedMessages>
-            <header>${basedir}/../header.txt</header>
-          </catalog>
+           <configuration>${basedir}/../messagecatalog_configuration.xml</configuration>
         </configuration>
       </plugin>
 
