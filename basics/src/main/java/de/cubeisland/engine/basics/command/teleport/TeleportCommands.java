@@ -30,8 +30,10 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 
 /**
  * Contains commands to teleport to players/worlds/position.
@@ -113,7 +115,7 @@ public class TeleportCommands
                 {
                     if (module.perms().TELEPORT_PREVENT_TP.isAuthorized(user)) // teleport the user
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport &2%s&c!", user.getName());
+                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport {user}!", user);
                         return;
                     }
                 } // else equals tp -> no need to check tp perm
@@ -123,9 +125,9 @@ public class TeleportCommands
                     {
                         if (module.perms().COMMAND_TP_FORCE.isAuthorized(context.getSender()))
                         {
-                            context.sendTranslated(MessageType.POSITIVE, "Use the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
+                            context.sendTranslated(MessageType.POSITIVE, "Use the {text:-force (-f)} flag to teleport to this player."); //Show force flag if has permission
                         }
-                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to &2%s&c!", target.getName());
+                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to {user}!", target);
                         return;
                     }
                 } // else equals tphere -> no need to check tpto perm
@@ -135,7 +137,7 @@ public class TeleportCommands
         {
             if (user == null) // if not tp other persons console cannot use this
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Teleport to &4hell &cinitiated...");
+                context.sendTranslated(MessageType.NEGATIVE, "Teleport to {text:hell:color=DARK_RED} initiated...");
                 return;
             }
         }
@@ -143,9 +145,9 @@ public class TeleportCommands
         {
             if (module.perms().COMMAND_TP_FORCE.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.POSITIVE, "Use the &e-force (-f) &aflag to teleport to this player."); //Show force flag if has permission
+                context.sendTranslated(MessageType.POSITIVE, "Use the {text:-force (-f)} flag to teleport to this player."); //Show force flag if has permission
             }
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to &2%s&c!", target.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to {user}!", target);
             return;
         }
         boolean safe = !context.hasFlag("u");
@@ -153,23 +155,22 @@ public class TeleportCommands
         {
             if (context.getSender() == user)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "&6You found yourself!");
+                context.sendTranslated(MessageType.NEUTRAL, "You found yourself!");
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "You just teleported &2%s &ato &2%s... &eNot very useful right?", user.getName(), user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "You just teleported {user} to {user}... Not very useful right?", user.getName(), user.getName());
             return;
         }
         if (TeleportCommands.teleport(user, target.getLocation(), safe, force, true))
         {
-            context.sendTranslated(MessageType.POSITIVE, "You teleported to &2%s&a!", target.getName());
+            context.sendTranslated(MessageType.POSITIVE, "You teleported to {user}!", target);
         }
     }
 
     @Command(desc = "Teleports everyone directly to a player.",
              usage = "<player> [-unsafe]", min = 1, max = 1,
-             flags = {
-                @Flag(longName = "force", name = "f"),
-                @Flag(longName = "unsafe", name = "u")})
+             flags = {@Flag(longName = "force", name = "f"),
+                      @Flag(longName = "unsafe", name = "u")})
     public void tpall(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -187,7 +188,7 @@ public class TeleportCommands
         boolean safe = !context.hasFlag("u");
         if (!force && module.perms().TELEPORT_PREVENT_TPTO.isAuthorized(user))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to %s!", user.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to {user}!", user);
             return;
         }
         ArrayList<String> noTp = new ArrayList<>();
@@ -203,10 +204,11 @@ public class TeleportCommands
                 noTp.add(player.getName());
             }
         }
-        context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", user.getName());
+        context.getCore().getUserManager().broadcastMessage(MessageType.POSITIVE, "Teleporting everyone to {user}", user);
         if (!noTp.isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));
+            context.sendTranslated(MessageType.NEUTRAL, "The following players were not teleported: \n{user#list}",
+                                   StringUtils.implode(ChatFormat.WHITE + ","+ ChatFormat.DARK_GREEN,noTp));
         }
     }
 
@@ -223,7 +225,7 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
             return;
         }
         User target = context.getUser(0);
@@ -241,18 +243,18 @@ public class TeleportCommands
         boolean safe = !context.hasFlag("u");
         if (sender.equals(target))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "&6You found yourself!");
+            context.sendTranslated(MessageType.NEUTRAL, "You found yourself!");
             return;
         }
         if (!force && module.perms().TELEPORT_PREVENT_TP.isAuthorized(target))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport %s!", target.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport {user}!", target);
             return;
         }
         if (TeleportCommands.teleport(target, sender.getLocation(), safe, force, true))
         {
-            context.sendTranslated(MessageType.POSITIVE, "You teleported %s to you!", target.getName());
-            target.sendTranslated(MessageType.POSITIVE, "You were teleported to %s", sender.getName());
+            context.sendTranslated(MessageType.POSITIVE, "You teleported {user} to you!", target);
+            target.sendTranslated(MessageType.POSITIVE, "You were teleported to {sender}", sender);
         }
     }
 
@@ -269,7 +271,7 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
             return;
         }
         boolean force = false;
@@ -292,10 +294,11 @@ public class TeleportCommands
             }
         }
         context.sendTranslated(MessageType.POSITIVE, "You teleported everyone to you!");
-        context.getCore().getUserManager().broadcastMessage("&aTeleporting everyone to %s", sender.getName());
+        context.getCore().getUserManager().broadcastMessage(MessageType.POSITIVE, "Teleporting everyone to {sender}", sender);
         if (!noTp.isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The following players were not teleported: \n&2%s", StringUtils.implode("&f,&2",noTp));
+            context.sendTranslated(MessageType.NEUTRAL, "The following players were not teleported: \n{user#list}",
+                                   StringUtils.implode(ChatFormat.WHITE + ","+ ChatFormat.DARK_GREEN,noTp));
         }
     }
 
@@ -344,10 +347,10 @@ public class TeleportCommands
             Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
             if (TeleportCommands.teleport(sender, loc, context.hasFlag("s") && module.perms().COMMAND_TPPOS_SAFE.isAuthorized(context.getSender()), false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "Teleported to &eX:&6%d &eY:&6%d &eZ:&6%d&a in %s!", x, y, z, world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Teleported to {vector:x\\=:y\\=:z\\=} in {world}!", new BlockVector3(x, y, z), world.getName());
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "&6ProTip: &cTeleport does not work IRL!");
+        context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
     }
 }

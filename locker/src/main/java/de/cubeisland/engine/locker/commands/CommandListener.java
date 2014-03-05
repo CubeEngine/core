@@ -75,7 +75,7 @@ public class CommandListener implements Listener
         map.put(sender.getName(), new Triplet<>(commandType, s, b));
         if (this.doesPersist(sender.getName()))
         {
-            sender.sendTranslated(MessageType.NEUTRAL, "Persist mode is active. Your command will be repeated until reusing &6/cpersist");
+            sender.sendTranslated(MessageType.NEUTRAL, "Persist mode is active. Your command will be repeated until reusing {text:/cpersist}");
         }
     }
 
@@ -201,7 +201,7 @@ public class CommandListener implements Listener
         }
         else if (lock == null)
         {
-            user.sendTranslated(MessageType.NEUTRAL, "&6No protection detected here!");
+            user.sendTranslated(MessageType.NEUTRAL, "No protection detected here!");
             event.setCancelled(true);
             this.cmdUsed(user);
             return true;
@@ -285,7 +285,8 @@ public class CommandListener implements Listener
             }
             else if (lock.hasPass())
             {
-                user.sendTranslated(MessageType.NEUTRAL, "You cannot invalidate KeyBooks for password protected locks. &aChange the password to invalidate them!");
+                user.sendTranslated(MessageType.NEUTRAL, "You cannot invalidate KeyBooks for password protected locks.");
+                user.sendTranslated(MessageType.POSITIVE, "Change the password to invalidate them!");
             }
             else
             {
@@ -321,7 +322,7 @@ public class CommandListener implements Listener
             {
                 User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
-                user.sendTranslated(MessageType.NEUTRAL, "&2%s&e is now the owner of this protection.", newOwner.getName());
+                user.sendTranslated(MessageType.NEUTRAL, "{user} is now the owner of this protection.", newOwner.getName());
             }
             else
             {

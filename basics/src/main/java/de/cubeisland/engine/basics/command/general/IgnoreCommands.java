@@ -27,6 +27,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.jooq.DSLContext;
@@ -98,17 +99,18 @@ public class IgnoreCommands
                 {
                     if (module.perms().COMMAND_IGNORE_PREVENT.isAuthorized(user))
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to ignore &2%s&c!", user.getName());
+                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to ignore {user}!", user);
                         continue;
                     }
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} is already on your ignore list!", user.getName());
+                    context.sendTranslated(MessageType.NEGATIVE, "{user} is already on your ignore list!", user);
                 }
                 else
                 {
                     added.add(name);
                 }
             }
-            context.sendTranslated(MessageType.POSITIVE, "You added {user#list} to your ignore list!", StringUtils.implode("&f, &2", added));
+            context.sendTranslated(MessageType.POSITIVE, "You added {user#list} to your ignore list!",
+                                   StringUtils.implode(ChatFormat.WHITE + ", " + ChatFormat.DARK_GREEN, added));
             return;
         }
         int rand1 = new Random().nextInt(6)+1;
@@ -135,14 +137,15 @@ public class IgnoreCommands
                 }
                 else if (!this.removeIgnore(sender, user))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You haven't ignored &2%s&c!", user.getName());
+                    context.sendTranslated(MessageType.NEGATIVE, "You haven't ignored {user}!", user);
                 }
                 else
                 {
                     added.add(name);
                 }
             }
-            context.sendTranslated(MessageType.POSITIVE, "You removed {user#list} from your ignore list!", StringUtils.implode("&f, &2", added));
+            context.sendTranslated(MessageType.POSITIVE, "You removed {user#list} from your ignore list!",
+                                   StringUtils.implode(ChatFormat.WHITE + ", " + ChatFormat.DARK_GREEN, added));
             return;
         }
         context.sendTranslated(MessageType.NEGATIVE, "Congratulations! You are now looking at this text!");

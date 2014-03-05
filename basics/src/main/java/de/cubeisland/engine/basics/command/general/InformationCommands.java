@@ -267,19 +267,19 @@ public class InformationCommands
                     String key;
                     if (entity instanceof Player)
                     {
-                        key = "&2player";
+                        key = ChatFormat.DARK_GREEN + "player";
                     }
                     else if (entity instanceof LivingEntity)
                     {
-                        key = "&3" + Match.entity().getNameFor(entity.getType());
+                        key = ChatFormat.DARK_AQUA + Match.entity().getNameFor(entity.getType());
                     }
                     else if (entity instanceof Item)
                     {
-                        key = "&7" + Match.material().getNameFor(((Item)entity).getItemStack());
+                        key = ChatFormat.GREY + Match.material().getNameFor(((Item)entity).getItemStack());
                     }
                     else
                     {
-                        key = "&7" + Match.entity().getNameFor(entity.getType());
+                        key = ChatFormat.GREY + Match.entity().getNameFor(entity.getType());
                     }
                     Pair<Double, Integer> pair = groupedEntities.get(key);
                     if (pair == null)
@@ -297,7 +297,10 @@ public class InformationCommands
         StringBuilder groupedOutput = new StringBuilder();
         for (String key : groupedEntities.keySet())
         {
-            groupedOutput.append(String.format("\n&6%dx %s &f(&e%dm+&f)", groupedEntities.get(key).getRight(), key, MathHelper.round(groupedEntities.get(key).getLeft())));
+            groupedOutput.append("\n").append(ChatFormat.GOLD).append(groupedEntities.get(key).getRight()).append("x ")
+                         .append(key).append(ChatFormat.WHITE).append(" (").append(ChatFormat.GOLD)
+                         .append(MathHelper.round(groupedEntities.get(key).getLeft())).append("m")
+                         .append(ChatFormat.WHITE).append(")");
         }
         if (outputlist.isEmpty())
         {
@@ -306,41 +309,43 @@ public class InformationCommands
         else
         {
             String result;
-            result = StringUtils.implode("&f, ", outputlist);
+            result = StringUtils.implode(ChatFormat.WHITE + ", ", outputlist);
             result += groupedOutput.toString();
-            result = ChatFormat.parseFormats(result);
             if (context.getSender().getName().equals(user.getName()))
             {
                 context.sendTranslated(MessageType.NEUTRAL, "Found those nearby you:\n{}", result);
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby %s:\n{}", user.getName(), result);
+                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby {user}:\n{}", user, result);
             }
         }
     }
 
     private void addNearInformation(List<String> list, Entity entity, double distance)
     {
+        String s;
         if (entity instanceof Player)
         {
-            list.add(String.format("&2%s&f (&e%dm&f)", ((Player)entity).getName(), (int)distance));
+            s = ChatFormat.DARK_GREEN + ((Player)entity).getName();
         }
         else if (entity instanceof LivingEntity)
         {
-            list.add(String.format("&3%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType()),(int)distance));
+            s = ChatFormat.DARK_AQUA + Match.entity().getNameFor(entity.getType());
         }
         else
         {
             if (entity instanceof Item)
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", Match.material().getNameFor(((Item)entity).getItemStack()), (int)distance));
+                s = ChatFormat.GREY + Match.material().getNameFor(((Item)entity).getItemStack());
             }
             else
             {
-                list.add(String.format("&7%s&f (&e%dm&f)", Match.entity().getNameFor(entity.getType()),(int)distance));
+                s = ChatFormat.GREY + Match.entity().getNameFor(entity.getType());
             }
         }
+        s += ChatFormat.WHITE + " (" + ChatFormat.GOLD + distance + "m" + ChatFormat.WHITE + ")";
+        list.add(s);
     }
 
     @Command(names = {"ping", "pong"}, desc = "Pong!", max = 0)
@@ -375,24 +380,23 @@ public class InformationCommands
             return;
         }
         //Uptime:
-        context.sendTranslated(MessageType.POSITIVE, "[&cCubeEngine-Basics&a]");
+        context.sendTranslated(MessageType.POSITIVE, "[{text:CubeEngine-Basics:color=RED}]");
         DateFormat df = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT,
                      context.getSender().getLocale());
         Date start = new Date(ManagementFactory.getRuntimeMXBean().getStartTime());
         Duration dura = new Duration(start.getTime(), System.currentTimeMillis());
-        context.sendTranslated(MessageType.POSITIVE, "Server is running since &6%s", df.format(start));
-        context.sendTranslated(MessageType.POSITIVE, "Uptime: &6%s", formatter.print(dura.toPeriod()));
+        context.sendTranslated(MessageType.POSITIVE, "Server is running since {input#uptime}", df.format(start));
+        context.sendTranslated(MessageType.POSITIVE, "Uptime: {input#uptime}", formatter.print(dura.toPeriod()));
         //TPS:
         float tps = this.module.getLagTimer().getAverageTPS();
-        String color = tps == 20 ? "&2" : tps > 17 ? "&e" : tps > 10 ? "&c" : tps == 0 ? "&eNaN" : "&4";
-        color = ChatFormat.parseFormats(color);
-        context.sendTranslated(MessageType.POSITIVE, "Current TPS: %s%.1f", color, tps);
+        String color = tps == 20 ? ChatFormat.DARK_GREEN.toString() : tps > 17 ? ChatFormat.YELLOW.toString() : tps > 10 ? ChatFormat.RED.toString() : tps == 0 ? (ChatFormat.YELLOW.toString() + "NaN") : ChatFormat.DARK_RED.toString();
+        context.sendTranslated(MessageType.POSITIVE, "Current TPS: {input#color}{decimal#tps:1}", color, tps);
         Pair<Long, Float> lowestTPS = this.module.getLagTimer().getLowestTPS();
         if (lowestTPS.getRight() != 20)
         {
-            color = ChatFormat.parseFormats(tps > 17 ? "&e" : tps > 10 ? "&c" : "&4");
+            color = ChatFormat.parseFormats(tps > 17 ? ChatFormat.YELLOW.toString() : tps > 10 ? ChatFormat.RED.toString() : ChatFormat.DARK_RED.toString());
             Date date = new Date(lowestTPS.getLeft());
-            context.sendTranslated(MessageType.POSITIVE, "Lowest TPS was %s%.1f &f(&a%s&f)", color, lowestTPS.getRight(), df.format(date));
+            context.sendTranslated(MessageType.POSITIVE, "Lowest TPS was {decimal#tps:1} ({input#date})", color, lowestTPS.getRight(), df.format(date));
             long timeSinceLastLowTPS = System.currentTimeMillis() - this.module.getLagTimer().getLastLowTPS();
             if (tps == 20 && TimeUnit.MINUTES.convert(timeSinceLastLowTPS,TimeUnit.MILLISECONDS) < 1)
             {
@@ -409,31 +413,30 @@ public class InformationCommands
         {
             if (memUsePercent > 95)
             {
-                memused = "&4";
+                memused = ChatFormat.DARK_RED.toString();
             }
             else
             {
-                memused = "&c";
+                memused = ChatFormat.RED.toString();
             }
         }
         else if (memUsePercent > 60)
         {
-            memused = "&e";
+            memused = ChatFormat.YELLOW.toString();
         }
         else
         {
-            memused = "&2";
+            memused = ChatFormat.DARK_GREEN.toString();
         }
         memused += memUse;
-        memused = ChatFormat.parseFormats(memused);
-        context.sendTranslated(MessageType.POSITIVE, "Memory Usage: %s&f/&6%d&f/&6%d &aMB", memused, memCom, memMax);
+        context.sendTranslated(MessageType.POSITIVE, "Memory Usage: {input#memused}/{integer#memcom}/{integer#memMax} MB", memused, memCom, memMax);
         //Worlds with loaded Chunks / Entities
         for (World world : Bukkit.getServer().getWorlds())
         {
             String type = world.getEnvironment().name();
             int loadedChunks = world.getLoadedChunks().length;
             int entities = world.getEntities().size();
-            context.sendTranslated(MessageType.POSITIVE, "%s &e(&2%s&e)&a: &6%d &achunks &6%d &aentities", world.getName(), type, loadedChunks, entities);
+            context.sendTranslated(MessageType.POSITIVE, "{world} ({input#environment}): {amount} chunks {amount} entities", world, type, loadedChunks, entities);
         }
     }
 
@@ -442,9 +445,10 @@ public class InformationCommands
     public void listWorlds(CommandContext context)
     {
         context.sendTranslated(MessageType.POSITIVE, "Loaded worlds:");
+        String format = " " + ChatFormat.WHITE + "- " + ChatFormat.GOLD + "%s" + ChatFormat.WHITE + ":" + ChatFormat.INDIGO + "%s";
         for (World world : Bukkit.getServer().getWorlds())
         {
-            context.sendMessage(String.format(ChatFormat.parseFormats(" &f- &6%s&f: &9%s"),world.getName(),world.getEnvironment().name()));
+            context.sendMessage(String.format(format, world.getName(), world.getEnvironment().name()));
         }
     }
 }

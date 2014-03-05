@@ -71,11 +71,11 @@ public class ItemCommands
             ItemStack item = Match.material().itemStack(context.getString(0));
             if (item != null)
             {
-                context.sendTranslated(MessageType.POSITIVE, "Matched &e%s &f(&e%d&f:&e%d&f) &afor &f%s", Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                context.sendTranslated(MessageType.POSITIVE, "Matched {input#item} ({input#id}:{input#data}) for {input}", Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Could not find any item named &e%s&c!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Could not find any item named {input}!", context.getString(0));
             }
             return;
         }
@@ -93,10 +93,10 @@ public class ItemCommands
                 String found = Match.material().getNameFor(item);
                 if (found == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Itemname unknown! Itemdata: &e%d&f:&e%d&f", item.getType().getId(), item.getDurability());
+                    context.sendTranslated(MessageType.NEGATIVE, "Itemname unknown! Itemdata: {input#id}:{input#data}", item.getType().getId(), item.getDurability());
                     return;
                 }
-                context.sendTranslated(MessageType.POSITIVE, "The Item in your hand is: &e%s &f(&e%d&f:&e%d&f)", found, item.getType().getId(), item.getDurability());
+                context.sendTranslated(MessageType.POSITIVE, "The Item in your hand is: {input#item} ({input#id}:{input#data})", found, item.getType().getId(), item.getDurability());
             }
             return;
         }
@@ -125,15 +125,15 @@ public class ItemCommands
             }
             meta.setLore(list);
             item.setItemMeta(meta);
-            context.sendTranslated(MessageType.POSITIVE, "You now hold &6%s&a in your hands!", name);
+            context.sendTranslated(MessageType.POSITIVE, "You now hold {input#name} in your hands!", name);
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "Trying to give your &6toys &ca name?");
+        context.sendTranslated(MessageType.NEGATIVE, "Trying to give your {text:toys} a name?");
     }
 
-    @Command(names = {
-        "headchange", "skullchange"
-    }, desc = "Changes a skull to a players skin.", usage = "<name>", min = 1, max = 1)
+    @Command(names = {"headchange", "skullchange"},
+             desc = "Changes a skull to a players skin.",
+             usage = "<name>", min = 1, max = 1)
     public void headchange(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -146,7 +146,7 @@ public class ItemCommands
                 SkullMeta meta = ((SkullMeta)sender.getItemInHand().getItemMeta());
                 meta.setOwner(name);
                 sender.getItemInHand().setItemMeta(meta);
-                context.sendTranslated(MessageType.POSITIVE, "You now hold &6%s's &ahead in your hands!", name);
+                context.sendTranslated(MessageType.POSITIVE, "You now hold {user}'s head in your hands!", name);
                 return;
             }
             context.sendTranslated(MessageType.NEGATIVE, "You are not holding a head.");
@@ -176,7 +176,7 @@ public class ItemCommands
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Invalid parameter! Use &aon &eor %coff&e!");
+                    context.sendTranslated(MessageType.NEUTRAL, "Invalid parameter! Use {text:on} or {text:off}!");
                     return;
                 }
             }
@@ -205,7 +205,7 @@ public class ItemCommands
     {
         if (!context.hasArg(0))
         {
-            context.sendTranslated(MessageType.POSITIVE, "Following Enchantments are availiable:\n%s", this.getPossibleEnchantments(null));
+            context.sendTranslated(MessageType.POSITIVE, "Following Enchantments are availiable:\n{input#enchs}", this.getPossibleEnchantments(null));
             return;
         }
         if (context.getSender() instanceof User)
@@ -214,7 +214,7 @@ public class ItemCommands
             ItemStack item = sender.getItemInHand();
             if (item.getType().equals(Material.AIR))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "&6ProTip: &eYou cannot enchant your fists!");
+                context.sendTranslated(MessageType.NEUTRAL, "{text:ProTip}: You cannot enchant your fists!");
                 return;
             }
             Enchantment ench = context.getArg(0, Enchantment.class, null);
@@ -223,7 +223,9 @@ public class ItemCommands
                 String possibleEnchs = this.getPossibleEnchantments(item);
                 if (possibleEnchs != null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Enchantment &6%s &cnot found! Try one of those instead:\n%s", context.getString(0), possibleEnchs);
+                    context.sendTranslated(MessageType.NEGATIVE, "Enchantment {input#enchantment} not found!", context.getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "Try one of those instead:");
+                    context.sendMessage(possibleEnchs);
                 }
                 else
                 {
@@ -254,7 +256,7 @@ public class ItemCommands
                     }
                     // TODO enchant item event when bukkit event is not only for enchanting via table #WaitForBukkit
                     item.addUnsafeEnchantment(ench, level);
-                    context.sendTranslated(MessageType.POSITIVE, "Added unsafe enchantment: &6%s %d &ato your item!", Match.enchant().nameFor(ench), level);
+                    context.sendTranslated(MessageType.POSITIVE, "Added unsafe enchantment: {input#enchantment} {integer#level} to your item!", Match.enchant().nameFor(ench), level);
                     return;
                 }
                 context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to add unsafe enchantments!");
@@ -265,7 +267,7 @@ public class ItemCommands
                 if (level >= ench.getStartLevel() && level <= ench.getMaxLevel())
                 {
                     item.addUnsafeEnchantment(ench, level);
-                    context.sendTranslated(MessageType.POSITIVE, "Added enchantment: &6%s %d &ato your item!", Match.enchant().nameFor(ench), level);
+                    context.sendTranslated(MessageType.POSITIVE, "Added enchantment: {input#enchantment} {integer#level} to your item!", Match.enchant().nameFor(ench), level);
                     return;
                 }
                 context.sendTranslated(MessageType.NEGATIVE, "This enchantment-level is not allowed!");
@@ -274,7 +276,9 @@ public class ItemCommands
             String possibleEnchs = this.getPossibleEnchantments(item);
             if (possibleEnchs != null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "This enchantment is not allowed for this item!\n&eTry one of those instead:\n%s", possibleEnchs);
+                context.sendTranslated(MessageType.NEGATIVE, "This enchantment is not allowed for this item!", possibleEnchs);
+                context.sendTranslated(MessageType.NEUTRAL, "Try one of those instead:");
+                context.sendMessage(possibleEnchs);
                 return;
             }
             context.sendTranslated(MessageType.NEGATIVE, "You can not enchant this item!");
@@ -293,25 +297,27 @@ public class ItemCommands
             {
                 if (first)
                 {
-                    sb.append("&e").append(Match.enchant().nameFor(enchantment));
+                    sb.append(ChatFormat.YELLOW).append(Match.enchant().nameFor(enchantment));
                     first = false;
                 }
                 else
                 {
-                    sb.append("&f, &e").append(Match.enchant().nameFor(enchantment));
+                    sb.append(ChatFormat.WHITE).append(", ").append(ChatFormat.YELLOW).append(Match.enchant()
+                                                                                                   .nameFor(enchantment));
                 }
             }
         }
         if (sb.length() == 0)
         {
             return null;
-        }
+       }
         return sb.toString();
     }
 
-    @Command(desc = "Gives the specified Item to a player", flags = {
-        @Flag(name = "b", longName = "blacklist")
-    }, min = 2, max = 3, usage = "<player> <material[:data]> [amount] [-blacklist]")
+    @Command(desc = "Gives the specified Item to a player",
+             flags = {@Flag(name = "b", longName = "blacklist")},
+             usage = "<player> <material[:data]> [amount] [-blacklist]",
+             min = 2, max = 3)
     @SuppressWarnings("deprecation")
     public void give(ParameterizedContext context)
     {
@@ -324,7 +330,7 @@ public class ItemCommands
         ItemStack item = context.getArg(1, ItemStack.class, null);
         if (item == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Unknown Item: &6%s&c!", context.getString(1));
+            context.sendTranslated(MessageType.NEGATIVE, "Unknown Item: {input#item}!", context.getString(1));
             return;
         }
         if (!context.hasFlag("b") && module.perms().ITEM_BLACKLIST.isAuthorized(context.getSender())
@@ -347,8 +353,8 @@ public class ItemCommands
         user.getInventory().addItem(item);
         user.updateInventory();
         String matname = Match.material().getNameFor(item);
-        context.sendTranslated(MessageType.POSITIVE, "You gave &2%s &e%d %s&a!", user.getName(), amount, matname);
-        user.sendTranslated(MessageType.POSITIVE, "&2%s &ajust gave you &e%d %s&a!", context.getSender().getName(), amount, matname);
+        context.sendTranslated(MessageType.POSITIVE, "You gave {user} {amount} {input#item}!", user, amount, matname);
+        user.sendTranslated(MessageType.POSITIVE, "{user} just gave you {amount} {input#item}!", context.getSender().getName(), amount, matname);
     }
 
     @Command(names = {
@@ -365,7 +371,7 @@ public class ItemCommands
             ItemStack item = context.getArg(0, ItemStack.class, null);
             if (item == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Unknown Item: &6%s&c!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Item {input#item} not found!", context.getString(0));
                 return;
             }
             if (!context.hasFlag("b") && module.perms().ITEM_BLACKLIST.isAuthorized(sender)
@@ -411,10 +417,10 @@ public class ItemCommands
             item.setAmount(amount);
             sender.getInventory().addItem(item);
             sender.updateInventory();
-            sender.sendTranslated(MessageType.NEUTRAL, "Received: %d %s ", amount, Match.material().getNameFor(item));
+            sender.sendTranslated(MessageType.NEUTRAL, "Received: {amount} {input#item}", amount, Match.material().getNameFor(item));
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Did you try to use &6/give &eon your new I-Tem?");
+        context.sendTranslated(MessageType.NEUTRAL, "Did you try to use {text:/give} on your new I-Tem?");
     }
 
     @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", max = 1, flags = @Flag(longName = "all", name = "a"))
@@ -454,14 +460,14 @@ public class ItemCommands
                 Integer amount = context.getArg(0, Integer.class);
                 if (amount == null || amount <= 1)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Invalid amount! (%s)", context.getString(0));
+                    context.sendTranslated(MessageType.NEGATIVE, "Invalid amount {input#amount}", context.getString(0));
                     return;
                 }
                 for (int i = 1; i < amount; ++i)
                 {
                     sender.getInventory().addItem(sender.getItemInHand());
                 }
-                sender.sendTranslated(MessageType.POSITIVE, "Refilled &6%s &astacks in hand!", context.getString(0));
+                sender.sendTranslated(MessageType.POSITIVE, "Refilled {amount} stacks in hand!", amount);
                 return;
             }
             sender.sendTranslated(MessageType.POSITIVE, "Refilled stack in hand!");
@@ -514,7 +520,7 @@ public class ItemCommands
             sender.sendTranslated(MessageType.NEUTRAL, "Item cannot be repaired!");
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "If you do this you'll &cloose &eyour warranty!");
+        context.sendTranslated(MessageType.NEGATIVE, "If you do this you'll loose your warranty!");
     }
 
     @Command(desc = "Stacks your items up to 64")
@@ -570,10 +576,10 @@ public class ItemCommands
             if (changed)
             {
                 user.getInventory().setContents(items);
-                user.sendMessage("&aItems stacked together!");
+                user.sendTranslated(MessageType.POSITIVE, "Items stacked together!");
                 return;
             }
-            user.sendMessage("&eNothing to stack!");
+            user.sendTranslated(MessageType.NEUTRAL, "Nothing to stack!");
             return;
         }
         context.sendTranslated(MessageType.NEUTRAL, "No stacking for you.");

@@ -78,16 +78,14 @@ public class WorldsCommands extends ContainerCommand
 
     @Command(desc = "Creates a new world",
              usage = "<name> {universe} [env <environement>] [seed <seed>] [type <type>] [struct <true|false>] [gen <generator>] [-recreate] [-noload]",
-    params = {
-    @Param(names = {"environment","env"}, type = Environment.class),
-    @Param(names = "seed"),
-    @Param(names = {"worldtype","type"}, type = WorldType.class),
-    @Param(names = {"structure","struct"}, type = Boolean.class),
-    @Param(names = {"generator","gen"})},
-    max = 2, min = 1, flags = {
-    @Flag(longName = "recreate",name = "r"),
-    @Flag(longName = "noload",name = "no"),
-    })
+             params = {@Param(names = {"environment","env"}, type = Environment.class),
+                      @Param(names = "seed"),
+                      @Param(names = {"worldtype","type"}, type = WorldType.class),
+                      @Param(names = {"structure","struct"}, type = Boolean.class),
+                      @Param(names = {"generator","gen"})},
+             flags = {@Flag(longName = "recreate",name = "r"),
+                     @Flag(longName = "noload",name = "no"),},
+             max = 2, min = 1)
     public void create(ParameterizedContext context)
     {
         World world = this.wm.getWorld(0);
@@ -99,7 +97,7 @@ public class WorldsCommands extends ContainerCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "A world named &6%s&c already exists and is loaded!", world.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "A world named {world} already exists and is loaded!", world);
             }
             return;
         }
@@ -113,7 +111,7 @@ public class WorldsCommands extends ContainerCommand
                     Path newPath = path.resolveSibling(context.getString(0) + "_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss")
                         .format(new Date()));
                     Files.move(path, newPath);
-                    context.sendTranslated(MessageType.POSITIVE, "Old world moved to &6%s", path.getFileName().toString());
+                    context.sendTranslated(MessageType.POSITIVE, "Old world moved to {name#folder}", path.getFileName().toString());
                 }
                 catch (IOException e)
                 {
@@ -123,7 +121,7 @@ public class WorldsCommands extends ContainerCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "A world named &6%s&c already exists but is not loaded!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "A world named {name#world} already exists but is not loaded!", context.getString(0));
                 return;
             }
         }
@@ -193,7 +191,7 @@ public class WorldsCommands extends ContainerCommand
         World world = this.wm.getWorld(context.getString(0));
         if (world != null)
         {
-            context.sendTranslated(MessageType.POSITIVE, "The world %s is already loaded!", world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The world {world} is already loaded!", world);
             return;
         }
         if (multiverse.hasWorld(context.getString(0)) != null)
@@ -205,11 +203,11 @@ public class WorldsCommands extends ContainerCommand
             world = multiverse.loadWorld(context.getString(0));
             if (world != null)
             {
-                context.sendTranslated(MessageType.POSITIVE, "World &6%s&a loaded!", world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "World {world} loaded!", world);
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Could not load &6%s", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Could not load {name#world}", context.getString(0));
             }
         }
         else if (Files.exists(Bukkit.getServer().getWorldContainer().toPath().resolve(context.getString(0))))
@@ -221,7 +219,7 @@ public class WorldsCommands extends ContainerCommand
                 universe = this.multiverse.getUniverse(context.getString(1));
                 if (universe == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Universe &6%s&c not found!", context.getString(1));
+                    context.sendTranslated(MessageType.NEGATIVE, "Universe {name} not found!", context.getString(1));
                     return;
                 }
             }
@@ -238,11 +236,11 @@ public class WorldsCommands extends ContainerCommand
             Set<World> worldToAdd = new HashSet<>();
             worldToAdd.add(world);
             universe.addWorlds(worldToAdd);
-            context.sendTranslated(MessageType.POSITIVE, "World &6%s&a loaded!", world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "World {world} loaded!", world);
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
         }
     }
 
@@ -277,23 +275,23 @@ public class WorldsCommands extends ContainerCommand
                         return;
                     }
                 }
-                context.sendTranslated(MessageType.POSITIVE, "Teleported all players out of &6%s", world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Teleported all players out of {world}", world);
             }
             if (this.wm.unloadWorld(world, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "Unloaded the world &6%s&a!", world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Unloaded the world {world}!", world);
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Could not unload &6%s", world.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "Could not unload {world}", world);
                 if (!world.getPlayers().isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "There are players still on that map! (&6%d&e)", world.getPlayers().size());
+                    context.sendTranslated(MessageType.NEUTRAL, "There are still {amount} players on that map!", world.getPlayers().size());
                 }
             }
             return;
         }
-        context.sendTranslated(MessageType.POSITIVE, "The world does not exist");
+        context.sendTranslated(MessageType.POSITIVE, "The world {input} does not exist", context.getString(0));
     }
 
     @Command(desc = "Remove a world", usage = "<world> [-f]",
@@ -309,7 +307,7 @@ public class WorldsCommands extends ContainerCommand
         Universe universe = multiverse.hasWorld(context.getString(0));
         if (universe == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
             return;
         }
         universe.removeWorld(context.getString(0));
@@ -324,11 +322,11 @@ public class WorldsCommands extends ContainerCommand
             {
                 module.getLog().error(e, "Error while deleting world folder!");
             }
-            context.sendTranslated(MessageType.NEGATIVE, "Configuration and folder for the world &6%s&c removed!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Configuration and folder for the world {name#world} removed!", context.getString(0));
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Configuration for the world &6%s&c removed!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Configuration for the world {name#world} removed!", context.getString(0));
         }
     }
 
@@ -343,11 +341,11 @@ public class WorldsCommands extends ContainerCommand
                 World world = this.wm.getWorld(pair.getLeft());
                 if (world == null)
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "&6%s &9%s &c(not loaded)&a in the universe &6%s", pair.getLeft(), pair.getRight().generation.environment.name(), universe.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "{name#world} {input#environement:color=INDIGO} {text:(not loaded):color=RED} in the universe {name}", pair.getLeft(), pair.getRight().generation.environment.name(), universe.getName());
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "&6%s &9%s&a in the universe &6%s", pair.getLeft(), pair.getRight().generation.environment.name(), universe.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "{name#world} {input#environement:color=INDIGO} in the universe {name}", pair.getLeft(), pair.getRight().generation.environment.name(), universe.getName());
                 }
             }
         }
@@ -360,9 +358,9 @@ public class WorldsCommands extends ContainerCommand
         WorldConfig config = multiverse.getWorldConfig(context.getString(0));
         if (config == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
         }
-        context.sendTranslated(MessageType.POSITIVE, "WorldInformation for &6%s&a:", context.getString(0));
+        context.sendTranslated(MessageType.POSITIVE, "WorldInformation for {input#world}:", context.getString(0));
         context.sendMessage("TODO"); // TODO finish worlds info cmd
     }
     // info
@@ -373,17 +371,17 @@ public class WorldsCommands extends ContainerCommand
         World world = this.wm.getWorld(context.getString(0));
         if (world == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
             return;
         }
         if (world.getPlayers().isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "There are no players in &6%s", world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "There are no players in {world}", world);
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "The following players are in &6%s", world.getName());
-            String s = ChatFormat.parseFormats(" &e-&6 ");
+            context.sendTranslated(MessageType.POSITIVE, "The following players are in {world}", world);
+            String s = ChatFormat.YELLOW + "  -" + ChatFormat.GOLD;
             for (Player player : world.getPlayers())
             {
                 context.sendMessage(s + player.getName());
@@ -399,12 +397,12 @@ public class WorldsCommands extends ContainerCommand
         World world = this.wm.getWorld(context.getString(0));
         if (world == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!");
+            context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
             return;
         }
         Universe universe = multiverse.getUniverseFrom(world);
         universe.getConfig().mainWorld = new ConfigWorld(this.wm, world);
-        context.sendTranslated(MessageType.POSITIVE, "&6%s&a is now the main world of the universe &6%s", world.getName(), universe.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{world} is now the main world of the universe {name}", world, universe.getName());
     }
     // set main world (of universe) (of universes)
     // set main universe
@@ -416,18 +414,18 @@ public class WorldsCommands extends ContainerCommand
         World world = context.getArg(0, World.class, null);
         if (world == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
             return;
         }
         Universe universe = this.multiverse.getUniverse(context.getString(1));
         if (universe == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Universe &6%s&c not found!", context.getString(1));
+            context.sendTranslated(MessageType.NEGATIVE, "Universe {input} not found!", context.getString(1));
             return;
         }
         if (universe.hasWorld(world.getName()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "&6%s&c is already in the universe &6%s", world.getName(), universe.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "{world} is already in the universe {name}", world, universe.getName());
             return;
         }
         Universe oldUniverse = multiverse.getUniverseFrom(world);
@@ -478,25 +476,25 @@ public class WorldsCommands extends ContainerCommand
                         WorldConfig worldConfig = universe.getWorldConfig(world);
                         if (user.safeTeleport(worldConfig.spawn.spawnLocation.getLocationIn(world), TeleportCause.COMMAND, false))
                         {
-                            context.sendTranslated(MessageType.POSITIVE, "You are now at the spawn of &6%s&a (main world of the universe &6%s&a)", world.getName(), name);
+                            context.sendTranslated(MessageType.POSITIVE, "You are now at the spawn of {world} (main world of the universe {name})", world, name);
                             return;
                         } // else tp failed
                         return;
                     }
                 }
-                context.sendTranslated(MessageType.NEGATIVE, "Universe &6%s&c not found!", name);
+                context.sendTranslated(MessageType.NEGATIVE, "Universe {input} not found!", name);
                 return;
             }
             World world = this.wm.getWorld(name);
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", name);
                 return;
             }
             WorldConfig worldConfig = this.multiverse.getUniverseFrom(world).getWorldConfig(world);
             if (user.safeTeleport(worldConfig.spawn.spawnLocation.getLocationIn(world), TeleportCause.COMMAND, false))
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are now at the spawn of &6%s&a!", name);
+                context.sendTranslated(MessageType.POSITIVE, "You are now at the spawn of {world}!", world);
                 return;
             } // else tp failed
             return;
@@ -510,12 +508,12 @@ public class WorldsCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s%c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         Universe universe = multiverse.getUniverseFrom(user.getWorld());
         universe.loadPlayer(user);
-        context.sendTranslated(MessageType.POSITIVE, "Loaded &2%s's&a data from file!", user.getName());
+        context.sendTranslated(MessageType.POSITIVE, "Loaded {user}'s data from file!", user);
     }
 
     @Command(desc = "Save a players inventory etc. for his current world", usage = "<user>", min = 1, max = 1)
@@ -524,11 +522,11 @@ public class WorldsCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User &2%s%c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         Universe universe = multiverse.getUniverseFrom(user.getWorld());
         universe.savePlayer(user, user.getWorld());
-        context.sendTranslated(MessageType.POSITIVE, "Saved &2%s's&a data to file!", user.getName());
+        context.sendTranslated(MessageType.POSITIVE, "Saved {user}'s data to file!", user.getName());
     }
 }

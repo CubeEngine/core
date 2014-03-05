@@ -44,6 +44,6 @@ public class UserReader extends ArgumentReader
         {
             return user;
         }
-        throw new InvalidArgumentException("&cUser {user} not found!", arg);
+        throw new InvalidArgumentException("User {user} not found!", arg); // TODO where is this catched???
     }
 }

@@ -104,25 +104,25 @@ public class DoorCommand
             world = context.getArg(2, World.class, null);
             if(world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World &6%s &cnot found!", context.getString(2));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input#world} not found!", context.getString(2));
                 return;
             }
             Integer x = context.getArg(3, Integer.class, null);
             if(x == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "x-value &6%s &cis not supported!", context.getString(3));
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid x-value {input}!", context.getString(3));
                 return;
             }
             Integer y = context.getArg(4, Integer.class, null);
             if(y == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "y-value &6%s &cis not supported!", context.getString(4));
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid y-value {input}!", context.getString(4));
                 return;
             }
             Integer z = context.getArg(5, Integer.class, null);
             if(z == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "z-value &6%s &cis not supported!", context.getString(5));
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid z-value {input}!", context.getString(5));
                 return;
             }
             vector = new Vector3(x, y, z);

@@ -116,7 +116,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     public void help(HelpContext context) throws Exception
     {
         CommandSender sender = context.getSender();
-        context.sendTranslated(MessageType.NONE, "&7Usage: &f%s", this.getUsage(context));
+        context.sendTranslated(MessageType.NONE, "{text:Usage:color=INDIGO}: {input#usage}", this.getUsage(context));
         context.sendMessage(" ");
         context.sendTranslated(MessageType.NEUTRAL, "The following actions are available:");
         context.sendMessage(" ");
@@ -131,7 +131,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         }
 
         context.sendMessage(" ");
-        context.sendTranslated(MessageType.NONE, "&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated(MessageType.NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 
     private class ChildDelegation

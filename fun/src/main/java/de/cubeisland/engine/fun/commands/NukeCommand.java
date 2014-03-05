@@ -99,7 +99,7 @@ public class NukeCommand
         {
             if(!module.perms().COMMAND_NUKE_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendMessage("&cYou are not allowed to specify a player!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to specify a player!");
                 return;
             }
 
@@ -164,7 +164,7 @@ public class NukeCommand
             location = this.getSpawnLocation(location, locationHeight);
             return new Sphere(new Vector3(location.getX(), location.getY(), location.getZ()), radius);
         default:
-            context.sendTranslated(MessageType.NEGATIVE, "The shape '%s' was not found!", shapeName);
+            context.sendTranslated(MessageType.NEGATIVE, "The shape {input} was not found!", shapeName);
             break;
         }
         return null;

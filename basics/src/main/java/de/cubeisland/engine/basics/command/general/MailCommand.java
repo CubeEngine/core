@@ -69,7 +69,8 @@ public class MailCommand extends ContainerCommand
             }
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "If you wanted to look into other players mails use: &6/mail spy %s&e.\n&cOtherwise be quiet!", context.getString(0));
+                context.sendTranslated(MessageType.NEUTRAL, "If you wanted to look into other players mails use: {text:/mail spy} {input#player}.", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Otherwise be quiet!");
                 return;
             }
             mailof = context.getUser(0);
@@ -117,7 +118,7 @@ public class MailCommand extends ContainerCommand
         }
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You do not have any mail from &2%s&e.", nameMailOf);
+            context.sendTranslated(MessageType.NEUTRAL, "You do not have any mail from {user}.", nameMailOf);
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -125,9 +126,9 @@ public class MailCommand extends ContainerCommand
         for (Mail mail : mails)
         {
             i++;
-            sb.append("\n&f").append(i).append(": ").append(mail.readMail());
+            sb.append("\n").append(ChatFormat.WHITE).append(i).append(": ").append(mail.readMail());
         }
-        context.sendTranslated(MessageType.POSITIVE, "Your mails:%s", ChatFormat.parseFormats(sb.toString()));
+        context.sendTranslated(MessageType.POSITIVE, "Your mails: {input#mails}", ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "spymail")
@@ -143,7 +144,7 @@ public class MailCommand extends ContainerCommand
         List<Mail> mails = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().getMails();
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
-            context.sendTranslated(MessageType.NEUTRAL, "&2%s &edoes not have any mails!", user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "{user} does not have any mails!", user);
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -151,9 +152,9 @@ public class MailCommand extends ContainerCommand
         for (Mail mail : mails)
         {
             i++;
-            sb.append("\n&f").append(i).append(": ").append(mail.getMessage());
+            sb.append("\n").append(ChatFormat.WHITE).append(i).append(": ").append(mail.getMessage());
         }
-        context.sendTranslated(MessageType.NEUTRAL, "&2%s's mails:%s", user.getName(), ChatFormat.parseFormats(sb.toString()));
+        context.sendTranslated(MessageType.NEUTRAL, "{user}'s mails: {input#mails}", user, ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "sendmail")
@@ -168,7 +169,7 @@ public class MailCommand extends ContainerCommand
         }
         String message = context.getStrings(1);
         this.mail(message, context.getSender(), user);
-        context.sendTranslated(MessageType.POSITIVE, "Mail send to &2%s&a!", user.getName());
+        context.sendTranslated(MessageType.POSITIVE, "Mail send to {user}!", user);
     }
 
     @Alias(names = "sendallmail")
@@ -217,7 +218,7 @@ public class MailCommand extends ContainerCommand
             Integer mailId = context.getArg(0, Integer.class, null);
             if (mailId == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "&6%s&c is not a number!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a number!", context.getString(0));
                 return;
             }
             BasicsUser bUser = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser();
@@ -230,7 +231,7 @@ public class MailCommand extends ContainerCommand
             {
                 Mail mail = bUser.getMails().get(mailId);
                 module.getCore().getDB().getDSL().delete(TABLE_MAIL).where(TABLE_MAIL.KEY.eq(mail.getKey())).execute();
-                context.sendTranslated(MessageType.POSITIVE, "Deleted Mail #%d", mailId);
+                context.sendTranslated(MessageType.POSITIVE, "Deleted Mail #{integer#mailid}", mailId);
             }
             catch (IndexOutOfBoundsException e)
             {
@@ -243,8 +244,8 @@ public class MailCommand extends ContainerCommand
         }
     }
 
-    @Command(names = {"clear"},
-            desc = "Clears your mails.", usage = "[player]", min = 0, max = 1)
+    @Command(names = {"clear"}, desc = "Clears your mails.",
+             usage = "[player]", min = 0, max = 1)
     public void clear(CommandContext context)
     {
         User sender = null;

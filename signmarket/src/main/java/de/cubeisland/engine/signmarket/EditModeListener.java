@@ -453,12 +453,12 @@ public class EditModeListener extends ConversationCommand
             Integer amount = context.getParam("amount",null);
             if (amount == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Invalid amount %s!", context.getString("amount"));
+                user.sendTranslated(MessageType.NEGATIVE, "Invalid amount {input#amount}!", context.getString("amount"));
                 return null;
             }
             else if (amount < 0)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Negative amounts could be unfair! &eJust sayin'");
+                user.sendTranslated(MessageType.NEGATIVE, "Negative amounts could be unfair! Just sayin'");
                 return null;
             }
             else
@@ -507,7 +507,7 @@ public class EditModeListener extends ConversationCommand
                             int maxAdmin = this.module.getConfig().maxAdminStock;
                             if (maxAdmin != -1 && (size > maxAdmin || size == -1))
                             {
-                                context.sendTranslated(MessageType.NEGATIVE, "The maximum size of admin-signs is set to &6%d&c!", maxAdmin);
+                                context.sendTranslated(MessageType.NEGATIVE, "The maximum size of admin-signs is set to {amount}!", maxAdmin);
                                 return null;
                             }
                             else
@@ -521,7 +521,7 @@ public class EditModeListener extends ConversationCommand
                             int maxUser = this.module.getConfig().maxUserStock;
                             if (maxUser != -1 && (size > maxUser || size == -1))
                             {
-                                context.sendTranslated(MessageType.NEGATIVE, "The maximum size of user-signs is set to &6%d&c!", maxUser);
+                                context.sendTranslated(MessageType.NEGATIVE, "The maximum size of user-signs is set to {amount}!", maxUser);
                                 return null;
                             }
                             else
@@ -585,7 +585,8 @@ public class EditModeListener extends ConversationCommand
                     {
                         if (!user.isSneaking())
                         {
-                            user.sendTranslated(MessageType.NEGATIVE, "This is not a market-sign!\n&eUse shift leftclick to convert the sign.");
+                            user.sendTranslated(MessageType.NEGATIVE, "This is not a market-sign!");
+                            user.sendTranslated(MessageType.NEUTRAL, "Use shift leftclick to convert the sign.");
                             return;
                         }
                         curSign = this.signFactory.createSignAt(user, newLoc);

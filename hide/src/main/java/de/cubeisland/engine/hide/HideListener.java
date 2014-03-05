@@ -78,8 +78,7 @@ public class HideListener implements Listener
         {
             if (!name.equals(canSeeHidden))
             {
-                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player &e%s&a is now visible", event.getUser()
-                                                                                                     .getDisplayName());
+                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player {user} is now visible", event.getUser());
             }
         }
     }
@@ -137,7 +136,7 @@ public class HideListener implements Listener
         {
             if (!user.equals(canSeeHidden))
             {
-                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player &e%s&a is now hidden!", event.getUser().getDisplayName());
+                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player {user}is now hidden!", event.getUser());
             }
         }
     }

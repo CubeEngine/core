@@ -35,6 +35,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
 import de.cubeisland.engine.locker.storage.KeyBook;
@@ -75,7 +76,7 @@ public class LockerCommands extends ContainerCommand
                 if (lock.isBlockLock())
                 {
                     Location loc = lock.getFirstLocation();
-                    context.sendTranslated(MessageType.POSITIVE, "The protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                    context.sendTranslated(MessageType.POSITIVE, "The protection corresponding to this book is located at {vector} in {world}", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), loc.getWorld());
                 }
                 else
                 {
@@ -84,7 +85,7 @@ public class LockerCommands extends ContainerCommand
                         if (entity.getUniqueId().equals(lock.getEntityUID()))
                         {
                             Location loc = entity.getLocation();
-                            context.sendTranslated(MessageType.POSITIVE, "The entity-protection corresponding to this book is located at &6%d&a:&6%d&a:&6%d&a in &6%s", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                            context.sendTranslated(MessageType.POSITIVE, "The entity-protection corresponding to this book is located at {vector} in {world}", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), loc.getWorld());
                             return;
                         }
                     }
@@ -250,14 +251,14 @@ public class LockerCommands extends ContainerCommand
         if (isNotUser(context.getSender())) return;
         if (context.getParams().isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You need to define which flags to &6set&e or &6unSet&a!");
+            context.sendTranslated(MessageType.NEUTRAL, "You need to define which flags to {text:set} or {text:unset}!");
             context.sendTranslated(MessageType.NEUTRAL, "The following flags are available:");
-            String format = ChatFormat.parseFormats(" &7- &6%s");
+            String format = "  " + ChatFormat.GREY + "-" + ChatFormat.GOLD;
             for (String flag : ProtectionFlag.getNames())
             {
-                context.sendMessage(String.format(format, flag));
+                context.sendMessage(format + flag);
             }
-            context.sendTranslated(MessageType.NEUTRAL, "You can also unset \"&6all&e\"");
+            context.sendTranslated(MessageType.NEUTRAL, "You can also unset {text:all}");
             return;
         }
         if (context.hasFlag("p"))

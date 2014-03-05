@@ -35,6 +35,7 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.rulebook.Rulebook;
 import gnu.trove.iterator.TIntIterator;
@@ -116,7 +117,7 @@ public class RulebookCommands extends ContainerCommand
             
             if(!this.rulebookManager.contains(locale))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "The language %s is not supported yet.", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+                context.sendTranslated(MessageType.NEUTRAL, "The language {name} is not supported yet.", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
                 return;
             }
         }
@@ -163,23 +164,23 @@ public class RulebookCommands extends ContainerCommand
         {
             if(this.rulebookManager.getLocales().isEmpty())
             {
-                context.sendMessage("&eNo rulebook available at the moment");
+                context.sendTranslated(MessageType.NEUTRAL, "No rulebook available at the moment");
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "&6available languages:");
+                context.sendTranslated(MessageType.NEUTRAL, "available languages:");
                 for(Locale locale : this.rulebookManager.getLocales())
                 {
-                    context.sendMessage("&e* " + locale.getDisplayLanguage(context.getSender().getLocale()));
+                    context.sendMessage(ChatFormat.YELLOW + "* " + locale.getDisplayLanguage(context.getSender().getLocale()));
                 }
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "&6supported languages:");
+            context.sendTranslated(MessageType.NEUTRAL, "supported languages:");
             for(Language language : this.getModule().getCore().getI18n().getLanguages())
             {
-                context.sendMessage("&e* " + language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+                context.sendMessage(ChatFormat.YELLOW +  "* " + language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             }
         }
     }
@@ -197,23 +198,23 @@ public class RulebookCommands extends ContainerCommand
 
         if(language == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with %s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
             return;
         }
         if(!this.rulebookManager.contains(language.getLocale()))
         {
-            context.sendTranslated(MessageType.POSITIVE, "The languagefile of %s doesn't exist at the moment", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.POSITIVE, "The languagefile of {input} doesn't exist at the moment", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             return;
         }
         
         try
         {
             this.rulebookManager.removeBook(language.getLocale());
-            context.sendTranslated(MessageType.POSITIVE, "The languagefiles of %s was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.POSITIVE, "The languagefiles of {input} was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         catch(IOException ex)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The language file of %s couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.NEGATIVE, "The language file of {input} couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             this.getModule().getLog().error(ex, "Error when deleting the files!");
         }
 
@@ -245,7 +246,7 @@ public class RulebookCommands extends ContainerCommand
         Language language = this.rulebookManager.getLanguage(context.getString(0));
         if(language == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with %s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
             return;
         }
         Locale locale = language.getLocale();
@@ -256,7 +257,7 @@ public class RulebookCommands extends ContainerCommand
             {
                 this.rulebookManager.removeBook(locale);
                 this.rulebookManager.addBook(item, locale);
-                context.sendTranslated(MessageType.POSITIVE, "The rulebook %s was succesful modified.", locale
+                context.sendTranslated(MessageType.POSITIVE, "The rulebook {name} was succesful modified.", locale
                     .getDisplayLanguage(context.getSender().getLocale()));
             }
             catch(IOException ex)
@@ -297,7 +298,7 @@ public class RulebookCommands extends ContainerCommand
         Language language = this.rulebookManager.getLanguage(context.getString(0));
         if(language == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with %s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
             return;
         }
         Locale locale = language.getLocale();
@@ -305,11 +306,11 @@ public class RulebookCommands extends ContainerCommand
         if(!this.rulebookManager.contains(locale))
         {
             this.rulebookManager.addBook(item, locale);
-            context.sendTranslated(MessageType.POSITIVE, "Rulebook for the language %s was added succesfully", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(MessageType.POSITIVE, "Rulebook for the language {input} was added succesfully", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         else
         {
-            context.sendMessage("&eThere is already a book with that language.");
+            context.sendTranslated(MessageType.NEUTRAL, "There is already a book with that language.");
         }
     }
 

@@ -109,7 +109,7 @@ public class Kit
                 Long lastUsage = user.get(KitsAttachment.class).getKitUsage(this.name);
                 if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
                 {
-                    sender.sendTranslated(MessageType.NEUTRAL, "This kit not available at the moment. &aTry again later!");
+                    sender.sendTranslated(MessageType.NEUTRAL, "This kit not available at the moment. Try again later!");
                     throw new PermissionDeniedException();
                 }
             }

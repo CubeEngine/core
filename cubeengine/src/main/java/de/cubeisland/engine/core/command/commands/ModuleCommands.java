@@ -65,7 +65,7 @@ public class ModuleCommands extends ContainerCommand
         if (!modules.isEmpty())
         {
             context.sendTranslated(MessageType.NEUTRAL, "These are the loaded modules.");
-            context.sendTranslated(MessageType.POSITIVE, "Green (+)&r stands for enabled, &cred (-)&r for disabled.");
+            context.sendTranslated(MessageType.NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
             context.sendMessage(" ");
 
             for (Module module : modules)
@@ -115,7 +115,7 @@ public class ModuleCommands extends ContainerCommand
         else
         {
             this.mm.disableModule(module);
-            context.sendTranslated(MessageType.POSITIVE, "The module &6%s&a was successfully disabled!", module.getId());
+            context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully disabled!", module.getId());
         }
     }
 
@@ -130,7 +130,7 @@ public class ModuleCommands extends ContainerCommand
         else
         {
             this.mm.unloadModule(module);
-            context.sendTranslated(MessageType.POSITIVE, "The module &6%s&a was successfully unloaded!", module.getId());
+            context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully unloaded!", module.getId());
         }
     }
 
@@ -149,11 +149,11 @@ public class ModuleCommands extends ContainerCommand
                 this.mm.reloadModule(module, context.hasFlag("f"));
                 if (context.hasFlag("f"))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "The module &6%s&a was successfully reloaded from file!", module.getId());
+                    context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getId());
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "The module &6%s&a was successfully reloaded!", module.getId());
+                    context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully reloaded!", module.getId());
                 }
             }
             catch (ModuleException ex)
@@ -196,7 +196,7 @@ public class ModuleCommands extends ContainerCommand
             Module module = mm.loadModule(modulePath);
             mm.enableModule(module);
 
-            context.sendTranslated(MessageType.POSITIVE, "The module &6%s&a has been successfully loaded and enabled!", module.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getName());
         }
         catch (ModuleAlreadyLoadedException e)
         {
@@ -217,13 +217,13 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not find the module &6%s&c!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Could not find the module {name#module}!", context.getString(0));
             return;
         }
         ModuleInfo moduleInfo = module.getInfo();
-        context.sendTranslated(MessageType.POSITIVE, "Name: &6%s", moduleInfo.getName());
-        context.sendTranslated(MessageType.POSITIVE, "Description: &6%s", moduleInfo.getDescription());
-        context.sendTranslated(MessageType.POSITIVE, "Version: &6%s", moduleInfo.getVersion());
+        context.sendTranslated(MessageType.POSITIVE, "Name: {input}", moduleInfo.getName());
+        context.sendTranslated(MessageType.POSITIVE, "Description: {input}", moduleInfo.getDescription());
+        context.sendTranslated(MessageType.POSITIVE, "Version: {input}", moduleInfo.getVersion());
         VanillaCommands.showSourceVersion(context, moduleInfo.getSourceVersion());
 
         Map<String, Version> dependencies = moduleInfo.getDependencies();
@@ -232,8 +232,8 @@ public class ModuleCommands extends ContainerCommand
         Set<String> services = moduleInfo.getServices();
         Set<String> providedServices = moduleInfo.getProvidedServices();
 
-        String green = ChatFormat.parseFormats("   &a- ");
-        String red = ChatFormat.parseFormats("   &c- ");
+        String green = "   " + ChatFormat.BRIGHT_GREEN + "- ";
+        String red = "   " + ChatFormat.RED + "- ";
         if (!providedServices.isEmpty())
         {
             context.sendTranslated(MessageType.POSITIVE, "Provided services:");

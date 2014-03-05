@@ -61,7 +61,7 @@ public class PortalModifyCommand extends ContainerCommand
             portal = manager.getPortal(context.getString(1));
             if (portal == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Portal &6%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(1));
                 return;
             }
         }
@@ -77,7 +77,7 @@ public class PortalModifyCommand extends ContainerCommand
         }
         portal.config.owner = user.getOfflinePlayer();
         portal.config.save();
-        context.sendTranslated(MessageType.POSITIVE, "&2%s&a is now the owner of &6%s&a!", user.getName(), portal.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is now the owner of {name#portal}!", user.getName(), portal.getName());
     }
 
     @Alias(names = "mvpd")
@@ -92,7 +92,7 @@ public class PortalModifyCommand extends ContainerCommand
             portal = manager.getPortal(context.getString(1));
             if (portal == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Portal &6%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(1));
                 return;
             }
         }
@@ -110,7 +110,7 @@ public class PortalModifyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "The Portal Agency will bring you your portal for just &6$ 1337&e within &6%d weeks", new Random().nextInt(51)+1);
+                context.sendTranslated(MessageType.NEUTRAL, "The Portal Agency will bring you your portal for just {text:$ 1337} within {amount} weeks", new Random().nextInt(51)+1);
                 return;
             }
             portal.config.destination = new Destination(((User)context.getSender()).getLocation());
@@ -120,7 +120,7 @@ public class PortalModifyCommand extends ContainerCommand
             Portal destPortal = manager.getPortal(context.getString(0).substring(2));
             if (destPortal == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Portal &6%s&c not found!", context.getString(0).substring(2));
+                context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0).substring(2));
                 return;
             }
             portal.config.destination = new Destination(destPortal);
@@ -130,7 +130,7 @@ public class PortalModifyCommand extends ContainerCommand
             World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
                 return;
             }
             portal.config.destination = new Destination(world);
@@ -154,7 +154,7 @@ public class PortalModifyCommand extends ContainerCommand
                     portal = manager.getPortal(context.getString(0));
                     if (portal == null)
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "Portal &6%s&c not found!", context.getString(0));
+                        context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0));
                         return;
                     }
                 }
@@ -169,7 +169,7 @@ public class PortalModifyCommand extends ContainerCommand
                 portal.config.location.from = new BlockVector3(p1.getBlockX(), p1.getBlockY(), p1.getBlockZ());
                 portal.config.location.to = new BlockVector3(p2.getBlockX(), p2.getBlockY(), p2.getBlockZ());
                 portal.config.save();
-                context.sendTranslated(MessageType.POSITIVE, "Portal &6%s&a updated to your current selection!", portal.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Portal {name} updated to your current selection!", portal.getName());
                 return;
             }
             context.sendTranslated(MessageType.NEGATIVE, "Please select a cuboid first!");
@@ -190,7 +190,7 @@ public class PortalModifyCommand extends ContainerCommand
                 portal = manager.getPortal(context.getString(0));
                 if (portal == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Portal &6%s&c not found!", context.getString(0));
+                    context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0));
                     return;
                 }
             }
@@ -208,7 +208,7 @@ public class PortalModifyCommand extends ContainerCommand
             }
             portal.config.location.destination = new WorldLocation(location);
             portal.config.save();
-            context.sendTranslated(MessageType.POSITIVE, "The portal exit of portal &6%s&a was set to your current location!", portal.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The portal exit of portal {name} was set to your current location!", portal.getName());
             return;
         }
         context.sendTranslated(MessageType.NEGATIVE, "You have to be ingame to do this!");
@@ -223,7 +223,7 @@ public class PortalModifyCommand extends ContainerCommand
             portal = manager.getPortal(context.getString(0));
             if (portal == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Portal &6%s&c not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0));
                 return;
             }
         }
@@ -241,11 +241,11 @@ public class PortalModifyCommand extends ContainerCommand
         portal.config.save();
         if (portal.config.safeTeleport)
         {
-            context.sendTranslated(MessageType.POSITIVE, "The portal &6%s&a will not teleport to an unsafe destination", portal.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The portal {name} will not teleport to an unsafe destination", portal.getName());
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "The portal &6%s&a will also teleport to an unsafe destination", portal.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The portal {name} will also teleport to an unsafe destination", portal.getName());
         }
     }
 
@@ -258,7 +258,7 @@ public class PortalModifyCommand extends ContainerCommand
             portal = manager.getPortal(context.getString(0));
             if (portal == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Portal &6%s&c not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0));
                 return;
             }
         }
@@ -276,11 +276,11 @@ public class PortalModifyCommand extends ContainerCommand
         portal.config.save();
         if (portal.config.teleportNonPlayers)
         {
-            context.sendTranslated(MessageType.POSITIVE, "The portal &6%s&a will teleport entities too", portal.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The portal {name} will teleport entities too", portal.getName());
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "The portal &6%s&a will only teleport players", portal.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The portal {name} will only teleport players", portal.getName());
         }
     }
 }

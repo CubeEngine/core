@@ -150,8 +150,7 @@ public class Fakeanticheat extends Module implements Listener
 
     private void flood(User user)
     {
-        final String message = user.composeMessage(MessageType.NONE, "&9This Server got hacked by &c%s&9 using NoCheatPlus by flow [ultimate CE version]", user
-            .getName());
+        final String message = user.composeMessage(MessageType.NONE, "&9This Server got hacked by {user:color=RED} using NoCheatPlus by flow [ultimate CE version]", user);
         for (int i = 0; i < 60; ++i)
         {
             user.sendMessage(message);

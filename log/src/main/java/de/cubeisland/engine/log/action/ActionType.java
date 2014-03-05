@@ -155,7 +155,7 @@ public abstract class ActionType
     {
         if (this.canRollback())
         {
-            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.getActionType().getName());
+            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Rollback: {name#actiontype}", logEntry.getActionType().getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;
@@ -165,7 +165,7 @@ public abstract class ActionType
     {
         if (this.canRedo())
         {
-            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Redo: &6%s", logEntry.getActionType().getName());
+            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Redo: {name#actiontype}", logEntry.getActionType().getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;

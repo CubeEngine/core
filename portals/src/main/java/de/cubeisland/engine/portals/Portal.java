@@ -70,7 +70,7 @@ public class Portal
         {
             if (entity instanceof User)
             {
-                ((User)entity).sendTranslated(MessageType.NEUTRAL, "This portal \"&6%s&e\" has no destination yet!", this.getName());
+                ((User)entity).sendTranslated(MessageType.NEUTRAL, "This portal {name} has no destination yet!", this.getName());
                 ((User)entity).attachOrGet(PortalsAttachment.class, module).setInPortal(true);
             }
         }
@@ -98,7 +98,7 @@ public class Portal
 
     public void showInfo(CommandSender user)
     {
-        user.sendTranslated(MessageType.POSITIVE, "Portal Information for &6%s", this.getName());
+        user.sendTranslated(MessageType.POSITIVE, "Portal Information for {name#portal}", this.getName());
         if (this.config.safeTeleport)
         {
             user.sendTranslated(MessageType.POSITIVE, "This Portal has safe-teleport enabled");
@@ -107,8 +107,10 @@ public class Portal
         {
             user.sendTranslated(MessageType.POSITIVE, "This Portal will teleport non-players too");
         }
-        user.sendTranslated(MessageType.POSITIVE, "&2%s&a is the owner of this portal", this.config.owner.getName());
-        user.sendTranslated(MessageType.POSITIVE, "Location: &6%d:%d:%d&a to &6%d:%d:%d&a in &6%s", this.config.location.from.x, this.config.location.from.y, this.config.location.from.z, this.config.location.to.x, this.config.location.to.y, this.config.location.to.z, this.config.world.getName());
+        user.sendTranslated(MessageType.POSITIVE, "{user} is the owner of this portal", this.config.owner);
+        user.sendTranslated(MessageType.POSITIVE, "Location: {vector} to {vector} in {world}",
+                            new BlockVector3(this.config.location.from.x, this.config.location.from.y, this.config.location.from.z),
+                            new BlockVector3(this.config.location.to.x, this.config.location.to.y, this.config.location.to.z), this.config.world.getName());
         if (this.config.destination == null)
         {
             user.sendTranslated(MessageType.POSITIVE, "This portal has no destination yet");
@@ -118,13 +120,14 @@ public class Portal
             switch (config.destination.type)
             {
             case PORTAL:
-                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to another portal: &6%s", config.destination.portal);
+                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to another portal: {name#portal}", config.destination.portal);
                 break;
             case WORLD:
-                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to the spawn of &6%s", config.destination.world.getName());
+                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to the spawn of {world}", config.destination.world);
                 break;
             case LOCATION:
-                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to &6%d:%d:%d&a in &6%s", config.destination.location.x, config.destination.location.y, config.destination.location.z, config.destination.world.getName());
+                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to {vector} in {world}",
+                    new BlockVector3((int)config.destination.location.x, (int)config.destination.location.y, (int)config.destination.location.z), config.destination.world.getName());
                 break;
             }
 

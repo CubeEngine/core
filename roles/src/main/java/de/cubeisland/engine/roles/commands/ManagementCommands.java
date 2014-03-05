@@ -45,7 +45,7 @@ public class ManagementCommands extends ContainerCommand
         module.getConfiguration().reload();
         module.getRolesManager().initRoleProviders();
         module.getRolesManager().recalculateAllRoles();
-        context.sendTranslated(MessageType.POSITIVE, "&f[&6Roles&f]&a reload complete!");
+        context.sendTranslated(MessageType.POSITIVE, "{text:Roles} reload complete!");
     }
 
     @Alias(names = "mansave")
@@ -56,7 +56,7 @@ public class ManagementCommands extends ContainerCommand
         Roles module = (Roles)this.getModule();
         module.getConfiguration().save();
         module.getRolesManager().saveAll();
-        context.sendTranslated(MessageType.POSITIVE, "&f[&6Roles&f]&a all configurations saved!");
+        context.sendTranslated(MessageType.POSITIVE, "{text:Roles} all configurations saved!");
     }
 
     public static World curWorldOfConsole = null;
@@ -71,10 +71,10 @@ public class ManagementCommands extends ContainerCommand
             world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Invalid world! No world &6%s &cfound", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "All your roles commands will now have &6%s&a as default world!", context.getString(0));
+            context.sendTranslated(MessageType.POSITIVE, "All your roles commands will now have {input#world} as default world!", context.getString(0));
         }
         else
         {

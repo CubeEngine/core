@@ -364,7 +364,7 @@ public class MarketSign
                                 int amount = this.putItems(user, true);
                                 if (amount != 0)
                                 {
-                                    user.sendTranslated(MessageType.POSITIVE, "Added all (&6%d&a) &6%s&a to the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
+                                    user.sendTranslated(MessageType.POSITIVE, "Added all ({amount}) {name#material} to the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
                                 }
                                 return;
                             }
@@ -401,7 +401,7 @@ public class MarketSign
                                 }
                                 int amount = this.putItems(user, false);
                                 if (amount != 0)
-                                    user.sendTranslated(MessageType.POSITIVE, "Added &6%d&ax &6%s &ato the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
+                                    user.sendTranslated(MessageType.POSITIVE, "Added {amount}x {input#material} to the stock!", amount, Match.material().getNameFor(this.itemInfo.getItemStack()));
                                 return;
                             }
                             else if (itemInHand.getTypeId() != 0)
@@ -519,7 +519,6 @@ public class MarketSign
 
     public void showInfo(User user)
     {
-        // TODO color NONE
         if (this.isInEditMode())
         {
             user.sendTranslated(MessageType.NONE, "\n-- &5Sign Market - Edit Mode &f--");
@@ -530,40 +529,40 @@ public class MarketSign
         }
         if (!this.hasType())
         {
-            user.sendMessage("&5new Sign");
+            user.sendMessage(ChatFormat.PURPLE + "new Sign");
             return;
         }
         if (this.isTypeBuy())
         {
             if (this.isAdminSign())
             {
-                user.sendTranslated(MessageType.NONE, "&3Buy: &6%d &ffor &6%s &ffrom &6%s", this.getAmount(), this.parsePrice(), "Server");
+                user.sendTranslated(MessageType.NONE, "{text:Buy:color=DARK_BLUE}: {amount} for {input#price} from {input#owner}", this.getAmount(), this.parsePrice(), "Server");
             }
             else
             {
-                user.sendTranslated(MessageType.NONE, "&3Buy: &6%d &ffor &6%s &ffrom &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
+                user.sendTranslated(MessageType.NONE, "{text:Buy:color=DARK_BLUE}: {amount} for {input#price} from {user#owner}", this.getAmount(), this.parsePrice(), this.getOwner().getName());
             }
         }
         else
         {
             if (this.isAdminSign())
             {
-                user.sendTranslated(MessageType.NONE, "&3Sell: &6%d &ffor &6%s&f to &6%s", this.getAmount(), this.parsePrice(), "Server");
+                user.sendTranslated(MessageType.NONE, "{text:Sell:color=DARK_BLUE}: {amount} for {input#price} to {input#owner}", this.getAmount(), this.parsePrice(), "Server");
             }
             else
             {
-                user.sendTranslated(MessageType.NONE, "&3Sell: &6%d &ffor &6%s&f to &2%s", this.getAmount(), this.parsePrice(), this.getOwner().getName());
+                user.sendTranslated(MessageType.NONE, "{text:Sell:color=DARK_BLUE}: {amount} for {input#price} to {user#owner}", this.getAmount(), this.parsePrice(), this.getOwner().getName());
             }
         }
         if (this.getItem() == null)
         {
             if (this.isInEditMode())
             {
-                user.sendTranslated(MessageType.NONE, "&5No Item");
+                user.sendTranslated(MessageType.NONE, ChatFormat.PURPLE + "No Item");
             }
             else
             {
-                user.sendTranslated(MessageType.NONE, "&4No Item");
+                user.sendTranslated(MessageType.NONE, ChatFormat.DARK_RED + "No Item");
             }
         }
         else
@@ -571,42 +570,43 @@ public class MarketSign
             ItemMeta meta = this.getItem().getItemMeta();
             if (meta.hasDisplayName())
             {
-                user.sendMessage("&e" + Match.material().getNameFor(this.getItem()) + " &f(&6" + this.getItem().getItemMeta().getDisplayName() + "&f)");
+                user.sendMessage(ChatFormat.YELLOW + Match.material().getNameFor(this.getItem()) + ChatFormat.WHITE +
+                                     " ("  + ChatFormat.GOLD + this.getItem().getItemMeta().getDisplayName() + ChatFormat.WHITE + ")");
             }
             else
             {
                 if (meta.hasLore() || !meta.getEnchants().isEmpty())
                 {
-                    user.sendMessage("&e" + Match.material().getNameFor(this.getItem()));
+                    user.sendMessage(ChatFormat.YELLOW + Match.material().getNameFor(this.getItem()));
                 }
                 else
                 {
-                    user.sendMessage("&6" + Match.material().getNameFor(this.getItem()));
+                    user.sendMessage(ChatFormat.GOLD + Match.material().getNameFor(this.getItem()));
                 }
             }
             if (meta.hasLore())
             {
                 for (String loreLine : this.getItem().getItemMeta().getLore())
                 {
-                    user.sendMessage(" &e-&f " + loreLine);
+                    user.sendMessage(ChatFormat.YELLOW + " - " + ChatFormat.WHITE + loreLine);
                 }
             }
             if (!meta.getEnchants().isEmpty())
             {
-                user.sendTranslated(MessageType.NONE, "&6Enchantments:");
+                user.sendTranslated(MessageType.NEUTRAL, "Enchantments:");
             }
             for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet())
             {
-                user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
+                user.sendMessage(ChatFormat.YELLOW + " - " + ChatFormat.GOLD + Match.enchant().nameFor(entry.getKey()) + " " + ChatFormat.YELLOW + RomanNumbers.intToRoman(entry.getValue()));
             }
             if (meta instanceof EnchantmentStorageMeta)
             {
                 if (!((EnchantmentStorageMeta)meta).getStoredEnchants().isEmpty())
                 {
-                    user.sendTranslated(MessageType.NONE, "&6Book-Enchantments:");
+                    user.sendTranslated(MessageType.NEUTRAL, "Book-Enchantments:");
                     for (Map.Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta)meta).getStoredEnchants().entrySet())
                     {
-                        user.sendMessage(" &e-&6 " + Match.enchant().nameFor(entry.getKey()) + " &e" + RomanNumbers.intToRoman(entry.getValue()));
+                        user.sendMessage(ChatFormat.YELLOW + " - " + ChatFormat.GOLD + Match.enchant().nameFor(entry.getKey()) + " " + ChatFormat.YELLOW + RomanNumbers.intToRoman(entry.getValue()));
                     }
                 }
             }
@@ -664,16 +664,16 @@ public class MarketSign
         {
             if (this.isInEditMode())
             {
-                return "&5No Price";
+                return ChatFormat.PURPLE + "No Price";
             }
             else
             {
-                return "&4No Price";
+                return ChatFormat.DARK_RED + "No Price";
             }
         }
         if (this.allowBuyIfEmpty())
         {
-            return "&o"+this.economy.format(this.getPrice());
+            return ChatFormat.ITALIC + this.economy.format(this.getPrice());
         }
         return this.economy.format(this.getPrice());
     }
@@ -697,10 +697,10 @@ public class MarketSign
                 amount = this.getMaxItemAmount() - this.getStock();
                 if (amount <= 0)
                 {
-                    user.sendMessage("&cThe market-sign inventory is full!");
+                    user.sendTranslated(MessageType.NEGATIVE, "The market-sign inventory is full!");
                     return 0;
                 }
-                user.sendMessage("&cThe market-sign cannot hold all your items!");
+                user.sendTranslated(MessageType.NEGATIVE, "The market-sign cannot hold all your items!");
             }
         }
         this.setStock(this.getStock() + amount);
@@ -760,7 +760,7 @@ public class MarketSign
         this.setStock(this.getStock() - amountToTake + amountGivenBack);
         if (amountGivenBack != 0 && (amountGivenBack == this.getAmount() || amountGivenBack == this.getStock()))
         {
-            user.sendMessage("&cYour inventory is full!");
+            user.sendTranslated(MessageType.NEGATIVE, "Your inventory is full!");
         }
         user.updateInventory();
         this.saveToDatabase();
@@ -892,7 +892,7 @@ public class MarketSign
                     }
                     user.getInventory().addItem(item);
                     user.updateInventory();
-                    user.sendTranslated(MessageType.POSITIVE, "You bought &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
+                    user.sendTranslated(MessageType.POSITIVE, "You bought {amount}x {input#item} for {input#price}.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
                     return;
                 }
                 user.sendTranslated(MessageType.NEGATIVE, "You do not have enough space for these items!");
@@ -934,7 +934,7 @@ public class MarketSign
                 this.saveToDatabase();
             } // else admin sign -> no change
             user.updateInventory();
-            user.sendTranslated(MessageType.POSITIVE, "You sold &6%dx %s &afor &6%s&a.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
+            user.sendTranslated(MessageType.POSITIVE, "You sold {amount}x {input#item} for {input#price}.", this.getAmount(), Match.material().getNameFor(this.getItem()), this.parsePrice());
         }
     }
 
@@ -1012,17 +1012,17 @@ public class MarketSign
             {
                 if (this.isAdminSign())
                 {
-                    lines[0] = "&5&lAdmin-";
+                    lines[0] = ChatFormat.PURPLE.toString() + ChatFormat.BOLD + "Admin-";
                 }
                 else
                 {
-                    lines[0] = "&5&l";
+                    lines[0] = ChatFormat.PURPLE.toString() + ChatFormat.BOLD;
                 }
             }
             else if (!isValid ||(this.isTypeBuy() && this.isSoldOut())
                 || (!this.isTypeBuy() && ((this.hasDemand() && this.isSatisfied()) || isFull())))
             {
-                lines[0] = "&4";
+                lines[0] = ChatFormat.DARK_RED.toString();
                 if (this.isAdminSign())
                 {
                     lines[0] += "Admin-";
@@ -1030,11 +1030,11 @@ public class MarketSign
             }
             else if (this.isAdminSign())
             {
-                lines[0] = "&9&lAdmin-";
+                lines[0] = ChatFormat.INDIGO.toString() + ChatFormat.BOLD + "Admin-";
             }
             else
             {
-                lines[0] = "&1&l";
+                lines[0] = ChatFormat.DARK_BLUE.toString() + ChatFormat.BOLD;
             }
             if (this.hasType())
             {
@@ -1044,7 +1044,7 @@ public class MarketSign
                     {
                         if (this.allowBuyIfEmpty())
                         {
-                            lines[0] = "&9&l&oAdmin-Buy";
+                            lines[0] = "" + ChatFormat.INDIGO + ChatFormat.BOLD + ChatFormat.ITALIC + "Admin-Buy";
                         }
                         else
                         {
@@ -1084,22 +1084,22 @@ public class MarketSign
             {
                 if (this.isInEditMode())
                 {
-                    lines[1] = "&5No Item";
+                    lines[1] = ChatFormat.PURPLE + "No Item";
                 }
                 else
                 {
-                    lines[1] = "&4No Item";
+                    lines[1] = ChatFormat.DARK_RED + "No Item";
                 }
             }
             else if (item.getItemMeta().hasDisplayName() || item.getItemMeta().hasLore() || !item.getEnchantments().isEmpty())
             {
                 if (item.getItemMeta().hasDisplayName())
                 {
-                    lines[1] = "&e" + item.getItemMeta().getDisplayName();
+                    lines[1] = ChatFormat.YELLOW + item.getItemMeta().getDisplayName();
                 }
                 else
                 {
-                    lines[1] = "&e" + Match.material().getNameFor(this.getItem());
+                    lines[1] = ChatFormat.YELLOW + Match.material().getNameFor(this.getItem());
                 }
             }
             else
@@ -1110,11 +1110,11 @@ public class MarketSign
             {
                 if (this.isInEditMode())
                 {
-                    lines[2] = "&5No amount";
+                    lines[2] = ChatFormat.PURPLE + "No amount";
                 }
                 else
                 {
-                    lines[2] = "&4No amount";
+                    lines[2] = ChatFormat.DARK_RED + "No amount";
                 }
             }
             else
@@ -1122,7 +1122,7 @@ public class MarketSign
                 lines[2] = String.valueOf(this.getAmount());
                 if (!this.hasType())
                 {
-                    lines[2] = "&4" + lines[2];
+                    lines[2] = ChatFormat.DARK_RED + lines[2];
                 }
                 else if (this.isTypeBuy())
                 {
@@ -1130,16 +1130,16 @@ public class MarketSign
                     {
                         if (this.allowBuyIfEmpty())
                         {
-                            lines[2] += " &1&ox" + this.getStock();
+                            lines[2] += " " + ChatFormat.DARK_BLUE + ChatFormat.ITALIC + "x" + this.getStock();
                         }
                         else
                         {
-                            lines[2] += " &4x" + this.getStock();
+                            lines[2] += " " + ChatFormat.DARK_RED + "x" + this.getStock();
                         }
                     }
                     else if (this.hasStock())
                     {
-                        lines[2] += " &1x" + this.getStock();
+                        lines[2] += " " + ChatFormat.DARK_BLUE + "x" + this.getStock();
                     }
                 }
                 else if (this.hasStock())
@@ -1149,20 +1149,20 @@ public class MarketSign
                     {
                         if (this.hasDemand())
                         {
-                            lines[2] += " &bx" + (this.getDemand() - this.getStock());
+                            lines[2] += " " + ChatFormat.AQUA + "x" + (this.getDemand() - this.getStock());
                         }
                         else
                         {
-                            lines[2] += " &bx?";
+                            lines[2] += " " + ChatFormat.AQUA + "x?";
                         }
                     }
                     else if (this.hasDemand())
                     {
-                        lines[2] += " &4x" + (this.getDemand() - this.getStock());
+                        lines[2] += " " + ChatFormat.DARK_RED + "x" + (this.getDemand() - this.getStock());
                     }
                     else
                     {
-                        lines[2] += " &4x?";
+                        lines[2] += " " + ChatFormat.DARK_RED + "x?";
                     }
                 }
             }

@@ -71,7 +71,7 @@ public class CoreCommands extends ContainerCommand
         pm.disablePlugin(this.core);
         pm.enablePlugin(this.core);
         long time = Profiler.endProfiling("ceReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(MessageType.POSITIVE, "CubeEngine-Reload completed in &6%d&ams!", time);
+        context.sendTranslated(MessageType.POSITIVE, "CubeEngine-Reload completed in {integer#time}ms!", time);
     }
 
     @Command(desc = "Reloads all of the modules!", usage = "[-f]", flags = @Flag(name = "f", longName = "file"))
@@ -81,7 +81,7 @@ public class CoreCommands extends ContainerCommand
         Profiler.startProfiling("modulesReload");
         context.getCore().getModuleManager().reloadModules(context.hasFlag("f"));
         long time = Profiler.endProfiling("modulesReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(MessageType.POSITIVE, "Modules-Reload completed in &6%d&ams!", time);
+        context.sendTranslated(MessageType.POSITIVE, "Modules-Reload completed in {integer#time}ms!", time);
     }
 
     @Command(names = {
@@ -96,7 +96,7 @@ public class CoreCommands extends ContainerCommand
             target = context.getUser(1);
             if (target == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "User %s not found!");
+                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!");
                 return;
             }
         }
@@ -160,7 +160,7 @@ public class CoreCommands extends ContainerCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User &c not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             }
         }
         else if (sender instanceof User)
@@ -274,7 +274,7 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The current log level: &a%s", context.getCore().getLog().getLevel());
+            context.sendTranslated(MessageType.NEUTRAL, "The current log level: {input#loglevel}", context.getCore().getLog().getLevel());
         }
     }
 
@@ -290,15 +290,15 @@ public class CoreCommands extends ContainerCommand
             {
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "No match found for &6%s&e!", context.getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "No match found for {input}!", context.getString(0));
                 }
                 else if (exact)
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "Matched exactly! User: &2%s", user.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "Matched exactly! User: {user}", user);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "Matched not exactly! User: &2%s", user.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "Matched not exactly! User: {user}", user);
                 }
             }
         };

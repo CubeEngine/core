@@ -162,11 +162,11 @@ public class PowerToolCommand extends ContainerCommand implements Listener
             }
             if (removed)
             {
-                context.sendTranslated(MessageType.POSITIVE, "Removed the command: &e%s &abound to this item!", cmd);
+                context.sendTranslated(MessageType.POSITIVE, "Removed the command: {input#command} bound to this item!", cmd);
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The command &e%s &cwas not found on this item!", cmd);
+                context.sendTranslated(MessageType.NEGATIVE, "The command {input#command} was not found on this item!", cmd);
             }
         }
         this.setPowerTool(item, powertools);
@@ -229,11 +229,11 @@ public class PowerToolCommand extends ContainerCommand implements Listener
                     String itemName = item.getItemMeta().getDisplayName();
                     if (itemName == null)
                     {
-                        sender.sendMessage("&6" + Match.material().getNameFor(item) + "&6:");
+                        sender.sendMessage(ChatFormat.GOLD + Match.material().getNameFor(item) + ChatFormat.GOLD + ":");
                     }
                     else
                     {
-                        sender.sendMessage("&6" + itemName + "&6:");
+                        sender.sendMessage(ChatFormat.GOLD + itemName + ChatFormat.GOLD + ":");
                     }
                     this.showPowerToolList(context, this.getPowerTools(item), false, false);
                 }
@@ -266,15 +266,17 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         int i = 0;
         for (; i < powertools.size() - 1; i++)
         {
-            sb.append("\n&f").append(powertools.get(i));
+            sb.append("\n").append(ChatFormat.WHITE).append(powertools.get(i));
         }
         if (lastAsNew)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "&6%d &ecommand(s) bound to this item:%s\n&e%s &6(&aNEW&6)", i + 1, sb.toString(), powertools.get(i));
+            context.sendTranslated(MessageType.NEUTRAL, "{amount} command(s) bound to this item:{}", i + 1, sb.toString());
+            context.sendMessage(ChatFormat.YELLOW + powertools.get(i) + ChatFormat.GOLD + "NEW"); // TODO translate
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "&6%d &ecommand(s) bound to this item:%s\n&f%s", i + 1, sb.toString(), powertools.get(i));
+            context.sendTranslated(MessageType.NEUTRAL, "{amount} command(s) bound to this item:{}", i + 1, sb.toString());
+            context.sendMessage(powertools.get(i));
         }
     }
 
@@ -286,7 +288,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         {
             for (String line : meta.getLore())
             {
-                if (line.equals("§2PowerTool"))
+                if (line.equals(ChatFormat.DARK_GREEN + "PowerTool"))
                 {
                     break;
                 }
@@ -295,7 +297,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         }
         if (newPowerTools != null && !newPowerTools.isEmpty())
         {
-            newLore.add(ChatFormat.parseFormats("&2PowerTool"));
+            newLore.add(ChatFormat.DARK_GREEN + "PowerTool");
             newLore.addAll(newPowerTools);
         }
         meta.setLore(newLore);

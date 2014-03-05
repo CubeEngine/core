@@ -77,7 +77,7 @@ public class WarpCommand extends ContainerCommand
                 return null;
             }
             sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
-            context.sendTranslated(MessageType.POSITIVE, "You have been teleported to the warp &6%s", context.getString(0));
+            context.sendTranslated(MessageType.POSITIVE, "You have been teleported to the warp {name}", context.getString(0));
         }
         else
         {
@@ -121,7 +121,7 @@ public class WarpCommand extends ContainerCommand
             }
             Location loc = sender.getLocation();
             Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("priv") ? VISIBILITY_PRIVATE : VISIBILITY_PUBLIC));
-            context.sendTranslated(MessageType.POSITIVE, "Your warp &6%s&a has been created!", warp.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Your warp {name} has been created!", warp.getName());
             return;
         }
         context.sendTranslated(MessageType.CRITICAL, "This command can only be used by users!");
@@ -224,8 +224,7 @@ public class WarpCommand extends ContainerCommand
         }
         if (first != null)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Found a direct match: &6%s &aowned by &2%s", first.getName(), first.getOwner()
-                                                                                                 .getDisplayName());
+            context.sendTranslated(MessageType.POSITIVE, "Found a direct match: {name#home} owned by {user}", first.getName(), first.getOwner());
             return null;
         }
 
@@ -242,7 +241,7 @@ public class WarpCommand extends ContainerCommand
             @Override
             public void onFinish(CommandContext context)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Here is the top &6%d &eresults:", context.getArg(1, Integer.class, 5));
+                context.sendTranslated(MessageType.NEUTRAL, "Here is the top {integer} results:", context.getArg(1, Integer.class, 5));
                 int position = 1;
                 for (String warp : results.keySet())
                 {
@@ -288,7 +287,7 @@ public class WarpCommand extends ContainerCommand
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "&2%s is not a user on this server");
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
             warps = telePointManager.listWarps(context.getUser(0), mask);

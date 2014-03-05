@@ -593,12 +593,12 @@ public abstract class CubeCommand extends Command
         }
         if (t instanceof MissingParameterException)
         {
-            sender.sendTranslated(MessageType.NEGATIVE, "The parameter &6%s&c is missing!", t.getMessage());
+            sender.sendTranslated(MessageType.NEGATIVE, "The parameter {input#parameter} is missing!", t.getMessage());
         }
         else if (t instanceof IncorrectUsageException)
         {
             sender.sendMessage(t.getMessage());
-            sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: &f%s", this.getUsage(sender));
+            sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {input#usage:color=white}", this.getUsage(sender));
         }
         else if (t instanceof PermissionDeniedException)
         {
@@ -711,8 +711,8 @@ public abstract class CubeCommand extends Command
      */
     public void help(HelpContext context) throws Exception
     {
-        context.sendTranslated(MessageType.NONE, "&7Description: &f%s", this.getDescription());
-        context.sendTranslated(MessageType.NONE, "&7Usage: &f%s", this.getUsage(context));
+        context.sendTranslated(MessageType.NONE, "{text:Description:color=GREY}: {input}", this.getDescription());
+        context.sendTranslated(MessageType.NONE, "{text:Usage:color=GREY}: {input}", this.getUsage(context));
 
         if (this.hasChildren())
         {
@@ -730,7 +730,7 @@ public abstract class CubeCommand extends Command
             }
         }
         context.sendMessage(" ");
-        context.sendTranslated(MessageType.NONE, "&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated(MessageType.NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
     }
 
     public void onRegister()

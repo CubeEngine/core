@@ -139,7 +139,7 @@ public class Multiverse implements Listener
                         }
                         universe.addWorlds(foundWorlds);
                     }
-                    sender.sendTranslated(MessageType.NEUTRAL, "Found &6%d&e new worlds in the universe &6%s&e!", foundWorlds.size(), entry.getKey());
+                    sender.sendTranslated(MessageType.NEUTRAL, "Found {amount} new worlds in the universe {name#universe}!", foundWorlds.size(), entry.getKey());
                 }
             }
         }
@@ -147,7 +147,7 @@ public class Multiverse implements Listener
         {
             this.module.getLog().info("No previous Universes found! Initializing...");
             CommandSender sender = this.module.getCore().getCommandManager().getConsoleSender();
-            sender.sendTranslated(MessageType.NEUTRAL, "&6Scraping together Matter...");
+            sender.sendTranslated(MessageType.NEUTRAL, "Scraping together Matter...");
             Map<String, Set<World>> found = new HashMap<>();
             this.searchUniverses(found, this.wm.getWorlds(), sender);
             sender.sendTranslated(MessageType.NEUTRAL, "Finishing research...");
@@ -157,7 +157,7 @@ public class Multiverse implements Listener
                 Files.createDirectories(universeDir);
                 this.universes.put(entry.getKey(), Universe.create(this.module, this, universeDir, entry.getValue()));
             }
-            sender.sendTranslated(MessageType.NEUTRAL, "Found &6%d&e universes with &6%d&e worlds!", found.size(), this.wm.getWorlds().size());
+            sender.sendTranslated(MessageType.NEUTRAL, "Found {amount#universes} universes with {amount#worlds} worlds!", found.size(), this.wm.getWorlds().size());
         }
         for (Universe universe : this.universes.values())
         {
@@ -205,13 +205,13 @@ public class Multiverse implements Listener
             switch (world.getEnvironment())
             {
             case NORMAL:
-                sender.sendTranslated(MessageType.NEUTRAL, "&6%s&e gets formed by crushing rocks together in the universe &6%s", world.getName(), universeName);
+                sender.sendTranslated(MessageType.NEUTRAL, "{world} gets formed by crushing rocks together in the universe {name#universe}", world, universeName);
                 break;
             case NETHER:
-                sender.sendTranslated(MessageType.NEUTRAL, "Cooling plasma a bit to make &6%s&e in the universe &6%s", world.getName(), universeName);
+                sender.sendTranslated(MessageType.NEUTRAL, "Cooling plasma a bit to make {world} in the universe {name#universe}", world, universeName);
                 break;
             case THE_END:
-                sender.sendTranslated(MessageType.NEUTRAL, "Found a cold rock named &6%s&e in the universe &6%s", world.getName(), universeName);
+                sender.sendTranslated(MessageType.NEUTRAL, "Found a cold rock named {world} in the universe {name#universe}", world, universeName);
                 break;
             }
         }
@@ -281,7 +281,7 @@ public class Multiverse implements Listener
         {
             event.setCancelled(true); // TODO check if player has access to the world he is currently in
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to enter the universe &6%s&c!", universe.getName());
+            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to enter the universe {name#universe}!", universe.getName());
         }
     }
 

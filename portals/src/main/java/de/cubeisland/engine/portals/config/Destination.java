@@ -70,7 +70,7 @@ public class Destination
             {
                 if (entity instanceof User)
                 {
-                    ((User)entity).sendTranslated(MessageType.NEGATIVE, "Destination portal &6%s&c does not exist!", portal);
+                    ((User)entity).sendTranslated(MessageType.NEGATIVE, "Destination portal {input} does not exist!", portal);
                 }
                 return;
             }

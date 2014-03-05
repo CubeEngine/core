@@ -63,7 +63,7 @@ public class ChatCommands
     {
         if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to send the message to. &eIs the player offline?", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to send the message to. Is the player offline?", context.getString(0));
         }
     }
 
@@ -88,7 +88,7 @@ public class ChatCommands
         }
         if (!this.sendWhisperTo(lastWhisper, context.getStrings(0), context))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to reply to. &eIs the player offline?", lastWhisper);
+            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to reply to. Is the player offline?", lastWhisper);
         }
     }
 
@@ -155,7 +155,7 @@ public class ChatCommands
         {
             sb.append(context.getString(i++)).append(" ");
         }
-        this.um.broadcastMessage("&2[&cBroadcast&2] &e" + sb.toString()); // TODO change method
+        this.um.broadcastMessage(MessageType.NEUTRAL, "[{text:Broadcast}] {}", sb.toString());
     }
 
     @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1, max = 2)
@@ -189,8 +189,8 @@ public class ChatCommands
             (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
         String timeString = dura.getMillis() == 0 ? user.composeMessage(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
-        user.sendTranslated(MessageType.NEGATIVE, "You are now muted for &6%s&c!", timeString); // TODO formatter for time
-        context.sendTranslated(MessageType.NEUTRAL, "You muted  {user} globally for &6%s&c!", user.getName(), timeString); // TODO formatter for time
+        user.sendTranslated(MessageType.NEGATIVE, "You are now muted for {input#amount}!", timeString);
+        context.sendTranslated(MessageType.NEUTRAL, "You muted {user} globally for {input#amount}!", user.getName(), timeString);
     }
 
     @Command(desc = "Unmutes a player", usage = "<player>", min = 1, max = 1)
@@ -220,23 +220,15 @@ public class ChatCommands
         context.sendTranslated(MessageType.POSITIVE, "The following chat-codes are available:");
         StringBuilder builder = new StringBuilder();
         int i = 0;
-        String reset = ChatFormat.parseFormats("&r");
         for (ChatFormat chatFormat : ChatFormat.values())
         {
             if (i++ % 3 == 0)
             {
                 builder.append("\n");
             }
-            builder.append(" ").append(chatFormat.getChar()).append(" ").append(chatFormat.toString()).append(chatFormat.name()).append(reset);
+            builder.append(" ").append(chatFormat.getChar()).append(" ").append(chatFormat.toString()).append(chatFormat.name()).append(ChatFormat.RESET);
         }
         context.sendMessage(builder.toString());
         context.sendTranslated(MessageType.POSITIVE, "To use these type {text:&} followed by the code above");
-
-       /*context.sendMessage(
-            "&00 black &11 darkblue &22 darkgreen &33 darkaqua\n"
-                + "&44 darkred &55 purple &66 orange &77 grey\n"
-                + "&88 darkgrey &99 indigo &aa brightgreen &bb aqua\n"
-                + "&cc red &dd pink &ee yellow &ff white\n"
-                + "k: &kk&r &ll bold&r &mm strike&r &nn underline&r &oo italic");*/
     }
 }

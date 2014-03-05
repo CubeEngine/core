@@ -141,7 +141,7 @@ public class GeneralsListener implements Listener
             if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
             {
                 User clicker = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                clicker.sendTranslated(MessageType.POSITIVE, "This &6%s &abelongs to {tamer}!", Match.entity().getNameFor(event.getRightClicked().getType()), tamed.getOwner());
+                clicker.sendTranslated(MessageType.POSITIVE, "This {name#entity} belongs to {tamer}!", Match.entity().getNameFor(event.getRightClicked().getType()), tamed.getOwner());
             }
         }
     }

@@ -61,14 +61,14 @@ public class VoteCommands
             }
             else
             {
-                context.sendTranslated(MessageType.POSITIVE, "You current vote-count is &6%d", voteModel.getVoteamount().intValue());
+                context.sendTranslated(MessageType.POSITIVE, "You current vote-count is {amount}", voteModel.getVoteamount().intValue());
                 if (System.currentTimeMillis() - voteModel.getLastvote().getTime() >= module.getConfig().voteBonusTime.getMillis())
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Sadly you did not vote in the last &6%s&e so your vote-count will be reset to 1", this.formatter.print(module.getConfig().voteBonusTime.toPeriod()));
+                    context.sendTranslated(MessageType.NEUTRAL, "Sadly you did not vote in the last {input#time} so your vote-count will be reset to 1", this.formatter.print(module.getConfig().voteBonusTime.toPeriod()));
                 }
                 else if (System.currentTimeMillis() - voteModel.getLastvote().getTime() < TimeUnit.DAYS.toMillis(1))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You voted &6%s&a so you will probably not be able to vote again already!", TimeUtil.format(context.getSender().getLocale(), new Date(voteModel.getLastvote().getTime())));
+                    context.sendTranslated(MessageType.POSITIVE, "You voted {input#time} so you will probably not be able to vote again already!", TimeUtil.format(context.getSender().getLocale(), new Date(voteModel.getLastvote().getTime())));
                 }
                 else
                 {
@@ -76,7 +76,7 @@ public class VoteCommands
                 }
                 if (!module.getConfig().voteUrl.isEmpty())
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You can vote here now: &6%s", module.getConfig().voteUrl);
+                    context.sendTranslated(MessageType.POSITIVE, "You can vote here now: {name#voteurl}", module.getConfig().voteUrl);
                 }
             }
             return;
@@ -84,7 +84,7 @@ public class VoteCommands
         context.sendTranslated(MessageType.NEUTRAL, "Well you wont get any rewards.");
         if (!module.getConfig().voteUrl.isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "But here go vote anyways: &6%s", module.getConfig().voteUrl);
+            context.sendTranslated(MessageType.NEUTRAL, "But here go vote anyways: {name#voteurl}", module.getConfig().voteUrl);
         }
     }
 }

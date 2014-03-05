@@ -289,21 +289,21 @@ public abstract class AbstractUserManager implements UserManager
         return null;
     }
 
-    public void broadcastMessageWithPerm(String message, Permission perm, Object... params)
+    public void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params)
     {
         for (User user : this.onlineUsers)
         {
             if (perm == null || perm.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.NONE, message, params);
+                user.sendTranslated(messageType, message, params);
             }
         }
-        this.core.getCommandManager().getConsoleSender().sendTranslated(MessageType.NONE, message, params);
+        this.core.getCommandManager().getConsoleSender().sendTranslated(messageType, message, params);
     }
 
-    public void broadcastMessage(String message, Object... args)
+    public void broadcastMessage(MessageType messageType, String message, Object... args)
     {
-        this.broadcastMessageWithPerm(message, null, args);
+        this.broadcastMessageWithPerm(messageType, message, null, args);
     }
 
     public void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args)
@@ -316,7 +316,7 @@ public abstract class AbstractUserManager implements UserManager
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(MessageType.NONE, starColor.toString() + "* &2%s &f%s", name, message);
+            user.sendTranslated(MessageType.NONE, starColor.toString() + "* {user} {input#message:color=WHITE}", name, message);
         }
     }
 

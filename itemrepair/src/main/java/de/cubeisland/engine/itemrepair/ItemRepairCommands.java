@@ -77,7 +77,7 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Ok now you only need to right-click &4NOW&e!\n... too slow");
+            context.sendTranslated(MessageType.NEUTRAL, "Ok now you only need to right-click {text:NOW:color=DARK_RED}!\n... too slow");
         }
     }
 

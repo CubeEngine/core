@@ -64,14 +64,14 @@ public class ChatCommands
         }
         else
         {
-            context.sendMessage("&cYou cannot change the consoles DisplayName");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot change the consoles DisplayName");
             return;
         }
         String name = context.getString(0);
         if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
         {
             forUser.setDisplayName(context.getSender().getName());
-            context.sendTranslated(MessageType.POSITIVE, "DisplayName reset to &2%s", context.getSender().getName());
+            context.sendTranslated(MessageType.POSITIVE, "DisplayName reset to {user}", context.getSender());
         }
         else
         {
@@ -80,7 +80,7 @@ public class ChatCommands
                 context.sendTranslated(MessageType.NEGATIVE, "There already is another player named like this!");
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "DisplayName changed from &2%s&a to &2%s", context.getSender().getDisplayName(), name);
+            context.sendTranslated(MessageType.POSITIVE, "DisplayName changed from {user} to {user}", context.getSender(), name);
             ((User)context.getSender()).setDisplayName(name);
         }
     }

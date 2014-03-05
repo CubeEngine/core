@@ -83,7 +83,7 @@ public class CuboidSelector implements Selector, Listener
         return attachment.getPoint(index);
     }
 
-    public static final String SELECTOR_TOOL_NAME = ChatFormat.parseFormats("&9Selector-Tool");
+    public static final String SELECTOR_TOOL_NAME = ChatFormat.INDIGO + "Selector-Tool";
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event)

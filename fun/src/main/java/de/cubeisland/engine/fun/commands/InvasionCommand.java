@@ -44,7 +44,7 @@ public class InvasionCommand
         EntityType entityType = Match.entity().mob(context.getString(0, null));
         if (entityType == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "EntityType %s not found", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "EntityType {input} not found", context.getString(0));
             return;
         }
         final Location helperLocation = new Location(null, 0, 0, 0);

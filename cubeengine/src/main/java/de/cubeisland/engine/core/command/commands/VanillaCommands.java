@@ -97,14 +97,14 @@ public class VanillaCommands implements CommandHolder
         final String message = context.getStrings(0);
         if (message != null)
         {
-            context.getCore().getUserManager().broadcastMessageWithPerm(message, core.perms().COMMAND_RELOAD_NOTIFY);
+            context.getCore().getUserManager().broadcastMessageWithPerm(MessageType.NONE, message, core.perms().COMMAND_RELOAD_NOTIFY);
         }
 
         if (context.hasFlag("m"))
         {
             context.sendTranslated(MessageType.NEUTRAL, "Reloading the modules...");
             this.core.getModuleManager().reloadModules();
-            context.sendTranslated(MessageType.POSITIVE, "Successfully reloaded %d modules!");
+            context.sendTranslated(MessageType.POSITIVE, "Successfully reloaded {amount} modules!", this.core.getModuleManager().getModules().size());
         }
         else
         {
@@ -158,18 +158,16 @@ public class VanillaCommands implements CommandHolder
                 difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.US));
                 if (difficulty == null)
                 {
-                    sender.sendTranslated(MessageType.NEGATIVE, "'%s' is not a known difficulty!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "{input} is not a known difficulty!", context.getString(0));
                     return;
                 }
             }
             world.setDifficulty(difficulty);
-            context.sendMessage("&aThe difficulty has been successfully set!");
+            context.sendTranslated(MessageType.POSITIVE, "The difficulty has been successfully set!");
         }
         else
         {
-            context.sendTranslated(MessageType.NONE, "The current difficulty level: %s", sender.composeMessage(MessageType.NONE, world.getDifficulty()
-                                                                                                    .toString()
-                                                                                                    .toLowerCase(Locale.US)));
+            context.sendTranslated(MessageType.NONE, "The current difficulty level: {input}", world.getDifficulty().name());
             if (this.core.getServer().isHardcore())
             {
                 context.sendTranslated(MessageType.NONE, "Your server has the hardcore mode enabled.");
@@ -230,9 +228,9 @@ public class VanillaCommands implements CommandHolder
         user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendTranslated(MessageType.POSITIVE, "You were opped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated(MessageType.POSITIVE, "You were opped by {sender}", context.getSender());
         }
-        context.sendTranslated(MessageType.POSITIVE, "&2%s is now an operator!", offlinePlayer.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is now an operator!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -240,7 +238,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendTranslated(MessageType.NEUTRAL, "User &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated(MessageType.NEUTRAL, "User {user} has been opped by {sender}!", offlinePlayer, context.getSender());
         }
 
         this.core.getLog().info("Player {} has been opped by {}", offlinePlayer.getName(), context.getSender().getName());
@@ -281,9 +279,9 @@ public class VanillaCommands implements CommandHolder
         User user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendTranslated(MessageType.POSITIVE, "You were deopped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated(MessageType.POSITIVE, "You were deopped by {user}.", context.getSender());
         }
-        context.sendTranslated(MessageType.POSITIVE, "&2%s is no operator anymore!", offlinePlayer.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is no operator anymore!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -291,7 +289,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendTranslated(MessageType.POSITIVE, "User &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated(MessageType.POSITIVE, "User {user} has been opped by {sender}!", offlinePlayer, context.getSender());
         }
 
         this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());
@@ -303,7 +301,7 @@ public class VanillaCommands implements CommandHolder
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
 
-        context.sendTranslated(MessageType.NEUTRAL, "There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
+        context.sendTranslated(MessageType.NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:", plugins.length, modules.size());
         context.sendMessage(" ");
         context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + context.getCore().getVersion() + ")");
 
@@ -340,7 +338,7 @@ public class VanillaCommands implements CommandHolder
             {
                 player.saveData();
             }
-            context.sendTranslated(MessageType.POSITIVE, "World '%s' has been saved to disk!", world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "World {world} has been saved to disk!", world);
         }
         else
         {
@@ -352,7 +350,7 @@ public class VanillaCommands implements CommandHolder
             }
             this.core.getServer().savePlayers();
             context.sendTranslated(MessageType.POSITIVE, "All worlds have been saved to disk!");
-            context.sendTranslated(MessageType.POSITIVE, "The saving took %d milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
+            context.sendTranslated(MessageType.POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
         }
     }
 
@@ -373,7 +371,7 @@ public class VanillaCommands implements CommandHolder
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "%s&f is currently running in version &9%s&f.", plugin.getName(), plugin.getDescription().getVersion());
+                context.sendTranslated(MessageType.NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", plugin.getName(), plugin.getDescription().getVersion());
                 context.sendMessage(" ");
                 context.sendTranslated(MessageType.NEUTRAL, "&nPlugin information:");
                 context.sendMessage(" ");
@@ -381,8 +379,8 @@ public class VanillaCommands implements CommandHolder
                 {
                     showSourceVersion(context, core.getSourceVersion());
                 }
-                context.sendTranslated(MessageType.NEUTRAL, "Description: &6%s", plugin.getDescription().getDescription());
-                context.sendTranslated(MessageType.NEUTRAL, "Website: &6%s", plugin.getDescription().getWebsite());
+                context.sendTranslated(MessageType.NEUTRAL, "Description: {input}", plugin.getDescription().getDescription());
+                context.sendTranslated(MessageType.NEUTRAL, "Website: {input}", plugin.getDescription().getWebsite());
                 context.sendTranslated(MessageType.NEUTRAL, "Authors:");
                 for (String author : plugin.getDescription().getAuthors())
                 {
@@ -392,10 +390,10 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "This server is running &6%s&r in version &9%s", server.getName(), server.getVersion());
-            context.sendTranslated(MessageType.NEUTRAL, "Bukkit API&r version: &9%s", server.getBukkitVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated(MessageType.NEUTRAL, "Expanded and improved by &aCubeEngine&r version &9%s", context.getCore().getVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion());
             showSourceVersion(context, core.getSourceVersion());
         }
     }
@@ -406,8 +404,8 @@ public class VanillaCommands implements CommandHolder
         if (context.hasFlag("s") && sourceVersion != null)
         {
             final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
-            context.sendTranslated(MessageType.POSITIVE, "Source Version: &6%s", sourceVersion);
-            context.sendTranslated(MessageType.POSITIVE, "Source link: &6%s", SOURCE_LINK + commit);
+            context.sendTranslated(MessageType.POSITIVE, "Source Version: {input}", sourceVersion);
+            context.sendTranslated(MessageType.POSITIVE, "Source link: {input}", SOURCE_LINK + commit);
         }
     }
 
@@ -438,7 +436,7 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(true);
-            context.sendTranslated(MessageType.POSITIVE, "&2%s is now whitelisted.", player.getName());
+            context.sendTranslated(MessageType.POSITIVE, "{user} is now whitelisted.", player);
         }
 
         @Command(names = {
@@ -459,7 +457,7 @@ public class VanillaCommands implements CommandHolder
             }
 
             player.setWhitelisted(false);
-            context.sendTranslated(MessageType.POSITIVE, "&2%s is not whitelisted anymore.", player.getName());
+            context.sendTranslated(MessageType.POSITIVE, "{user} is not whitelisted anymore.", player.getName());
         }
 
         @Command(desc = "Lists all the whitelisted players")

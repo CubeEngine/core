@@ -28,6 +28,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 
 /**
@@ -62,7 +63,7 @@ public class SpawnCommands
             world = context.getSender().getServer().getWorld(context.getString(0));
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World: %s not found", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found", context.getString(0));
                 return;
             }
         }
@@ -102,15 +103,13 @@ public class SpawnCommands
             z = loc.getBlockZ();
         }
         world.setSpawnLocation(x, y, z);
-        context.sendTranslated(MessageType.POSITIVE, "The spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
+        context.sendTranslated(MessageType.POSITIVE, "The spawn in {world} is now set to {vector:x\\=:y\\=:z\\=}", world, new BlockVector3(x, y, z));
     }
 
-    @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2, params = @Param(names = {
-        "world", "w"
-    }, type = World.class), flags = {
-            @Flag(longName = "force", name = "f"),
-            @Flag(longName = "all", name = "a")
-    })
+    @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2,
+             params = @Param(names = {"world", "w"}, type = World.class),
+             flags = {@Flag(longName = "force", name = "f"),
+                      @Flag(longName = "all", name = "a")})
     public void spawn(ParameterizedContext context)
     {
         User user = null;
@@ -133,7 +132,7 @@ public class SpawnCommands
             world = context.getParam("world", null);
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World &6%s&c not found!", context.getString("world"));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input#world} not found!", context.getString("world"));
                 return;
             }
         }
@@ -164,12 +163,12 @@ public class SpawnCommands
                     return;
                 }
             }
-            this.module.getCore().getUserManager().broadcastMessage("&aTeleported everyone to the spawn of %s!", world.getName());
+            this.module.getCore().getUserManager().broadcastMessage(MessageType.POSITIVE, "Teleported everyone to the spawn of {world}!", world);
             return;
         }
         if (user == null && !context.hasArg(0))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
             return;
         }
         if (context.hasArg(0))
@@ -187,12 +186,12 @@ public class SpawnCommands
             }
             if (!force && module.perms().COMMAND_SPAWN_PREVENT.isAuthorized(user))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to spawn %s!", user.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to spawn {user}!", user);
                 return;
             }
         }
         final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
-        final Location userLocation = user.getLocation();
+        final Location userLocation = user.getLocation(); // TODO possible NPE
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
         if (!TeleportCommands.teleport(user, spawnLocation, true, force, true))
@@ -225,7 +224,7 @@ public class SpawnCommands
             }
             if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "Teleported to the spawn of world &6%s&a!", world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Teleported to the spawn of world {world}!", world);
             }
             return;
         }

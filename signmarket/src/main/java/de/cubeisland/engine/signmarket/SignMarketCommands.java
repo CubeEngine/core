@@ -55,9 +55,9 @@ public class SignMarketCommands extends ContainerCommand
                     return;
                 }
                 this.module.getEditModeListener().addUser((User)context.getSender());
-                context.sendTranslated(MessageType.POSITIVE, "You are now in edit mode!\n" +
-                                           "Chat will now work as commands.\n" +
-                                           "&eType exit or use this command again to leave the editmode.");
+                context.sendTranslated(MessageType.POSITIVE, "You are now in edit mode!");
+                context.sendTranslated(MessageType.POSITIVE, "Chat will now work as commands.");
+                context.sendTranslated(MessageType.NEUTRAL, "Type exit or use this command again to leave the editmode.");
             }
         }
         else

@@ -33,7 +33,7 @@ import de.cubeisland.engine.locker.Locker;
 
 public class KeyBook
 {
-    public static final String TITLE = ChatFormat.parseFormats("&r&6KeyBook &8#");
+    public static final String TITLE = ChatFormat.RESET.toString() + ChatFormat.GOLD + "KeyBook " + ChatFormat.DARK_GREY + "#";
     public final ItemStack item;
     public final User currentHolder;
     private final Locker module;

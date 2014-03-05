@@ -697,25 +697,25 @@ public class LockManager implements Listener
                 {
                     accessListModel = this.dsl.newRecord(TABLE_ACCESS_LIST).newGlobalAccess(sender, modifyUser, accessType);
                     accessListModel.insert();
-                    sender.sendTranslated(MessageType.POSITIVE, "Global access for &2%s&a set!", modifyUser.getName());
+                    sender.sendTranslated(MessageType.POSITIVE, "Global access for {user} set!", modifyUser);
                 }
                 else
                 {
                     accessListModel.setLevel(accessType);
                     accessListModel.update();
-                    sender.sendTranslated(MessageType.POSITIVE, "Updated global access-level for &2%s&a!", modifyUser.getName());
+                    sender.sendTranslated(MessageType.POSITIVE, "Updated global access-level for {user}!", modifyUser);
                 }
             }
             else
             {
                 if (accessListModel == null)
                 {
-                    sender.sendTranslated(MessageType.NEUTRAL, "&2%s&e had no global access!", modifyUser.getName());
+                    sender.sendTranslated(MessageType.NEUTRAL, "{user} had no global access!", modifyUser);
                 }
                 else
                 {
                     accessListModel.delete();
-                    sender.sendTranslated(MessageType.POSITIVE, "Removed global access from &2%s", modifyUser.getName());
+                    sender.sendTranslated(MessageType.POSITIVE, "Removed global access from {user}", modifyUser);
                 }
             }
         }

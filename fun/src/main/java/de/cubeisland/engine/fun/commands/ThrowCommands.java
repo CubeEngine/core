@@ -145,7 +145,7 @@ public class ThrowCommands
         }
         if (!type.isSpawnable())
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The Item %s is not supported!", object);
+            context.sendTranslated(MessageType.NEGATIVE, "The Item {name#item} is not supported!", object);
             return;
         }
 

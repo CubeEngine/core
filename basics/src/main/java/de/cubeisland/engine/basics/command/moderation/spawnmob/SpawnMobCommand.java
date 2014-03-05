@@ -69,7 +69,7 @@ public class SpawnMobCommand
         }
         else if (sender == null)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Succesfully spawned some &cbugs &einside your server!");
+            context.sendTranslated(MessageType.NEUTRAL, "Succesfully spawned some {text:bugs:color=RED} inside your server!");
             return;
         }
         else
@@ -82,7 +82,7 @@ public class SpawnMobCommand
             amount = context.getArg(1, Integer.class, null);
             if (amount == null)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "%s is not a number! Really!", context.getString(1));
+                context.sendTranslated(MessageType.NEUTRAL, "{input} is not a number! Really!", context.getString(1));
                 return;
             }
             if (amount <= 0)
@@ -93,7 +93,7 @@ public class SpawnMobCommand
         }
         if (amount > config.commands.spawnmobLimit)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The serverlimit is set to &e%d&c, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
+            context.sendTranslated(MessageType.NEGATIVE, "The serverlimit is set to {number}, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
             return;
         }
         loc.add(0.5, 0, 0.5);
@@ -105,7 +105,7 @@ public class SpawnMobCommand
         Entity entitySpawned = entitiesSpawned[0];
         if (entitySpawned.getPassenger() == null)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Spawned %d &e%s&a!", amount, Match.entity().getNameFor(entitySpawned.getType()));
+            context.sendTranslated(MessageType.POSITIVE, "Spawned {amount} {input#entity}!", amount, Match.entity().getNameFor(entitySpawned.getType()));
         }
         else
         {
@@ -113,11 +113,9 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = context.getSender().composeMessage(MessageType.NONE, "%s &ariding &e%s", Match.entity()
-                                                                                        .getNameFor(entitySpawned
-                                                                                                        .getType()), message);
+                message = context.getSender().composeMessage(MessageType.NONE, "{input#entity} riding {input}", Match.entity().getNameFor(entitySpawned.getType()), message);
             }
-            message = context.getSender().composeMessage(MessageType.POSITIVE, "Spawned %d &e%s!", amount, message);
+            message = context.getSender().composeMessage(MessageType.POSITIVE, "Spawned {amount} {input#message}!", amount, message);
             context.sendMessage(message);
         }
     }

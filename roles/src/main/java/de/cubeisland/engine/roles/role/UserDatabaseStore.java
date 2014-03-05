@@ -301,12 +301,12 @@ public class UserDatabaseStore extends ResolvedDataHolder
         super.roleMissing(roleName, temp);
         if (temp)
         {
-            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your temporary role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your temporary role {name} is not available in {world}", roleName, provider.getMainWorld());
             this.attachment.getHolder().sendTranslated(MessageType.CRITICAL, "You should report this to an administrator!");
         }
         else
         {
-            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your role {name} is not available in {world}", roleName, provider.getMainWorld());
             this.attachment.getHolder().sendTranslated(MessageType.CRITICAL, "You should report this to an administrator!");
         }
     }

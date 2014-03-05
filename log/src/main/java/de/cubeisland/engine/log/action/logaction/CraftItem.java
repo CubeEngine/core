@@ -71,7 +71,7 @@ public class CraftItem extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a crafted &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} crafted {input#item}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc); // TODO formatter for itemdata
     }
 
     @Override

@@ -69,7 +69,7 @@ public class RocketCommand
             user = context.getParam("player");
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The &2%s&c not found!", context.getString("player"));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString("player"));
                 return;
             }
         }
@@ -85,7 +85,7 @@ public class RocketCommand
 
         if (height > this.module.getConfig().command.rocket.maxHeight)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Do you never wanna see %s again?", user.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "Do you never wanna see {user} again?", user);
             return;
         }
         else if (height < 0)

@@ -90,7 +90,7 @@ public class InventoryCommands
             {
                 if (!(context.hasFlag("q") && module.perms().COMMAND_INVSEE_QUIET.isAuthorized(context.getSender())))
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "&2%s&e is looking into your inventory.", sender.getName());
+                    user.sendTranslated(MessageType.NEUTRAL, "{sender} is looking into your inventory.", sender);
                 }
             }
             InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(inv, sender);
@@ -181,7 +181,7 @@ public class InventoryCommands
         {
             if (!(context.hasFlag("f") && module.perms().COMMAND_CLEARINVENTORY_FORCE.isAuthorized(sender))) // is not forced?
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear the inventory of &2%s", target.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear the inventory of {user}", target);
                 return;
             }
         }
@@ -204,10 +204,10 @@ public class InventoryCommands
             {
                 if (!(module.perms().COMMAND_CLEARINVENTORY_QUIET.isAuthorized(sender) && context.hasFlag("q"))) // quiet
                 {
-                    target.sendTranslated(MessageType.NEUTRAL, "Your inventory has been cleared by &6%s&e!", sender.getName());
+                    target.sendTranslated(MessageType.NEUTRAL, "Your inventory has been cleared by {sender}!", sender);
                 }
             }
-            sender.sendTranslated(MessageType.POSITIVE, "The inventory of &6%s&a has been cleared!", target.getName());
+            sender.sendTranslated(MessageType.POSITIVE, "The inventory of {user} has been cleared!", target);
         }
     }
 }

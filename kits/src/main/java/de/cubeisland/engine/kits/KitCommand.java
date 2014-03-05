@@ -114,7 +114,7 @@ public class KitCommand extends ContainerCommand
         Kit kit = new Kit(module, context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "&6%s &cis is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
+            context.sendTranslated(MessageType.NEGATIVE, "{name#kit} is is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
             return;
         }
         manager.saveKit(kit);
@@ -122,7 +122,7 @@ public class KitCommand extends ContainerCommand
         {
             getModule().getCore().getPermissionManager().registerPermission(getModule(), kit.getPermission());
         }
-        context.sendTranslated(MessageType.POSITIVE, "Created the &6%s &akit!", kit.getKitName());
+        context.sendTranslated(MessageType.POSITIVE, "Created the {name#kit} kit!", kit.getKitName());
     }
 
 
@@ -131,10 +131,10 @@ public class KitCommand extends ContainerCommand
     public void list(ParameterizedContext context)
     {
         context.sendTranslated(MessageType.POSITIVE, "The following kits are available:");
-        String format = ChatFormat.parseFormats(" &f-&e %s");
+        String format = "  " + ChatFormat.WHITE + "-" + ChatFormat.YELLOW;
         for (String kitName : manager.getKitsNames())
         {
-            context.sendMessage(String.format(format, kitName));
+            context.sendMessage(format + kitName);
         }
     }
 
@@ -155,7 +155,7 @@ public class KitCommand extends ContainerCommand
         }
         if (kit == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Kit &6%s &cnot found!", kitname);
+            context.sendTranslated(MessageType.NEGATIVE, "Kit {input} not found!", kitname);
             return;
         }
         if (context.hasFlag("a"))
@@ -170,12 +170,12 @@ public class KitCommand extends ContainerCommand
                     {
                         if (receiver.getName().equals(context.getSender().getName()))
                         {
-                            context.sendTranslated(MessageType.POSITIVE, "Received the &6%s &akit!", kit.getKitName());
+                            context.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit!", kit.getKitName());
                         }
                         else
                         {
-                            context.sendTranslated(MessageType.POSITIVE, "You gave &2%s &athe &6%s &akit!", receiver.getName(), kit.getKitName());
-                            receiver.sendTranslated(MessageType.POSITIVE, "Received the &6%s &akit. Enjoy it!", kit.getKitName());
+                            context.sendTranslated(MessageType.POSITIVE, "You gave {user} the {name#kit} kit!", receiver, kit.getKitName());
+                            receiver.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy it!", kit.getKitName());
                         }
                         gaveKit = true;
                     }
@@ -191,7 +191,7 @@ public class KitCommand extends ContainerCommand
             }
             else if (kitNotreceived > 0)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "%d players did not receive a kit!");
+                context.sendTranslated(MessageType.NEGATIVE, "{amount} players did not receive a kit!", kitNotreceived);
             }
         }
         else
@@ -213,12 +213,12 @@ public class KitCommand extends ContainerCommand
             }
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User %s &cnot found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
             }
             if (!user.isOnline())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "&2%s&c is not online!", user.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "{user} is not online!", user.getName());
                 return;
             }
             if (kit.give(context.getSender(), user, force))
@@ -227,7 +227,7 @@ public class KitCommand extends ContainerCommand
                 {
                     if (kit.getCustomMessage().equals(""))
                     {
-                        context.sendTranslated(MessageType.POSITIVE, "Received the &6%s&a kit. Enjoy it!", kit.getKitName());
+                        context.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {
@@ -236,10 +236,10 @@ public class KitCommand extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You gave &2%s &athe &6%s&a kit!", user.getName(), kit.getKitName());
+                    context.sendTranslated(MessageType.POSITIVE, "You gave {user} the {name#kit} kit!", user, kit.getKitName());
                     if (kit.getCustomMessage().equals(""))
                     {
-                        user.sendTranslated(MessageType.POSITIVE, "Received the &6%s&a kit. Enjoy it!", kit.getKitName());
+                        user.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy it!", kit.getKitName());
                     }
                     else
                     {
@@ -251,7 +251,7 @@ public class KitCommand extends ContainerCommand
             {
                 if (other)
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "&2%s &ehas not enough inventory-space for this kit!", user.getName());
+                    context.sendTranslated(MessageType.NEUTRAL, "{user} has not enough inventory-space for this kit!", user);
                 }
                 else
                 {

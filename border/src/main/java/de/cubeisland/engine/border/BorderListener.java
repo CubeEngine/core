@@ -111,7 +111,7 @@ public class BorderListener implements Listener
         }
         else if (!(event instanceof PlayerTeleportEvent) && isChunkAlmostOutOfRange(event.getTo().getChunk(), config))
         {
-            this.um.getExactUser(event.getPlayer().getName()).sendTranslated(MessageType.NEUTRAL, "&6You are near the world-border! You might want to turn around.");
+            this.um.getExactUser(event.getPlayer().getName()).sendTranslated(MessageType.NEUTRAL, "You are near the world-border! You might want to turn around.");
         }
     }
 

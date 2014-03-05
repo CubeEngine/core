@@ -284,7 +284,7 @@ public class MovementCommands
             context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport back!");
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "Unfortunatly teleporting is still not implemented in the game &6'Life'&c!");
+        context.sendTranslated(MessageType.NEGATIVE, "Unfortunatly teleporting is still not implemented in the game {text:'Life'}!");
     }
 
     @Command(names = {
@@ -315,7 +315,7 @@ public class MovementCommands
             loc.add(0.5, 1, 0.5);
             if (TeleportCommands.teleport(user, loc, true, false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "You just placed &2%s &awhere you were looking!", user.getName());
+                context.sendTranslated(MessageType.POSITIVE, "You just placed {user} where you were looking!", user);
                 user.sendTranslated(MessageType.POSITIVE, "You were placed somewhere!");
             }
             return;
@@ -346,8 +346,8 @@ public class MovementCommands
             }
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Succesfully swapped your socks!\n"
-                                           + "&eAs console you have to provide both players!");
+                context.sendTranslated(MessageType.NEGATIVE, "Succesfully swapped your socks!");
+                context.sendTranslated(MessageType.NEUTRAL, "As console you have to provide both players!");
                 return;
             }
         }
@@ -366,10 +366,10 @@ public class MovementCommands
         {
             if (context.getSender() instanceof Player)
             {
-                context.sendTranslated(MessageType.POSITIVE, "Swapped position with &cyourself!? &eAre you kidding me?");
+                context.sendTranslated(MessageType.NEGATIVE, "Swapped position with yourself!? Are you kidding me?");
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "Truely a hero! &eTrying to swap a users position with himself...");
+            context.sendTranslated(MessageType.NEUTRAL, "Truely a hero! Trying to swap a users position with himself...");
             return;
         }
         Location userLoc = user.getLocation();
@@ -379,10 +379,10 @@ public class MovementCommands
             {
                 if (context.hasArg(1))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "Swapped position of &2%s &aand &2%s&a!", user.getName(), sender.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "Swapped position of {user} and {user}!", user, sender);
                     return;
                 }
-                context.sendTranslated(MessageType.POSITIVE, "Swapped position with &2%s&a!", user.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Swapped position with {user}!", user);
             }
             else
             {

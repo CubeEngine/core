@@ -41,6 +41,7 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
             .registerMacro(new TextMacro())
             .registerMacro(new BiomeFormatter())
             .registerMacro(new VectorFormatter())
+            .registerMacro(new DecimalFormatter())
             ;
 
     }

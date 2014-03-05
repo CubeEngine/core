@@ -36,8 +36,9 @@ public class UserCommandHelper extends ContainerCommand
     protected final RolesManager manager;
     protected final WorldManager worldManager;
     protected final Roles module;
-    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s&f: &6%s");
-    protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
+
+    protected final String LISTELEM = "- " + ChatFormat.YELLOW + "%s";
+    protected final String LISTELEM_VALUE = "- " + ChatFormat.YELLOW + "%s" + ChatFormat.WHITE + ": " + ChatFormat.GOLD + "%s";
 
     public UserCommandHelper(Roles module)
     {
@@ -68,7 +69,7 @@ public class UserCommandHelper extends ContainerCommand
         }
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User %s not found!", context.getString(pos));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(pos));
             return null;
         }
         return user;
@@ -93,7 +94,7 @@ public class UserCommandHelper extends ContainerCommand
             world = context.getParam("in");
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World %s not found!", context.getString("in"));
+                context.sendTranslated(MessageType.NEGATIVE, "World {world} not found!", context.getString("in"));
             }
             return world;
         }
@@ -108,18 +109,18 @@ public class UserCommandHelper extends ContainerCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "You are using &6%s&e as current world.", world.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
             }
             return world;
         }
         if (ManagementCommands.curWorldOfConsole == null)
         {
             context.sendTranslated(MessageType.NEUTRAL, "Please provide a world.");
-            context.sendTranslated(MessageType.POSITIVE, "You can define a world with &6/roles admin defaultworld <world>");
+            context.sendTranslated(MessageType.POSITIVE, "You can define a world with {text:/roles admin defaultworld <world>}");
             return null;
         }
         world = ManagementCommands.curWorldOfConsole;
-        context.sendTranslated(MessageType.NEUTRAL, "You are using &6%s&e as current world.", world.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
         return world;
     }
 }

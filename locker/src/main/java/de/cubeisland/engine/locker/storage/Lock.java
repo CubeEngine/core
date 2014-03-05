@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.LockerAttachment;
 import org.jooq.Result;
@@ -162,9 +163,9 @@ public class Lock
                 ItemStack itemStack = new ItemStack(Material.ENCHANTED_BOOK, 1);
                 ItemMeta itemMeta = itemStack.getItemMeta();
                 itemMeta.setDisplayName(this.getColorPass() + KeyBook.TITLE + this.getId());
-                itemMeta.setLore(Arrays.asList(user.composeMessage(MessageType.NEUTRAL, ChatFormat.parseFormats("&eThis book can")), user
-                    .composeMessage(MessageType.NEUTRAL, ChatFormat.parseFormats("&eunlock a magically")), user
-                                                   .composeMessage(MessageType.NEUTRAL, ChatFormat.parseFormats("&elocked protection"))));
+                itemMeta.setLore(Arrays.asList(user.composeMessage(MessageType.NEUTRAL, ChatFormat.YELLOW + "This book can"), user
+                    .composeMessage(MessageType.NEUTRAL, ChatFormat.YELLOW + "unlock a magically"), user
+                                                   .composeMessage(MessageType.NEUTRAL, ChatFormat.YELLOW + "locked protection")));
                 itemStack.setItemMeta(itemMeta);
                 user.setItemInHand(itemStack);
                 HashMap<Integer, ItemStack> full = user.getInventory().addItem(new ItemStack(Material.BOOK, amount));
@@ -256,16 +257,16 @@ public class Lock
                         {
                             if (admin)
                             {
-                                user.sendTranslated(MessageType.POSITIVE, "Granted &2%s&a admin access to this protection!", modifyUser.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "Granted {user} admin access to this protection!", modifyUser);
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.POSITIVE, "Granted &2%s&a access to this protection!", modifyUser.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "Granted {user} access to this protection!", modifyUser);
                             }
                         }
                         else
                         {
-                            user.sendTranslated(MessageType.POSITIVE, "Removed &2%s's&a access to this protection!", modifyUser.getName());
+                            user.sendTranslated(MessageType.POSITIVE, "Removed {user}'s access to this protection!", modifyUser);
                         }
                     }
                     else
@@ -274,16 +275,16 @@ public class Lock
                         {
                             if (admin)
                             {
-                                user.sendTranslated(MessageType.POSITIVE, "Udated &2%s's&a access to admin access!", modifyUser.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "Updated {user}'s access to admin access!", modifyUser);
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.POSITIVE, "Udated &2%s's&a access to normal access!", modifyUser.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "Updated {user}'s access to normal access!", modifyUser);
                             }
                         }
                         else
                         {
-                            user.sendTranslated(MessageType.POSITIVE, "&2%s&a had no access to this protection!", modifyUser.getName());
+                            user.sendTranslated(MessageType.POSITIVE, "{user} had no access to this protection!", modifyUser);
                         }
                     }
                 }
@@ -380,7 +381,7 @@ public class Lock
             event.setCancelled(true);
             if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "A magical lock from &2%s&c prevents you from using this door!", this.getOwner().getName());
+                user.sendTranslated(MessageType.NEGATIVE, "A magical lock from {user} prevents you from using this door!", this.getOwner());
             }
             else
             {
@@ -409,7 +410,7 @@ public class Lock
     {
         if (soundLocation != null && module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEUTRAL, "This inventory is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(MessageType.NEUTRAL, "This inventory is protected by {user}", this.getOwner());
         }
         if (this.handleAccess(user, soundLocation, event) || event.isCancelled()) return;
         boolean in;
@@ -437,7 +438,7 @@ public class Lock
             event.setCancelled(true); // private & no access
             if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "A magical lock from &2%s&c prevents you from accessing this inventory!", this.getOwner().getName());
+                user.sendTranslated(MessageType.NEGATIVE, "A magical lock from {user} prevents you from accessing this inventory!", this.getOwner());
             }
             else
             {
@@ -473,7 +474,7 @@ public class Lock
     {
         if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEUTRAL, "This entity is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(MessageType.NEUTRAL, "This entity is protected by {user}", this.getOwner());
         }
         if (this.getLockType() == PUBLIC) return;
         if (this.handleAccess(user, null, event))
@@ -491,7 +492,7 @@ public class Lock
             event.setCancelled(true); // private & no access
             if (module.perms().SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Magic from &2%s&c repelled your attempts to reach this entity!", this.getOwner().getName());
+                user.sendTranslated(MessageType.NEGATIVE, "Magic from {user} repelled your attempts to reach this entity!", this.getOwner());
             }
             else
             {
@@ -533,7 +534,7 @@ public class Lock
     {
         if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEUTRAL, "This block is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(MessageType.NEUTRAL, "This block is protected by {user}", this.getOwner());
         }
         if (this.getLockType() == PUBLIC) return;
         if (this.handleAccess(user, null, event))
@@ -611,7 +612,7 @@ public class Lock
         if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
         {
             this.lastKeyNotify.put(owner.getName(), System.currentTimeMillis());
-            owner.sendTranslated(MessageType.NEUTRAL, "&2%s&e used a KeyBook to access one of your protections!", user.getName());
+            owner.sendTranslated(MessageType.NEUTRAL, "{user} used a KeyBook to access one of your protections!", user.getName());
         }
     }
 
@@ -637,9 +638,9 @@ public class Lock
                 this.lastNotify.put(owner.getName(), System.currentTimeMillis());
                 if (this.isBlockLock())
                 {
-                    owner.sendTranslated(MessageType.NEUTRAL, "&2%s&e accessed one your protection with the id &6%d!", user.getName(), this.getId());
+                    owner.sendTranslated(MessageType.NEUTRAL, "{user} accessed one your protection with the id {integer}!", user, this.getId());
                     Location loc = this.getFirstLocation();
-                    owner.sendTranslated(MessageType.NEUTRAL, "which is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                    owner.sendTranslated(MessageType.NEUTRAL, "which is located at {vector} in {world}!", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), loc.getWorld());
                 }
                 else
                 {
@@ -647,13 +648,13 @@ public class Lock
                     {
                         if (entity.getUniqueId().equals(this.getEntityUID()))
                         {
-                            owner.sendTranslated(MessageType.NEUTRAL, "&2%s&e accessed one of your protected entities!", user.getName());
+                            owner.sendTranslated(MessageType.NEUTRAL, "{user} accessed one of your protected entities!", user);
                             Location loc = entity.getLocation();
-                            owner.sendTranslated(MessageType.NEUTRAL, "which is located at &6%d&e:&6%s&e:&6%s&e in &6%s&e!", loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getWorld().getName());
+                            owner.sendTranslated(MessageType.NEUTRAL, "which is located at {vector} in {world}",  new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), loc.getWorld());
                             return;
                         }
                     }
-                    owner.sendTranslated(MessageType.NEUTRAL, "&2%s&e accessed one of your protected entities somewhere!", user.getName());
+                    owner.sendTranslated(MessageType.NEUTRAL, "{user} accessed one of your protected entities somewhere!", user);
                 }
             }
         }
@@ -679,18 +680,18 @@ public class Lock
         if (this.isOwner(user) || this.hasAdmin(user) || module.perms().CMD_INFO_OTHER.isAuthorized(user))
         {
             user.sendMessage("");
-            user.sendTranslated(MessageType.POSITIVE, "Protection: &6#%d&a Type: &6%s&a by &6%s", this.getId(), this.getLockType().name(), this.getOwner().getName());
-            user.sendTranslated(MessageType.POSITIVE, "protects &6%s&a since &6%s", this.getProtectedType().name(), this.model.getCreated().toString());
-            user.sendTranslated(MessageType.POSITIVE, "last access was &6%s", this.model.getLastAccess().toString());
+            user.sendTranslated(MessageType.POSITIVE, "Protection: #{integer#id} Type: {input#type} by {user}", this.getId(), this.getLockType().name(), this.getOwner());
+            user.sendTranslated(MessageType.POSITIVE, "protects {input#type} since {input#time}", this.getProtectedType().name(), this.model.getCreated().toString());
+            user.sendTranslated(MessageType.POSITIVE, "last access was {input#time}", this.model.getLastAccess().toString());
             if (this.hasPass())
             {
                 if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Has a password and is currently &eunlocked");
+                    user.sendTranslated(MessageType.POSITIVE, "Has a password and is currently {text:unlocked:color=YELLOW}");
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Has a password and is currently &clocked");
+                    user.sendTranslated(MessageType.POSITIVE, "Has a password and is currently {text:locked:color=RED}");
                 }
             }
 
@@ -706,10 +707,10 @@ public class Lock
             if (!flags.isEmpty())
             {
                 user.sendTranslated(MessageType.POSITIVE, "The following flags are set:");
-                String format = ChatFormat.parseFormats("  &7- &e%s");
+                String format = "  " + ChatFormat.GREY + "- " + ChatFormat.YELLOW;
                 for (String flag : flags)
                 {
-                    user.sendMessage(String.format(format, flag));
+                    user.sendMessage(format + flag);
                 }
             }
             List<AccessListModel> accessors = this.getAccessors();
@@ -721,28 +722,28 @@ public class Lock
                     User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId().longValue());
                     if ((listModel.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN)
                     {
-                        user.sendMessage(String.format(ChatFormat.parseFormats("  &7- &2%s&6 [Admin]"), accessor.getName()));
+                        user.sendMessage("  " + ChatFormat.GREY + "- " + ChatFormat.DARK_GREEN + accessor.getName() + ChatFormat.GOLD + " [Admin}");
                     }
                     else
                     {
-                        user.sendMessage(String.format(ChatFormat.parseFormats("  &7- &2%s"), accessor.getName()));
+                        user.sendMessage("  " + ChatFormat.GREY + "- " + ChatFormat.DARK_GREEN + accessor.getName());
                     }
                 }
             }
             if (!this.locations.isEmpty())
             {
-                user.sendTranslated(MessageType.POSITIVE, "This protections covers &6%d&a blocks!", this.locations.size());
+                user.sendTranslated(MessageType.POSITIVE, "This protections covers {amount} blocks!", this.locations.size());
             }
         }
         else
         {
             if (module.perms().CMD_INFO_SHOW_OWNER.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.POSITIVE, "ProtectionType: &6%s&a Owner: &2%s", this.getLockType().name(), this.getOwner().getName());
+                user.sendTranslated(MessageType.POSITIVE, "ProtectionType: {input#locktype} Owner: {user}", this.getLockType().name(), this.getOwner());
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "ProtectionType: &6%s", this.getLockType().name());
+                user.sendTranslated(MessageType.POSITIVE, "ProtectionType: {input#locktype}", this.getLockType().name());
             }
             AccessListModel access = this.getAccess(user);
             if (this.hasPass())
@@ -834,7 +835,7 @@ public class Lock
         }
         if (module.perms().SHOW_OWNER.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEUTRAL, "This door is protected by &2%s", this.getOwner().getName());
+            user.sendTranslated(MessageType.NEUTRAL, "This door is protected by {user}", this.getOwner());
         }
         if (block.getState().getData() instanceof Door)
         {

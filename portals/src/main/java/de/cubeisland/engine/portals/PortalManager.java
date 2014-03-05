@@ -97,7 +97,7 @@ public class PortalManager implements Listener
                 attachment.setInPortal(true);
                 if (attachment.isDebug())
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "[Portals] Debug: &aTeleported into portal: &6%s", portal.getName());
+                    user.sendTranslated(MessageType.POSITIVE, "{text:[Portals] Debug\\::color=YELLOW} Teleported into portal: {name}", portal.getName());
                 }
                 return;
             }
@@ -191,11 +191,11 @@ public class PortalManager implements Listener
                         {
                             if (attachment.isInPortal())
                             {
-                                user.sendTranslated(MessageType.NEUTRAL, "[Portals] Debug: &aMove in portal: &6%s", portal.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "{text:[Portals] Debug\\::color=YELLOW} Move in portal: {name}", portal.getName());
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.NEUTRAL, "[Portals] Debug: &aEntered portal: &6%s", portal.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "{text:[Portals] Debug\\::color=YELLOW} Entered portal: {name}", portal.getName());
                                 portal.showInfo(user);
                                 attachment.setInPortal(true);
                             }
