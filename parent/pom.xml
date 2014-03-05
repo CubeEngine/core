@@ -220,7 +220,23 @@
     </resources>
 
     <plugins>
-
+      <plugin>
+        <groupId>de.cubeisland.maven.plugins</groupId>
+        <artifactId>githead-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-license-headers</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>de.cubeisland.maven.plugins</groupId>
         <artifactId>messagecatalog-maven-plugin</artifactId>
