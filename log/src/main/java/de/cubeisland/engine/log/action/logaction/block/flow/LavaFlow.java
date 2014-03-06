@@ -129,11 +129,11 @@ public class LavaFlow extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size();
-            user.sendTranslated(MessageType.POSITIVE, "%s&aLava occupied this block &6%d times%s", time, amount, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}Lava occupied this block {amount} times{}", time, amount, loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&aLava occupied the block%s", time, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}Lava occupied the block{}", time, loc);
         }
     }
 

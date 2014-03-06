@@ -59,7 +59,7 @@ public class SpawnerSpawn extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&6%s &aspawned from a spawner%s", time, logEntry.getCauserEntity(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} spawned from a spawner{}", time, logEntry.getCauserEntity(), loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)

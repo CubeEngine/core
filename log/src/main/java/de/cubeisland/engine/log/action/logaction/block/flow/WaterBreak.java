@@ -52,7 +52,7 @@ public class WaterBreak extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&6%s &agot flushed away by water%s!", time, logEntry.getOldBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got flushed away by water{loc}!", time, logEntry.getOldBlock(), loc);
     }
 
     @Override

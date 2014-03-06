@@ -57,22 +57,22 @@ public class WitherExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aA Wither hunting down &2%s &ablasted away &6%dx %s%s", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Wither hunting down {user} ablasted away {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&6%dx %s&a got destroyed in a Wither-Explosion%s", time, amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#block} got destroyed in a Wither-Explosion{}", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aA Wither hunting down &2%s &ablasted away &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Wither hunting down {user} blasted away {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got destroyed in a Wither-Explosion%s", time, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got destroyed in a Wither-Explosion{}", time, logEntry.getOldBlock(), loc);
             }
         }
     }

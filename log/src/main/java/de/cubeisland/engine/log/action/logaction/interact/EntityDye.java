@@ -64,7 +64,7 @@ public class EntityDye extends SimpleLogActionType
     {
         JsonNode json = logEntry.getAdditional();
         DyeColor color = DyeColor.valueOf(json.get("nColor").asText());
-        user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a dyed a &6%s&a in &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), color.name(), loc); //TODO get Pretty name for color
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} dyed a {name#entity} in {input#color}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), color.name(), loc); //TODO get Pretty name for color
     }
 
     @Override

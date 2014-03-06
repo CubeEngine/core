@@ -73,11 +73,11 @@ public class BlockForm extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated(MessageType.POSITIVE, "%s&6%dx %s &aformed naturally%s", time, amount, logEntry.getNewBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#block} formed naturally{}", time, amount, logEntry.getNewBlock(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&6%s &aformed naturally%s", time, logEntry.getNewBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} formed naturally{}", time, logEntry.getNewBlock(), loc);
         }
     }
 

@@ -71,11 +71,11 @@ public class PlayerQuit extends SimpleLogActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a left the server &6x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size() +1, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} left the server x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size() +1, loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a left the server%s", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} left the server{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

@@ -72,11 +72,11 @@ public class VehicleEnter extends SimpleLogActionType
     {
         if (logEntry.getCauserUser() == null)
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&6%s &aentered a &6%s%s", time, logEntry.getCauserEntity(), logEntry.getEntityFromData(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} entered a {name#entity}{}", time, logEntry.getCauserEntity(), logEntry.getEntityFromData(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aentered a &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} entered a {name#entity}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
         }
     }
     @Override

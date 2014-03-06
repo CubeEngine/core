@@ -66,7 +66,7 @@ public class MilkFill extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&2%s &amilked a cow%s", time, logEntry.getCauserUser().getDisplayName(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} milked a cow{}", time, logEntry.getCauserUser().getDisplayName(), loc);
     }
 
 

@@ -65,7 +65,7 @@ public class ButtonUse extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&2%s &apressed a &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} pressed a {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
     }
 
 

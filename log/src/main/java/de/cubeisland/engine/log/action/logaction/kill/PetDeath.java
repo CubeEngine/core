@@ -66,20 +66,20 @@ public class PetDeath extends SimpleLogActionType
                 User owner = this.um.getExactUser(json.get("owner").asText());
                 if (logEntry.hasCauserUser())
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "%s&aThe &6%s&a of &2%s &agot slaughtered by &2%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserUser().getDisplayName(), loc);
+                    user.sendTranslated(MessageType.POSITIVE, "{}The {name#killed} of {user} got slaughtered by {user}{}", time, killed, owner.getDisplayName(), logEntry.getCauserUser().getDisplayName(), loc);
                 }
                 else if (logEntry.hasCauserEntity())
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "%s&aThe &6%s&a of &2%s &acould not escape &6%s%s", time, killed, owner.getDisplayName(), logEntry.getCauserEntity(), loc);
+                    user.sendTranslated(MessageType.POSITIVE, "{}The {name#killed} of {user} could not escape {name#entity}{}", time, killed, owner.getDisplayName(), logEntry.getCauserEntity(), loc);
                 }
                 else // something else
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "%s&aThe &6%s&a of &2%s &adied%s", time, killed, owner.getDisplayName(), loc);
+                    user.sendTranslated(MessageType.POSITIVE, "{}The {name#killed} of {user} died{}", time, killed, owner.getDisplayName(), loc);
                 }
                 return;
             }
         }
-        user.sendTranslated(MessageType.POSITIVE, "&6%s &adied! &4(Pet without owner)", logEntry.getEntityFromData());
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} died! (Pet without owner){}", time, logEntry.getEntityFromData(), loc);
     }
 
     @Override

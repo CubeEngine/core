@@ -85,7 +85,7 @@ public class ItemPickup extends SimpleLogActionType
         {
             amount = logEntry.getItemData().amount;
         }
-        user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a picked up %d &6%s%s", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getItemData(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} picked up {amount} {name#item}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getItemData(), loc);
     }
 
     @Override

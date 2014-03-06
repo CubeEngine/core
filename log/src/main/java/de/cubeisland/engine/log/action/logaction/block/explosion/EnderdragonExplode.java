@@ -58,22 +58,22 @@ public class EnderdragonExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%dx %s%s", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}An enderdragon attacking {user} changed the integrity of {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aAn enderdragon changed the integrity of &6%dx %s%s", time, amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}An enderdragon changed the integrity of {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aAn enderdragon attacking &2%s &achanged the integrity of &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}An enderdragon attacking {user} &achanged the integrity of {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aAn enderdragon changed the integrity of &6%s%s", time, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}An enderdragon changed the integrity of {name#block}{}", time, logEntry.getOldBlock(), loc);
             }
         }
     }

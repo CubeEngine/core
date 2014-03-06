@@ -67,14 +67,14 @@ public abstract class RoleCommandHelper extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "You are using &6%s&e as current world.", world.getName());
+                    context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
                 }
             }
             else
             {
                 if (ManagementCommands.curWorldOfConsole == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You have to provide a world with &6[in <world]&c!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You have to provide a world with {text:in world}!");
                     context.sendTranslated(MessageType.NEUTRAL, "Or you can define a default-world with {text:/roles admin defaultworld <world>}");
                     return null;
                 }

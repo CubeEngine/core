@@ -110,7 +110,7 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "Changed destination to &6%d&a floors down! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
+            user.sendTranslated(MessageType.POSITIVE, "Changed destination to {amount} floors down! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
         }
         return true;
     }

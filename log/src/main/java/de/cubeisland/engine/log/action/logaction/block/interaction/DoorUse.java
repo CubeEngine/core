@@ -56,11 +56,11 @@ public class DoorUse extends BlockActionType
     {
         if (!((logEntry.getOldBlock().data & 0x4) == 0x4))
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aopened the &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} opened the {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aclosed the &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} closed the {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
         }
     }
 

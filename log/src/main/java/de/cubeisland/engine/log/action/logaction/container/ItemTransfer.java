@@ -52,7 +52,7 @@ public class ItemTransfer extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got moved out of &6%s%s", time, logEntry.getItemData(), logEntry.getContainerTypeFromBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#item} got moved out of {name#block}{}", time, logEntry.getItemData(), logEntry.getContainerTypeFromBlock(), loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)

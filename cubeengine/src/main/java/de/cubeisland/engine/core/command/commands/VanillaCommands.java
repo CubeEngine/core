@@ -373,7 +373,7 @@ public class VanillaCommands implements CommandHolder
             {
                 context.sendTranslated(MessageType.NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", plugin.getName(), plugin.getDescription().getVersion());
                 context.sendMessage(" ");
-                context.sendTranslated(MessageType.NEUTRAL, "&nPlugin information:");
+                context.sendTranslated(MessageType.NEUTRAL, ChatFormat.UNDERLINE + "Plugin information:");
                 context.sendMessage(" ");
                 if (plugin instanceof Core)
                 {

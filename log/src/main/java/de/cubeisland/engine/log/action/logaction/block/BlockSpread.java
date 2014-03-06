@@ -70,7 +70,7 @@ public class BlockSpread extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a spreaded%s", time, logEntry.getNewBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} spreaded{}", time, logEntry.getNewBlock(), loc);
     }
 
 

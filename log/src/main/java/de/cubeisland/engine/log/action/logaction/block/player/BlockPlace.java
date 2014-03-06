@@ -106,22 +106,22 @@ public class BlockPlace extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.getOldBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aplaced &6%dx %s%s", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getNewBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getNewBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &areplaced &6%dx %s&a with &6%s%s", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), logEntry.getNewBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} replaced {amount}x {name#block} with {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), logEntry.getNewBlock(), loc);
             }
         }
         else // single
         {
             if (logEntry.getOldBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aplaced &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getNewBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getNewBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &areplaced &6%s&a with &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), logEntry.getNewBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} replaced {name#block} with {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), logEntry.getNewBlock(), loc);
             }
         }
     }

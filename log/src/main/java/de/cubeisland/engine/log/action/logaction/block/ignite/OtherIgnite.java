@@ -52,7 +52,7 @@ public class OtherIgnite extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&aFire got set by an explosion or something else%s", time, loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}Fire got set by an explosion or something else{}", time, loc);
     }
 
 

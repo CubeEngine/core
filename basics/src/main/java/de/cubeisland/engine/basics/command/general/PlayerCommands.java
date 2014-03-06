@@ -101,7 +101,7 @@ public class PlayerCommands
                     return;
                 }
                 context.sendTranslated(MessageType.POSITIVE, "You made everyone fat!");
-                this.um.broadcastStatus("&ashared food with everyone.", context.getSender()); // TODO MessageType separate for translate Messages and messages from external input e.g. /me
+                this.um.broadcastStatus(ChatFormat.BRIGHT_GREEN + "shared food with everyone.", context.getSender()); // TODO MessageType separate for translate Messages and messages from external input e.g. /me
             }
             else
             {
@@ -171,7 +171,7 @@ public class PlayerCommands
                     return;
                 }
                 context.sendTranslated(MessageType.NEUTRAL, "You let everyone starve to death!");
-                this.um.broadcastStatus("&etook away all food.", context.getSender());
+                this.um.broadcastStatus(ChatFormat.YELLOW + "took away all food.", context.getSender());
             }
             else
             {
@@ -241,7 +241,7 @@ public class PlayerCommands
                     return;
                 }
                 context.sendTranslated(MessageType.POSITIVE, "You healed everyone!");
-                this.um.broadcastStatus("&ahealed every player.", context.getSender());
+                this.um.broadcastStatus(ChatFormat.BRIGHT_GREEN + "healed every player.", context.getSender());
             }
             else
             {

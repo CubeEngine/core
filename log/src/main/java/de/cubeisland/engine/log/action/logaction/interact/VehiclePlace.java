@@ -105,7 +105,7 @@ public class VehiclePlace extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         // TODO NPE here
-        user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aplaced a &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} placed a {name#entity}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
     }
 
 

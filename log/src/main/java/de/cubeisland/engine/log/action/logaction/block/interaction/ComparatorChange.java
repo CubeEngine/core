@@ -56,11 +56,11 @@ public class ComparatorChange extends BlockActionType
     {
         if (logEntry.getNewBlock().material.equals(Material.REDSTONE_COMPARATOR_ON))
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aactivated the comparator%s", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} activated the comparator{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &adeactivated the comparator%s", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} deactivated the comparator{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

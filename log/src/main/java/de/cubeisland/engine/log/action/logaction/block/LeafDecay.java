@@ -67,7 +67,7 @@ public class LeafDecay extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&6%s &adecayed%s", time, logEntry.getOldBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} decayed{}", time, logEntry.getOldBlock(), loc);
     }
 
     @Override

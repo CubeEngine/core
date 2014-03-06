@@ -56,11 +56,11 @@ public class EntityExplode extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated(MessageType.POSITIVE, "%s&aSomething blew up &6%dx %s%s", time, amount, logEntry.getOldBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}Something blew up {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&aSomething blew up &6%s%s", time, logEntry.getOldBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}Something blew up {name#block}{}", time, logEntry.getOldBlock(), loc);
         }
     }
 

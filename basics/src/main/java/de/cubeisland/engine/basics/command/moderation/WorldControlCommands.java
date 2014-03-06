@@ -38,6 +38,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -228,11 +229,15 @@ public class WorldControlCommands
                     EntityType type = Match.entity().any(s_entityType);
                     if (type == null)
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "Invalid entity-type!\n&eUse &6"
-                                                   + EntityType.DROPPED_ITEM + "&e, &6" + EntityType.ARROW + "&e, &6"
-                                                   + EntityType.BOAT + "&e, &6" + EntityType.MINECART + "&e, &6"
-                                                   + EntityType.PAINTING + "&e, &6" + EntityType.ITEM_FRAME + " &eor &6"
-                                                   + EntityType.EXPERIENCE_ORB);
+                        context.sendTranslated(MessageType.NEGATIVE, "Invalid entity-type!");
+                        context.sendTranslated(MessageType.NEUTRAL, "Use one of those instead:");
+                        context.sendMessage(EntityType.DROPPED_ITEM.toString() + ChatFormat.YELLOW + ", " +
+                                                ChatFormat.GOLD + EntityType.ARROW + ChatFormat.YELLOW + ", " +
+                                                ChatFormat.GOLD + EntityType.BOAT + ChatFormat.YELLOW + ", " +
+                                                ChatFormat.GOLD + EntityType.MINECART + ChatFormat.YELLOW + ", " +
+                                                ChatFormat.GOLD + EntityType.PAINTING + ChatFormat.YELLOW + ", " +
+                                                ChatFormat.GOLD + EntityType.ITEM_FRAME + ChatFormat.YELLOW + " or " +
+                                                ChatFormat.GOLD + EntityType.EXPERIENCE_ORB);
                         return;
                     }
                     if (type.isAlive())

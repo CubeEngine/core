@@ -521,11 +521,13 @@ public class MarketSign
     {
         if (this.isInEditMode())
         {
-            user.sendTranslated(MessageType.NONE, "\n-- &5Sign Market - Edit Mode &f--");
+            user.sendMessage("");
+            user.sendTranslated(MessageType.NONE, "-- {text:Sign Market:color=PURPLE} - {text:Edit Mode:color=PURPLE} --");
         }
         else
         {
-            user.sendTranslated(MessageType.NONE, "\n--------- &6Sign Market &f---------");
+            user.sendMessage("");
+            user.sendTranslated(MessageType.NONE, "--------- {text:Sign Market} ---------");
         }
         if (!this.hasType())
         {
@@ -860,7 +862,7 @@ public class MarketSign
                 {
                     if (!this.allowBuyIfEmpty())
                     {
-                        user.sendTranslated(MessageType.NEGATIVE, "This market-sign is &4&lSold Out&c!");
+                        user.sendTranslated(MessageType.NEGATIVE, "This market-sign is {text:Sold Out:color=DARK_RED}!");
                         return;
                     }
                 }
@@ -900,12 +902,12 @@ public class MarketSign
             } // else Sell
             if (this.hasDemand() && this.isSatisfied())
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This market-sign is &4&lsatisfied&c! You can no longer sell items to it.");
+                user.sendTranslated(MessageType.NEGATIVE, "This market-sign is {text:satisfied:color=DARK_RED}! You can no longer sell items to it.");
                 return;
             }
             if (this.isFull())
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This market-sign is &4&lfull&c! You can no longer sell items to it.");
+                user.sendTranslated(MessageType.NEGATIVE, "This market-sign is {text:full:color=DARK_RED}! You can no longer sell items to it.");
                 return;
             }
             if (!this.isAdminSign() && !this.canAfford(this.getOwner()))

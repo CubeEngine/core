@@ -55,30 +55,30 @@ public class WorldEditActionType extends BlockActionType
             int attached = logEntry.getAttached().size() +1;
             if (logEntry.getNewBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aused worldedit to remove &6%s x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), attached, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} used worldedit to remove {name#block} x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), attached, loc);
             }
             else if (logEntry.getOldBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aused worldedit to place &6%s x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getNewBlock(), attached, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} used worldedit to place {name#block} x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getNewBlock(), attached, loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aused worldedit to replace &6%s&a with &6%s x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), logEntry.getNewBlock(), attached, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} used worldedit to replace {name#block} with {name#block} x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), logEntry.getNewBlock(), attached, loc);
             }
         }
         else
         {
             if (logEntry.getNewBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aused worldedit to remove &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} used worldedit to remove {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else if (logEntry.getOldBlock().material.equals(Material.AIR))
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aused worldedit to place &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getNewBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} used worldedit to place {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getNewBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s &aused worldedit to replace &6%s&a with &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), logEntry.getNewBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} used worldedit to replace {name#block} with {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), logEntry.getNewBlock(), loc);
             }
         }
     }

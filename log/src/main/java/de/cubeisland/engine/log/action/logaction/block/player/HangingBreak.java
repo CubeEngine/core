@@ -165,11 +165,11 @@ public class HangingBreak extends BlockActionType
     {
         if (logEntry.getItemData() == null)
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got removed by &2%s%s", time, logEntry.getOldBlock(), logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got removed by {user}{}", time, logEntry.getOldBlock(), logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &abroke an&6 item-frame &acontaining &6%s%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} broke an {text:item-frame} containing {name#item}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc);
         }
     }
 

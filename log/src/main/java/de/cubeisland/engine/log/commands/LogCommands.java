@@ -37,8 +37,8 @@ import de.cubeisland.engine.log.LogAttachment;
 
 public class LogCommands extends ContainerCommand
 {
-    public static final String toolName = ChatFormat.parseFormats("&9Logging-ToolBlock");
-    public static final String selectorToolName = ChatFormat.parseFormats("&9Selector-Tool");
+    public static final String toolName = ChatFormat.INDIGO + "Logging-ToolBlock";
+    public static final String selectorToolName = ChatFormat.INDIGO + "Selector-Tool";
 
     // TODO command to show current params on a lookup-tool
     // TODO command to change params on a lookup-tool (only further limiting)
@@ -161,7 +161,7 @@ public class LogCommands extends ContainerCommand
             Material blockMaterial = this.matchType(context.getString(0),true);
             if (blockMaterial == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "&6%s&c is not a valid log-type.&e Use chest, container, player, block or kills instead!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context.getString(0));
                 return;
             }
             User user = (User) context.getSender();
@@ -189,7 +189,7 @@ public class LogCommands extends ContainerCommand
             Material blockMaterial = this.matchType(context.getString(0),false);
             if (blockMaterial == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "&6%s&c is not a valid log-type.&e Use chest, container, player, block or kills instead!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context.getString(0));
                 return;
             }
             User user = (User) context.getSender();

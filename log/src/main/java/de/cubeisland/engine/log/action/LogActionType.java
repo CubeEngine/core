@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import org.bukkit.event.Listener;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.log.storage.LogEntry;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.ShowParameter;
@@ -58,17 +59,18 @@ public abstract class LogActionType extends ActionType implements Listener
                 String fDate = dateOnly.format(first);
                 if (dateOnly.format(last).equals(fDate)) // Same day
                 {
-                    time = "&7" + fDate + " " + timeOnly.format(first) + " &6-&7 " + timeOnly.format(last) + " - ";
+                    time = ChatFormat.GREY + fDate + " " + timeOnly.format(first) + " " + ChatFormat.GOLD + "-" +
+                        ChatFormat.WHITE + timeOnly.format(last) + " - ";
                 }
                 else
                 {
-                    time = "&7" + fDate + " " + timeOnly.format(first) +
-                        " &6-&7 " + dateOnly.format(last) + " " + timeOnly.format(last) + " - ";
+                    time = ChatFormat.GREY + fDate + " " + timeOnly.format(first) + " " + ChatFormat.GOLD + "-" +
+                        ChatFormat.GREY + dateOnly.format(last) + " " + timeOnly.format(last) + " - ";
                 }
             }
             else
             {
-                time = "&7"+ dateOnly.format(logEntry.getTimestamp()) + " " +
+                time = ChatFormat.GREY + dateOnly.format(logEntry.getTimestamp()) + " " +
                     timeOnly.format(logEntry.getTimestamp()) + " - ";
             }
         }

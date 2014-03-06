@@ -294,9 +294,9 @@ public class ActionTypeManager
         TreeSet<String> actionTypes = new TreeSet<>();
         for (ActionType actionType : this.registeredActionTypes.values())
         {
-            actionTypes.add(actionType.getName().replace("-","&f-&7"));
+            actionTypes.add(actionType.getName().replace("-", ChatFormat.WHITE + "-" + ChatFormat.GREY));
         }
-        return ChatFormat.parseFormats("&7&o"+StringUtils.implode("&f, &7&o",actionTypes));
+        return ChatFormat.GREY.toString() + ChatFormat.ITALIC + StringUtils.implode(ChatFormat.WHITE.toString() + ", " + ChatFormat.GREY + ChatFormat.ITALIC, actionTypes);
     }
 
     public Set<ActionType> getActionType(String actionString)

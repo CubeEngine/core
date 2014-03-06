@@ -101,7 +101,7 @@ public class VehicleBreak extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a broke a &6%s%s", time, logEntry.getCauserUser() == null ?
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} broke a {name#entity}{}", time, logEntry.getCauserUser() == null ?
         logEntry.getCauserEntity() :
         logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
     }

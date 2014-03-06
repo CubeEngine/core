@@ -120,34 +120,34 @@ public class BlockShift extends BlockActionType
         // TODO redo messages
         if (logEntry.hasAttached())
         {
-            times = String.format(user.composeMessage(MessageType.POSITIVE, " &6%d times"), logEntry.getAttached().size() + 1);
+            times = String.format(user.composeMessage(MessageType.POSITIVE, " {amount} times"), logEntry.getAttached().size() + 1);
         }
         if (logEntry.getOldBlock().material == AIR )
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&aA piston moved &6%s&a in place%s%s", time, logEntry.getNewblock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}A piston moved {name#block} in place{input#times}{}", time, logEntry.getNewblock(), times, loc);
         }
         else if (logEntry.getOldBlock().material == PISTON_EXTENSION)
         {
             if (logEntry.getNewBlock().material == AIR)
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aA piston retracted%s%s", time, times, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A piston retracted{input#times}{}", time, times, loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&aA piston retracted a moving &6%s&a in place%s%s", time, logEntry.getNewBlock(), times, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A piston retracted a moving {name#block} in place{input#times}{}", time, logEntry.getNewBlock(), times, loc);
             }
         }
         else if (logEntry.getNewBlock().material == PISTON_EXTENSION)
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got moved away by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got moved away by a Piston{input#times}{}", time, logEntry.getOldBlock(), times, loc);
         }
         else if (logEntry.getNewBlock().material == AIR)
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&6%s&a got retracted by a Piston%s%s", time, logEntry.getOldBlock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got retracted by a Piston{input#times}{}", time, logEntry.getOldBlock(), times, loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&aA piston moved &6%s&a in to replace &6%s%s%s", time, logEntry.getOldBlock(), logEntry.getNewblock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}A piston moved {name#block} in to replace {input#times}{}", time, logEntry.getOldBlock(), logEntry.getNewblock(), times, loc);
         }
     }
 

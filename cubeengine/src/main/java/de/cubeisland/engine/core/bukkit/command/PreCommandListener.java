@@ -34,7 +34,6 @@ import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
-import static de.cubeisland.engine.core.util.StringUtils.implode;
 
 public class PreCommandListener implements Listener
 {
@@ -75,7 +74,7 @@ public class PreCommandListener implements Listener
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(this.core.getI18n().translate(language, "&cCouldn't find &e/%s&c. Did you mean &a/%s&c?"));
+                    sender.sendMessage(this.core.getI18n().translate(language, "Couldn't find &e/%s&c. Did you mean &a/%s&c?"));
                 }
                 else
                 {

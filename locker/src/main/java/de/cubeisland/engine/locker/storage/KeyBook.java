@@ -102,13 +102,13 @@ public class KeyBook
     public void invalidate()
     {
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(ChatFormat.parseFormats("&4Broken KeyBook"));
+        itemMeta.setDisplayName(ChatFormat.parseFormats(ChatFormat.DARK_RED + "Broken KeyBook"));
         itemMeta.setLore(Arrays.asList(ChatFormat // TODO translate as one object
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "&eThis KeyBook")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "&elooks old and")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "&eused up. It")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "&ewont let you")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "&eopen any containers!"))));
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "This KeyBook")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "looks old and")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "used up. It")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "wont let you")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "open any containers!"))));
         item.setItemMeta(itemMeta);
         item.setType(Material.PAPER);
         currentHolder.updateInventory();

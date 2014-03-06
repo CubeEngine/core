@@ -116,14 +116,15 @@ public class SignChange extends BlockActionType
             String line = newSignIterator.next().asText();
             newLines.add(line);
         }
-        String delim = ChatFormat.parseFormats("&7 | &f");
+        String delim = ChatFormat.GREY + " | " + ChatFormat.WHITE;
         if (oldEmpty)
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &awrote &7[&f%s&7]&a on a sign%s", time, logEntry.getCauserUser().getDisplayName(), StringUtils.implode(delim, newLines), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} wrote &7[&f%s&7]&a on a sign%s", time, logEntry.getCauserUser().getDisplayName(), StringUtils.implode(delim, newLines), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s &awrote &7[&f%s&7]&a%s\n    &aThe old signtext was &7[&f%s&7]", time, logEntry.getCauserUser().getDisplayName(), StringUtils.implode(delim,newLines), loc, StringUtils.implode(delim,oldLines));
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} wrote {input#signtext}",time, logEntry.getCauserUser().getDisplayName(), StringUtils.implode(delim,newLines));
+            user.sendTranslated(MessageType.POSITIVE, "    The old signtext was {input#signtext}{}", StringUtils.implode(delim,oldLines), loc);
         }
     }
 

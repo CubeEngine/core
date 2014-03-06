@@ -80,11 +80,11 @@ public class PlayerJoin extends SimpleLogActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a joined the server &6x%d%s", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size() +1, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} joined the server x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size() +1, loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a joined the server%s", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} joined the server{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         //TODO ip if known
     }

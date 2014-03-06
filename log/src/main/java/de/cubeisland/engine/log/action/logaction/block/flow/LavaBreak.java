@@ -53,7 +53,7 @@ public class LavaBreak extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&6%s &agot destroyed by lava%s!", time, logEntry.getOldBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got destroyed by lava{}!", time, logEntry.getOldBlock(), loc);
     }
 
 

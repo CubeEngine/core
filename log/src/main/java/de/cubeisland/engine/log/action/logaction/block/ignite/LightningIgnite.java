@@ -51,7 +51,7 @@ public class LightningIgnite extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "%s&aFire got set by a lightning strike%s", time, loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}Fire got set by a lightning strike{}", time, loc);
     }
 
     @Override

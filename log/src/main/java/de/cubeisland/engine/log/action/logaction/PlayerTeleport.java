@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -97,18 +98,22 @@ public class PlayerTeleport extends SimpleLogActionType
                 locTo = locFrom;
                 locFrom = temp;
             }
-            user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s&a to &6%d&f:&6%d&f:&6%d&a in &6%s", time, logEntry.getCauserUser().getName(), locFrom.getBlockX(), locFrom.getBlockY(), locFrom.getBlockZ(), locFrom.getWorld().getName(), locTo.getBlockX(), locTo.getBlockY(), locTo.getBlockZ(), locTo.getWorld().getName());
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} teleported from {vector} in {world} to {vector} in {world}{}",
+                        time, logEntry.getCauserUser().getName(), new BlockVector3(locFrom.getBlockX(), locFrom.getBlockY(), locFrom.getBlockZ()), locFrom.getWorld(),
+                                                                  new BlockVector3(locTo.getBlockX(), locTo.getBlockY(), locTo.getBlockZ()), locTo.getWorld());
         }
         else
         {
             if (json.get("dir").asText().equals("from"))
             {
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a teleported from &6%d&f:&6%d&f:&6%d&a in &6%s", time, logEntry.getCauserUser().getName(), json.get("x").asInt(), json.get("y").asInt(), json.get("z").asInt(), world.getName(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} teleported from {vector} in {world}", time, logEntry.getCauserUser().getName(),
+                                    new BlockVector3(json.get("x").asInt(), json.get("y").asInt(), json.get("z").asInt()), world, loc);
             }
             else
             {
 
-                user.sendTranslated(MessageType.POSITIVE, "%s&2%s&a teleported to &6%d&f:&6%d&f:&6%d&a in &6%s%s!", time, logEntry.getCauserUser().getDisplayName(), json.get("x").asInt(), json.get("y").asInt(), json.get("z").asInt(), world.getName(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} teleported to {vector} in {world}!", time, logEntry.getCauserUser().getDisplayName(),
+                                    new BlockVector3(json.get("x").asInt(), json.get("y").asInt(), json.get("z").asInt()), world, loc);
             }
         }
     }
