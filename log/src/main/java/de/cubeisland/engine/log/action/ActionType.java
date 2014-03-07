@@ -42,7 +42,7 @@ public abstract class ActionType
 {
     private ActionTypeModel model;
 
-    protected Log logModule;
+    protected Log module;
     protected UserManager um;
     protected ObjectMapper om;
     protected ActionTypeManager manager;
@@ -61,7 +61,7 @@ public abstract class ActionType
      */
     public void queueLog(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
-        long worldID = this.logModule.getCore().getWorldManager().getWorldId(location.getWorld());
+        long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
         Long causerID;
         if (causer == null)
         {
@@ -90,7 +90,7 @@ public abstract class ActionType
      */
     public final void initialize(Log module, ActionTypeManager manager)
     {
-        this.logModule = module;
+        this.module = module;
         this.um = module.getCore().getUserManager();
         this.om = module.getObjectMapper();
         this.manager = manager;

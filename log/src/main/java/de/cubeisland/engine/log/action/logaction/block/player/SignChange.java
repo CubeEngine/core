@@ -119,7 +119,7 @@ public class SignChange extends BlockActionType
         String delim = ChatFormat.GREY + " | " + ChatFormat.WHITE;
         if (oldEmpty)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} wrote &7[&f%s&7]&a on a sign%s", time, logEntry.getCauserUser().getDisplayName(), StringUtils.implode(delim, newLines), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} wrote {input#signtext} on a sign{}", time, logEntry.getCauserUser().getDisplayName(), StringUtils.implode(delim, newLines), loc);
         }
         else
         {

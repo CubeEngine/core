@@ -617,15 +617,15 @@ public class MarketSign
         {
             if (!this.hasDemand() && this.hasInfiniteSize())
             {
-                user.sendTranslated(MessageType.NONE, "&3In stock: &6%d&f/&6Infinite", this.getStock());
+                user.sendTranslated(MessageType.NEUTRAL, "In stock: {amount}/{text:Infinite}", this.getStock());
             }
             else if (this.getItem() == null || this.getAmount() == 0)
             {
-                user.sendTranslated(MessageType.NONE, "&3In stock: &6%d&f/&cUnkown", this.getStock());
+                user.sendTranslated(MessageType.NEUTRAL, "In stock: {amount}/{text:Unknown:color=RED}", this.getStock());
             }
             else
             {
-                user.sendTranslated(MessageType.NONE, "&3In stock: &6%d&f/&6%d", this.getStock(), this.getMaxItemAmount());
+                user.sendTranslated(MessageType.NEUTRAL, "In stock: {amount}/{amount#max}", this.getStock(), this.getMaxItemAmount());
             }
         }
     }

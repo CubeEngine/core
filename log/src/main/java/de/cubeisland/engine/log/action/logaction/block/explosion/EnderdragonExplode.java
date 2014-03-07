@@ -69,7 +69,7 @@ public class EnderdragonExplode extends BlockActionType
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}An enderdragon attacking {user} &achanged the integrity of {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}An enderdragon attacking {user} changed the integrity of {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {

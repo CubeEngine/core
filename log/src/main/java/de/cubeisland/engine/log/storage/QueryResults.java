@@ -67,7 +67,7 @@ public class QueryResults
         }
 
         int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
-        user.sendTranslated(MessageType.POSITIVE, "&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
+        user.sendTranslated(MessageType.POSITIVE, "{amount} distinct logs ({amount} pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
@@ -95,11 +95,11 @@ public class QueryResults
                 totalPages = (compressedEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
                 if (totalPages > 1)
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Compressed into &6%d&a logs! (&6%d&a pages)", compressedEntries.size(), totalPages);
+                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs! ({amount} pages)", compressedEntries.size(), totalPages);
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Compressed into &6%d&a logs!", compressedEntries.size());
+                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs!", compressedEntries.size());
                 }
             }
         }
@@ -122,11 +122,11 @@ public class QueryResults
         }
         if (show.page == 1)
         {
-            user.sendTranslated(MessageType.POSITIVE, "Showing %d most recent logs:", showing);
+            user.sendTranslated(MessageType.POSITIVE, "Showing {integer} most recent logs:", showing);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "Showing %d logs (Page %d):", showing, show.page);
+            user.sendTranslated(MessageType.POSITIVE, "Showing {integer} logs (Page {integer}):", showing, show.page);
         }
         int i = 0;
         int cpage = 1;
@@ -151,7 +151,7 @@ public class QueryResults
                 catch (Exception e)
                 {
                     module.getLog().error(e, "An error occurred while showing LogEntries!");
-                    user.sendTranslated(MessageType.POSITIVE, "&4Internal Error! Could not show LogEntry");
+                    user.sendTranslated(MessageType.CRITICAL, "Internal Error! Could not show LogEntry");
                 }
             }
             i++;

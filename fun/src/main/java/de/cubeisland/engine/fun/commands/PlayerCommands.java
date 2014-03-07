@@ -201,7 +201,7 @@ public class PlayerCommands
 
         if (power > this.module.getConfig().command.explosion.power)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The power of the explosion shouldn't be greater than %d", this.module.getConfig().command.explosion.power);
+            context.sendTranslated(MessageType.NEGATIVE, "The power of the explosion shouldn't be greater than {integer}", this.module.getConfig().command.explosion.power);
             return;
         }
 
@@ -345,7 +345,7 @@ public class PlayerCommands
         }
         else if (seconds < 1 || seconds > this.module.getConfig().command.burn.maxTime)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Only 1 to %d seconds are permitted!", this.module.getConfig().command.burn.maxTime);
+            context.sendTranslated(MessageType.NEGATIVE, "Only 1 to {integer} seconds are permitted!", this.module.getConfig().command.burn.maxTime);
             return;
         }
 

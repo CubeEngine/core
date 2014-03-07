@@ -96,7 +96,7 @@ public class BlockFall extends BlockActionType
     public void preplanBlockFall(final Location location, Entity player, BlockActionType reason)
     {
         plannedFall.put(location, new Pair<>(player, reason));
-        BlockFall.this.logModule.getCore().getTaskManager().runTaskDelayed(logModule, new Runnable()
+        BlockFall.this.module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
         {
             @Override
             public void run()

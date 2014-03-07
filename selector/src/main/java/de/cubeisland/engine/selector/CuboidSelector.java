@@ -103,12 +103,12 @@ public class CuboidSelector implements Selector, Listener
                 if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
                 {
                     logAttachment.setPoint(0, clicked);
-                    user.sendTranslated(MessageType.POSITIVE, "First position set to (%d, %d, %d).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
+                    user.sendTranslated(MessageType.POSITIVE, "First position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 else
                 {
                     logAttachment.setPoint(1, clicked);
-                    user.sendTranslated(MessageType.POSITIVE, "Second position set to (%d, %d, %d).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
+                    user.sendTranslated(MessageType.POSITIVE, "Second position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 event.setCancelled(true);
                 event.setUseItemInHand(Result.DENY);

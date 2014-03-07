@@ -92,7 +92,7 @@ public class HangingBreak extends BlockActionType
             }
             else
             {
-                this.logModule.getLog().info("Unexpected HangingBreakEvent");
+                this.module.getLog().info("Unexpected HangingBreakEvent");
             }
         }
     }
@@ -136,7 +136,7 @@ public class HangingBreak extends BlockActionType
         }
         else
         {
-            this.logModule.getLog().debug("Not a player breaking Hanging?");
+            this.module.getLog().debug("Not a player breaking Hanging?");
         }
     }
 
@@ -148,7 +148,7 @@ public class HangingBreak extends BlockActionType
         if (!clearPlanned)
         {
             clearPlanned = true;
-            HangingBreak.this.logModule.getCore().getTaskManager().runTask(logModule, new Runnable()
+            HangingBreak.this.module.getCore().getTaskManager().runTask(module, new Runnable()
             {
                 @Override
                 public void run()

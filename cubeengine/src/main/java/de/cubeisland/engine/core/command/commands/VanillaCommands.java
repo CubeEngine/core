@@ -110,11 +110,13 @@ public class VanillaCommands implements CommandHolder
         {
             context.sendTranslated(MessageType.NEUTRAL, "Reloading the whole server... (this may take some time)");
             // pre-translate to avoid a NPE
-            final String preTranslated = context.getSender().composeMessage(MessageType.POSITIVE, "The reload is completed after %d seconds");
-
+            Locale locale = context.getSender().getLocale();
             long time = System.currentTimeMillis();
             this.core.getServer().reload();
-            context.sendMessage(String.format(preTranslated, MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
+            context.sendMessage(this.core.getMessageCompositor()
+                                         .composeMessage(locae, ChatFormat.BRIGHT_GREEN + this.core.getI18n()
+                                                                                                    .translate(locale, "The reload is completed after {amount} seconds"), MILLISECONDS
+                                                             .toSeconds(System.currentTimeMillis() - time)));
         }
     }
 
@@ -200,7 +202,7 @@ public class VanillaCommands implements CommandHolder
                 for (OfflinePlayer player : ops)
                 {
                     context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.composeMessage(
-                        MessageType.NONE, "Last seen: %s", dateFormat
+                        MessageType.NONE, "Last seen: {input#date}", dateFormat
                         .format(new Date(player.getLastPlayed()))) + ")");
                 }
             }

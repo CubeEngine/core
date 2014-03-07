@@ -169,7 +169,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false)
                     {
-                        this.logModule.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
+                        this.module.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
                         this.logDeathDrops(event);
                         return;
                     }

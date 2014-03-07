@@ -121,7 +121,7 @@ public class ContainerActionType extends ActionTypeContainer
         }
         if (holder != null)
         {
-            this.logModule.getLog().debug("Unknown InventoryHolder: {}", holder.getClass().getName());
+            this.module.getLog().debug("Unknown InventoryHolder: {}", holder.getClass().getName());
         }
         return null;
     }
@@ -418,7 +418,7 @@ public class ContainerActionType extends ActionTypeContainer
         Inventory target = event.getDestination();
         if (target == null || source == null)
         {
-            this.logModule.getLog().debug("InventoryMoveItem has null {} -> {}", source, target);
+            this.module.getLog().debug("InventoryMoveItem has null {} -> {}", source, target);
             // TODO remove if fixed
             return;
         }

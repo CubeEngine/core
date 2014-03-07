@@ -73,7 +73,7 @@ public class PlayerTeleport extends SimpleLogActionType
     {
         ObjectNode json = this.om.createObjectNode();
         json.put("dir", from ? "from" : "to");
-        json.put("world", this.logModule.getCore().getWorldManager().getWorldId(location.getWorld()));
+        json.put("world", this.module.getCore().getWorldManager().getWorldId(location.getWorld()));
         json.put("x",location.getBlockX());
         json.put("y",location.getBlockY());
         json.put("z",location.getBlockZ());
@@ -84,7 +84,7 @@ public class PlayerTeleport extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         JsonNode json = logEntry.getAdditional();
-        World world = this.logModule.getCore().getWorldManager().getWorld(json.get("world").asLong());
+        World world = this.module.getCore().getWorldManager().getWorld(json.get("world").asLong());
         if (logEntry.hasAttached())
         {
             Location locFrom = logEntry.getLocation();

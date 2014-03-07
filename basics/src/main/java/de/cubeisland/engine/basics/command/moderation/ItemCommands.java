@@ -502,7 +502,7 @@ public class ItemCommands
                     sender.sendTranslated(MessageType.NEUTRAL, "No items to repair!");
                     return;
                 }
-                sender.sendTranslated(MessageType.POSITIVE, "Repaired %d items!", repaired);
+                sender.sendTranslated(MessageType.POSITIVE, "Repaired {amount} items!", repaired);
                 return;
             }
             ItemStack item = sender.getItemInHand();

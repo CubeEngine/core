@@ -75,7 +75,7 @@ public class VehiclePlace extends SimpleLogActionType
         }
         else
         {
-            this.logModule.getLog().info("Unexpected VehiclePlacement: {} planned: {}", event.getVehicle(),
+            this.module.getLog().info("Unexpected VehiclePlacement: {} planned: {}", event.getVehicle(),
                                          plannedVehiclePlace.size());
         }
     }
@@ -89,7 +89,7 @@ public class VehiclePlace extends SimpleLogActionType
         if (!clearPlanned)
         {
             clearPlanned = true;
-            VehiclePlace.this.logModule.getCore().getTaskManager().runTask(logModule, new Runnable()
+            VehiclePlace.this.module.getCore().getTaskManager().runTask(module, new Runnable()
             {
                 @Override
                 public void run()

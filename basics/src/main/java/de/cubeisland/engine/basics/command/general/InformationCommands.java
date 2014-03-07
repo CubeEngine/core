@@ -358,7 +358,7 @@ public class InformationCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NONE, ("ping".equals(label) ? "pong" : "ping") + "! Your latency: %s", ((User)context.getSender()).getPing());
+            context.sendTranslated(MessageType.NONE, ("ping".equals(label) ? "pong" : "ping") + "! Your latency: {integer#ping}", ((User)context.getSender()).getPing());
         }
     }
 

@@ -91,7 +91,7 @@ public class NukeCommand
         }
         if(explosionRange < 0 || explosionRange > this.module.getConfig().command.nuke.maxExplosionRange)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The explosion range can't be less than 0 or greater than %d", this.module.getConfig().command.nuke.maxExplosionRange);
+            context.sendTranslated(MessageType.NEGATIVE, "The explosion range can't be less than 0 or greater than {integer}", this.module.getConfig().command.nuke.maxExplosionRange);
             return;
         }
 
@@ -135,7 +135,7 @@ public class NukeCommand
 
         if(!context.hasFlag("q"))
         {
-            context.sendTranslated(MessageType.POSITIVE, "You spawned %d blocks of tnt.", blockAmount);
+            context.sendTranslated(MessageType.POSITIVE, "You spawned {integer} blocks of tnt.", blockAmount);
         }
     }
 

@@ -116,14 +116,14 @@ public class ThrowCommands
         int amount = context.getArg(1, Integer.class, -1);
         if ((amount > this.module.getConfig().command.throwSection.maxAmount || amount < 1) && amount != -1)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The amount has to be a number from 1 to %d", this.module.getConfig().command.throwSection.maxAmount);
+            context.sendTranslated(MessageType.NEGATIVE, "The amount has to be a number from 1 to {integer}", this.module.getConfig().command.throwSection.maxAmount);
             return;
         }
 
         int delay = context.getParam("delay", 3);
         if (delay > this.module.getConfig().command.throwSection.maxDelay || delay < 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The delay has to be a number from 0 to %d", this.module.getConfig().command.throwSection.maxDelay);
+            context.sendTranslated(MessageType.NEGATIVE, "The delay has to be a number from 0 to {integer}", this.module.getConfig().command.throwSection.maxDelay);
             return;
         }
         

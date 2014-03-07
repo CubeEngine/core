@@ -59,7 +59,7 @@ public class EndermanPickup extends BlockActionType
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{text:Enderman} &apicked up {name#block}{}!", time, logEntry.getOldBlock().toString(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{text:Enderman} picked up {name#block}{}!", time, logEntry.getOldBlock().toString(), loc);
         }
     }
 

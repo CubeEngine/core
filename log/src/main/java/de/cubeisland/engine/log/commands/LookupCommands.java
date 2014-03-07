@@ -67,27 +67,27 @@ public class LookupCommands
             // TODO show description
             return;
         }
-        context.sendTranslated(MessageType.NONE, "&6Registered ActionTypes:"); //TODO colors
+        context.sendTranslated(MessageType.NEUTRAL, "Registered ActionTypes:"); //TODO colors
         context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
         context.sendMessage("");
-        context.sendTranslated(MessageType.NONE, "&6Lookup&f/&6Rollback&f/&6Restore&f-&6Parameters:");
+        context.sendTranslated(MessageType.NEUTRAL, "Lookup/Rollback/Redo-Parameters:");
         context.sendMessage("");
-        context.sendTranslated(MessageType.NONE, " &f-&6 action &7<actionType> &flike &3a block-break &f(See full list above)");
-        context.sendTranslated(MessageType.NONE, " &f-&6 radius &7<radius>&f or &3sel&f, &3global&f, &3player:<radius>");
-        context.sendTranslated(MessageType.NONE, " &f-&6 player &7<users>&f like &3p Faithcaio ");
-        context.sendTranslated(MessageType.NONE, " &f-&6 entity &7<entities>&f like &3e sheep");
-        context.sendTranslated(MessageType.NONE, " &f-&6 block &7<blocks>&f like &3b stone &for &3b 1");
-        context.sendTranslated(MessageType.NONE, " &f-&6 since &7<time>&f default is 3 days");
-        context.sendTranslated(MessageType.NONE, " &f-&6 before &7<time>");
-        context.sendTranslated(MessageType.NONE, " &f-&6 world &7<world>&f default is your current world");
+        context.sendTranslated(MessageType.NEUTRAL, " - action <actionType> like a block-break (See full list above)");
+        context.sendTranslated(MessageType.NEUTRAL, " - radius <radius> or sel, global, player:<radius>");
+        context.sendTranslated(MessageType.NEUTRAL, " - player <users> like p Faithcaio ");
+        context.sendTranslated(MessageType.NEUTRAL, " - entity <entities> like e sheep");
+        context.sendTranslated(MessageType.NEUTRAL, " - block <blocks> like b stone");
+        context.sendTranslated(MessageType.NEUTRAL, " - since <time> default is 3 days");
+        context.sendTranslated(MessageType.NEUTRAL, " - before <time>");
+        context.sendTranslated(MessageType.NEUTRAL, " - world <world> default is your current world");
 
         context.sendMessage("");
-        context.sendTranslated(MessageType.NONE, "Use &6!&f to exclude the parameters instead of including them.");
+        context.sendTranslated(MessageType.NEUTRAL, "Use {text:!} to exclude the parameters instead of including them.");
     }
 
     @Command(
         desc = "Queries a lookup in the database\n    " +
-            "Show availiable parameters with &6/lookup params",
+            "Show availiable parameters with /lookup params",
         usage = "[page <page>] [parameters]",
     flags = {
         @Flag(longName = "coordinates", name = "coords"),
@@ -280,7 +280,7 @@ public class LookupCommands
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "&6%s&c is not a valid time value!", beforeString);
+            user.sendTranslated(MessageType.NEGATIVE, "{input#time} is not a valid time value!", beforeString);
             return false;
         }
     }
@@ -302,7 +302,7 @@ public class LookupCommands
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "&6%s&c is not a valid time value!", sinceString);
+            user.sendTranslated(MessageType.NEGATIVE, "{input#time} is not a valid time value!", sinceString);
             return false;
         }
     }
@@ -318,7 +318,7 @@ public class LookupCommands
         World world = user.getServer().getWorld(worldString);
         if (world == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "Unkown world: &6%s", worldString);
+            user.sendTranslated(MessageType.NEGATIVE, "Unknown world: {input#world}", worldString);
             return false;
         }
         params.setWorld(world);
@@ -499,7 +499,7 @@ public class LookupCommands
                 }
                 catch (NumberFormatException ex)
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "Invalid BlockData: &6%s", sub);
+                    user.sendTranslated(MessageType.NEGATIVE, "Invalid BlockData: {name#block}", sub);
                     return false;
                 }
                 name = name.substring(0,name.indexOf(":"));
@@ -507,7 +507,7 @@ public class LookupCommands
             Material material = Match.material().material(name);
             if (material == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Unknown Material: &6%s", name);
+                user.sendTranslated(MessageType.NEGATIVE, "Unknown Material: {name#material}", name);
                 return false;
             }
             ImmutableBlockData blockData = new ImmutableBlockData(material, data);
@@ -537,7 +537,7 @@ public class LookupCommands
             EntityType entityType = Match.entity().living(name);
             if (entityType == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Unknown EntityType: &6%s", name);
+                user.sendTranslated(MessageType.NEGATIVE, "Unknown EntityType: {name#entity}", name);
                 return false;
             }
             if (negate)
@@ -567,7 +567,7 @@ public class LookupCommands
             Set<ActionType> actionTypes = this.actionTypeManager.getActionType(actionString);
             if (actionTypes == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Unkown action-type: &6%s", actionString);
+                user.sendTranslated(MessageType.NEGATIVE, "Unknown action-type: {name#action}", actionString);
                 return false;
             }
             if (negate)
