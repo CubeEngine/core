@@ -24,6 +24,7 @@
       </method>
       <method>
         <name>sendTranslated</name>
+        <singular>2</singular>
       </method>
       <method>
         <name>sendTranslatedN</name>
