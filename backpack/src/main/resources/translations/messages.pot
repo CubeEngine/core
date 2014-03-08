@@ -1,0 +1,179 @@
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-08 17:29+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:55
+#: de/cubeisland/engine/backpack/BackpackManager.java:139
+#: de/cubeisland/engine/backpack/BackpackManager.java:162
+msgid "&2%s does not have a backpack named &6%s&c in this world!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:95
+msgid "&2%s&c already had a backpack named &6%s&c in &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:74
+msgid "&aCreated global backpack &6%s&a for &2%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:84
+msgid "&aCreated grouped backpack &6%s&a in &6%s&a for &2%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:79
+msgid "&aCreated singleworld backpack &6%s&a for &2%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:146
+msgid "&aItem added to backpack!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:221
+msgid "&aItems are allowed to go in!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:217
+msgid "&aItems are not allowed to go in!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:209
+msgid "&aPageSize changed!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:187
+msgid "&aPages changed!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:129
+#: de/cubeisland/engine/backpack/BackpackCommands.java:180
+msgid "&aYou have to specify a world for non global backpacks!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:149
+msgid "&aYou received items in your backpack &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:91
+msgid "&cA backpack named &6%s&c already exists in &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:172
+msgid "&cCould not change page amount! Not enough space!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:194
+msgid "&cCould not change page size! Not enough space!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:251
+msgid "&cCould not match item &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:300
+msgid "&cInvalid amount &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:275
+#: de/cubeisland/engine/backpack/BackpackCommands.java:285
+msgid "&cUnknown Enchantment &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:76
+#: de/cubeisland/engine/backpack/BackpackCommands.java:118
+#: de/cubeisland/engine/backpack/BackpackCommands.java:174
+#: de/cubeisland/engine/backpack/BackpackCommands.java:230
+msgid "&cUnknown World &6%s&c!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:66
+#: de/cubeisland/engine/backpack/BackpackCommands.java:137
+#: de/cubeisland/engine/backpack/BackpackCommands.java:188
+#: de/cubeisland/engine/backpack/BackpackCommands.java:239
+msgid "&cUser &2%s&c not found!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:87
+msgid "&cYou are not allowed to open backpacks from an other world!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:82
+msgid "&cYou are not allowed to open the backpacks of other users!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:93
+msgid "&cYou cannot open a inventory in console!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:58
+#: de/cubeisland/engine/backpack/BackpackManager.java:142
+#: de/cubeisland/engine/backpack/BackpackManager.java:165
+msgid "&cYou don't have a backpack named &6%s&c in this world!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:143
+#: de/cubeisland/engine/backpack/BackpackCommands.java:194
+#: de/cubeisland/engine/backpack/BackpackCommands.java:245
+msgid "&cYou need to specify a User"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:98
+msgid ""
+"<name> [user] [-global]|[-single] [-blockinput] [w <world>] [p <pages>] [s "
+"<size>]"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:52
+msgid "<name> [user] [w <world>]"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:205
+msgid ""
+"<name> [user] [w <world>] <item <item>[:data]> [name <name>] [lore "
+"<loreline>[,<loreline>]] [ench <enchs...>] [amount <amount>]"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:152
+msgid ""
+"<name> [user] [w <world>] [pages <pages>] [s <size>] [blockinput "
+"<true|false>]"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:204
+msgid "Puts items into a backpack"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:97
+msgid "creates a new backpack"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:151
+msgid "modifies a backpack"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:52
+msgid "opens a backpack"
+msgstr ""

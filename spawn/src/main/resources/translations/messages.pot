@@ -1,14 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"POT-Creation-Date: 2014-03-08 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,94 +26,102 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:76
+#: de/cubeisland/engine/spawn/SpawnCommands.java:77
 msgid "&cWorld: %s not found"
-msgstr ""
-
-#: de/cubeisland/engine/spawn/SpawnCommands.java:84
-#: de/cubeisland/engine/spawn/SpawnCommands.java:105
-msgid "&cIf not used ingame you have to specify a world and coordinates!"
 msgstr ""
 
 #: de/cubeisland/engine/spawn/SpawnCommands.java:85
 #: de/cubeisland/engine/spawn/SpawnCommands.java:106
+msgid "&cIf not used ingame you have to specify a world and coordinates!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:86
+#: de/cubeisland/engine/spawn/SpawnCommands.java:107
 msgid "&eUse &6\"global\"&e instead of the role-name to set the default spawn."
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:97
+#: de/cubeisland/engine/spawn/SpawnCommands.java:98
 msgid "&cCoordinates are invalid!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:123
-#: de/cubeisland/engine/spawn/SpawnCommands.java:263
+#: de/cubeisland/engine/spawn/SpawnCommands.java:124
+#: de/cubeisland/engine/spawn/SpawnCommands.java:266
 msgid "&cCould not find the role &6%s&c in &6%s&c!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:143
+#: de/cubeisland/engine/spawn/SpawnCommands.java:146
 msgid "&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:177
+#: de/cubeisland/engine/spawn/SpawnCommands.java:180
 msgid "&cWorld &6%s&c not found!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:177
-msgid "world"
-msgstr ""
-
-#: de/cubeisland/engine/spawn/SpawnCommands.java:183
+#: de/cubeisland/engine/spawn/SpawnCommands.java:186
 msgid "&cYou have to specify a world!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:190
+#: de/cubeisland/engine/spawn/SpawnCommands.java:193
 msgid "&cYou are not allowed to spawn everyone!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:209
+#: de/cubeisland/engine/spawn/SpawnCommands.java:212
 msgid ""
 "&cInvalid spawn-location for the role of &2%s&c! &ePlease check your role-"
 "configurations!\n"
 "&7%s"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:234
+#: de/cubeisland/engine/spawn/SpawnCommands.java:237
 msgid "&6ProTip: &cTeleport does not work IRL!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:242
+#: de/cubeisland/engine/spawn/SpawnCommands.java:245
 msgid "&cUser &2%s &cnot found!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:247
+#: de/cubeisland/engine/spawn/SpawnCommands.java:250
 msgid "&cYou cannot teleport an offline player to spawn!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:252
+#: de/cubeisland/engine/spawn/SpawnCommands.java:255
 msgid "&cYou are not allowed to spawn %s!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:259
-msgid "role"
-msgstr ""
-
-#: de/cubeisland/engine/spawn/SpawnCommands.java:269
+#: de/cubeisland/engine/spawn/SpawnCommands.java:272
 msgid "&cThe role &6%s&c in &6%s&c has no spawn-point!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:275
+#: de/cubeisland/engine/spawn/SpawnCommands.java:278
 msgid ""
 "&cInvalid spawn-location for the role &6%s&c! &ePlease check your role-"
 "configuration!\n"
 "&7%s"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:279
+#: de/cubeisland/engine/spawn/SpawnCommands.java:282
 msgid "&aYou are now standing at the spawn of &6%s&a!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:302
+#: de/cubeisland/engine/spawn/SpawnCommands.java:305
 msgid ""
 "&cInvalid spawn-location for your role! &ePlease check your role-"
 "configurations!\n"
 "&7%s"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:58
+msgid "Changes the respawnpoint"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:149
+msgid "Teleport directly to the worlds spawn."
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:58
+msgid "[<role>|global] [<x> <y> <z>] [world]"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:149
+msgid "[player] [world <world>] [role <role>]"
 msgstr ""

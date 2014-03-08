@@ -1,0 +1,128 @@
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-08 17:29+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/kits/KitCommand.java:253
+msgid "&2%s &ehas not enough inventory-space for this kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:220
+msgid "&2%s&c is not online!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:116
+msgid "&6%s &cis is not a valid name! Do not use characters like *, | or ?"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:124
+msgid "&aCreated the &6%s &akit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:172
+msgid "&aReceived the &6%s &akit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:177
+msgid "&aReceived the &6%s &akit. Enjoy it!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:229
+#: de/cubeisland/engine/kits/KitCommand.java:241
+msgid "&aReceived the &6%s&a kit. Enjoy it!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:132
+msgid "&aThe following kits are available:"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:176
+msgid "&aYou gave &2%s &athe &6%s &akit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:238
+msgid "&aYou gave &2%s &athe &6%s&a kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:193
+msgid "&c%d players did not receive a kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:76
+msgid "&cJust log in or use the config!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:157
+msgid "&cKit &6%s &cnot found!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/Kit.java:102
+msgid "&cKit-limit reached."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:189
+msgid "&cNo one received the kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:215
+msgid "&cUser %s &cnot found!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:210
+msgid "&cYou need to specify a user!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/Kit.java:111
+msgid "&eThis kit not available at the moment. &aTry again later!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:257
+msgid "&eYou don't have enough inventory-space for this kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:66
+msgid "<kitName> [-toolbar]"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:141
+msgid "<kitname> [player]"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:64
+msgid "Creates a new kit with the items in your inventory."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:141
+msgid "Gives a kit of items."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:129
+msgid "Lists all currently available kits."
+msgstr ""
+
+#: de/cubeisland/engine/kits/Kit.java:90
+msgid "You are not allowed to give this kit."
+msgstr ""

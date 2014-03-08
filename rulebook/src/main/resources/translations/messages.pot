@@ -1,14 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"POT-Creation-Date: 2014-03-08 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -103,4 +113,38 @@ msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:309
 msgid "&aRulebook for the language %s was added succesfully"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:193
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:226
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:280
+msgid "<language>"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:158
+msgid "[-supported]"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:66
+msgid "[language] [Player <name>]"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:277
+msgid "adds the book in hand as rulebook of the declared language"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:65
+msgid "gets the player the rulebook in the inventory"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:155
+msgid "list all available languages of the rulebooks."
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:225
+msgid "modified the rulebook of the declared language with the book in hand"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:190
+msgid "removes the declared language and languagefiles!"
 msgstr ""

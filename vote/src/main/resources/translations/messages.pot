@@ -1,14 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"POT-Creation-Date: 2014-03-08 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,40 +26,43 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/vote/VoteCommands.java:49
+#: de/cubeisland/engine/vote/VoteCommands.java:59
 msgid "&eSorry but you do not have any registered votes on this server!"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:53
+#: de/cubeisland/engine/vote/VoteCommands.java:63
 msgid "&aYou current vote-count is &6%d"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:56
+#: de/cubeisland/engine/vote/VoteCommands.java:66
 msgid ""
 "&eSadly you did not vote in the last &6%s&e so your vote-count will be reset "
 "to 1"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:61
-msgid ""
-"&aYou voted &6%s&a ago so you will probably not be able to vote again "
-"already!"
-msgstr ""
-
-#: de/cubeisland/engine/vote/VoteCommands.java:66
+#: de/cubeisland/engine/vote/VoteCommands.java:76
 msgid ""
 "&eVoting now will increase your consecutive votes and result in higher "
 "reward!"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:70
+#: de/cubeisland/engine/vote/VoteCommands.java:80
 msgid "&aYou can vote here now: &6%s"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:75
+#: de/cubeisland/engine/vote/VoteCommands.java:85
 msgid "&eWell you wont get any rewards."
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:78
+#: de/cubeisland/engine/vote/VoteCommands.java:88
 msgid "&eBut here go vote anyways: &6%s"
+msgstr ""
+
+#: de/cubeisland/engine/vote/VoteCommands.java:71
+msgid ""
+"&aYou voted &6%s&a so you will probably not be able to vote again already!"
+msgstr ""
+
+#: de/cubeisland/engine/vote/VoteCommands.java:49
+msgid "shows your current vote situation"
 msgstr ""
