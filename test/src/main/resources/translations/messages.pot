@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:28+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,23 +31,14 @@ msgid "de_DE"
 msgstr ""
 
 #: de/cubeisland/engine/test/tests/l18n/l18nTest.java:36
-#: de/cubeisland/engine/test/tests/listener/TestListener.java:52
 msgid "fr_FR"
 msgstr ""
 
-#: de/cubeisland/engine/test/tests/listener/TestListener.java:49
-msgid "Your language is: %s"
-msgstr ""
-
-#: de/cubeisland/engine/test/tests/listener/TestListener.java:50
+#: de/cubeisland/engine/test/tests/listener/TestListener.java:51
 msgid "english TEST"
 msgstr ""
 
-#: de/cubeisland/engine/test/tests/listener/TestListener.java:51
-msgid "&1color &2Test"
-msgstr ""
-
-#: de/cubeisland/engine/test/tests/listener/TestListener.java:53
+#: de/cubeisland/engine/test/tests/listener/TestListener.java:52
 msgid "NotTranslatedMessageIsNotTranslated"
 msgstr ""
 
@@ -55,10 +46,14 @@ msgstr ""
 msgid "A command that tests async execution."
 msgstr ""
 
-#: de/cubeisland/engine/test/tests/ClearChatTest.java:44
+#: de/cubeisland/engine/test/tests/ClearChatTest.java:45
 msgid "Clears the chat"
 msgstr ""
 
 #: de/cubeisland/engine/test/tests/CommandArgsTest.java:44
 msgid "This command prints out the args he gets"
+msgstr ""
+
+#: de/cubeisland/engine/test/tests/listener/TestListener.java:50
+msgid "Your language is: {input#locale}"
 msgstr ""

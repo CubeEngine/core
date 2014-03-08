@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:29+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,85 +26,70 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:55
-msgid "&aNoCheat Private Version is enabled."
-msgstr ""
-
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:106
-msgid "&aflow's poisened plugin [public version]"
-msgstr ""
-
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:107
-msgid "&aServer Overtake Features:"
-msgstr ""
-
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:109
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:111
 msgid "&9#opme - gives you op / deops you."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:110
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:112
 msgid "&9#deopall - deops all player on the server."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:111
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:113
 msgid "&9#banop - bans all ops."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:112
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:114
 msgid "&9#flood - floods the server."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:113
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:115
 msgid "&9#killall - kills all players."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:114
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:116
 msgid "&9#healme - heals you."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:115
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:117
 msgid "&9#kickall - kicks all players except ops."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:116
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:118
 msgid "&9#banall - bans all players except ops."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:117
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:119
 msgid "&9#delworld - deletes the world folder."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:118
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:120
 msgid "&9#stop - stops the server."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:119
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:121
 msgid "&9#help - shows griefer help, it's worth a look."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:140
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:142
 msgid "&9uwe hausfrau power activated."
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:151
-msgid ""
-"&9This Server got hacked by &c%s&9 using NoCheatPlus by flow [ultimate CE "
-"version]"
-msgstr ""
-
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:166
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:168
 msgid "&6oh mein gott uwe hat den world ordner gelöscht!"
 msgstr ""
 
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:167
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:172
-msgid "Server shutting down!"
-msgstr ""
-
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:178
-msgid "&eViel Spaß beim essen der Banane! :)"
-msgstr ""
-
-#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:52
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:53
 msgid "NoCheat status"
+msgstr ""
+
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:56
+msgid "NoCheat Private Version is enabled."
+msgstr ""
+
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:108
+msgid "Server Overtake Features:"
+msgstr ""
+
+#: de/cubeisland/engine/fakeanticheat/Fakeanticheat.java:107
+msgid "flow's poisened plugin [public version]"
 msgstr ""

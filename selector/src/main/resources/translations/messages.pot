@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:29+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,22 +26,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/selector/CuboidSelector.java:105
-msgid "&aFirst position set to (%d, %d, %d)."
+#: de/cubeisland/engine/selector/CuboidSelector.java:106
+msgid "First position set to ({integer}, {integer}, {integer})."
 msgstr ""
 
-#: de/cubeisland/engine/selector/SelectorCommand.java:97
-msgid "&aFound a Region-Selector Tool in your inventory!"
+#: de/cubeisland/engine/selector/SelectorCommand.java:98
+msgid "Found a Region-Selector Tool in your inventory!"
 msgstr ""
 
-#: de/cubeisland/engine/selector/SelectorCommand.java:89
-msgid "&aReceived a new Region-Selector Tool"
+#: de/cubeisland/engine/selector/SelectorCommand.java:90
+msgid "Received a new Region-Selector Tool"
 msgstr ""
 
-#: de/cubeisland/engine/selector/CuboidSelector.java:110
-msgid "&aSecond position set to (%d, %d, %d)."
+#: de/cubeisland/engine/selector/CuboidSelector.java:111
+msgid "Second position set to ({integer}, {integer}, {integer})."
 msgstr ""
 
-#: de/cubeisland/engine/selector/SelectorCommand.java:55
-msgid "&cYou cannot hold a selection tool!"
+#: de/cubeisland/engine/selector/SelectorCommand.java:56
+msgid "You cannot hold a selection tool!"
 msgstr ""

@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:28+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,36 +26,36 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/writer/EditCommand.java:61
-msgid "&cEdit what?"
-msgstr ""
-
-#: de/cubeisland/engine/writer/EditCommand.java:75
+#: de/cubeisland/engine/writer/EditCommand.java:76
 msgid "Your book is now unsigned and ready to be edited"
 msgstr ""
 
-#: de/cubeisland/engine/writer/EditCommand.java:86
-msgid "&cYou need to specify at least one parameter"
-msgstr ""
-
-#: de/cubeisland/engine/writer/EditCommand.java:99
-msgid "&cCould not change the sign!"
-msgstr ""
-
-#: de/cubeisland/engine/writer/EditCommand.java:107
+#: de/cubeisland/engine/writer/EditCommand.java:108
 msgid "The sign has been changed"
 msgstr ""
 
-#: de/cubeisland/engine/writer/EditCommand.java:111
-msgid ""
-"&cYou need to have a signed book in hand or be looking at a sign less than "
-"10 blocks away"
-msgstr ""
-
-#: de/cubeisland/engine/writer/EditCommand.java:39
+#: de/cubeisland/engine/writer/EditCommand.java:40
 msgid "Edit a sign or unsign a book"
 msgstr ""
 
-#: de/cubeisland/engine/writer/EditCommand.java:39
+#: de/cubeisland/engine/writer/EditCommand.java:40
 msgid "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] "
+msgstr ""
+
+#: de/cubeisland/engine/writer/EditCommand.java:100
+msgid "Could not change the sign!"
+msgstr ""
+
+#: de/cubeisland/engine/writer/EditCommand.java:62
+msgid "Edit what?"
+msgstr ""
+
+#: de/cubeisland/engine/writer/EditCommand.java:112
+msgid ""
+"You need to have a signed book in hand or be looking at a sign less than 10 "
+"blocks away"
+msgstr ""
+
+#: de/cubeisland/engine/writer/EditCommand.java:87
+msgid "You need to specify at least one parameter"
 msgstr ""

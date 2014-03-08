@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:28+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,18 +26,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/fly/FlyListener.java:74
+#: de/cubeisland/engine/fly/FlyListener.java:75
 msgid "You dont have permission to use this!"
 msgstr ""
 
-#: de/cubeisland/engine/fly/FlyListener.java:82
+#: de/cubeisland/engine/fly/FlyListener.java:83
 msgid "You are not allowed to fly now!"
 msgstr ""
 
-#: de/cubeisland/engine/fly/FlyListener.java:95
+#: de/cubeisland/engine/fly/FlyListener.java:96
 msgid "You can now fly!"
 msgstr ""
 
-#: de/cubeisland/engine/fly/FlyListener.java:130
+#: de/cubeisland/engine/fly/FlyListener.java:131
 msgid "You cannot fly anymore!"
 msgstr ""

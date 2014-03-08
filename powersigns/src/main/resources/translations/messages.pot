@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:28+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,28 +26,27 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:59
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:89
-msgid "&cYou can not depart from this sign but only arrive!"
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:113
+msgid "Changed destination to {amount} floors down! Floorname: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:65
-msgid ""
-"&cCould not find any other sign to lift to! &ePerhaps it got destroyed?"
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:109
+msgid "Changed destination to {input} floors up! Floorname: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:96
-msgid "&cThere are no more LiftSigns here!"
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:102
+msgid "Could not find any other LiftSign!"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:101
-msgid "&cCould not find any other LiftSign!"
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:66
+msgid "Could not find any other sign to lift to! Perhaps it got destroyed?"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:108
-msgid "&aChanged destination to &6%d&a floors up! Floorname: &6%s"
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:97
+msgid "There are no more LiftSigns here!"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:112
-msgid "&aChanged destination to &6%d&a floors down! Floorname: &6%s"
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:60
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:90
+msgid "You can not depart from this sign but only arrive!"
 msgstr ""

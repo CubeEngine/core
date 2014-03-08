@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:28+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,84 +26,85 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/border/BorderCommands.java:68
-msgid "&cYou need to specify a world!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:79
-msgid "&aCenter for Border in &6%s&a set to world-spawn!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:88
-msgid "&cInvalid Chunk-coordinates!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:99
-msgid "&cYou need to specify the chunk-coordinates or use the -spawn flag"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:103
-msgid "&aCenter for Border in &6%s&a set!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:112
-msgid "&cChunk generation is already running!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:130
-msgid "&cThere is no world named &6%s"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:180
-msgid "&aAdded &6%d &achunks to generate in &6%s"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:223
-msgid "&cAvailiable Memory getting low! Pausing ChunkGeneration"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:255
-msgid "&aChunkgeneration is at &6%d%% &a(&6%d/%d&a)"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:268
-msgid "&aChunkgeneration completed! Generated &6%d&a chunks"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderListener.java:87
-msgid "&cYou cannot teleport outside the border!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderListener.java:100
-msgid ""
-"&eAs you reach the border the world turns on itself and you appear on the "
-"other side of the world!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderListener.java:107
-msgid "&cYou've reached the border!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderListener.java:113
-msgid "&6You are near the world-border! You might want to turn around."
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderListener.java:161
-msgid "&cThis portal would teleport you behind the border!"
-msgstr ""
-
-#: de/cubeisland/engine/border/BorderCommands.java:107
+#: de/cubeisland/engine/border/BorderCommands.java:108
 msgid "<world>"
 msgstr ""
 
-#: de/cubeisland/engine/border/BorderCommands.java:107
+#: de/cubeisland/engine/border/BorderCommands.java:108
 msgid "Generates the chunks located in the border"
 msgstr ""
 
-#: de/cubeisland/engine/border/BorderCommands.java:56
+#: de/cubeisland/engine/border/BorderCommands.java:57
 msgid "Sets the center of the border"
 msgstr ""
 
-#: de/cubeisland/engine/border/BorderCommands.java:56
+#: de/cubeisland/engine/border/BorderCommands.java:57
 msgid "[<chunkX> <chunkZ>]|[-spawn] [in <world>]"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:181
+msgid "Added {amount} chunks to generate in {world}"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:101
+msgid ""
+"As you reach the border the world turns on itself and you appear on the "
+"other side of the world!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:224
+msgid "Available Memory getting low! Pausing ChunkGeneration"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:80
+msgid "Center for Border in {world} set to world-spawn!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:104
+msgid "Center for Border in {world} set!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:113
+msgid "Chunk generation is already running!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:269
+msgid "Chunkgeneration completed! Generated {amount} chunks"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:256
+msgid ""
+"Chunkgeneration is at {integer#percent}% ({amount#done}/{amount#total})"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:89
+msgid "Invalid Chunk-coordinates!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:162
+msgid "This portal would teleport you behind the border!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:131
+msgid "World {input} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:114
+msgid "You are near the world-border! You might want to turn around."
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:88
+msgid "You cannot teleport outside the border!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:69
+msgid "You need to specify a world!"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderCommands.java:100
+msgid "You need to specify the chunk-coordinates or use the -spawn flag"
+msgstr ""
+
+#: de/cubeisland/engine/border/BorderListener.java:108
+msgid "You've reached the border!"
 msgstr ""

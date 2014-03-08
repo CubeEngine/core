@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:29+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,103 +26,98 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/kits/KitCommand.java:253
-msgid "&2%s &ehas not enough inventory-space for this kit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:220
-msgid "&2%s&c is not online!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:116
-msgid "&6%s &cis is not a valid name! Do not use characters like *, | or ?"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:124
-msgid "&aCreated the &6%s &akit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:172
-msgid "&aReceived the &6%s &akit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:177
-msgid "&aReceived the &6%s &akit. Enjoy it!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:229
-#: de/cubeisland/engine/kits/KitCommand.java:241
-msgid "&aReceived the &6%s&a kit. Enjoy it!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:132
-msgid "&aThe following kits are available:"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:176
-msgid "&aYou gave &2%s &athe &6%s &akit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:238
-msgid "&aYou gave &2%s &athe &6%s&a kit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:193
-msgid "&c%d players did not receive a kit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:76
-msgid "&cJust log in or use the config!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:157
-msgid "&cKit &6%s &cnot found!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/Kit.java:102
-msgid "&cKit-limit reached."
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:189
-msgid "&cNo one received the kit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:215
-msgid "&cUser %s &cnot found!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:210
-msgid "&cYou need to specify a user!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/Kit.java:111
-msgid "&eThis kit not available at the moment. &aTry again later!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:257
-msgid "&eYou don't have enough inventory-space for this kit!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:66
+#: de/cubeisland/engine/kits/KitCommand.java:67
 msgid "<kitName> [-toolbar]"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:141
+#: de/cubeisland/engine/kits/KitCommand.java:142
 msgid "<kitname> [player]"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:64
+#: de/cubeisland/engine/kits/KitCommand.java:65
 msgid "Creates a new kit with the items in your inventory."
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:141
+#: de/cubeisland/engine/kits/KitCommand.java:142
 msgid "Gives a kit of items."
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:129
+#: de/cubeisland/engine/kits/KitCommand.java:130
 msgid "Lists all currently available kits."
 msgstr ""
 
-#: de/cubeisland/engine/kits/Kit.java:90
+#: de/cubeisland/engine/kits/Kit.java:91
 msgid "You are not allowed to give this kit."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:125
+msgid "Created the {name#kit} kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:77
+msgid "Just log in or use the config!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:158
+msgid "Kit {input} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/Kit.java:103
+msgid "Kit-limit reached."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:190
+msgid "No one received the kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:173
+msgid "Received the {name#kit} kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:178
+#: de/cubeisland/engine/kits/KitCommand.java:230
+#: de/cubeisland/engine/kits/KitCommand.java:242
+msgid "Received the {name#kit} kit. Enjoy it!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:133
+msgid "The following kits are available:"
+msgstr ""
+
+#: de/cubeisland/engine/kits/Kit.java:112
+msgid "This kit not available at the moment. Try again later!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:216
+msgid "User {user} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:258
+msgid "You don't have enough inventory-space for this kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:177
+#: de/cubeisland/engine/kits/KitCommand.java:239
+msgid "You gave {user} the {name#kit} kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:211
+msgid "You need to specify a user!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:194
+msgid "{amount} players did not receive a kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:117
+msgid ""
+"{name#kit} is is not a valid name! Do not use characters like *, | or ?"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:254
+msgid "{user} has not enough inventory-space for this kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:221
+msgid "{user} is not online!"
 msgstr ""

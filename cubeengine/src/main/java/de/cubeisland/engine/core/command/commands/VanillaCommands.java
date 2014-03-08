@@ -114,7 +114,7 @@ public class VanillaCommands implements CommandHolder
             long time = System.currentTimeMillis();
             this.core.getServer().reload();
             context.sendMessage(this.core.getMessageCompositor()
-                                         .composeMessage(locae, ChatFormat.BRIGHT_GREEN + this.core.getI18n()
+                                         .composeMessage(locale, ChatFormat.BRIGHT_GREEN + this.core.getI18n()
                                                                                                     .translate(locale, "The reload is completed after {amount} seconds"), MILLISECONDS
                                                              .toSeconds(System.currentTimeMillis() - time)));
         }

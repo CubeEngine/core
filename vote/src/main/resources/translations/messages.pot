@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 17:28+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,43 +26,43 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/vote/VoteCommands.java:59
-msgid "&eSorry but you do not have any registered votes on this server!"
+#: de/cubeisland/engine/vote/VoteCommands.java:50
+msgid "shows your current vote situation"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:63
-msgid "&aYou current vote-count is &6%d"
+#: de/cubeisland/engine/vote/VoteCommands.java:87
+msgid "But here go vote anyways: {name#voteurl}"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:66
+#: de/cubeisland/engine/vote/VoteCommands.java:67
 msgid ""
-"&eSadly you did not vote in the last &6%s&e so your vote-count will be reset "
-"to 1"
+"Sadly you did not vote in the last {input#time} so your vote-count will be "
+"reset to 1"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:76
+#: de/cubeisland/engine/vote/VoteCommands.java:60
+msgid "Sorry but you do not have any registered votes on this server!"
+msgstr ""
+
+#: de/cubeisland/engine/vote/VoteCommands.java:75
 msgid ""
-"&eVoting now will increase your consecutive votes and result in higher "
-"reward!"
+"Voting now will increase your consecutive votes and result in higher reward!"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:80
-msgid "&aYou can vote here now: &6%s"
+#: de/cubeisland/engine/vote/VoteCommands.java:84
+msgid "Well you wont get any rewards."
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:85
-msgid "&eWell you wont get any rewards."
+#: de/cubeisland/engine/vote/VoteCommands.java:79
+msgid "You can vote here now: {name#voteurl}"
 msgstr ""
 
-#: de/cubeisland/engine/vote/VoteCommands.java:88
-msgid "&eBut here go vote anyways: &6%s"
+#: de/cubeisland/engine/vote/VoteCommands.java:64
+msgid "You current vote-count is {amount}"
 msgstr ""
 
 #: de/cubeisland/engine/vote/VoteCommands.java:71
 msgid ""
-"&aYou voted &6%s&a so you will probably not be able to vote again already!"
-msgstr ""
-
-#: de/cubeisland/engine/vote/VoteCommands.java:49
-msgid "shows your current vote situation"
+"You voted {input#time} so you will probably not be able to vote again "
+"already!"
 msgstr ""
