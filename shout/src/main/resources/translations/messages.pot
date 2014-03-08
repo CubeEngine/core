@@ -1,14 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"POT-Creation-Date: 2014-03-08 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,29 +46,8 @@ msgstr ""
 msgid "You have to include a message!"
 msgstr ""
 
-#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:164
-msgid "message"
-msgstr ""
-
-#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:168
-#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:172
-msgid "locale"
-msgstr ""
-
 #: de/cubeisland/engine/shout/interactions/ShoutCommand.java:172
 msgid "%s isn't a valid locale!"
-msgstr ""
-
-#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:182
-msgid "delay"
-msgstr ""
-
-#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:183
-msgid "world"
-msgstr ""
-
-#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:184
-msgid "permission"
 msgstr ""
 
 #: de/cubeisland/engine/shout/interactions/ShoutCommand.java:189
@@ -86,4 +75,20 @@ msgstr ""
 
 #: de/cubeisland/engine/shout/interactions/ShoutCommand.java:225
 msgid "&eThere is no message of the day."
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:128
+msgid "Creates a new announcement"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:110
+msgid "List all announcements"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:211
+msgid "Prints out the message of the day."
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:203
+msgid "clean all loaded announcements form memory and load from disk"
 msgstr ""

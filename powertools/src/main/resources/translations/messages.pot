@@ -1,0 +1,116 @@
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-08 17:29+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:272
+msgid "&6%d &ecommand(s) bound to this item:%s\n"
+"&e%s &6(&aNEW&6)"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:276
+msgid "&6%d &ecommand(s) bound to this item:%s\n"
+"&f%s"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:104
+msgid "&aRemoved all commands bound to items in your inventory!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:114
+msgid "&aRemoved all commands bound to the item in your hand!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:164
+msgid "&aRemoved the command: &e%s &abound to this item!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:149
+msgid "&aRemoved the last command bound to this item!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:260
+msgid "&cNo commands saved on this item!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:168
+msgid "&cThe command &e%s &cwas not found on this item!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:174
+msgid "&eNo more commands saved on this item!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:118
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:139
+msgid "&eNo more power for you!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:214
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:251
+msgid "&eYou already have enough power!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:110
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:132
+msgid "&eYou are not holding any item in your hand."
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:194
+msgid "&eYou do not have an item in your hand to bind the command to!"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:243
+msgid "&eYou do not have an item in your hand."
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:184
+msgid "<commandstring>"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:181
+msgid "Adds a command to your powertool"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:218
+msgid "Lists your powertool-bindings."
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:124
+msgid "Removes a command from your powertool"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:90
+msgid "Removes all command from your powertool"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:91
+msgid "[-a]"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:124
+msgid "[command] [-chat]"
+msgstr ""
