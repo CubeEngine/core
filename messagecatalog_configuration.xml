@@ -50,7 +50,6 @@
   <catalog format="gettext">
     <removeUnusedMessages>true</removeUnusedMessages>
     <createEmptyTemplate>false</createEmptyTemplate>
-    <deleteOldTemplate>true</deleteOldTemplate>
     <template>${basedir}/src/main/resources/translations/messages.pot</template>
     <header>${basedir}/../header.txt</header>
   </catalog>
