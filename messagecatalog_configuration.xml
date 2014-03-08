@@ -51,7 +51,7 @@
     <removeUnusedMessages>true</removeUnusedMessages>
     <createEmptyTemplate>false</createEmptyTemplate>
     <template>${basedir}/src/main/resources/translations/messages.pot</template>
-    <header>${basedir}/../header.txt</header>
+    <header>https://raw.github.com/CubeEngineDev/CubeEngine/master/header.txt</header>
   </catalog>
 
 </messagecatalog>

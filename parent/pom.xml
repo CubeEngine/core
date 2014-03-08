@@ -384,7 +384,7 @@
           <artifactId>messagecatalog-maven-plugin</artifactId>
           <version>1.0.0-SNAPSHOT</version>
           <configuration>
-            <configuration>${basedir}/../messagecatalog_configuration.xml</configuration>
+            <configuration>https://raw.github.com/CubeEngineDev/CubeEngine/master/messagecatalog_configuration.xml</configuration>
           </configuration>
           <executions>
             <execution>
