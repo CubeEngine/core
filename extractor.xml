@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messagecatalog>
+<extractor>
 
   <source language="java">
 
@@ -55,4 +55,4 @@
     <header>https://raw.github.com/CubeEngineDev/CubeEngine/master/header.txt</header>
   </catalog>
 
-</messagecatalog>
+</extractor>

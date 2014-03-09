@@ -239,7 +239,7 @@
       </plugin>
       <plugin>
         <groupId>de.cubeisland.maven.plugins</groupId>
-        <artifactId>messagecatalog-maven-plugin</artifactId>
+        <artifactId>messageextractor-maven-plugin</artifactId>
       </plugin>
 
     </plugins>
@@ -381,7 +381,7 @@
         </plugin>
         <plugin>
           <groupId>de.cubeisland.maven.plugins</groupId>
-          <artifactId>messagecatalog-maven-plugin</artifactId>
+          <artifactId>messageextractor-maven-plugin</artifactId>
           <version>1.0.0-SNAPSHOT</version>
           <configuration>
             <configurations>
