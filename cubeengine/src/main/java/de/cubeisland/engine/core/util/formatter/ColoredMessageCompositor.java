@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.ColoredFormatter.ColorReader;
 import de.cubeisland.engine.formatter.DefaultMessageCompositor;
 import de.cubeisland.engine.formatter.context.MacroContext;
 
@@ -42,8 +43,8 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
             .registerMacro(new BiomeFormatter())
             .registerMacro(new VectorFormatter())
             .registerMacro(new DecimalFormatter())
+            .registerReader("color", new ColorReader())
             ;
-
     }
 
     public String composeMessage(MessageType type, Locale locale, String sourceMessage, Object... messageArgs)

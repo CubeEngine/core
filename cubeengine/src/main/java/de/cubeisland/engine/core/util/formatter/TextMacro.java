@@ -37,7 +37,7 @@ public class TextMacro implements ConstantMacro
     @Override
     public String process(MacroContext macroContext)
     {
-        ChatFormat color = macroContext.getMapped("color", ChatFormat.class);
+        ChatFormat color = macroContext.readMapped("color", ChatFormat.class);
         if (color == null)
         {
             color = ChatFormat.GOLD;
