@@ -34,15 +34,10 @@ public abstract class ColoredFormatter<T> extends AbstractFormatter<T>
     @Override
     public String process(T object, MacroContext context)
     {
-        return this.process(context.getMapped("color", ChatFormat.class), object, context);
+        return this.process(context.readMapped("color", ChatFormat.class), object, context);
     }
 
     public abstract String process(ChatFormat color, T object, MacroContext context);
-
-    static
-    {
-        MacroContext.register(new ColorReader());
-    }
 
     public static class ColorReader implements Reader<ChatFormat>
     {
@@ -50,12 +45,6 @@ public abstract class ColoredFormatter<T> extends AbstractFormatter<T>
         public ChatFormat getData(String raw)
         {
             return ChatFormat.valueOf(raw);
-        }
-
-        @Override
-        public String getKey()
-        {
-            return "color";
         }
     }
 }
