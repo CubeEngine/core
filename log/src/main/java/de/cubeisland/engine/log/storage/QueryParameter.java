@@ -28,6 +28,7 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
@@ -226,33 +227,32 @@ public class QueryParameter implements Cloneable
         {
             if (this.location2 != null)
             {
-                user.sendTranslated("&eNo logs found in between &3%d&f:&3%d&f:&3%d&e and &3%d&f:&3%d&f:&3%d&e in &3%s&e!",
-                                    this.location1.x, this.location1.y, this.location1.z,
-                                    this.location2.x, this.location2.y, this.location2.z,
-                                    this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                user.sendTranslated(MessageType.NEUTRAL, "No logs found in between {vector} and {vector} in {world}!",
+                                    new BlockVector3(this.location1.x, this.location1.y, this.location1.z),
+                                    new BlockVector3(this.location2.x, this.location2.y, this.location2.z),
+                                    this.module.getCore().getWorldManager().getWorld(worldID));
             }
             else if (this.radius == null)
             {
-                user.sendTranslated("&eNo logs found at &3%s&f:&3%d&f:&3%d&f:&3%d&e!",
-                                    this.module.getCore().getWorldManager().getWorld(worldID).getName(),
-                                    this.location1.x, this.location1.y, this.location1.z);
+                user.sendTranslated(MessageType.NEUTRAL, "No logs found at {vector} in {world}!",
+                                    new BlockVector3(this.location1.x, this.location1.y, this.location1.z),
+                                    this.module.getCore().getWorldManager().getWorld(worldID));
             }
             else if (user.getLocation().getBlockX() == location1.x
                   && user.getLocation().getBlockY() == location1.y
                   && user.getLocation().getBlockZ() == location1.z)
             {
-                user.sendTranslated("&eNo logs found in a radius of &3%d&e around you!", radius);
+                user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around you!", radius);
             }
             else
             {
-                user.sendTranslated("&eNo logs found in a radius of &3%d around %d&f:&3%d&f:&3%d&e in &3%s&e!",
-                                    this.radius,this.location1.x, this.location1.y, this.location1.z,
-                                    this.module.getCore().getWorldManager().getWorld(worldID).getName());
+                user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around {vector} in {world}!",
+                    this.radius, new BlockVector3(this.location1.x, this.location1.y, this.location1.z), this.module.getCore().getWorldManager().getWorld(worldID));
             }
         }
         else
         {
-            user.sendTranslated("&eNo logs found for your given parameters");
+            user.sendTranslated(MessageType.NEUTRAL, "No logs found for your given parameters");
         }
     }
 

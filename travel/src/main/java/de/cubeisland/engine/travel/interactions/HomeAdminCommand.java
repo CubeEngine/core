@@ -34,6 +34,7 @@ import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.TelePointManager;
@@ -64,7 +65,7 @@ public class HomeAdminCommand extends ContainerCommand
             Home home;
             if (user == null)
             {
-                sender.sendTranslated("&2%s&c is not an user on this server!", context.getString(0));
+                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return null;
             }
 
@@ -73,7 +74,7 @@ public class HomeAdminCommand extends ContainerCommand
                 home = tpManager.getHome(user, context.getString(1));
                 if (home == null)
                 {
-                    sender.sendTranslated("&2%s&c does not have a home named &6%s&c!", user.getName(), context.getString(1));
+                    sender.sendTranslated(MessageType.NEGATIVE, "{user} does not have a home named {name#home}!", user, context.getString(1));
                     return null;
                 }
             }
@@ -82,14 +83,14 @@ public class HomeAdminCommand extends ContainerCommand
                 home = tpManager.getHome(user, "home");
                 if (home == null)
                 {
-                    sender.sendTranslated("&2%s&c does not have a home!", user.getName());
+                    sender.sendTranslated(MessageType.NEGATIVE, "{user} does not have a home!", user);
                     return null;
                 }
             }
             Location location = home.getLocation();
             if (location == null)
             {
-                context.sendTranslated("&cThis home is in a world that no longer exists!");
+                context.sendTranslated(MessageType.NEGATIVE, "This home is in a world that no longer exists!");
                 return null;
             }
             sender.teleport(location, TeleportCause.COMMAND);
@@ -99,7 +100,7 @@ public class HomeAdminCommand extends ContainerCommand
             }
             else
             {
-                sender.sendTranslated("&aYou have been teleported to &2%s&a's home!", user.getName());
+                sender.sendTranslated(MessageType.POSITIVE, "You have been teleported to {user}'s home!", user);
             }
             return null;
         }
@@ -127,25 +128,25 @@ public class HomeAdminCommand extends ContainerCommand
         {
             if (context.getUser(0) == null)
             {
-                context.sendTranslated("&2%s &cIsn't an user on this server", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return null;
             }
             else
             {
                 if (context.hasFlag("pub"))
                 {
-                    context.sendTranslated("&eAre you sure you want to delete all public homes ever created by &2%s?", context.getString(0));
-                    context.sendTranslated("&eTo delete all the public homes, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                    context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all public homes ever created by {user}?", context.getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "To delete all the public homes, do: {text:/confirm} before 30 seconds has passed");
                 }
                 else if (context.hasFlag("priv"))
                 {
-                    context.sendTranslated("&eAre you sure you want to delete all private homes ever created by &2%s?", context.getString(0));
-                    context.sendTranslated("&eTo delete all the private homes, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                    context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all private homes ever created by {user}?", context.getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "To delete all the private homes, do: {text:/confirm} before 30 seconds has passed");
                 }
                 else
                 {
-                    context.sendTranslated("&eAre you sure you want to delete all homes ever created by &2%s?", context.getString(0));
-                    context.sendTranslated("&eTo delete all the homes, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                    context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all homes ever created by {user}?", context.getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "To delete all the homes, do: &{text:/confirm} before 30 seconds has passed");
                 }
             }
         }
@@ -153,18 +154,18 @@ public class HomeAdminCommand extends ContainerCommand
         {
             if (context.hasFlag("pub"))
             {
-                context.sendTranslated("&eAre you sure you want to delete all public homes ever created on this server!?");
-                context.sendTranslated("&eTo delete all the public homes of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all public homes ever created on this server!?");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the public homes of every user, do: {text:/confirm} before 30 seconds has passed");
             }
             else if (context.hasFlag("priv"))
             {
-                context.sendTranslated("&eAre you sure you want to delete all private homes ever created on this server?");
-                context.sendTranslated("&eTo delete all the private homes of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all private homes ever created on this server?");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the private homes of every user, do: {text:/confirm} before 30 seconds has passed");
             }
             else
             {
-                context.sendTranslated("&eAre you sure you want to delete all homes ever created on this server!?");
-                context.sendTranslated("&eTo delete all the homes of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all homes ever created on this server!?");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the homes of every user, do: {text:/confirm} before 30 seconds has passed");
             }
         }
         return new ConfirmResult(new Runnable()
@@ -184,7 +185,7 @@ public class HomeAdminCommand extends ContainerCommand
                         mask |= tpManager.PRIVATE;
                     }
                     tpManager.deleteHomes(mask);
-                    context.sendTranslated("&aThe homes are now deleted");
+                    context.sendTranslated(MessageType.POSITIVE, "The homes are now deleted");
                 }
                 else
                 {
@@ -199,7 +200,7 @@ public class HomeAdminCommand extends ContainerCommand
                         mask |= tpManager.PRIVATE;
                     }
                     tpManager.deleteHomes(user, mask);
-                    context.sendTranslated("&aThe homes are now deleted");
+                    context.sendTranslated(MessageType.POSITIVE, "The homes are now deleted");
                 }
             }
         }, context);
@@ -241,25 +242,25 @@ public class HomeAdminCommand extends ContainerCommand
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated("&cCan't find any user named &2%s", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
             homes = tpManager.listHomes(user, mask);
         }
         if (homes.isEmpty())
         {
-            context.sendTranslated("&cThe query returned no homes!");
+            context.sendTranslated(MessageType.NEGATIVE, "The query returned no homes!");
             return;
         }
         for (Home home : homes)
         {
             if (home.isPublic())
             {
-                context.sendTranslated("  &2public&e:&6%s", home.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "  {text:public}:{name#home}", home.getName());
             }
             else
             {
-                context.sendTranslated("  &2%s&e:&6%s", home.getOwnerName(), home.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "  {user}:{name#home}", home.getOwnerName(), home.getName());
             }
         }
     }
@@ -274,16 +275,16 @@ public class HomeAdminCommand extends ContainerCommand
         home = tpManager.getHome(context.getString(0));
         if (home == null)
         {
-            context.sendTranslated("&cCouldn't find &6%s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Home {input} not found!", context.getString(0));
             return;
         }
         if (!home.isPublic())
         {
-            context.sendTranslated("&6%s&c is already private!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "{name#home} is already private!", context.getString(0));
             return;
         }
         home.setVisibility(TeleportPointModel.VISIBILITY_PRIVATE);
-        context.sendTranslated("&6%s&a is now private", context.getString(0));
+        context.sendTranslated(MessageType.POSITIVE, "{input#home} is now private", context.getString(0));
     }
 
     @Command(names = {"public", "makepublic"},
@@ -297,15 +298,15 @@ public class HomeAdminCommand extends ContainerCommand
         home = tpManager.getHome(context.getString(0));
         if (home == null)
         {
-            context.sendTranslated("&cCouldn't find &6%s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Home {input#home} not found!", context.getString(0));
             return;
         }
         if (home.isPublic())
         {
-            context.sendTranslated("&6%s &cis already public!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "{input#home} is already public!", context.getString(0));
             return;
         }
         home.setVisibility(TeleportPointModel.VISIBILITY_PUBLIC);
-        context.sendTranslated("&6%s&a is now public", context.getString(0));
+        context.sendTranslated(MessageType.POSITIVE, "{input#home} is now public", context.getString(0));
     }
 }

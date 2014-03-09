@@ -36,6 +36,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -95,7 +96,7 @@ public class BlockFall extends BlockActionType
     public void preplanBlockFall(final Location location, Entity player, BlockActionType reason)
     {
         plannedFall.put(location, new Pair<>(player, reason));
-        BlockFall.this.logModule.getCore().getTaskManager().runTaskDelayed(logModule, new Runnable()
+        BlockFall.this.module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
         {
             @Override
             public void run()
@@ -111,14 +112,11 @@ public class BlockFall extends BlockActionType
         if (logEntry.getCauserUser() == null)
         {
             ActionType type = this.manager.getActionType(logEntry.getAdditional().get("cause").asInt());
-            user.sendTranslated("%s&6%s&a did fall to a lower place %s&a because of &6%s",
-                                time,logEntry.getOldBlock(), loc,type.getName());
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} did fall to a lower place because of {name#type}{}", time, logEntry.getOldBlock(), type.getName(), loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &acaused &6%s&a to fall to a lower place%s",
-                                time,logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getOldBlock(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} caused {name#block} to fall to a lower place{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
         }
     }
 

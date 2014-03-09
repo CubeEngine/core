@@ -24,6 +24,7 @@ import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
 import net.minecraft.server.v1_7_R1.DedicatedServer;
 import net.minecraft.server.v1_7_R1.EntityLiving;
 import net.minecraft.server.v1_7_R1.EntityPlayer;
+import net.minecraft.server.v1_7_R1.GenericAttributes;
 import net.minecraft.server.v1_7_R1.Item;
 import net.minecraft.server.v1_7_R1.MinecraftServer;
 import net.minecraft.server.v1_7_R1.PlayerInteractManager;
@@ -136,7 +137,7 @@ public class BukkitUtils
         org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger)LogManager.getLogger("Minecraft");
         if (commandFilter == null)
         {
-            commandFilter = new CommandLogFilter();
+            commandFilter = new CommandLogFilter(); // TODO configurable filter
         }
         logger.addFilter(commandFilter);
     }
@@ -373,6 +374,16 @@ public class BukkitUtils
             CubeEngine.getCore().getLog().warn(ex, "Could not get Target of Ghast or Enderdragon");
             return null;
         }
+    }
+
+    public static double getEntitySpeed(LivingEntity entity)
+    {
+        return (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).getValue();
+    }
+
+    public static void setEntitySpeed(LivingEntity entity, double value)
+    {
+        (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).setValue(value);
     }
 
     static boolean isAnsiSupported(Server server)

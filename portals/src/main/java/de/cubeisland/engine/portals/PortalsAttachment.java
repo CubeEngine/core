@@ -18,6 +18,7 @@
 package de.cubeisland.engine.portals;
 
 import de.cubeisland.engine.core.user.UserAttachment;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class PortalsAttachment extends UserAttachment
 {
@@ -50,11 +51,11 @@ public class PortalsAttachment extends UserAttachment
         this.debug = !this.debug;
         if (debug)
         {
-            this.getHolder().sendTranslated("&aYou are now in portal debug mode!");
+            this.getHolder().sendTranslated(MessageType.POSITIVE, "You are now in portal debug mode!");
         }
         else
         {
-            this.getHolder().sendTranslated("&aYou are no longer in portal debug mode!");
+            this.getHolder().sendTranslated(MessageType.POSITIVE, "You are no longer in portal debug mode!");
         }
     }
 

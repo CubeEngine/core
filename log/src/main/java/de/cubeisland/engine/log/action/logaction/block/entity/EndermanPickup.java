@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -54,13 +55,11 @@ public class EndermanPickup extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&6Enderman &apicked up &6%s&6 x%d%s!",
-                                time, logEntry.getOldBlock().toString(), logEntry.getAttached().size()+1, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{text:Enderman} picked up {name#block} x{amount}{}!", time, logEntry.getOldBlock().toString(), logEntry.getAttached().size()+1, loc);
         }
         else
         {
-            user.sendTranslated("%s&6Enderman &apicked up &6%s%s!",
-                                time, logEntry.getOldBlock().toString(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{text:Enderman} picked up {name#block}{}!", time, logEntry.getOldBlock().toString(), loc);
         }
     }
 

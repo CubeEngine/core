@@ -28,11 +28,12 @@ import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.locker.Locker;
 
 public class KeyBook
 {
-    public static final String TITLE = ChatFormat.parseFormats("&r&6KeyBook &8#");
+    public static final String TITLE = ChatFormat.RESET.toString() + ChatFormat.GOLD + "KeyBook " + ChatFormat.DARK_GREY + "#";
     public final ItemStack item;
     public final User currentHolder;
     private final Locker module;
@@ -71,7 +72,7 @@ public class KeyBook
             // Validate book
             if (this.isValidFor(lock))
             {
-                if (effectLocation != null) currentHolder.sendTranslated("&aAs you approach with your KeyBook the magic lock disappears!");
+                if (effectLocation != null) currentHolder.sendTranslated(MessageType.POSITIVE, "As you approach with your KeyBook the magic lock disappears!");
                 currentHolder.playSound(effectLocation, Sound.PISTON_EXTEND, 1, 2);
                 currentHolder.playSound(effectLocation, Sound.PISTON_EXTEND, 1, (float)1.5);
                 if (effectLocation != null) lock.notifyKeyUsage(currentHolder);
@@ -79,7 +80,7 @@ public class KeyBook
             }
             else
             {
-                currentHolder.sendTranslated("&cYou try to open the container with your KeyBook\n" +
+                currentHolder.sendTranslated(MessageType.NEGATIVE, "You try to open the container with your KeyBook\n" +
                                         "but forcefully get pushed away!");
                 this.invalidate();
                 currentHolder.playSound(effectLocation, Sound.GHAST_SCREAM, 1, 1);
@@ -91,7 +92,7 @@ public class KeyBook
         }
         else
         {
-            currentHolder.sendTranslated("&eYou try to open the container with your KeyBook but nothing happens!");
+            currentHolder.sendTranslated(MessageType.NEUTRAL, "You try to open the container with your KeyBook but nothing happens!");
             currentHolder.playSound(effectLocation, Sound.BLAZE_HIT, 1, 1);
             currentHolder.playSound(effectLocation, Sound.BLAZE_HIT, 1, (float)0.8);
             return false;
@@ -101,13 +102,13 @@ public class KeyBook
     public void invalidate()
     {
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(ChatFormat.parseFormats("&4Broken KeyBook"));
-        itemMeta.setLore(Arrays.asList(ChatFormat
-               .parseFormats(currentHolder.translate("&eThis KeyBook")), ChatFormat
-               .parseFormats(currentHolder.translate("&elooks old and")), ChatFormat
-               .parseFormats(currentHolder.translate("&eused up. It")), ChatFormat
-               .parseFormats(currentHolder.translate("&ewont let you")), ChatFormat
-               .parseFormats(currentHolder.translate("&eopen any containers!"))));
+        itemMeta.setDisplayName(ChatFormat.parseFormats(ChatFormat.DARK_RED + "Broken KeyBook"));
+        itemMeta.setLore(Arrays.asList(ChatFormat // TODO translate as one object
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "This KeyBook")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "looks old and")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "used up. It")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "wont let you")), ChatFormat
+               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "open any containers!"))));
         item.setItemMeta(itemMeta);
         item.setType(Material.PAPER);
         currentHolder.updateInventory();

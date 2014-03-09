@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -56,33 +57,22 @@ public class CreeperExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.getCauserUser() == null)
             {
-                user.sendTranslated("%s&aA Creeper-Explosion wrecked &6%dx %s%s",
-                                    time,amount,logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Creeper-Explosion wrecked {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &alet a Creeper detonate and destroy &6%dx &6%s%s",
-                                    time,
-                                    logEntry.getCauserUser().getDisplayName(),
-                                    amount,
-                                    logEntry.getOldBlock(),
-                                    loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} let a Creeper detonate and destroy {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.getCauserUser() == null)
             {
-                user.sendTranslated("%s&aA Creeper-Explosion wrecked &6%s%s",
-                                    time,logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Creeper-Explosion wrecked {name#block}{}", time, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &alet a Creeper detonate and destroy &6%s%s",
-                                    time,
-                                    logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(),
-                                    loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} let a Creeper detonate and destroy {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
         }
     }

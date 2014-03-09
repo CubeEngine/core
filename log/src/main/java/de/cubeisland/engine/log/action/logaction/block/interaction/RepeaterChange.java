@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -62,13 +63,11 @@ public class RepeaterChange extends BlockActionType
         }
         if (logEntry.hasAttached() && oldTicks.intValue() == newTicks)
         {
-            user.sendTranslated("%s&2%s &afiddled around with the repeater but did not change anything%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} fiddled around with the repeater but did not change anything{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aset the repeater to &6%d&a ticks delay%s",
-                                time, logEntry.getCauserUser().getDisplayName(), newTicks,loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} set the repeater to {amount} ticks delay{}", time, logEntry.getCauserUser().getDisplayName(), newTicks, loc);
         }
     }
 

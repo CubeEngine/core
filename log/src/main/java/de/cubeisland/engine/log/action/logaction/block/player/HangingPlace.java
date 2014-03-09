@@ -29,6 +29,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -75,9 +76,7 @@ public class HangingPlace extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &agot hung up by &2%s%s",
-                           time, logEntry.getNewBlock(),
-                            logEntry.getCauserUser().getDisplayName(),loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got hung up by {user}{}", time, logEntry.getNewBlock(), logEntry.getCauserUser().getDisplayName(), loc);
     }
 
     @Override

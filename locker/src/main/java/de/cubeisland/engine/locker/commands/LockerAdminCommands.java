@@ -24,6 +24,7 @@ import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
@@ -43,13 +44,13 @@ public class LockerAdminCommands extends ContainerCommand
         if (LockerCommands.isNotUser(context.getSender())) return null;
         if (id == null)
         {
-            context.sendTranslated("&6%s&c is not a valid id!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "{input} is not a valid id!", context.getString(0));
             return null;
         }
         Lock lockById = this.manager.getLockById(id);
         if (lockById == null)
         {
-            context.sendTranslated("&cThere is no protection with the id &6%d", id);
+            context.sendTranslated(MessageType.NEGATIVE, "There is no protection with the id {integer}", id);
         }
         return lockById;
     }
@@ -73,11 +74,11 @@ public class LockerAdminCommands extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated("&cThe protection with the id &6%d&c is an entity and cannot be accessed from far away!", lock.getId());
+                    context.sendTranslated(MessageType.NEGATIVE, "The protection with the id {integer} is an entity and cannot be accessed from far away!", lock.getId());
                 }
                 return;
             default:
-                context.sendTranslated("&cThe protection with the id &6%d&c is not a container!");
+                context.sendTranslated(MessageType.NEGATIVE, "The protection with the id {integer} is not a container!", lock.getId());
         }
     }
 
@@ -100,7 +101,7 @@ public class LockerAdminCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&cYou cannot teleport to an entity protection!");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot teleport to an entity protection!");
         }
     }
 
@@ -110,11 +111,11 @@ public class LockerAdminCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         this.manager.purgeLocksFrom(user);
-        context.sendTranslated("&aAll locks from &2%s&a are now deleted!", user.getName());
+        context.sendTranslated(MessageType.POSITIVE, "All locks from {user} are now deleted!", user);
     }
 
     // TODO admin cmds

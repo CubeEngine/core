@@ -104,6 +104,10 @@ public class ItemData
 
     public static ItemData deserialize(JsonNode json)
     {
+        if (json == null)
+        {
+            return null;
+        }
         Material mat = Material.getMaterial(json.get("mats").asText());
         Short dura = (short)json.get("dura").asInt();
         int amount = json.get("amount").asInt();

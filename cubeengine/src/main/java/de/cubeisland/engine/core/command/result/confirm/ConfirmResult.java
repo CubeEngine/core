@@ -21,6 +21,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 /**
  * A result that should be confirmed via the /confirm command
@@ -50,7 +51,7 @@ public class ConfirmResult implements CommandResult
         context.getCore().getCommandManager().getConfirmManager().registerConfirmation(this, this.module, sender);
         if (!message.isEmpty())
         {
-            context.sendTranslated(message, context.getCommand().getName());
+            context.sendTranslated(MessageType.NONE, message, context.getCommand().getName());
         }
     }
 

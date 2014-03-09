@@ -34,12 +34,17 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.util.ChatFormat.GREY;
+import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
+import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 /**
  * This class is the base for all of our commands
@@ -321,7 +326,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender)
     {
-        return (sender instanceof User ? "/" : "") + implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.translate(this.usage));
+        return (sender instanceof User ? "/" : "") + implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.composeMessage(NONE, this.usage));
     }
 
         /**
@@ -337,7 +342,7 @@ public abstract class CubeCommand
         final CommandSender sender = context.getSender();
         return (sender instanceof User ? "/" : "") +
             implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender
-            .translate(this.usage));
+            .composeMessage(NONE, this.usage));
     }
 
     /**
@@ -350,7 +355,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + sender.translate(this.usage);
+        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + sender.composeMessage(NONE, this.usage);
     }
 
     /**
@@ -489,13 +494,13 @@ public abstract class CubeCommand
      */
     public void help(HelpContext context)
     {
-        context.sendTranslated("&7Description: &f%s", this.getDescription());
-        context.sendTranslated("&7Usage: &f%s", this.getUsage(context));
+        context.sendTranslated(NEUTRAL, "Description: {message}", this.getDescription());
+        context.sendTranslated(NEUTRAL, "Usage: {message}", this.getUsage(context));
 
         if (this.hasChildren())
         {
             context.sendMessage(" ");
-            context.sendTranslated("The following sub commands are available:");
+            context.sendTranslated(NONE, "The following sub commands are available:");
             context.sendMessage(" ");
 
             final CommandSender sender = context.getSender();
@@ -503,11 +508,12 @@ public abstract class CubeCommand
             {
                 if (command.isAuthorized(sender))
                 {
-                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.translate(command.getDescription()));
+                    context.sendMessage(YELLOW + command.getName() + WHITE + ": " + GREY + sender.composeMessage(NONE, command
+                        .getDescription()));
                 }
             }
         }
         context.sendMessage(" ");
-        context.sendTranslated("&7Detailed help: &9%s", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated(NEUTRAL, "Detailed help: {message#link}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
     }
 }

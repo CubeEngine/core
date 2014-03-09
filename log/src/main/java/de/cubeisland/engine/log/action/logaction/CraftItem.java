@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.CraftItemEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.ItemData;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -70,9 +71,7 @@ public class CraftItem extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s&a crafted &6%s%s",
-                            time,logEntry.getCauserUser().getDisplayName(),
-                            logEntry.getItemData(),loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} crafted {input#item}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getItemData(), loc); // TODO formatter for itemdata
     }
 
     @Override

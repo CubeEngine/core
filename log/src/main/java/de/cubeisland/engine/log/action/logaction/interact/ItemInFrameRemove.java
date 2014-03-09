@@ -28,6 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.ItemData;
@@ -66,26 +67,22 @@ public class ItemInFrameRemove extends SimpleLogActionType
         {
             if (logEntry.hasAttached())
             {
-                user.sendTranslated("%s&aSomething removed &6%d %s&a from itemframes%s",
-                                    time, logEntry.getAttached().size() +1, itemData, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}Something removed {amount} {name#item} from itemframes{}", time, logEntry.getAttached().size() +1, itemData, loc);
             }
             else
             {
-                user.sendTranslated("%s&aaSomething removed &6%s&a from an itemframe%s",
-                                    time, itemData, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}Something removed {name#item} from an itemframe{}", time, itemData, loc);
             }
         }
         else
         {
             if (logEntry.hasAttached())
             {
-                user.sendTranslated("%s&2%s&a removed &6%d %s&a from itemframes%s",
-                                    time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() +1, itemData, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} removed {amount} {name#item} from itemframes{}", time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() +1, itemData, loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s&a removed &6%s&a from an itemframe%s",
-                                    time, logEntry.getCauserUser().getName(), itemData, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} removed {name#item} from an itemframe{}", time, logEntry.getCauserUser().getName(), itemData, loc);
             }
         }
     }

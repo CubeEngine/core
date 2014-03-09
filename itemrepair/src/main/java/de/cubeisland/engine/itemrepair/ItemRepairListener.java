@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.itemrepair.repair.RepairBlockManager;
 import de.cubeisland.engine.itemrepair.repair.RepairRequest;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock;
@@ -75,7 +76,7 @@ public class ItemRepairListener implements Listener
 
         if (!repairBlock.getPermission().isAuthorized(user))
         {
-            user.sendTranslated("&cYou are not allowed to use this repair block!");
+            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use this repair block!");
             return;
         }
 
@@ -129,7 +130,7 @@ public class ItemRepairListener implements Listener
             final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
             if (this.repairRequests.containsKey(user.getName()))
             {
-                user.sendTranslated("&eThe repair has been cancelled!");
+                user.sendTranslated(MessageType.NEUTRAL, "The repair has been cancelled!");
                 this.repairRequests.remove(user.getName());
                 event.setCancelled(true);
             }

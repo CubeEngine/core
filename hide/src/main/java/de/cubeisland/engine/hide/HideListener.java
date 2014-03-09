@@ -36,6 +36,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.hide.event.UserHideEvent;
 import de.cubeisland.engine.hide.event.UserShowEvent;
 
@@ -77,8 +78,7 @@ public class HideListener implements Listener
         {
             if (!name.equals(canSeeHidden))
             {
-                um.getExactUser(canSeeHidden).sendTranslated("&aPlayer &e%s&a is now visible", event.getUser()
-                                                                                                     .getDisplayName());
+                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player {user} is now visible", event.getUser());
             }
         }
     }
@@ -93,7 +93,7 @@ public class HideListener implements Listener
             event.setJoinMessage(null);
             this.module.hidePlayer(user);
 
-            user.sendTranslated("&aYou were automatically hidden!");
+            user.sendTranslated(MessageType.POSITIVE, "You were automatically hidden!");
         }
     }
 
@@ -105,7 +105,7 @@ public class HideListener implements Listener
         if (module.perms().AUTO_SEEHIDDENS.isAuthorized(user) && !module.getCanSeeHiddens().contains(name))
         {
             canSeeHiddens.add(name);
-            user.sendTranslated("&aYou can automatically see hidden players!");
+            user.sendTranslated(MessageType.POSITIVE, "You can automatically see hidden players!");
         }
     }
 
@@ -136,7 +136,7 @@ public class HideListener implements Listener
         {
             if (!user.equals(canSeeHidden))
             {
-                um.getExactUser(canSeeHidden).sendTranslated("&aPlayer &e%s&a is now hidden!", event.getUser().getDisplayName());
+                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player {user}is now hidden!", event.getUser());
             }
         }
     }

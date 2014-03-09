@@ -20,7 +20,6 @@ package de.cubeisland.engine.log.commands;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -36,6 +35,7 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
@@ -67,43 +67,27 @@ public class LookupCommands
             // TODO show description
             return;
         }
-        context.sendTranslated("&6Registered ActionTypes:");
+        context.sendTranslated(MessageType.NEUTRAL, "Registered ActionTypes:"); //TODO colors
         context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
         context.sendMessage("");
-        context.sendTranslated("&6Lookup&f/&6Rollback&f/&6Restore&f-&6Parameters:");
+        context.sendTranslated(MessageType.NEUTRAL, "Lookup/Rollback/Redo-Parameters:");
         context.sendMessage("");
-        context.sendTranslated(" &f-&6 action &7<actionType> &flike &3a block-break &f(See full list above)");
-        context.sendTranslated(" &f-&6 radius &7<radius>&f or &3sel&f, &3global&f, &3player:<radius>");
-        context.sendTranslated(" &f-&6 player &7<users>&f like &3p Faithcaio ");
-        context.sendTranslated(" &f-&6 entity &7<entities>&f like &3e sheep");
-        context.sendTranslated(" &f-&6 block &7<blocks>&f like &3b stone &for &3b 1");
-        context.sendTranslated(" &f-&6 since &7<time>&f default is 3 days");
-        context.sendTranslated(" &f-&6 before &7<time>");
-        context.sendTranslated(" &f-&6 world &7<world>&f default is your current world");
+        context.sendTranslated(MessageType.NEUTRAL, " - action <actionType> like a block-break (See full list above)");
+        context.sendTranslated(MessageType.NEUTRAL, " - radius <radius> or sel, global, player:<radius>");
+        context.sendTranslated(MessageType.NEUTRAL, " - player <users> like p Faithcaio ");
+        context.sendTranslated(MessageType.NEUTRAL, " - entity <entities> like e sheep");
+        context.sendTranslated(MessageType.NEUTRAL, " - block <blocks> like b stone");
+        context.sendTranslated(MessageType.NEUTRAL, " - since <time> default is 3 days");
+        context.sendTranslated(MessageType.NEUTRAL, " - before <time>");
+        context.sendTranslated(MessageType.NEUTRAL, " - world <world> default is your current world");
 
         context.sendMessage("");
-        context.sendTranslated("Use &6!&f to exclude the parameters instead of including them.");
-    }
-
-    /**
-     * Returns the Selection or null if nothing is selected
-     *
-     * @param context
-     * @return
-     */
-    //TODO change return to a selection See WE how they did it
-    private Location getSelection(ParameterizedContext context)
-    {
-        if (!context.hasFlag("sel"))
-        {
-            throw new IllegalStateException("Did not choose selection!");
-        }
-        return null;
+        context.sendTranslated(MessageType.NEUTRAL, "Use {text:!} to exclude the parameters instead of including them.");
     }
 
     @Command(
         desc = "Queries a lookup in the database\n    " +
-            "Show availiable parameters with &6/lookup params",
+            "Show availiable parameters with /lookup params",
         usage = "[page <page>] [parameters]",
     flags = {
         @Flag(longName = "coordinates", name = "coords"),
@@ -201,7 +185,7 @@ public class LookupCommands
         {
             if (!context.hasParams())
             {
-                context.sendTranslated("&cYou need to define parameters to rollback!");
+                context.sendTranslated(MessageType.NEGATIVE, "You need to define parameters to rollback!");
                 return;
             }
             User user = (User)context.getSender();
@@ -256,7 +240,7 @@ public class LookupCommands
         {
             if (!context.hasParams())
             {
-                context.sendTranslated("&cYou need to define parameters to redo!");
+                context.sendTranslated(MessageType.NEGATIVE, "You need to define parameters to redo!");
                 return;
             }
             User user = (User)context.getSender();
@@ -296,7 +280,7 @@ public class LookupCommands
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated("&6%s&c is not a valid time value!", beforeString);
+            user.sendTranslated(MessageType.NEGATIVE, "{input#time} is not a valid time value!", beforeString);
             return false;
         }
     }
@@ -318,7 +302,7 @@ public class LookupCommands
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated("&6%s&c is not a valid time value!", sinceString);
+            user.sendTranslated(MessageType.NEGATIVE, "{input#time} is not a valid time value!", sinceString);
             return false;
         }
     }
@@ -328,13 +312,13 @@ public class LookupCommands
         if (worldString == null) return true;
         if (hasRadius)
         {
-            user.sendTranslated("&cYou cannot define a radius or selection and a world.");
+            user.sendTranslated(MessageType.NEGATIVE, "You cannot define a radius or selection and a world.");
             return false;
         }
         World world = user.getServer().getWorld(worldString);
         if (world == null)
         {
-            user.sendTranslated("&cUnkown world: &6%s", worldString);
+            user.sendTranslated(MessageType.NEGATIVE, "Unknown world: {input#world}", worldString);
             return false;
         }
         params.setWorld(world);
@@ -349,14 +333,14 @@ public class LookupCommands
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
             if (!logAttachment.applySelection(params))
             {
-                user.sendTranslated("&cYou have to select a region first!");
+                user.sendTranslated(MessageType.NEGATIVE, "You have to select a region first!");
                 if (module.hasWorldEdit())
                 {
-                    user.sendTranslated("&eUse worldedit to select a cuboid region!");
+                    user.sendTranslated(MessageType.NEUTRAL, "Use worldedit to select a cuboid region!");
                 }
                 else
                 {
-                    user.sendTranslated("&eUse this selection wand.");
+                    user.sendTranslated(MessageType.NEUTRAL, "Use this selection wand.");
                     LogCommands.giveSelectionTool(user);
                 }
                 return false;
@@ -375,8 +359,8 @@ public class LookupCommands
                 radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
                 if (radiusUser == null)
                 {
-                    user.sendTranslated("&cInvalid radius/location selection");
-                    user.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    user.sendTranslated(MessageType.NEGATIVE, "Invalid radius/location selection");
+                    user.sendTranslated(MessageType.POSITIVE, "The radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
                     return false;
                 }
                 radiusString = radiusString.substring(radiusString.indexOf(":")+1);
@@ -395,8 +379,8 @@ public class LookupCommands
                 radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
                 if (radiusUser == null)
                 {
-                    user.sendTranslated("&cInvalid radius/location selection");
-                    user.sendTranslated("&aThe radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    user.sendTranslated(MessageType.NEGATIVE, "Invalid radius/location selection");
+                    user.sendTranslated(MessageType.POSITIVE, "The radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
                     return false;
                 }
                 params.setWorld(radiusUser.getWorld());
@@ -420,7 +404,7 @@ public class LookupCommands
             }
             if (limit > 100)
             {
-                context.sendTranslated("&eYour page-limit is to high! Showing 100 logs per page.");
+                context.sendTranslated(MessageType.NEUTRAL, "Your page-limit is to high! Showing 100 logs per page.");
                 limit = 100;
             }
             show.pagelimit = limit;
@@ -436,7 +420,7 @@ public class LookupCommands
                 }
                 else
                 {
-                    context.sendTranslated("&cYou have to do a query first!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You have to do a query first!");
                 }
                 return false;
             }
@@ -449,7 +433,7 @@ public class LookupCommands
                 Integer page = context.getParam("page",null);
                 if (page == null)
                 {
-                    context.sendTranslated("&cInvalid page!");
+                    context.sendTranslated(MessageType.NEGATIVE, "Invalid page!");
                     return false;
                 }
                 show.page = page;
@@ -458,7 +442,7 @@ public class LookupCommands
             }
             else
             {
-                context.sendTranslated("&cYou have to do a query first!");
+                context.sendTranslated(MessageType.NEGATIVE, "You have to do a query first!");
             }
             return false;
         }
@@ -479,7 +463,7 @@ public class LookupCommands
             User user = this.module.getCore().getUserManager().getUser(name, false);
             if (user == null)
             {
-                sender.sendTranslated("&cUser &2%s&c not found!", name);
+                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
                 return false;
             }
             if (negate)
@@ -515,7 +499,7 @@ public class LookupCommands
                 }
                 catch (NumberFormatException ex)
                 {
-                    user.sendTranslated("&cInvalid BlockData: &6%s", sub);
+                    user.sendTranslated(MessageType.NEGATIVE, "Invalid BlockData: {name#block}", sub);
                     return false;
                 }
                 name = name.substring(0,name.indexOf(":"));
@@ -523,7 +507,7 @@ public class LookupCommands
             Material material = Match.material().material(name);
             if (material == null)
             {
-                user.sendTranslated("&cUnknown Material: &6%s", name);
+                user.sendTranslated(MessageType.NEGATIVE, "Unknown Material: {name#material}", name);
                 return false;
             }
             ImmutableBlockData blockData = new ImmutableBlockData(material, data);
@@ -553,7 +537,7 @@ public class LookupCommands
             EntityType entityType = Match.entity().living(name);
             if (entityType == null)
             {
-                user.sendTranslated("&cUnknown EntityType: &6%s", name);
+                user.sendTranslated(MessageType.NEGATIVE, "Unknown EntityType: {name#entity}", name);
                 return false;
             }
             if (negate)
@@ -583,7 +567,7 @@ public class LookupCommands
             Set<ActionType> actionTypes = this.actionTypeManager.getActionType(actionString);
             if (actionTypes == null)
             {
-                user.sendTranslated("&cUnkown action-type: &6%s",actionString);
+                user.sendTranslated(MessageType.NEGATIVE, "Unknown action-type: {name#action}", actionString);
                 return false;
             }
             if (negate)

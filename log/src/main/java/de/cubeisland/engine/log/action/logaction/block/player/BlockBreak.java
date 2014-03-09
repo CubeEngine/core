@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.ItemDrop;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
@@ -197,7 +198,7 @@ public class BlockBreak extends BlockActionType
         if (!clearPlanned)
         {
             clearPlanned = true;
-            BlockBreak.this.logModule.getCore().getTaskManager().runTask(logModule, new Runnable()
+            BlockBreak.this.module.getCore().getTaskManager().runTask(module, new Runnable()
             {
                 @Override
                 public void run()
@@ -215,18 +216,13 @@ public class BlockBreak extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = 1+logEntry.getAttached().size();
-            user.sendTranslated("%s&2%s &abroke &6%dx %s%s",
-                                time,
-                                logEntry.getCauserUser().getDisplayName(),
-                                amount,
-                                logEntry.getOldBlock(),
-                                loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} broke {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
         }
         else
         {
             if (logEntry.getAdditional() != null && logEntry.getAdditional().get("oldSign") != null)
             {
-                String delim = ChatFormat.parseFormats("&7 | &f");
+                String delim = ChatFormat.GREY + " | " + ChatFormat.WHITE;
                 ArrayNode oldSign = (ArrayNode)logEntry.getAdditional().get("oldSign");
                 String[] lines = new String[4];
                 int i=0;
@@ -234,19 +230,12 @@ public class BlockBreak extends BlockActionType
                 {
                     lines[i++] = jsonNode.asText();
                 }
-                user.sendTranslated("%s&2%s &abroke &6%s&a \n   with &7[&f%s&7]&a written on it%s",
-                                    time,
-                                    logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(), StringUtils.implode(delim, lines),
-                                    loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} broke {name#block}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock());
+                user.sendTranslated(MessageType.POSITIVE, "   with {input#signtext} written on it{}", StringUtils.implode(delim, lines), loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s &abroke &6%s%s",
-                                    time,
-                                    logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(),
-                                    loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} broke {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
         }
     }

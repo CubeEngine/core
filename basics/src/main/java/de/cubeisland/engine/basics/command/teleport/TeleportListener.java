@@ -31,6 +31,7 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.LocationUtil;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class TeleportListener implements Listener
 {
@@ -95,7 +96,7 @@ public class TeleportListener implements Listener
                             loc = block.getLocation().add(0.5, 1, 0.5);
                         }
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                        user.sendTranslated("&ePoof!");
+                        user.sendTranslated(MessageType.NEUTRAL, "Poof!");
                         event.setCancelled(true);
                     }
                     return;
@@ -108,12 +109,12 @@ public class TeleportListener implements Listener
                                 this.module.getConfiguration().navigation.thru.maxWallThickness);
                         if (loc == null)
                         {
-                            user.sendTranslated("&cNothing to pass through!");
+                            user.sendTranslated(MessageType.NEGATIVE, "Nothing to pass through!");
                             return;
                         }
                         loc.setY(loc.getY() + 1);
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                        user.sendTranslated("&eYou passed the wall");
+                        user.sendTranslated(MessageType.NEUTRAL, "You passed the wall");
                         event.setCancelled(true);
                     }
             }

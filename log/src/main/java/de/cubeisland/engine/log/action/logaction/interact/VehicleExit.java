@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -72,15 +73,11 @@ public class VehicleExit extends SimpleLogActionType
     {
         if (logEntry.getCauserUser() == null)
         {
-            user.sendTranslated("%s&6%s &aexited a &6%s%s",
-                                time, logEntry.getCauserEntity(),
-                                logEntry.getEntityFromData(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} exited a {name#entity}{}", time, logEntry.getCauserEntity(), logEntry.getEntityFromData(), loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aexited a &6%s%s",
-                                time, logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getEntityFromData(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} exited a {name#entity}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), loc);
         }
     }
     @Override

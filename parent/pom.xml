@@ -19,7 +19,7 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
     <timestamp>${maven.build.timestamp}</timestamp>
     <minecraftVersion>1.7.2</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.3-SNAPSHOT</bukkitVersion>
+    <bukkitVersion>${minecraftVersion}-R0.4-SNAPSHOT</bukkitVersion>
     <jdkVersion>1.7</jdkVersion>
     <projectBase>${basedir}/..</projectBase>
     <externalPackage>${project.groupId}.external</externalPackage>
@@ -238,16 +238,10 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.googlecode.gettext-commons</groupId>
-        <artifactId>gettext-maven-plugin</artifactId>
-        <version>1.2.4</version>
-        <configuration>
-          <sourceLocale>en_US</sourceLocale>
-          <poDirectory>${basedir}/src/main/resources/translations</poDirectory>
-          <keysFile>messages.pot</keysFile>
-          <keywords>-ktranslate:1 -ktranslateN:1,2 -kgetTranslation:1 -kgetTranslationN:1,2 -ksendTranslated:1 -ksendTranslatedN:1,2 -k_:1</keywords>
-        </configuration>
+        <groupId>de.cubeisland.maven.plugins</groupId>
+        <artifactId>messageextractor-maven-plugin</artifactId>
       </plugin>
+
     </plugins>
 
     <pluginManagement>
@@ -384,6 +378,26 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>2.7</version>
+        </plugin>
+        <plugin>
+          <groupId>de.cubeisland.maven.plugins</groupId>
+          <artifactId>messageextractor-maven-plugin</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
+          <configuration>
+            <configurations>
+              <configuration>${basedir}/extractor.xml</configuration>
+              <configuration>${basedir}/../extractor.xml</configuration>
+              <configuration>https://raw.github.com/CubeEngineDev/CubeEngine/master/extractor.xml</configuration>
+            </configurations>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>update</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>

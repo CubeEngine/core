@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -56,29 +57,22 @@ public class WitherExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Wither hunting down &2%s &ablasted away &6%dx %s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(), amount,
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Wither hunting down {user} ablasted away {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&6%dx %s&a got destroyed in a Wither-Explosion%s",
-                                    time, amount,
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#block} got destroyed in a Wither-Explosion{}", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Wither hunting down &2%s &ablasted away &6%s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Wither hunting down {user} blasted away {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&6%s&a got destroyed in a Wither-Explosion%s",
-                                    time,logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got destroyed in a Wither-Explosion{}", time, logEntry.getOldBlock(), loc);
             }
         }
     }

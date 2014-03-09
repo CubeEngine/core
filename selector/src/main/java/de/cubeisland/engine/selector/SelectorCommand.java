@@ -29,6 +29,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.selector.CuboidSelector.SELECTOR_TOOL_NAME;
 import static java.util.Arrays.asList;
@@ -53,7 +54,7 @@ public class SelectorCommand extends CubeCommand
         }
         else
         {
-            context.sendTranslated("&cYou cannot hold a selection tool!");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot hold a selection tool!");
         }
         return null;
     }
@@ -87,7 +88,7 @@ public class SelectorCommand extends CubeCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated("&aReceived a new Region-Selector Tool");
+            user.sendTranslated(MessageType.POSITIVE, "Received a new Region-Selector Tool");
             return;
         }
         user.getInventory().removeItem(found);
@@ -95,6 +96,6 @@ public class SelectorCommand extends CubeCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated("&aFound a Region-Selector Tool in your inventory!");
+        user.sendTranslated(MessageType.POSITIVE, "Found a Region-Selector Tool in your inventory!");
     }
 }

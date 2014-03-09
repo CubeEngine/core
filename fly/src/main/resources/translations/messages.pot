@@ -1,14 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +26,18 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/fly/FlyListener.java:74
+#: de/cubeisland/engine/fly/FlyListener.java:75
 msgid "You dont have permission to use this!"
 msgstr ""
 
-#: de/cubeisland/engine/fly/FlyListener.java:82
+#: de/cubeisland/engine/fly/FlyListener.java:83
 msgid "You are not allowed to fly now!"
 msgstr ""
 
-#: de/cubeisland/engine/fly/FlyListener.java:95
+#: de/cubeisland/engine/fly/FlyListener.java:96
 msgid "You can now fly!"
 msgstr ""
 
-#: de/cubeisland/engine/fly/FlyListener.java:130
+#: de/cubeisland/engine/fly/FlyListener.java:131
 msgid "You cannot fly anymore!"
 msgstr ""

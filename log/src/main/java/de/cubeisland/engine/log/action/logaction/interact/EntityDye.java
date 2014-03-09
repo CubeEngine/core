@@ -25,6 +25,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -63,10 +64,7 @@ public class EntityDye extends SimpleLogActionType
     {
         JsonNode json = logEntry.getAdditional();
         DyeColor color = DyeColor.valueOf(json.get("nColor").asText());
-        user.sendTranslated("%s&2%s&a dyed a &6%s&a in &6%s%s",
-                            time,logEntry.getCauserUser().getDisplayName(),
-                            logEntry.getEntityFromData(),
-                            color.name(), loc); //TODO get Pretty name for color
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} dyed a {name#entity} in {input#color}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getEntityFromData(), color.name(), loc); //TODO get Pretty name for color
     }
 
     @Override

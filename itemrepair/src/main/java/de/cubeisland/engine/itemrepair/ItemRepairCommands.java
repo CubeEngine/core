@@ -31,6 +31,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.itemrepair.repair.RepairBlockManager;
 
 public class ItemRepairCommands extends ContainerCommand implements Listener
@@ -62,21 +63,21 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
                 if (!this.removeRequests.contains(context.getSender().getName()))
                 {
                     this.addRequests.add(context.getSender().getName());
-                    context.sendTranslated("&eRightclick the block.");
+                    context.sendTranslated(MessageType.NEUTRAL, "Rightclick the block.");
                 }
                 else
                 {
-                    context.sendTranslated("&cYou are already removing a repair block!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You are already removing a repair block!");
                 }
             }
             else
             {
-                context.sendTranslated("&cYou are already adding a repair block!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are already adding a repair block!");
             }
         }
         else
         {
-            context.sendTranslated("&eOk now you only need to right-click &4NOW&e!\n... too slow");
+            context.sendTranslated(MessageType.NEUTRAL, "Ok now you only need to right-click {text:NOW:color=DARK_RED}!\n... too slow");
         }
     }
 
@@ -90,21 +91,21 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
                 if (!this.addRequests.contains(context.getSender().getName()))
                 {
                     this.removeRequests.add(context.getSender().getName());
-                    context.sendTranslated("&eRightclick the block.");
+                    context.sendTranslated(MessageType.NEUTRAL, "Rightclick the block.");
                 }
                 else
                 {
-                    context.sendTranslated("&cYou are already adding a repair block!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You are already adding a repair block!");
                 }
             }
             else
             {
-                context.sendTranslated("&cYou are already removing a repair block!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are already removing a repair block!");
             }
         }
         else
         {
-            context.sendTranslated("&cOnly players can remove repair blocks!");
+            context.sendTranslated(MessageType.NEGATIVE, "Only players can remove repair blocks!");
         }
     }
 
@@ -121,16 +122,16 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
                 {
                     if (this.rbm.attachRepairBlock(block))
                     {
-                        user.sendTranslated("&aRepair block successfully added!");
+                        user.sendTranslated(MessageType.POSITIVE, "Repair block successfully added!");
                     }
                     else
                     {
-                        user.sendTranslated("&cThis block can't be used as a repair block!");
+                        user.sendTranslated(MessageType.NEGATIVE, "This block can't be used as a repair block!");
                     }
                 }
                 else
                 {
-                    user.sendTranslated("&cThis block is already a repair block!");
+                    user.sendTranslated(MessageType.NEGATIVE, "This block is already a repair block!");
                 }
             }
             if (event.getAction() != Action.PHYSICAL)
@@ -151,11 +152,11 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
             {
                 if (this.rbm.detachRepairBlock(event.getClickedBlock()))
                 {
-                    user.sendTranslated("&aRepair block successfully removed!");
+                    user.sendTranslated(MessageType.POSITIVE, "Repair block successfully removed!");
                 }
                 else
                 {
-                    user.sendTranslated("&cThis block is not a repair block!");
+                    user.sendTranslated(MessageType.NEGATIVE, "This block is not a repair block!");
                 }
             }
             if (event.getAction() != Action.PHYSICAL)

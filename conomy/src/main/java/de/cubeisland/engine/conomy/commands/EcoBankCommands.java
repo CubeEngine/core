@@ -25,6 +25,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class EcoBankCommands extends ContainerCommand
 {
@@ -48,14 +49,14 @@ public class EcoBankCommands extends ContainerCommand
         Double amount = this.manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated("&cCould not parse amount! %s", amountString);
+            context.sendTranslated(MessageType.NEGATIVE, "Could not parse amount! {input}", amountString);
             return;
         }
         String format = manager.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             this.manager.transactionAll(false, true, amount);
-            context.sendTranslated("&aYou gave &6%s&a to every bank!", format);
+            context.sendTranslated(MessageType.POSITIVE, "You gave {input#amount} to every bank!", format);
         }
         else
         {
@@ -65,16 +66,16 @@ public class EcoBankCommands extends ContainerCommand
                 BankAccount target = this.manager.getBankAccount(bankString, false);
                 if (target == null)
                 {
-                    context.sendTranslated("&cThere is no bank account named &6%s!", bankString);
+                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#name}!", bankString);
                     continue;
                 }
                 this.manager.transaction(null, target, amount, true);
-                context.sendTranslated("&aYou gave &6%s&a to the bank &6%s&a!", format, bankString);
+                context.sendTranslated(MessageType.POSITIVE, "You gave {input#amount} to the bank {input#bank}!", format, bankString);
                 for (User user : this.module.getCore().getUserManager().getOnlineUsers())
                 {
                     if (target.isOwner(user))
                     {
-                        user.sendTranslated("&2%s&a granted &6%s&a to your bank &6%s&a!", context.getSender().getName(), format, bankString);
+                        user.sendTranslated(MessageType.POSITIVE, "{user} granted {input#amount} to your bank {input#bank}!", context.getSender(), format, bankString);
                     }
                 }
             }
@@ -91,14 +92,14 @@ public class EcoBankCommands extends ContainerCommand
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated("&cCould not parse amount!");
+            context.sendTranslated(MessageType.NEGATIVE, "Could not parse amount!");
             return;
         }
         String format = manager.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             this.manager.transactionAll(false, true, -amount);
-            context.sendTranslated("&aYou took &6%s&a from every bank!", format);
+            context.sendTranslated(MessageType.POSITIVE, "You took {input#amount} from every bank!", format);
         }
         else
         {
@@ -108,16 +109,16 @@ public class EcoBankCommands extends ContainerCommand
                 BankAccount target = this.manager.getBankAccount(bankString, false);
                 if (target == null)
                 {
-                    context.sendTranslated("&cThere is no bank account named &6%s!", bankString);
+                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", bankString);
                     return;
                 }
                 this.manager.transaction(target, null, amount, true);
-                context.sendTranslated("&aYou took &6%s&a from the bank &6%s&a!", format, bankString);
+                context.sendTranslated(MessageType.POSITIVE, "You took {input#amount} from the bank {input#bank}!", format, bankString);
                 for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
                 {
                     if (target.isOwner(onlineUser))
                     {
-                        onlineUser.sendTranslated("&2%s&a charged your bank &6%s&a for &6%s&a!", context.getSender().getName(), bankString, format);
+                        onlineUser.sendTranslated(MessageType.POSITIVE, "{user} charged your bank {input#bank} for {input#amount}!", context.getSender(), bankString, format);
                     }
                 }
             }
@@ -132,7 +133,7 @@ public class EcoBankCommands extends ContainerCommand
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             this.manager.setAll(false, true, this.manager.getDefaultBankBalance());
-            context.sendTranslated("&aYou resetted every bank account!");
+            context.sendTranslated(MessageType.POSITIVE, "You resetted every bank account!");
         }
         else
         {
@@ -142,17 +143,17 @@ public class EcoBankCommands extends ContainerCommand
                 BankAccount target = this.manager.getBankAccount(bankString, false);
                 if (target == null)
                 {
-                    context.sendTranslated("&cThere is no bank account named &6%s!", bankString);
+                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", bankString);
                     return;
                 }
                 target.reset();
                 String format = this.manager.format(this.manager.getDefaultBalance());
-                context.sendTranslated("The account of the bank &6%s&a got reset to &6%s&a!", bankString, format);
+                context.sendTranslated(MessageType.POSITIVE, "The account of the bank {input#bank} got reset to {input#balance}!", bankString, format);
                 for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
                 {
                     if (target.isOwner(onlineUser))
                     {
-                        onlineUser.sendTranslated("&2%s&a resetted the money of your bank &6%s&a to &6%s&a!", context.getSender().getName(), bankString, format);
+                        onlineUser.sendTranslated(MessageType.POSITIVE, "{user} resetted the money of your bank {input#bank} to {input#balance}!", context.getSender(), bankString, format);
                     }
                 }
             }
@@ -168,14 +169,14 @@ public class EcoBankCommands extends ContainerCommand
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated("&cCould not parse amount!");
+            context.sendTranslated(MessageType.NEGATIVE, "Could not parse amount!");
             return;
         }
         String format = this.manager.format(amount);
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             this.manager.setAll(false, true, amount);
-            context.sendTranslated("&aYou have set every bank account to &6%s&a!", format);
+            context.sendTranslated(MessageType.POSITIVE, "You have set every bank account to {input#balance}!", format);
         }
         else
         {
@@ -185,16 +186,16 @@ public class EcoBankCommands extends ContainerCommand
                 BankAccount target = this.manager.getBankAccount(bankString, false);
                 if (target == null)
                 {
-                    context.sendTranslated("&cThere is no bank account named &6%s!", bankString);
+                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", bankString);
                     return;
                 }
                 target.set(amount);
-                context.sendTranslated("The account of the bank &6%s&a got set to &6%s&a!", bankString, format);
+                context.sendTranslated(MessageType.POSITIVE, "The account of the bank {input#bank} got set to {input#balance}!", bankString, format);
                 for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
                 {
                     if (target.isOwner(onlineUser))
                     {
-                        onlineUser.sendTranslated("&2%s&a set the money of your bank &6%s&a to &6%s&a!", context.getSender().getName(), bankString, format);
+                        onlineUser.sendTranslated(MessageType.POSITIVE, "{user} set the money of your bank {input#bank} to {input#balance}!", context.getSender(), bankString, format);
                     }
                 }
             }
@@ -209,13 +210,13 @@ public class EcoBankCommands extends ContainerCommand
         Float factor = context.getArg(1, Float.class, null);
         if (factor == null)
         {
-            context.sendTranslated("&cInvalid factor: &6%s",context.getString(1));
+            context.sendTranslated(MessageType.NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
             return;
         }
         if (context.getString(0).equals("*"))
         {
             this.manager.scaleAll(false, true, factor);
-            context.sendTranslated("&aScaled the balance of every bank by &6%f&a!", factor);
+            context.sendTranslated(MessageType.POSITIVE, "Scaled the balance of every bank by {decimal#factor}!", factor);
             return;
         }
         String[] banks = StringUtils.explode(",", context.getString(0));
@@ -224,16 +225,16 @@ public class EcoBankCommands extends ContainerCommand
             BankAccount account = this.manager.getBankAccount(bankString, false);
             if (account == null)
             {
-                context.sendTranslated("&cThere is no bank account named &6%s!", bankString);
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", bankString);
                 return;
             }
             account.scale(factor);
-            context.sendTranslated("&aScaled the balance of the bank &6%s&a by &6%f&a!", bankString, factor);
+            context.sendTranslated(MessageType.POSITIVE, "Scaled the balance of the bank {input#bank} by {decimal#factor}!", bankString, factor);
             for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
             {
                 if (account.isOwner(onlineUser))
                 {
-                    onlineUser.sendTranslated("&2%s&a scaled the money of your bank &6%s&a by &6%f&a!", context.getSender().getName(), bankString, factor);
+                    onlineUser.sendTranslated(MessageType.POSITIVE, "{user} scaled the money of your bank {input#bank} by {decimal#factor}", context.getSender().getName(), bankString, factor);
                 }
             }
         }
@@ -255,17 +256,17 @@ public class EcoBankCommands extends ContainerCommand
             BankAccount target = this.manager.getBankAccount(bankString, false);
             if (target == null)
             {
-                context.sendTranslated("&cThere is no bank account named &6%s!", bankString);
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", bankString);
                 return;
             }
             if (target.isHidden())
             {
-                context.sendTranslated("&aThe bank &6%s&a is already hidden!", bankString);
+                context.sendTranslated(MessageType.POSITIVE, "The bank {input#bank} is already hidden!", bankString);
             }
             else
             {
                 target.setHidden(true);
-                context.sendTranslated("&aThe bank &6%s&a is now hidden!", bankString);
+                context.sendTranslated(MessageType.POSITIVE, "The bank {input#bank} is now hidden!", bankString);
             }
         }
     }
@@ -286,17 +287,17 @@ public class EcoBankCommands extends ContainerCommand
             BankAccount target = this.manager.getBankAccount(bankString, false);
             if (target == null)
             {
-                context.sendTranslated("&cThere is no bank account named &6%s!", bankString);
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", bankString);
                 return;
             }
             if (target.isHidden())
             {
                 target.setHidden(false);
-                context.sendTranslated("&aThe bank &6%s&a is no longer hidden!", bankString);
+                context.sendTranslated(MessageType.POSITIVE, "The bank {input#bank} is no longer hidden!", bankString);
             }
             else
             {
-                context.sendTranslated("&aThe bank &6%s&a was not hidden!", bankString);
+                context.sendTranslated(MessageType.POSITIVE, "The bank {input#bank} was not hidden!", bankString);
             }
         }
     }

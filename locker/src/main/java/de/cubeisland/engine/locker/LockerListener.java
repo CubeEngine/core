@@ -68,6 +68,7 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 
@@ -98,7 +99,7 @@ public class LockerListener implements Listener
         {
             if (module.perms().DENY_CONTAINER.isAuthorized(user))
             {
-                user.sendTranslated("&cStrong magic prevents you from accessing any inventory!");
+                user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from accessing any inventory!");
                 event.setCancelled(true);
                 return;
             }
@@ -109,7 +110,7 @@ public class LockerListener implements Listener
         {
             if (module.perms().DENY_DOOR.isAuthorized(user))
             {
-                user.sendTranslated("&cStrong magic prevents you from accessing any door!");
+                user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from accessing any door!");
                 event.setCancelled(true);
                 return;
             }
@@ -131,7 +132,7 @@ public class LockerListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (module.perms().DENY_ENTITY.isAuthorized(user))
         {
-            user.sendTranslated("&cStrong magic prevents you from reaching this Entity!");
+            user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from reaching this Entity!");
             event.setCancelled(true);
             return;
         }
@@ -272,18 +273,18 @@ public class LockerListener implements Listener
                     {
                         if (!lock.validateTypeAt(relativeLoc))
                         {
-                            user.sendTranslated("&eNearby BlockProtection is not valid!");
+                            user.sendTranslated(MessageType.NEUTRAL, "Nearby BlockProtection is not valid!");
                             lock.delete(user);
                         }
                         else if (lock.isOwner(user) || lock.hasAdmin(user) || module.perms().EXPAND_OTHER.isAuthorized(user))
                         {
                             this.manager.extendLock(lock, event.getBlockPlaced().getLocation());
-                            user.sendTranslated("&aProtection expanded!");
+                            user.sendTranslated(MessageType.POSITIVE, "Protection expanded!");
                         }
                         else
                         {
                             event.setCancelled(true);
-                            user.sendTranslated("&cThe nearby chest is protected by someone else!");
+                            user.sendTranslated(MessageType.NEGATIVE, "The nearby chest is protected by someone else!");
                         }
                         return;
                     }
@@ -304,7 +305,7 @@ public class LockerListener implements Listener
                     {
                         if (!lock.validateTypeAt(relativeLoc))
                         {
-                            user.sendTranslated("&eNearby BlockProtection is not valid!");
+                            user.sendTranslated(MessageType.NEUTRAL, "Nearby BlockProtection is not valid!");
                             lock.delete(user);
                         }
                         else
@@ -323,12 +324,12 @@ public class LockerListener implements Listener
                                     {
                                         this.manager.extendLock(lock, loc); // bot half
                                         this.manager.extendLock(lock, loc.clone().add(0, 1, 0)); // top half
-                                        user.sendTranslated("&aProtection expanded!");
+                                        user.sendTranslated(MessageType.POSITIVE, "Protection expanded!");
                                     }
                                     else
                                     {
                                         event.setCancelled(true);
-                                        user.sendTranslated("&cThe nearby door is protected by someone else!");
+                                        user.sendTranslated(MessageType.NEGATIVE, "The nearby door is protected by someone else!");
                                     }
                                 }
                             }

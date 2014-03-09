@@ -23,6 +23,9 @@ import java.text.SimpleDateFormat;
 import org.bukkit.event.Listener;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.storage.LogEntry;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.ShowParameter;
@@ -35,7 +38,7 @@ public abstract class LogActionType extends ActionType implements Listener
     @Override
     public void enable()
     {
-        this.logModule.getCore().getEventManager().registerListener(this.logModule,this);
+        this.module.getCore().getEventManager().registerListener(this.module,this);
     }
 
     protected abstract void showLogEntry(User user, LogEntry logEntry, String time, String loc);
@@ -58,23 +61,25 @@ public abstract class LogActionType extends ActionType implements Listener
                 String fDate = dateOnly.format(first);
                 if (dateOnly.format(last).equals(fDate)) // Same day
                 {
-                    time = "&7" + fDate + " " + timeOnly.format(first) + " &6-&7 " + timeOnly.format(last) + " - ";
+                    time = ChatFormat.GREY + fDate + " " + timeOnly.format(first) + " " + ChatFormat.GOLD + "-" +
+                        ChatFormat.WHITE + timeOnly.format(last) + " - ";
                 }
                 else
                 {
-                    time = "&7" + fDate + " " + timeOnly.format(first) +
-                        " &6-&7 " + dateOnly.format(last) + " " + timeOnly.format(last) + " - ";
+                    time = ChatFormat.GREY + fDate + " " + timeOnly.format(first) + " " + ChatFormat.GOLD + "-" +
+                        ChatFormat.GREY + dateOnly.format(last) + " " + timeOnly.format(last) + " - ";
                 }
             }
             else
             {
-                time = "&7"+ dateOnly.format(logEntry.getTimestamp()) + " " +
+                time = ChatFormat.GREY + dateOnly.format(logEntry.getTimestamp()) + " " +
                     timeOnly.format(logEntry.getTimestamp()) + " - ";
             }
         }
         String loc = "";
         if (show.showCoords)
         {
+            loc =  "\n";
             if (logEntry.hasAttached())
             {
                 int xMin = logEntry.getVector().x;
@@ -112,19 +117,19 @@ public abstract class LogActionType extends ActionType implements Listener
                 }
                 if (xMax == xMin && yMax == yMin && zMax == zMin)
                 {
-                    loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
-                    loc = String.format(loc,logEntry.getWorld().getName(),xMax,yMax,zMax);
+                    loc += user.composeMessage(MessageType.POSITIVE, "   at {vector} in {world}",
+                          new BlockVector3(xMax, yMax, zMax), logEntry.getWorld());
                 }
                 else
                 {
-                    loc = "\n&a   in between &3%d&f:&3%d&f:&3%d&a and &3%d&f:&3%d&f:&3%d&a in &3%s";
-                    loc = String.format(loc,xMin, yMin, zMin, xMax,yMax,zMax,logEntry.getWorld().getName());
+                    loc += user.composeMessage(MessageType.POSITIVE, "   in between {vector} nd {vector} in {world}",
+                          new BlockVector3(xMin, yMin, zMin), new BlockVector3(xMax, yMax, zMax), logEntry.getWorld());
                 }
             }
             else
             {
-                loc = "\n&a   at &3%s&f:&3%d&f:&3%d&f:&3%d&a";
-                loc = String.format(loc,logEntry.getWorld().getName(),logEntry.getVector().x,logEntry.getVector().y,logEntry.getVector().z);
+                loc += user.composeMessage(MessageType.POSITIVE, "   at {vector} in {world}",
+                      new BlockVector3(logEntry.getVector().x, logEntry.getVector().y, logEntry.getVector().z), logEntry.getWorld());
             }
         }
         this.showLogEntry(user,logEntry,time,loc);

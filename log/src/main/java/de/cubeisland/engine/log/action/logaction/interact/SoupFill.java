@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -58,8 +59,7 @@ public class SoupFill extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&2%s &amade soup with a mooshroom",
-                            time, logEntry.getCauserUser().getDisplayName(),loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} made soup with a mooshroom{}", time, logEntry.getCauserUser().getDisplayName(), loc);
     }
 
     @Override

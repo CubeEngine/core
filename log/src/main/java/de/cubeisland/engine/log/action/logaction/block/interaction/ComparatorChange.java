@@ -25,6 +25,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -55,13 +56,11 @@ public class ComparatorChange extends BlockActionType
     {
         if (logEntry.getNewBlock().material.equals(Material.REDSTONE_COMPARATOR_ON))
         {
-            user.sendTranslated("%s&2%s &aactivated the comparator%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} activated the comparator{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &adeactivated the comparator%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} deactivated the comparator{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

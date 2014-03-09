@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extractor>
+
+  <source language="java">
+
+    <directory>${basedir}/src/main/java</directory>
+
+    <methods>
+      <method>
+        <name>translate</name>
+      </method>
+      <method>
+        <name>translateN</name>
+        <singular>1</singular>
+        <plural>2</plural>
+      </method>
+      <method>
+        <name>getTranslation</name>
+      </method>
+      <method>
+        <name>getTranslationN</name>
+        <singular>1</singular>
+        <plural>2</plural>
+      </method>
+      <method>
+        <name>sendTranslated</name>
+        <singular>2</singular>
+      </method>
+      <method>
+        <name>sendTranslatedN</name>
+        <singular>1</singular>
+        <plural>2</plural>
+      </method>
+      <method>
+        <name>_</name>
+      </method>
+    </methods>
+
+    <annotations>
+      <annotation>
+        <name>de.cubeisland.engine.core.command.reflected.Command</name>
+        <fields>
+          <field>desc</field>
+          <field>usage</field>
+        </fields>
+      </annotation>
+    </annotations>
+
+  </source>
+
+  <catalog format="gettext">
+    <removeUnusedMessages>true</removeUnusedMessages>
+    <createEmptyTemplate>false</createEmptyTemplate>
+    <template>${basedir}/src/main/resources/translations/messages.pot</template>
+    <header>https://raw.github.com/CubeEngineDev/CubeEngine/master/header.txt</header>
+  </catalog>
+
+</extractor>

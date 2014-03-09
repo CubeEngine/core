@@ -30,6 +30,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.player.PlayerGrow;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -93,21 +94,17 @@ public class NaturalGrow extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&6%dx %s &agrew naturally%s",
-                                time,amount,logEntry.getNewBlock(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#block} grew naturally{}", time, amount, logEntry.getNewBlock(), loc);
         }
         else
         {
             if (logEntry.hasReplacedBlock())
             {
-                user.sendTranslated("%s&6%s &agrew naturally into &6%s%s",
-                                    time,logEntry.getNewBlock(),
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#block} grew naturally into {name#block}{}", time, logEntry.getNewBlock(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&6%s &agrew naturally%s",
-                                    time,logEntry.getNewBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#block} grew naturally{}", time, logEntry.getNewBlock(), loc);
             }
         }
     }

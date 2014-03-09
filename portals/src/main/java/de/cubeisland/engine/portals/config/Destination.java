@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.Portal;
 import de.cubeisland.engine.portals.PortalManager;
@@ -69,7 +70,7 @@ public class Destination
             {
                 if (entity instanceof User)
                 {
-                    ((User)entity).sendTranslated("&cDestination portal &6%s&c does not exist!", portal);
+                    ((User)entity).sendTranslated(MessageType.NEGATIVE, "Destination portal {input} does not exist!", portal);
                 }
                 return;
             }
@@ -88,7 +89,7 @@ public class Destination
         {
             if (entity instanceof User)
             {
-                ((User)entity).sendTranslated("&cYou have to leave your current vehicle to pass a portal!");
+                ((User)entity).sendTranslated(MessageType.NEGATIVE, "You have to leave your current vehicle to pass a portal!");
             }
             return;
         }

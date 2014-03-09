@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -80,8 +81,7 @@ public class XpPickup extends SimpleLogActionType
                 amount += entry.getAdditional().iterator().next().asInt();
             }
         }
-        user.sendTranslated("%s&2%s&a earned &6%d experience%s",
-                            time, logEntry.getCauserUser().getDisplayName(), amount,loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} earned {amount} experience{}", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
     }
 
     @Override

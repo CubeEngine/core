@@ -29,6 +29,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 /**
  * Contains commands that allow to modify an inventory.
@@ -58,7 +59,7 @@ public class InventoryCommands
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
             boolean denyModify = false;
@@ -71,7 +72,7 @@ public class InventoryCommands
                 }
                 else
                 {
-                    context.sendTranslated("&cYou are not allowed to look into enderchests!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to look into enderchests!");
                     return;
                 }
             }
@@ -89,7 +90,7 @@ public class InventoryCommands
             {
                 if (!(context.hasFlag("q") && module.perms().COMMAND_INVSEE_QUIET.isAuthorized(context.getSender())))
                 {
-                    user.sendTranslated("&2%s&e is looking into your inventory.", sender.getName());
+                    user.sendTranslated(MessageType.NEUTRAL, "{sender} is looking into your inventory.", sender);
                 }
             }
             InventoryGuardFactory guard = InventoryGuardFactory.prepareInventory(inv, sender);
@@ -100,7 +101,7 @@ public class InventoryCommands
             guard.submitInventory(this.module, true);
             return;
         }
-        context.sendTranslated("&cThis command can only be used by a player!");
+        context.sendTranslated(MessageType.NEGATIVE, "This command can only be used by a player!");
     }
 
     @Command(desc = "Stashes or unstashes your inventory to reuse later")
@@ -138,10 +139,10 @@ public class InventoryCommands
                 sender.getInventory().setHelmet(null);
             }
             sender.get(BasicsAttachment.class).setStashedArmor(armorToStash);
-            sender.sendTranslated("&aSwapped stashed Inventory!");
+            sender.sendTranslated(MessageType.POSITIVE, "Swapped stashed Inventory!");
             return;
         }
-        context.sendTranslated("&cYeah you better put it away!");
+        context.sendTranslated(MessageType.NEGATIVE, "Yeah you better put it away!");
     }
 
     @Command(names = {"clearinventory", "ci", "clear"},
@@ -158,7 +159,7 @@ public class InventoryCommands
             target = context.getArg(0, User.class);
             if (target == null)
             {
-                sender.sendTranslated("&cThe specified user was not found!");
+                sender.sendTranslated(MessageType.NEGATIVE, "The specified user was not found!");
                 return;
             }
         }
@@ -168,19 +169,19 @@ public class InventoryCommands
         }
         else
         {
-            sender.sendTranslated("&cThat awkward moment when you realize you do not have an inventory!");
+            sender.sendTranslated(MessageType.NEGATIVE, "That awkward moment when you realize you do not have an inventory!");
             return;
         }
         if (sender != target && !module.perms().COMMAND_CLEARINVENTORY_OTHER.isAuthorized(sender))
         {
-            context.sendTranslated("&cYou are not allowed to clear the inventory of other users!");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear the inventory of other users!");
             return;
         }
         if (target != sender && module.perms().COMMAND_CLEARINVENTORY_PREVENT.isAuthorized(target)) // other has prevent
         {
             if (!(context.hasFlag("f") && module.perms().COMMAND_CLEARINVENTORY_FORCE.isAuthorized(sender))) // is not forced?
             {
-                context.sendTranslated("&cYou are not allowed to clear the inventory of &2%s", target.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear the inventory of {user}", target);
                 return;
             }
         }
@@ -195,7 +196,7 @@ public class InventoryCommands
         target.updateInventory();
         if (sender == target)
         {
-            sender.sendTranslated("&aYour inventory has been cleared!");
+            sender.sendTranslated(MessageType.POSITIVE, "Your inventory has been cleared!");
         }
         else
         {
@@ -203,10 +204,10 @@ public class InventoryCommands
             {
                 if (!(module.perms().COMMAND_CLEARINVENTORY_QUIET.isAuthorized(sender) && context.hasFlag("q"))) // quiet
                 {
-                    target.sendTranslated("&eYour inventory has been cleared by &6%s&e!", sender.getName());
+                    target.sendTranslated(MessageType.NEUTRAL, "Your inventory has been cleared by {sender}!", sender);
                 }
             }
-            sender.sendTranslated("&aThe inventory of &6%s&a has been cleared!", target.getName());
+            sender.sendTranslated(MessageType.POSITIVE, "The inventory of {user} has been cleared!", target);
         }
     }
 }

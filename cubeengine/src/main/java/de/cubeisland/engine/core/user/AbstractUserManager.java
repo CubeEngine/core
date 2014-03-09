@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 import org.jooq.Record1;
@@ -288,21 +289,21 @@ public abstract class AbstractUserManager implements UserManager
         return null;
     }
 
-    public void broadcastMessageWithPerm(String message, Permission perm, Object... params)
+    public void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params)
     {
         for (User user : this.onlineUsers)
         {
             if (perm == null || perm.isAuthorized(user))
             {
-                user.sendTranslated(message, params);
+                user.sendTranslated(messageType, message, params);
             }
         }
-        this.core.getCommandManager().getConsoleSender().sendTranslated(message, params);
+        this.core.getCommandManager().getConsoleSender().sendTranslated(messageType, message, params);
     }
 
-    public void broadcastMessage(String message, Object... args)
+    public void broadcastMessage(MessageType messageType, String message, Object... args)
     {
-        this.broadcastMessageWithPerm(message, null, args);
+        this.broadcastMessageWithPerm(messageType, message, null, args);
     }
 
     public void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args)
@@ -315,7 +316,7 @@ public abstract class AbstractUserManager implements UserManager
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(starColor.toString() + "* &2%s &f%s", name, message);
+            user.sendTranslated(MessageType.NONE, starColor.toString() + "* {user} {input#message:color=WHITE}", name, message);
         }
     }
 
@@ -394,7 +395,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUsers.values())
         {
-            user.kickPlayer(user.translate(message, params));
+            user.kickPlayer(user.composeMessage(MessageType.NONE, message, params));
         }
     }
 

@@ -30,6 +30,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.contract.NotNull;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -141,7 +142,7 @@ public class ConfirmManager
         @Override
         public void run()
         {
-            sender.sendTranslated("&cYour confirmation timed out....");
+            sender.sendTranslated(MessageType.NEGATIVE, "Your confirmation timed out....");
             pendingConfirmations.remove(sender);
         }
     }

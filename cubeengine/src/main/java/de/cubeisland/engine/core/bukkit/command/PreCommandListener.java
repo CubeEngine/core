@@ -32,6 +32,7 @@ import org.bukkit.event.server.ServerCommandEvent;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
@@ -77,17 +78,20 @@ public class PreCommandListener implements Listener
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(this.core.getI18n().translate(language, "&cCouldn't find &e%s&c. Did you mean &a%s&c?", prefix + label, prefix + matches.iterator().next()));
+                    final String translated = ChatFormat.RED + this.core.getI18n().translate(language, "Couldn't find {input#command}. Did you mean {input#proposal}?");
+                    sender.sendMessage(this.core.getMessageCompositor().composeMessage(language, translated, "/" + prefix + label, "/" + prefix + matches.iterator().next()));
                 }
                 else
                 {
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
-                    sender.sendMessage(this.core.getI18n().translate(language, "&eDid you mean one of these: &a%s &e?", prefix + implode(", " + prefix, matches)));
+                    final String translated = ChatFormat.YELLOW + this.core.getI18n().translate(language, "Did you mean one of these: {input#similar} ?");
+                    sender.sendMessage(this.core.getMessageCompositor().composeMessage(language, translated, prefix + implode(", " + prefix, matches)));
                 }
             }
             else
             {
-                sender.sendMessage(this.core.getI18n().translate(language, "&cI couldn't find any command for &e%s &c...", label));
+                final String translated = ChatFormat.RED + this.core.getI18n().translate(language, "I couldn't find any command for {input#command} ...");
+                sender.sendMessage(this.core.getMessageCompositor().composeMessage(language, translated, label));
             }
             return true;
         }

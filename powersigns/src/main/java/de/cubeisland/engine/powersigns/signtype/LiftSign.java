@@ -26,6 +26,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.powersigns.PowerSign;
 import de.cubeisland.engine.powersigns.Powersigns;
 import de.cubeisland.engine.powersigns.signtype.LiftSign.LiftSignInfo;
@@ -56,13 +57,13 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         LiftSignInfo signTypeInfo = sign.getSignTypeInfo();
         if (signTypeInfo.up == null)
         {
-            user.sendTranslated("&cYou can not depart from this sign but only arrive!");
+            user.sendTranslated(MessageType.NEGATIVE, "You can not depart from this sign but only arrive!");
             return true;
         }
         Location targetLocation = signTypeInfo.findLiftSign(signTypeInfo.destFloor);
         if (targetLocation == null)
         {
-            user.sendTranslated("&cCould not find any other sign to lift to! &ePerhaps it got destroyed?");
+            user.sendTranslated(MessageType.NEGATIVE, "Could not find any other sign to lift to! Perhaps it got destroyed?");
             return true;
         }
         int y = targetLocation.getBlockY();
@@ -86,30 +87,30 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         LiftSignInfo signTypeInfo = sign.getSignTypeInfo();
         if (signTypeInfo.up == null)
         {
-            user.sendTranslated("&cYou can not depart from this sign but only arrive!");
+            user.sendTranslated(MessageType.NEGATIVE, "You can not depart from this sign but only arrive!");
             return true;
         }
         if (signTypeInfo.findNextLiftSign() == null)
         {
             if (signTypeInfo.destFloor == 1)
             {
-                user.sendTranslated("&cThere are no more LiftSigns here!");
+                user.sendTranslated(MessageType.NEGATIVE, "There are no more LiftSigns here!");
                 return true;
             }
             if (signTypeInfo.findFirstLiftSign() == null)
             {
-                user.sendTranslated("&cCould not find any other LiftSign!");
+                user.sendTranslated(MessageType.NEGATIVE, "Could not find any other LiftSign!");
                 return true;
             }
         }
         LiftSignInfo attached = signTypeInfo.getAttachedLiftSign();
         if (signTypeInfo.up)
         {
-            user.sendTranslated("&aChanged destination to &6%d&a floors up! Floorname: &6%s",signTypeInfo.destFloor,attached.floorName);
+            user.sendTranslated(MessageType.POSITIVE, "Changed destination to {input} floors up! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
         }
         else
         {
-            user.sendTranslated("&aChanged destination to &6%d&a floors down! Floorname: &6%s",signTypeInfo.destFloor,attached.floorName);
+            user.sendTranslated(MessageType.POSITIVE, "Changed destination to {amount} floors down! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
         }
         return true;
     }
@@ -245,20 +246,20 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
             sign.setLine(0,this.floorName);
             if (this.up == null)
             {
-                sign.setLine(1, ChatFormat.parseFormats("&1[Lift]"));
+                sign.setLine(1, ChatFormat.DARK_BLUE + "[Lift]");
             }
             else if (this.up)
             {
-                sign.setLine(1, ChatFormat.parseFormats("&1[Lift Up]"));
+                sign.setLine(1, ChatFormat.DARK_BLUE + "[Lift Up]");
             }
             else
             {
-                sign.setLine(1, ChatFormat.parseFormats("&1[Lift Down]"));
+                sign.setLine(1, ChatFormat.DARK_BLUE + "[Lift Down]");
             }
             Location connectedLift = this.findLiftSign(this.destFloor);
             if (connectedLift == null)
             {
-                sign.setLine(2, ChatFormat.parseFormats("&4No Floor"));
+                sign.setLine(2, ChatFormat.DARK_RED + "No Floor");
             }
             else
             {

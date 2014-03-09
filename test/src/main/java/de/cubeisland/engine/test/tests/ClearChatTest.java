@@ -21,6 +21,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 
 public class ClearChatTest extends Test
 {
@@ -53,7 +54,7 @@ public class ClearChatTest extends Test
         }
         else
         {
-            context.sendMessage("&cYou better don't do this.");
+            context.sendMessage(ChatFormat.RED + "You better don't do this.");
         }
     }
 }

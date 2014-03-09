@@ -22,6 +22,7 @@ import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContextFactory;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class ConfirmCommand extends CubeCommand
 {
@@ -39,14 +40,14 @@ public class ConfirmCommand extends CubeCommand
         int pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
         if (pendingConfirmations < 1)
         {
-            context.sendTranslated("&cYou don't have any pending confirmations!");
+            context.sendTranslated(MessageType.NEGATIVE, "You don't have any pending confirmations!");
             return null;
         }
         confirmManager.getLastPendingConfirmation(context.getSender()).run();
         pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
         if (pendingConfirmations > 0)
         {
-            context.sendTranslated("&eYou now have &6%d &epending confirmations", pendingConfirmations);
+            context.sendTranslated(MessageType.NEUTRAL, "You now have {amount} pending confirmations", pendingConfirmations);
         }
         return null;
     }

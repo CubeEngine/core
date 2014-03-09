@@ -53,6 +53,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Colorable;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -349,6 +350,7 @@ public class EntityDataChanger<EntityInterface>
                                     public void applyEntity(Horse entity, Integer input)
                                     {
                                         entity.setJumpStrength(input);
+
                                     }
 
                                     @Override
@@ -370,6 +372,46 @@ public class EntityDataChanger<EntityInterface>
                                         return null;
                                     }
                                 });
+
+    // TODO EntitySpeed using Bukkit-API #WaitForBukkit
+    public static final EntityDataChanger<LivingEntity> ENTITY_SPEED =
+        new EntityDataChanger<>(LivingEntity.class,
+                                new EntityChanger<LivingEntity, Double>() {
+                                    @Override
+                                    public void applyEntity(LivingEntity entity, Double input)
+                                    {
+                                        BukkitUtils.setEntitySpeed(entity, input);
+                                    }
+
+                                    @Override
+                                    public Double getTypeValue(String input)
+                                    {
+                                        if (input.startsWith("speed"))
+                                        {
+                                            try
+                                            {
+                                                double speed = Double.parseDouble(input.substring(5, input.length()));
+                                                if (speed >= 0 && speed <= 2)
+                                                {
+                                                    return speed;
+                                                }
+                                            }
+                                            catch (NumberFormatException ignored)
+                                            {}
+                                        }
+                                        return null;
+                                    }
+                                });
+
+    /*
+    BukkitUtils.setEntitySpeed(entity, input);
+    Default speed for horse:
+                                        return (0.44999998807907104D +
+                                            this.random.nextDouble() * 0.3D +
+                                            this.random.nextDouble() * 0.3D
+                                            + this.random.nextDouble() * 0.3D)
+                                            * 0.25D;
+     */
 
     public static final EntityDataChanger<LivingEntity> ENTITY_NAME =
         new EntityDataChanger<>(LivingEntity.class,
@@ -612,7 +654,6 @@ public class EntityDataChanger<EntityInterface>
                                     }
                                 });
 
-    // TODO Horse OR/AND EntitySpeed  #WaitForBukkit
 
     private EntityDataChanger(Class<EntityInterface> clazz, EntityChanger<EntityInterface, ?> changer)
     {

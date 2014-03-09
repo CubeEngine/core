@@ -42,6 +42,7 @@ import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
@@ -591,14 +592,14 @@ public class QueryManager
             switch (action)
             {
             case SHOW:
-                user.sendTranslated("&eLookups cannot return all data while cleaning up the database!");
+                user.sendTranslated(MessageType.NEUTRAL, "Lookups cannot return all data while cleaning up the database!");
                 break;
             case ROLLBACK:
             case REDO:
             case ROLLBACK_PREVIEW:
             case REDO_PREVIEW:
-                user.sendTranslated("&cThis action is not possible while cleaning up the database!");
-                user.sendTranslated("&ePleas");
+                user.sendTranslated(MessageType.NEGATIVE, "This action is not possible while cleaning up the database!");
+                user.sendTranslated(MessageType.NEUTRAL, "Pleas");
                 return;
             }
         }

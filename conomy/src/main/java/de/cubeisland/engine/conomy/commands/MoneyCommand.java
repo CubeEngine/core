@@ -19,6 +19,11 @@ package de.cubeisland.engine.conomy.commands;
 
 import java.util.Collection;
 
+import de.cubeisland.engine.conomy.Conomy;
+import de.cubeisland.engine.conomy.account.Account;
+import de.cubeisland.engine.conomy.account.ConomyManager;
+import de.cubeisland.engine.conomy.account.UserAccount;
+import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -28,12 +33,9 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.conomy.Conomy;
-import de.cubeisland.engine.conomy.account.Account;
-import de.cubeisland.engine.conomy.account.ConomyManager;
-import de.cubeisland.engine.conomy.account.UserAccount;
-import de.cubeisland.engine.conomy.account.storage.AccountModel;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class MoneyCommand extends ContainerCommand
 {
@@ -77,7 +79,7 @@ public class MoneyCommand extends ContainerCommand
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated("&cUser %s not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
         }
@@ -85,7 +87,7 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated("&cIf you are out of money, better go work than typing silly commands in the console.");
+                context.sendTranslated(MessageType.NEGATIVE, "If you are out of money, better go work than typing silly commands in the console.");
                 return;
             }
             user = (User)context.getSender();
@@ -95,11 +97,11 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!account.isHidden() || showHidden || account.getName().equalsIgnoreCase(user.getName()))
             {
-                context.sendTranslated("&2%s's &aBalance: &6%s", user.getName(), manager.format(account.balance()));
+                context.sendTranslated(MessageType.POSITIVE, "{user}'s Balance: {input#balance}", user, manager.format(account.balance()));
                 return;
             }
         }
-        context.sendTranslated("&cNo account found for &2%s&c!", user.getName());
+        context.sendTranslated(MessageType.NEGATIVE, "No account found for {user}!", user);
     }
 
     @Alias(names = {"toplist", "balancetop", "topmoney"})
@@ -130,7 +132,7 @@ public class MoneyCommand extends ContainerCommand
             }
             catch (NumberFormatException e)
             {
-                context.sendTranslated("&cInvalid rank!");
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid rank!");
                 return;
             }
         }
@@ -138,17 +140,17 @@ public class MoneyCommand extends ContainerCommand
         int i = fromRank;
         if (fromRank == 1)
         {
-            context.sendTranslated("&aTop Balance &f(&6%d&f)", models.size());
+            context.sendTranslated(MessageType.POSITIVE, "Top Balance ({amount})", models.size());
         }
         else
         {
-            context.sendTranslated("&aTop Balance from &6%d &ato &6%d", fromRank, fromRank + models.size() -1);
+            context.sendTranslated(MessageType.POSITIVE, "Top Balance from {integer} to {integer}", fromRank, fromRank + models.size() -1);
         }
         for (AccountModel account : models)
         {
-            context.sendTranslated("&a%d &f- &2%s&f: &6%s", i++,
-                   this.module.getCore().getUserManager().getUser(account.getUserId().longValue()).getName()
-                   , manager.format((double)account.getValue() / manager.fractionalDigitsFactor()));
+            context.sendMessage("" + i++ + ChatFormat.WHITE + "- " + ChatFormat.DARK_GREEN +
+                                    this.module.getCore().getUserManager().getUser(account.getUserId().longValue()).getName() +
+                                    ChatFormat.WHITE + ": " + ChatFormat.GOLD + (manager.format((double)account.getValue() / manager.fractionalDigitsFactor())));
         }
     }
 
@@ -165,12 +167,12 @@ public class MoneyCommand extends ContainerCommand
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated("&cCould not parse amount!");
+            context.sendTranslated(MessageType.NEGATIVE, "Could not parse amount!");
             return;
         }
         if (amount < 0)
         {
-            context.sendTranslated("&cWhat are you trying there?");
+            context.sendTranslated(MessageType.NEGATIVE, "What are you trying there?");
             return;
         }
         String format = manager.format(amount);
@@ -180,13 +182,13 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!module.perms().COMMAND_PAY_ASOTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cYou are not allowed to pay money as someone else!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to pay money as someone else!");
                 return;
             }
             sender = context.getUser("as");
             if (sender == null)
             {
-                context.sendTranslated("&cUser %s not found!", context.getString("as"));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString("as"));
                 return;
             }
             asSomeOneElse = true;
@@ -195,7 +197,7 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated("&cPlease specify a user to use his account.");
+                context.sendTranslated(MessageType.NEGATIVE, "Please specify a user to use his account.");
                 return;
             }
             sender = (User)context.getSender();
@@ -205,12 +207,11 @@ public class MoneyCommand extends ContainerCommand
         {
             if (asSomeOneElse)
             {
-                context.sendTranslated("&2%s &cdoes not have an account!",
-                                       sender.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", sender);
             }
             else
             {
-                context.sendTranslated("&cYou do not have an account!");
+                context.sendTranslated(MessageType.NEGATIVE, "You do not have an account!");
             }
             return;
         }
@@ -220,14 +221,13 @@ public class MoneyCommand extends ContainerCommand
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated("&cUser %s not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 continue;
             }
             Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
-                context.sendTranslated("&2%s &cdoes not have an account!",
-                                       user.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
                 continue;
             }
             if (!(context.hasFlag("f") && module.perms().COMMAND_MONEY_PAY_FORCE.isAuthorized(context.getSender()))) //force allowed
@@ -236,11 +236,11 @@ public class MoneyCommand extends ContainerCommand
                 {
                     if (asSomeOneElse)
                     {
-                        context.sendTranslated("&2%s&c cannot afford &6%s&c!", sender.getName(), format);
+                        context.sendTranslated(MessageType.NEGATIVE, "{user} cannot afford {input#amount}!", sender.getName(), format);
                     }
                     else
                     {
-                        context.sendTranslated("&cYou cannot afford &6%s&c!", format);
+                        context.sendTranslated(MessageType.NEGATIVE, "You cannot afford {input#amount}!", format);
                     }
                     return;
                 }
@@ -249,17 +249,17 @@ public class MoneyCommand extends ContainerCommand
             {
                 if (asSomeOneElse)
                 {
-                    context.sendTranslated("&6%s&a transferred from &2%s's&a to &2%s's&a account!", format, sender.getName(), user.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "{input#amount} transferred from {user}'s to {user}'s account!", format, sender, user);
                 }
                 else
                 {
-                    context.sendTranslated("&6%s&a transferred to &2%s's&a account!", format, user.getName());
+                    context.sendTranslated(MessageType.POSITIVE, "{input#amount} transferred to {user}'s account!", format, user);
                 }
-                user.sendTranslated("&2%s&a just payed you &6%s!", sender.getName(), format);
+                user.sendTranslated(MessageType.POSITIVE, "{user} just payed you {input#amount}!", sender, format);
             }
             else
             {
-                context.sendTranslated("&cThe Transaction was not successful!");
+                context.sendTranslated(MessageType.NEGATIVE, "The Transaction was not successful!");
             }
         }
     }

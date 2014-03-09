@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class BorderCommands extends ContainerCommand
 {
@@ -65,7 +66,7 @@ public class BorderCommands extends ContainerCommand
         }
         else if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated("&cYou need to specify a world!");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a world!");
             return;
         }
         else
@@ -76,7 +77,7 @@ public class BorderCommands extends ContainerCommand
         if (context.hasFlag("s"))
         {
             this.module.getConfig(world).center.setCenter(world.getSpawnLocation().getChunk(), true);
-            context.sendTranslated("&aCenter for Border in &6%s&a set to world-spawn!", world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Center for Border in {world} set to world-spawn!", world);
             return;
         }
         else if (context.hasArg(1))
@@ -85,7 +86,7 @@ public class BorderCommands extends ContainerCommand
             Integer z = context.getArg(0, Integer.class, null);
             if (x == null || z == null)
             {
-                context.sendTranslated("&cInvalid Chunk-coordinates!");
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid Chunk-coordinates!");
                 return;
             }
             center = world.getChunkAt(x, z);
@@ -96,11 +97,11 @@ public class BorderCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&cYou need to specify the chunk-coordinates or use the -spawn flag");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify the chunk-coordinates or use the -spawn flag");
             return;
         }
         this.module.getConfig(world).center.setCenter(center, false);
-        context.sendTranslated("&aCenter for Border in &6%s&a set!", world.getName());
+        context.sendTranslated(MessageType.POSITIVE, "Center for Border in {world} set!", world);
     }
 
     @Alias(names = "generateBorder")
@@ -109,7 +110,7 @@ public class BorderCommands extends ContainerCommand
     {
         if (running)
         {
-            context.sendTranslated("&cChunk generation is already running!");
+            context.sendTranslated(MessageType.NEGATIVE, "Chunk generation is already running!");
             return;
         }
         String worldName = context.getString(0);
@@ -127,7 +128,7 @@ public class BorderCommands extends ContainerCommand
             World world = this.module.getCore().getWorldManager().getWorld(worldName);
             if (world == null)
             {
-                context.sendTranslated("&cThere is no world named &6%s", worldName);
+                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", worldName);
                 return;
             }
             this.addChunksToGenerate(world, context.getSender());
@@ -177,7 +178,7 @@ public class BorderCommands extends ContainerCommand
             curLen++;
             dir = -dir;
         }
-        sender.sendTranslated("&aAdded &6%d &achunks to generate in &6%s", chunksAdded, world.getName());
+        sender.sendTranslated(MessageType.POSITIVE, "Added {amount} chunks to generate in {world}", chunksAdded);
     }
 
     private boolean addIfInBorder(BorderConfig config, long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)
@@ -220,7 +221,7 @@ public class BorderCommands extends ContainerCommand
         if (freeMemory < 300) // less than 300 MB memory left
         {
             this.scheduleGeneration(20 * 10); // Take a 10 second break
-            sender.sendTranslated("&cAvailiable Memory getting low! Pausing ChunkGeneration");
+            sender.sendTranslated(MessageType.NEGATIVE, "Available Memory getting low! Pausing ChunkGeneration");
             rt.gc();
             return;
         }
@@ -252,7 +253,7 @@ public class BorderCommands extends ContainerCommand
             {
                 this.lastNotify = System.currentTimeMillis();
                 int percentNow = totalDone * 100 / total;
-                this.sender.sendTranslated("&aChunkgeneration is at &6%d%% &a(&6%d/%d&a)", percentNow, totalDone, total);
+                this.sender.sendTranslated(MessageType.POSITIVE, "Chunkgeneration is at {integer#percent}% ({amount#done}/{amount#total})", percentNow, totalDone, total);
             }
         }
         if (!chunksToGenerate.isEmpty())
@@ -265,7 +266,7 @@ public class BorderCommands extends ContainerCommand
             {
                 triplet.getFirst().unloadChunkRequest(triplet.getSecond(), triplet.getThird());
             }
-            sender.sendTranslated("&aChunkgeneration completed! Generated &6%d&a chunks", generated);
+            sender.sendTranslated(MessageType.POSITIVE, "Chunkgeneration completed! Generated {amount} chunks", generated);
             rt.gc();
             this.running = false;
         }

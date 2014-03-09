@@ -63,6 +63,9 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
+import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.formatter.MessageCompositor;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -215,21 +218,31 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public String translate(String message, Object... params)
+    public String composeMessage(MessageType type, String message, Object... params)
     {
-        return this.core.getI18n().translate(this.getLocale(), message, params);
+        message = this.getCore().getI18n().translate(this.getLocale(), message);
+        MessageCompositor messageCompositor = this.getCore().getMessageCompositor();
+        if (messageCompositor instanceof ColoredMessageCompositor)
+        {
+            return ((ColoredMessageCompositor)messageCompositor).composeMessage(type, this.getLocale(), message, params);
+        }
+        else
+        {
+            return messageCompositor.composeMessage(this.getLocale(), message, params);
+        }
     }
 
     /**
      * Sends a translated Message to this User
      *
+     * @param type
      * @param message the message to translate
      * @param params optional parameter
      */
     @Override
-    public void sendTranslated(String message, Object... params)
+    public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.translate(message, params));
+        this.sendMessage(this.composeMessage(type, message, params));
     }
 
     @Override

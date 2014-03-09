@@ -27,8 +27,8 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.fun.Fun;
-
 import gnu.trove.map.hash.THashMap;
 
 public class DiscoCommand
@@ -63,21 +63,21 @@ public class DiscoCommand
             world = context.getArg(0, World.class);
             if (world == null)
             {
-                context.sendTranslated("&cThe given world was not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "The given world was not found!");
                 return;
             }
         }
 
         if (world == null)
         {
-            context.sendTranslated("&cNo world has been specified!");
+            context.sendTranslated(MessageType.NEGATIVE, "No world has been specified!");
             return;
         }
 
         final int delay = context.getParam("delay", this.module.getConfig().command.disco.defaultDelay);
         if (delay < this.module.getConfig().command.disco.minDelay || delay > this.module.getConfig().command.disco.maxDelay)
         {
-            context.sendTranslated("&cThe delay has to be a number between %d and %d", this.module.getConfig().command.disco.minDelay, this.module.getConfig().command.disco.maxDelay);
+            context.sendTranslated(MessageType.NEGATIVE, "The delay has to be a number between {integer} and {integer}", this.module.getConfig().command.disco.minDelay, this.module.getConfig().command.disco.maxDelay);
             return;
         }
 
@@ -93,7 +93,7 @@ public class DiscoCommand
                     iter.remove();
                 }
             }
-            context.sendTranslated("&aThe disco has been stopped!");
+            context.sendTranslated(MessageType.POSITIVE, "The disco has been stopped!");
         }
         else
         {
@@ -101,11 +101,11 @@ public class DiscoCommand
             if (task.start())
             {
                 this.activeTasks.put(world.getName(), task);
-                context.sendTranslated("&aThe disco started!");
+                context.sendTranslated(MessageType.POSITIVE, "The disco started!");
             }
             else
             {
-                context.sendTranslated("&cThe disco couldn not be started!");
+                context.sendTranslated(MessageType.NEGATIVE, "The disco couldn not be started!");
             }
         }
     }

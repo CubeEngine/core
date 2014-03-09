@@ -22,6 +22,7 @@ import javax.persistence.Table;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import org.jooq.Field;
 import org.jooq.Record4;
 import org.jooq.Row4;
@@ -51,10 +52,10 @@ public class Mail extends UpdatableRecordImpl<Mail> implements Record4<UInteger,
     {
         if (this.getSenderid() == null || this.getSenderid().longValue() == 0)
         {
-            return "&cCONSOLE&f: " + this.getMessage();
+            return ChatFormat.RED + "CONSOLE" + ChatFormat.WHITE + ": " + this.getMessage();
         }
         User user = CubeEngine.getUserManager().getUser(this.getSenderid().longValue());
-        return "&2" + user.getName() + "&f: " + this.getMessage();
+        return ChatFormat.DARK_GREEN + user.getName() + ChatFormat.WHITE + ": " + this.getMessage();
     }
 
     public void setKey(UInteger value) {

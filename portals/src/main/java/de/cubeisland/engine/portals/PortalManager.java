@@ -35,6 +35,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.LocationUtil;
 import de.cubeisland.engine.core.util.Pair;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.portals.config.PortalConfig;
 
 public class PortalManager implements Listener
@@ -96,7 +97,7 @@ public class PortalManager implements Listener
                 attachment.setInPortal(true);
                 if (attachment.isDebug())
                 {
-                    user.sendTranslated("&e[Portals] Debug: &aTeleported into portal: &6%s", portal.getName());
+                    user.sendTranslated(MessageType.POSITIVE, "{text:[Portals] Debug\\::color=YELLOW} Teleported into portal: {name}", portal.getName());
                 }
                 return;
             }
@@ -190,11 +191,11 @@ public class PortalManager implements Listener
                         {
                             if (attachment.isInPortal())
                             {
-                                user.sendTranslated("&e[Portals] Debug: &aMove in portal: &6%s", portal.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "{text:[Portals] Debug\\::color=YELLOW} Move in portal: {name}", portal.getName());
                             }
                             else
                             {
-                                user.sendTranslated("&e[Portals] Debug: &aEntered portal: &6%s", portal.getName());
+                                user.sendTranslated(MessageType.POSITIVE, "{text:[Portals] Debug\\::color=YELLOW} Entered portal: {name}", portal.getName());
                                 portal.showInfo(user);
                                 attachment.setInPortal(true);
                             }

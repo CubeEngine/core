@@ -28,6 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -69,11 +70,7 @@ public class EntityBreak extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&aA &6%s &adestroyed &6%s%s",
-                            time,
-                            logEntry.getCauserEntity(),
-                            logEntry.getOldBlock(),
-                            loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}A {name#entity} destroyed {name#block}{}", time, logEntry.getCauserEntity(), logEntry.getOldBlock(), loc);
     }
 
 

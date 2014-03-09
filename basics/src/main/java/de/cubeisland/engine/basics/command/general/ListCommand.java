@@ -37,6 +37,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class ListCommand extends CubeCommand
 {
@@ -52,7 +53,7 @@ public class ListCommand extends CubeCommand
     protected SortedMap<String, Set<User>> groupUsers(Set<User> users)
     {
         SortedMap<String, Set<User>> grouped = new TreeMap<>();
-        grouped.put("&6Players", users);
+        grouped.put(ChatFormat.GOLD + "Players", users);
 
         return grouped;
     }
@@ -74,12 +75,12 @@ public class ListCommand extends CubeCommand
 
         if (users.isEmpty())
         {
-            sender.sendTranslated("&cThere are no players online at the moment!");
+            sender.sendTranslated(MessageType.NEGATIVE, "There are no players online at the moment!");
             return null;
         }
 
         SortedMap<String, Set<User>> grouped = this.groupUsers(users);
-        sender.sendTranslated("&9Players online: &a%d&f/&e%d", users.size(), Bukkit.getMaxPlayers());
+        sender.sendTranslated(MessageType.POSITIVE, "Players online: {amount#online}/{amount#max}", users.size(), Bukkit.getMaxPlayers());
 
         for (Entry<String, Set<User>> entry : grouped.entrySet())
         {
@@ -88,14 +89,14 @@ public class ListCommand extends CubeCommand
             {
                 continue;
             }
-            StringBuilder group = new StringBuilder(entry.getKey()).append("&f: ");
+            StringBuilder group = new StringBuilder(entry.getKey()).append(ChatFormat.WHITE).append(": ");
             group.append(this.formatUser(it.next()));
 
             while (it.hasNext())
             {
-                group.append("&f, ").append(this.formatUser(it.next()));
+                group.append(ChatFormat.WHITE).append(", ").append(this.formatUser(it.next()));
             }
-            sender.sendMessage(ChatFormat.parseFormats(group.toString()));
+            sender.sendMessage(group.toString());
         }
 
         return null;
@@ -103,10 +104,10 @@ public class ListCommand extends CubeCommand
 
     private String formatUser(User user)
     {
-        String entry = "&2" + user.getDisplayName();
+        String entry = ChatFormat.DARK_GREEN + user.getDisplayName();
         if (user.attachOrGet(BasicsAttachment.class, basics).isAfk())
         {
-            entry += "&f(&7afk&f)";
+            entry += ChatFormat.WHITE + "(" + ChatFormat.GREY + "afk" + ChatFormat.WHITE + ")";
         }
         return entry;
     }

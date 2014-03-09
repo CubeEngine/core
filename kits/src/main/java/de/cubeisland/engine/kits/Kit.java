@@ -37,6 +37,7 @@ import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryUtil;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.joda.time.Duration;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
@@ -88,7 +89,7 @@ public class Kit
         {
             if (!this.getPermission().isAuthorized(sender))
             {
-                throw new PermissionDeniedException(sender.translate("You are not allowed to give this kit."), getPermission());
+                throw new PermissionDeniedException("You are not allowed to give this kit.", getPermission());
             }
         }
         if (!force)
@@ -99,7 +100,7 @@ public class Kit
                     where(TableKitsGiven.TABLE_KITS.KITNAME.like(this.name), TableKitsGiven.TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
                 if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
                 {
-                    throw new IncorrectUsageException(sender.translate("&cKit-limit reached."), false);
+                    throw new IncorrectUsageException("Kit-limit reached.", false);
                 }
             }
             if (limitUsageDelay != 0)
@@ -107,7 +108,7 @@ public class Kit
                 Long lastUsage = user.get(KitsAttachment.class).getKitUsage(this.name);
                 if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
                 {
-                    throw new IncorrectUsageException(sender.translate("&eThis kit not available at the moment. &aTry again later!"), false);
+                    throw new IncorrectUsageException("This kit not available at the moment. Try again later!", false);
                 }
             }
         }
@@ -211,15 +212,15 @@ public class Kit
         }
 
         @Override
-        public String translate(String message, Object... params)
+        public String composeMessage(MessageType type, String message, Object... params)
         {
-            return this.user.translate(message, params);
+            return this.user.composeMessage(type, message, params);
         }
 
         @Override
-        public void sendTranslated(String message, Object... params)
+        public void sendTranslated(MessageType type, String message, Object... params)
         {
-            this.user.sendTranslated(message, params);
+            this.user.sendTranslated(type, message, params);
         }
 
         @Override

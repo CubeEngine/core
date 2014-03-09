@@ -26,6 +26,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -63,9 +64,7 @@ public class CropTrample extends BlockActionType
                 logEntry = logEntry.getAttached().first(); // replacing SOIL log with the crop log as the destroyed SOIL is implied
             }
         }
-        user.sendTranslated("%s&2%s &atrampeled down &6%s%s",
-                            time, logEntry.getCauserUser().getDisplayName(),
-                            logEntry.getOldBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} trampeled down {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
     }
 
     @Override

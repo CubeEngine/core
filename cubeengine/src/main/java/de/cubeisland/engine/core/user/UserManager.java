@@ -25,6 +25,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Cleanable;
 import de.cubeisland.engine.core.util.Triplet;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public interface UserManager extends Cleanable
 {
@@ -126,8 +127,8 @@ public interface UserManager extends Cleanable
      * @return the found User or null
      */
     User findUser(String name, boolean database);
-    void broadcastMessageWithPerm(String message, Permission perm, Object... params);
-    void broadcastMessage(String message, Object... args);
+    void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params);
+    void broadcastMessage(MessageType messageType, String message, Object... args);
     void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args);
     void broadcastStatus(String message, CommandSender sender, Object... args);
     Triplet<Long, String, Integer> getFailedLogin(User user);

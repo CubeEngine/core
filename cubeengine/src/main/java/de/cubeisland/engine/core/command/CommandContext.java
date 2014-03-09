@@ -22,6 +22,7 @@ import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public interface CommandContext
 {
@@ -78,10 +79,11 @@ public interface CommandContext
     /**
      * This method is a proxy to CommandSender.sendTranslated(String, Object...)
      *
+     * @param type
      * @param message the mesage to send
      * @param args the args
      */
-    void sendTranslated(String message, Object... args);
+    void sendTranslated(MessageType type, String message, Object... args);
 
     /**
      * Returns the number og arguments given to the command

@@ -30,6 +30,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
@@ -70,23 +71,15 @@ public class ItemInsert extends SimpleLogActionType
         }
         if (amount > 0)
         {
-            user.sendTranslated("%s&2%s&a placed &6%d %s&a into &6%s%s",
-                                time, logEntry.getCauserUser().getName(),
-                                amount,itemData,
-                                logEntry.getContainerTypeFromBlock(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount} {name#item} into {name#container}{}", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else if (amount < 0)
         {
-            user.sendTranslated("%s&2%s&a took &6%d %s&a out of &6%s%s",
-                                time, logEntry.getCauserUser().getName(),
-                                -amount,itemData,
-                                logEntry.getContainerTypeFromBlock(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} took {amount} {name#item} out of {name#container}{}", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a did not change the amount of &6%s&a in &6%s%s",
-                                time , logEntry.getCauserUser().getName(), itemData,
-                                logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} did not change the amount of {name#item} in {name#container}{}", time, logEntry.getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
     }
 
@@ -121,14 +114,14 @@ public class ItemInsert extends SimpleLogActionType
                 HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
-                    attachment.getHolder().sendTranslated("&cCould not rollback an item-insert!");
+                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
                     return false;
                 }
                 return true;
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated("&cInvalid Container to rollback item-insert!");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-insert!");
             }
             return false;
         }
@@ -174,14 +167,14 @@ public class ItemInsert extends SimpleLogActionType
                 HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
-                    attachment.getHolder().sendTranslated("&cCould not rollback an item-insert!");
+                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
                     return false;
                 }
                 return true;
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated("&cInvalid Container to rollback item-insert!");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-insert!");
             }
             return false;
         }

@@ -23,6 +23,7 @@ import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class BasicContext implements CommandContext
 {
@@ -88,9 +89,9 @@ public class BasicContext implements CommandContext
     }
 
     @Override
-    public void sendTranslated(String message, Object... args)
+    public void sendTranslated(MessageType type, String message, Object... args)
     {
-        this.sender.sendTranslated(message, args);
+        this.sender.sendTranslated(type, message, args);
     }
 
     @Override

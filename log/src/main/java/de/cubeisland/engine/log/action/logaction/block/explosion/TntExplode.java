@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -56,28 +57,22 @@ public class TntExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA TNT-Explosion induced by &2%s&a got rid of &6%dx %s%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),amount,
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion induced by {user} got rid of {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&aA TNT-Explosion got rid of &6%dx %s%s",
-                                    time,amount,logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion got rid of {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA TNT-Explosion induced by &2%s&a got rid of &6%s%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion induced by {user} got rid of {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&aA TNT-Explosion got rid of &6%s%s",
-                                    time,logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion got rid of {name#block}{}", time, logEntry.getOldBlock(), loc);
             }
         }
     }

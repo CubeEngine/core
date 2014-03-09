@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
 
@@ -76,7 +77,7 @@ public class PlayerCommands
         {
             if(!module.perms().COMMAND_HAT_OTHER.isAuthorized( context.getSender() ) )
             {
-                context.sendTranslated("&cYou can't set the hat of an other player.");
+                context.sendTranslated(MessageType.NEGATIVE, "You can't set the hat of an other player.");
                 return;
             }
             
@@ -84,7 +85,7 @@ public class PlayerCommands
             
             if(user == null)
             {
-                context.sendTranslated("&cUser not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "User not found!");
                 return;
             }
         }
@@ -94,7 +95,7 @@ public class PlayerCommands
         }
         else
         {
-            context.sendTranslated("&cYou has to specify a user!");
+            context.sendTranslated(MessageType.NEGATIVE, "You has to specify a user!");
             return;
         }
         
@@ -102,20 +103,20 @@ public class PlayerCommands
         {
             if(!module.perms().COMMAND_HAT_ITEM.isAuthorized( context.getSender() ))
             {
-                context.sendTranslated("&cYou can only use your item in hand!");
+                context.sendTranslated(MessageType.NEGATIVE, "You can only use your item in hand!");
                 return;
             }
             head = Match.material().itemStack( context.getArg( 0, String.class ) );
             if(head == null)
             {
-                context.sendTranslated("&cItem not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "Item not found!");
                 return;
             }
         }
         else if(console)
         {
-            context.sendTranslated("&cTrying to be Notch? No hat for you!");
-            context.sendTranslated("&ePlease specify an item!");
+            context.sendTranslated(MessageType.NEGATIVE, "Trying to be Notch? No hat for you!");
+            context.sendTranslated(MessageType.NEUTRAL, "Please specify an item!");
             return;
         }
         else
@@ -125,7 +126,7 @@ public class PlayerCommands
         }
         if (head.getTypeId() == 0)
         {
-            context.sendTranslated("&cYou do not have any item in your hand!");
+            context.sendTranslated(MessageType.NEGATIVE, "You do not have any item in your hand!");
             return;
         }
         userInventory = user.getInventory();
@@ -149,7 +150,7 @@ public class PlayerCommands
         
         if( !(context.hasFlag("q") && module.perms().COMMAND_HAT_QUIET.isAuthorized(context.getSender()) ) && module.perms().COMMAND_HAT_NOTIFY.isAuthorized( user ) )
         {
-            user.sendTranslated("&aYour hat was changed");
+            user.sendTranslated(MessageType.POSITIVE, "Your hat was changed");
         }        
     }
 
@@ -176,13 +177,13 @@ public class PlayerCommands
         {
             if (!module.perms().COMMAND_EXPLOSION_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cYou are not allowed to use the player parameter.");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use the player parameter.");
                 return;
             }
             user = context.getUser("player");
             if (user == null)
             {
-                context.sendTranslated("&cUser not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "User not found!");
                 return;
             }
             location = user.getLocation();
@@ -191,7 +192,7 @@ public class PlayerCommands
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated("&cThis command can only be used by a player!");
+                context.sendTranslated(MessageType.NEGATIVE, "This command can only be used by a player!");
                 return;
             }
             user = (User)context.getSender();
@@ -200,23 +201,23 @@ public class PlayerCommands
 
         if (power > this.module.getConfig().command.explosion.power)
         {
-            context.sendTranslated("&cThe power of the explosion shouldn't be greater than %d", this.module.getConfig().command.explosion.power);
+            context.sendTranslated(MessageType.NEGATIVE, "The power of the explosion shouldn't be greater than {integer}", this.module.getConfig().command.explosion.power);
             return;
         }
 
         if (!module.perms().COMMAND_EXPLOSION_BLOCK_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("b") || context.hasFlag("u")))
         {
-            context.sendTranslated("&cYou are not allowed to break blocks");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break blocks");
             return;
         }
         if (!module.perms().COMMAND_EXPLOSION_FIRE.isAuthorized(context.getSender()) && (context.hasFlag("f") || context.hasFlag("u")))
         {
-            context.sendTranslated("&cYou are not allowed to set fireticks");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to set fireticks");
             return;
         }
         if (!module.perms().COMMAND_EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("p") || context.hasFlag("u")))
         {
-            context.sendTranslated("&cYou are not allowed to damage an other player");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to damage an other player");
             return;
         }
 
@@ -251,12 +252,12 @@ public class PlayerCommands
 
         if (damage != -1 && !module.perms().COMMAND_LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
         {
-            context.sendTranslated("&cYou are not allowed the use the damage parameter");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed the use the damage parameter");
             return;
         }
         if (context.hasFlag("u") && !module.perms().COMMAND_LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
         {
-            context.sendTranslated("&cYou are not allowed to use the unsafe flag");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use the unsafe flag");
             return;
         }
 
@@ -265,13 +266,13 @@ public class PlayerCommands
             user = context.getUser("player");
             if (user == null)
             {
-                context.sendTranslated("&cUser not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "User not found!");
                 return;
             }
             location = user.getLocation();
             if ((damage != -1 && damage < 0) || damage > 20)
             {
-                context.sendTranslated("&cThe damage value has to be a number from 1 to 20");
+                context.sendTranslated(MessageType.NEGATIVE, "The damage value has to be a number from 1 to 20");
                 return;
             }
             user.setFireTicks(20 * context.getParam("fireticks", 0));
@@ -280,7 +281,7 @@ public class PlayerCommands
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated("&cThis command can only be used by a player!");
+                context.sendTranslated(MessageType.NEGATIVE, "This command can only be used by a player!");
                 return;
             }
             user = (User)context.getSender();
@@ -307,7 +308,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser not found!");
+            context.sendTranslated(MessageType.NEGATIVE, "User not found!");
             return;
         }
 
@@ -315,7 +316,7 @@ public class PlayerCommands
 
         if (damage < 1 || damage > 20)
         {
-            context.sendTranslated("&cOnly damage values from 1 to 20 are allowed!");
+            context.sendTranslated(MessageType.NEGATIVE, "Only damage values from 1 to 20 are allowed!");
             return;
         }
 
@@ -332,7 +333,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser not found!");
+            context.sendTranslated(MessageType.NEGATIVE, "User not found!");
             return;
         }
 
@@ -344,7 +345,7 @@ public class PlayerCommands
         }
         else if (seconds < 1 || seconds > this.module.getConfig().command.burn.maxTime)
         {
-            context.sendTranslated("&cOnly 1 to %d seconds are permitted!", this.module.getConfig().command.burn.maxTime);
+            context.sendTranslated(MessageType.NEGATIVE, "Only 1 to {integer} seconds are permitted!", this.module.getConfig().command.burn.maxTime);
             return;
         }
 

@@ -48,8 +48,11 @@ import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
+import static de.cubeisland.engine.core.util.formatter.MessageType.CRITICAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class CubeCommandExecutor implements CommandExecutor, TabCompleter
 {
@@ -299,7 +302,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
         if (t instanceof MissingParameterException)
         {
-            sender.sendTranslated("&cThe parameter &6%s&c is missing!", t.getMessage());
+            sender.sendTranslated(NEGATIVE, "The parameter {name#parameter} is missing!", t.getMessage());
         }
         else if (t instanceof IncorrectUsageException)
         {
@@ -310,7 +313,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             }
             else
             {
-                sender.sendTranslated("&cThat seems wrong...");
+                sender.sendTranslated(NEGATIVE, "That seems wrong...");
             }
             if (e.getDisplayUsage())
             {
@@ -323,7 +326,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                 {
                     usage = this.command.getUsage(sender);
                 }
-                sender.sendTranslated("&eProper usage: &f%s", usage);
+                sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
             }
         }
         else if (t instanceof PermissionDeniedException)
@@ -335,15 +338,15 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             }
             else
             {
-                sender.sendTranslated("&cYou're not allowed to do this!");
-                sender.sendTranslated("&cContact an administrator if you think this is a mistake!");
+                sender.sendTranslated(NEGATIVE, "You're not allowed to do this!");
+                sender.sendTranslated(NEGATIVE, "Contact an administrator if you think this is a mistake!");
             }
-            sender.sendTranslated("&cMissing permission: &6%s", e.getPermission());
+            sender.sendTranslated(NEGATIVE, "Missing permission: {name}", e.getPermission());
         }
         else
         {
-            sender.sendTranslated("&4An unknown error occurred while executing this command!");
-            sender.sendTranslated("&4Please report this error to an administrator.");
+            sender.sendTranslated(CRITICAL, "An unknown error occurred while executing this command!");
+            sender.sendTranslated(CRITICAL, "Please report this error to an administrator.");
             this.command.getModule().getLog().debug(t, t.getLocalizedMessage());
         }
     }

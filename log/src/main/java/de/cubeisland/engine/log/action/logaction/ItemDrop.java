@@ -33,6 +33,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 import de.cubeisland.engine.log.storage.ItemData;
@@ -128,31 +129,22 @@ public class ItemDrop extends SimpleLogActionType
         {
             if (logEntry.getBlock() != null)
             {
-                user.sendTranslated("%s&2%s&a let drop &6%d %s&a from &6%s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(),
-                                    amount, logEntry.getItemData(),logEntry.getContainerTypeFromBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} let drop {amount} {name#item} from {name#container}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getItemData(), logEntry.getContainerTypeFromBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s&a dropped &6%d %s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(),
-                                    amount, logEntry.getItemData(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} dropped {amount} {name#item}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getItemData(), loc);
             }
         }
         else
         {
             if (logEntry.getBlock() != null)
             {
-                user.sendTranslated("%s&6%s&a let drop %d &6%s&a from &6%s%s",
-                                    time, logEntry.getCauserEntity(),
-                                    amount, logEntry.getItemData(),
-                                    logEntry.getContainerTypeFromBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} let drop {amount} {name#item} from {name#container}{}", time, logEntry.getCauserEntity(), amount, logEntry.getItemData(), logEntry.getContainerTypeFromBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&6%s&a dropped %d &6%s%s",
-                                    time, logEntry.getCauserEntity(),
-                                    amount, logEntry.getItemData(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} dropped {amount} {name#item}{}", time, logEntry.getCauserEntity(), amount, logEntry.getItemData(), loc);
             }
 
         }

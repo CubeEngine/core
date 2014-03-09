@@ -75,7 +75,7 @@ public class WorldConfig extends YamlConfiguration
                      "Empty means main world of this universe")
         public ConfigWorld respawnWorld; // empty means main universe world
         @Comment("If false sleeping in a bed will not set a players spawn. Not implemented yet")
-        public boolean allowBedRespawn = true; // TODO implement bedspawn
+        public boolean allowBedRespawn = true;
         @Comment("Keeps the spawn of this world loaded.")
         public boolean keepSpawnInMemory = false;
         @Comment("This worlds spawn")
@@ -87,7 +87,6 @@ public class WorldConfig extends YamlConfiguration
     {
         @Comment("If true players wont need permissions to access this world")
         public boolean free = true;
-        public boolean interceptTeleport = false; // TODO
     }
 
     @Comment("Mob Spawing Settings of this world")
@@ -190,7 +189,6 @@ public class WorldConfig extends YamlConfiguration
         this.pvp = world.getPVP();
         this.autosave = world.isAutoSave();
         this.difficulty = world.getDifficulty();
-        // TODO gamemode
         for (String rule : world.getGameRules())
         {
             String value = world.getGameRuleValue(rule);

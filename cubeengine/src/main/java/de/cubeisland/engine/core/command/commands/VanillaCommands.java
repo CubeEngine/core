@@ -50,6 +50,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
@@ -96,24 +97,26 @@ public class VanillaCommands implements CommandHolder
         final String message = context.getStrings(0);
         if (message != null)
         {
-            context.getCore().getUserManager().broadcastMessageWithPerm(message, core.perms().COMMAND_RELOAD_NOTIFY);
+            context.getCore().getUserManager().broadcastMessageWithPerm(MessageType.NONE, message, core.perms().COMMAND_RELOAD_NOTIFY);
         }
 
         if (context.hasFlag("m"))
         {
-            context.sendTranslated("&eReloading the modules...");
+            context.sendTranslated(MessageType.NEUTRAL, "Reloading the modules...");
             this.core.getModuleManager().reloadModules();
-            context.sendTranslated("&aSuccessfully reloaded %d modules!");
+            context.sendTranslated(MessageType.POSITIVE, "Successfully reloaded {amount} modules!", this.core.getModuleManager().getModules().size());
         }
         else
         {
-            context.sendTranslated("&eReloading the whole server... (this may take some time)");
+            context.sendTranslated(MessageType.NEUTRAL, "Reloading the whole server... (this may take some time)");
             // pre-translate to avoid a NPE
-            final String preTranslated = context.getSender().translate("&aThe reload is completed after %d seconds");
-
+            Locale locale = context.getSender().getLocale();
             long time = System.currentTimeMillis();
             this.core.getServer().reload();
-            context.sendMessage(String.format(preTranslated, MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
+            context.sendMessage(this.core.getMessageCompositor()
+                                         .composeMessage(locale, ChatFormat.BRIGHT_GREEN + this.core.getI18n()
+                                                                                                    .translate(locale, "The reload is completed after {amount} seconds"), MILLISECONDS
+                                                             .toSeconds(System.currentTimeMillis() - time)));
         }
     }
 
@@ -135,7 +138,7 @@ public class VanillaCommands implements CommandHolder
             }
             else
             {
-                context.sendTranslated("&cYou have to specify a world!");
+                context.sendTranslated(MessageType.NEGATIVE, "You have to specify a world!");
                 return;
             }
         }
@@ -148,7 +151,7 @@ public class VanillaCommands implements CommandHolder
                 difficulty = Difficulty.getByValue(difficultyLevel);
                 if (difficulty == null)
                 {
-                    sender.sendTranslated("&cThe given difficulty level is unknown!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "The given difficulty level is unknown!");
                     return;
                 }
             }
@@ -157,19 +160,19 @@ public class VanillaCommands implements CommandHolder
                 difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.US));
                 if (difficulty == null)
                 {
-                    sender.sendTranslated("&c'%s' is not a known difficulty!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "{input} is not a known difficulty!", context.getString(0));
                     return;
                 }
             }
             world.setDifficulty(difficulty);
-            context.sendMessage("&aThe difficulty has been successfully set!");
+            context.sendTranslated(MessageType.POSITIVE, "The difficulty has been successfully set!");
         }
         else
         {
-            context.sendTranslated("The current difficulty level: %s", sender.translate(world.getDifficulty().toString().toLowerCase(Locale.US)));
+            context.sendTranslated(MessageType.NONE, "The current difficulty level: {input}", world.getDifficulty().name());
             if (this.core.getServer().isHardcore())
             {
-                context.sendTranslated("Your server has the hardcore mode enabled.");
+                context.sendTranslated(MessageType.NONE, "Your server has the hardcore mode enabled.");
             }
         }
     }
@@ -188,17 +191,19 @@ public class VanillaCommands implements CommandHolder
             Set<OfflinePlayer> ops = this.core.getServer().getOperators();
             if (ops.isEmpty())
             {
-                context.sendTranslated("&eThere are currently no operators!");
+                context.sendTranslated(MessageType.NEUTRAL, "There are currently no operators!");
             }
             else
             {
-                context.sendTranslated("The following users are operators:");
+                context.sendTranslated(MessageType.NEUTRAL, "The following users are operators:");
                 context.sendMessage(" ");
                 final CommandSender sender = context.getSender();
                 final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, sender.getLocale());
                 for (OfflinePlayer player : ops)
                 {
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.translate("Last seen: %s", dateFormat.format(new Date(player.getLastPlayed()))) + ")");
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.composeMessage(
+                        MessageType.NONE, "Last seen: {input#date}", dateFormat
+                        .format(new Date(player.getLastPlayed()))) + ")");
                 }
             }
             return;
@@ -206,8 +211,8 @@ public class VanillaCommands implements CommandHolder
         User user = this.core.getUserManager().getUser(context.getString(0), false);
         if (user == null && !context.hasFlag("f"))
         {
-            context.sendTranslated("&cThe given player has never played on this server!");
-            context.sendTranslated("&cIf you still want to op him, use the -force flag.");
+            context.sendTranslated(MessageType.NEGATIVE, "The given player has never played on this server!");
+            context.sendTranslated(MessageType.NEGATIVE, "If you still want to op him, use the -force flag.");
             return;
         }
 
@@ -218,16 +223,16 @@ public class VanillaCommands implements CommandHolder
         }
         if (offlinePlayer.isOp())
         {
-            context.sendTranslated("&eThe given player is already an operator.");
+            context.sendTranslated(MessageType.NEUTRAL, "The given player is already an operator.");
             return;
         }
         offlinePlayer.setOp(true);
         user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendTranslated("&aYou were opped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated(MessageType.POSITIVE, "You were opped by {sender}", context.getSender());
         }
-        context.sendTranslated("&2%s &ais now an operator!", offlinePlayer.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is now an operator!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -235,7 +240,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendTranslated("&eUser &2%s &ehas been opped by &2%s&e!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated(MessageType.NEUTRAL, "User {user} has been opped by {sender}!", offlinePlayer, context.getSender());
         }
 
         this.core.getLog().info("Player {} has been opped by {}", offlinePlayer.getName(), context.getSender().getName());
@@ -257,28 +262,28 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated("&cYou have to specify an operator!");
+            context.sendTranslated(MessageType.NEGATIVE, "You have to specify an operator!");
             return;
         }
 
         if (!sender.getName().equals(offlinePlayer.getName()) && !core.perms().COMMAND_DEOP_OTHER.isAuthorized(sender))
         {
-            sender.sendTranslated("&cYou are not allowed to deop others!");
+            sender.sendTranslated(MessageType.NEGATIVE, "You are not allowed to deop others!");
             return;
         }
 
         if (!offlinePlayer.isOp())
         {
-            sender.sendTranslated("&cThe player you tried to deop is not an operator.");
+            sender.sendTranslated(MessageType.NEGATIVE, "The player you tried to deop is not an operator.");
             return;
         }
         offlinePlayer.setOp(false);
         User user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
         if (user != null)
         {
-            user.sendTranslated("&aYou were deopped by &2%s&a.", context.getSender().getName());
+            user.sendTranslated(MessageType.POSITIVE, "You were deopped by {user}.", context.getSender());
         }
-        context.sendTranslated("&2%s&a is no operator anymore!", offlinePlayer.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is no operator anymore!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
@@ -286,7 +291,7 @@ public class VanillaCommands implements CommandHolder
             {
                 continue;
             }
-            onlineUser.sendTranslated("&aUser &2%s&a has been opped by &2%s&a!", offlinePlayer.getName(), context.getSender().getName());
+            onlineUser.sendTranslated(MessageType.POSITIVE, "User {user} has been opped by {sender}!", offlinePlayer, context.getSender());
         }
 
         this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());
@@ -298,7 +303,7 @@ public class VanillaCommands implements CommandHolder
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
 
-        context.sendTranslated("There are %d plugins and %d CubeEngine modules loaded:", plugins.length, modules.size());
+        context.sendTranslated(MessageType.NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:", plugins.length, modules.size());
         context.sendMessage(" ");
         context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + context.getCore().getVersion() + ")");
 
@@ -325,29 +330,29 @@ public class VanillaCommands implements CommandHolder
             World world = context.getArg(0, World.class);
             if (world == null)
             {
-                context.sendTranslated("&cThe given world was not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "The given world was not found!");
                 return;
             }
             
-            context.sendTranslated("&eSaving...");
+            context.sendTranslated(MessageType.NEUTRAL, "Saving...");
             world.save();
             for(Player player : world.getPlayers())
             {
                 player.saveData();
             }
-            context.sendTranslated("&aWorld '%s' has been saved to disk!", world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "World {world} has been saved to disk!", world);
         }
         else
         {
-            context.sendTranslated("&eSaving...");
+            context.sendTranslated(MessageType.NEUTRAL, "Saving...");
             Profiler.startProfiling("save-worlds");
             for (World world : this.core.getServer().getWorlds())
             {
                 world.save();
             }
             this.core.getServer().savePlayers();
-            context.sendTranslated("&aAll worlds have been saved to disk!");
-            context.sendTranslated("&aThe saving took %d milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
+            context.sendTranslated(MessageType.POSITIVE, "All worlds have been saved to disk!");
+            context.sendTranslated(MessageType.POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
         }
     }
 
@@ -364,22 +369,21 @@ public class VanillaCommands implements CommandHolder
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)
             {
-                context.sendTranslated("&cThe given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
+                context.sendTranslated(MessageType.NEGATIVE, "The given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
             }
             else
             {
+                context.sendTranslated(MessageType.NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", plugin.getName(), plugin.getDescription().getVersion());
                 context.sendMessage(" ");
-                context.sendTranslated("&e%s&f is currently running in version &9%s&f.", plugin.getName(), plugin.getDescription().getVersion());
-                context.sendMessage(" ");
-                context.sendTranslated("&nPlugin information:");
+                context.sendTranslated(MessageType.NEUTRAL, ChatFormat.UNDERLINE + "Plugin information:");
                 context.sendMessage(" ");
                 if (plugin instanceof Core)
                 {
                     showSourceVersion(context, core.getSourceVersion());
                 }
-                context.sendTranslated("Description: &6%s", plugin.getDescription().getDescription());
-                context.sendTranslated("Website: &6%s", plugin.getDescription().getWebsite());
-                context.sendTranslated("Authors:");
+                context.sendTranslated(MessageType.NEUTRAL, "Description: {input}", plugin.getDescription().getDescription());
+                context.sendTranslated(MessageType.NEUTRAL, "Website: {input}", plugin.getDescription().getWebsite());
+                context.sendTranslated(MessageType.NEUTRAL, "Authors:");
                 for (String author : plugin.getDescription().getAuthors())
                 {
                     context.sendMessage("   - " + ChatFormat.AQUA + author);
@@ -388,10 +392,10 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated("This server is running &e%s&r in version &9%s", server.getName(), server.getVersion());
-            context.sendTranslated("&eBukkit API&r version: &9%s", server.getBukkitVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated("Expanded and improved by &aCubeEngine&r version &9%s", context.getCore().getVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion());
             showSourceVersion(context, core.getSourceVersion());
         }
     }
@@ -402,8 +406,8 @@ public class VanillaCommands implements CommandHolder
         if (context.hasFlag("s") && sourceVersion != null)
         {
             final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
-            context.sendTranslated("&aSource Version: &6%s", sourceVersion);
-            context.sendTranslated("&aSource link: &6%s", SOURCE_LINK + commit);
+            context.sendTranslated(MessageType.POSITIVE, "Source Version: {input}", sourceVersion);
+            context.sendTranslated(MessageType.POSITIVE, "Source link: {input}", SOURCE_LINK + commit);
         }
     }
 
@@ -423,18 +427,18 @@ public class VanillaCommands implements CommandHolder
         {
             if (!context.hasArgs())
             {
-                context.sendTranslated("&cYou have to specify the player to add to the whitelist!");
+                context.sendTranslated(MessageType.NEGATIVE, "You have to specify the player to add to the whitelist!");
                 return;
             }
             final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
             if (player.isWhitelisted())
             {
-                context.sendTranslated("&eThe given player is already whitelisted.");
+                context.sendTranslated(MessageType.NEUTRAL, "The given player is already whitelisted.");
                 return;
             }
 
             player.setWhitelisted(true);
-            context.sendTranslated("&2%s&a is now whitelisted.", player.getName());
+            context.sendTranslated(MessageType.POSITIVE, "{user} is now whitelisted.", player);
         }
 
         @Command(names = {
@@ -444,18 +448,18 @@ public class VanillaCommands implements CommandHolder
         {
             if (!context.hasArgs())
             {
-                context.sendTranslated("&cYou have to specify the player to remove from the whitelist!");
+                context.sendTranslated(MessageType.NEGATIVE, "You have to specify the player to remove from the whitelist!");
                 return;
             }
             final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
             if (!player.isWhitelisted())
             {
-                context.sendTranslated("&eThe given player is not whitelisted.");
+                context.sendTranslated(MessageType.NEUTRAL, "The given player is not whitelisted.");
                 return;
             }
 
             player.setWhitelisted(false);
-            context.sendTranslated("&2%s&a is not whitelisted anymore.", player.getName());
+            context.sendTranslated(MessageType.POSITIVE, "{user} is not whitelisted anymore.", player.getName());
         }
 
         @Command(desc = "Lists all the whitelisted players")
@@ -464,20 +468,21 @@ public class VanillaCommands implements CommandHolder
             Set<OfflinePlayer> whitelist = this.core.getServer ().getWhitelistedPlayers();
             if (!this.core.getServer().hasWhitelist())
             {
-                context.sendTranslated("&eThe whitelist is currently disabled.");
+                context.sendTranslated(MessageType.NEUTRAL, "The whitelist is currently disabled.");
             }
             else
             {
-                context.sendTranslated("&2The whitelist is enabled!.");
+                context.sendTranslated(MessageType.POSITIVE, "The whitelist is enabled!.");
             }
             context.sendMessage(" ");
             if (whitelist.isEmpty())
             {
-                context.sendTranslated("&eThere are currently no whitelisted players!");
+                context.sendTranslated(MessageType.NEUTRAL, "There are currently no whitelisted players!");
             }
             else
             {
-                context.sendTranslated("The following players are whitelisted:");
+                context.sendTranslated(MessageType.NEUTRAL, "The following players are whitelisted:");
+                // TODO show op
                 context.sendMessage(" ");
                 for (OfflinePlayer player : whitelist)
                 {
@@ -491,12 +496,12 @@ public class VanillaCommands implements CommandHolder
         {
             if (this.core.getServer().hasWhitelist())
             {
-                context.sendTranslated("&cThe whitelist is already enabled!");
+                context.sendTranslated(MessageType.NEGATIVE, "The whitelist is already enabled!");
                 return;
             }
             this.core.getServer().setWhitelist(true);
             BukkitUtils.saveServerProperties();
-            context.sendTranslated("&aThe whitelist is now enabled.");
+            context.sendTranslated(MessageType.POSITIVE, "The whitelist is now enabled.");
         }
 
         @Command(desc = "Disables the whitelisting")
@@ -504,12 +509,12 @@ public class VanillaCommands implements CommandHolder
         {
             if (!this.core.getServer().hasWhitelist())
             {
-                context.sendTranslated("&cThe whitelist is already disabled!");
+                context.sendTranslated(MessageType.NEGATIVE, "The whitelist is already disabled!");
                 return;
             }
             this.core.getServer().setWhitelist(false);
             BukkitUtils.saveServerProperties();
-            context.sendTranslated("&aThe whitelist is now disabled.");
+            context.sendTranslated(MessageType.POSITIVE, "The whitelist is now disabled.");
         }
 
         @Command(desc = "Wipes the whitelist completely")
@@ -517,12 +522,12 @@ public class VanillaCommands implements CommandHolder
         {
             if (context.isSender(User.class))
             {
-                context.sendTranslated("&cThis command is too dangerous for users!");
+                context.sendTranslated(MessageType.NEGATIVE, "This command is too dangerous for users!");
                 return;
             }
 
             BukkitUtils.wipeWhiteliste();
-            context.sendTranslated("&aThe whitelist was successfully wiped!");
+            context.sendTranslated(MessageType.POSITIVE, "The whitelist was successfully wiped!");
         }
     }
 }

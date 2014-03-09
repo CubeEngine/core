@@ -39,7 +39,7 @@ import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Version;
-
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 
 public class ModuleCommands extends ContainerCommand
@@ -64,8 +64,8 @@ public class ModuleCommands extends ContainerCommand
 
         if (!modules.isEmpty())
         {
-            context.sendTranslated("&eThese are the loaded modules.");
-            context.sendTranslated("&aGreen (+)&r stands for enabled, &cred (-)&r for disabled.");
+            context.sendTranslated(MessageType.NEUTRAL, "These are the loaded modules.");
+            context.sendTranslated(MessageType.NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
             context.sendMessage(" ");
 
             for (Module module : modules)
@@ -82,7 +82,7 @@ public class ModuleCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated("&eThere are no modules loaded!");
+            context.sendTranslated(MessageType.NEUTRAL, "There are no modules loaded!");
         }
     }
 
@@ -92,15 +92,15 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendTranslated("&cThe given module could not be found!");
+            context.sendTranslated(MessageType.NEGATIVE, "The given module could not be found!");
         }
         else if (this.mm.enableModule(module))
         {
-            context.sendTranslated("&aThe given module was successfully enabled!");
+            context.sendTranslated(MessageType.POSITIVE, "The given module was successfully enabled!");
         }
         else
         {
-            context.sendTranslated("&4An error occurred while enabling the module!");
+            context.sendTranslated(MessageType.CRITICAL, "An error occurred while enabling the module!");
         }
     }
 
@@ -110,12 +110,12 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendTranslated("&cThe given module could not be found!");
+            context.sendTranslated(MessageType.NEGATIVE, "The given module could not be found!");
         }
         else
         {
             this.mm.disableModule(module);
-            context.sendTranslated("&aThe module &6%s&a was successfully disabled!", module.getId());
+            context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully disabled!", module.getId());
         }
     }
 
@@ -125,12 +125,12 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendTranslated("&cThe given module could not be found!");
+            context.sendTranslated(MessageType.NEGATIVE, "The given module could not be found!");
         }
         else
         {
             this.mm.unloadModule(module);
-            context.sendTranslated("&aThe module &6%s&a was successfully unloaded!", module.getId());
+            context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully unloaded!", module.getId());
         }
     }
 
@@ -140,7 +140,7 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendTranslated("&cThe given module could not be found!");
+            context.sendTranslated(MessageType.NEGATIVE, "The given module could not be found!");
         }
         else
         {
@@ -149,17 +149,17 @@ public class ModuleCommands extends ContainerCommand
                 this.mm.reloadModule(module, context.hasFlag("f"));
                 if (context.hasFlag("f"))
                 {
-                    context.sendTranslated("&aThe module &6%s&a was successfully reloaded from file!", module.getId());
+                    context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getId());
                 }
                 else
                 {
-                    context.sendTranslated("&aThe module &6%s&a was successfully reloaded!", module.getId());
+                    context.sendTranslated(MessageType.POSITIVE, "The module {name#module} was successfully reloaded!", module.getId());
                 }
             }
             catch (ModuleException ex)
             {
-                context.sendTranslated("&cFailed to reload the module!");
-                context.sendTranslated("&eCheck the server log for info.");
+                context.sendTranslated(MessageType.NEGATIVE, "Failed to reload the module!");
+                context.sendTranslated(MessageType.NEUTRAL, "Check the server log for info.");
                 context.getCore().getLog().error(ex, "Failed to reload the module {}!", module.getName());
             }
         }
@@ -171,7 +171,7 @@ public class ModuleCommands extends ContainerCommand
         String moduleFileName = context.getString(0);
         if (moduleFileName.contains(".") || moduleFileName.contains("/") || moduleFileName.contains("\\"))
         {
-            context.sendTranslated("&cThe given file name is invalid!");
+            context.sendTranslated(MessageType.NEGATIVE, "The given file name is invalid!");
             return;
         }
 
@@ -180,13 +180,13 @@ public class ModuleCommands extends ContainerCommand
         Path modulePath = modulesPath.resolve(context.getString(0) + ".jar");
         if (!Files.exists(modulePath))
         {
-            context.sendTranslated("&cThe given module file was not found! The name might be case sensitive.");
+            context.sendTranslated(MessageType.NEGATIVE, "The given module file was not found! The name might be case sensitive.");
             return;
         }
 
         if (!Files.isReadable(modulePath))
         {
-            context.sendTranslated("&cThe module exists, but cannot be read! Check the file permissions.");
+            context.sendTranslated(MessageType.NEGATIVE, "The module exists, but cannot be read! Check the file permissions.");
             return;
         }
 
@@ -196,15 +196,15 @@ public class ModuleCommands extends ContainerCommand
             Module module = mm.loadModule(modulePath);
             mm.enableModule(module);
 
-            context.sendTranslated("&aThe module &6%s&a has been successfully loaded and enabled!", module.getName());
+            context.sendTranslated(MessageType.POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getName());
         }
         catch (ModuleAlreadyLoadedException e)
         {
-            context.sendTranslated("&eThis module is already loaded, try reloading it.");
+            context.sendTranslated(MessageType.NEUTRAL, "This module is already loaded, try reloading it.");
         }
         catch (ModuleException ex)
         {
-            context.sendTranslated("&cThe module failed to load! Check the server log for info.");
+            context.sendTranslated(MessageType.NEGATIVE, "The module failed to load! Check the server log for info.");
             context.getCore().getLog().error(ex, "Failed to load a module from file {}!", modulePath);
         }
     }
@@ -217,13 +217,13 @@ public class ModuleCommands extends ContainerCommand
         Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
-            context.sendTranslated("&cCould not find the module &6%s&c!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Could not find the module {name#module}!", context.getString(0));
             return;
         }
         ModuleInfo moduleInfo = module.getInfo();
-        context.sendTranslated("&aName: &6%s", moduleInfo.getName());
-        context.sendTranslated("&aDescription: &6%s", moduleInfo.getDescription());
-        context.sendTranslated("&aVersion: &6%s", moduleInfo.getVersion());
+        context.sendTranslated(MessageType.POSITIVE, "Name: {input}", moduleInfo.getName());
+        context.sendTranslated(MessageType.POSITIVE, "Description: {input}", moduleInfo.getDescription());
+        context.sendTranslated(MessageType.POSITIVE, "Version: {input}", moduleInfo.getVersion());
         VanillaCommands.showSourceVersion(context, moduleInfo.getSourceVersion());
 
         Map<String, Version> dependencies = moduleInfo.getDependencies();
@@ -232,11 +232,11 @@ public class ModuleCommands extends ContainerCommand
         Set<String> services = moduleInfo.getServices();
         Set<String> providedServices = moduleInfo.getProvidedServices();
 
-        String green = ChatFormat.parseFormats("   &a- ");
-        String red = ChatFormat.parseFormats("   &c- ");
+        String green = "   " + ChatFormat.BRIGHT_GREEN + "- ";
+        String red = "   " + ChatFormat.RED + "- ";
         if (!providedServices.isEmpty())
         {
-            context.sendTranslated("&aProvided services:");
+            context.sendTranslated(MessageType.POSITIVE, "Provided services:");
             for (String service : providedServices)
             {
                 context.sendMessage(green + service);
@@ -244,7 +244,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!dependencies.isEmpty())
         {
-            context.sendTranslated("&aModule dependencies:");
+            context.sendTranslated(MessageType.POSITIVE, "Module dependencies:");
             for (String dependency : dependencies.keySet())
             {
                 Module dep = this.mm.getModule(dependency);
@@ -260,7 +260,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!softDependencies.isEmpty())
         {
-            context.sendTranslated("&aModule soft-dependencies:");
+            context.sendTranslated(MessageType.POSITIVE, "Module soft-dependencies:");
             for (String dependency : softDependencies.keySet())
             {
                 Module dep = this.mm.getModule(dependency);
@@ -276,7 +276,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!pluginDependencies.isEmpty())
         {
-            context.sendTranslated("&aPlugin dependencies:");
+            context.sendTranslated(MessageType.POSITIVE, "Plugin dependencies:");
             for (String dependency : pluginDependencies)
             {
                 Plugin dep = Bukkit.getPluginManager().getPlugin(dependency);
@@ -292,7 +292,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!services.isEmpty())
         {
-            context.sendTranslated("&aService dependencies:");
+            context.sendTranslated(MessageType.POSITIVE, "Service dependencies:");
             for (String service : services)
             {
                 context.sendMessage(green + service); // TODO colors to show if service is found OR NOT

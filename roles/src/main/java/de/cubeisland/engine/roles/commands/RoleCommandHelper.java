@@ -25,6 +25,7 @@ import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.Role;
@@ -39,8 +40,8 @@ public abstract class RoleCommandHelper extends ContainerCommand
     protected final Roles module;
     protected final WorldManager worldManager;
 
-    protected final String LISTELEM = ChatFormat.parseFormats("- &e%s");
-    protected final String LISTELEM_VALUE = ChatFormat.parseFormats("- &e%s&f: &6%s");
+    protected final String LISTELEM = "- " + ChatFormat.YELLOW + "%s";
+    protected final String LISTELEM_VALUE = "- " + ChatFormat.YELLOW + "%s" + ChatFormat.WHITE + ": " + ChatFormat.GOLD + "%s";
 
     public RoleCommandHelper(Roles module)
     {
@@ -66,19 +67,19 @@ public abstract class RoleCommandHelper extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
+                    context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
                 }
             }
             else
             {
                 if (ManagementCommands.curWorldOfConsole == null)
                 {
-                    context.sendTranslated("&cYou have to provide a world with &6[in <world]&c!");
-                    context.sendTranslated("&eOr you can define a default-world with &6/roles admin defaultworld <world>");
+                    context.sendTranslated(MessageType.NEGATIVE, "You have to provide a world with {text:in world}!");
+                    context.sendTranslated(MessageType.NEUTRAL, "Or you can define a default-world with {text:/roles admin defaultworld <world>}");
                     return null;
                 }
                 world = ManagementCommands.curWorldOfConsole;
-                context.sendTranslated("&eYou are using &6%s&e as current world.", world.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
             }
         }
         else
@@ -86,7 +87,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
             world = context.getParam("in");
             if (world == null)
             {
-                context.sendTranslated("&cWorld %s not found!", context.getString("in"));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString("in"));
                 return null;
             }
         }
@@ -100,12 +101,12 @@ public abstract class RoleCommandHelper extends ContainerCommand
         {
             if (world == null)
             {
-                context.sendTranslated("&cCould not find the global role &6%s&c.", name);
+                context.sendTranslated(MessageType.NEGATIVE, "Could not find the global role {name}.", name);
                 return null;
             }
             else
             {
-                context.sendTranslated("&cCould not find the role &6%s&c in &6%s&c.", name, world.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "Could not find the role {name} in {world}", name, world);
                 return null;
             }
         }

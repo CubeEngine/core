@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -79,13 +80,11 @@ public class PlayerJoin extends SimpleLogActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&2%s&a joined the server &6x%d%s",
-                                time,logEntry.getCauserUser().getDisplayName(),logEntry.getAttached().size() +1 , loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} joined the server x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size() +1, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a joined the server%s",
-                                time, logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} joined the server{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         //TODO ip if known
     }

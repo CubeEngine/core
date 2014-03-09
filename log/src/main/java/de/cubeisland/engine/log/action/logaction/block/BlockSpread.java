@@ -28,6 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockSpreadEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -69,8 +70,7 @@ public class BlockSpread extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s&a spreaded%s",
-                            time, logEntry.getNewBlock(),loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} spreaded{}", time, logEntry.getNewBlock(), loc);
     }
 
 

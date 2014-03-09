@@ -24,9 +24,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class MuteListener implements Listener
 {
@@ -52,7 +53,7 @@ public class MuteListener implements Listener
                 if (bUser.getMuted() != null && System.currentTimeMillis() < bUser.getMuted().getTime())
                 {
                     event.setCancelled(true);
-                    sender.sendTranslated("&cYou try to speak but nothing happens!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You try to speak but nothing happens!");
                 }
             }
             // ignored?

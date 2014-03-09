@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -56,29 +57,22 @@ public class FireballExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Fireball flying towards &2%s &ablasted away &6%dx %s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(), amount,
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball flying towards {user} blasted away {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&aA Fireball blasted away &6%dx %s%s",
-                                    time, amount,
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball blasted away {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated("%s&aA Fireball flying towards &2%s &ablasted away &6%s%s",
-                                    time, logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball flying towards {user} blasted away {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated("%s&aA Fireball blasted away &6%s%s",
-                                    time,logEntry.getOldBlock(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball blasted away {name#block}{}", time, logEntry.getOldBlock(), loc);
             }
         }
     }

@@ -31,6 +31,7 @@ import org.bukkit.Location;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
 
@@ -66,7 +67,7 @@ public class QueryResults
         }
 
         int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
-        user.sendTranslated("&6%d&a distinct logs (&6%d&a pages)", this.logEntries.size(), totalPages);
+        user.sendTranslated(MessageType.POSITIVE, "{amount} distinct logs ({amount} pages)", this.logEntries.size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
@@ -94,11 +95,11 @@ public class QueryResults
                 totalPages = (compressedEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
                 if (totalPages > 1)
                 {
-                    user.sendTranslated("&aCompressed into &6%d&a logs! (&6%d&a pages)", compressedEntries.size(), totalPages);
+                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs! ({amount} pages)", compressedEntries.size(), totalPages);
                 }
                 else
                 {
-                    user.sendTranslated("&aCompressed into &6%d&a logs!", compressedEntries.size());
+                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs!", compressedEntries.size());
                 }
             }
         }
@@ -121,11 +122,11 @@ public class QueryResults
         }
         if (show.page == 1)
         {
-            user.sendTranslated("&aShowing %d most recent logs:", showing);
+            user.sendTranslated(MessageType.POSITIVE, "Showing {integer} most recent logs:", showing);
         }
         else
         {
-            user.sendTranslated("&aShowing %d logs (Page %d):", showing, show.page);
+            user.sendTranslated(MessageType.POSITIVE, "Showing {integer} logs (Page {integer}):", showing, show.page);
         }
         int i = 0;
         int cpage = 1;
@@ -143,7 +144,15 @@ public class QueryResults
         {
             if (cpage == show.page)
             {
-                logEntry.getActionType().showLogEntry(user,parameter,logEntry, show);
+                try
+                {
+                    logEntry.getActionType().showLogEntry(user,parameter,logEntry, show);
+                }
+                catch (Exception e)
+                {
+                    module.getLog().error(e, "An error occurred while showing LogEntries!");
+                    user.sendTranslated(MessageType.CRITICAL, "Internal Error! Could not show LogEntry");
+                }
             }
             i++;
             if (i % show.pagelimit == 0)
@@ -223,7 +232,7 @@ public class QueryResults
         {
             if (!logEntry.rollback(attachment, true, preview))
             {
-                attachment.getHolder().sendTranslated("&cCould not Rollback:");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not Rollback:");
                 logEntry.getActionType().showLogEntry(attachment.getHolder(), null, logEntry, show);
                 CubeEngine.getLog().warn("Could not rollback!");
             }
@@ -290,7 +299,7 @@ public class QueryResults
         {
             if (!logEntry.redo(attachment, true, preview))
             {
-                attachment.getHolder().sendTranslated("&cCould not Redo:");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not Redo:");
                 logEntry.getActionType().showLogEntry(attachment.getHolder(), null, logEntry, show);
                 CubeEngine.getLog().warn("Could not redo!");
             }

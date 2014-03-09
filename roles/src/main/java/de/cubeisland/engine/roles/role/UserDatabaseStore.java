@@ -28,6 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.roles.RoleAppliedEvent;
 import de.cubeisland.engine.roles.storage.UserMetaData;
 import de.cubeisland.engine.roles.storage.UserPermission;
@@ -259,7 +260,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
             {
                 if (!attachment.isOfflineMsgReceived())
                 {
-                    user.sendTranslated("&cThe server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
+                    user.sendTranslated(MessageType.NEGATIVE, "The server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
                     attachment.setOfflineMsgReceived(true);
                 }
                 this.module.getLog().warn("Role-permissions not applied! Server is running in unsecured offline-mode!");
@@ -300,13 +301,13 @@ public class UserDatabaseStore extends ResolvedDataHolder
         super.roleMissing(roleName, temp);
         if (temp)
         {
-            this.attachment.getHolder().sendTranslated("&cYour temporary role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
-            this.attachment.getHolder().sendTranslated("&4You should report this to an administrator!");
+            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your temporary role {name} is not available in {world}", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated(MessageType.CRITICAL, "You should report this to an administrator!");
         }
         else
         {
-            this.attachment.getHolder().sendTranslated("&cYour role &6%s&c is not available in &6%s", roleName, provider.getMainWorld());
-            this.attachment.getHolder().sendTranslated("&4You should report this to an administrator!");
+            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your role {name} is not available in {world}", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated(MessageType.CRITICAL, "You should report this to an administrator!");
         }
     }
 

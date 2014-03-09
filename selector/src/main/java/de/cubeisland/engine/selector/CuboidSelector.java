@@ -28,6 +28,7 @@ import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.shape.Shape;
 
 public class CuboidSelector implements Selector, Listener
@@ -82,7 +83,7 @@ public class CuboidSelector implements Selector, Listener
         return attachment.getPoint(index);
     }
 
-    public static final String SELECTOR_TOOL_NAME = ChatFormat.parseFormats("&9Selector-Tool");
+    public static final String SELECTOR_TOOL_NAME = ChatFormat.INDIGO + "Selector-Tool";
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event)
@@ -102,12 +103,12 @@ public class CuboidSelector implements Selector, Listener
                 if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
                 {
                     logAttachment.setPoint(0, clicked);
-                    user.sendTranslated("&aFirst Position selected!");
+                    user.sendTranslated(MessageType.POSITIVE, "First position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 else
                 {
                     logAttachment.setPoint(1, clicked);
-                    user.sendTranslated("&aSecond Position selected!");
+                    user.sendTranslated(MessageType.POSITIVE, "Second position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 event.setCancelled(true);
                 event.setUseItemInHand(Result.DENY);

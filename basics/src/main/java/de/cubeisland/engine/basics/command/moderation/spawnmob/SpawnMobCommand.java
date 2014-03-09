@@ -21,12 +21,13 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
+import de.cubeisland.engine.basics.Basics;
+import de.cubeisland.engine.basics.BasicsConfiguration;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.basics.BasicsConfiguration;
 
 import static de.cubeisland.engine.basics.command.moderation.spawnmob.SpawnMob.spawnMobs;
 
@@ -52,7 +53,7 @@ public class SpawnMobCommand
         }
         if (!context.hasArg(0))
         {
-            context.sendTranslated("&cYou need to define what mob to spawn!");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to define what mob to spawn!");
             return;
         }
         Location loc;
@@ -61,14 +62,14 @@ public class SpawnMobCommand
             User user = context.getUser(2);
             if (user == null)
             {
-                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(2));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(2));
                 return;
             }
             loc = user.getLocation();
         }
         else if (sender == null)
         {
-            context.sendTranslated("&eSuccesfully spawned some &cbugs &einside your server!");
+            context.sendTranslated(MessageType.NEUTRAL, "Succesfully spawned some {text:bugs:color=RED} inside your server!");
             return;
         }
         else
@@ -81,18 +82,18 @@ public class SpawnMobCommand
             amount = context.getArg(1, Integer.class, null);
             if (amount == null)
             {
-                context.sendTranslated("&e%s is not a number! Really!", context.getString(1));
+                context.sendTranslated(MessageType.NEUTRAL, "{input} is not a number! Really!", context.getString(1));
                 return;
             }
             if (amount <= 0)
             {
-                context.sendTranslated("&eAnd how am i supposed to know which mobs to despawn?");
+                context.sendTranslated(MessageType.NEUTRAL, "And how am i supposed to know which mobs to despawn?");
                 return;
             }
         }
         if (amount > config.commands.spawnmobLimit)
         {
-            context.sendTranslated("&cThe serverlimit is set to &e%d&c, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
+            context.sendTranslated(MessageType.NEGATIVE, "The serverlimit is set to {number}, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
             return;
         }
         loc.add(0.5, 0, 0.5);
@@ -104,7 +105,7 @@ public class SpawnMobCommand
         Entity entitySpawned = entitiesSpawned[0];
         if (entitySpawned.getPassenger() == null)
         {
-            context.sendTranslated("&aSpawned %d &e%s&a!", amount, Match.entity().getNameFor(entitySpawned.getType()));
+            context.sendTranslated(MessageType.POSITIVE, "Spawned {amount} {input#entity}!", amount, Match.entity().getNameFor(entitySpawned.getType()));
         }
         else
         {
@@ -112,9 +113,9 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = context.getSender().translate("%s &ariding &e%s", Match.entity().getNameFor(entitySpawned.getType()), message);
+                message = context.getSender().composeMessage(MessageType.NONE, "{input#entity} riding {input}", Match.entity().getNameFor(entitySpawned.getType()), message);
             }
-            message = context.getSender().translate("&aSpawned %d &e%s!", amount, message);
+            message = context.getSender().composeMessage(MessageType.POSITIVE, "Spawned {amount} {input#message}!", amount, message);
             context.sendMessage(message);
         }
     }

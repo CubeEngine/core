@@ -29,6 +29,7 @@ import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.TelePointManager;
 import de.cubeisland.engine.travel.storage.TeleportPointModel;
@@ -53,9 +54,9 @@ public class WarpAdminCommand extends ContainerCommand
     @Override
     public CommandResult run(CommandContext context)
     {
-        context.sendMessage("&2This is not a command on it's own.");
-        context.sendMessage("&eIf you want to teleport to a users warp: \"/warp <user>\"");
-        context.sendMessage("&eTo get a list of the admin commands: \"/warp admin ?\"");
+        context.sendTranslated(MessageType.NEGATIVE, "This is not a command on it's own.");
+        context.sendTranslated(MessageType.NEUTRAL, "If you want to teleport to a users warp: {text:/warp <user>}");
+        context.sendTranslated(MessageType.NEUTRAL, "To get a list of the admin commands: {text:/warp admin ?}");
         return null;
     }
 
@@ -77,33 +78,27 @@ public class WarpAdminCommand extends ContainerCommand
         {
             if (module.getCore().getUserManager().getUser(context.getString(0), false) == null)
             {
-                context.sendTranslated("&2%s &cIsn't an user on this server", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return null;
             }
             else
             {
                 if (context.hasFlag("pub"))
                 {
-                    context
-                        .sendTranslated("&eAre you sure you want to delete all public warps ever created by &2%s?", context
-                            .getString(0));
-                    context
-                        .sendTranslated("&eTo delete all the public warps, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                    context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all public warps ever created by {user}?", context
+                        .getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "To delete all the public warps, do: {text:/confirm} before 30 seconds has passed");
                 }
                 else if (context.hasFlag("priv"))
                 {
-                    context
-                        .sendTranslated("&eAre you sure you want to delete all private warps ever created by &2%s?", context
-                            .getString(0));
-                    context
-                        .sendTranslated("&eTo delete all the private warps, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                    context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all private warps ever created by {user}?", context
+                        .getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "To delete all the private warps, do: {text:/confirm} before 30 seconds has passed");
                 }
                 else
                 {
-                    context.sendTranslated("&eAre you sure you want to delete all warps ever created by &2%s?", context
-                        .getString(0));
-                    context
-                        .sendTranslated("&eTo delete all the warps, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                    context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all warps ever created by {user}?", context.getString(0));
+                    context.sendTranslated(MessageType.NEUTRAL, "To delete all the warps, do: {text:/confirm} before 30 seconds has passed");
                 }
             }
         }
@@ -111,23 +106,18 @@ public class WarpAdminCommand extends ContainerCommand
         {
             if (context.hasFlag("pub"))
             {
-                context
-                    .sendTranslated("&eAre you sure you want to delete all public warps ever created on this server!?");
-                context
-                    .sendTranslated("&eTo delete all the public warps of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all public warps ever created on this server!?");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the public warps of every user, do: {text:/confirm} before 30 seconds has passed");
             }
             else if (context.hasFlag("priv"))
             {
-                context
-                    .sendTranslated("&eAre you sure you want to delete all private warps ever created on this server?");
-                context
-                    .sendTranslated("&eTo delete all the private warps of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all private warps ever created on this server?");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the private warps of every user, do: {text:/confirm} before 30 seconds has passed");
             }
             else
             {
-                context.sendTranslated("&eAre you sure you want to delete all warps ever created on this server!?");
-                context
-                    .sendTranslated("&eTo delete all the warps of every user, do: &6\"/confirm\" &ebefore 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all warps ever created on this server!?");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the warps of every user, do: {text:/confirm} before 30 seconds has passed");
             }
         }
         return new ConfirmResult(new Runnable()
@@ -147,7 +137,7 @@ public class WarpAdminCommand extends ContainerCommand
                         mask |= tpManager.PRIVATE;
                     }
                     tpManager.deleteWarps(mask);
-                    context.sendTranslated("&aThe warps are now deleted");
+                    context.sendTranslated(MessageType.POSITIVE, "The warps are now deleted");
                 }
                 else
                 {
@@ -162,51 +152,49 @@ public class WarpAdminCommand extends ContainerCommand
                         mask |= tpManager.PRIVATE;
                     }
                     tpManager.deleteWarps(user, mask);
-                    context.sendTranslated("&aThe warps are now deleted");
+                    context.sendTranslated(MessageType.POSITIVE, "The warps are now deleted");
                 }
             }
         }, context);
     }
 
-    @Command(names = {
-        "private", "makeprivate"
-    }, permDefault =  PermDefault.OP, desc = "Make a users warp private", min = 1, max = 1, usage = " owner:home")
+    @Command(names = {"privae", "makeprivate"}, permDefault = PermDefault.OP,
+             desc = "Make a users warp private", min = 1, max = 1, usage = " owner:home")
     public void makePrivate(CommandContext context)
     {
         Warp warp;
         warp = tpManager.getWarp(context.getString(0));
         if (warp == null)
         {
-            context.sendTranslated("&cCouldn't find &6%s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Warp {name} not found!", context.getString(0));
             return;
         }
         if (!warp.isPublic())
         {
-            context.sendTranslated("&6%s &cis already private!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "{name#warp} is already private!", context.getString(0));
             return;
         }
         warp.setVisibility(TeleportPointModel.VISIBILITY_PRIVATE);
-        context.sendTranslated("&6%s &ais now private", context.getString(0));
+        context.sendTranslated(MessageType.POSITIVE, "{name#warp} is now private", context.getString(0));
     }
 
-    @Command(names = {
-        "public"
-    }, permDefault =  PermDefault.OP, desc = "Make a users warp public", min = 1, max = 1, usage = " owner:home")
+    @Command(names = {"public"}, permDefault =  PermDefault.OP,
+             desc = "Make a users warp public", min = 1, max = 1, usage = " owner:home")
     public void makePublic(CommandContext context)
     {
         Warp warp;
         warp = tpManager.getWarp(context.getString(0));
         if (warp == null)
         {
-            context.sendTranslated("&cCouldn't find &6%s", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Warp {name} not found!", context.getString(0));
             return;
         }
         if (warp.isPublic())
         {
-            context.sendTranslated("&6%s &cis already public!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "{name#warp} is already public!", context.getString(0));
             return;
         }
         warp.setVisibility(TeleportPointModel.VISIBILITY_PUBLIC);
-        context.sendTranslated("&6%s &ais now public", context.getString(0));
+        context.sendTranslated(MessageType.POSITIVE, "{name#warp} is now public", context.getString(0));
     }
 }

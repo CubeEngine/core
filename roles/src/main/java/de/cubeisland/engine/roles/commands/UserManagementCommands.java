@@ -27,6 +27,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
 import de.cubeisland.engine.roles.role.Role;
@@ -58,12 +59,12 @@ public class UserManagementCommands extends UserCommandHelper
         Role role = this.manager.getProvider(world).getRole(roleName);
         if (role == null)
         {
-            context.sendTranslated("&eCould not find the role &6%s&e in &6%s&e.", roleName, world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "Could not find the role {name} in {world}.", roleName, world);
             return;
         }
         if (!role.canAssignAndRemove(context.getSender()))
         {
-            context.sendTranslated("&cYou are not allowed to assign the role &6%s&c in &6%s&c!",role.getName(),world.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to assign the role {name} in {world}!", role.getName(), world);
             return;
         }
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
@@ -71,27 +72,25 @@ public class UserManagementCommands extends UserCommandHelper
         {
             if (!user.isOnline())
             {
-                context.sendTranslated("&cYou cannot assign a temporary role to a offline player!");
+                context.sendTranslated(MessageType.NEGATIVE, "You cannot assign a temporary role to a offline player!");
                 return;
             }
             if (attachment.getDataHolder(world).assignTempRole(role))
             {
                 attachment.getCurrentDataHolder().apply();
-                context.sendTranslated("&aAdded the role &6%s&a temporarily to &2%s&a in &6%s&a.", roleName, user
-                    .getName(), world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Added the role {name} temporarily to {user} in {world}.", roleName, user, world);
                 return;
             }
-            context.sendTranslated("&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "{user} already had the role {name} in {world}.", user, roleName, world);
             return;
         }
         if (attachment.getDataHolder(world).assignRole(role))
         {
             attachment.getCurrentDataHolder().apply();
-            context.sendTranslated("&aAdded the role &6%s&a to &2%s&a in &6%s&a.", roleName, user.getName(), world
-                .getName());
+            context.sendTranslated(MessageType.POSITIVE, "Added the role {name} to {user} in {world}.", roleName, user, world);
             return;
         }
-        context.sendTranslated("&2%s&e already had the role &6%s&e in &6%s&e.", user.getName(), roleName, world.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "{user} already had the role {name} in {world}.", user, roleName, world);
     }
 
     @Alias(names = {"remurole", "manudel"})
@@ -108,12 +107,12 @@ public class UserManagementCommands extends UserCommandHelper
         Role role = this.manager.getProvider(world).getRole(context.getString(1));
         if (role == null)
         {
-            context.sendTranslated("&eCould not find the role &6%s &ein &6%s&e.", context.getString(1), world.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "Could not find the role {name} in {world}.", context.getString(1), world);
             return;
         }
         if (!role.canAssignAndRemove(context.getSender()))
         {
-            context.sendTranslated("&cYou are not allowed to remove the role &6%s&c in &6%s&c!",role.getName(),world.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to remove the role {name} in {world}!", role.getName(), world);
             return;
         }
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
@@ -121,11 +120,10 @@ public class UserManagementCommands extends UserCommandHelper
         {
             attachment.reload();
             attachment.getCurrentDataHolder().apply();
-            context.sendTranslated("&aRemoved the role &6%s&a from &2%s&a in &6%s&a.", role.getName(), user
-                .getName(), world.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Removed the role {name} from {user} in {world}.", role.getName(), user, world);
             return;
         }
-        context.sendTranslated("&2%s&e did not have the role &6%s&e in &6%s&e.", user.getName(), role.getName(), world.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "{user} did not have the role {name} in {world}.", user, role.getName(), world);
     }
 
     @Alias(names = {"clearurole", "manuclear"})
@@ -148,10 +146,10 @@ public class UserManagementCommands extends UserCommandHelper
             dataHolder.assignTempRole(role);
         }
         dataHolder.apply();
-        context.sendTranslated("&eCleared the roles of &2%s&e in &6%s&e.", user.getName(), world.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "Cleared the roles of {user} in {world}.", user, world);
         if (!defaultRoles.isEmpty())
         {
-            context.sendTranslated("&eDefault roles assigned:");
+            context.sendTranslated(MessageType.NEUTRAL, "Default roles assigned:");
             for (Role role : defaultRoles)
             {
                 context.sendMessage(String.format(this.LISTELEM, role.getName()));
@@ -185,19 +183,19 @@ public class UserManagementCommands extends UserCommandHelper
             attachment.getCurrentDataHolder().apply();
             if (value == PermissionValue.RESET)
             {
-                context.sendTranslated("&ePermission &6%s&e of &2%s&e reset!", perm, user.getName());
+                context.sendTranslated(MessageType.NEUTRAL, "Permission {input} of {user} reset!", perm, user);
                 return;
             }
             if (value == PermissionValue.TRUE)
             {
-                context.sendTranslated("&aPermission &6%s&a of &2%s&a set to true!", perm, user.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Permission {input} of {user} set to true!", perm, user);
                 return;
             }
-            context.sendTranslated("&cPermission &6%s&c of &2%s&c set to false!", perm, user.getName());
+            context.sendTranslated(MessageType.NEGATIVE, "Permission {input} of {user} set to false!", perm, user);
         }
         catch (IllegalArgumentException e)
         {
-            context.sendTranslated("&cUnkown setting: &6%s &cUse &6true&c,&6false&c or &6reset&c!", setTo);
+            context.sendTranslated(MessageType.NEGATIVE, "Unknown setting: \"Unknown setting: {input} Use {text:true},{text:false} or {text:reset}!", setTo);
         }
     }
 
@@ -217,7 +215,7 @@ public class UserManagementCommands extends UserCommandHelper
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
         attachment.getDataHolder(world).setPermission(perm, PermissionValue.RESET);
         attachment.getCurrentDataHolder().apply();
-        context.sendTranslated("&ePermission &6%s&e of &2%s&e resetted!", perm, user.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "Permission {input} of {user} resetted!", perm, user);
     }
 
     @Alias(names = {"setudata","setumeta","setumetadata"})
@@ -233,7 +231,7 @@ public class UserManagementCommands extends UserCommandHelper
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         World world = this.getWorld(context);
@@ -241,7 +239,7 @@ public class UserManagementCommands extends UserCommandHelper
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
         attachment.getDataHolder(world).setMetadata(metaKey, metaVal);
         attachment.getCurrentDataHolder().apply();
-        context.sendTranslated("&aMetadata &6%s&a of &2%s&a set to &6%s&a in &6%s&a!", metaKey, user.getName(), metaVal, world.getName());
+        context.sendTranslated(MessageType.POSITIVE, "Metadata {input#key} of {user} set to {input#value} in {world}!", metaKey, user, metaVal, world);
     }
 
     @Alias(names = {"resetudata","resetumeta","resetumetadata"})
@@ -256,7 +254,7 @@ public class UserManagementCommands extends UserCommandHelper
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated("&cUser %s not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         World world = this.getWorld(context);
@@ -264,7 +262,7 @@ public class UserManagementCommands extends UserCommandHelper
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
         attachment.getDataHolder(world).removeMetadata(metaKey);
         attachment.getCurrentDataHolder().apply();
-        context.sendTranslated("&eMetadata &6%s&e of &2%s &eremoved in &6%s&e!", metaKey, user.getName(), world.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "Metadata {input#key} of {user} removed in {world}!", metaKey, user, world);
     }
 
     @Alias(names = {"clearudata","clearumeta","clearumetadata"})
@@ -282,6 +280,6 @@ public class UserManagementCommands extends UserCommandHelper
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
         attachment.getDataHolder(world).clearMetadata();
         attachment.getCurrentDataHolder().apply();
-        context.sendTranslated("&eMetadata of &2%s &ecleared in &6%s&e!", user.getName(), world.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "Metadata of {user} cleared in {world}!", user, world);
     }
 }

@@ -30,6 +30,7 @@ import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -72,13 +73,11 @@ public class BlockForm extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&6%dx %s &aformed naturally%s",
-                                time,amount,logEntry.getNewBlock(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#block} formed naturally{}", time, amount, logEntry.getNewBlock(), loc);
         }
         else
         {
-            user.sendTranslated("%s&6%s &aformed naturally%s",
-                                time,logEntry.getNewBlock(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} formed naturally{}", time, logEntry.getNewBlock(), loc);
         }
     }
 

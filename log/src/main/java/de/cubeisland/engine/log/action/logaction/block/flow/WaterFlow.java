@@ -29,6 +29,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.event.block.BlockFromToEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.action.logaction.block.BlockForm;
@@ -135,11 +136,11 @@ public class WaterFlow extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size();
-            user.sendTranslated("%s&aWater flooded &6%dx&a the block%s",time,amount,loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}Water flooded {amount}x the block{}", time, amount, loc);
         }
         else
         {
-            user.sendTranslated("%s&aWater flooded the block%s",time,loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}Water flooded the block{}", time, loc);
         }
     }
 

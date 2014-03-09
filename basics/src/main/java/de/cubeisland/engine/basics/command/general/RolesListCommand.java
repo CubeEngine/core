@@ -83,12 +83,12 @@ public class RolesListCommand extends ListCommand
             }
             else
             {
-                display = "&7" + role.getName();
+                display = ChatFormat.GREY + role.getName();
             }
             display = ChatFormat.parseFormats(display);
             grouped.put(display, entry.getValue());
         }
-        grouped.put(ChatFormat.parseFormats("&7No Role"), noRoleSet);
+        grouped.put(ChatFormat.GREY + "No Role", noRoleSet);
 
         return grouped;
     }

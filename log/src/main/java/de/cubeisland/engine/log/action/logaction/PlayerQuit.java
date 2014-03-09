@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -70,13 +71,11 @@ public class PlayerQuit extends SimpleLogActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&2%s&a left the server &6x%d%s",
-                                time,logEntry.getCauserUser().getDisplayName(),logEntry.getAttached().size() +1 , loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} left the server x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAttached().size() +1, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a left the server%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} left the server{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

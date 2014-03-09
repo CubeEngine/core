@@ -32,6 +32,7 @@ import org.bukkit.potion.PotionEffect;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -123,11 +124,11 @@ public class PotionSplash extends SimpleLogActionType
     {
         String effects;
         Iterator<JsonNode> it = logEntry.getAdditional().get("effects").elements();
-        effects = "&6"+it.next().iterator().next().asText();
+        effects = ChatFormat.GOLD + it.next().iterator().next().asText();
         while (it.hasNext())
         {
             JsonNode next = it.next();
-            effects += "&f, &6";
+            effects += ChatFormat.WHITE + ", " + ChatFormat.GOLD;
             effects += next.iterator().next().asText();
         }
         effects = ChatFormat.parseFormats(effects);
@@ -145,14 +146,11 @@ public class PotionSplash extends SimpleLogActionType
                     amountAffected += entry.getAdditional().get("amount").asInt();
                 }
             }
-            user.sendTranslated("%s&2%s&a used &6%d splash potions &a&f(%s&f)&a onto &6%d&a entities in total%s",
-                            time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1 ,
-                            effects, amountAffected, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} used {amount} splash potions {input#effects} onto {amount} entities in total{}", time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1, effects, amountAffected, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s&a used a &6splash potion&a &f(%s&f)&a onto &6%d&a entities%s", time, logEntry
-                .getCauserUser().getName(), effects, amountAffected, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} used a {text:splash potion} {input#effects} onto {amount} entities{}", time, logEntry.getCauserUser().getName(), effects, amountAffected, loc);
         }
     }
 

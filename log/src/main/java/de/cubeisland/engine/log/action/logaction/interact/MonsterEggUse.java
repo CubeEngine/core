@@ -25,6 +25,7 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.EntityData;
@@ -55,9 +56,7 @@ public class MonsterEggUse extends SimpleLogActionType
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
         EntityType entityType = EntityType.fromId(logEntry.getItemData().dura); // Dura is entityTypeId
-        user.sendTranslated("%s&2%s &aspawned &6%s%s",
-                            time, logEntry.getCauserUser().getDisplayName(),
-                            new EntityData(entityType,null),loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} spawned {name#entity}{}", time, logEntry.getCauserUser().getDisplayName(), new EntityData(entityType, null), loc);
     }
 
     @Override

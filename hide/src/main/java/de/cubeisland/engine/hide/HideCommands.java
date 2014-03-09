@@ -26,6 +26,8 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class HideCommands implements CommandHolder
 {
@@ -56,23 +58,23 @@ public class HideCommands implements CommandHolder
             this.module.hidePlayer(target);
             if (target == sender)
             {
-                target.sendTranslated("&aYou are now hidden!");
+                target.sendTranslated(MessageType.POSITIVE, "You are now hidden!");
             }
             else
             {
-                target.sendTranslated("&aYou were hidden by &e%s&a!", sender.getDisplayName());
-                sender.sendTranslated("&a%s&a is now hidden!", target.getDisplayName());
+                target.sendTranslated(MessageType.POSITIVE, "You were hidden by {sender}!", sender);
+                sender.sendTranslated(MessageType.POSITIVE, "{user} is now hidden!", target);
             }
         }
         else
         {
             if (target == sender)
             {
-                target.sendTranslated("&eYou are already hidden!");
+                target.sendTranslated(MessageType.NEUTRAL, "You are already hidden!");
             }
             else
             {
-                sender.sendTranslated("&e%s&a is already hidden!", target.getDisplayName());
+                sender.sendTranslated(MessageType.NEUTRAL, "{user} is already hidden!", target);
             }
         }
     }
@@ -91,23 +93,23 @@ public class HideCommands implements CommandHolder
             this.module.showPlayer(target);
             if (target == sender)
             {
-                target.sendTranslated("&aYou are now visible!");
+                target.sendTranslated(MessageType.POSITIVE, "You are now visible!");
             }
             else
             {
-                target.sendTranslated("&aYou were unhidden by &e%s&a!", sender.getDisplayName());
-                sender.sendTranslated("&a%s&a is now visible!", target.getDisplayName());
+                target.sendTranslated(MessageType.POSITIVE, "You were unhidden by {sender}!", sender);
+                sender.sendTranslated(MessageType.POSITIVE, "{user} is now visible!", target);
             }
         }
         else
         {
             if (target == sender)
             {
-                target.sendTranslated("&eYou are already visible!");
+                target.sendTranslated(MessageType.NEUTRAL, "You are already visible!");
             }
             else
             {
-                sender.sendTranslated("&e%s&a is already visible!", target.getDisplayName());
+                sender.sendTranslated(MessageType.NEUTRAL, "{user} is already visible!", target);
             }
         }
     }
@@ -125,22 +127,22 @@ public class HideCommands implements CommandHolder
         {
             if (target == sender)
             {
-                context.sendTranslated("&aYou are hidden right now!");
+                context.sendTranslated(MessageType.POSITIVE, "You are hidden right now!");
             }
             else
             {
-                context.sendTranslated("&a%s&a is hidden right now!", target.getDisplayName());
+                context.sendTranslated(MessageType.POSITIVE, "{user} is hidden right now!", target.getDisplayName());
             }
         }
         else
         {
             if (target == sender)
             {
-                context.sendTranslated("&eYou are visible right now!");
+                context.sendTranslated(MessageType.NEUTRAL, "You are visible right now!");
             }
             else
             {
-                context.sendTranslated("&e%s&a is visible right now!", target.getDisplayName());
+                context.sendTranslated(MessageType.NEUTRAL, "{user} is visible right now!", target.getDisplayName());
             }
         }
         this.module.getHiddenUsers().contains(target.getName());
@@ -152,13 +154,13 @@ public class HideCommands implements CommandHolder
         Set<String> hiddens = this.module.getHiddenUsers();
         if (hiddens.isEmpty())
         {
-            context.sendTranslated("&eThere are no hidden users!");
+            context.sendTranslated(MessageType.NEUTRAL, "There are no hidden users!");
             return;
         }
-        context.sendTranslated("&aThe following users are hidden:");
+        context.sendTranslated(MessageType.POSITIVE, "The following users are hidden:");
         for (String name : hiddens)
         {
-            context.sendMessage(" - &e" + context.getCore().getUserManager().getExactUser(name).getDisplayName());
+            context.sendMessage(" - " + ChatFormat.YELLOW + context.getCore().getUserManager().getExactUser(name).getDisplayName());
         }
     }
 
@@ -176,24 +178,24 @@ public class HideCommands implements CommandHolder
         {
             if (target == sender)
             {
-                context.sendTranslated("&aYou can now see hidden users!");
+                context.sendTranslated(MessageType.POSITIVE, "You can now see hidden users!");
             }
             else
             {
-                target.sendTranslated("&aYou can now see hidden users! (Enabled by &e%s&a)", sender.getDisplayName());
-                context.sendTranslated("&e%s&a can now see hidden users!", target.getDisplayName());
+                target.sendTranslated(MessageType.POSITIVE, "You can now see hidden users! (Enabled by {sender})", sender);
+                context.sendTranslated(MessageType.NEUTRAL, "{user} can now see hidden users!", target);
             }
         }
         else
         {
             if (target == sender)
             {
-                context.sendTranslated("&aYou can no longer see hidden users!");
+                context.sendTranslated(MessageType.POSITIVE, "You can no longer see hidden users!");
             }
             else
             {
-                target.sendTranslated("&aYou can no longer see hidden users! (Disabled by &e%s&a)", sender.getDisplayName());
-                context.sendTranslated("&e%s&a can no longer see hidden users!", target.getDisplayName());
+                target.sendTranslated(MessageType.POSITIVE, "You can no longer see hidden users! (Disabled by {sender})", sender);
+                context.sendTranslated(MessageType.NEUTRAL, "{user} can no longer see hidden users!", target);
             }
         }
     }
@@ -211,22 +213,22 @@ public class HideCommands implements CommandHolder
         {
             if (target == sender)
             {
-                context.sendTranslated("&aYou can currently see hidden users!");
+                context.sendTranslated(MessageType.POSITIVE, "You can currently see hidden users!");
             }
             else
             {
-                context.sendTranslated("&a%s&a can currently see hidden users!", target.getDisplayName());
+                context.sendTranslated(MessageType.POSITIVE, "{user} can currently see hidden users!", target);
             }
         }
         else
         {
             if (target == sender)
             {
-                context.sendTranslated("&eYou can't see hidden players!");
+                context.sendTranslated(MessageType.NEUTRAL, "You can't see hidden players!");
             }
             else
             {
-                context.sendTranslated("&e%s&a can't see hidden players!", target.getDisplayName());
+                context.sendTranslated(MessageType.NEUTRAL, "{user} can't see hidden players!", target);
             }
         }
     }
@@ -237,13 +239,13 @@ public class HideCommands implements CommandHolder
         Set<String> canSeeHiddens = this.module.getCanSeeHiddens();
         if (canSeeHiddens.isEmpty())
         {
-            context.sendTranslated("&eNo users can currently see hidden users!");
+            context.sendTranslated(MessageType.NEUTRAL, "No users can currently see hidden users!");
             return;
         }
-        context.sendTranslated("&aThe following players can see hidden players:");
+        context.sendTranslated(MessageType.POSITIVE, "The following players can see hidden players:");
         for (String user : canSeeHiddens)
         {
-            context.sendMessage(" - &e" + context.getCore().getUserManager().getExactUser(user).getDisplayName());
+            context.sendMessage(" - " + ChatFormat.YELLOW + context.getCore().getUserManager().getExactUser(user).getDisplayName());
         }
     }
 
@@ -254,7 +256,7 @@ public class HideCommands implements CommandHolder
             User target = context.getUser(0);
             if (target == null)
             {
-                context.sendTranslated("&cCouldn't find the user &e%s&c...", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return null;
             }
             return target;
@@ -265,7 +267,7 @@ public class HideCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated("&cNo user specified!");
+            context.sendTranslated(MessageType.NEGATIVE, "No user specified!");
             return null;
         }
     }

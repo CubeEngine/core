@@ -48,6 +48,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.engine.log.action.logaction.ItemDrop;
@@ -168,7 +169,7 @@ public class KillActionType extends ActionTypeContainer
                 {
                     if (false)
                     {
-                        this.logModule.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
+                        this.module.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
                         this.logDeathDrops(event);
                         return;
                     }
@@ -227,35 +228,22 @@ public class KillActionType extends ActionTypeContainer
         {
             if (amount == 1)
             {
-                user.sendTranslated("%s&6%s &agot slaughtered by &2%s%s",
-                                    time,
-                                    logEntry.getEntityFromData(),
-                                    logEntry.getCauserUser().getDisplayName(),loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} got slaughtered by {user}{}", time, logEntry.getEntityFromData(), logEntry.getCauserUser().getDisplayName(), loc);
             }
             else
             {
-                user.sendTranslated("%s&6%dx %s &agot slaughtered by &2%s%s",
-                                    time, amount,
-                                    logEntry.getEntityFromData(),
-                                    logEntry.getCauserUser().getDisplayName(),
-                                    loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#entity} got slaughtered by {user}{}", time, amount, logEntry.getEntityFromData(), logEntry.getCauserUser().getDisplayName(), loc);
             }
         }
         else if (logEntry.hasCauserEntity())
         {
             if (amount == 1)
             {
-                user.sendTranslated("%s&6%s &acould not escape &6%s%s",
-                                    time,
-                                    logEntry.getEntityFromData(),
-                                    logEntry.getCauserEntity(), loc);
+                user.sendTranslated(MessageType.POSITIVE,  "{}{name#entity} could not escape {name#entity}{}", time, logEntry.getEntityFromData(), logEntry.getCauserEntity(), loc);
             }
             else
             {
-                user.sendTranslated("%s&6%dx %s &acould not escape &6%s%s",
-                                    time, amount,
-                                    logEntry.getEntityFromData(),
-                                    logEntry.getCauserEntity(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#entity} could not escape {name#entity}{}", time, amount, logEntry.getEntityFromData(), logEntry.getCauserEntity(), loc);
             }
 
         }
@@ -263,17 +251,11 @@ public class KillActionType extends ActionTypeContainer
         {
             if (amount == 1)
             {
-                user.sendTranslated("%s&6%s &adied%s &f(&6%s&f)",
-                                    time,
-                                    logEntry.getEntityFromData(), loc,
-                                    logEntry.getAdditional().get("dmgC").toString());
+                user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} died ({input#cause}){}", time, logEntry.getEntityFromData(), logEntry.getAdditional().get("dmgC").toString(), loc);
             }
             else
             {
-                user.sendTranslated("%s&6%dx %s &adied%s &f(&6%s&f)",
-                                    time,amount,
-                                    logEntry.getEntityFromData(),loc,
-                                    logEntry.getAdditional().get("dmgC").toString());
+                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#entity} died ({input#cause}){}", time, amount, logEntry.getEntityFromData(), logEntry.getAdditional().get("dmgC").toString(), loc);
             }
         }
     }

@@ -54,7 +54,7 @@ public class TimeMatcher
                 Long old = nameToTime.put(name, entry.getKey());
                 if (old != null)
                 {
-                    CubeEngine.getLog().warn("Duplicate Time-Name \"%s\" for values: (%d|%d)",
+                    CubeEngine.getLog().warn("Duplicate Time-Name \"{}\" for values: ({}|{})",
                                              name, old, entry.getKey());
                 }
             }

@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -51,8 +52,7 @@ public class WaterBreak extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s &agot flushed away by water%s!",
-                            time ,logEntry.getOldBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got flushed away by water{loc}!", time, logEntry.getOldBlock(), loc);
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -51,9 +52,7 @@ public class ItemTransfer extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated("%s&6%s&a got moved out of &6%s%s",
-                            time,logEntry.getItemData(),
-                            logEntry.getContainerTypeFromBlock(),loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#item} got moved out of {name#block}{}", time, logEntry.getItemData(), logEntry.getContainerTypeFromBlock(), loc);
     }
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)

@@ -31,6 +31,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class BackpackManager implements Listener
 {
@@ -52,10 +53,10 @@ public class BackpackManager implements Listener
         {
             if (sender != forUser)
             {
-                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                sender.sendTranslated(MessageType.NEGATIVE, "{user} does not have a backpack named {input#backpack} in this world!", forUser, name);
                 return;
             }
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
+            sender.sendTranslated(MessageType.NEGATIVE, "You don't have a backpack named {input#backpack} in this world!", name);
             return;
         }
         backPack.openInventory(sender);
@@ -71,28 +72,28 @@ public class BackpackManager implements Listener
             if (global)
             {
                 attachment.createGlobalBackpack(name, blockInput, pages, size);
-                sender.sendTranslated("&aCreated global backpack &6%s&a for &2%s", name, forUser.getName());
+                sender.sendTranslated(MessageType.POSITIVE, "Created global backpack {input#backpack} for {user}", name, forUser);
             }
             else if (single)
             {
                 attachment.createBackpack(name, forWorld, blockInput, pages, size);
-                sender.sendTranslated("&aCreated singleworld backpack &6%s&a for &2%s", name, forUser.getName());
+                sender.sendTranslated(MessageType.POSITIVE, "Created singleworld backpack {input#backpack} for {user}", name, forUser);
             }
             else
             {
                 attachment.createGroupedBackpack(name, forWorld, blockInput, pages, size);
-                sender.sendTranslated("&aCreated grouped backpack &6%s&a in &6%s&a for &2%s", name, forWorld.getName(), forUser.getName());
+                sender.sendTranslated(MessageType.POSITIVE, "Created grouped backpack {input#backpack} in {world} for {user}", name, forWorld, forUser);
             }
         }
         else
         {
             if (sender == forUser)
             {
-                sender.sendTranslated("&cA backpack named &6%s&c already exists in &6%s", name, forWorld.getName());
+                sender.sendTranslated(MessageType.NEGATIVE, "A backpack named {input#backpack} already exists in {world}", name, forWorld);
             }
             else
             {
-                sender.sendTranslated("&2%s&c already had a backpack named &6%s&c in &6%s", forUser.getName(), name, forWorld.getName());
+                sender.sendTranslated(MessageType.NEGATIVE, "{user} already had a backpack named {input#backpack} in {world}", forUser, name, forWorld);
             }
         }
     }
@@ -136,17 +137,17 @@ public class BackpackManager implements Listener
         {
             if (sender != forUser)
             {
-                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                sender.sendTranslated(MessageType.NEGATIVE, "{user} does not have a backpack named {input#backpack} in this world!", forUser, name);
                 return;
             }
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
+            sender.sendTranslated(MessageType.NEGATIVE, "You don't have a backpack named {input#backpack} in this world!", name);
             return;
         }
         backPack.addItem(itemToGive);
-        sender.sendTranslated("&aItem added to backpack!");
+        sender.sendTranslated(MessageType.POSITIVE, "Item added to backpack!");
         if (sender != forUser && forUser.isOnline())
         {
-            forUser.sendTranslated("&aYou received items in your backpack &6%s", name);
+            forUser.sendTranslated(MessageType.POSITIVE, "You received items in your backpack {input#backpack}", name);
         }
     }
 
@@ -159,17 +160,17 @@ public class BackpackManager implements Listener
         {
             if (sender != forUser)
             {
-                sender.sendTranslated("&2%s does not have a backpack named &6%s&c in this world!", forUser.getName(), name);
+                sender.sendTranslated(MessageType.NEGATIVE, "{user} does not have a backpack named {input#backpack} in this world!", forUser, name);
                 return;
             }
-            sender.sendTranslated("&cYou don't have a backpack named &6%s&c in this world!", name);
+            sender.sendTranslated(MessageType.NEGATIVE, "You don't have a backpack named {input#backpack} in this world!", name);
             return;
         }
         if (pages != null)
         {
             if (backPack.data.contents.size() > pages * backPack.data.size)
             {
-                sender.sendTranslated("&cCould not change page amount! Not enough space!");
+                sender.sendTranslated(MessageType.NEGATIVE, "Could not change page amount! Not enough space!");
             }
             else
             {
@@ -184,14 +185,14 @@ public class BackpackManager implements Listener
                     }
                 }
                 backPack.data.pages = pages;
-                sender.sendTranslated("&aPages changed!");
+                sender.sendTranslated(MessageType.POSITIVE, "Pages changed!");
             }
         }
         if (size != null)
         {
             if (backPack.data.contents.size() > size * backPack.data.pages)
             {
-                sender.sendTranslated("&cCould not change page size! Not enough space!");
+                sender.sendTranslated(MessageType.NEGATIVE, "Could not change page size! Not enough space!");
             }
             else
             {
@@ -206,7 +207,7 @@ public class BackpackManager implements Listener
                     }
                 }
                 backPack.data.size = size;
-                sender.sendTranslated("&aPageSize changed!");
+                sender.sendTranslated(MessageType.POSITIVE, "PageSize changed!");
             }
         }
         if (blockInput != null)
@@ -214,11 +215,11 @@ public class BackpackManager implements Listener
             backPack.data.allowItemsIn = !blockInput;
             if (blockInput)
             {
-                sender.sendTranslated("&aItems are not allowed to go in!");
+                sender.sendTranslated(MessageType.POSITIVE, "Items are not allowed to go in!");
             }
             else
             {
-                sender.sendTranslated("&aItems are allowed to go in!");
+                sender.sendTranslated(MessageType.POSITIVE, "Items are allowed to go in!");
             }
         }
         backPack.data.save();

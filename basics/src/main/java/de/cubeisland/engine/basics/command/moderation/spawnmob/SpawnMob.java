@@ -34,6 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class SpawnMob
@@ -81,7 +82,7 @@ public class SpawnMob
         }
         if (entityType == null)
         {
-            context.sendTranslated("&cUnknown mob-type: &6%s &cnot found!", entityName);
+            context.sendTranslated(MessageType.NEGATIVE, "Unknown mob-type: {input#entityname} not found!", entityName);
             return null;
         }
         Entity[] spawnedMobs = new Entity[amount];

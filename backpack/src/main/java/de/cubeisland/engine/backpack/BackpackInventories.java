@@ -42,7 +42,7 @@ public class BackpackInventories
     private final Map<Player, Integer> viewers = new HashMap<>();
     private final Map<Integer, BackpackHolder> views = new HashMap<>();
     
-    private static final String pageString = ChatFormat.parseFormats("&6Page ");
+    private static final String pageString = ChatFormat.GOLD + "Page";
 
     public BackpackInventories(Backpack module, BackpackData data)
     {

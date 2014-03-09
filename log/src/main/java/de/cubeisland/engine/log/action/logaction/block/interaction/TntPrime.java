@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -54,13 +55,11 @@ public class TntPrime extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated("%s&2%s &aignited &6%d &aTNT!%s",
-                                time,logEntry.getCauserUser().getDisplayName(),amount,loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} ignited {amount} TNT!{}", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
         }
         else
         {
-            user.sendTranslated("%s&2%s &aignited TNT!%s",
-                                time,logEntry.getCauserUser().getDisplayName(),loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} ignited TNT!{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

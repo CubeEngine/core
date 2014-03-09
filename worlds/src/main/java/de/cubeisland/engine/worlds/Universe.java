@@ -326,7 +326,7 @@ public class Universe
 
     public WorldConfig getWorldConfig(World world)
     {
-        return this.worldConfigs.get(world);
+        return this.worldConfigs.get(world.getName());
     }
 
     public void savePlayer(Player player, World world)
@@ -368,9 +368,16 @@ public class Universe
         {
             player.setFlying(player.isFlying());
         }
-        if (!(this.universeConfig.keepGameMode || module.perms().KEEP_GAMEMODE.isAuthorized(player)))
+        if (!module.perms().KEEP_GAMEMODE.isAuthorized(player))
         {
-            player.setGameMode(this.worldConfigs.get(player.getWorld().getName()).gameMode);
+            if (this.universeConfig.enforceGameMode != null)
+            {
+                player.setGameMode(this.universeConfig.enforceGameMode);
+            }
+            else if (!(this.universeConfig.keepGameMode))
+            {
+                player.setGameMode(this.worldConfigs.get(player.getWorld().getName()).gameMode);
+            }
         }
         this.module.getLog().debug("PlayerData for {} in {} ({}) applied", player.getName(), player.getWorld().getName(), this.getName());
     }

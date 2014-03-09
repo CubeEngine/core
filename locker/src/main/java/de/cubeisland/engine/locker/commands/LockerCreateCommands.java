@@ -17,15 +17,16 @@
  */
 package de.cubeisland.engine.locker.commands;
 
-import de.cubeisland.engine.locker.Locker;
-import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
-import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.locker.Locker;
+import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
+import de.cubeisland.engine.locker.storage.LockManager;
 
 import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
 import static de.cubeisland.engine.locker.commands.LockerCommands.isNotUser;
@@ -45,11 +46,11 @@ public class LockerCreateCommands extends ContainerCommand
         this.manager.commandListener.setCommandType(sender, type, password, createKeyBook);
         if (createKeyBook)
         {
-            sender.sendTranslated("&aRightclick what you want to protect with a book in your hand!");
+            sender.sendTranslated(MessageType.POSITIVE, "Rightclick what you want to protect with a book in your hand!");
         }
         else
         {
-            sender.sendTranslated("&aRightclick what you want to protect!");
+            sender.sendTranslated(MessageType.POSITIVE, "Rightclick what you want to protect!");
         }
     }
 

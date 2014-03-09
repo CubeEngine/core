@@ -31,6 +31,7 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class EditCommand
 {
@@ -58,7 +59,7 @@ public class EditCommand
     {
         if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated("&cEdit what?");
+            context.sendTranslated(MessageType.NEGATIVE, "Edit what?");
             return;
         }
         User user = (User)context.getSender();
@@ -72,7 +73,7 @@ public class EditCommand
             item.setItemMeta(meta);
             item.setType(Material.BOOK_AND_QUILL);
 
-            user.sendTranslated("Your book is now unsigned and ready to be edited");
+            user.sendTranslated(MessageType.POSITIVE, "Your book is now unsigned and ready to be edited");
         }
         else
         {
@@ -83,7 +84,7 @@ public class EditCommand
                 Map<String, Object> params = context.getParams();
                 if (params.size() < 1)
                 {
-                    context.sendTranslated("&cYou need to specify at least one parameter");
+                    context.sendTranslated(MessageType.NEGATIVE, "You need to specify at least one parameter");
                     return;
                 }
                 Sign sign = (Sign)target.getState();
@@ -96,7 +97,7 @@ public class EditCommand
                 context.getCore().getEventManager().fireEvent(event);
                 if (event.isCancelled())
                 {
-                    context.sendTranslated("&cCould not change the sign!");
+                    context.sendTranslated(MessageType.NEGATIVE, "Could not change the sign!");
                     return;
                 }
                 for (int i = 0; i < 4; ++i)
@@ -104,11 +105,11 @@ public class EditCommand
                     sign.setLine(i, lines[i]);
                 }
                 sign.update();
-                user.sendTranslated("The sign has been changed");
+                user.sendTranslated(MessageType.POSITIVE, "The sign has been changed");
             }
             else
             {
-                user.sendTranslated("&cYou need to have a signed book in hand or be looking at a sign less than 10 blocks away");
+                user.sendTranslated(MessageType.NEGATIVE, "You need to have a signed book in hand or be looking at a sign less than 10 blocks away");
             }
         }
     }

@@ -54,6 +54,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.locker.BlockLockerConfiguration;
 import de.cubeisland.engine.locker.EntityLockerConfiguration;
@@ -292,13 +293,13 @@ public class LockManager implements Listener
                             this.extendLock(lock, relative.getLocation());
                             if (user != null)
                             {
-                                user.sendTranslated("&aProtection repaired & expanded!");
+                                user.sendTranslated(MessageType.POSITIVE, "Protection repaired & expanded!");
                             }
                         }
                         else if (user != null)
                         {
-                            user.sendTranslated("&4Broken Protection detected! Try /cremove on nearby blocks!");
-                            user.sendTranslated("&eIf this message keeps coming please contact an administrator!");
+                            user.sendTranslated(MessageType.CRITICAL, "Broken Protection detected! Try /cremove on nearby blocks!");
+                            user.sendTranslated(MessageType.NEUTRAL, "If this message keeps coming please contact an administrator!");
                         }
                         break;
                     }
@@ -312,7 +313,7 @@ public class LockManager implements Listener
                 lock.delete(user);
                 if (user != null)
                 {
-                    user.sendTranslated("&eDetected invalid BlockProtection is now deleted!");
+                    user.sendTranslated(MessageType.NEUTRAL, "Detected invalid BlockProtection is now deleted!");
                 }
             }
             return this.handleLockAccess(lock, access);
@@ -424,11 +425,11 @@ public class LockManager implements Listener
             }
             if (user != null)
             {
-                user.sendTranslated("&aRemoved Lock!");
+                user.sendTranslated(MessageType.POSITIVE, "Removed Lock!");
             }
             return;
         }
-        user.sendTranslated("&cThis protection is not yours!");
+        user.sendTranslated(MessageType.NEGATIVE, "This protection is not yours!");
     }
 
     /**
@@ -696,25 +697,25 @@ public class LockManager implements Listener
                 {
                     accessListModel = this.dsl.newRecord(TABLE_ACCESS_LIST).newGlobalAccess(sender, modifyUser, accessType);
                     accessListModel.insert();
-                    sender.sendTranslated("&aGlobal access for &2%s&a set!", modifyUser.getName());
+                    sender.sendTranslated(MessageType.POSITIVE, "Global access for {user} set!", modifyUser);
                 }
                 else
                 {
                     accessListModel.setLevel(accessType);
                     accessListModel.update();
-                    sender.sendTranslated("&aUpdated global access-level for &2%s&a!", modifyUser.getName());
+                    sender.sendTranslated(MessageType.POSITIVE, "Updated global access-level for {user}!", modifyUser);
                 }
             }
             else
             {
                 if (accessListModel == null)
                 {
-                    sender.sendTranslated("&2%s&e had no global access!", modifyUser.getName());
+                    sender.sendTranslated(MessageType.NEUTRAL, "{user} had no global access!", modifyUser);
                 }
                 else
                 {
                     accessListModel.delete();
-                    sender.sendTranslated("&aRemoved global access from &2%s", modifyUser.getName());
+                    sender.sendTranslated(MessageType.POSITIVE, "Removed global access from {user}", modifyUser);
                 }
             }
         }

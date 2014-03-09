@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.ItemData;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -84,9 +85,7 @@ public class ItemPickup extends SimpleLogActionType
         {
             amount = logEntry.getItemData().amount;
         }
-        user.sendTranslated("%s&2%s&a picked up %d &6%s%s",
-                            time,logEntry.getCauserUser().getDisplayName(),
-                            amount, logEntry.getItemData(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} picked up {amount} {name#item}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getItemData(), loc);
     }
 
     @Override

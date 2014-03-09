@@ -27,13 +27,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.Openable;
 
+import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.Vector3;
 import de.cubeisland.engine.core.util.math.shape.Sphere;
-import de.cubeisland.engine.basics.Basics;
 
 public class DoorCommand
 {
@@ -77,19 +78,19 @@ public class DoorCommand
         }
         else
         {
-            context.sendTranslated("&cDo not know whether I should close or open the doors");
+            context.sendTranslated(MessageType.NEGATIVE, "Do not know whether I should close or open the doors");
             return;
         }
 
         if(radius > this.basics.getConfiguration().commands.maxDoorRadius)
         {
-            context.sendTranslated("&cYou can't execute this with a radius over %d", this.basics.getConfiguration().commands.maxDoorRadius);
+            context.sendTranslated(MessageType.NEGATIVE, "You can't execute this with a radius over {amount}", this.basics.getConfiguration().commands.maxDoorRadius);
             return;
         }
 
         if(!context.hasArg(5) && !(context.getSender() instanceof User))
         {
-            context.sendTranslated("&cYou has to specify a location!");
+            context.sendTranslated(MessageType.NEGATIVE, "You has to specify a location!");
             return;
         }
         else if(!context.hasArg(5))
@@ -103,25 +104,25 @@ public class DoorCommand
             world = context.getArg(2, World.class, null);
             if(world == null)
             {
-                context.sendTranslated("&cWorld &6%s &cnot found!", context.getString(2));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input#world} not found!", context.getString(2));
                 return;
             }
             Integer x = context.getArg(3, Integer.class, null);
             if(x == null)
             {
-                context.sendTranslated("&cx-value &6%s &cis not supported!", context.getString(3));
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid x-value {input}!", context.getString(3));
                 return;
             }
             Integer y = context.getArg(4, Integer.class, null);
             if(y == null)
             {
-                context.sendTranslated("&cy-value &6%s &cis not supported!", context.getString(4));
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid y-value {input}!", context.getString(4));
                 return;
             }
             Integer z = context.getArg(5, Integer.class, null);
             if(z == null)
             {
-                context.sendTranslated("&cz-value &6%s &cis not supported!", context.getString(5));
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid z-value {input}!", context.getString(5));
                 return;
             }
             vector = new Vector3(x, y, z);

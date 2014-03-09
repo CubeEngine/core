@@ -34,6 +34,8 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.InviteManager;
@@ -94,19 +96,19 @@ public class HomeCommand extends ContainerCommand
                 Home home = this.tpManager.getHome(sender, "home");
                 if (home == null)
                 {
-                    context.sendTranslated("&cYou don't have a home! do &6/setHome");
+                    context.sendTranslated(MessageType.NEGATIVE, "You don't have a home! do {text:/setHome}");
                     return null;
                 }
 
                 if (!home.isOwner(sender))
                 {
-                    sender.sendTranslated("&cYou don't have a home! do &6/setHome");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You don't have a home! do {text:/setHome}");
                     return null;
                 }
                 Location location = home.getLocation();
                 if (location == null)
                 {
-                    context.sendTranslated("&cThis home is in a world that no longer exists!");
+                    context.sendTranslated(MessageType.NEGATIVE, "This home is in a world that no longer exists!");
                     return null;
                 }
                 sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
@@ -116,7 +118,7 @@ public class HomeCommand extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated("&aYou have been teleported to your home!");
+                    context.sendTranslated(MessageType.POSITIVE, "You have been teleported to your home!");
                 }
             }
             else if (this.module.getConfig().homes.multipleHomes)
@@ -132,7 +134,7 @@ public class HomeCommand extends ContainerCommand
                             Location location = home.getLocation();
                             if (location == null)
                             {
-                                context.sendTranslated("&cThis home is in a world that no longer exists!");
+                                context.sendTranslated(MessageType.NEGATIVE, "This home is in a world that no longer exists!");
                                 return null;
                             }
                             sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
@@ -142,8 +144,7 @@ public class HomeCommand extends ContainerCommand
                             }
                             else
                             {
-                                sender.sendTranslated("&aYou have been teleported to &6%s&a's default home",
-                                                      home.getOwnerName());
+                                sender.sendTranslated(MessageType.POSITIVE, "You have been teleported to {user}'s default home", home.getOwnerName());
                             }
                             return null;
                         }
@@ -152,14 +153,14 @@ public class HomeCommand extends ContainerCommand
                 Home home = this.tpManager.getHome(sender, context.getString(0).toLowerCase());
                 if (home == null)
                 {
-                    context.sendTranslated("&6%s&c is not a home", context.getString(0).toLowerCase());
+                    context.sendTranslated(MessageType.NEGATIVE, "Home {name} not found!", context.getString(0).toLowerCase());
                     return null;
                 }
 
                 Location location = home.getLocation();
                 if (location == null)
                 {
-                    context.sendTranslated("&cThis home is in a world that no longer exists!");
+                    context.sendTranslated(MessageType.NEGATIVE, "This home is in a world that no longer exists!");
                     return null;
                 }
                 sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
@@ -171,16 +172,15 @@ public class HomeCommand extends ContainerCommand
                 {
                     if (home.isOwner(sender))
                     {
-                        context.sendTranslated("&aYou have been teleported to your home: &6%s", home.getName());
+                        context.sendTranslated(MessageType.POSITIVE, "You have been teleported to your home: {name}", home.getName());
                     }
                     else if (home.isPublic())
                     {
-                        context.sendTranslated("&aYou have been teleported to the public home &6%s", home.getName());
+                        context.sendTranslated(MessageType.POSITIVE, "You have been teleported to the public home {name}", home.getName());
                     }
                     else
                     {
-                        context.sendTranslated("&aYou have been teleported to &2%s&a's home: &6%s",
-                                               home.getOwnerName(), home.getName());
+                        context.sendTranslated(MessageType.POSITIVE, "You have been teleported to {user}'s home: {name}", home.getOwnerName(), home.getName());
                     }
                 }
             }
@@ -207,8 +207,8 @@ public class HomeCommand extends ContainerCommand
             User sender = (User)context.getSender();
             if (this.tpManager.getNumberOfHomes(sender) >= this.module.getConfig().homes.max) // TODO permission to allow more
             {
-                sender.sendTranslated("&4You have reached your maximum number of homes!");
-                sender.sendTranslated("&cYou have to delete a home to make a new one");
+                sender.sendTranslated(MessageType.CRITICAL, "You have reached your maximum number of homes!");
+                sender.sendTranslated(MessageType.NEGATIVE, "You have to delete a home to make a new one");
                 return;
             }
             Location location = sender.getLocation();
@@ -217,11 +217,11 @@ public class HomeCommand extends ContainerCommand
                 Home test = this.tpManager.getHome(sender, "home");
                 if (test != null && test.isOwner(sender))
                 {
-                    sender.sendTranslated("&cYou already have a home! Maybe you need /home move?");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You already have a home! Maybe you need /home move?");
                     return;
                 }
                 this.tpManager.createHome(location, "home", sender, VISIBILITY_PRIVATE);
-                sender.sendTranslated("&aYour home has been created!");
+                sender.sendTranslated(MessageType.POSITIVE, "Your home has been created!");
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
@@ -234,27 +234,27 @@ public class HomeCommand extends ContainerCommand
                     {
                         if (this.tpManager.getHome(name).isPublic())
                         {
-                            sender.sendTranslated("&cA public home by that name already exist. Please choose another name");
+                            sender.sendTranslated(MessageType.NEGATIVE, "A public home by that name already exist. Please choose another name");
                             return;
                         }
                     }
                 }
                 if (name.contains(":") || name.length() >= 32)
                 {
-                    sender.sendTranslated("&cHomes may not have names that are longer then 32 characters nor contain colon(:)'s!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "Homes may not have names that are longer then 32 characters nor contain colon(:)'s!");
                     return;
                 }
                 if (this.tpManager.hasHome(name, sender))
                 {
-                    sender.sendTranslated("&cYou already have a home by that name! Maybe you need /home move?");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You already have a home by that name! Maybe you need /home move?");
                     return;
                 }
                 this.tpManager.createHome(location, name, sender, visibility);
-                sender.sendTranslated("&aYour home &6%s &ahas been created!", context.getString(0));
+                sender.sendTranslated(MessageType.POSITIVE, "Your home {name} has been created!", context.getString(0));
             }
             return;
         }
-        context.sendTranslated("&eOk so I'll need your new Address then. &cNo seriously this won't work!");
+        context.sendTranslated(MessageType.NEGATIVE, "Ok so I'll need your new Address then. No seriously this won't work!");
     }
 
     @Command(desc = "Set the welcome message of homes",
@@ -275,7 +275,7 @@ public class HomeCommand extends ContainerCommand
                 home = this.tpManager.getHome(sender, context.getString("home"));
                 if (home == null || !home.isOwner(sender))
                 {
-                    sender.sendTranslated("&6%s&c is not a home you're owning!", context.getString("home"));
+                    sender.sendTranslated(MessageType.NEGATIVE, "{name#home} is not a home you're owning!", context.getString("home"));
                     return;
                 }
             }
@@ -284,7 +284,7 @@ public class HomeCommand extends ContainerCommand
                 home = this.tpManager.getHome(sender, "home");
                 if (home == null || !home.isOwner(sender))
                 {
-                    sender.sendTranslated("&cYou don't have a home!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You don't have a home!");
                     return;
                 }
             }
@@ -297,7 +297,7 @@ public class HomeCommand extends ContainerCommand
                 home.setWelcomeMsg(context.getStrings(0));
             }
             home.update();
-            sender.sendTranslated("&aThe welcome message for the home is now set to: ");
+            sender.sendTranslated(MessageType.POSITIVE, "The welcome message for the home is now set to: ");
             sender.sendMessage(home.getWelcomeMsg());
         }
     }
@@ -317,17 +317,17 @@ public class HomeCommand extends ContainerCommand
                 Home home = this.tpManager.getHome(sender, "home");
                 if (home == null)
                 {
-                    sender.sendTranslated("&6%s &cCould not be found!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "Home {name} not found!", context.getString(0));
                     return;
                 }
                 if (!home.isOwner(sender))
                 {
-                    sender.sendTranslated("&cYou can't move another users home");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't move another users home");
                     return;
                 }
                 home.setLocation(sender.getLocation());
                 home.update();
-                sender.sendTranslated("&aYour home has been moved to you current location!");
+                sender.sendTranslated(MessageType.POSITIVE, "Your home has been moved to you current location!");
                 return;
             }
             if (this.module.getConfig().homes.multipleHomes)
@@ -335,22 +335,22 @@ public class HomeCommand extends ContainerCommand
                 Home home = this.tpManager.getHome(sender, context.getString(0));
                 if (home == null)
                 {
-                    sender.sendTranslated("&cYou do not have a home named &6%s&c!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "You do not have a home named {name#home}!", context.getString(0));
                     return;
                 }
                 if (!home.isOwner(sender)) // TODO permission
                 {
-                    sender.sendTranslated("&cYou are not allowed to move another users home!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You are not allowed to move another users home!");
                     return;
                 }
                 home.setLocation(sender.getLocation());
                 home.update();
-                sender.sendTranslated("&aThe home &6%s&a has been moved to your current location!", home.getName());
+                sender.sendTranslated(MessageType.POSITIVE, "The home {name} has been moved to your current location!", home.getName());
                 return;
             }
             return;
         }
-        context.sendTranslated("&cI am calling the moving company right now!");
+        context.sendTranslated(MessageType.NEGATIVE, "I am calling the moving company right now!");
     }
 
     @Alias(names = {"remhome", "removehome", "delhome", "deletehome"})
@@ -368,36 +368,36 @@ public class HomeCommand extends ContainerCommand
                 Home home = this.tpManager.getHome(sender, "home");
                 if (home == null)
                 {
-                    sender.sendTranslated("&6%s &cCould not be found!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "Home {name} not found!", context.getString(0));
                     return;
                 }
                 if (!home.isOwner(sender))
                 {
-                    sender.sendTranslated("&cYou can't remove another users home");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't remove another users home");
                     return;
                 }
                 this.tpManager.deleteHome(home);
-                sender.sendTranslated("&aYour home have been removed");
+                sender.sendTranslated(MessageType.POSITIVE, "Your home have been removed");
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, context.getString(0));
                 if (home == null)
                 {
-                    sender.sendTranslated("&6%s &cCould not be found!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "Home {name} not found!", context.getString(0));
                     return;
                 }
                 if (!home.isOwner(sender))
                 {
-                    sender.sendTranslated("&cYou can't remove another players home");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't remove another players home");
                     return;
                 }
                 this.tpManager.deleteHome(home);
-                sender.sendTranslated("&6%s &chave been removed", context.getString(0));
+                sender.sendTranslated(MessageType.NEGATIVE, "{name#home} have been removed", context.getString(0));
             }
             return;
         }
-        context.sendTranslated("&cSo where do you want to sleep this night?");
+        context.sendTranslated(MessageType.NEGATIVE, "So where do you want to sleep this night?");
     }
 
     @Alias(names = {"listhomes", "homes"})
@@ -439,26 +439,26 @@ public class HomeCommand extends ContainerCommand
         Set<Home> homes = this.tpManager.listHomes(user, mask);
         if (homes.isEmpty())
         {
-            user.sendTranslated("&cYou are not invited to any home!");
+            user.sendTranslated(MessageType.NEGATIVE, "You are not invited to any home!");
             return;
         }
-        user.sendTranslated("&eHere is a list of your homes: ");
+        user.sendTranslated(MessageType.NEUTRAL, "Here is a list of your homes: ");
         for (Home home : homes)
         {
             if (home == null) continue; // TODO this should not even happen!!!
             if (home.isOwner(user))
             {
-                user.sendMessage("  &6" + home.getName());
+                user.sendMessage("  " + ChatFormat.GOLD + home.getName());
             }
             else
             {
                 if (home.isPublic())
                 {
-                    user.sendTranslated("  &2public&e:&6%s", home.getName());
+                    user.sendTranslated(MessageType.NONE, "  {text:public}:{name#home}", home.getName());
                 }
                 else
                 {
-                    user.sendTranslated("  &2%s&e:&6%s", home.getOwnerName(), home.getName());
+                    user.sendTranslated(MessageType.NEUTRAL, "  {user}:{name#home}", home.getOwnerName(), home.getName());
                 }
             }
         }
@@ -476,16 +476,16 @@ public class HomeCommand extends ContainerCommand
             Set<Home> homes = this.tpManager.listHomes(user, this.tpManager.OWNED);
             if (!homes.isEmpty())
             {
-                user.sendTranslated("&eHere is a list of all your homes with the users invited to them:");
+                user.sendTranslated(MessageType.NEUTRAL, "Here is a list of all your homes with the users invited to them:");
                 for (Home home : homes)
                 {
                     Set<TeleportInvite> invites = this.inviteManager.getInvites(home.getModel());
                     if (invites.size() != 0)
                     {
-                        context.sendTranslated("  &6%s&e:", home.getName());
+                        context.sendTranslated(MessageType.NEUTRAL, "  {name#home}:", home.getName());
                         for (TeleportInvite invite : invites)
                         {
-                            context.sendMessage("    &2" + this.module.getCore().getUserManager()
+                            context.sendMessage("    " + ChatFormat.DARK_GREEN + this.module.getCore().getUserManager()
                                                                       .getUser(invite.getUserkey().longValue())
                                                                       .getName());
                         }
@@ -493,10 +493,10 @@ public class HomeCommand extends ContainerCommand
                 }
                 return;
             }
-            context.sendTranslated("&cYou don't have any homes with users invited to them!");
+            context.sendTranslated(MessageType.NEGATIVE, "You don't have any homes with users invited to them!");
             return;
         }
-        context.sendTranslated("&cNo one will ever invite a console to his home.");
+        context.sendTranslated(MessageType.NEGATIVE, "No one will ever invite a console to his home.");
     }
 
     @Command(desc = "Invite a user to one of your homes",
@@ -513,81 +513,80 @@ public class HomeCommand extends ContainerCommand
                 Home home = this.tpManager.getHome(sender, "home");
                 if (home == null)
                 {
-                    sender.sendTranslated("&cYou don't have a home!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You don't have a home!");
                     return;
                 }
                 if (!home.isOwner(sender)) // TODO permission
                 {
-                    sender.sendTranslated("&cYou are not allowed to edit another players home");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit another players home");
                     return;
                 }
                 if (home.isPublic())
                 {
-                    sender.sendTranslated("&cYou can't invite a person to a public home >:(");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't invite a person to a public home >:(");
                     return;
                 }
                 User invited = context.getUser(0);
                 if (invited == null)
                 {
-                    sender.sendTranslated("&cUser &2%s&c not found!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                     return;
                 }
                 if (invited.equals(sender))
                 {
-                    sender.sendTranslated("&cYou cannot invite yourself to your own home!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You cannot invite yourself to your own home!");
                     return;
                 }
                 if (home.isInvited(invited))
                 {
-                    sender.sendTranslated("&2%s&c is already invited to your home!", invited.getDisplayName());
+                    sender.sendTranslated(MessageType.NEGATIVE, "{user} is already invited to your home!", invited);
                     return;
                 }
                 home.invite(invited);
                 if (invited.isOnline())
                 {
-                    invited.sendTranslated("&2%s&e invited you to his home. To teleport to it use: /home &2%s&e:&6home", sender.getDisplayName(), sender.getName());
+                    invited.sendTranslated(MessageType.NEUTRAL, "{user} invited you to his home. To teleport to it use: /home {user}:{text:home}", sender, sender);
                 }
-                sender.sendTranslated("&2%s&a Is now invited to your home", context.getString(0));
+                sender.sendTranslated(MessageType.POSITIVE, "{user} Is now invited to your home", context.getString(0));
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, context.getString(0));
                 if (home == null)
                 {
-                    sender.sendTranslated("&6%s &cis not a home!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "Home {input} not found!", context.getString(0));
                     return;
                 }
                 if (!home.isOwner(sender))
                 {
-                    sender.sendTranslated("&4You can't edit another players home");
+                    sender.sendTranslated(MessageType.CRITICAL, "You can't edit another players home");
                     return;
                 }
                 if (home.isPublic())
                 {
-                    sender.sendTranslated("&cYou can't invite a person to a public home >:(");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't invite a person to a public home >:(");
                 }
                 User invited = CubeEngine.getUserManager().getUser(context.getString(1), false);
                 if (invited == null)
                 {
-                    sender.sendTranslated("&cThat user could not be found!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "That user could not be found!");
                     return;
                 }
                 if (home.isInvited(invited))
                 {
-                    sender.sendTranslated("&2%s &cis already invited to &6%s!", invited.getDisplayName(), home.getName());
+                    sender.sendTranslated(MessageType.NEGATIVE, "{user} is already invited to {name#home}!", invited, home.getName());
                     return;
                 }
                 home.invite(invited);
                 if (invited.isOnline())
                 {
-                    invited.sendTranslated("&2%s &ehas invited you to his home &6%s&e. To access it do: /home &2%s&e:&6%s",
-                                        sender.getDisplayName(), context.getString(0), sender.getName(), context.getString(0));
+                    invited.sendTranslated(MessageType.NEUTRAL, "{user} has invited you to his home {name}. To access it do: /home {user}:{name#home}", sender, context.getString(0), sender, context.getString(0));
                 }
-                sender.sendTranslated("&2%s &aIs now invited to &6%s", context.getString(1), context.getString(0));
+                sender.sendTranslated(MessageType.POSITIVE, "{user} is now invited to {name}", context.getString(1), context.getString(0));
             }
             return;
         }
-        context.sendTranslated("&cHow about making a phone call to invite someone instead?");
+        context.sendTranslated(MessageType.NEGATIVE, "How about making a phone call to invite someone instead?");
     }
 
     @Command(desc = "Uninvite a user from one of your homes",
@@ -604,77 +603,77 @@ public class HomeCommand extends ContainerCommand
                 Home home = this.tpManager.getHome(sender, "home");
                 if (home == null)
                 {
-                    sender.sendTranslated("&cYou don't have a home!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You don't have a home!");
                     return;
                 }
                 if (!home.isOwner(sender)) // TODO permission
                 {
-                    sender.sendTranslated("&cYou are not allowed to edit another players home");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit another players home");
                     return;
                 }
                 if (home.isPublic())
                 {
-                    sender.sendTranslated("&cYou can't uninvite a person from a public home >:(");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a person from a public home >:(");
                     return;
                 }
                 User invited = CubeEngine.getUserManager().getUser(context.getString(0), false);
                 if (invited == null)
                 {
-                    sender.sendTranslated("&cYou can't uninvite a user that never have played on this server!!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a user that never have played on this server!!");
                     return;
                 }
                 if (!home.isInvited(invited))
                 {
-                    sender.sendTranslated("&2%s &cIs not invited to your home!", invited.getDisplayName());
+                    sender.sendTranslated(MessageType.NEGATIVE, "{user} Is not invited to your home!", invited);
                     return;
                 }
                 home.unInvite(invited);
                 if (invited.isOnline())
                 {
-                    invited.sendTranslated("&eYou are no longer invited to &2%s&e's home", sender.getDisplayName());
+                    invited.sendTranslated(MessageType.NEUTRAL, "You are no longer invited to {user}'s home", sender);
                 }
-                sender.sendTranslated("&2%s &eIs no longer invited to home", context.getString(0));
+                sender.sendTranslated(MessageType.NEUTRAL, "{user} Is no longer invited to home", context.getString(0));
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
                 Home home = this.tpManager.getHome(sender, context.getString(0));
                 if (home == null)
                 {
-                    sender.sendTranslated("&6%s &cis not a home!", context.getString(0));
+                    sender.sendTranslated(MessageType.NEGATIVE, "{name#home} is not a home!", context.getString(0));
                     return;
                 }
                 if (!home.getOwner().equals(sender))
                 {
-                    sender.sendTranslated("&cYou can't edit another players home");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't edit another players home");
                     return;
                 }
                 if (home.isPublic())
                 {
-                    sender.sendTranslated("&cYou can't uninvite a person from a public home >:(");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a person from a public home >:(");
                     return;
                 }
                 User invited = CubeEngine.getUserManager().getUser(context.getString(1), false);
                 if (invited == null)
                 {
-                    sender.sendTranslated("&cYou can't univite a user that never have played on this server!!");
+                    sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a user that never have played on this server!!");
                     return;
                 }
                 if (!home.isInvited(invited))
                 {
-                    sender.sendTranslated("&2%s &cIs not invited to &6%s&c!", invited.getDisplayName(), home.getName());
+                    sender.sendTranslated(MessageType.NEGATIVE, "{user} is not invited to {home#name}!", invited, home.getName());
                     return;
                 }
                 home.unInvite(invited);
                 if (invited.isOnline())
                 {
-                    invited.sendTranslated("&eYou are no longer invited to &2%s&e's home &6%s", sender.getDisplayName(), context.getString(0));
+                    invited.sendTranslated(MessageType.NEUTRAL, "You are no longer invited to {user}'s home {name#home}", sender.getDisplayName(), context.getString(0));
                 }
-                sender.sendTranslated("&2%s &eIs no longer invited to &6%s", context.getString(1), context.getString(0));
+                sender.sendTranslated(MessageType.NEUTRAL, "{user} is no longer invited to {name#home}", context.getString(1), context.getString(0));
             }
         }
         else
         {
-            context.sendTranslated("&4This command can only be used by users!");
+            context.sendTranslated(MessageType.CRITICAL, "This command can only be used by users!");
         }
     }
 
@@ -698,30 +697,29 @@ public class HomeCommand extends ContainerCommand
             }
             else
             {
-                context.sendTranslated("&cMultiHomes is not enabled!");
+                context.sendTranslated(MessageType.NEGATIVE, "MultiHomes is not enabled!");
                 return;
             }
             if (home == null)
             {
-                sender.sendTranslated("&cYou do not have a home named &6%s&c!",
-                                      context.getString(0) == null ? "home" : context.getString(0));
+                sender.sendTranslated(MessageType.NEGATIVE, "You do not have a home named {name#home}!", context.getString(0) == null ? "home" : context.getString(0));
                 return;
             }
             if (!home.isOwner(sender))
             {
-                context.sendTranslated("&cYou cannot make homes of other players public!");
+                context.sendTranslated(MessageType.NEGATIVE, "You cannot make homes of other players public!");
                 return;
             }
             if (!home.isPublic())
             {
-                context.sendTranslated("&cYour home is already private!");
+                context.sendTranslated(MessageType.NEGATIVE, "Your home is already private!");
                 return;
             }
             home.setVisibility(VISIBILITY_PRIVATE);
-            context.sendTranslated("&aYour home is now private");
+            context.sendTranslated(MessageType.POSITIVE, "Your home is now private");
             return;
         }
-        context.sendTranslated("&4This command can only be used by users!");
+        context.sendTranslated(MessageType.CRITICAL, "This command can only be used by users!");
     }
 
     @Command(names = {"makepublic", "setpublic", "public"},
@@ -745,29 +743,28 @@ public class HomeCommand extends ContainerCommand
             }
             else
             {
-                context.sendTranslated("&cMultiHomes is not enabled!");
+                context.sendTranslated(MessageType.NEGATIVE, "MultiHomes is not enabled!");
                 return;
             }
             if (home == null)
             {
-                sender.sendTranslated("&cYou do not have a home named &6%s&c!",
-                                      context.getString(0) == null ? "home" : context.getString(0));
+                sender.sendTranslated(MessageType.NEGATIVE, "You do not have a home named {name#home}!", context.getString(0) == null ? "home" : context.getString(0));
                 return;
             }
             if (!home.isOwner(sender))
             {
-                context.sendTranslated("&cYou cannot make homes of other players public!");
+                context.sendTranslated(MessageType.NEGATIVE, "You cannot make homes of other players public!");
                 return;
             }
             if (home.isPublic())
             {
-                context.sendTranslated("&cYour home is already public!");
+                context.sendTranslated(MessageType.NEGATIVE, "Your home is already public!");
                 return;
             }
             home.setVisibility(VISIBILITY_PUBLIC);
-            context.sendTranslated("&aYour home is now public");
+            context.sendTranslated(MessageType.POSITIVE, "Your home is now public");
             return;
         }
-        context.sendTranslated("&4This command can only be used by users!");
+        context.sendTranslated(MessageType.CRITICAL, "This command can only be used by users!");
     }
 }

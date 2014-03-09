@@ -28,6 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -80,24 +81,16 @@ public class PlayerChat extends SimpleLogActionType
         {
             if (logEntry.getAttached().size() >= 4)
             {
-                user.sendTranslated("%s&2%s&a spammed &f\"&6%s&f\" &6x%d%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getAdditional().iterator().next().asText(),
-                                    logEntry.getAttached().size()+1, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} spammed \"{input#message}\" x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), logEntry.getAttached().size()+1, loc);
             }
             else
             {
-                user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\" &6x%d%s",
-                                    time,logEntry.getCauserUser().getDisplayName(),
-                                    logEntry.getAdditional().iterator().next().asText(),
-                                    logEntry.getAttached().size()+1, loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}{user} chatted \"{input#message}\" x{amount}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), logEntry.getAttached().size()+1, loc);
             }
         }
         else
         {
-            user.sendTranslated("%s&2%s&a chatted &f\"&6%s&f\"%s",
-                                time,logEntry.getCauserUser().getDisplayName(),
-                                logEntry.getAdditional().iterator().next().asText(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} chatted \"{input#message}\"{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getAdditional().iterator().next().asText(), loc);
         }
     }
 

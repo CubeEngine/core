@@ -27,6 +27,8 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
 
 /**
@@ -61,7 +63,7 @@ public class SpawnCommands
             world = context.getSender().getServer().getWorld(context.getString(0));
             if (world == null)
             {
-                context.sendTranslated("&cWorld: %s not found", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found", context.getString(0));
                 return;
             }
         }
@@ -69,7 +71,7 @@ public class SpawnCommands
         {
             if (sender == null)
             {
-                context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated(MessageType.NEGATIVE, "If not used ingame you have to specify a world and coordinates!");
                 return;
             }
             world = sender.getWorld();
@@ -82,7 +84,7 @@ public class SpawnCommands
             z = context.getArg(3, Integer.class, null);
             if (x == null || y == null || z == null)
             {
-                context.sendTranslated("&cCoordinates are invalid!");
+                context.sendTranslated(MessageType.NEGATIVE, "Coordinates are invalid!");
                 return;
             }
             this.module.getCore().getEventManager().fireEvent(new WorldSetSpawnEvent(this.module.getCore(), world, new Location(world, x,y,z)));
@@ -91,7 +93,7 @@ public class SpawnCommands
         {
             if (sender == null)
             {
-                context.sendTranslated("&cIf not used ingame you have to specify a world and coordinates!");
+                context.sendTranslated(MessageType.NEGATIVE, "If not used ingame you have to specify a world and coordinates!");
                 return;
             }
             final Location loc = sender.getLocation();
@@ -101,15 +103,13 @@ public class SpawnCommands
             z = loc.getBlockZ();
         }
         world.setSpawnLocation(x, y, z);
-        context.sendTranslated("&aThe spawn in &6%s&a is now set to &eX:&6%d &eY:&6%d &eZ:&6%d", world.getName(), x, y, z);
+        context.sendTranslated(MessageType.POSITIVE, "The spawn in {world} is now set to {vector:x\\=:y\\=:z\\=}", world, new BlockVector3(x, y, z));
     }
 
-    @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2, params = @Param(names = {
-        "world", "w"
-    }, type = World.class), flags = {
-            @Flag(longName = "force", name = "f"),
-            @Flag(longName = "all", name = "a")
-    })
+    @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2,
+             params = @Param(names = {"world", "w"}, type = World.class),
+             flags = {@Flag(longName = "force", name = "f"),
+                      @Flag(longName = "all", name = "a")})
     public void spawn(ParameterizedContext context)
     {
         User user = null;
@@ -132,20 +132,20 @@ public class SpawnCommands
             world = context.getParam("world", null);
             if (world == null)
             {
-                context.sendTranslated("&cWorld &6%s&c not found!", context.getString("world"));
+                context.sendTranslated(MessageType.NEGATIVE, "World {input#world} not found!", context.getString("world"));
                 return;
             }
         }
         if (world == null)
         {
-            context.sendTranslated("&cYou have to specify a world!");
+            context.sendTranslated(MessageType.NEGATIVE, "You have to specify a world!");
             return;
         }
         if (context.hasFlag("a"))
         {
             if (!module.perms().COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cYou are not allowed to spawn everyone!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to spawn everyone!");
                 return;
             }
             Location loc = world.getSpawnLocation().add(0.5, 0, 0.5);
@@ -163,12 +163,12 @@ public class SpawnCommands
                     return;
                 }
             }
-            this.module.getCore().getUserManager().broadcastMessage("&aTeleported everyone to the spawn of %s!", world.getName());
+            this.module.getCore().getUserManager().broadcastMessage(MessageType.POSITIVE, "Teleported everyone to the spawn of {world}!", world);
             return;
         }
         if (user == null && !context.hasArg(0))
         {
-            context.sendTranslated("&6ProTip: &cTeleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
             return;
         }
         if (context.hasArg(0))
@@ -176,27 +176,27 @@ public class SpawnCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated("&cUser &2%s &cnot found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
             if (!user.isOnline())
             {
-                context.sendTranslated("&cYou cannot teleport an offline player to spawn!");
+                context.sendTranslated(MessageType.NEGATIVE, "You cannot teleport an offline player to spawn!");
                 return;
             }
             if (!force && module.perms().COMMAND_SPAWN_PREVENT.isAuthorized(user))
             {
-                context.sendTranslated("&cYou are not allowed to spawn %s!", user.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to spawn {user}!", user);
                 return;
             }
         }
         final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
-        final Location userLocation = user.getLocation();
+        final Location userLocation = user.getLocation(); // TODO possible NPE
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
         if (!TeleportCommands.teleport(user, spawnLocation, true, force, true))
         {
-            context.sendTranslated("&cTeleport failed!");
+            context.sendTranslated(MessageType.NEGATIVE, "Teleport failed!");
         }
     }
 
@@ -210,7 +210,7 @@ public class SpawnCommands
             World world = context.getArg(0, World.class, null);
             if (world == null)
             {
-                context.sendTranslated("&cWorld not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "World not found!");
                 return;
             }
             final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
@@ -219,15 +219,15 @@ public class SpawnCommands
             spawnLocation.setYaw(userLocation.getYaw());
             if (!module.perms().tpWorld().getPermission(world.getName()).isAuthorized(sender))
             {
-                context.sendTranslated("You are not allowed to teleport to this world!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport to this world!");
                 return;
             }
             if (TeleportCommands.teleport(sender, spawnLocation, true, false, true))
             {
-                context.sendTranslated("&aTeleported to the spawn of world &6%s&a!", world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Teleported to the spawn of world {world}!", world);
             }
             return;
         }
-        context.sendTranslated("&eProTip: Teleport does not work IRL!");
+        context.sendTranslated(MessageType.NEUTRAL, "ProTip: Teleport does not work IRL!");
     }
 }

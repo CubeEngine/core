@@ -45,7 +45,7 @@ public abstract class SimpleLogActionType extends LogActionType
     {
         if (data instanceof Player)
         {
-            User user = this.logModule.getCore().getUserManager().getExactUser(((Player)data).getName());
+            User user = this.module.getCore().getUserManager().getExactUser(((Player)data).getName());
             this.queueLog(location, causer, null, user.getId(), null, null, additional);
         }
         else

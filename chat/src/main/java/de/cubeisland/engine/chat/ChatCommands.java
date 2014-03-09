@@ -20,6 +20,7 @@ package de.cubeisland.engine.chat;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -48,12 +49,12 @@ public class ChatCommands
             forUser = context.getUser(1);
             if (forUser == null)
             {
-                context.sendTranslated("&cUser &2%s&c not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
            }
            if (forUser != context.getSender() && !module.perms().COMMAND_NICK_OTHER.isAuthorized(context.getSender()))
            {
-               context.sendTranslated("&cYou are not allowed to change the nickname of another player!");
+               context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the nickname of another player!");
                return;
            }
         }
@@ -63,23 +64,23 @@ public class ChatCommands
         }
         else
         {
-            context.sendMessage("&cYou cannot change the consoles DisplayName");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot change the consoles DisplayName");
             return;
         }
         String name = context.getString(0);
         if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
         {
             forUser.setDisplayName(context.getSender().getName());
-            context.sendTranslated("&aDisplayName reset to &2%s", context.getSender().getName());
+            context.sendTranslated(MessageType.POSITIVE, "DisplayName reset to {user}", context.getSender());
         }
         else
         {
             if (module.getCore().getUserManager().getUser(name, false) != null && !module.perms().COMMAND_NICK_OFOTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated("&cThere already is another player named like this!");
+                context.sendTranslated(MessageType.NEGATIVE, "There already is another player named like this!");
                 return;
             }
-            context.sendTranslated("&aDisplayName changed from &2%s&a to &2%s", context.getSender().getDisplayName(), name);
+            context.sendTranslated(MessageType.POSITIVE, "DisplayName changed from {user} to {user}", context.getSender(), name);
             ((User)context.getSender()).setDisplayName(name);
         }
     }

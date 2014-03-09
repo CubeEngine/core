@@ -27,6 +27,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.EntityBlockFormEvent;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
@@ -67,15 +68,11 @@ public class EntityForm extends BlockActionType
     {
         if (logEntry.hasAttached())
         {
-            user.sendTranslated("%s&6%s &aformed &6%s&6 x%d%s",
-                                time,logEntry.getCauserEntity(),
-                                logEntry.getNewBlock(), logEntry.getAttached().size() +1, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} formed {name#block} x{amount}{}", time, logEntry.getCauserEntity(), logEntry.getNewBlock(), logEntry.getAttached().size() +1, loc);
         }
         else
         {
-            user.sendTranslated("%s&6%s &aformed &6%s%s",
-                                time, logEntry.getCauserEntity(),
-                                logEntry.getNewBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} formed {name#block}{}", time, logEntry.getCauserEntity(), logEntry.getNewBlock(), loc);
         }
     }
 

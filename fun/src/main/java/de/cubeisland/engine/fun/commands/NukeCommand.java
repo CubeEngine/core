@@ -38,6 +38,7 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.Vector3;
 import de.cubeisland.engine.core.util.math.shape.Cuboid;
 import de.cubeisland.engine.core.util.math.shape.Cylinder;
@@ -85,12 +86,12 @@ public class NukeCommand
 
         if(explosionRange != 4 && !module.perms().COMMAND_NUKE_CHANGE_RANGE.isAuthorized(context.getSender()))
         {
-            context.sendTranslated("&cYou are not allowed to change the explosion range of the nuke carpet!");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the explosion range of the nuke carpet!");
             return;
         }
         if(explosionRange < 0 || explosionRange > this.module.getConfig().command.nuke.maxExplosionRange)
         {
-            context.sendTranslated("&cThe explosion range can't be less than 0 or greater than %d", this.module.getConfig().command.nuke.maxExplosionRange);
+            context.sendTranslated(MessageType.NEGATIVE, "The explosion range can't be less than 0 or greater than {integer}", this.module.getConfig().command.nuke.maxExplosionRange);
             return;
         }
 
@@ -98,14 +99,14 @@ public class NukeCommand
         {
             if(!module.perms().COMMAND_NUKE_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendMessage("&cYou are not allowed to specify a player!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to specify a player!");
                 return;
             }
 
             user = context.getUser("player");
             if(user == null)
             {
-                context.sendTranslated("&cUser not found");
+                context.sendTranslated(MessageType.NEGATIVE, "User not found");
                 return;
             }
             location = user.getLocation();
@@ -118,7 +119,7 @@ public class NukeCommand
             }
             if(user == null)
             {
-                context.sendTranslated("&cThis command can only be used by a player!");
+                context.sendTranslated(MessageType.NEGATIVE, "This command can only be used by a player!");
                 return;
             }
             location = user.getTargetBlock(null, this.module.getConfig().command.nuke.distance).getLocation();
@@ -134,7 +135,7 @@ public class NukeCommand
 
         if(!context.hasFlag("q"))
         {
-            context.sendTranslated("&aYou spawned %d blocks of tnt.", blockAmount);
+            context.sendTranslated(MessageType.POSITIVE, "You spawned {integer} blocks of tnt.", blockAmount);
         }
     }
 
@@ -163,7 +164,7 @@ public class NukeCommand
             location = this.getSpawnLocation(location, locationHeight);
             return new Sphere(new Vector3(location.getX(), location.getY(), location.getZ()), radius);
         default:
-            context.sendTranslated("The shape '%s' was not found!", shapeName);
+            context.sendTranslated(MessageType.NEGATIVE, "The shape {input} was not found!", shapeName);
             break;
         }
         return null;

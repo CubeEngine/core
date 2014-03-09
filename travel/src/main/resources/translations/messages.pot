@@ -1,14 +1,24 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"POT-Creation-Date: 2014-03-08 21:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,613 +26,748 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:66
-msgid "&2%s&c is not an user on this server!"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:214
+msgid " <<user>  <-owned> <-invited>> <-public> <-private>"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:75
-msgid "&2%s&c does not have a home named &6%s&c!"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:119
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:69
+msgid " <user> <-public> <-Private>"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:84
-msgid "&2%s&c does not have a home!"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:294
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:162
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:182
+msgid " owner:home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:91
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:103
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:129
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:156
-msgid "&cThis home is in a world that no longer exists!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:101
-msgid "&aYou have been teleported to &2%s&a's home!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:124
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:72
-msgid "&2%s &cIsn't an user on this server"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:131
-msgid ""
-"&eAre you sure you want to delete all public homes ever created by &2%s?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:132
-msgid ""
-"&eTo delete all the public homes, do: &6\"/confirm\" &ebefore 30 seconds has "
-"passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:136
-msgid ""
-"&eAre you sure you want to delete all private homes ever created by &2%s?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:137
-msgid ""
-"&eTo delete all the private homes, do: &6\"/confirm\" &ebefore 30 seconds "
-"has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:141
-msgid "&eAre you sure you want to delete all homes ever created by &2%s?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:142
-msgid ""
-"&eTo delete all the homes, do: &6\"/confirm\" &ebefore 30 seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:150
-msgid ""
-"&eAre you sure you want to delete all public homes ever created on this "
-"server!?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:151
-msgid ""
-"&eTo delete all the public homes of every user, do: &6\"/confirm\" &ebefore "
-"30 seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:155
-msgid ""
-"&eAre you sure you want to delete all private homes ever created on this "
-"server?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:156
-msgid ""
-"&eTo delete all the private homes of every user, do: &6\"/confirm\" &ebefore "
-"30 seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:160
-msgid ""
-"&eAre you sure you want to delete all homes ever created on this server!?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:161
-msgid ""
-"&eTo delete all the homes of every user, do: &6\"/confirm\" &ebefore 30 "
-"seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:181
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:196
-msgid "&aThe homes are now deleted"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:238
-msgid "&cCan't find any user named &2%s"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:245
-msgid "&cThe query returned no homes!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:252
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:451
-msgid "  &2public&e:&6%s"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:256
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:455
-msgid "  &2%s&e:&6%s"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:412
+msgid "<-public> <-private> <-owned> <-invited>"
 msgstr ""
 
 #: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:271
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:294
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:172
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:193
-msgid "&cCouldn't find &6%s"
+msgid "<owner>:<home>"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:276
-msgid "&6%s&c is already private!"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:263
+msgid "<user> <-PUBlic> <-PRIVate> <-Owned> <-Invited>"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:280
-msgid "&6%s&a is now private"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:114
+msgid "Clear all homes (of an user)"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:299
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:198
-msgid "&6%s &cis already public!"
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:66
+msgid "Clear all warps (of an user)"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:303
-msgid "&6%s&a is now public"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:97
+msgid "Create a warp"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:91
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:97
-msgid "&cYou don't have a home! do &6/setHome"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:502
+msgid "Invite a user to one of your homes"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:113
-msgid "&aYou have been teleported to your home!"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:209
+msgid "List all (public) homes"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:139
-msgid "&aYou have been teleported to &6%s&a's default home"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:258
+msgid "List all available warps"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:149
-msgid "&6%s&c is not a home"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:468
+msgid "List all players invited to your homes"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:168
-msgid "&aYou have been teleported to your home: &6%s"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:405
+msgid "List homes you can access"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:172
-msgid "&aYou have been teleported to the public home &6%s"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:270
+msgid "Make a users home private"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:176
-msgid "&aYou have been teleported to &2%s&a's home: &6%s"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:292
+msgid "Make a users home public"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:204
-#: de/cubeisland/engine/travel/interactions/HomeListener.java:65
-msgid "&4You have reached your maximum number of homes!"
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:162
+msgid "Make a users warp private"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:205
-#: de/cubeisland/engine/travel/interactions/HomeListener.java:66
-msgid "&cYou have to delete a home to make a new one"
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:182
+msgid "Make a users warp public"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:214
-msgid "&cYou already have a home! Maybe you need /home move?"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:681
+msgid "Make one of your homes private"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:218
-#: de/cubeisland/engine/travel/interactions/HomeListener.java:70
-msgid "&aYour home has been created!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:726
+msgid "Make one of your homes public"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:231
-msgid "&cA public home by that name already exist. Please choose another name"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:306
+msgid "Move a home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:238
-msgid ""
-"&cHomes may not have names that are longer then 32 characters nor contain "
-"colon(:)'s!"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:186
+msgid "Move a warp"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:243
-msgid "&cYou already have a home by that name! Maybe you need /home move?"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:358
+msgid "Remove a home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:247
-msgid "&aYour home &6%s &ahas been created!"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:135
+msgid "Remove a warp"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:251
-msgid ""
-"&eOk so I'll need your new Address then. &cNo seriously this won't work!"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:156
+msgid "Rename a warp"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:269
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:272
-msgid "home"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:212
+msgid "Search for a warp"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:272
-msgid "&6%s&c is not a home you're owning!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:260
+msgid "Set the welcome message of homes"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:281
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:510
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:601
-msgid "&cYou don't have a home!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:199
+msgid "Set your home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:294
-msgid "&aThe welcome message for the home is now set to: "
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:592
+msgid "Uninvite a user from one of your homes"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:314
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:365
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:381
-msgid "&6%s &cCould not be found!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:199
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:307
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:358
+msgid "[HomeName]"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:319
-msgid "&cYou can't move another users home"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:264
+msgid "[Welcome message goes here] <home [home name] [-append]>"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:324
-msgid "&aYour home has been moved to you current location!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:682
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:729
+msgid "[home]"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:332
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:700
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:747
-msgid "&cYou do not have a home named &6%s&c!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:504
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:594
+msgid "[home] <user>"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:337
-msgid "&cYou are not allowed to move another users home!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:485
+msgid "  {name#home}:"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:342
-msgid "&aThe home &6%s&a has been moved to your current location!"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:259
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:457
+msgid "  {text:public}:{name#home}"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:347
-msgid "&cI am calling the moving company right now!"
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:263
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:461
+msgid "  {user}:{name#home}"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:370
-msgid "&cYou can't remove another users home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:374
-msgid "&aYour home have been removed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:386
-msgid "&cYou can't remove another players home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:390
-msgid "&6%s &chave been removed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:394
-msgid "&cSo where do you want to sleep this night?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:436
-msgid "&cYou are not invited to any home!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:439
-msgid "&eHere is a list of your homes: "
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:473
-msgid "&eHere is a list of all your homes with the users invited to them:"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:479
-msgid "  &6%s&e:"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:490
-msgid "&cYou don't have any homes with users invited to them!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:493
-msgid "&cNo one will ever invite a console to his home."
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:515
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:606
-msgid "&cYou are not allowed to edit another players home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:520
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:561
-msgid "&cYou can't invite a person to a public home >:("
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:526
-msgid "&cUser &2%s&c not found!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:531
-msgid "&cYou cannot invite yourself to your own home!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:536
-msgid "&2%s&c is already invited to your home!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:542
-msgid ""
-"&2%s&e invited you to his home. To teleport to it use: /home &2%s&e:&6home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:544
-msgid "&2%s&a Is now invited to your home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:551
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:637
-msgid "&6%s &cis not a home!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:556
-msgid "&4You can't edit another players home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:566
-msgid "&cThat user could not be found!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:571
-msgid "&2%s &cis already invited to &6%s!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:577
-msgid ""
-"&2%s &ehas invited you to his home &6%s&e. To access it do: /home &2%s&e:&6%s"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:580
-msgid "&2%s &aIs now invited to &6%s"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:584
-msgid "&cHow about making a phone call to invite someone instead?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:611
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:647
-msgid "&cYou can't uninvite a person from a public home >:("
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:617
-msgid "&cYou can't uninvite a user that never have played on this server!!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:622
-msgid "&2%s &cIs not invited to your home!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:628
-msgid "&eYou are no longer invited to &2%s&e's home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:630
-msgid "&2%s &eIs no longer invited to home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:642
-msgid "&cYou can't edit another players home"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:653
-msgid "&cYou can't univite a user that never have played on this server!!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:658
-msgid "&2%s &cIs not invited to &6%s&c!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:664
-msgid "&eYou are no longer invited to &2%s&e's home &6%s"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:666
-msgid "&2%s &eIs no longer invited to &6%s"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:671
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:718
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:765
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:126
-msgid "&4This command can only be used by users!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:695
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:742
-msgid "&cMultiHomes is not enabled!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:706
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:753
-msgid "&cYou cannot make homes of other players public!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:711
-msgid "&cYour home is already private!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:715
-msgid "&aYour home is now private"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:758
-msgid "&cYour home is already public!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeCommand.java:762
-msgid "&aYour home is now public"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/HomeListener.java:59
-msgid "&aYour home have been set!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:80
-msgid ""
-"&eAre you sure you want to delete all public warps ever created by &2%s?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:83
-msgid ""
-"&eTo delete all the public warps, do: &6\"/confirm\" &ebefore 30 seconds has "
-"passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:88
-msgid ""
-"&eAre you sure you want to delete all private warps ever created by &2%s?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:91
-msgid ""
-"&eTo delete all the private warps, do: &6\"/confirm\" &ebefore 30 seconds "
-"has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:95
-msgid "&eAre you sure you want to delete all warps ever created by &2%s?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:98
-msgid ""
-"&eTo delete all the warps, do: &6\"/confirm\" &ebefore 30 seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:107
-msgid ""
-"&eAre you sure you want to delete all public warps ever created on this "
-"server!?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:109
-msgid ""
-"&eTo delete all the public warps of every user, do: &6\"/confirm\" &ebefore "
-"30 seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:114
-msgid ""
-"&eAre you sure you want to delete all private warps ever created on this "
-"server?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:116
-msgid ""
-"&eTo delete all the private warps of every user, do: &6\"/confirm\" &ebefore "
-"30 seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:120
-msgid ""
-"&eAre you sure you want to delete all warps ever created on this server!?"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:122
-msgid ""
-"&eTo delete all the warps of every user, do: &6\"/confirm\" &ebefore 30 "
-"seconds has passed"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:142
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:157
-msgid "&aThe warps are now deleted"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:177
-msgid "&6%s &cis already private!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:181
-msgid "&6%s &ais now private"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:202
-msgid "&6%s &ais now public"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:68
-msgid "&cYou don't have access to any warp with that name"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:75
-msgid "&cThis warp is in a world that no longer exists!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:79
-msgid "&aYou have been teleported to the warp &6%s"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:101
-msgid "&4The server have reached it's maximum number of warps!"
-msgstr ""
-
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:102
-msgid "&cSome warps have to be delete for new ones to be made"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:237
+msgid "A public home by that name already exist. Please choose another name"
 msgstr ""
 
 #: de/cubeisland/engine/travel/interactions/WarpCommand.java:112
 msgid ""
-"&cA public warp by that name already exist! maybe you want to include the -"
+"A public warp by that name already exist! maybe you want to include the -"
 "private flag?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:148
+msgid "Are you sure you want to delete all homes ever created by {user}?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:167
+msgid ""
+"Are you sure you want to delete all homes ever created on this server!?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:143
+msgid ""
+"Are you sure you want to delete all private homes ever created by {user}?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:162
+msgid ""
+"Are you sure you want to delete all private homes ever created on this "
+"server?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:94
+msgid ""
+"Are you sure you want to delete all private warps ever created by {user}?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:114
+msgid ""
+"Are you sure you want to delete all private warps ever created on this "
+"server?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:138
+msgid ""
+"Are you sure you want to delete all public homes ever created by {user}?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:157
+msgid ""
+"Are you sure you want to delete all public homes ever created on this "
+"server!?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:88
+msgid ""
+"Are you sure you want to delete all public warps ever created by {user}?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:109
+msgid ""
+"Are you sure you want to delete all public warps ever created on this "
+"server!?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:100
+msgid "Are you sure you want to delete all warps ever created by {user}?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:119
+msgid ""
+"Are you sure you want to delete all warps ever created on this server!?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:227
+msgid "Found a direct match: {name#home} owned by {user}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:312
+msgid "Here are the warps:"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:479
+msgid "Here is a list of all your homes with the users invited to them:"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:445
+msgid "Here is a list of your homes: "
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:244
+msgid "Here is the top {integer} results:"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:301
+msgid "Home {input#home} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:278
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:557
+msgid "Home {input} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:156
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:320
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:371
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:387
+msgid "Home {name} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:244
+msgid ""
+"Homes may not have names that are longer then 32 characters nor contain "
+"colon(:)'s!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:589
+msgid "How about making a phone call to invite someone instead?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:353
+msgid "I am calling the moving company right now!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:58
+msgid "If you want to teleport to a users warp: {text:/warp <user>}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:700
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:746
+msgid "MultiHomes is not enabled!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:499
+msgid "No one will ever invite a console to his home."
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:257
+msgid "Ok so I'll need your new Address then. No seriously this won't work!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:400
+msgid "So where do you want to sleep this night?"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:103
+msgid "Some warps have to be delete for new ones to be made"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:572
+msgid "That user could not be found!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:199
+msgid "That warp could not be found!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:348
+msgid "The home {name} has been moved to your current location!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:188
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:203
+msgid "The homes are now deleted"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:252
+msgid "The query returned no homes!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:307
+msgid "The query returned no warps!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:102
+msgid "The server have reached it's maximum number of warps!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:149
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:171
+msgid "The warp could not be found"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:153
+msgid "The warp is now deleted"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:209
+msgid "The warp is now moved to your current location"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:140
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:155
+msgid "The warps are now deleted"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:183
+msgid "The warps name is now changed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:300
+msgid "The welcome message for the home is now set to: "
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:676
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:722
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:768
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:127
+msgid "This command can only be used by users!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:93
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:111
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:137
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:163
+msgid "This home is in a world that no longer exists!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:57
+msgid "This is not a command on it's own."
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:76
+msgid "This warp is in a world that no longer exists!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:168
+msgid ""
+"To delete all the homes of every user, do: {text:/confirm} before 30 seconds "
+"has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:149
+msgid ""
+"To delete all the homes, do: &{text:/confirm} before 30 seconds has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:163
+msgid ""
+"To delete all the private homes of every user, do: {text:/confirm} before 30 "
+"seconds has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:144
+msgid ""
+"To delete all the private homes, do: {text:/confirm} before 30 seconds has "
+"passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:115
+msgid ""
+"To delete all the private warps of every user, do: {text:/confirm} before 30 "
+"seconds has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:96
+msgid ""
+"To delete all the private warps, do: {text:/confirm} before 30 seconds has "
+"passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:158
+msgid ""
+"To delete all the public homes of every user, do: {text:/confirm} before 30 "
+"seconds has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:139
+msgid ""
+"To delete all the public homes, do: {text:/confirm} before 30 seconds has "
+"passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:110
+msgid ""
+"To delete all the public warps of every user, do: {text:/confirm} before 30 "
+"seconds has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:90
+msgid ""
+"To delete all the public warps, do: {text:/confirm} before 30 seconds has "
+"passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:120
+msgid ""
+"To delete all the warps of every user, do: {text:/confirm} before 30 seconds "
+"has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:101
+msgid ""
+"To delete all the warps, do: {text:/confirm} before 30 seconds has passed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:59
+msgid "To get a list of the admin commands: {text:/warp admin ?}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:68
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:131
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:245
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:532
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:81
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:290
+msgid "User {user} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:169
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:189
+msgid "Warp {name} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/travel/interactions/WarpCommand.java:118
 #: de/cubeisland/engine/travel/interactions/WarpCommand.java:177
 msgid ""
-"&cWarps may not have names that are longer then 32 characters, and they may "
+"Warps may not have names that are longer then 32 characters, and they may "
 "not contain colon(:)'s!"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:123
-msgid "&aYour warp &6%s&a has been created!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:249
+msgid "You already have a home by that name! Maybe you need /home move?"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:148
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:170
-msgid "&cThe warp could not be found"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:220
+msgid "You already have a home! Maybe you need /home move?"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:152
-msgid "&aThe warp is now deleted"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:633
+msgid "You are no longer invited to {user}'s home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:182
-msgid "&aThe warps name is now changed"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:669
+msgid "You are no longer invited to {user}'s home {name#home}"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:198
-msgid "&cThat warp could not be found!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:521
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:611
+msgid "You are not allowed to edit another players home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:203
-msgid "&cYou are not allowed to edit that warp!"
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:204
+msgid "You are not allowed to edit that warp!"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:208
-msgid "&aThe warp is now moved to your current location"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:343
+msgid "You are not allowed to move another users home!"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:226
-msgid "&aFound a direct match: &6%s &aowned by &2%s"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:442
+msgid "You are not invited to any home!"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:244
-msgid "&eHere is the top &6%d &eresults:"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:562
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:647
+msgid "You can't edit another players home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:290
-msgid "&2%s &cis not a user on this server"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:526
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:567
+msgid "You can't invite a person to a public home >:("
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:307
-msgid "&cThe query returned no warps!"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:325
+msgid "You can't move another users home"
 msgstr ""
 
-#: de/cubeisland/engine/travel/interactions/WarpCommand.java:312
-msgid "&eHere are the warps:"
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:392
+msgid "You can't remove another players home"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:376
+msgid "You can't remove another users home"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:616
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:652
+msgid "You can't uninvite a person from a public home >:("
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:622
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:658
+msgid "You can't uninvite a user that never have played on this server!!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:537
+msgid "You cannot invite yourself to your own home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:710
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:756
+msgid "You cannot make homes of other players public!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:338
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:705
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:751
+msgid "You do not have a home named {name#home}!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:287
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:516
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:606
+msgid "You don't have a home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:99
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:105
+msgid "You don't have a home! do {text:/setHome}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:69
+msgid "You don't have access to any warp with that name"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:496
+msgid "You don't have any homes with users invited to them!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:179
+msgid "You have been teleported to the public home {name}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:80
+msgid "You have been teleported to the warp {name}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:121
+msgid "You have been teleported to your home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:175
+msgid "You have been teleported to your home: {name}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:147
+msgid "You have been teleported to {user}'s default home"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:103
+msgid "You have been teleported to {user}'s home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:183
+msgid "You have been teleported to {user}'s home: {name}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:210
+#: de/cubeisland/engine/travel/interactions/HomeListener.java:66
+msgid "You have reached your maximum number of homes!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:211
+#: de/cubeisland/engine/travel/interactions/HomeListener.java:67
+msgid "You have to delete a home to make a new one"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:224
+#: de/cubeisland/engine/travel/interactions/HomeListener.java:71
+msgid "Your home has been created!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:330
+msgid "Your home has been moved to you current location!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:380
+msgid "Your home have been removed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeListener.java:60
+msgid "Your home have been set!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:715
+msgid "Your home is already private!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:761
+msgid "Your home is already public!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:719
+msgid "Your home is now private"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:765
+msgid "Your home is now public"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:253
+msgid "Your home {name} has been created!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpCommand.java:124
+msgid "Your warp {name} has been created!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:306
+msgid "{input#home} is already public!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:287
+msgid "{input#home} is now private"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:310
+msgid "{input#home} is now public"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:396
+msgid "{name#home} have been removed"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:283
+msgid "{name#home} is already private!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:278
+msgid "{name#home} is not a home you're owning!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:642
+msgid "{name#home} is not a home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:174
+msgid "{name#warp} is already private!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:194
+msgid "{name#warp} is already public!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:178
+msgid "{name#warp} is now private"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/WarpAdminCommand.java:198
+msgid "{name#warp} is now public"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:635
+msgid "{user} Is no longer invited to home"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:627
+msgid "{user} Is not invited to your home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:550
+msgid "{user} Is now invited to your home"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:77
+msgid "{user} does not have a home named {name#home}!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeAdminCommand.java:86
+msgid "{user} does not have a home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:583
+msgid ""
+"{user} has invited you to his home {name}. To access it do: /home {user}:"
+"{name#home}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:548
+msgid ""
+"{user} invited you to his home. To teleport to it use: /home {user}:{text:"
+"home}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:542
+msgid "{user} is already invited to your home!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:577
+msgid "{user} is already invited to {name#home}!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:671
+msgid "{user} is no longer invited to {name#home}"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:663
+msgid "{user} is not invited to {home#name}!"
+msgstr ""
+
+#: de/cubeisland/engine/travel/interactions/HomeCommand.java:585
+msgid "{user} is now invited to {name}"
 msgstr ""

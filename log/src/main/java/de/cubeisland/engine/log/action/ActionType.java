@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.storage.ActionTypeModel;
@@ -41,7 +42,7 @@ public abstract class ActionType
 {
     private ActionTypeModel model;
 
-    protected Log logModule;
+    protected Log module;
     protected UserManager um;
     protected ObjectMapper om;
     protected ActionTypeManager manager;
@@ -60,7 +61,7 @@ public abstract class ActionType
      */
     public void queueLog(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additionalData)
     {
-        long worldID = this.logModule.getCore().getWorldManager().getWorldId(location.getWorld());
+        long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
         Long causerID;
         if (causer == null)
         {
@@ -89,7 +90,7 @@ public abstract class ActionType
      */
     public final void initialize(Log module, ActionTypeManager manager)
     {
-        this.logModule = module;
+        this.module = module;
         this.um = module.getCore().getUserManager();
         this.om = module.getObjectMapper();
         this.manager = manager;
@@ -154,7 +155,7 @@ public abstract class ActionType
     {
         if (this.canRollback())
         {
-            attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Rollback: &6%s", logEntry.getActionType().getName());
+            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Rollback: {name#actiontype}", logEntry.getActionType().getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;
@@ -164,7 +165,7 @@ public abstract class ActionType
     {
         if (this.canRedo())
         {
-            attachment.getHolder().sendTranslated("&4Encountered an unimplemented LogAction-Redo: &6%s", logEntry.getActionType().getName());
+            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Redo: {name#actiontype}", logEntry.getActionType().getName());
             throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
         }
         return false;
