@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.util.formatter;
 import org.bukkit.block.Biome;
 
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
 public class BiomeFormatter extends ColoredFormatter<Biome>
 {

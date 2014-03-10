@@ -30,7 +30,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.formatter.MessageCompositor;
+import de.cubeisland.engine.messagecompositor.MessageCompositor;
 
 public class WrappedCommandSender implements CommandSender
 {

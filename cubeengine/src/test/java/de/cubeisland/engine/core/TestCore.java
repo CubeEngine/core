@@ -49,11 +49,11 @@ import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.DefaultLogFactory;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import de.cubeisland.engine.logging.target.PrintTarget;
+import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import org.joda.time.Duration;
 
 /**

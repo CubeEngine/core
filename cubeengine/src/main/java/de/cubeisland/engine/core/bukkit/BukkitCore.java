@@ -91,9 +91,9 @@ import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.core.world.TableWorld;
-import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

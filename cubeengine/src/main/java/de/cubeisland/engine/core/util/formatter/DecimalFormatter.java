@@ -18,11 +18,11 @@
 package de.cubeisland.engine.core.util.formatter;
 
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.formatter.context.MacroContext;
-import de.cubeisland.engine.formatter.formatter.reflected.Names;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
+import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 
 @Names("decimal")
-public class DecimalFormatter extends de.cubeisland.engine.formatter.formatter.example.DecimalFormatter
+public class DecimalFormatter extends de.cubeisland.engine.messagecompositor.macro.example.DecimalFormatter
 {
     @Override
     protected String formatNumber(Number number, MacroContext context)

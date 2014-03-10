@@ -22,8 +22,8 @@ import java.util.Locale;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.ColoredFormatter.ColorReader;
-import de.cubeisland.engine.formatter.DefaultMessageCompositor;
-import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.messagecompositor.DefaultMessageCompositor;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
 public class ColoredMessageCompositor extends DefaultMessageCompositor
 {

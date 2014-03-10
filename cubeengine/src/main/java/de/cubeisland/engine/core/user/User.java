@@ -65,7 +65,7 @@ import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.formatter.MessageCompositor;
+import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
