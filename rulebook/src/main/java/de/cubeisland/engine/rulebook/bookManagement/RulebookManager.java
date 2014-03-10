@@ -34,6 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.rulebook.Rulebook;
 
 public final class RulebookManager

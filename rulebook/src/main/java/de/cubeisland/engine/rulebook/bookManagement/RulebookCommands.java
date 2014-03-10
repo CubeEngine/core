@@ -36,6 +36,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.rulebook.Rulebook;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.TIntSet;

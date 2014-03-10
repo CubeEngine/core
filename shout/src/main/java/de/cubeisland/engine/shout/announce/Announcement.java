@@ -29,6 +29,9 @@ import de.cubeisland.engine.core.i18n.I18n;
 
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.i18n.language.ClonedLanguage;
+import de.cubeisland.engine.i18n.language.Language;
+import de.cubeisland.engine.i18n.language.NormalLanguage;
 import de.cubeisland.engine.shout.Shout;
 import gnu.trove.map.hash.THashMap;
 

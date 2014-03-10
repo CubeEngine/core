@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.i18n.language.Language;
 
 public class RuleBookFile
 {

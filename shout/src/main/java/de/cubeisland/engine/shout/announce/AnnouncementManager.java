@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.shout.Shout;
 import de.cubeisland.engine.shout.ShoutException;
