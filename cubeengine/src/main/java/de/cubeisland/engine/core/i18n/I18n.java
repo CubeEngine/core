@@ -29,11 +29,14 @@ import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileManager;
-import de.cubeisland.engine.core.filesystem.gettext.MessageCatalogFactory;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.util.Cleanable;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.i18n.language.ClonedLanguage;
+import de.cubeisland.engine.i18n.language.Language;
+import de.cubeisland.engine.i18n.language.NormalLanguage;
+import de.cubeisland.engine.i18n.language.SourceLanguage;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
@@ -48,13 +51,11 @@ import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 public class I18n implements Cleanable
 {
     private final Core core;
-    private static final Object[] NO_PARAMS = {};
     private final Log logger;
     private final SourceLanguage sourceLanguage;
     private final Map<Locale, Language> languages;
     private final Map<String, Language> languageLookupMap;
     private Locale defaultLocale;
-    private final MessageCatalogFactory messageCatalogFactory;
 
     public I18n(Core core)
     {
@@ -66,13 +67,9 @@ public class I18n implements Cleanable
                                                   core.getTaskManager().getThreadFactory()));
         this.languages = new THashMap<>();
         this.languageLookupMap = new THashMap<>();
-        this.sourceLanguage = new SourceLanguage();
+        this.sourceLanguage = SourceLanguage.EN_US;
         this.languages.put(this.sourceLanguage.getLocale(), this.sourceLanguage);
         this.registerLanguage(this.sourceLanguage);
-        this.messageCatalogFactory = new MessageCatalogFactory();
-
-        FileManager fm = core.getFileManager();
-        this.loadLanguages(fm.getLanguagePath());
 
         Locale def = core.getConfiguration().defaultLocale;
         if (this.languages.containsKey(def))
@@ -109,96 +106,6 @@ public class I18n implements Cleanable
             language = this.sourceLanguage;
         }
         return language;
-    }
-
-    /**
-     * This method load all languages from a directory
-     *
-     * @param languagePath the directory to load from
-     */
-    private synchronized void loadLanguages(Path languagePath)
-    {
-        Map<Locale, LocaleConfig> languages = new HashMap<>();
-        LocaleConfig config;
-
-        try (DirectoryStream<Path> directory = Files.newDirectoryStream(languagePath, YAML))
-        {
-            for (Path file : directory)
-            {
-                config = this.core.getConfigFactory().load(LocaleConfig.class, file.toFile(), false);
-                if (config.locale != null)
-                {
-                    languages.put(config.locale, config);
-                }
-                else
-                {
-                    this.logger.error("The language ''{}'' has an invalid configuration!", file.getFileName());
-                }
-            }
-        }
-        catch (IOException ex)
-        {
-            this.core.getLog().warn(ex, "Failed to load the languages!");
-        }
-
-        Stack<Locale> loadStack = new Stack<>();
-        for (LocaleConfig entry : languages.values())
-        {
-            this.loadLanguage(languagePath, entry, languages, loadStack);
-        }
-    }
-
-    private Language loadLanguage(Path languagePath, LocaleConfig config, Map<Locale, LocaleConfig> languages, Stack<Locale> loadStack)
-    {
-        if (this.languages.containsKey(config.locale))
-        {
-            return this.languages.get(config.locale);
-        }
-        if (loadStack.contains(config.locale))
-        {
-            this.logger.error("The language ''{}'' caused a circular dependency!", loadStack.peek());
-            return null;
-        }
-        Language language = null;
-
-        if (config.parent != null && this.sourceLanguage.equals(config.parent))
-        {
-            language = this.sourceLanguage;
-        }
-        else
-        {
-            LocaleConfig parent = languages.get(config.parent);
-            if (parent != null)
-            {
-                loadStack.add(config.locale);
-                language = this.loadLanguage(languagePath, parent, languages, loadStack);
-                loadStack.pop();
-            }
-        }
-        try
-        {
-            language = new NormalLanguage(this.core, config, languagePath, language);
-            this.registerLanguage(language);
-            if (config.clones != null)
-            {
-                Language clonedLanguage;
-                for (Locale cloneLocale : config.clones)
-                {
-                    clonedLanguage = ClonedLanguage.clone(cloneLocale, language);
-                    if (clonedLanguage != null && !this.sourceLanguage.equals(clonedLanguage.getLocale()))
-                    {
-                        this.registerLanguage(clonedLanguage);
-                    }
-                }
-            }
-
-            return language;
-        }
-        catch (IllegalArgumentException e)
-        {
-            this.logger.error("Failed to load the language '{}': {}", config.locale, e.getLocalizedMessage());
-        }
-        return null;
     }
 
     private void registerLanguage(Language language)
@@ -311,11 +218,6 @@ public class I18n implements Cleanable
     @Override
     public void clean()
     {
-        for (Language language : this.languageLookupMap.values())
-        {
-            language.clean();
-        }
-        this.sourceLanguage.clean();
         this.languageLookupMap.clear();
     }
 

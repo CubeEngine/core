@@ -18,25 +18,26 @@
 package de.cubeisland.engine.core.i18n;
 
 import java.util.Locale;
-import java.util.Map;
 
-import de.cubeisland.engine.core.util.ChatFormat;
-
-import gnu.trove.map.hash.THashMap;
+import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.i18n.language.LocaleConfig;
 
 /**
- * This class represents the source language.
+ * This cofniguration is used to parse the language configurations.
  */
-public final class SourceLanguage implements Language
+public class LocaleConfiguration extends YamlConfiguration implements LocaleConfig
 {
-    private final String code = "en_US";
-    private final Locale locale = Locale.US;
-    private final String name = "English";
-    private final String localName = "English";
-    private final Map<String, String> messages = new THashMap<>();
+    public Locale locale;
 
-    SourceLanguage()
-    {}
+    public String name;
+
+    public String localName;
+
+    public Locale parent = null;
+
+    public Locale[] clones = null;
+
 
     @Override
     public Locale getLocale()
@@ -57,38 +58,14 @@ public final class SourceLanguage implements Language
     }
 
     @Override
-    public String getTranslation(String message)
+    public Locale getParent()
     {
-        String translation = this.messages.get(message);
-        if (translation == null)
-        {
-            this.messages.put(message, translation = ChatFormat.parseFormats(message));
-        }
-
-        return translation;
+        return this.parent;
     }
 
     @Override
-    public Map<String, String> getMessages()
+    public Locale[] getClones()
     {
-        return new THashMap<>(this.messages);
-    }
-
-    @Override
-    public boolean equals(Locale locale)
-    {
-        return this.locale.equals(locale);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return this.code.hashCode();
-    }
-
-    @Override
-    public void clean()
-    {
-        this.messages.clear();
+        return this.clones;
     }
 }

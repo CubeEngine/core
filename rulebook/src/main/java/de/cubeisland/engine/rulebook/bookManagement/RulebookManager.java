@@ -33,7 +33,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.rulebook.Rulebook;
 

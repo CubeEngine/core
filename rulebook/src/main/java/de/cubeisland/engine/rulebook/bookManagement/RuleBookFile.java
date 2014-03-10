@@ -32,7 +32,6 @@ import java.util.Set;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.util.StringUtils;
 
 public class RuleBookFile

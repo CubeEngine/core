@@ -41,7 +41,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
