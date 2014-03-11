@@ -20,10 +20,10 @@ package de.cubeisland.engine.core.util.formatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.core.util.ChatFormat;
 
-public class ColorConfiguration extends YamlConfiguration
+public class ColorConfiguration extends ReflectedYaml
 {
     // TODO converters
     public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()

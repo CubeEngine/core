@@ -20,9 +20,9 @@ package de.cubeisland.engine.faq;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
-public class FaqConfig extends YamlConfiguration
+public class FaqConfig extends ReflectedYaml
 {
     public List<Question> questions = new ArrayList<>();
 

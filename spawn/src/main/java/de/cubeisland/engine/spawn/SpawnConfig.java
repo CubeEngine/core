@@ -20,9 +20,9 @@ package de.cubeisland.engine.spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
-public class SpawnConfig extends YamlConfiguration
+public class SpawnConfig extends ReflectedYaml
 {
     public World mainWorld = Bukkit.getWorlds().get(0);
 }

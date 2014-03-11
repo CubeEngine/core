@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingUtil;
@@ -35,6 +34,7 @@ import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+import de.cubeisland.engine.reflect.Reflected;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -338,12 +338,12 @@ public abstract class Module
     }
 
     /**
-     * Loads and saves from config.{@link de.cubeisland.engine.configuration.codec.ConfigurationCodec#getExtension()} in the module folder
+     * Loads and saves from config.{@link de.cubeisland.engine.reflect.codec.Codec#getExtension()} in the module folder
      *
      * @param clazz the configurations class
      * @return the loaded configuration
      */
-    protected final <T extends Configuration> T loadConfig(Class<T> clazz)
+    protected final <T extends Reflected> T loadConfig(Class<T> clazz)
     {
         T config = this.core.getConfigFactory().create(clazz);
         config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());

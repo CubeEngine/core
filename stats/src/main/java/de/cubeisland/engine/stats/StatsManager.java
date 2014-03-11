@@ -28,10 +28,10 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.task.TaskManager;

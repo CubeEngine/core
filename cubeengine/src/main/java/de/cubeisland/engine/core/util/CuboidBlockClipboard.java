@@ -17,9 +17,8 @@
  */
 package de.cubeisland.engine.core.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -31,18 +30,18 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
-import de.cubeisland.engine.configuration.ConfigurationFactory;
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.NullNode;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
+import de.cubeisland.engine.reflect.Reflector;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
 
 import static de.cubeisland.engine.core.bukkit.NBTUtils.convertNBTToNode;
 
@@ -163,7 +162,7 @@ public class CuboidBlockClipboard
 
     public static class CuboidBlockClipboardConverter implements Converter<CuboidBlockClipboard>
     {
-        public CuboidBlockClipboardConverter(ConfigurationFactory factory)
+        public CuboidBlockClipboardConverter(Reflector factory)
         {
             ConverterManager cManager = factory.getDefaultConverterManager();
             cManager.registerConverter(CuboidBlockClipboard.class, this);
@@ -229,7 +228,7 @@ public class CuboidBlockClipboard
             {
                 if (node instanceof MapNode)
                 {
-                    LinkedHashMap<String,Node> mappedNodes = ((MapNode)node).getMappedNodes();
+                    Map<String,Node> mappedNodes = ((MapNode)node).getValue();
                     int width = manager.convertFromNode(mappedNodes.get("width"), Integer.class);
                     int height = manager.convertFromNode(mappedNodes.get("height"), Integer.class);
                     int length = manager.convertFromNode(mappedNodes.get("length"), Integer.class);
@@ -240,12 +239,12 @@ public class CuboidBlockClipboard
                     Node tileE = mappedNodes.get("tileentities");
                     if (tileE != null && tileE instanceof ListNode)
                     {
-                        ArrayList<Node> listedNodes = ((ListNode)tileE).getListedNodes();
+                        List<Node> listedNodes = ((ListNode)tileE).getValue();
                         for (Node listedNode : listedNodes)
                         {
                             if (listedNode instanceof MapNode)
                             {
-                                LinkedHashMap<String, Node> teData = ((MapNode)listedNode).getMappedNodes();
+                                Map<String, Node> teData = ((MapNode)listedNode).getValue();
                                 BlockVector3 vector = new BlockVector3(((IntNode)teData.get("x")).getValue(),
                                                                        ((IntNode)teData.get("y")).getValue(),
                                                                        ((IntNode)teData.get("z")).getValue());
@@ -267,9 +266,9 @@ public class CuboidBlockClipboard
                     if (mappedNodes.containsKey("relative"))
                     {
                         MapNode relativeMap = (MapNode)mappedNodes.get("relative");
-                        int x = (Integer)relativeMap.getMappedNodes().get("x").getValue();
-                        int y = (Integer)relativeMap.getMappedNodes().get("y").getValue();
-                        int z = (Integer)relativeMap.getMappedNodes().get("z").getValue();
+                        int x = (Integer)relativeMap.getValue().get("x").getValue();
+                        int y = (Integer)relativeMap.getValue().get("y").getValue();
+                        int z = (Integer)relativeMap.getValue().get("z").getValue();
                         relative = new BlockVector3(x,y,z);
                     }
                     CuboidBlockClipboard result = new CuboidBlockClipboard(new BlockVector3(width, height, length),relative);

@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -39,17 +39,17 @@ import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.configuration.node.ByteNode;
-import de.cubeisland.engine.configuration.node.DoubleNode;
-import de.cubeisland.engine.configuration.node.FloatNode;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.LongNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.NullNode;
-import de.cubeisland.engine.configuration.node.ShortNode;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.node.ByteNode;
+import de.cubeisland.engine.reflect.node.DoubleNode;
+import de.cubeisland.engine.reflect.node.FloatNode;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.LongNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
+import de.cubeisland.engine.reflect.node.ShortNode;
+import de.cubeisland.engine.reflect.node.StringNode;
 
 public class NBTUtils
 {
@@ -220,7 +220,7 @@ public class NBTUtils
         {
             boolean onlyByte = true;
             boolean onlyInt = true;
-            ArrayList<Node> listedNodes = ((ListNode)node).getListedNodes();
+            List<Node> listedNodes = ((ListNode)node).getValue();
             for (Node listedNode : listedNodes)
             {
                 if (!(listedNode instanceof IntNode))
@@ -265,7 +265,7 @@ public class NBTUtils
         if (node instanceof MapNode)
         {
             NBTTagCompound compound = new NBTTagCompound();
-            for (Entry<String, Node> entry : ((MapNode)node).getMappedNodes().entrySet())
+            for (Entry<String, Node> entry : ((MapNode)node).getValue().entrySet())
             {
                 compound.set(((MapNode)node).getOriginalKey(entry.getKey()),convertNodeToNBT(entry.getValue()));
             }

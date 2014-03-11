@@ -27,7 +27,7 @@ import org.bukkit.WorldType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.potion.PotionEffect;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.exception.ModuleLoadError;

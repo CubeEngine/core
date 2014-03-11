@@ -17,11 +17,11 @@
  */
 package de.cubeisland.engine.log.action.logaction.container;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
 
 public class ContainerTypeConverter implements Converter<ContainerType>
 {

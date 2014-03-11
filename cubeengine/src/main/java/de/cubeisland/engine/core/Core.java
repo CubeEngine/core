@@ -19,7 +19,6 @@ package de.cubeisland.engine.core;
 
 import java.nio.charset.Charset;
 
-import de.cubeisland.engine.configuration.ConfigurationFactory;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
@@ -38,6 +37,7 @@ import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
+import de.cubeisland.engine.reflect.Reflector;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
@@ -176,7 +176,7 @@ public interface Core
 
     LogFactory getLogFactory();
 
-    ConfigurationFactory getConfigFactory();
+    Reflector getConfigFactory();
 
     /**
      * Returns true after the first server tick happened

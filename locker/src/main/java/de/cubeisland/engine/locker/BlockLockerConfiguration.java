@@ -19,7 +19,7 @@ package de.cubeisland.engine.locker;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.configuration.exception.ConversionException;
+import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.locker.storage.ProtectedType;
 

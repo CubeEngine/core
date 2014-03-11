@@ -27,9 +27,9 @@ import java.util.Stack;
 
 import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.exception.InvalidConfigurationException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.reflect.exception.InvalidReflectedObjectException;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.config.RoleConfig;
 import gnu.trove.map.hash.THashMap;
@@ -111,7 +111,7 @@ public abstract class RoleProvider
                 }
             }
         }
-        catch (IOException|InvalidConfigurationException e)
+        catch (IOException|InvalidReflectedObjectException e)
         {
             this.module.getLog().warn(e, "Failed to load a configuration");
         }

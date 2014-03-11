@@ -21,27 +21,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.configuration.Configuration;
-import de.cubeisland.engine.configuration.codec.ConfigurationCodec;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.BooleanNode;
-import de.cubeisland.engine.configuration.node.ByteNode;
-import de.cubeisland.engine.configuration.node.CharNode;
-import de.cubeisland.engine.configuration.node.DoubleNode;
-import de.cubeisland.engine.configuration.node.FloatNode;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.LongNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.NullNode;
-import de.cubeisland.engine.configuration.node.ShortNode;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.Reflected;
+import de.cubeisland.engine.reflect.codec.Codec;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.BooleanNode;
+import de.cubeisland.engine.reflect.node.ByteNode;
+import de.cubeisland.engine.reflect.node.CharNode;
+import de.cubeisland.engine.reflect.node.DoubleNode;
+import de.cubeisland.engine.reflect.node.FloatNode;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.LongNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
+import de.cubeisland.engine.reflect.node.ShortNode;
+import de.cubeisland.engine.reflect.node.StringNode;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;
@@ -58,7 +57,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-public class NBTCodec extends ConfigurationCodec
+public class NBTCodec extends Codec
 {
     @Override
     public String getExtension()
@@ -67,7 +66,7 @@ public class NBTCodec extends ConfigurationCodec
     }
 
     @Override
-    protected final void save(MapNode node, OutputStream os, Configuration config) throws ConversionException
+    protected final void save(MapNode node, OutputStream os, Reflected config) throws ConversionException
     {
         try
         {
@@ -83,7 +82,7 @@ public class NBTCodec extends ConfigurationCodec
     }
 
     @Override
-    protected final MapNode load(InputStream is, Configuration config)
+    protected final MapNode load(InputStream is, Reflected config)
     {
         try
         {
@@ -162,7 +161,7 @@ public class NBTCodec extends ConfigurationCodec
 
     private CompoundTag convertMap(MapNode baseNode)
     {
-        LinkedHashMap<String,Node> map = baseNode.getMappedNodes();
+        Map<String,Node> map = baseNode.getValue();
         CompoundTag result = new CompoundTag("root", new CompoundMap());
         if (map.isEmpty()) return result;
         this.convertMap(result.getValue(),map, baseNode);
@@ -182,14 +181,14 @@ public class NBTCodec extends ConfigurationCodec
         if (value instanceof MapNode)
         {
             CompoundMap map = new CompoundMap();
-            this.convertMap(map,((MapNode)value).getMappedNodes(), (MapNode)value);
+            this.convertMap(map,((MapNode)value).getValue(), (MapNode)value);
             return new CompoundTag(name,map);
         }
         else if (value instanceof ListNode)
         {
             List<Tag> tagList = new ArrayList<>();
             java.lang.Integer i = 0;
-            for (Node node : ((ListNode)value).getListedNodes())
+            for (Node node : ((ListNode)value).getValue())
             {
                 i++;
                 tagList.add(this.convertValue(i.toString(),node));

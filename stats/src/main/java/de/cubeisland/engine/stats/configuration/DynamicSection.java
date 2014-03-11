@@ -17,13 +17,13 @@
  */
 package de.cubeisland.engine.stats.configuration;
 
-import de.cubeisland.engine.configuration.StringUtils;
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.NullNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
+import de.cubeisland.engine.reflect.util.StringUtils;
 
 public class DynamicSection
 {
@@ -61,7 +61,7 @@ public class DynamicSection
      */
     public boolean hasKey(String key)
     {
-        return parent.getMappedNodes().containsKey(StringUtils.fieldNameToPath(key));
+        return parent.getValue().containsKey(StringUtils.fieldNameToPath(key));
     }
 
     /**
@@ -82,7 +82,7 @@ public class DynamicSection
 
     public Node getNode(String key)
     {
-        return parent.getMappedNodes().get(StringUtils.fieldNameToPath(key));
+        return parent.getValue().get(StringUtils.fieldNameToPath(key));
     }
 
     /**

@@ -20,15 +20,15 @@ package de.cubeisland.engine.worlds.converter;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.ByteNode;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.NullNode;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.ByteNode;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
+import de.cubeisland.engine.reflect.node.StringNode;
 
 public class PotionEffectConverter implements Converter<PotionEffect>
 {

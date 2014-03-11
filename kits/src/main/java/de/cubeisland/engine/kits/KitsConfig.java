@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.kits;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
-public class KitsConfig extends YamlConfiguration
+public class KitsConfig extends ReflectedYaml
 {}

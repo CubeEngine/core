@@ -17,11 +17,11 @@
  */
 package de.cubeisland.engine.conomy;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 
-public class ConomyConfiguration extends YamlConfiguration
+public class ConomyConfiguration extends ReflectedYaml
 {
     @Name("currency.symbol")
     public String symbol = "€";

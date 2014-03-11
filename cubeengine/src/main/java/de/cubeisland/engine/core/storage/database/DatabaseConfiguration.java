@@ -17,12 +17,12 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
 /**
  * DatabaseConfiguration have to return their corresponding DatabaseClass.
  */
-public abstract class DatabaseConfiguration extends YamlConfiguration
+public abstract class DatabaseConfiguration extends ReflectedYaml
 {
 
 }

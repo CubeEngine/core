@@ -20,13 +20,13 @@ package de.cubeisland.engine.roles.config;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
 import de.cubeisland.engine.roles.Roles;
 
 public class PermissionTreeConverter implements Converter<PermissionTree>
@@ -67,9 +67,9 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
                 int size = baseValueMap.size();
                 if (size == 1)
                 {
-                    if (values.getListedNodes().size() == 1)
+                    if (values.getValue().size() == 1)
                     {
-                        for (Node subValue : values.getListedNodes())
+                        for (Node subValue : values.getValue())
                         {
                             if (subValue instanceof StringNode)
                             {
@@ -84,7 +84,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
                             }
                             else
                             {
-                                String subKey = ((MapNode)subValue).getMappedNodes().keySet().iterator().next();
+                                String subKey = ((MapNode)subValue).getValue().keySet().iterator().next();
                                 subMap.setNode(StringNode.of(entry.getKey() + "." + subKey), ((MapNode)subValue).getExactNode(subKey));
                                 result.addNode(subMap);
                             }
@@ -152,7 +152,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
 
     private void loadFromList(PermissionTree permTree, ListNode list, String path)
     {
-        for (Node value : list.getListedNodes())
+        for (Node value : list.getValue())
         {
             if (value instanceof StringNode)
             {
@@ -182,7 +182,7 @@ public class PermissionTreeConverter implements Converter<PermissionTree>
 
     private void loadFromMap(PermissionTree permTree, MapNode map, String path)
     {
-        for (Map.Entry<String, Node> entry : map.getMappedNodes().entrySet())
+        for (Map.Entry<String, Node> entry : map.getValue().entrySet())
         {
             if (entry.getValue() instanceof ListNode)
             {

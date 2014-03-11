@@ -25,10 +25,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
+import de.cubeisland.engine.reflect.Reflected;
 
-public class PlayerDataConfig extends Configuration<NBTCodec>
+public class PlayerDataConfig extends Reflected<NBTCodec>
 {
     public int heldItemSlot = 0;
     public double health = 20;

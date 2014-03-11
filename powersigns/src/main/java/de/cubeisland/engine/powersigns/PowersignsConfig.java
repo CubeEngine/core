@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.powersigns;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
-public class PowersignsConfig extends YamlConfiguration
+public class PowersignsConfig extends ReflectedYaml
 {}

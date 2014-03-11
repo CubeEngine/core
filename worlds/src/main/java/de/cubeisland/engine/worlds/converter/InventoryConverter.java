@@ -26,15 +26,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.ShortNode;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.ShortNode;
+import de.cubeisland.engine.reflect.node.StringNode;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
 
 public class InventoryConverter implements Converter<Inventory>
@@ -101,7 +101,7 @@ public class InventoryConverter implements Converter<Inventory>
                 Node contents = ((MapNode)node).getExactNode("Contents");
                 if (contents instanceof ListNode)
                 {
-                    for (Node listedNode : ((ListNode)contents).getListedNodes())
+                    for (Node listedNode : ((ListNode)contents).getValue())
                     {
                         if (listedNode instanceof MapNode)
                         {

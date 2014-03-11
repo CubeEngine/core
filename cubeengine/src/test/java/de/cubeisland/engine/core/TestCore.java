@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.configuration.ConfigurationFactory;
-import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -54,6 +52,8 @@ import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import de.cubeisland.engine.logging.target.PrintTarget;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
+import de.cubeisland.engine.reflect.Reflector;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
 import org.joda.time.Duration;
 
 /**
@@ -69,7 +69,7 @@ public class TestCore implements Core
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
     private ModuleManager moduleManager = null;
-    private final ConfigurationFactory configFactory = new ConfigurationFactory();
+    private final Reflector configFactory = new Reflector();
     private LogFactory logFactory;
 
     {
@@ -230,7 +230,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public ConfigurationFactory getConfigFactory()
+    public Reflector getConfigFactory()
     {
         return this.configFactory;
     }

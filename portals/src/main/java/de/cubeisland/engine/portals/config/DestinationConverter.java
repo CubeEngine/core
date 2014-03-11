@@ -17,18 +17,18 @@
  */
 package de.cubeisland.engine.portals.config;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.StringNode;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.config.Destination.Type;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
 
 public class DestinationConverter implements Converter<Destination>
 {
@@ -65,7 +65,7 @@ public class DestinationConverter implements Converter<Destination>
     {
         if (node instanceof MapNode)
         {
-            LinkedHashMap<String,Node> mappedNodes = ((MapNode)node).getMappedNodes();
+            Map<String,Node> mappedNodes = ((MapNode)node).getValue();
             try
             {
                 Type type = Type.valueOf(mappedNodes.get("type").asText());

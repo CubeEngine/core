@@ -33,8 +33,8 @@
   <dependencies>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
-      <artifactId>configuration</artifactId>
-      <version>1.0.4-SNAPSHOT</version>
+      <artifactId>reflect</artifactId>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
