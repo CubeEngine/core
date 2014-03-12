@@ -22,11 +22,6 @@ file_filter = conomy/src/main/resources/translations/<lang>.po
 source_file = conomy/src/main/resources/translations/messages.pot
 source_lang = en_US
 
-[cubeengine.fakeanticheat]
-file_filter = fakeanticheat/src/main/resources/translations/<lang>.po
-source_file = fakeanticheat/src/main/resources/translations/messages.pot
-source_lang = en_US
-
 [cubeengine.fly]
 file_filter = fly/src/main/resources/translations/<lang>.po
 source_file = fly/src/main/resources/translations/messages.pot
