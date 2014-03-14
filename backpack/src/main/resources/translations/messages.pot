@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-11 00:09+0100\n"
+"POT-Creation-Date: 2014-03-14 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,20 +76,12 @@ msgstr ""
 msgid "Could not change page size! Not enough space!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:249
-msgid "Could not match item {input#name}"
-msgstr ""
-
 #: de/cubeisland/engine/backpack/BackpackManager.java:75
 msgid "Created global backpack {input#backpack} for {user}"
 msgstr ""
 
 #: de/cubeisland/engine/backpack/BackpackManager.java:85
 msgid "Created grouped backpack {input#backpack} in {world} for {user}"
-msgstr ""
-
-#: de/cubeisland/engine/backpack/BackpackManager.java:80
-msgid "Created singleworld backpack {input#backpack} for {user}"
 msgstr ""
 
 #: de/cubeisland/engine/backpack/BackpackCommands.java:298
@@ -106,10 +98,6 @@ msgstr ""
 
 #: de/cubeisland/engine/backpack/BackpackManager.java:218
 msgid "Items are not allowed to go in!"
-msgstr ""
-
-#: de/cubeisland/engine/backpack/BackpackManager.java:210
-msgid "PageSize changed!"
 msgstr ""
 
 #: de/cubeisland/engine/backpack/BackpackManager.java:188
@@ -158,12 +146,6 @@ msgstr ""
 msgid "You have to specify a world for non global backpacks!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:142
-#: de/cubeisland/engine/backpack/BackpackCommands.java:192
-#: de/cubeisland/engine/backpack/BackpackCommands.java:243
-msgid "You need to specify a User"
-msgstr ""
-
 #: de/cubeisland/engine/backpack/BackpackManager.java:150
 msgid "You received items in your backpack {input#backpack}"
 msgstr ""
@@ -176,4 +158,22 @@ msgstr ""
 #: de/cubeisland/engine/backpack/BackpackManager.java:140
 #: de/cubeisland/engine/backpack/BackpackManager.java:163
 msgid "{user} does not have a backpack named {input#backpack} in this world!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:80
+msgid "Created singleworld backpack {input#backpack} in {world} for {user}"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:249
+msgid "Item {input#name} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackManager.java:210
+msgid "Page-size changed!"
+msgstr ""
+
+#: de/cubeisland/engine/backpack/BackpackCommands.java:142
+#: de/cubeisland/engine/backpack/BackpackCommands.java:192
+#: de/cubeisland/engine/backpack/BackpackCommands.java:243
+msgid "You need to specify a user"
 msgstr ""

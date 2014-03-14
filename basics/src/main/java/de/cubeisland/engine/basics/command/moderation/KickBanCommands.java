@@ -128,7 +128,7 @@ public class KickBanCommands
         {
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You cannot ipBan a player that has never player on the server before!");
+                context.sendTranslated(MessageType.NEGATIVE, "You cannot ip-ban a player that has never played on the server before!");
                 return;
             }
             if (user.getAddress() != null)
