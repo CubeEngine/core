@@ -139,7 +139,7 @@ public class BackpackCommands extends ContainerCommand
         }
         else if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a User");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a user");
             return;
         }
         manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld,
@@ -189,7 +189,7 @@ public class BackpackCommands extends ContainerCommand
         }
         else if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a User");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a user");
             return;
         }
         manager.modifyBackpack(context.getSender(), forUser, context.getString(0), forWorld,
@@ -240,13 +240,13 @@ public class BackpackCommands extends ContainerCommand
         }
         else if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a User");
+            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a user");
             return;
         }
         ItemStack matchedItem = Match.material().itemStack(context.getString("i"));
         if (matchedItem == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not match item {input#name}", context.getString("i"));
+            context.sendTranslated(MessageType.NEGATIVE, "Item {input#name} not found!", context.getString("i"));
             return;
         }
         ItemMeta itemMeta = matchedItem.getItemMeta();

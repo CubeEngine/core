@@ -77,7 +77,7 @@ public class BackpackManager implements Listener
             else if (single)
             {
                 attachment.createBackpack(name, forWorld, blockInput, pages, size);
-                sender.sendTranslated(MessageType.POSITIVE, "Created singleworld backpack {input#backpack} for {user}", name, forUser);
+                sender.sendTranslated(MessageType.POSITIVE, "Created singleworld backpack {input#backpack} in {world} for {user}", name, forWorld, forUser);
             }
             else
             {
@@ -207,7 +207,7 @@ public class BackpackManager implements Listener
                     }
                 }
                 backPack.data.size = size;
-                sender.sendTranslated(MessageType.POSITIVE, "PageSize changed!");
+                sender.sendTranslated(MessageType.POSITIVE, "Page-size changed!");
             }
         }
         if (blockInput != null)
