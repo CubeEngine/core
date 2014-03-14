@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-08 21:07+0100\n"
-"PO-Revision-Date: 2014-03-14 07:35+0000\n"
+"PO-Revision-Date: 2014-03-14 07:42+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -31,15 +31,15 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:169
 msgid "Your password has been reset!"
-msgstr ""
+msgstr "Dein Passwort wurde zurückgesetzt!"
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:175
 msgid "Your server has the hardcore mode enabled."
-msgstr ""
+msgstr "Dein Server ist im Hardcore-Modus."
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:198
 msgid "The following users are operators:"
-msgstr ""
+msgstr "Die folgenden Benutzer sind Operator:"
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:386
 msgid "Authors:"
