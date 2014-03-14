@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 # Translators:
+# Phillip Schichtel, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-08 21:07+0100\n"
-"PO-Revision-Date: 2014-03-09 09:05+0000\n"
+"PO-Revision-Date: 2014-03-14 07:35+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -42,11 +43,11 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:386
 msgid "Authors:"
-msgstr ""
+msgstr "Authoren:"
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:484
 msgid "The following players are whitelisted:"
-msgstr ""
+msgstr "Die folgenden Spieler stehen auf der Whitelist:"
 
 #: de/cubeisland/engine/core/command/ContainerCommand.java:121
 msgid "The following actions are available:"
