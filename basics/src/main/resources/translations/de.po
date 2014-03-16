@@ -21,9 +21,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 21:08+0100\n"
-"PO-Revision-Date: 2014-03-13 11:04+0000\n"
-"Last-Translator: boeserwolf91 <boeserwolf91@gmail.com>\n"
+"POT-Creation-Date: 2014-03-15 00:35+0100\n"
+"PO-Revision-Date: 2014-03-15 09:12+0000\n"
+"Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,10 +34,6 @@ msgstr ""
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:116
 msgid "Who are you!?"
 msgstr "Wer bist du?"
-
-#: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:131
-msgid "You cannot ipBan a player that has never player on the server before!"
-msgstr "Du kannst einen Spieler, der noch nie auf dem Server gespielt hat, IP-bannen!"
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:222
 msgid "You are not allowed to teleport to this world!"
@@ -2194,4 +2190,8 @@ msgstr "{user}s Briefe: {input#mails}"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:439
 msgid "{world} ({input#environment}): {amount} chunks {amount} entities"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:131
+msgid "You cannot ip-ban a player that has never played on the server before!"
 msgstr ""
