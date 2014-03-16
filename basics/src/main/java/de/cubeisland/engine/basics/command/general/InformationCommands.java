@@ -362,7 +362,7 @@ public class InformationCommands
         }
     }
 
-    @Command(desc = "Displays chunk, memory, and world information.",
+    @Command(desc = "Displays chunk, memory and world information.",
              max = 0, flags = @Flag(longName = "reset" , name = "r"))
     public void lag(ParameterizedContext context)
     {

@@ -219,7 +219,7 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Heals a Player", max = 1, usage = "{player}")
+    @Command(desc = "Heals a player", max = 1, usage = "{player}")
     public void heal(CommandContext context)
     {
         if (context.hasArg(0))
