@@ -20,8 +20,8 @@ msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-15 00:35+0100\n"
-"PO-Revision-Date: 2014-03-15 09:12+0000\n"
-"Last-Translator: Phillip Schichtel\n"
+"PO-Revision-Date: 2014-03-16 19:12+0000\n"
+"Last-Translator: Faithcaio <Faithcaio@cubeisland.de>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -67,7 +67,7 @@ msgstr "<hauteur>"
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:212
 msgid "<mailId>"
-msgstr "<numéro de currier>"
+msgstr "<numéro de courriel>"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:364
 msgid "<material[:data]> [enchantment[:level]] [amount] [-blacklist]"
@@ -113,7 +113,7 @@ msgstr "<joueur>"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:319
 msgid "<player> <material[:data]> [amount] [-blacklist]"
-msgstr ""
+msgstr "<joueur> <matériel[:data]> [quantité] [-blacklist]"
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:60
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:161
@@ -123,194 +123,194 @@ msgstr "<joueur> <message>"
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:274
 msgid "<player> <time> [reason]"
-msgstr ""
+msgstr "<joueur> <durée> [raison]"
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:171
 msgid "<player> [-unsafe]"
-msgstr ""
+msgstr "<joueur> [-unsafe]"
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:161
 msgid "<player> [duration]"
-msgstr ""
+msgstr "<joueur> [durée]"
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:327
 msgid "<player> [player]"
-msgstr ""
+msgstr "<joueur> [joueur]"
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:70
 msgid "<player> [player] [-unsafe]"
-msgstr ""
+msgstr "<joueur> [joueur] [-unsafe]"
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:108
 msgid "<player> [reason] [-ipban]"
-msgstr ""
+msgstr "<joueur> [joueur] [-ipban]"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:735
 msgid "<speed> [player]"
-msgstr ""
+msgstr "<vitesse> [joueur]"
 
 #: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:65
 msgid "<sun|rain|storm> [duration] [in <world>]"
-msgstr ""
+msgstr "<sun|rain|storm> [durée] [in <monde>]"
 
 #: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:60
 msgid "<time> [w <worlds>]"
-msgstr ""
+msgstr "<l'heure> [w <mondes>]"
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:204
 msgid "<world>"
-msgstr ""
+msgstr "<monde>"
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:306
 msgid "<x> [y] <z> [w <world>]"
-msgstr ""
+msgstr "<x> [y] <z> [w <monde>]"
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:135
 msgid "Accepts any pending teleport-request."
-msgstr ""
+msgstr "Accepte une requête en suspend."
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:201
 msgid "Adds an Enchantment to the item in your hand"
-msgstr ""
+msgstr "Ajoute un enchantement sur l'objet tenu"
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:49
 msgid "Allows you to see into the inventory of someone else."
-msgstr ""
+msgstr "Autorise à regarder dans l'inventaire d'un autre joueur."
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:272
 msgid "Bans a player for a given time."
-msgstr ""
+msgstr "Suspend un joueur pour une durée donnée."
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:106
 msgid "Bans a player permanently on your server."
-msgstr ""
+msgstr "Banni un joueur sur ce serveur pour toujours."
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:213
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:254
 msgid "Bans the IP from this server."
-msgstr ""
+msgstr "Banni un IP de ce serveur."
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:149
 msgid "Broadcasts a message"
-msgstr ""
+msgstr "Emet un message"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:135
 msgid "Changes a skull to a players skin."
-msgstr ""
+msgstr "Change l'apparance d'une tête."
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:106
 msgid "Changes the display name of the item in your hand."
-msgstr ""
+msgstr "Change le nom affiché de l'objet tenu."
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:327
 msgid "Changes the gamemode"
-msgstr ""
+msgstr "Change le mode de jeu"
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:49
 msgid "Changes the global respawnpoint"
-msgstr ""
+msgstr "Change l'endroit de réssuscitement"
 
 #: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:142
 msgid "Changes the time for a player"
-msgstr ""
+msgstr "Change l'heure pour un joueur"
 
 #: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:57
 msgid "Changes the time of a world"
-msgstr ""
+msgstr "Change l'heure d'un monde"
 
 #: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:64
 msgid "Changes the weather"
-msgstr ""
+msgstr "Change le temps"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:735
 msgid "Changes your walkspeed."
-msgstr ""
+msgstr "Change la vitesse de marche."
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:149
 msgid "Clears the inventory"
-msgstr ""
+msgstr "Vide un inventaire completement"
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:247
 msgid "Clears your mails."
-msgstr ""
+msgstr "Efface tous les courriels"
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:187
 msgid "Denies any pending teleport-request."
-msgstr ""
+msgstr "Refuse une requête en suspend."
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:305
 msgid "Direct teleport to a coordinate."
-msgstr ""
+msgstr "Teleporation vers une coordonnée"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:444
 msgid "Displays all loaded worlds"
-msgstr ""
+msgstr "Affiche tout les mondes chargés"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:365
 msgid "Displays chunk, memory, and world information."
-msgstr ""
+msgstr "Affiche information du chunk, memoire et monde"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:604
 msgid "Displays informations from a player!"
-msgstr ""
+msgstr "Affiche des informations d'un joueur"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:197
 msgid "Displays near players(entities/mobs) to you."
-msgstr ""
+msgstr "Affiche joueurs (entitées/animeaux) proche."
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:559
 msgid "Displays that you are afk"
-msgstr ""
+msgstr "Affiche l'absence d'un joueur"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:77
 msgid "Displays the Biome-Type you are standing in."
-msgstr ""
+msgstr "Affiche le type de biome actuel."
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:217
 msgid "Displays the colors"
-msgstr ""
+msgstr "Affiche les couleurs"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:145
 msgid "Displays the direction in which you are looking."
-msgstr ""
+msgstr "Affiche la direction du regard actuel."
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:117
 msgid "Displays the seed of a world."
-msgstr ""
+msgstr "Affiche la graine d'un monde."
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:162
 msgid "Displays your current depth."
-msgstr ""
+msgstr "Affiche la profondeur actuelle."
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:183
 msgid "Displays your current location."
-msgstr ""
+msgstr "Affiche la position actuel."
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:152
 msgid "Empties the hunger bar"
-msgstr ""
+msgstr "Vide la faim"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:317
 msgid "Gives the specified Item to a player"
-msgstr ""
+msgstr "Donne l'objet spécifié à un joueur"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:362
 msgid "Gives the specified Item to you"
-msgstr ""
+msgstr "Donne l'objet spécifié à soi même"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
 msgid "Heals a Player"
-msgstr ""
+msgstr "Guéri un joueur"
 
 #: de/cubeisland/engine/basics/command/general/IgnoreCommands.java:82
 msgid "Ignores all messages from players"
-msgstr ""
+msgstr "Ignore tous les méssages d'un joueur"
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:192
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:216
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:292
 msgid "Jumps to the position you are looking at."
-msgstr ""
+msgstr "Saute vers l'endroit regardé."
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:71
 msgid "Kicks a player from the server"
