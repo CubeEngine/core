@@ -44,7 +44,7 @@
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>messagecompositor</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
