@@ -155,7 +155,7 @@ public class ItemCommands
         context.sendTranslated(MessageType.NEGATIVE, "This will you only give headaches!");
     }
 
-    @Command(desc = "The user can use unlimited items", max = 1, usage = "[on|off]")
+    @Command(desc = "Grants unlimited items", max = 1, usage = "[on|off]")
     @SuppressWarnings("deprecation")
     public void unlimited(CommandContext context)
     {
