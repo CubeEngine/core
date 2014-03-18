@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-15 00:35+0100\n"
-"PO-Revision-Date: 2014-03-16 19:12+0000\n"
+"PO-Revision-Date: 2014-03-17 21:39+0000\n"
 "Last-Translator: Faithcaio <Faithcaio@cubeisland.de>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -318,11 +318,11 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:380
 msgid "Kills a player"
-msgstr ""
+msgstr "Tue un joueur"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:545
 msgid "Kills yourself"
-msgstr ""
+msgstr "Se tue"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:783
 msgid "Lets you fly away"
@@ -330,7 +330,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:66
 msgid "Looks up an item for you!"
-msgstr ""
+msgstr "Cherche un objet"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:523
 msgid "Makes a player send a message (including commands)"
@@ -342,15 +342,15 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/DoorCommand.java:49
 msgid "Opens or closes doors around the player."
-msgstr ""
+msgstr "Ouvre ou ferme les portes autour du joueur"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:351
 msgid "Pong!"
-msgstr ""
+msgstr "Pong!"
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:57
 msgid "Reads your mails."
-msgstr ""
+msgstr "Affiche les courriels"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:426
 msgid "Refills the stack in hand"
@@ -366,7 +366,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:212
 msgid "Removes a single mail"
-msgstr ""
+msgstr "Efface un curriel"
 
 #: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:140
 msgid "Removes entity"
