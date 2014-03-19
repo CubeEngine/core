@@ -67,10 +67,6 @@ public class I18n_old implements Cleanable
         return new THashSet<>(this.languages.values());
     }
 
-    public SourceLanguage getSourceLanguage()
-    {
-        return this.sourceLanguage;
-    }
 
     /**
      * Returns the default language
@@ -115,14 +111,7 @@ public class I18n_old implements Cleanable
         this.languageLookupMap.clear();
     }
 
-    public static String localeToString(Locale locale)
-    {
-        if (locale == null)
-        {
-            throw new NullPointerException("The locale must not be null!");
-        }
-        return locale.getLanguage().toLowerCase(Locale.US) + '_' + locale.getCountry().toUpperCase(Locale.US);
-    }
+
 
     private static boolean mayBeRegionCode(String string)
     {

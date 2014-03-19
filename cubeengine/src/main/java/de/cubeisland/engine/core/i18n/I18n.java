@@ -1,68 +1,31 @@
 package de.cubeisland.engine.core.i18n;
 
-import java.util.HashMap;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.logging.LoggingUtil;
+import de.cubeisland.engine.i18n.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.I18nService;
-import de.cubeisland.engine.i18n.language.ClonedLanguage;
+import de.cubeisland.engine.i18n.TranslationLoadingException;
 import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.i18n.language.SourceLanguage;
 import de.cubeisland.engine.i18n.loader.GettextLoader;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 
-public class I18n extends I18nService
+public class I18n
 {
     final Core core;
-    private final Log logger;
-    private final I18nLanguageLoader languageLoader;
-
-    private final Map<Locale, Language> languages = new HashMap<>();
+    private final I18nService service;
+    private List<URI> translationFolders = new LinkedList<>();
 
     public I18n(Core core)
     {
-        super(SourceLanguage.EN_US, new GettextLoader(core.getFileManager().getTranslationPath().toFile()));
         this.core = core;
-        this.logger = core.getLogFactory().getLog(Core.class, "Language");
-        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Language"),
-                                                  LoggingUtil.getFileFormat(false, false),
-                                                  true, LoggingUtil.getCycler(),
-                                                  core.getTaskManager().getThreadFactory()));
-        this.languages.put(this.getSourceLanguage().getLocale(), this.getSourceLanguage());
-        this.languageLoader = new I18nLanguageLoader(this, this.core.getFileManager().getLanguagePath());
-    }
-
-    public Language getDefaultLanguage()
-    {
-        Language language = this.getLanguage(this.core.getConfiguration().defaultLocale);
-        if (language == null)
-        {
-            language = this.getSourceLanguage();
-        }
-        return language;
-    }
-
-    public Language getLanguage(Locale locale)
-    {
-        if (locale == null)
-        {
-            throw new NullPointerException("The locale must not be null!");
-        }
-        Language result = this.languages.get(locale);
-        if (result == null && this.languageLoader.hasConfiguration(locale))
-        {
-            result = this.languageLoader.loadLanguage(locale);
-            if (result instanceof ClonedLanguage)
-            {
-                Language original = ((ClonedLanguage)result).getOriginal();
-                this.languages.put(original.getLocale(), original);
-            }
-            this.languages.put(locale, result);
-        }
-        return result;
+        // TODO fill translationFolders
+        GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.translationFolders);
+        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(core), core.getConfiguration().defaultLocale);
     }
 
     public String translate(String message)
@@ -90,21 +53,39 @@ public class I18n extends I18nService
         if (translation == null)
         {
             // TODO this.logMissingTranslation(locale, message); still necessary?
-            Language defLang = this.getLanguage(Locale.getDefault());
+            Language defLang = this.getDefaultLanguage();
             if (defLang != null)
             {
                 translation = defLang.getTranslation(message);
             }
             else
             {
-                this.logger.warn("The configured default language {} was not found! Falling back to the source language...", this.core.getConfiguration().defaultLocale.getDisplayName());
+                this.core.getLog().warn("The configured default language {} was not found! Falling back to the source language...", this.core
+                    .getConfiguration().defaultLocale.getDisplayName());
             }
             if (translation == null)
             {
-                translation = this.getSourceLanguage().getTranslation(message); // TODO why not just return the message?
+                translation = service.getSourceLanguage().getTranslation(message); // TODO why not just return the message?
             }
         }
         return translation;
     }
 
+    private Language getLanguage(Locale locale)
+    {
+        try
+        {
+            return this.service.getLanguage(locale);
+        }
+        catch (TranslationLoadingException | DefinitionLoadingException e)
+        {
+            this.core.getLog().error(e, "Error while getting Language!");
+            return null;
+        }
+    }
+
+    public Language getDefaultLanguage()
+    {
+        return this.getLanguage(service.getDefaultLocale());
+    }
 }
