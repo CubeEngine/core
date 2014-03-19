@@ -23,7 +23,7 @@ import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
-import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.i18n.I18n_old;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -116,7 +116,7 @@ public interface Core
      *
      * @return the I18n API
      */
-    I18n getI18n();
+    I18n_old getI18n();
 
     /**
      * This method returns the engine configuration

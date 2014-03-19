@@ -56,7 +56,7 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.filesystem.FileManager;
-import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.i18n.I18n_old;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -94,7 +94,6 @@ import de.cubeisland.engine.logging.LogLevel;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -111,7 +110,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitUserManager userManager;
     private FileManager fileManager;
     private BukkitModuleManager moduleManager;
-    private I18n i18n;
+    private I18n_old i18n;
     private BukkitCoreConfiguration config;
     private Log logger;
     private EventManager eventManager;
@@ -262,7 +261,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.userManager = new BukkitUserManager(this);
 
         // depends on: file manager, core config
-        this.i18n = new I18n(this);
+        this.i18n = new I18n_old(this);
 
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
@@ -571,7 +570,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public I18n getI18n()
+    public I18n_old getI18n()
     {
         return this.i18n;
     }

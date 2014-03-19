@@ -32,8 +32,8 @@ public class l18nTest extends Test
     @Override
     public void onEnable()
     {
-        module.getLog().debug(CubeEngine.getCore().getI18n().translate("de_DE", "test", "english TEST"));
-        module.getLog().debug(CubeEngine.getCore().getI18n().translate("fr_FR", "test", "english TEST"));
+        module.getLog().debug(CubeEngine.getCore().getI18n().translate("de_DE"));
+        module.getLog().debug(CubeEngine.getCore().getI18n().translate("fr_FR"));
         this.setSuccess(true);
     }
 }

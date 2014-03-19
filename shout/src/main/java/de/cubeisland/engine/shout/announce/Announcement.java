@@ -25,7 +25,7 @@ import java.util.Map;
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.i18n.I18n_old;
 
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
@@ -105,7 +105,7 @@ public class Announcement
             return messages.get(locale);
         }
 
-        final I18n i18n = CubeEngine.getI18n();
+        final I18n_old i18n = CubeEngine.getI18n();
         Language lang = i18n.getLanguage(locale);
         if (lang != null)
         {

@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileUtil;
-import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.i18n.I18n_old;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -73,7 +73,7 @@ public class AnnouncementManager
     private final Map<String, Receiver> receivers;
     private final Map<String, Announcement> dynamicAnnouncements;
     private final Map<String, Announcement> fixedCycleAnnouncements;
-    private final I18n i18n;
+    private final I18n_old i18n;
     private MessageOfTheDay motd;
 
     public AnnouncementManager(Shout module, Path announcementFolder)

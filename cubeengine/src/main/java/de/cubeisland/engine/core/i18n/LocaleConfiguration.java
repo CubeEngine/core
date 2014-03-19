@@ -19,12 +19,11 @@ package de.cubeisland.engine.core.i18n;
 
 import java.util.Locale;
 
-import de.cubeisland.engine.reflect.ReflectedYaml;
-import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.i18n.language.LocaleConfig;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
 /**
- * This cofniguration is used to parse the language configurations.
+ * This configuration is used to parse the language configurations.
  */
 public class LocaleConfiguration extends ReflectedYaml implements LocaleConfig
 {

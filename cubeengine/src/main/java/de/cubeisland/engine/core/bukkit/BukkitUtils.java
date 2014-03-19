@@ -48,7 +48,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.i18n.I18n_old;
 import de.cubeisland.engine.core.user.User;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.apache.logging.log4j.LogManager;
@@ -117,7 +117,7 @@ public class BukkitUtils
             try
             {
                 final String localeString = (String)entityPlayerLocaleField.get(((CraftPlayer)player).getHandle());
-                return I18n.stringToLocale(localeString);
+                return I18n_old.stringToLocale(localeString);
             }
             catch (Exception ignored)
             {}

@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core;
 
 import de.cubeisland.engine.core.filesystem.FileManager;
-import de.cubeisland.engine.core.i18n.I18n;
+import de.cubeisland.engine.core.i18n.I18n_old;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.logging.Log;
 
@@ -128,7 +128,7 @@ public final class CubeEngine
      *
      * @return the I18 API
      */
-    public static I18n getI18n()
+    public static I18n_old getI18n()
     {
         return core.getI18n();
     }
