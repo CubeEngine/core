@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-03-15 00:35+0100\n"
-"PO-Revision-Date: 2014-03-17 21:39+0000\n"
+"PO-Revision-Date: 2014-03-18 23:07+0000\n"
 "Last-Translator: Faithcaio <Faithcaio@cubeisland.de>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -288,7 +288,7 @@ msgstr "Affiche la position actuel."
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:152
 msgid "Empties the hunger bar"
-msgstr "Vide la faim"
+msgstr "Vide la barre nourricière"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:317
 msgid "Gives the specified Item to a player"
@@ -314,7 +314,7 @@ msgstr "Saute vers l'endroit regardé."
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:71
 msgid "Kicks a player from the server"
-msgstr ""
+msgstr "Renvoie un joueur du serveur"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:380
 msgid "Kills a player"
@@ -326,7 +326,7 @@ msgstr "Se tue"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:783
 msgid "Lets you fly away"
-msgstr ""
+msgstr "Donne l'habilité de voler"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:66
 msgid "Looks up an item for you!"
@@ -334,11 +334,11 @@ msgstr "Cherche un objet"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:523
 msgid "Makes a player send a message (including commands)"
-msgstr ""
+msgstr "Oblige un joueur d'envoyer un message ou une commande"
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:161
 msgid "Mutes a player"
-msgstr ""
+msgstr "Fait disparaître tous les messages d'un joueur"
 
 #: de/cubeisland/engine/basics/command/moderation/DoorCommand.java:49
 msgid "Opens or closes doors around the player."
@@ -354,15 +354,15 @@ msgstr "Affiche les courriels"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:426
 msgid "Refills the stack in hand"
-msgstr ""
+msgstr "Rempli la pile en main"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:82
 msgid "Refills your hunger bar"
-msgstr ""
+msgstr "Rempli la barre nourricière"
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:333
 msgid "Reloads the ban lists"
-msgstr ""
+msgstr "Recharge la liste des joueurs bannis"
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:212
 msgid "Removes a single mail"
@@ -370,113 +370,113 @@ msgstr "Efface un curriel"
 
 #: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:140
 msgid "Removes entity"
-msgstr ""
+msgstr "Supprime des entitées"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:477
 msgid "Repairs your items"
-msgstr ""
+msgstr "Répare des objets"
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:71
 msgid "Replies to the last person that whispered to you."
-msgstr ""
+msgstr "Répond à la dernière personne ayant envoyé message personnel."
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:91
 msgid "Requests to teleport a player to you."
-msgstr ""
+msgstr "Demande à teleporter un joueur vers la position actuelle."
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:43
 msgid "Requests to teleport to a player."
-msgstr ""
+msgstr "Demande à teleporter vers un joueur."
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:58
 msgid "Sends a private message to someone"
-msgstr ""
+msgstr "Envoi un message personnel à quelqu'un"
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:176
 msgid "Sends mails to all players."
-msgstr ""
+msgstr "Envoi un courriel à tous les joueurs."
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:161
 msgid "Sends mails to other players."
-msgstr ""
+msgstr "Envoi un courriel à un joueur."
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:211
 msgid "Shows a random number from 0 to 100"
-msgstr ""
+msgstr "Affiche un numéro au hasard entre 0 et 100"
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:135
 msgid "Shows the mails of other players."
-msgstr ""
+msgstr "Affiche les courriels d'autre joueurs."
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:498
 msgid "Shows when given player was online the last time"
-msgstr ""
+msgstr "Affiche le dernier moment qu'un joueur était en ligne"
 
 #: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:46
 msgid "Spawns the specified Mob"
-msgstr ""
+msgstr "Fait apparaître une creature spécifiée"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:526
 msgid "Stacks your items up to 64"
-msgstr ""
+msgstr "Empile des objets dans l'inventaire jusqu'à 64"
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:107
 msgid "Stashes or unstashes your inventory to reuse later"
-msgstr ""
+msgstr "Met de côté l'inventaire actuel et le renplace"
 
 #: de/cubeisland/engine/basics/command/general/IgnoreCommands.java:122
 msgid "Stops ignoring all messages from a player"
-msgstr ""
+msgstr "Arrête d'ignorer tous les méssages d'un joueur"
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:327
 msgid "Swaps your and another players position"
-msgstr ""
+msgstr "Echange la position avec un autre joueur"
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:215
 msgid "Teleport a player directly to you."
-msgstr ""
+msgstr "Téléporte un joueur vers la position actuelle."
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:70
 msgid "Teleport directly to a player."
-msgstr ""
+msgstr "Téléporte directement vers un joueur."
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:109
 msgid "Teleport directly to the worlds spawn."
-msgstr ""
+msgstr "Teleporte vers le point de réssusitement d'un monde."
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:261
 msgid "Teleport every player directly to you."
-msgstr ""
+msgstr "Téléporte tous les joueurs à la position actuelle."
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:170
 msgid "Teleports everyone directly to a player."
-msgstr ""
+msgstr "Téléporte tous les joueurs vers un autre joueur."
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:89
 msgid "Teleports to the highest point at your position."
-msgstr ""
+msgstr "Téléporte vers le point le plus haut à proximitée."
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:154
 msgid "Teleports you to the next safe spot downwards."
-msgstr ""
+msgstr "Téléporte vers la prochaine position sûre en profondeur."
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:107
 msgid "Teleports you to the next safe spot upwards."
-msgstr ""
+msgstr "Téléporte vers la prochaine position sûre en hauteur."
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:203
 msgid "Teleports you to the spawn of given world"
-msgstr ""
+msgstr "Téléporte vers le point de réssusitement du monde donné."
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:239
 msgid "Teleports you to your last location"
-msgstr ""
+msgstr "Téléporte vers la derniere position"
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:50
 msgid ""
 "Teleports you x-amount of blocks into the air and puts a glassblock beneath "
 "you."
-msgstr ""
+msgstr "Téléporte x-blocs en hauteur et place un bloc de verre en dessous."
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:158
 msgid "The user can use unlimited items"
@@ -484,80 +484,80 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:684
 msgid "Toggles the god-mode!"
-msgstr ""
+msgstr "Bascule en mode dieu."
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:198
 msgid "Unbans a previously banned player."
-msgstr ""
+msgstr "Réactive un joueur bani."
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:196
 msgid "Unmutes a player"
-msgstr ""
+msgstr "Ne fait plus disparaître tous les messages d'un joueur"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:479
 msgid "[-all]"
-msgstr ""
+msgstr "[-all]"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:426
 msgid "[amount] [-a]"
-msgstr ""
+msgstr "[quantité] [-a]"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:785
 msgid "[flyspeed] [player]"
-msgstr ""
+msgstr "[vitesse de vol] [joueur]"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:66
 msgid "[item]"
-msgstr ""
+msgstr "[objet]"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:158
 msgid "[on|off]"
-msgstr ""
+msgstr "[on|off]"
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:57
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:248
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:684
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:149
 msgid "[player]"
-msgstr ""
+msgstr "[joueur]"
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:109
 msgid "[player] [world <world>]"
-msgstr ""
+msgstr "[joueur] [world <monde>]"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:198
 msgid "[radius] [player] [-entity]|[-mob]"
-msgstr ""
+msgstr "[rayon] [joueur] [-entity]|[-mob]"
 
 #: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:293
 msgid "[types...] [radius] [in world] [-l] [-all]"
-msgstr ""
+msgstr "[types...] [rayon] [in <monde>] [-l]|[-all]"
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:49
 msgid "[world] [<x> <y> <z>]"
-msgstr ""
+msgstr "[monde] [<x> <y> <z>]"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:82
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:152
 msgid "{players}"
-msgstr ""
+msgstr "{joueurs}"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:559
 msgid "{player}"
-msgstr ""
+msgstr "{joueur}"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:327
 msgid "{player} [gamemode]"
-msgstr ""
+msgstr "{joueurs} [mode jeu]"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:117
 msgid "{world}"
-msgstr ""
+msgstr "{monde}"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:78
 msgid "{world} {block-x} {block-z}"
-msgstr ""
+msgstr "{monde} {bloc-x} {bloc-z}"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:218
 msgid ""
@@ -579,36 +579,36 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:662
 msgid "AFK: {text:true:color=BRIGHT_GREEN}"
-msgstr ""
+msgstr "Absent: {text:vraie:color=BRIGHT_GREEN}"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:270
 msgid "Added enchantment: {input#enchantment} {integer#level} to your item!"
-msgstr ""
+msgstr "Enchantement ajouté: {input#enchantement} {integer#level}!"
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:259
 msgid ""
 "Added unsafe enchantment: {input#enchantment} {integer#level} to your item!"
-msgstr ""
+msgstr "Enchantement dangereux ajouté: {input#enchantement} {integer#level}!"
 
 #: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:90
 msgid "And how am i supposed to know which mobs to despawn?"
-msgstr ""
+msgstr "Ne me demande pas l'impossible!"
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:350
 msgid "As console you have to provide both players!"
-msgstr ""
+msgstr "En tant que console il faut fournir les 2 joueurs!"
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:147
 msgid "Ascended a level!"
-msgstr ""
+msgstr "Monter à l'étage!"
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:680
 msgid "Banned by {user} on {inpt#date}: {input#reason} ({input#expire})"
-msgstr ""
+msgstr "Banni par {user} le {input#date}: {input#raison} ({input#expire})"
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:322
 msgid "Banning players by name is not allowed in offline-mode!"
-msgstr ""
+msgstr "Bannir un joueur avec son nom n'est pas autorisé en mode hors connexion!"
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:114
 msgid "Biome at {vector:x\\=:z\\=}: {biome}"
