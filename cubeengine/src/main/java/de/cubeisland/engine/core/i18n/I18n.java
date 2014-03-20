@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.i18n.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.I18nService;
 import de.cubeisland.engine.i18n.TranslationLoadingException;
@@ -116,63 +115,7 @@ public class I18n
     }
 
 
-    private static boolean mayBeRegionCode(String string)
-    {
-        if (!StringUtils.isNumeric(string))
-        {
-            return false;
-        }
-        try
-        {
-            int countryCode = Integer.parseInt(string);
-            if (countryCode <= 999)
-            {
-                return true;
-            }
-        }
-        catch (NumberFormatException ignored)
-        {}
-        return false;
-    }
 
-    public static Locale stringToLocale(String string)
-    {
-        if (string == null)
-        {
-            return Locale.getDefault();
-        }
-        string = string.trim();
-        if (string.isEmpty())
-        {
-            return Locale.getDefault();
-        }
-
-        string = string.replace('-', '_').replaceAll("[^a-z0-9_]", "");
-        String[] parts = string.split("_", 2);
-
-        String language = parts[0];
-        String country = ""; // TODO redundant
-
-        // if the language code is longer than 3-alpha's
-        if (language.length() > 3)
-        {
-            // strip it to a 2-alpha code
-            language = language.substring(0, 2);
-        }
-        if (parts.length > 0)
-        {
-            country = parts[1];
-            if (country.length() > 2 && !mayBeRegionCode(country))
-            {
-                country = country.substring(0, 2); // TODO never used
-            }
-        }
-
-        language = language.toLowerCase(Locale.US);
-        country = language.toUpperCase(Locale.US);
-
-        return new Locale(language, country);
-    }
 
     /*
         TODO language names & searchLangMethods
