@@ -56,7 +56,7 @@ import de.cubeisland.engine.core.command.commands.VanillaCommands;
 import de.cubeisland.engine.core.command.commands.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.filesystem.FileManager;
-import de.cubeisland.engine.core.i18n.I18n_old;
+import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -110,7 +110,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitUserManager userManager;
     private FileManager fileManager;
     private BukkitModuleManager moduleManager;
-    private I18n_old i18n;
+    private I18n i18n;
     private BukkitCoreConfiguration config;
     private Log logger;
     private EventManager eventManager;
@@ -261,7 +261,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.userManager = new BukkitUserManager(this);
 
         // depends on: file manager, core config
-        this.i18n = new I18n_old(this);
+        this.i18n = new I18n(this);
 
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
@@ -408,7 +408,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.i18n != null)
         {
-            this.i18n.clean();
+            // TODO i18n cleanup? this.i18n.clean();
             this.i18n = null;
         }
 
@@ -570,7 +570,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public I18n_old getI18n()
+    public I18n getI18n()
     {
         return this.i18n;
     }

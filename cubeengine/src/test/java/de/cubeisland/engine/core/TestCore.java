@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;
-import de.cubeisland.engine.core.i18n.I18n_old;
+import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.ModuleManager;
 import de.cubeisland.engine.core.module.TestModuleManager;
@@ -143,7 +143,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public I18n_old getI18n()
+    public I18n getI18n()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
