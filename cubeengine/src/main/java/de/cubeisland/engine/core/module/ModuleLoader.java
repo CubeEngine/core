@@ -38,7 +38,6 @@ import de.cubeisland.engine.core.module.exception.IncompatibleDependencyExceptio
 import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
-import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 import de.cubeisland.engine.core.module.exception.ModuleLoadException;
 import de.cubeisland.engine.core.storage.Registry;
 import gnu.trove.set.hash.THashSet;
@@ -192,6 +191,8 @@ public class ModuleLoader
         }
 
         this.classLoaders.put(info.getId(), classLoader);
+
+        this.core.getI18n().registerModule(module);
         this.core.getEventManager().fireEvent(new ModuleLoadedEvent(this.core, module));
         this.getCore().getLog().debug("Module {} loaded...", info.getId());
         return module;

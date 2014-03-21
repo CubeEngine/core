@@ -44,7 +44,7 @@ public abstract class ColoredFormatter<T> extends AbstractFormatter<T>
         @Override
         public ChatFormat read(String raw)
         {
-            return ChatFormat.valueOf(raw);
+            return ChatFormat.valueOf(raw.toUpperCase());
         }
     }
 }

@@ -28,15 +28,12 @@ import de.cubeisland.engine.reflect.ReflectedYaml;
 public class LocaleConfiguration extends ReflectedYaml implements LanguageDefinition
 {
     public Locale locale;
-
     public String name;
-
     public String localName;
-
     public Locale parent = null;
-
     public Locale[] clones = null;
-
+    private int pluralCount;
+    private String pluralExpression;
 
     @Override
     public Locale getLocale()
@@ -66,5 +63,17 @@ public class LocaleConfiguration extends ReflectedYaml implements LanguageDefini
     public Locale[] getClones()
     {
         return this.clones;
+    }
+
+    @Override
+    public int getPluralCount()
+    {
+        return this.pluralCount;
+    }
+
+    @Override
+    public String getPluralExpression()
+    {
+        return this.pluralExpression;
     }
 }

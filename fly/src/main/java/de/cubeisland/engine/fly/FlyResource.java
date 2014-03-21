@@ -21,7 +21,7 @@ import de.cubeisland.engine.core.filesystem.Resource;
 
 public enum FlyResource implements Resource
 {
-    GERMAN_MESSAGES("resources/language/messages/de_DE.json", "language/de_DE/fly.json");
+    GERMAN_MESSAGES("de/cubeisland/engine/core/util/language/messages/de_DE.json", "language/de_DE/fly.json");
 
     private final String target;
     private final String source;

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.i18n;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +40,7 @@ public class I18nLanguageLoader extends LanguageLoader
     {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(core.getFileManager().getLanguagePath(), FileExtensionFilter.YAML))
         {
+            // Search override Languages under CubeEngine/languages
             for (Path path : directoryStream)
             {
                 LocaleConfiguration config = core.getConfigFactory().load(LocaleConfiguration.class, path.toFile(), false);
@@ -49,6 +51,26 @@ public class I18nLanguageLoader extends LanguageLoader
                     for (Locale clone : clones)
                     {
                         this.configurations.put(clone, config);
+                    }
+                }
+            }
+            // Search provided Languages in CubeEngine.jar
+            for (URL url : I18n.getFilesFromJar("languages/", ".yml", this.getClass()))
+            {
+                LocaleConfiguration config = core.getConfigFactory().load(LocaleConfiguration.class, url.openStream());
+                if (!this.configurations.containsKey(config.getLocale()))
+                {
+                    this.configurations.put(config.getLocale(), config);
+                }
+                Locale[] clones = config.getClones();
+                if (clones != null)
+                {
+                    for (Locale clone : clones)
+                    {
+                        if (!this.configurations.containsKey(clone))
+                        {
+                            this.configurations.put(clone, config);
+                        }
                     }
                 }
             }

@@ -17,17 +17,26 @@
  */
 package de.cubeisland.engine.core.i18n;
 
-import java.net.URI;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -44,17 +53,54 @@ public class I18n
 {
     final Core core;
     private final I18nService service;
-    private List<URI> translationFolders = new LinkedList<>();
+    private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
     private ColoredMessageCompositor compositor;
 
     public I18n(Core core)
     {
         this.core = core;
-        // TODO fill translationFolders
-        GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.translationFolders);
+        // TODO override translations
+        this.poFiles.addAll(getFilesFromJar("translations/", ".po", this.getClass()));
+
+        GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
         this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(core), core.getConfiguration().defaultLocale);
         this.compositor = new ColoredMessageCompositor(core);
+    }
+
+    public void registerModule(Module module)
+    {
+        // TODO add translations overrides for modules
+        this.poFiles.addAll(getFilesFromJar("translations/", ".po", module.getClass()));
+    }
+
+    public static List<URL> getFilesFromJar(String path, String fileEnding, Class clazz)
+    {
+        try
+        {
+            URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
+            Set<String> files = new LinkedHashSet<>();
+            JarFile jarFile = new JarFile(new File(url.toURI()));
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements())
+            {
+                String name = entries.nextElement().getName();
+                if (name.startsWith(path) && name.endsWith(fileEnding))
+                {
+                    files.add(name);
+                }
+            }
+            List<URL> urls = new ArrayList<>();
+            for (String file : files)
+            {
+                urls.add(clazz.getResource("/" + file));
+            }
+            return urls;
+        }
+        catch (IOException | URISyntaxException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public String translate(MessageType type, String message, Object... args)
@@ -90,8 +136,11 @@ public class I18n
         try
         {
             Language language = this.service.getLanguage(locale);
-            this.languageLookupMap.put(language.getName().toLowerCase(language.getLocale()), language);
-            this.languageLookupMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
+            if (language != null)
+            {
+                this.languageLookupMap.put(language.getName().toLowerCase(language.getLocale()), language);
+                this.languageLookupMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
+            }
             return language;
         }
         catch (TranslationLoadingException | DefinitionLoadingException e)
