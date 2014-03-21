@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-15 00:35+0100\n"
-"PO-Revision-Date: 2014-03-15 09:12+0000\n"
+"POT-Creation-Date: 2014-03-19 12:43+0100\n"
+"PO-Revision-Date: 2014-03-20 09:13+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: Turkish (http://www.transifex.com/projects/p/cubeengine/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -246,10 +246,6 @@ msgstr ""
 msgid "Displays all loaded worlds"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/InformationCommands.java:365
-msgid "Displays chunk, memory, and world information."
-msgstr ""
-
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:604
 msgid "Displays informations from a player!"
 msgstr ""
@@ -296,10 +292,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:362
 msgid "Gives the specified Item to you"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
-msgid "Heals a Player"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/IgnoreCommands.java:82
@@ -478,10 +470,6 @@ msgid ""
 "you."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:158
-msgid "The user can use unlimited items"
-msgstr ""
-
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:684
 msgid "Toggles the god-mode!"
 msgstr ""
@@ -527,10 +515,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:198
 msgid "[radius] [player] [-entity]|[-mob]"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:293
-msgid "[types...] [radius] [in world] [-l] [-all]"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:49
@@ -600,10 +584,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:147
 msgid "Ascended a level!"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:680
-msgid "Banned by {user} on {inpt#date}: {input#reason} ({input#expire})"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:322
@@ -2192,4 +2172,24 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:131
 msgid "You cannot ip-ban a player that has never played on the server before!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:680
+msgid "Banned by {user} on {input#date}: {input#reason} ({input#expire})"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/InformationCommands.java:365
+msgid "Displays chunk, memory and world information."
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:158
+msgid "Grants unlimited items"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
+msgid "Heals a player"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:293
+msgid "[types...] [radius] [in <world>] [-l] [-all]"
 msgstr ""
