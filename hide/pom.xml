@@ -27,8 +27,8 @@
     </dependency>
     <dependency>
       <groupId>org.dynmap</groupId>
-      <artifactId>dynmap</artifactId>
-      <version>1.9</version>
+      <artifactId>dynmap-api</artifactId>
+      <version>1.9.4</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>

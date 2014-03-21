@@ -52,7 +52,17 @@
     <removeUnusedMessages>true</removeUnusedMessages>
     <createEmptyTemplate>false</createEmptyTemplate>
     <template>${basedir}/src/main/resources/translations/messages.pot</template>
-    <header>https://raw.github.com/CubeEngineDev/CubeEngine/master/header.txt</header>
+    <header>
+      <comments>https://raw.github.com/CubeEngineDev/CubeEngine/master/header.txt</comments>
+      <metadata>
+        <entry key="Project-Id-Version">${groupId}:${artifactId}:${version}</entry>
+        <entry key="Report-Msgid-Bugs-To">development@cubeisland.de</entry>
+        <entry key="POT-Creation-Date" variable="true">${date.get('yyyy-MM-dd HH:mm:ssZ')}</entry>
+        <entry key="MIME-Version">1.0</entry>
+        <entry key="Content-Type">text/plain; charset=CHARSET</entry>
+        <entry key="Content-Transfer-Encoding">8bit</entry>
+      </metadata>
+    </header>
   </catalog>
 
 </extractor>
