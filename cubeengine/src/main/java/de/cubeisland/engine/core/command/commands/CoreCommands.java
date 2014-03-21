@@ -138,7 +138,7 @@ public class CoreCommands extends ContainerCommand
             {
                 final UserManager um = this.getModule().getCore().getUserManager();
                 um.resetAllPasswords();
-                sender.sendTranslated(MessageType.POSITIVE, "ll passwords reset!");
+                sender.sendTranslated(MessageType.POSITIVE, "All passwords reset!");
             }
             else
             {

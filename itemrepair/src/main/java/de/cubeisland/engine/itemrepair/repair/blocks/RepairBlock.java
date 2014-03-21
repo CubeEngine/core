@@ -208,15 +208,15 @@ public class RepairBlock
             }
             if (this.config.costPercentage > 100)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input:amount} (+{decimal:2}%)", format, this.config.costPercentage - 100);
+                user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount} (+{decimal:2}%)", format, this.config.costPercentage - 100);
             }
             else if (this.config.costPercentage < 100)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input:amount} (-{decimal:2}%)", format, 100 - this.config.costPercentage);
+               user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount} (-{decimal:2}%)", format, 100 - this.config.costPercentage);
             }
             else
             {
-                user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input:amount}", format);
+                user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount}", format);
             }
             user.sendTranslated(MessageType.NEUTRAL, "You currently have {input#balance}", economy.format(user.getLocale(), economy.getBalance(user.getName())));
             user.sendTranslated(MessageType.POSITIVE, "{text:Leftclick} again to repair all your damaged items.");
@@ -303,7 +303,7 @@ public class RepairBlock
             }
             else if (this.config.costPercentage < 100)
             {
-                user.sendTranslated(MessageType.POSITIVE, "Thats {decimal#percent:2}% less then the normal price", 100 - this.config.costPercentage);
+                user.sendTranslated(MessageType.POSITIVE, "Thats {decimal#percent:2}% less then the normal price!", 100 - this.config.costPercentage);
             }
         }
         else
