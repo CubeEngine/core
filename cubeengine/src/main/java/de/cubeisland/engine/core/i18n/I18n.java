@@ -19,14 +19,19 @@ package de.cubeisland.engine.core.i18n;
 
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.i18n.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.I18nService;
+import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.i18n.TranslationLoadingException;
 import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.i18n.language.SourceLanguage;
@@ -38,6 +43,7 @@ public class I18n
     final Core core;
     private final I18nService service;
     private List<URI> translationFolders = new LinkedList<>();
+    private Map<String, Language> languageLookupMap = new HashMap<>();
 
     public I18n(Core core)
     {
@@ -71,7 +77,6 @@ public class I18n
         }
         if (translation == null)
         {
-            // TODO this.logMissingTranslation(locale, message); still necessary?
             Language defLang = this.getDefaultLanguage();
             if (defLang != null)
             {
@@ -84,7 +89,7 @@ public class I18n
             }
             if (translation == null)
             {
-                translation = service.getSourceLanguage().getTranslation(message); // TODO why not just return the message?
+                translation = service.getSourceLanguage().getTranslation(message);
             }
         }
         return translation;
@@ -94,7 +99,10 @@ public class I18n
     {
         try
         {
-            return this.service.getLanguage(locale);
+            Language language = this.service.getLanguage(locale);
+            this.languageLookupMap.put(language.getName().toLowerCase(language.getLocale()), language);
+            this.languageLookupMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
+            return language;
         }
         catch (TranslationLoadingException | DefinitionLoadingException e)
         {
@@ -114,31 +122,25 @@ public class I18n
         return new THashSet<>(this.service.getLoadedLanguages());
     }
 
-
-
-
-    /*
-        TODO language names & searchLangMethods
-        this.languageLookupMap.put(localeToString(language.getLocale()), language);
-        this.languageLookupMap.put(language.getName().toLowerCase(language.getLocale()), language);
-        this.languageLookupMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
-
-        public Set<Language> searchLanguages(String name)
+    public Set<Language> searchLanguages(String name, int maxDistance)
+    {
+        Locale locale = I18nUtil.stringToLocale(name);
+        Language language = this.getLanguage(locale);
+        if (language != null)
         {
-            return this.searchLanguages(name, 2);
+            HashSet<Language> lang = new HashSet<>();
+            lang.add(language);
+            return lang;
         }
 
-        public Set<Language> searchLanguages(String name, int maximumDifference)
+        Set<String> matches = Match.string().getBestMatches(name.toLowerCase(), this.languageLookupMap.keySet(), maxDistance);
+        Set<Language> languages = new THashSet<>(matches.size());
+
+        for (String match : matches)
         {
-            Set<String> matches = Match.string().getBestMatches(name, this.languageLookupMap.keySet(), maximumDifference);
-            Set<Language> languages = new THashSet<>(matches.size());
-
-            for (String match : matches)
-            {
-                languages.add(this.languageLookupMap.get(match));
-            }
-
-            return languages;
+            languages.add(this.languageLookupMap.get(match));
         }
-     */
+
+        return languages;
+    }
 }
