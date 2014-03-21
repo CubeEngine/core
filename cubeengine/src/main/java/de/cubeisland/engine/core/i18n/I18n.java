@@ -82,30 +82,7 @@ public class I18n
 
     public String translate(Locale locale, String message)
     {
-        String translation = null;
-        Language language = this.getLanguage(locale);
-        if (language != null)
-        {
-            translation = language.getTranslation(message);
-        }
-        if (translation == null)
-        {
-            Language defLang = this.getDefaultLanguage();
-            if (defLang != null)
-            {
-                translation = defLang.getTranslation(message);
-            }
-            else
-            {
-                this.core.getLog().warn("The configured default language {} was not found! Falling back to the source language...", this.core
-                    .getConfiguration().defaultLocale.getDisplayName());
-            }
-            if (translation == null)
-            {
-                translation = service.getSourceLanguage().getTranslation(message);
-            }
-        }
-        return translation;
+        return this.service.translate(locale, message);
     }
 
     public Language getLanguage(Locale locale)
