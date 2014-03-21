@@ -651,10 +651,5 @@ public final class BukkitCore extends JavaPlugin implements Core
         return corePerms;
     }
 
-    @Override
-    public MessageCompositor getMessageCompositor()
-    {
-        return this.messageCompositor;
-    }
-//endregion
+    //endregion
 }

@@ -117,19 +117,22 @@ public abstract class LogActionType extends ActionType implements Listener
                 }
                 if (xMax == xMin && yMax == yMin && zMax == zMin)
                 {
-                    loc += user.composeMessage(MessageType.POSITIVE, "   at {vector} in {world}",
-                          new BlockVector3(xMax, yMax, zMax), logEntry.getWorld());
+                    loc += user.translate(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(xMax, yMax, zMax), logEntry
+                        .getWorld());
                 }
                 else
                 {
-                    loc += user.composeMessage(MessageType.POSITIVE, "   in between {vector} nd {vector} in {world}",
-                          new BlockVector3(xMin, yMin, zMin), new BlockVector3(xMax, yMax, zMax), logEntry.getWorld());
+                    loc += user.translate(MessageType.POSITIVE, "   in between {vector} nd {vector} in {world}", new BlockVector3(xMin, yMin, zMin), new BlockVector3(xMax, yMax, zMax), logEntry
+                        .getWorld());
                 }
             }
             else
             {
-                loc += user.composeMessage(MessageType.POSITIVE, "   at {vector} in {world}",
-                      new BlockVector3(logEntry.getVector().x, logEntry.getVector().y, logEntry.getVector().z), logEntry.getWorld());
+                loc += user.translate(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(logEntry
+                                                                                                              .getVector().x, logEntry
+                                                                                                              .getVector().y, logEntry
+                                                                                                              .getVector().z), logEntry
+                                          .getWorld());
             }
         }
         this.showLogEntry(user,logEntry,time,loc);

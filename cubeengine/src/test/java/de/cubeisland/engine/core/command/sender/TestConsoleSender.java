@@ -76,7 +76,7 @@ public class TestConsoleSender implements CommandSender
     }
 
     @Override
-    public String composeMessage(MessageType type, String message, Object... params)
+    public String translate(MessageType type, String message, Object... params)
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -84,7 +84,7 @@ public class TestConsoleSender implements CommandSender
     @Override
     public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.composeMessage(type, message, params));
+        this.sendMessage(this.translate(type, message, params));
     }
 
     @Override

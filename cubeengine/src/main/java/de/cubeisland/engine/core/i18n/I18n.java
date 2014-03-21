@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.i18n.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.I18nService;
@@ -44,6 +46,7 @@ public class I18n
     private final I18nService service;
     private List<URI> translationFolders = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
+    private ColoredMessageCompositor compositor;
 
     public I18n(Core core)
     {
@@ -51,14 +54,15 @@ public class I18n
         // TODO fill translationFolders
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.translationFolders);
         this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(core), core.getConfiguration().defaultLocale);
+        this.compositor = new ColoredMessageCompositor(core);
     }
 
-    public String translate(String message)
+    public String translate(MessageType type, String message, Object... args)
     {
-        return this.translate(this.core.getConfiguration().defaultLocale, message);
+        return this.translate(this.core.getConfiguration().defaultLocale, type, message, args);
     }
 
-    public String translate(Locale locale, String message)
+    public String translate(Locale locale, MessageType type, String message, Object... args)
     {
         if (locale == null)
         {
@@ -68,7 +72,16 @@ public class I18n
         {
             return null;
         }
+        return this.compositor.composeMessage(type, locale, this.translate(locale, message), args);
+    }
 
+    public String translate(String message)
+    {
+        return this.translate(this.core.getConfiguration().defaultLocale, message);
+    }
+
+    public String translate(Locale locale, String message)
+    {
         String translation = null;
         Language language = this.getLanguage(locale);
         if (language != null)

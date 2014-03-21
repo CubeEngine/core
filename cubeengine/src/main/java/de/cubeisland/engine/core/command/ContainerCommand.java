@@ -125,8 +125,8 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         {
             if (command.testPermissionSilent(sender))
             {
-                context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.composeMessage(MessageType.NONE, command
-                                                                                                                                                     .getDescription()));
+                context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.translate(MessageType.NONE, command
+                    .getDescription()));
             }
         }
 

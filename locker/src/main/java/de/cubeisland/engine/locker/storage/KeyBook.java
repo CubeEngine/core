@@ -104,11 +104,11 @@ public class KeyBook
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(ChatFormat.parseFormats(ChatFormat.DARK_RED + "Broken KeyBook"));
         itemMeta.setLore(Arrays.asList(ChatFormat // TODO translate as one object
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "This KeyBook")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "looks old and")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "used up. It")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "wont let you")), ChatFormat
-               .parseFormats(currentHolder.composeMessage(MessageType.NEUTRAL, "open any containers!"))));
+               .parseFormats(currentHolder.translate(MessageType.NEUTRAL, "This KeyBook")), ChatFormat
+               .parseFormats(currentHolder.translate(MessageType.NEUTRAL, "looks old and")), ChatFormat
+               .parseFormats(currentHolder.translate(MessageType.NEUTRAL, "used up. It")), ChatFormat
+               .parseFormats(currentHolder.translate(MessageType.NEUTRAL, "wont let you")), ChatFormat
+               .parseFormats(currentHolder.translate(MessageType.NEUTRAL, "open any containers!"))));
         item.setItemMeta(itemMeta);
         item.setType(Material.PAPER);
         currentHolder.updateInventory();
