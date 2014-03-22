@@ -214,9 +214,9 @@ public class Kit
         }
 
         @Override
-        public String composeMessage(MessageType type, String message, Object... params)
+        public String translate(MessageType type, String message, Object... params)
         {
-            return this.user.composeMessage(type, message, params);
+            return this.user.translate(type, message, params);
         }
 
         @Override

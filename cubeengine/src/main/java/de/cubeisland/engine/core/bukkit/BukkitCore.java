@@ -94,7 +94,6 @@ import de.cubeisland.engine.logging.LogLevel;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -409,7 +408,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.i18n != null)
         {
-            this.i18n.clean();
+            // TODO i18n cleanup? this.i18n.clean();
             this.i18n = null;
         }
 
@@ -652,10 +651,5 @@ public final class BukkitCore extends JavaPlugin implements Core
         return corePerms;
     }
 
-    @Override
-    public MessageCompositor getMessageCompositor()
-    {
-        return this.messageCompositor;
-    }
-//endregion
+    //endregion
 }

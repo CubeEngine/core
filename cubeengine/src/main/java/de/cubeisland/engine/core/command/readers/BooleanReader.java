@@ -24,6 +24,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.set.hash.THashSet;
 
 public class BooleanReader extends ArgumentReader

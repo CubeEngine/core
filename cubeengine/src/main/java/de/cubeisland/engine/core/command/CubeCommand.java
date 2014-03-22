@@ -299,7 +299,7 @@ public abstract class CubeCommand extends Command
     {
         return (sender instanceof User ? "/" : "") + this
             .implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender,
-                                sender.composeMessage(MessageType.NONE, super.getUsage()));
+                                sender.translate(MessageType.NONE, super.getUsage()));
     }
 
     /**
@@ -314,7 +314,7 @@ public abstract class CubeCommand extends Command
         final CommandSender sender = context.getSender();
         return (sender instanceof User ? "/" : "") + StringUtils
             .implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender
-            .composeMessage(MessageType.NONE, super.getUsage()));
+            .translate(MessageType.NONE, super.getUsage()));
     }
 
     /**
@@ -330,7 +330,7 @@ public abstract class CubeCommand extends Command
         StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "");
         usage.append(StringUtils.implode(" ", parentLabels)).append(' ')
             .append(this.getName()).append(' ')
-            .append(sender.composeMessage(MessageType.NONE, super.getUsage()));
+            .append(sender.translate(MessageType.NONE, super.getUsage()));
         return usage.toString();
     }
 
@@ -725,7 +725,8 @@ public abstract class CubeCommand extends Command
             {
                 if (command.testPermissionSilent(sender))
                 {
-                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.composeMessage(MessageType.NONE, command.getDescription()));
+                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.translate(MessageType.NONE, command
+                        .getDescription()));
                 }
             }
         }

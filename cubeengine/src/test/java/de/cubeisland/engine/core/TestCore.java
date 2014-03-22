@@ -43,7 +43,6 @@ import de.cubeisland.engine.core.util.converter.DurationConverter;
 import de.cubeisland.engine.core.util.converter.LevelConverter;
 import de.cubeisland.engine.core.util.converter.UserConverter;
 import de.cubeisland.engine.core.util.converter.VersionConverter;
-import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
@@ -51,7 +50,6 @@ import de.cubeisland.engine.logging.DefaultLogFactory;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import de.cubeisland.engine.logging.target.PrintTarget;
-import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 import org.joda.time.Duration;
@@ -239,11 +237,5 @@ public class TestCore implements Core
     public boolean isStartupFinished()
     {
         return false;
-    }
-
-    @Override
-    public MessageCompositor getMessageCompositor()
-    {
-        return new ColoredMessageCompositor(this);
     }
 }

@@ -28,9 +28,7 @@ import org.bukkit.plugin.Plugin;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.messagecompositor.MessageCompositor;
 
 public class WrappedCommandSender implements CommandSender
 {
@@ -90,24 +88,15 @@ public class WrappedCommandSender implements CommandSender
         return this.getWrappedSender().getServer();
     }
 
-    public String composeMessage(MessageType type, String message, Object... params)
+    public String translate(MessageType type, String message, Object... params)
     {
-        message = this.getCore().getI18n().translate(this.getLocale(), message);
-        MessageCompositor messageCompositor = this.getCore().getMessageCompositor();
-        if (messageCompositor instanceof ColoredMessageCompositor)
-        {
-            return ((ColoredMessageCompositor)messageCompositor).composeMessage(type, this.getLocale(), message, params);
-        }
-        else
-        {
-            return messageCompositor.composeMessage(this.getLocale(), message, params);
-        }
+        return this.getCore().getI18n().translate(this.getLocale(), type, message, params);
     }
 
     @Override
     public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.composeMessage(type, message, params));
+        this.sendMessage(this.translate(type, message, params));
     }
 
     @Override

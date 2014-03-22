@@ -26,7 +26,6 @@ import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.i18n.I18n;
-
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.i18n.language.ClonedLanguage;

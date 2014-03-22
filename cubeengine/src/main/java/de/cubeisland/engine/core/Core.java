@@ -36,7 +36,6 @@ import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import de.cubeisland.engine.reflect.Reflector;
 
 /**
@@ -184,6 +183,4 @@ public interface Core
      * @return false if the startup has not finished yet
      */
     boolean isStartupFinished();
-
-    MessageCompositor getMessageCompositor();
 }

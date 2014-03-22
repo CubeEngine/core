@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.i18n.language.Language;
 
 public class RuleBookFile
@@ -52,9 +53,9 @@ public class RuleBookFile
         {
             for (Path file : directoryStream)
             {
-                Set<Language> languages = CubeEngine.getI18n().searchLanguages(StringUtils.stripFileExtension(file.getFileName().toString()));
-
-                if (languages.size() == 1)
+                String localeString = StringUtils.stripFileExtension(file.getFileName().toString());
+                Language language = CubeEngine.getI18n().getLanguage(I18nUtil.stringToLocale(localeString));
+                if (language != null)
                 {
                     files.add(file);
                 }

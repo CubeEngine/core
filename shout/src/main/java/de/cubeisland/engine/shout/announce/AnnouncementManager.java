@@ -444,7 +444,7 @@ public class AnnouncementManager
                     continue;
                 }
                 Language language;
-                Set<Language> langs = this.i18n.searchLanguages(name);
+                Set<Language> langs = this.i18n.searchLanguages(name, 2);
                 if (langs.size() < 1)
                 {
                     this.module.getLog().info("Tried to load a lang-file with an invalid locale: {}", name);

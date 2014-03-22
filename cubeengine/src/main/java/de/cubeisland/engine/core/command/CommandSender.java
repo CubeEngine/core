@@ -38,7 +38,7 @@ public interface CommandSender extends org.bukkit.command.CommandSender
 
     void sendMessage(String message);
 
-    String composeMessage(MessageType type, String message, Object... params);
+    String translate(MessageType type, String message, Object... params);
 
     void sendTranslated(MessageType type, String message, Object... params);
 }
