@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:cubeengine:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-21 12:28:32+0100\n"
+"POT-Creation-Date: 2014-03-22 22:57:18+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -690,10 +690,6 @@ msgstr ""
 msgid "Your password has been set!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:141
-msgid "ll passwords reset!"
-msgstr ""
-
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:160
 msgid "{input} is not a known difficulty!"
 msgstr ""
@@ -740,4 +736,8 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:437
 msgid "{user} is now whitelisted."
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:141
+msgid "All passwords reset!"
 msgstr ""
