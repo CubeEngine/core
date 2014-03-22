@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.i18n;
 import java.util.Locale;
 
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
+import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
 /**
@@ -33,7 +34,7 @@ public class LocaleConfiguration extends ReflectedYaml implements LanguageDefini
     public Locale parent = null;
     public Locale[] clones = null;
     private int pluralCount;
-    private String pluralExpression;
+    private PluralExpr pluralExpression;
 
     @Override
     public Locale getLocale()
@@ -72,7 +73,7 @@ public class LocaleConfiguration extends ReflectedYaml implements LanguageDefini
     }
 
     @Override
-    public String getPluralExpression()
+    public PluralExpr getPluralExpression()
     {
         return this.pluralExpression;
     }

@@ -47,6 +47,7 @@ import de.cubeisland.engine.i18n.TranslationLoadingException;
 import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.i18n.language.SourceLanguage;
 import de.cubeisland.engine.i18n.loader.GettextLoader;
+import de.cubeisland.engine.i18n.plural.PluralExpr;
 import gnu.trove.set.hash.THashSet;
 
 public class I18n
@@ -59,6 +60,8 @@ public class I18n
 
     public I18n(Core core)
     {
+        core.getConfigFactory().getDefaultConverterManager().registerConverter(PluralExpr.class, new PluralExprConverter());
+
         this.core = core;
         // TODO override translations
         this.poFiles.addAll(getFilesFromJar("translations/", ".po", this.getClass()));
