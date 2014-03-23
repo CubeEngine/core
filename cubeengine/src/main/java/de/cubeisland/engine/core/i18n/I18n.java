@@ -44,14 +44,14 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.i18n.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.I18nService;
 import de.cubeisland.engine.i18n.I18nUtil;
-import de.cubeisland.engine.i18n.TranslationLoadingException;
+import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.i18n.language.SourceLanguage;
 import de.cubeisland.engine.i18n.loader.GettextLoader;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
+import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import gnu.trove.set.hash.THashSet;
 
 public class I18n

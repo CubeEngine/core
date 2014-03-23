@@ -28,9 +28,9 @@ import java.util.Map;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
-import de.cubeisland.engine.i18n.DefinitionLoadingException;
-import de.cubeisland.engine.i18n.LanguageLoader;
+import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
+import de.cubeisland.engine.i18n.language.LanguageLoader;
 
 public class I18nLanguageLoader extends LanguageLoader
 {
