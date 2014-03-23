@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -81,7 +80,7 @@ public class RuleBookFile
 
         try (FileChannel in = FileChannel.open(file))
         {
-            return FileUtil.readToString(in, Core.CHARSET);
+            return FileUtil.readToString(in, CubeEngine.CHARSET);
         }
     }
 
@@ -92,7 +91,7 @@ public class RuleBookFile
 
     public static void createFile(Path file, String txt) throws IOException
     {
-        try (BufferedWriter writer = Files.newBufferedWriter(file, Core.CHARSET))
+        try (BufferedWriter writer = Files.newBufferedWriter(file, CubeEngine.CHARSET))
         {
             writer.write(txt);
         }

@@ -463,7 +463,7 @@ public final class BukkitCore extends JavaPlugin implements Core
             return;
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat("yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), Core.CHARSET))
+        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat("yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), CubeEngine.CHARSET))
         {
             Thread main = CubeEngine.getMainThread();
             int i = 1;

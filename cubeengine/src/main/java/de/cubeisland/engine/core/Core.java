@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.core;
 
-import java.nio.charset.Charset;
-
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
@@ -45,8 +43,6 @@ import de.cubeisland.engine.reflect.Reflector;
  */
 public interface Core
 {
-    public static final Charset CHARSET = Charset.forName("UTF-8");
-
     /**
      * Returns the version of the core
      *
