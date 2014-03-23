@@ -218,6 +218,7 @@ public class RepairBlock
             {
                 user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount}", format);
             }
+            economy.createPlayerAccount(user.getName());
             user.sendTranslated(MessageType.NEUTRAL, "You currently have {input#balance}", economy.format(user.getLocale(), economy.getBalance(user.getName())));
             user.sendTranslated(MessageType.POSITIVE, "{text:Leftclick} again to repair all your damaged items.");
             return new RepairRequest(this, inventory, items, price);
