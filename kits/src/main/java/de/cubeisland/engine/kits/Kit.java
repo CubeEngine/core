@@ -226,6 +226,18 @@ public class Kit
         }
 
         @Override
+        public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
+        {
+            this.user.sendTranslatedN(type, n, singular, plural, params);
+        }
+
+        @Override
+        public String translateN(MessageType type, int n, String singular, String plural, Object... params)
+        {
+            return this.user.translateN(type, n, singular, plural, params);
+        }
+
+        @Override
         public void sendMessage(String string)
         {
             this.user.sendMessage(string);

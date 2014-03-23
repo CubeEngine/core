@@ -99,6 +99,20 @@ public class WrappedCommandSender implements CommandSender
         this.sendMessage(this.translate(type, message, params));
     }
 
+
+    @Override
+    public String translateN(MessageType type, int n, String singular, String plural, Object... params)
+    {
+        return this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params);
+    }
+
+
+    @Override
+    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
+    {
+        this.sendMessage(this.translateN(type, n, singular, plural, params));
+    }
+
     @Override
     public boolean isPermissionSet(String name)
     {
