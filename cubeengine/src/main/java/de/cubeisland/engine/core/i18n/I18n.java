@@ -147,6 +147,24 @@ public class I18n
         return this.compositor.composeMessage(type, locale, this.translate(locale, message), args);
     }
 
+    public String translateN(MessageType type, int n, String singular, String plural, Object... args)
+    {
+        return this.translateN(this.core.getConfiguration().defaultLocale, type, n, singular, plural, args);
+    }
+
+    public String translateN(Locale locale, MessageType type, int n, String singular, String plural, Object... args)
+    {
+        if (locale == null)
+        {
+            throw new NullPointerException("The language must not be null!");
+        }
+        if (singular == null || plural == null)
+        {
+            return null;
+        }
+        return this.compositor.composeMessage(type, locale, this.translateN(locale, n, singular, plural), args);
+    }
+
     public String translate(String message)
     {
         return this.translate(this.core.getConfiguration().defaultLocale, message);
@@ -155,6 +173,16 @@ public class I18n
     public String translate(Locale locale, String message)
     {
         return this.service.translate(locale, message);
+    }
+
+    public String translateN(int n, String singular, String plural)
+    {
+        return this.translateN(this.core.getConfiguration().defaultLocale, n, singular, plural);
+    }
+
+    public String translateN(Locale locale, int n, String singular, String plural)
+    {
+        return this.service.translateN(locale, singular, plural, n);
     }
 
     public Language getLanguage(Locale locale)

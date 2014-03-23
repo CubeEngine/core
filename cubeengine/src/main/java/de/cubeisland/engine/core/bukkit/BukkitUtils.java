@@ -225,6 +225,7 @@ public class BukkitUtils
      */
     public static boolean canBePlacedInBrewingstand(Material material)
     {
+        // TODO NPE when pufferfish
         return getItem(material).i(null) != null; // Items that can be brewed return a String here else null
     }
 
