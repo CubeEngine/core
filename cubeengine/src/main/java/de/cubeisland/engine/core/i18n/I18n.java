@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,6 +39,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
@@ -63,7 +67,7 @@ public class I18n
         core.getConfigFactory().getDefaultConverterManager().registerConverter(PluralExpr.class, new PluralExprConverter());
 
         this.core = core;
-        // TODO override translations
+        this.addPoFilesFromDirectory(this.core.getFileManager().getTranslationPath());
         this.poFiles.addAll(getFilesFromJar("translations/", ".po", this.getClass()));
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
@@ -71,9 +75,28 @@ public class I18n
         this.compositor = new ColoredMessageCompositor(core);
     }
 
+    private void addPoFilesFromDirectory(Path translations)
+    {
+        if (Files.exists(translations))
+        {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(translations, FileExtensionFilter.PO))
+            {
+                for (Path path : directoryStream)
+                {
+                    this.poFiles.add(path.toUri().toURL());
+                }
+            }
+            catch (IOException e)
+            {
+                this.core.getLog().error(e, "Error while getting translation override files!");
+            }
+        }
+    }
+
     public void registerModule(Module module)
     {
-        // TODO add translations overrides for modules
+        Path translations = module.getFolder().resolve("translations");
+        this.addPoFilesFromDirectory(translations);
         this.poFiles.addAll(getFilesFromJar("translations/", ".po", module.getClass()));
     }
 
