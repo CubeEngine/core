@@ -390,14 +390,6 @@
               <configuration>https://raw.github.com/CubeEngineDev/CubeEngine/master/extractor.xml</configuration>
             </configurations>
           </configuration>
-          <executions>
-            <execution>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>update</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
       </plugins>
     </pluginManagement>

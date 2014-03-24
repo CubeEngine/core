@@ -66,7 +66,8 @@ public class Writer extends Module
             Map<String, Object> params = context.getParams();
             if (params.size() < 1)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You need to specify at least one parameter!");
+                context.sendTranslated(MessageType.NEGATIVE, "You need to specify at least one parameter to edit a sign!");
+                context.sendTranslated(MessageType.NEGATIVE, "Or hold a signed book in your hand to edit it.");
                 return;
             }
             if (!this.editSignInSight(user, params))
