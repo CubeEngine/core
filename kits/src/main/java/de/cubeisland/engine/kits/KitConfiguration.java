@@ -28,6 +28,7 @@ import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.core.util.StringUtils;
 import org.joda.time.Duration;
 
+@SuppressWarnings("all")
 public class KitConfiguration extends ReflectedYaml
 {
     @Comment("Players that join your server the first time will receive this kit if set on true.")

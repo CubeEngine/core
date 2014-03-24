@@ -23,6 +23,7 @@ import java.util.Map;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
+@SuppressWarnings("all")
 public class ColorConfiguration extends ReflectedYaml
 {
     public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
@@ -37,6 +38,4 @@ public class ColorConfiguration extends ReflectedYaml
     };
 
     public Map<ChatFormat, ChatFormat> colorRemap = new HashMap<>();
-
-
 }

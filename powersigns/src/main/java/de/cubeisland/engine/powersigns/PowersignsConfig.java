@@ -19,5 +19,6 @@ package de.cubeisland.engine.powersigns;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
+@SuppressWarnings("all")
 public class PowersignsConfig extends ReflectedYaml
 {}

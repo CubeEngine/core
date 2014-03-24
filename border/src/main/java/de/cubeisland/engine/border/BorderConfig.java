@@ -25,6 +25,7 @@ import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.reflect.annotations.Name;
 
+@SuppressWarnings("all")
 public class BorderConfig extends ReflectedYaml
 {
     @Name("chunk-radius")

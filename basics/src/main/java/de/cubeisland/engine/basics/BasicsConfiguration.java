@@ -32,6 +32,7 @@ import de.cubeisland.engine.reflect.annotations.Name;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 
+@SuppressWarnings("all")
 public class BasicsConfiguration extends ReflectedYaml
 {
     public CommandsSection commands;

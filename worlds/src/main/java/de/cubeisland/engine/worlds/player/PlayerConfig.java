@@ -20,6 +20,7 @@ package de.cubeisland.engine.worlds.player;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.core.world.ConfigWorld;
 
+@SuppressWarnings("all")
 public class PlayerConfig extends ReflectedYaml
 {
     public ConfigWorld lastWorld;

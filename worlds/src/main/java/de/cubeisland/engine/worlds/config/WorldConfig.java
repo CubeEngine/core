@@ -40,6 +40,7 @@ import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.worlds.Worlds;
 
+@SuppressWarnings("all")
 public class WorldConfig extends ReflectedYaml
 {
     @Comment("Alias")

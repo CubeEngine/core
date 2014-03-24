@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.ConfigWorld;
 
+@SuppressWarnings("all")
 public class PortalConfig extends ReflectedYaml
 {
     public boolean safeTeleport = false;

@@ -32,6 +32,7 @@ import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 
+@SuppressWarnings("all")
 public class LoggingConfiguration extends ReflectedYaml
 {
     @Comment("Completely enables or disabled logging")

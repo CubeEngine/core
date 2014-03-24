@@ -23,6 +23,7 @@ import de.cubeisland.engine.reflect.annotations.Name;
 /**
  * Configuration class to parse the custom CubeEngine values of plugin.yml
  */
+@SuppressWarnings("all")
 public class PluginConfig extends ReflectedYaml
 {
     @Name("source-version")

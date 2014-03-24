@@ -23,6 +23,7 @@ import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 import org.joda.time.Duration;
 
+@SuppressWarnings("all")
 public class VoteConfiguration extends ReflectedYaml
 {
     public double voteReward = 100.0;

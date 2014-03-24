@@ -19,5 +19,6 @@ package de.cubeisland.engine.kits;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
+@SuppressWarnings("all")
 public class KitsConfig extends ReflectedYaml
 {}

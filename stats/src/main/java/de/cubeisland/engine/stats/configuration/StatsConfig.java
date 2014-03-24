@@ -23,9 +23,9 @@ import java.util.Map;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 
+@SuppressWarnings("all")
 public class StatsConfig extends ReflectedYaml
 {
-
     @Comment({"Configurations for each stat"})
     public Map<String, DynamicSection> statConfigs = new HashMap<>();
 

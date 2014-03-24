@@ -23,6 +23,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 import de.cubeisland.engine.locker.commands.LockerCommands;
 
+@SuppressWarnings("all")
 public class LockerPerm extends PermissionContainer<Locker>
 {
     public LockerPerm(Locker module, LockerCommands mainCmd)

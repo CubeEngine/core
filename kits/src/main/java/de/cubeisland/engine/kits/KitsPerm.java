@@ -20,6 +20,7 @@ package de.cubeisland.engine.kits;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class KitsPerm extends PermissionContainer<Kits>
 {
     public KitsPerm(Kits module)

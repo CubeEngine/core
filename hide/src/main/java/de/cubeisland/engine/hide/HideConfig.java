@@ -19,5 +19,8 @@ package de.cubeisland.engine.hide;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
+@SuppressWarnings("all")
 public class HideConfig extends ReflectedYaml
-{}
+{
+    // TODO
+}

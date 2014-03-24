@@ -20,6 +20,7 @@ package de.cubeisland.engine.chat;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 
+@SuppressWarnings("all")
 public class ChatConfig extends ReflectedYaml
 {
     @Comment({"There at least the following variables available:" ,

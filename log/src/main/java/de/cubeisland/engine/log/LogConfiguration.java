@@ -25,6 +25,7 @@ import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.reflect.annotations.Name;
 import org.joda.time.Duration;
 
+@SuppressWarnings("all")
 public class LogConfiguration extends ReflectedYaml
 {
     @Comment("The maximum of logs that may be logged at once.")

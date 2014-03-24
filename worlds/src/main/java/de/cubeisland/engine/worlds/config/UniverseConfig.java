@@ -24,6 +24,7 @@ import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.core.world.ConfigWorld;
 
+@SuppressWarnings("all")
 public class UniverseConfig extends ReflectedYaml
 {
     @Comment("The main world in this universe")

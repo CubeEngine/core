@@ -22,6 +22,7 @@ import de.cubeisland.engine.reflect.ReflectedYaml;
 /**
  * DatabaseConfiguration have to return their corresponding DatabaseClass.
  */
+@SuppressWarnings("all")
 public abstract class DatabaseConfiguration extends ReflectedYaml
 {
 

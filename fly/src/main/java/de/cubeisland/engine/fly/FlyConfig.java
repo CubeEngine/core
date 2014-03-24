@@ -20,6 +20,7 @@ package de.cubeisland.engine.fly;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Name;
 
+@SuppressWarnings("all")
 public class FlyConfig extends ReflectedYaml
 {
     @Name("enablemode.flyfeather")

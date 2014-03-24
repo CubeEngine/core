@@ -24,6 +24,7 @@ import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 
+@SuppressWarnings("all")
 public class ApiConfig extends ReflectedYaml
 {
     public NetworkSection network;

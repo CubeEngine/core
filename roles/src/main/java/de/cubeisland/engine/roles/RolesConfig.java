@@ -28,6 +28,7 @@ import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.roles.config.MirrorConfig;
 
+@SuppressWarnings("all")
 public class RolesConfig extends ReflectedYaml
 {
     @Name("disable-permission-in-offlinemode")

@@ -20,6 +20,7 @@ package de.cubeisland.engine.signmarket;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class MarketSignPerm extends PermissionContainer<Signmarket>
 {
     public MarketSignPerm(Signmarket module, SignMarketCommands smCmds)

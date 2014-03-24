@@ -26,6 +26,7 @@ import de.cubeisland.engine.reflect.ReflectedYaml;
 /**
  * This configuration is used to parse the language configurations.
  */
+@SuppressWarnings("all")
 public class LocaleConfiguration extends ReflectedYaml implements LanguageDefinition
 {
     public Locale locale;

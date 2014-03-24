@@ -20,6 +20,7 @@ package de.cubeisland.engine.worlds.config;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 
+@SuppressWarnings("all")
 public class WorldsConfig extends ReflectedYaml
 {
     @Comment("The main universe")

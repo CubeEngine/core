@@ -33,7 +33,8 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.world.WorldManager;
 import org.jooq.types.UInteger;
 
-public class  SignMarketConfig extends ReflectedYaml
+@SuppressWarnings("all")
+public class SignMarketConfig extends ReflectedYaml
 {
     @Name("sign.admin.enable")
     public boolean enableAdmin = true;

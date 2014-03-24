@@ -20,6 +20,7 @@ package de.cubeisland.engine.chat;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class ChatPerm extends PermissionContainer<Chat>
 {
     public ChatPerm(Chat module)

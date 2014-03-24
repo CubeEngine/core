@@ -30,6 +30,7 @@ import gnu.trove.map.hash.THashMap;
 /**
  * Dynamically registered Permissions for each world.
  */
+@SuppressWarnings("all")
 public class TpWorldPermissions extends PermissionContainer<Basics>
 {
     private final Permission COMMAND_TPWORLD;

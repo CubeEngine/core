@@ -20,10 +20,9 @@ package de.cubeisland.engine.worlds;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class WorldsPermissions extends PermissionContainer<Worlds>
 {
-
-
     public WorldsPermissions(Worlds module)
     {
         super(module);

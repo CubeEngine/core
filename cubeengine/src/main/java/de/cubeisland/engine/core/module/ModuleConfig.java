@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.util.Version;
 /**
  * This configuration is used to parse the module.yml file.
  */
+@SuppressWarnings("all")
 public class ModuleConfig extends ReflectedYaml
 {
     public String main;

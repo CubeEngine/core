@@ -21,6 +21,7 @@ import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.reflect.annotations.Name;
 
+@SuppressWarnings("all")
 public class ConomyConfiguration extends ReflectedYaml
 {
     @Name("currency.symbol")
@@ -59,5 +60,4 @@ public class ConomyConfiguration extends ReflectedYaml
     {
         return (int)Math.pow(10, this.fractionalDigits);
     }
-
 }

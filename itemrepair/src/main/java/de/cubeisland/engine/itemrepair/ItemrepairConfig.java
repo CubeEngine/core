@@ -27,6 +27,7 @@ import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 
+@SuppressWarnings("all")
 public class ItemrepairConfig extends ReflectedYaml
 {
     @Name("server.bank")

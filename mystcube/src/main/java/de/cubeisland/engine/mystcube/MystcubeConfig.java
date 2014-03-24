@@ -19,5 +19,6 @@ package de.cubeisland.engine.mystcube;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
+@SuppressWarnings("all")
 public class MystcubeConfig extends ReflectedYaml
 {}

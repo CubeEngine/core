@@ -21,9 +21,9 @@ import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 
+@SuppressWarnings("all")
 public class TravelConfig extends ReflectedYaml
 {
-
     public HomesSection homes;
 
     @Comment({"If this is set to true the commands /clearhomes and /clearwarps can only be used from the console.",

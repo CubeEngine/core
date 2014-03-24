@@ -20,6 +20,7 @@ package de.cubeisland.engine.backpack;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class BackpackPermissions extends PermissionContainer<Backpack>
 {
     public BackpackPermissions(Backpack module)

@@ -23,6 +23,7 @@ import de.cubeisland.engine.core.permission.PermissionContainer;
 
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 
+@SuppressWarnings("all")
 public class CorePerms extends PermissionContainer<CoreModule>
 {
     public CorePerms(CoreModule module)

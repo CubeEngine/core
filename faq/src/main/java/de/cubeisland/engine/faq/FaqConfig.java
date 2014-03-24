@@ -22,10 +22,10 @@ import java.util.List;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
+@SuppressWarnings("all")
 public class FaqConfig extends ReflectedYaml
 {
     public List<Question> questions = new ArrayList<>();
-
     {
         questions.add(new Question("Can I get OP?", "Nope!", new String[] {"get", "OP"}));
     }

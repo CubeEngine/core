@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
 import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 
+@SuppressWarnings("all")
 public class LockerConfig extends ReflectedYaml
 {
     @Name("settings.open-iron-door-with-click")

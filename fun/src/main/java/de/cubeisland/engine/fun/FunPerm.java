@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 import de.cubeisland.engine.core.permission.PermissionManager;
 
+@SuppressWarnings("all")
 public class FunPerm extends PermissionContainer<Fun>
 {
     public boolean ARE_THROW_ITEMS_REGISTERED = false;
