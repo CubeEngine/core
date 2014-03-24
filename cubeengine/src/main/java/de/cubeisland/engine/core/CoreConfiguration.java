@@ -32,6 +32,7 @@ import org.joda.time.Duration;
  * This Configuration holds all basic settings for CubeEngine.
  * Changes in this configuration can/will affect all modules.
  */
+@SuppressWarnings("all")
 public class CoreConfiguration extends ReflectedYaml
 {
     @Comment("Sets the locale to choose by default.")
