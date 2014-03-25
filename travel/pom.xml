@@ -17,10 +17,9 @@
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>cubeengine</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
