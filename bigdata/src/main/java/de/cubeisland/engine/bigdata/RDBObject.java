@@ -17,15 +17,32 @@
  */
 package de.cubeisland.engine.bigdata;
 
-import de.cubeisland.engine.reflect.ReflectedYaml;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
-public class MongoDBConfiguration extends ReflectedYaml
+public class RDBObject
 {
-    public String host = "localhost";
-    public int port = 27017;
+    private DBCollection collection;
+    private DBObject dbObject;
 
-    public MongoDBConfiguration(String host)
+    public RDBObject(DBCollection collection, DBObject dbObject)
     {
-        this.host = host;
+        this.collection = collection;
+        this.dbObject = dbObject;
+    }
+
+    public RDBObject(DBCollection collection)
+    {
+        this(collection, null);
+    }
+
+    public DBCollection getCollection()
+    {
+        return collection;
+    }
+
+    public DBObject getDBObject()
+    {
+        return dbObject;
     }
 }

@@ -17,27 +17,31 @@
  */
 package de.cubeisland.engine.bigdata;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.BasicDBObject;
 import de.cubeisland.engine.reflect.Reflected;
 import de.cubeisland.engine.reflect.codec.Codec;
 import de.cubeisland.engine.reflect.exception.CodecIOException;
 import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.reflect.node.ErrorNode;
+import de.cubeisland.engine.reflect.node.ListNode;
 import de.cubeisland.engine.reflect.node.MapNode;
 import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.ParentNode;
 
-public class MongoDBCodec extends Codec<DBObject, DBCollection>
+public class MongoDBCodec extends Codec<RDBObject, RDBObject>
 {
     @Override
-    public Collection<ErrorNode> loadReflected(Reflected reflected, DBObject dbo)
+    public Collection<ErrorNode> loadReflected(Reflected reflected, RDBObject rdbo)
     {
         try
         {
-            return dumpIntoSection(reflected.getDefault(), reflected, this.load(dbo, reflected), reflected);
+            return dumpIntoSection(reflected.getDefault(), reflected, this.load(rdbo, reflected), reflected);
         }
         catch (ConversionException ex)
         {
@@ -51,11 +55,11 @@ public class MongoDBCodec extends Codec<DBObject, DBCollection>
     }
 
     @Override
-    public void saveReflected(Reflected reflected, DBCollection dbc)
+    public void saveReflected(Reflected reflected, RDBObject rdbo)
     {
         try
         {
-            this.save(convertSection(reflected.getDefault(), reflected, reflected), dbc, reflected);
+            this.save(convertSection(reflected.getDefault(), reflected, reflected), rdbo, reflected);
         }
         catch (ConversionException ex)
         {
@@ -68,14 +72,78 @@ public class MongoDBCodec extends Codec<DBObject, DBCollection>
     }
 
     @Override
-    protected void save(MapNode mapNode, DBCollection dbc, Reflected reflected) throws ConversionException
+    protected void save(MapNode mapNode, RDBObject rdbo, Reflected reflected) throws ConversionException
     {
-        // TODO create DBObject & insert to dbc
+        BasicDBObject saveObject = this.convertMapNode(mapNode);
+        if (rdbo.getDBObject().get("_id") != null)
+        {
+            saveObject.append("_id", rdbo.getDBObject().get("_id"));
+        }
+        rdbo.getCollection().save(saveObject);
     }
 
-    @Override
-    protected MapNode load(DBObject dbo, Reflected reflected) throws ConversionException
+    private BasicDBObject convertMapNode(MapNode mapNode)
     {
-        return (MapNode) Node.wrapIntoNode(dbo.toMap()); // TODO test if this works
+        if (mapNode.isEmpty())
+        {
+            return new BasicDBObject();
+        }
+        BasicDBObject bdbo = null;
+        for (Entry<String, Node> entry : mapNode.getMappedNodes().entrySet())
+        {
+            if (bdbo == null)
+            {
+                bdbo = new BasicDBObject(entry.getKey(), convertNode(entry.getValue()));
+            }
+            else
+            {
+                bdbo.append(entry.getKey(), convertNode(entry.getValue()));
+            }
+        }
+        return bdbo;
+    }
+
+    private Object convertNode(Node node)
+    {
+        if (node instanceof ParentNode)
+        {
+            if (node instanceof MapNode)
+            {
+                return convertMapNode((MapNode)node);
+            }
+            else if (node instanceof ListNode)
+            {
+                return convertListNode((ListNode)node);
+            }
+            else
+            {
+                throw new IllegalArgumentException("ParentNode has to be List or MapNode not a " + node.getClass());
+            }
+        }
+        else
+        {
+            return node.getValue();
+        }
+    }
+
+    private List convertListNode(ListNode listNode)
+    {
+        ArrayList<Object> list = new ArrayList<>();
+        if (listNode.isEmpty())
+        {
+            return list;
+        }
+        for (Node node : listNode.getValue())
+        {
+            list.add(convertNode(node));
+        }
+        return list;
+    }
+
+
+    @Override
+    protected MapNode load(RDBObject rdbo, Reflected reflected) throws ConversionException
+    {
+        return (MapNode)Node.wrapIntoNode(rdbo.getDBObject().toMap());
     }
 }
