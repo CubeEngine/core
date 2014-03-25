@@ -216,13 +216,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public String translate(MessageType type, String message, Object... params)
+    public String getTranslation(MessageType type, String message, Object... params)
     {
         return this.getCore().getI18n().translate(this.getLocale(), type, message, params);
     }
 
     @Override
-    public String translateN(MessageType type, int n, String singular, String plural, Object... params)
+    public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
     {
         return this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params);
     }
@@ -237,13 +237,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.translate(type, message, params));
+        this.sendMessage(this.getTranslation(type, message, params));
     }
 
     @Override
     public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
     {
-        this.sendMessage(this.translateN(type, n, singular, plural, params));
+        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
     }
 
     @Override

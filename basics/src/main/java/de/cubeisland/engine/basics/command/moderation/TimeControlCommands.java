@@ -88,7 +88,7 @@ public class TimeControlCommands
             }
             else
             {
-                throw new IncorrectUsageException(context.getSender().translate(MessageType.NEGATIVE, "You have to specify a world when using this command from the console!"));
+                throw new IncorrectUsageException(context.getSender().getTranslation(MessageType.NEGATIVE, "You have to specify a world when using this command from the console!"));
             }
         }
         if (context.hasArg(0))

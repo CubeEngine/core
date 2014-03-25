@@ -675,7 +675,7 @@ public class PlayerCommands
             }
             else
             {
-                expires = context.getSender().translate(MessageType.NONE, "for ever");
+                expires = context.getSender().getTranslation(MessageType.NONE, "for ever");
             }
             context.sendTranslated(MessageType.NEUTRAL, "Banned by {user} on {input#date}: {input#reason} ({input#expire})", ban.getSource(), format.format(ban.getCreated()), ban.getReason(), expires);
         }

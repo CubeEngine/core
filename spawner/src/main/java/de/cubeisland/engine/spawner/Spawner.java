@@ -100,7 +100,7 @@ public class Spawner extends Module implements Listener
 
             ItemStack clone = spawnerItem.clone();
             ItemMeta itemMeta = clone.getItemMeta();
-            itemMeta.setDisplayName(user.translate(MessageType.NONE, "Inactive Monster Spawner"));
+            itemMeta.setDisplayName(user.getTranslation(MessageType.NONE, "Inactive Monster Spawner"));
             clone.setItemMeta(itemMeta);
             event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), clone);
 

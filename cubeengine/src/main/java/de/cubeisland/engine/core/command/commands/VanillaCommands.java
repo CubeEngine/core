@@ -198,7 +198,7 @@ public class VanillaCommands implements CommandHolder
                 final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, sender.getLocale());
                 for (OfflinePlayer player : ops)
                 {
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.translate(MessageType.NONE, "Last seen: {input#date}", dateFormat
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.getTranslation(MessageType.NONE, "Last seen: {input#date}", dateFormat
                         .format(new Date(player.getLastPlayed()))) + ")");
                 }
             }

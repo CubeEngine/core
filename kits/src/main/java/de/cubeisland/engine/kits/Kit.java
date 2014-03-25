@@ -214,9 +214,9 @@ public class Kit
         }
 
         @Override
-        public String translate(MessageType type, String message, Object... params)
+        public String getTranslation(MessageType type, String message, Object... params)
         {
-            return this.user.translate(type, message, params);
+            return this.user.getTranslation(type, message, params);
         }
 
         @Override
@@ -232,9 +232,9 @@ public class Kit
         }
 
         @Override
-        public String translateN(MessageType type, int n, String singular, String plural, Object... params)
+        public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
         {
-            return this.user.translateN(type, n, singular, plural, params);
+            return this.user.getTranslationN(type, n, singular, plural, params);
         }
 
         @Override

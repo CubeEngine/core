@@ -188,7 +188,7 @@ public class ChatCommands
         basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() +
             (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
-        String timeString = dura.getMillis() == 0 ? user.translate(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
+        String timeString = dura.getMillis() == 0 ? user.getTranslation(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
         user.sendTranslated(MessageType.NEGATIVE, "You are now muted for {input#amount}!", timeString);
         context.sendTranslated(MessageType.NEUTRAL, "You muted {user} globally for {input#amount}!", user.getName(), timeString);
     }

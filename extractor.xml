@@ -7,11 +7,11 @@
 
     <methods>
       <method>
-        <name>translate</name>
+        <name>getTranslation</name>
         <singular>2</singular>
       </method>
       <method>
-        <name>translateN</name>
+        <name>getTranslationN</name>
         <singular>3</singular>
         <plural>4</plural>
       </method>

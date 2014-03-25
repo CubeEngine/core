@@ -113,10 +113,10 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = context.getSender().translate(MessageType.NONE, "{input#entity} riding {input}", Match
+                message = context.getSender().getTranslation(MessageType.NONE, "{input#entity} riding {input}", Match
                     .entity().getNameFor(entitySpawned.getType()), message);
             }
-            message = context.getSender().translate(MessageType.POSITIVE, "Spawned {amount} {input#message}!", amount, message);
+            message = context.getSender().getTranslation(MessageType.POSITIVE, "Spawned {amount} {input#message}!", amount, message);
             context.sendMessage(message);
         }
     }

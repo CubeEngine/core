@@ -128,7 +128,7 @@ public class CubeEconomyService implements Economy
         User user = module.getCore().getUserManager().getUser(player);
         if (user != null)
         {
-            message = user.translate(MessageType.NONE, message); // TODO
+            message = user.getTranslation(MessageType.NONE, message); // TODO
         }
         return new EconomyResponse(amount, getBalance(player), result ? SUCCESS : FAILURE, message);
     }

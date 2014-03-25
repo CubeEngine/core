@@ -395,7 +395,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUsers.values())
         {
-            user.kickPlayer(user.translate(MessageType.NONE, message, params));
+            user.kickPlayer(user.getTranslation(MessageType.NONE, message, params));
         }
     }
 

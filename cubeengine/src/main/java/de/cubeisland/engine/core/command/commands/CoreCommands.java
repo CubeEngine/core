@@ -196,7 +196,7 @@ public class CoreCommands extends ContainerCommand
                     {
                         if (fails.get(user.getName()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                         {
-                            String msg = user.translate(MessageType.NEGATIVE, "Too many wrong passwords! \nFor your security you were banned 10 seconds.");
+                            String msg = user.getTranslation(MessageType.NEGATIVE, "Too many wrong passwords! \nFor your security you were banned 10 seconds.");
                             this.banManager.addBan(new UserBan(user.getName(),user.getName(),msg,
                                  new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                             if (!Bukkit.getServer().getOnlineMode())
