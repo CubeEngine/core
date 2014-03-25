@@ -15,32 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.backpack;
+package de.cubeisland.engine.bigdata;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
-import org.bukkit.inventory.ItemStack;
-
-import de.cubeisland.engine.core.config.codec.NBTCodec;
-import de.cubeisland.engine.reflect.FileReflected;
-
-public class BackpackData extends FileReflected<NBTCodec>
+public class MongoDBConfiguration extends ReflectedYaml
 {
-    public boolean allowItemsIn = true;
-    public int pages = 1;
-    public int size = 6;
-    public Map<Integer, ItemStack> contents = new HashMap<>();
 
-    @Override
-    public void onSave()
+    public String host = "localhost";
+    public int port = 27017;
+
+    public MongoDBConfiguration(String host)
     {
-        for (Integer next : contents.keySet())
-        {
-            if (contents.get(next) == null)
-            {
-                contents.remove(next);
-            }
-        }
+        this.host = host;
     }
 }

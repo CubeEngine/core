@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.cubeisland.engine.reflect.Reflected;
-import de.cubeisland.engine.reflect.codec.Codec;
+import de.cubeisland.engine.reflect.codec.FileCodec;
 import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.reflect.node.BooleanNode;
 import de.cubeisland.engine.reflect.node.ByteNode;
@@ -57,7 +57,7 @@ import org.spout.nbt.stream.NBTInputStream;
 import org.spout.nbt.stream.NBTOutputStream;
 import org.spout.nbt.util.NBTMapper;
 
-public class NBTCodec extends Codec
+public class NBTCodec extends FileCodec
 {
     @Override
     public String getExtension()

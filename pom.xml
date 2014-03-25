@@ -60,6 +60,7 @@
     <module>powertools</module>
     <module>kits</module>
     <module>spawner</module>
+    <module>bigdata</module>
   </modules>
 
   <build>

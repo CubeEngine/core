@@ -34,7 +34,7 @@
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>reflect</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
