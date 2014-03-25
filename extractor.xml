@@ -8,19 +8,12 @@
     <methods>
       <method>
         <name>translate</name>
+        <singular>2</singular>
       </method>
       <method>
         <name>translateN</name>
-        <singular>1</singular>
-        <plural>2</plural>
-      </method>
-      <method>
-        <name>getTranslation</name>
-      </method>
-      <method>
-        <name>getTranslationN</name>
-        <singular>1</singular>
-        <plural>2</plural>
+        <singular>3</singular>
+        <plural>4</plural>
       </method>
       <method>
         <name>sendTranslated</name>
@@ -28,11 +21,8 @@
       </method>
       <method>
         <name>sendTranslatedN</name>
-        <singular>1</singular>
-        <plural>2</plural>
-      </method>
-      <method>
-        <name>_</name>
+        <singular>3</singular>
+        <plural>4</plural>
       </method>
     </methods>
 
