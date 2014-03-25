@@ -15,32 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.backpack;
+package de.cubeisland.engine.bigdata;
 
-import java.util.HashMap;
-import java.util.Map;
+import de.cubeisland.engine.reflect.Reflected;
 
-import org.bukkit.inventory.ItemStack;
-
-import de.cubeisland.engine.core.config.codec.NBTCodec;
-import de.cubeisland.engine.reflect.ReflectedFile;
-
-public class BackpackData extends ReflectedFile<NBTCodec>
+public class ReflectedMongoDB extends Reflected<MongoDBCodec, RDBObject>
 {
-    public boolean allowItemsIn = true;
-    public int pages = 1;
-    public int size = 6;
-    public Map<Integer, ItemStack> contents = new HashMap<>();
+    @Override
+    public void save(RDBObject rdbo)
+    {
+        this.getCodec().saveReflected(this, rdbo);
+    }
 
     @Override
-    public void onSave()
+    public boolean loadFrom(RDBObject rdbo)
     {
-        for (Integer next : contents.keySet())
-        {
-            if (contents.get(next) == null)
-            {
-                contents.remove(next);
-            }
-        }
+        this.getCodec().loadReflected(this, rdbo);
+        return true;
     }
 }

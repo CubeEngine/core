@@ -15,32 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.backpack;
+package de.cubeisland.engine.bigdata;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.net.UnknownHostException;
 
-import org.bukkit.inventory.ItemStack;
+import com.mongodb.MongoClient;
+import de.cubeisland.engine.core.module.Module;
 
-import de.cubeisland.engine.core.config.codec.NBTCodec;
-import de.cubeisland.engine.reflect.ReflectedFile;
-
-public class BackpackData extends ReflectedFile<NBTCodec>
+public class Bigdata extends Module
 {
-    public boolean allowItemsIn = true;
-    public int pages = 1;
-    public int size = 6;
-    public Map<Integer, ItemStack> contents = new HashMap<>();
+    private MongoClient pool;
+    private MongoDBConfiguration config;
 
     @Override
-    public void onSave()
+    public void onLoad()
     {
-        for (Integer next : contents.keySet())
+        this.config = this.loadConfig(MongoDBConfiguration.class);
+        try
         {
-            if (contents.get(next) == null)
-            {
-                contents.remove(next);
-            }
+            this.pool = new MongoClient(this.config.host, this.config.port);
         }
+        catch (UnknownHostException e)
+        {
+            throw new IllegalArgumentException("Invalid host" + e);
+        }
+    }
+
+    @Override
+    public void onEnable()
+    {
+
     }
 }

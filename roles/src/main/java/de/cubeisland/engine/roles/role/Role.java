@@ -110,7 +110,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
         {
             dataHolder.assignRole(this);
         }
-        this.config.setFile(new File(this.config.getFile().getParent(), this.config.roleName + ".yml"));
+        this.config.setTarget(new File(this.config.getTarget().getParent(), this.config.roleName + ".yml"));
         this.save();
         return true;
     }
@@ -145,11 +145,11 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
         this.provider.removeRole(this);
         try
         {
-            Files.delete(this.config.getFile().toPath());
+            Files.delete(this.config.getTarget().toPath());
         }
         catch (IOException e)
         {
-            this.module.getLog().error(e, "Could not delete role {}!", this.config.getFile().getName());
+            this.module.getLog().error(e, "Could not delete role {}!", this.config.getTarget().getName());
         }
     }
 
