@@ -18,18 +18,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:test:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-21 09:58:50+0100\n"
+"POT-Creation-Date: 2014-03-25 20:26:13+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: de/cubeisland/engine/test/tests/l18n/l18nTest.java:35
-msgid "de_DE"
-msgstr ""
-
-#: de/cubeisland/engine/test/tests/l18n/l18nTest.java:36
-msgid "fr_FR"
-msgstr ""
 
 #: de/cubeisland/engine/test/tests/listener/TestListener.java:51
 msgid "english TEST"

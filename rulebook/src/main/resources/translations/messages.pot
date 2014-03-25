@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:rulebook:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-21 09:58:45+0100\n"
+"POT-Creation-Date: 2014-03-25 20:26:12+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -152,4 +152,8 @@ msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:180
 msgid "supported languages:"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookManager.java:97
+msgid "rulebook"
 msgstr ""

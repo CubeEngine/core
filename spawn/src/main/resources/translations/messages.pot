@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:spawn:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-25 15:18:03+0100\n"
+"POT-Creation-Date: 2014-03-25 20:26:13+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -124,3 +124,15 @@ msgstr ""
 #: de/cubeisland/engine/spawn/SpawnCommands.java:141
 msgid "[player]|* [world <world>] [role <role>]"
 msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:273
+msgid "Teleported {1:user} to the spawn of {world}"
+msgid_plural "Teleported {2:integer#amount} users to the spawn of {world}"
+msgstr[0] ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:280
+msgid "Teleported {2:user} to the spawn of the role {name#role} in {world}"
+msgid_plural ""
+"Teleported {3:integer#amount} users to the spawn of the role {name#role} in "
+"{world}"
+msgstr[0] ""
