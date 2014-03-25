@@ -14,6 +14,8 @@
 
   <properties>
     <projectBase>${project.basedir}</projectBase>
+    <minecraftVersion>1.7.2</minecraftVersion>
+    <bukkitVersion>${minecraftVersion}-R0.4-SNAPSHOT</bukkitVersion>
   </properties>
 
   <repositories>
@@ -31,6 +33,31 @@
   </repositories>
 
   <dependencies>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>${bukkitVersion}</version>
+      <type>jar</type>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.yaml</groupId>
+          <artifactId>yaml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.googlecode.json-simple</groupId>
+          <artifactId>json-simple</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>reflect</artifactId>
@@ -91,10 +118,6 @@
       <version>16.0-rc1</version>
       <type>jar</type>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
