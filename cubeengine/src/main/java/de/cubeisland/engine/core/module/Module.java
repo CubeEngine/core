@@ -34,7 +34,7 @@ import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogTarget;
 import de.cubeisland.engine.logging.filter.PrefixFilter;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
-import de.cubeisland.engine.reflect.FileReflected;
+import de.cubeisland.engine.reflect.ReflectedFile;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -343,7 +343,7 @@ public abstract class Module
      * @param clazz the configurations class
      * @return the loaded configuration
      */
-    protected final <T extends FileReflected<?>> T loadConfig(Class<T> clazz)
+    protected final <T extends ReflectedFile<?>> T loadConfig(Class<T> clazz)
     {
         T config = this.core.getConfigFactory().create(clazz);
         config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
