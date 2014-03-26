@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:cubeengine:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-25 20:26:09+0100\n"
+"POT-Creation-Date: 2014-03-26 03:00:08+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -743,22 +743,6 @@ msgstr ""
 msgid "All passwords reset!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/PreCommandListener.java:87
-msgid "&cI couldn't find any command for &e/%s &c..."
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/command/PreCommandListener.java:82
-msgid "&eDid you mean one of these: &a%s &e?"
-msgstr ""
-
-#: de/cubeisland/engine/core/command/sender/ConsoleCommandSender.java:49
-msgid "Console"
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/command/PreCommandListener.java:77
-msgid "Couldn't find &e/%s&c. Did you mean &a/%s&c?"
-msgstr ""
-
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:201
 msgid "Last seen: {input#date}"
 msgstr ""
@@ -767,12 +751,4 @@ msgstr ""
 msgid ""
 "Too many wrong passwords! \n"
 "For your security you were banned 10 seconds."
-msgstr ""
-
-#: de/cubeisland/engine/core/command/readers/BooleanReader.java:71
-msgid "no"
-msgstr ""
-
-#: de/cubeisland/engine/core/command/readers/BooleanReader.java:66
-msgid "yes"
 msgstr ""
