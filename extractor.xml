@@ -51,6 +51,8 @@
         <entry key="MIME-Version">1.0</entry>
         <entry key="Content-Type">text/plain; charset=CHARSET</entry>
         <entry key="Content-Transfer-Encoding">8bit</entry>
+        <entry key="Language">en_US</entry>
+        <entry key="Plural-Forms">nplurals=2; plural=(n != 1);</entry>
       </metadata>
     </header>
   </catalog>
