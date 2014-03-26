@@ -21,21 +21,21 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.minecraft.server.v1_7_R1.NBTBase;
-import net.minecraft.server.v1_7_R1.NBTTagByte;
-import net.minecraft.server.v1_7_R1.NBTTagByteArray;
-import net.minecraft.server.v1_7_R1.NBTTagCompound;
-import net.minecraft.server.v1_7_R1.NBTTagDouble;
-import net.minecraft.server.v1_7_R1.NBTTagEnd;
-import net.minecraft.server.v1_7_R1.NBTTagFloat;
-import net.minecraft.server.v1_7_R1.NBTTagInt;
-import net.minecraft.server.v1_7_R1.NBTTagIntArray;
-import net.minecraft.server.v1_7_R1.NBTTagList;
-import net.minecraft.server.v1_7_R1.NBTTagLong;
-import net.minecraft.server.v1_7_R1.NBTTagShort;
-import net.minecraft.server.v1_7_R1.NBTTagString;
-import net.minecraft.server.v1_7_R1.TileEntity;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import net.minecraft.server.v1_7_R2.NBTBase;
+import net.minecraft.server.v1_7_R2.NBTTagByte;
+import net.minecraft.server.v1_7_R2.NBTTagByteArray;
+import net.minecraft.server.v1_7_R2.NBTTagCompound;
+import net.minecraft.server.v1_7_R2.NBTTagDouble;
+import net.minecraft.server.v1_7_R2.NBTTagEnd;
+import net.minecraft.server.v1_7_R2.NBTTagFloat;
+import net.minecraft.server.v1_7_R2.NBTTagInt;
+import net.minecraft.server.v1_7_R2.NBTTagIntArray;
+import net.minecraft.server.v1_7_R2.NBTTagList;
+import net.minecraft.server.v1_7_R2.NBTTagLong;
+import net.minecraft.server.v1_7_R2.NBTTagShort;
+import net.minecraft.server.v1_7_R2.NBTTagString;
+import net.minecraft.server.v1_7_R2.TileEntity;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 
 import org.bukkit.Location;
 

@@ -279,7 +279,7 @@ public class VanillaCommands implements CommandHolder
         {
             user.sendTranslated(MessageType.POSITIVE, "You were deopped by {user}.", context.getSender());
         }
-        context.sendTranslated(MessageType.POSITIVE, "{user} is no operator anymore!", offlinePlayer);
+        context.sendTranslated(MessageType.POSITIVE, "{user} is no longer an operator!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {

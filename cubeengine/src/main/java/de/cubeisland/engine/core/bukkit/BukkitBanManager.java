@@ -23,12 +23,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.server.v1_7_R1.BanEntry;
-import net.minecraft.server.v1_7_R1.BanList;
-import net.minecraft.server.v1_7_R1.DedicatedPlayerList;
-import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
+import net.minecraft.server.v1_7_R2.BanEntry;
+import net.minecraft.server.v1_7_R2.BanList;
+import net.minecraft.server.v1_7_R2.DedicatedPlayerList;
+import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;

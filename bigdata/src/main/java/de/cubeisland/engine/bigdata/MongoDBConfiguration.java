@@ -23,9 +23,4 @@ public class MongoDBConfiguration extends ReflectedYaml
 {
     public String host = "localhost";
     public int port = 27017;
-
-    public MongoDBConfiguration(String host)
-    {
-        this.host = host;
-    }
 }
