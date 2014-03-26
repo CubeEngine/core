@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
@@ -23,17 +23,20 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * Represents an Enderman picking up a block
+ * Represents an Entity forming a block
+ * <p>This will usually be a SnowGolem making snow
  */
-public class EndermanPickup extends EntityBlockActionType<EntityBlockListener>
+public class EntityForm extends EntityBlockActionType<EntityBlockListener>
 {
-    //return "enderman-pickup";
-    //return this.lm.getConfig(world).block.enderman.ENDERMAN_PICKUP_enable;
+    // return "entity-form";
+    // return this.lm.getConfig(world).block.form.ENTITY_FORM_enable;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EndermanPickup && ((EndermanPickup)action).oldBlock == this.oldBlock;
+        return action instanceof EntityBreakBlock
+            && ((EntityBreakBlock)action).entityType == this.entityType
+            && ((EntityBreakBlock)action).newBlock == this.newBlock;
     }
 
     @Override
@@ -41,12 +44,11 @@ public class EndermanPickup extends EntityBlockActionType<EntityBlockListener>
     {
         if (this.hasAttached())
         {
-            int endermanCount = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, endermanCount,
-                        "{text:One Enderman} picked up {name#block} x{amount}!",
-                        "{2:amount} {text:Enderman} picked up {name#block} x{amount}!",
-                        this.oldBlock.name(), this.getAttached().size() + 1, endermanCount);
+            int count = this.countUniqueEntities();
+            return user.getTranslationN(POSITIVE, count, "{text:One} {name#entity} formed {name#block} x{amount}!", "{3:amount} {name#entity} formed {name#block} x{amount}!", this.entityType
+                .name(), this.oldBlock.name(), this.getAttached().size() + 1, count);
         }
-        return user.getTranslation(POSITIVE, "An {text:Enderman} picked up {name#block}", this.oldBlock.name());
+        return user.getTranslation(POSITIVE, "A {name#entity} formed {name#block}",
+                                   this.entityType.name(), this.oldBlock.name());
     }
 }

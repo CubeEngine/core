@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
@@ -23,17 +23,17 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * Represents an Enderman placing a block
+ * Represents a Sheep eating grass
  */
-public class EndermanPlace extends EntityBlockActionType<EntityBlockListener>
+public class SheepEat extends EntityBlockActionType<EntityBlockListener>
 {
-    // return "enderman-place";
-    // return this.lm.getConfig(world).block.enderman.ENDERMAN_PLACE_enable;
+    // return "sheep-eat";
+    // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EndermanPlace && ((EndermanPlace)action).newBlock == this.newBlock;
+        return action instanceof SheepEat;
     }
 
     @Override
@@ -41,12 +41,10 @@ public class EndermanPlace extends EntityBlockActionType<EntityBlockListener>
     {
         if (this.hasAttached())
         {
-            int endermanCount = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, endermanCount,
-                        "{text:One Enderman} placed {name#block} x{amount}!",
-                        "{2:amount} {text:Enderman} placed {name#block} x{amount}!",
-                        this.oldBlock.name(), this.getAttached().size() + 1, endermanCount);
+            int count = this.countUniqueEntities();
+            return user.getTranslationN(POSITIVE, count, "{text:One sheep} ate {text:grass} x{amount}!", "{1:amount} {text:sheep} ate {text:grass} x{amount}!", this
+                .getAttached().size() + 1, count);
         }
-        return user.getTranslation(POSITIVE, "An {text:Enderman} placed {name#block}", this.oldBlock.name());
+        return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
     }
 }

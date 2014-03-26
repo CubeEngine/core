@@ -15,42 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction;
+package de.cubeisland.engine.log.action.newaction.block.player;
 
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
 
-public abstract class BlockActionType<ListenerType> extends ActionTypeBase<ListenerType>
+import java.util.UUID;
+
+import org.bukkit.entity.Player;
+
+import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+
+public abstract class PlayerBlockActionType<ListenerType> extends BlockActionType<ListenerType>
 {
-    public Material oldBlock;
-    public int oldData;
-    public Material newBlock;
-    public int newData;
+    public UUID playerUUID;
+    public String playerName;
 
-    public void setOldBlock(BlockState state)
+    public void setPlayer(Player player)
     {
-
-
-
-        this.setNewBlock(state.getType());
-        // TODO data
-        // TODO additional data
-    }
-
-    public void setNewBlock(BlockState state)
-    {
-        this.setOldBlock(state.getType());
-        // TODO data
-        // TODO additional data
-    }
-
-    public void setOldBlock(Material mat)
-    {
-        this.oldBlock = mat;
-    }
-
-    public void setNewBlock(Material mat)
-    {
-        this.newBlock = mat;
+        this.playerName = player.getName();
+        this.playerUUID = player.getUniqueId();
     }
 }

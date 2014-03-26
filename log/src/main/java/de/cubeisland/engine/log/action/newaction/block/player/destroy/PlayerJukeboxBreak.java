@@ -15,38 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.block.player.destroy;
+
+import org.bukkit.Material;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
-/**
- * Represents a Sheep eating grass
- */
-public class SheepEat extends EntityBlockActionType<EntityBlockListener>
+public class PlayerJukeboxBreak extends PlayerBlockBreak
 {
-    // return "sheep-eat";
-    // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
 
-    @Override
-    public boolean canAttach(ActionTypeBase action)
-    {
-        return action instanceof SheepEat;
-    }
+    private Material disc; // TODO item format
 
     @Override
     public String translateAction(User user)
     {
-        if (this.hasAttached())
+        if (disc == null || this.hasAttached())
         {
-            int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count,
-                        "{text:One sheep} ate {text:grass} x{amount}!",
-                        "{1:amount} {text:sheep} ate {text:grass} x{amount}!",
-                        this.getAttached().size() + 1, count);
+            return super.translateAction(user);
         }
-        return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
+        return user.getTranslation(POSITIVE, "{user} broke {name#block} with {name#item}",
+                                   this.playerName, this.oldBlock.name(), this.disc.name());
+    }
+
+    public void setDisc(Material disc)
+    {
+        this.disc = disc;
     }
 }

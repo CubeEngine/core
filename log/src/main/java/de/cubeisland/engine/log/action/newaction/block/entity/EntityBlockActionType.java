@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +25,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.BlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 
 public abstract class EntityBlockActionType<ListenerType> extends BlockActionType<ListenerType>
 {

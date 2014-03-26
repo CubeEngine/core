@@ -22,21 +22,35 @@ import org.bukkit.event.Listener;
 
 public class LogListener implements Listener
 {
-    public <T extends ActionTypeBase<?>> T newAction(Class<T> clazz, World world)
+    protected final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz, World world)
     {
-        // TODO check if actionType is active for given world
+        if (!this.isActive(clazz, world))
+        {
+            return null;
+        }
+        return this.newAction(clazz);
+    }
+
+    protected final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz)
+    {
         try
         {
             return clazz.newInstance();
         }
         catch (InstantiationException | IllegalAccessException e)
         {
-             throw new IllegalArgumentException("Given LogAction cannot be instantiated!");
+            throw new IllegalArgumentException("Given LogAction cannot be instantiated!");
         }
     }
 
-    public void logAction(ActionTypeBase action)
+    protected final void logAction(ActionTypeBase action)
     {
         // TODO
+    }
+
+    protected final boolean isActive(Class<?> clazz, World world)
+    {
+        // TODO
+        return true;
     }
 }

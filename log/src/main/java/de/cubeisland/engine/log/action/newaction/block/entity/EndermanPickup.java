@@ -15,27 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
-
 /**
- * Represents an Entity breaking a block
- * <p>This will usually be a Zombie destroying doors
+ * Represents an Enderman picking up a block
  */
-public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
+public class EndermanPickup extends EntityBlockActionType<EntityBlockListener>
 {
-    // return "entity-break";
-    // return this.lm.getConfig(world).block.ENTITY_BREAK_enable;
+    //return "enderman-pickup";
+    //return this.lm.getConfig(world).block.enderman.ENDERMAN_PICKUP_enable;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EntityBreakBlock && ((EntityBreakBlock)action).entityType == this.entityType;
+        return action instanceof EndermanPickup && ((EndermanPickup)action).oldBlock == this.oldBlock;
     }
 
     @Override
@@ -43,13 +41,10 @@ public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
     {
         if (this.hasAttached())
         {
-            int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count,
-                        "{text:One} {name#entity} destroyed {name#block} x{amount}!",
-                        "{3:amount} {name#entity} destroyed {name#block} x{amount}!",
-                        this.entityType.name(), this.oldBlock.name(), this.getAttached().size() + 1, count);
+            int endermanCount = this.countUniqueEntities();
+            return user.getTranslationN(POSITIVE, endermanCount, "{text:One Enderman} picked up {name#block} x{amount}!", "{2:amount} {text:Enderman} picked up {name#block} x{amount}!", this.oldBlock
+                .name(), this.getAttached().size() + 1, endermanCount);
         }
-        return user.getTranslation(POSITIVE, "A {name#entity} destroyed {name#block}",
-                                   this.entityType.name(), this.oldBlock.name());
+        return user.getTranslation(POSITIVE, "An {text:Enderman} picked up {name#block}", this.oldBlock.name());
     }
 }

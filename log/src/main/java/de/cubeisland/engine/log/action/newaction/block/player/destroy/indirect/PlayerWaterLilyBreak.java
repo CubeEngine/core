@@ -15,22 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player;
+package de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect;
 
-import java.util.UUID;
+import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 
-import org.bukkit.entity.Player;
-
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-
-public abstract class PlayerActionType<ListenerType> extends ActionTypeBase<ListenerType>
+public class PlayerWaterLilyBreak extends PlayerBlockBreak
 {
-    public UUID playerUUID;
-    public String playerName;
-
-    public void setPlayer(Player player)
-    {
-        this.playerName = player.getName();
-        this.playerUUID = player.getUniqueId();
-    }
 }

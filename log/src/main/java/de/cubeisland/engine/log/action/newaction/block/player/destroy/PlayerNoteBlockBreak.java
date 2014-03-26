@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player;
+package de.cubeisland.engine.log.action.newaction.block.player.destroy;
 
-import java.util.UUID;
+import org.bukkit.Note;
 
-import org.bukkit.entity.Player;
-
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-
-public abstract class PlayerActionType<ListenerType> extends ActionTypeBase<ListenerType>
+/**
+ * Represents a player breaking a noteblock
+ */
+public class PlayerNoteBlockBreak extends PlayerBlockBreak
 {
-    public UUID playerUUID;
-    public String playerName;
+    private Note note;
 
-    public void setPlayer(Player player)
+    public void setNote(Note note)
     {
-        this.playerName = player.getName();
-        this.playerUUID = player.getUniqueId();
+        this.note = note;
     }
+
+    // TODO custom rollback/redo
 }
