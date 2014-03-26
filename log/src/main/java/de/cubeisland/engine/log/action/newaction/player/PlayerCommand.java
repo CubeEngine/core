@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
@@ -23,17 +23,21 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * Represents a Sheep eating grass
+ * Represents a player executing a command
  */
-public class SheepEat extends EntityBlockActionType<EntityBlockListener>
+public class PlayerCommand extends PlayerActionType<PlayerActionListener>
 {
-    // return "sheep-eat";
-    // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
+    // return "player-command";
+    // return this.lm.getConfig(world).PLAYER_COMMAND_enable;
+
+    private String command;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof SheepEat;
+        return action instanceof PlayerCommand
+            && ((PlayerCommand)action).playerUUID.equals(this.playerUUID)
+            && ((PlayerCommand)action).command.equalsIgnoreCase(this.command);
     }
 
     @Override
@@ -41,12 +45,19 @@ public class SheepEat extends EntityBlockActionType<EntityBlockListener>
     {
         if (this.hasAttached())
         {
-            int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count,
-                        "{text:One sheep} ate {text:grass} x{amount}!",
-                        "{1:amount} {text:sheep} ate {text:grass} x{amount}!",
-                        this.getAttached().size() + 1, count);
+            return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\" x{amount}",
+                                       this.playerName, this.command, this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
+        return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\"",this.playerName, this.command);
+    }
+
+    public void setCommand(String command)
+    {
+        this.command = command;
+    }
+
+    public String getCommand()
+    {
+        return command;
     }
 }

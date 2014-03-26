@@ -15,12 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction;
+package de.cubeisland.engine.log.action.newaction.player;
 
-import java.util.UUID;
+import org.bukkit.entity.Player;
 
-public abstract class UserBlockActionType<ListenerType>
+import de.cubeisland.engine.log.action.newaction.LogListener;
+
+public class PlayerLogListener extends LogListener
 {
-    public UUID playerUUID;
-    public String playerName; // TODO offlineplayer?
+
+    protected void setPlayerAndLocation(Player player, PlayerActionType action)
+    {
+        action.setLocation(player.getLocation());
+        action.setPlayer(player);
+    }
 }

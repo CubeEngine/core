@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.newaction.entityblock;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.EntityBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -48,9 +47,6 @@ public class EndermanPickup extends EntityBlockActionType<EntityBlockListener>
                         "{2:amount} {text:Enderman} picked up {name#block} x{amount}!",
                         this.oldBlock.name(), this.getAttached().size() + 1, endermanCount);
         }
-        else
-        {
-            return user.getTranslation(POSITIVE, "An {text:Enderman} picked up {name#block}", this.oldBlock.name());
-        }
+        return user.getTranslation(POSITIVE, "An {text:Enderman} picked up {name#block}", this.oldBlock.name());
     }
 }

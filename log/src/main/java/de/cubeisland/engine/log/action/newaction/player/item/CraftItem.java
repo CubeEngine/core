@@ -15,25 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.player.item;
+
+import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * Represents a Sheep eating grass
+ * Represents a player crafting an item
  */
-public class SheepEat extends EntityBlockActionType<EntityBlockListener>
+public class CraftItem extends PlayerActionType<PlayerItemActionListener>
 {
-    // return "sheep-eat";
-    // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
+    // return "craft-item";
+    // return this.lm.getConfig(world).CRAFT_ITEM_enable;
+
+    public ItemStack craftItem; // TODO item format
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof SheepEat;
+        return action instanceof CraftItem
+            && ((CraftItem)action).playerUUID.equals(this.playerUUID)
+            && ((CraftItem)action).craftItem.isSimilar(this.craftItem);
     }
 
     @Override
@@ -41,12 +48,15 @@ public class SheepEat extends EntityBlockActionType<EntityBlockListener>
     {
         if (this.hasAttached())
         {
-            int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count,
-                        "{text:One sheep} ate {text:grass} x{amount}!",
-                        "{1:amount} {text:sheep} ate {text:grass} x{amount}!",
-                        this.getAttached().size() + 1, count);
+            return user.getTranslation(POSITIVE, "{user} crafted {name#item} x{amount}",
+                        this.playerName, this.craftItem.getType().name(), this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
+        return user.getTranslation(POSITIVE, "{user} crafted {name#item}",
+                    this.playerName, this.craftItem.getType().name());
+    }
+
+    public void setItem(ItemStack result)
+    {
+        this.craftItem = result;
     }
 }

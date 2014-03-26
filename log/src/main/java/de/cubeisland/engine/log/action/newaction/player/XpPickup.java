@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
@@ -23,30 +23,38 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * Represents a Sheep eating grass
+ * Represents a player picking up an xp-orb
  */
-public class SheepEat extends EntityBlockActionType<EntityBlockListener>
+public class XpPickup extends PlayerActionType<PlayerActionListener>
 {
-    // return "sheep-eat";
-    // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
+    // return "xp-pickup";
+    // return this.lm.getConfig(world).XP_PICKUP_enable;
+
+    private int exp;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof SheepEat;
+        return action instanceof XpPickup
+            && ((XpPickup)action).playerUUID.equals(this.playerUUID);
     }
 
     @Override
     public String translateAction(User user)
     {
+        int amount = this.exp;
         if (this.hasAttached())
         {
-            int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count,
-                        "{text:One sheep} ate {text:grass} x{amount}!",
-                        "{1:amount} {text:sheep} ate {text:grass} x{amount}!",
-                        this.getAttached().size() + 1, count);
+            for (ActionTypeBase action : this.getAttached())
+            {
+                amount += ((XpPickup)action).exp;
+            }
         }
-        return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
+        return user.getTranslation(POSITIVE, "{user} earned {amount} experience", this.playerName, amount);
+    }
+
+    public void setExp(int exp)
+    {
+        this.exp = exp;
     }
 }

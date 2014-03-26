@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entityblock;
+package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
@@ -23,17 +23,20 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * Represents a Sheep eating grass
+ * Represents a Player leaving the server
  */
-public class SheepEat extends EntityBlockActionType<EntityBlockListener>
+public class PlayerQuit extends PlayerActionType<PlayerActionListener>
 {
-    // return "sheep-eat";
-    // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
+    // return "player-quit";
+    // return this.lm.getConfig(world).PLAYER_QUIT_enable;
+
+    public String reason;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof SheepEat;
+        return action instanceof PlayerQuit
+            && ((PlayerQuit)action).playerUUID.equals(this.playerUUID);
     }
 
     @Override
@@ -41,12 +44,15 @@ public class SheepEat extends EntityBlockActionType<EntityBlockListener>
     {
         if (this.hasAttached())
         {
-            int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count,
-                        "{text:One sheep} ate {text:grass} x{amount}!",
-                        "{1:amount} {text:sheep} ate {text:grass} x{amount}!",
-                        this.getAttached().size() + 1, count);
+            return user.getTranslation(POSITIVE, "{user} left the server x{amount}",
+                                       this.playerName, this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
+        return user.getTranslation(POSITIVE, "{user} left the server", this.playerName);
+        // TODO reason
+    }
+
+    public void setReason(String reason)
+    {
+        this.reason = reason;
     }
 }
