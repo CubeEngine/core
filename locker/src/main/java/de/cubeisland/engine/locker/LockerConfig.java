@@ -25,15 +25,16 @@ import javax.persistence.Transient;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.core.CubeEngine;
 
 import static de.cubeisland.engine.locker.storage.LockType.PRIVATE;
 import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
 
-public class LockerConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class LockerConfig extends ReflectedYaml
 {
     @Name("settings.open-iron-door-with-click")
     public boolean openIronDoorWithClick = false;

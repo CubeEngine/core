@@ -113,10 +113,7 @@ public class VanillaCommands implements CommandHolder
             Locale locale = context.getSender().getLocale();
             long time = System.currentTimeMillis();
             this.core.getServer().reload();
-            context.sendMessage(this.core.getMessageCompositor()
-                                         .composeMessage(locale, ChatFormat.BRIGHT_GREEN + this.core.getI18n()
-                                                                                                    .translate(locale, "The reload is completed after {amount} seconds"), MILLISECONDS
-                                                             .toSeconds(System.currentTimeMillis() - time)));
+            context.sendMessage(this.core.getI18n().translate(locale, MessageType.POSITIVE, "The reload is completed after {amount} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
         }
     }
 
@@ -201,8 +198,7 @@ public class VanillaCommands implements CommandHolder
                 final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, sender.getLocale());
                 for (OfflinePlayer player : ops)
                 {
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.composeMessage(
-                        MessageType.NONE, "Last seen: {input#date}", dateFormat
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.getTranslation(MessageType.NONE, "Last seen: {input#date}", dateFormat
                         .format(new Date(player.getLastPlayed()))) + ")");
                 }
             }
@@ -283,7 +279,7 @@ public class VanillaCommands implements CommandHolder
         {
             user.sendTranslated(MessageType.POSITIVE, "You were deopped by {user}.", context.getSender());
         }
-        context.sendTranslated(MessageType.POSITIVE, "{user} is no operator anymore!", offlinePlayer);
+        context.sendTranslated(MessageType.POSITIVE, "{user} is no longer an operator!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {

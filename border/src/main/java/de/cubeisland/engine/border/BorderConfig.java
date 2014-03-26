@@ -20,12 +20,13 @@ package de.cubeisland.engine.border;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 
-public class BorderConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class BorderConfig extends ReflectedYaml
 {
     @Name("chunk-radius")
     public int radius = 30;

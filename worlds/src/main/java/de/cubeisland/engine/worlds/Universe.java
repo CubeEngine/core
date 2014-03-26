@@ -40,7 +40,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.configuration.codec.YamlCodec;
+import de.cubeisland.engine.reflect.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -340,7 +340,7 @@ public class Universe
         YamlCodec codec = this.module.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
         try
         {
-            codec.saveConfig(config, new FileOutputStream(dirPlayers.resolve(player.getName() + YAML.getExtention()).toFile()));
+            codec.saveReflected(config, new FileOutputStream(dirPlayers.resolve(player.getName() + YAML.getExtention()).toFile()));
         }
         catch (FileNotFoundException e)
         {

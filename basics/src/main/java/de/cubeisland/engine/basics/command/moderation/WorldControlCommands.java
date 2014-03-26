@@ -120,7 +120,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                throw new IncorrectUsageException(context.getSender().composeMessage(MessageType.NEGATIVE, "If not used ingame you have to specify a world!"));
+                throw new IncorrectUsageException(context.getSender().getTranslation(MessageType.NEGATIVE, "If not used ingame you have to specify a world!"));
             }
             world = sender.getWorld();
         }
@@ -290,7 +290,7 @@ public class WorldControlCommands
         @Flag(longName = "lightning", name = "l"), // die with style
         @Flag(longName = "all", name = "a")// infinite radius
     }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class),
-             usage = "[types...] [radius] [in world] [-l] [-all]", max = 2)
+             usage = "[types...] [radius] [in <world>] [-l] [-all]", max = 2)
     public void butcher(ParameterizedContext context)
     {
         User sender = null;

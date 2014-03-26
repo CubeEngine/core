@@ -25,14 +25,15 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 
-public class BasicsConfiguration extends YamlConfiguration
+@SuppressWarnings("all")
+public class BasicsConfiguration extends ReflectedYaml
 {
     public CommandsSection commands;
 

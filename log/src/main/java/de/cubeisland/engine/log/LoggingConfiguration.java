@@ -26,13 +26,14 @@ import java.util.Set;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 
-public class LoggingConfiguration extends YamlConfiguration
+@SuppressWarnings("all")
+public class LoggingConfiguration extends ReflectedYaml
 {
     @Comment("Completely enables or disabled logging")
     @Name("logging.enable")

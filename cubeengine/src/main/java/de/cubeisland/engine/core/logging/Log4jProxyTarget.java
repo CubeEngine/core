@@ -71,7 +71,7 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
     }
 
     @Override
-    protected void shutdown0()
+    protected void onShutdown()
     {
         // this is not our logger! Let bukkit handle it
     }

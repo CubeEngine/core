@@ -20,14 +20,14 @@ package de.cubeisland.engine.roles.config;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.NullNode;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
+import de.cubeisland.engine.reflect.node.StringNode;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.roles.Roles;
@@ -80,8 +80,8 @@ public class MirrorConfigConverter implements Converter<MirrorConfig>
         }
 
         MirrorConfig mirror = new MirrorConfig(module, new ConfigWorld(module.getCore().getWorldManager(),
-                                       readMap.getMappedNodes().keySet().iterator().next()));
-        for (Map.Entry<String, Node> worlds : readMap.getMappedNodes().entrySet())
+                                       readMap.getValue().keySet().iterator().next()));
+        for (Map.Entry<String, Node> worlds : readMap.getValue().entrySet())
         {
             if (worlds.getKey().equals(mirror.mainWorld.getName()))
             {
@@ -96,7 +96,7 @@ public class MirrorConfigConverter implements Converter<MirrorConfig>
             boolean roles = false;
             boolean users = false;
             boolean assigned = false;
-            for (Node inList : worldList.getListedNodes())
+            for (Node inList : worldList.getValue())
             {
                 if (inList.asText().equals("roles"))
                 {

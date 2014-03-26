@@ -17,13 +17,14 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Name;
 
 /**
  * Configuration class to parse the custom CubeEngine values of plugin.yml
  */
-public class PluginConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class PluginConfig extends ReflectedYaml
 {
     @Name("source-version")
     public String sourceVersion = "unknown";

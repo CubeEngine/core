@@ -26,19 +26,26 @@ import de.cubeisland.engine.roles.Roles;
 public class Spawn extends Module
 {
     private SpawnConfig config;
-    @Inject private Roles roles;
+    @Inject
+    private Roles roles;
     private SpawnPerms perms;
 
     @Override
     public void onEnable()
     {
         this.config = this.loadConfig(SpawnConfig.class);
-        this.getCore().getEventManager().registerListener(this,new SpawnListener(roles));
+        this.getCore().getEventManager().registerListener(this, new SpawnListener(roles));
         CommandManager cm = this.getCore().getCommandManager();
         cm.removeCommand("setSpawn", true); // unregister basics commands
         cm.removeCommand("spawn", true); // unregister basics commands
         cm.registerCommands(this, new SpawnCommands(roles, this), ReflectedCommand.class);
-        perms = new SpawnPerms(this);// PermContainer registers itself
+        perms = new SpawnPerms(this); // PermContainer registers itself
+    }
+
+    @Override
+    public void onDisable()
+    {
+        // TODO if not complete shutdown reregister basics commands OR do not unregister simply override (let CommandManager handle it)
     }
 
     public SpawnConfig getConfiguration()

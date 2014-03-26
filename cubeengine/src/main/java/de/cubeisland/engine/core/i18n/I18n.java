@@ -17,256 +17,124 @@
  */
 package de.cubeisland.engine.core.i18n;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.filesystem.FileManager;
-import de.cubeisland.engine.core.filesystem.gettext.MessageCatalogFactory;
-import de.cubeisland.engine.core.logging.LoggingUtil;
-import de.cubeisland.engine.core.util.Cleanable;
-import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
-import gnu.trove.map.hash.THashMap;
+import de.cubeisland.engine.i18n.I18nService;
+import de.cubeisland.engine.i18n.I18nUtil;
+import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
+import de.cubeisland.engine.i18n.language.Language;
+import de.cubeisland.engine.i18n.language.SourceLanguage;
+import de.cubeisland.engine.i18n.loader.GettextLoader;
+import de.cubeisland.engine.i18n.plural.PluralExpr;
+import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
-
-
-/**
- * This class provides functionality to translate messages.
- */
-public class I18n implements Cleanable
+public class I18n
 {
-    private final Core core;
-    private static final Object[] NO_PARAMS = {};
-    private final Log logger;
-    private final SourceLanguage sourceLanguage;
-    private final Map<Locale, Language> languages;
-    private final Map<String, Language> languageLookupMap;
-    private Locale defaultLocale;
-    private final MessageCatalogFactory messageCatalogFactory;
+    final Core core;
+    private final I18nService service;
+    private List<URL> poFiles = new LinkedList<>();
+    private Map<String, Language> languageLookupMap = new HashMap<>();
+    private ColoredMessageCompositor compositor;
 
     public I18n(Core core)
     {
+        core.getConfigFactory().getDefaultConverterManager().registerConverter(PluralExpr.class, new PluralExprConverter());
+
         this.core = core;
-        this.logger = core.getLogFactory().getLog(Core.class, "Language");
-        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Language"),
-                                                  LoggingUtil.getFileFormat(false, false),
-                                                  true, LoggingUtil.getCycler(),
-                                                  core.getTaskManager().getThreadFactory()));
-        this.languages = new THashMap<>();
-        this.languageLookupMap = new THashMap<>();
-        this.sourceLanguage = new SourceLanguage();
-        this.languages.put(this.sourceLanguage.getLocale(), this.sourceLanguage);
-        this.registerLanguage(this.sourceLanguage);
-        this.messageCatalogFactory = new MessageCatalogFactory();
+        this.addPoFilesFromDirectory(this.core.getFileManager().getTranslationPath());
+        this.poFiles.addAll(getFilesFromJar("translations/", ".po", this.getClass()));
 
-        FileManager fm = core.getFileManager();
-        this.loadLanguages(fm.getLanguagePath());
-
-        Locale def = core.getConfiguration().defaultLocale;
-        if (this.languages.containsKey(def))
-        {
-            Locale.setDefault(def);
-        }
-        else
-        {
-            Locale.setDefault(this.sourceLanguage.getLocale());
-            core.getConfiguration().defaultLocale = Locale.getDefault();
-        }
+        GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
+        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(core), core.getConfiguration().defaultLocale);
+        this.compositor = new ColoredMessageCompositor(core);
     }
 
-    public Set<Language> getLanguages()
+    private void addPoFilesFromDirectory(Path translations)
     {
-        return new THashSet<>(this.languages.values());
-    }
-
-    public SourceLanguage getSourceLanguage()
-    {
-        return this.sourceLanguage;
-    }
-
-    /**
-     * Returns the default language
-     *
-     * @return the locale string of the default language
-     */
-    public Language getDefaultLanguage()
-    {
-        Language language = this.languages.get(Locale.getDefault());
-        if (language == null)
+        if (Files.exists(translations))
         {
-            language = this.sourceLanguage;
-        }
-        return language;
-    }
-
-    /**
-     * This method load all languages from a directory
-     *
-     * @param languagePath the directory to load from
-     */
-    private synchronized void loadLanguages(Path languagePath)
-    {
-        Map<Locale, LocaleConfig> languages = new HashMap<>();
-        LocaleConfig config;
-
-        try (DirectoryStream<Path> directory = Files.newDirectoryStream(languagePath, YAML))
-        {
-            for (Path file : directory)
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(translations, FileExtensionFilter.PO))
             {
-                config = this.core.getConfigFactory().load(LocaleConfig.class, file.toFile(), false);
-                if (config.locale != null)
+                for (Path path : directoryStream)
                 {
-                    languages.put(config.locale, config);
-                }
-                else
-                {
-                    this.logger.error("The language ''{}'' has an invalid configuration!", file.getFileName());
+                    this.poFiles.add(path.toUri().toURL());
                 }
             }
-        }
-        catch (IOException ex)
-        {
-            this.core.getLog().warn(ex, "Failed to load the languages!");
-        }
-
-        Stack<Locale> loadStack = new Stack<>();
-        for (LocaleConfig entry : languages.values())
-        {
-            this.loadLanguage(languagePath, entry, languages, loadStack);
+            catch (IOException e)
+            {
+                this.core.getLog().error(e, "Error while getting translation override files!");
+            }
         }
     }
 
-    private Language loadLanguage(Path languagePath, LocaleConfig config, Map<Locale, LocaleConfig> languages, Stack<Locale> loadStack)
+    public void registerModule(Module module)
     {
-        if (this.languages.containsKey(config.locale))
-        {
-            return this.languages.get(config.locale);
-        }
-        if (loadStack.contains(config.locale))
-        {
-            this.logger.error("The language ''{}'' caused a circular dependency!", loadStack.peek());
-            return null;
-        }
-        Language language = null;
+        Path translations = module.getFolder().resolve("translations");
+        this.addPoFilesFromDirectory(translations);
+        this.poFiles.addAll(getFilesFromJar("translations/", ".po", module.getClass()));
+    }
 
-        if (config.parent != null && this.sourceLanguage.equals(config.parent))
-        {
-            language = this.sourceLanguage;
-        }
-        else
-        {
-            LocaleConfig parent = languages.get(config.parent);
-            if (parent != null)
-            {
-                loadStack.add(config.locale);
-                language = this.loadLanguage(languagePath, parent, languages, loadStack);
-                loadStack.pop();
-            }
-        }
+    public static List<URL> getFilesFromJar(String path, String fileEnding, Class clazz)
+    {
         try
         {
-            language = new NormalLanguage(this.core, config, languagePath, language);
-            this.registerLanguage(language);
-            if (config.clones != null)
+            URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
+            Set<String> files = new LinkedHashSet<>();
+            JarFile jarFile = new JarFile(new File(url.toURI()));
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements())
             {
-                Language clonedLanguage;
-                for (Locale cloneLocale : config.clones)
+                String name = entries.nextElement().getName();
+                if (name.startsWith(path) && name.endsWith(fileEnding))
                 {
-                    clonedLanguage = ClonedLanguage.clone(cloneLocale, language);
-                    if (clonedLanguage != null && !this.sourceLanguage.equals(clonedLanguage.getLocale()))
-                    {
-                        this.registerLanguage(clonedLanguage);
-                    }
+                    files.add(name);
                 }
             }
-
-            return language;
+            List<URL> urls = new ArrayList<>();
+            for (String file : files)
+            {
+                urls.add(clazz.getResource("/" + file));
+            }
+            return urls;
         }
-        catch (IllegalArgumentException e)
+        catch (IOException | URISyntaxException e)
         {
-            this.logger.error("Failed to load the language '{}': {}", config.locale, e.getLocalizedMessage());
+            throw new IllegalArgumentException(e);
         }
-        return null;
     }
 
-    private void registerLanguage(Language language)
+    public String translate(MessageType type, String message, Object... args)
     {
-        this.languageLookupMap.put(localeToString(language.getLocale()), language);
-        this.languageLookupMap.put(language.getName().toLowerCase(language.getLocale()), language);
-        this.languageLookupMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
+        return this.translate(this.core.getConfiguration().defaultLocale, type, message, args);
     }
 
-    /**
-     * Returns a language by their locale string / name
-     *
-     * @param locale the locale
-     * @return the language or null if not found
-     */
-    public Language getLanguage(Locale locale)
-    {
-        if (locale == null)
-        {
-            throw new NullPointerException("The locale must not be null!");
-        }
-        return this.languages.get(locale);
-    }
-
-    public Set<Language> searchLanguages(String name)
-    {
-        return this.searchLanguages(name, 2);
-    }
-
-    public Set<Language> searchLanguages(String name, int maximumDifference)
-    {
-        Set<String> matches = Match.string().getBestMatches(name, this.languageLookupMap.keySet(), maximumDifference);
-        Set<Language> languages = new THashSet<>(matches.size());
-
-        for (String match : matches)
-        {
-            languages.add(this.languageLookupMap.get(match));
-        }
-
-        return languages;
-    }
-
-    private void logMissingTranslation(Locale locale, String message)
-    {
-        this.logger.info("\"{}\" \"{}\"", localeToString(locale), message);
-    }
-
-    /**
-     * This method translates a messages
-     *
-     * @param message  the message to translate
-     * @param params   the parameters to insert into the language after translation
-     * @return the translated language
-     */
-    public String translate(String message, Object... params)
-    {
-        return this.translate(Locale.getDefault(), message);
-    }
-
-    /**
-     * This method translates a messages
-     *
-     *
-     * @param locale the language to translate to
-     * @param message  the message to translate
-     * @return the translated language
-     */
-    public String translate(Locale locale, String message)
+    public String translate(Locale locale, MessageType type, String message, Object... args)
     {
         if (locale == null)
         {
@@ -276,125 +144,96 @@ public class I18n implements Cleanable
         {
             return null;
         }
-
-        String translation = null;
-        Language lang = this.languageLookupMap.get(localeToString(locale)); // TODO locale -> string -> language WTF?
-        if (lang != null)
-        {
-            locale = lang.getLocale();
-            translation = lang.getTranslation(message);
-        }
-
-        if (translation == null)
-        {
-            this.logMissingTranslation(locale, message);
-            Language defLang = this.getLanguage(Locale.getDefault());
-            if (defLang != null)
-            {
-                translation = defLang.getTranslation(message);
-                locale = Locale.getDefault();
-            }
-            else
-            {
-                this.logger.warn("The configured default language {} was not found! Falling back to the source language...", this
-                    .defaultLocale.getDisplayName());
-                locale = this.defaultLocale = this.sourceLanguage.getLocale();
-            }
-            if (translation == null)
-            {
-                translation = this.sourceLanguage.getTranslation( message);
-            }
-        }
-        return translation;
+        return this.compositor.composeMessage(type, locale, this.translate(locale, message), args);
     }
 
-    @Override
-    public void clean()
+    public String translateN(MessageType type, int n, String singular, String plural, Object... args)
     {
-        for (Language language : this.languageLookupMap.values())
-        {
-            language.clean();
-        }
-        this.sourceLanguage.clean();
-        this.languageLookupMap.clear();
+        return this.translateN(this.core.getConfiguration().defaultLocale, type, n, singular, plural, args);
     }
 
-    public static String localeToString(Locale locale)
+    public String translateN(Locale locale, MessageType type, int n, String singular, String plural, Object... args)
     {
         if (locale == null)
         {
-            throw new NullPointerException("The locale must not be null!");
+            throw new NullPointerException("The language must not be null!");
         }
-        return locale.getLanguage().toLowerCase(Locale.US) + '_' + locale.getCountry().toUpperCase(Locale.US);
+        if (singular == null || plural == null)
+        {
+            return null;
+        }
+        return this.compositor.composeMessage(type, locale, this.translateN(locale, n, singular, plural), args);
     }
 
-    private static boolean mayBeRegionCode(String string)
+    public String translate(String message)
     {
-        if (!StringUtils.isNumeric(string))
-        {
-            return false;
-        }
+        return this.translate(this.core.getConfiguration().defaultLocale, message);
+    }
+
+    public String translate(Locale locale, String message)
+    {
+        return this.service.translate(locale, message);
+    }
+
+    public String translateN(int n, String singular, String plural)
+    {
+        return this.translateN(this.core.getConfiguration().defaultLocale, n, singular, plural);
+    }
+
+    public String translateN(Locale locale, int n, String singular, String plural)
+    {
+        return this.service.translateN(locale, singular, plural, n);
+    }
+
+    public Language getLanguage(Locale locale)
+    {
         try
         {
-            int countryCode = Integer.parseInt(string);
-            if (countryCode <= 999)
+            Language language = this.service.getLanguage(locale);
+            if (language != null)
             {
-                return true;
+                this.languageLookupMap.put(language.getName().toLowerCase(language.getLocale()), language);
+                this.languageLookupMap.put(language.getLocalName().toLowerCase(language.getLocale()), language);
             }
+            return language;
         }
-        catch (NumberFormatException ignored)
-        {}
-        return false;
+        catch (TranslationLoadingException | DefinitionLoadingException e)
+        {
+            this.core.getLog().error(e, "Error while getting Language!");
+            return null;
+        }
     }
 
-    public static Locale stringToLocale(String string)
+    public Language getDefaultLanguage()
     {
-        if (string == null)
-        {
-            return Locale.getDefault();
-        }
-        string = string.trim();
-        if (string.isEmpty())
-        {
-            return Locale.getDefault();
-        }
-
-        string = string.replace('-', '_').replaceAll("[^a-z0-9_]", "");
-        String[] parts = string.split("_", 2);
-
-        String language = parts[0];
-        String country = "";
-
-        // if the language code is longer than 3-alpha's
-        if (language.length() > 3)
-        {
-            // strip it to a 2-alpha code
-            language = language.substring(0, 2);
-        }
-        if (parts.length > 0)
-        {
-            country = parts[1];
-            if (country.length() > 2 && !mayBeRegionCode(country))
-            {
-                country = country.substring(0, 2);
-            }
-        }
-
-        language = language.toLowerCase(Locale.US);
-        country = language.toUpperCase(Locale.US);
-
-        return new Locale(language, country);
+        return this.getLanguage(service.getDefaultLocale());
     }
 
-    /**
-     * Use this method to mark strings as translatable
-     *
-     * @param string the string to mark
-     * @return the exact same string
-     */
-    @Deprecated
-    public static String _(String string)
+    public Set<Language> getLanguages()
     {
-        return string;
+        // TODO this does no longer returns all languages available but only all currently loaded languages!
+        return new THashSet<>(this.service.getLoadedLanguages());
+    }
+
+    public Set<Language> searchLanguages(String name, int maxDistance)
+    {
+        Locale locale = I18nUtil.stringToLocale(name);
+        Language language = this.getLanguage(locale);
+        if (language != null)
+        {
+            HashSet<Language> lang = new HashSet<>();
+            lang.add(language);
+            return lang;
+        }
+
+        Set<String> matches = Match.string().getBestMatches(name.toLowerCase(), this.languageLookupMap.keySet(), maxDistance);
+        Set<Language> languages = new THashSet<>(matches.size());
+
+        for (String match : matches)
+        {
+            languages.add(this.languageLookupMap.get(match));
+        }
+
+        return languages;
     }
 }

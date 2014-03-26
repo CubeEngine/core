@@ -23,11 +23,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 
-public class RoleConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class RoleConfig extends ReflectedYaml
 {
     @Name("role-name")
     @Comment("The name of this role")

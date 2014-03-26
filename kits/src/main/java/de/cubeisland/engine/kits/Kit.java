@@ -212,15 +212,27 @@ public class Kit
         }
 
         @Override
-        public String composeMessage(MessageType type, String message, Object... params)
+        public String getTranslation(MessageType type, String message, Object... params)
         {
-            return this.user.composeMessage(type, message, params);
+            return this.user.getTranslation(type, message, params);
         }
 
         @Override
         public void sendTranslated(MessageType type, String message, Object... params)
         {
             this.user.sendTranslated(type, message, params);
+        }
+
+        @Override
+        public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
+        {
+            this.user.sendTranslatedN(type, n, singular, plural, params);
+        }
+
+        @Override
+        public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
+        {
+            return this.user.getTranslationN(type, n, singular, plural, params);
         }
 
         @Override

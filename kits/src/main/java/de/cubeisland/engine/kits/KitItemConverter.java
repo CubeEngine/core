@@ -26,13 +26,13 @@ import java.util.regex.Pattern;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class KitItemConverter implements Converter<KitItem>
@@ -104,7 +104,7 @@ public class KitItemConverter implements Converter<KitItem>
                 if (node instanceof MapNode)
                 {
                     MapNode subNode= (MapNode)((MapNode)node).getExactNode(((MapNode)node).getFirstKey());
-                    for (Entry<String, Node> enchNode : subNode.getMappedNodes().entrySet())
+                    for (Entry<String, Node> enchNode : subNode.getValue().entrySet())
                     {
                         int lv;
                         Enchantment enchantment = Match.enchant().enchantment(enchNode.getKey());

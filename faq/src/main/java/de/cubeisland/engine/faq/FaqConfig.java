@@ -20,12 +20,12 @@ package de.cubeisland.engine.faq;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
-public class FaqConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class FaqConfig extends ReflectedYaml
 {
     public List<Question> questions = new ArrayList<>();
-
     {
         questions.add(new Question("Can I get OP?", "Nope!", new String[] {"get", "OP"}));
     }

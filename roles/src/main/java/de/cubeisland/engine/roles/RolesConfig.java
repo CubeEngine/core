@@ -23,12 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.roles.config.MirrorConfig;
 
-public class RolesConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class RolesConfig extends ReflectedYaml
 {
     @Name("disable-permission-in-offlinemode")
     @Comment("If this is set to true no permissions will be assigned to any user if the server runs in offline-mode")

@@ -17,10 +17,11 @@
  */
 package de.cubeisland.engine.worlds.config;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 
-public class WorldsConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class WorldsConfig extends ReflectedYaml
 {
     @Comment("The main universe")
     public String mainUniverse;

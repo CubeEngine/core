@@ -38,13 +38,13 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.shout.Shout;
 import de.cubeisland.engine.shout.ShoutException;
@@ -444,7 +444,7 @@ public class AnnouncementManager
                     continue;
                 }
                 Language language;
-                Set<Language> langs = this.i18n.searchLanguages(name);
+                Set<Language> langs = this.i18n.searchLanguages(name, 2);
                 if (langs.size() < 1)
                 {
                     this.module.getLog().info("Tried to load a lang-file with an invalid locale: {}", name);
@@ -454,7 +454,7 @@ public class AnnouncementManager
                 language = langs.iterator().next();
                 try (FileChannel in = FileChannel.open(langFile))
                 {
-                    String content = FileUtil.readToString(in, Core.CHARSET);
+                    String content = FileUtil.readToString(in, CubeEngine.CHARSET);
                     if (content != null)
                     {
                         content = content.replace("\r\n", "\n").replace('\r', '\n').trim();
@@ -559,7 +559,7 @@ public class AnnouncementManager
         config.fixedCycle = fc;
         config.save();
 
-        try (BufferedWriter writer = Files.newBufferedWriter(folder.resolve(locale.toString() + ".txt"), Core.CHARSET))
+        try (BufferedWriter writer = Files.newBufferedWriter(folder.resolve(locale.toString() + ".txt"), CubeEngine.CHARSET))
         {
             writer.write(message);
         }

@@ -20,11 +20,12 @@ package de.cubeisland.engine.shout.announce;
 import java.util.Arrays;
 import java.util.List;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 
-public class AnnouncementConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class AnnouncementConfig extends ReflectedYaml
 {
     @Name("delay")
     public String delay = "10 minutes";

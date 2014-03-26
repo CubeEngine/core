@@ -4,8 +4,8 @@
   <parent>
     <groupId>de.cubeisland.engine</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <relativePath>../parent/pom.xml</relativePath>
+    <version>1</version>
+    <relativePath/>
   </parent>
 
   <artifactId>cubeengine</artifactId>
@@ -14,6 +14,8 @@
 
   <properties>
     <projectBase>${project.basedir}</projectBase>
+    <minecraftVersion>1.7.5</minecraftVersion>
+    <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
   </properties>
 
   <repositories>
@@ -32,19 +34,49 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>${bukkitVersion}</version>
+      <type>jar</type>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.yaml</groupId>
+          <artifactId>yaml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.googlecode.json-simple</groupId>
+          <artifactId>json-simple</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-lang</groupId>
+          <artifactId>commons-lang</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>de.cubeisland.engine</groupId>
-      <artifactId>configuration</artifactId>
-      <version>1.0.4-SNAPSHOT</version>
+      <artifactId>reflect</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
       <artifactId>logging</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
+      <version>0.0.2</version>
     </dependency>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
-      <artifactId>formatter</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <artifactId>i18n</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>de.cubeisland.engine</groupId>
+      <artifactId>messagecompositor</artifactId>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
@@ -75,10 +107,16 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>2.3.1</version>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.trove4j</groupId>
       <artifactId>trove4j</artifactId>
+      <version>3.0.3</version>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -86,10 +124,6 @@
       <version>16.0-rc1</version>
       <type>jar</type>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
@@ -143,14 +177,23 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <type>jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito</artifactId>
+      <version>1.5.3</version>
+      <type>jar</type>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
+      <version>1.5.3</version>
+      <type>jar</type>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -208,6 +251,9 @@
                 <exclude>templates/**</exclude>
                 <exclude>META-INF/native/**</exclude>
                 <exclude>**/*.java</exclude>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
               </excludes>
             </filter>
           </filters>

@@ -38,10 +38,10 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.shout.Shout;
 import de.cubeisland.engine.shout.announce.Announcement;
 import de.cubeisland.engine.shout.announce.MessageOfTheDay;
@@ -148,7 +148,7 @@ public class ShoutCommand extends ContainerCommand
         Locale locale = context.getSender().getLocale();
         if (context.hasParam("locale"))
         {
-            locale = I18n.stringToLocale(context.getString("locale"));
+            locale = I18nUtil.stringToLocale(context.getString("locale"));
         }
         if (locale == null)
         {

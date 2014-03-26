@@ -21,6 +21,7 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class HidePerm extends PermissionContainer<Hide>
 {
     public HidePerm(Hide module)

@@ -17,10 +17,11 @@
  */
 package de.cubeisland.engine.fly;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Name;
 
-public class FlyConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class FlyConfig extends ReflectedYaml
 {
     @Name("enablemode.flyfeather")
     public boolean flyfeather = true; //if false feather fly does not work

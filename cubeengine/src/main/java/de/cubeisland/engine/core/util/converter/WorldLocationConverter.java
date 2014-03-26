@@ -20,11 +20,11 @@ package de.cubeisland.engine.core.util.converter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
 import de.cubeisland.engine.core.util.WorldLocation;
 
 public class WorldLocationConverter implements Converter<WorldLocation>
@@ -47,7 +47,7 @@ public class WorldLocationConverter implements Converter<WorldLocation>
     {
         if (node instanceof MapNode)
         {
-            Map<String, Node> input = ((MapNode)node).getMappedNodes();
+            Map<String, Node> input = ((MapNode)node).getValue();
             double x = manager.convertFromNode(input.get("x"), double.class);
             double y = manager.convertFromNode(input.get("y"), double.class);
             double z = manager.convertFromNode(input.get("z"), double.class);

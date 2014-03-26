@@ -20,6 +20,7 @@ package de.cubeisland.engine.conomy;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class ConomyPermissions extends PermissionContainer<Conomy>
 {
     public ConomyPermissions(Conomy module)

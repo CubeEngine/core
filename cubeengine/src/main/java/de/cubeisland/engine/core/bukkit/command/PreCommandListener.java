@@ -34,6 +34,7 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
@@ -79,19 +80,19 @@ public class PreCommandListener implements Listener
                 if (matches.size() == 1)
                 {
                     final String translated = ChatFormat.RED + this.core.getI18n().translate(language, "Couldn't find {input#command}. Did you mean {input#proposal}?");
-                    sender.sendMessage(this.core.getMessageCompositor().composeMessage(language, translated, "/" + prefix + label, "/" + prefix + matches.iterator().next()));
+                    sender.sendMessage(this.core.getI18n().translate(language, MessageType.NONE, translated, "/" + prefix + label, "/" + prefix + matches.iterator().next()));
                 }
                 else
                 {
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
                     final String translated = ChatFormat.YELLOW + this.core.getI18n().translate(language, "Did you mean one of these: {input#similar} ?");
-                    sender.sendMessage(this.core.getMessageCompositor().composeMessage(language, translated, prefix + implode(", " + prefix, matches)));
+                    sender.sendMessage(this.core.getI18n().translate(language, MessageType.NONE, translated, prefix + implode(", " + prefix, matches)));
                 }
             }
             else
             {
                 final String translated = ChatFormat.RED + this.core.getI18n().translate(language, "I couldn't find any command for {input#command} ...");
-                sender.sendMessage(this.core.getMessageCompositor().composeMessage(language, translated, label));
+                sender.sendMessage(this.core.getI18n().translate(language, MessageType.NONE, translated, label));
             }
             return true;
         }

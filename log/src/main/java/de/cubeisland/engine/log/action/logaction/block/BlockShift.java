@@ -120,7 +120,7 @@ public class BlockShift extends BlockActionType
         // TODO redo messages
         if (logEntry.hasAttached())
         {
-            times = String.format(user.composeMessage(MessageType.POSITIVE, " {amount} times"), logEntry.getAttached().size() + 1);
+            times = String.format(user.getTranslation(MessageType.POSITIVE, " {amount} times"), logEntry.getAttached().size() + 1);
         }
         if (logEntry.getOldBlock().material == AIR )
         {

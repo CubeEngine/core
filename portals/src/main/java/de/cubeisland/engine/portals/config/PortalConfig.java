@@ -19,14 +19,15 @@ package de.cubeisland.engine.portals.config;
 
 import org.bukkit.OfflinePlayer;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.ConfigWorld;
 
-public class PortalConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class PortalConfig extends ReflectedYaml
 {
     public boolean safeTeleport = false;
     public boolean teleportNonPlayers = false;

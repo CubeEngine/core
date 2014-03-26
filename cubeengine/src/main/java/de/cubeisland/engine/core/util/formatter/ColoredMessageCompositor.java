@@ -20,10 +20,12 @@ package de.cubeisland.engine.core.util.formatter;
 import java.util.Locale;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.ColoredFormatter.ColorReader;
-import de.cubeisland.engine.formatter.DefaultMessageCompositor;
-import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.messagecompositor.DefaultMessageCompositor;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
+import de.cubeisland.engine.reflect.Reflector;
 
 public class ColoredMessageCompositor extends DefaultMessageCompositor
 {
@@ -33,8 +35,11 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
 
     public ColoredMessageCompositor(Core core)
     {
-        this.colorConfiguration = core.getConfigFactory().create(ColorConfiguration.class);
-            // TODO config converters core.getConfigFactory().load(ColorConfiguration.class, core.getFileManager().getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
+        Reflector configFactory = core.getConfigFactory();
+        configFactory.getDefaultConverterManager().registerConverter(MessageType.class, new MessageTypeConverter());;
+        configFactory.getDefaultConverterManager().registerConverter(ChatFormat.class, new ChatFormatConverter());
+
+        this.colorConfiguration = core.getConfigFactory().load(ColorConfiguration.class, core.getFileManager().getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
         this.registerMacro(new WorldFormatter())
             .registerMacro(new StringFormatter())
             .registerMacro(new IntegerFormatter())

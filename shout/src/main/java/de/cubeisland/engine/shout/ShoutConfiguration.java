@@ -17,10 +17,11 @@
  */
 package de.cubeisland.engine.shout;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 
-public class ShoutConfiguration extends YamlConfiguration
+@SuppressWarnings("all")
+public class ShoutConfiguration extends ReflectedYaml
 {
     @Comment("The delay after a player joins before he receives his first message")
     public int initialDelay = 20;

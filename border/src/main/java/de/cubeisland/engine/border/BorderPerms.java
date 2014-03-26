@@ -20,6 +20,7 @@ package de.cubeisland.engine.border;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
 
+@SuppressWarnings("all")
 public class BorderPerms extends PermissionContainer<Border>
 {
     public BorderPerms(Border module)

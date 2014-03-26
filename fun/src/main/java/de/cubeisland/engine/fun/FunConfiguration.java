@@ -17,12 +17,13 @@
  */
 package de.cubeisland.engine.fun;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 
-public class FunConfiguration extends YamlConfiguration
+@SuppressWarnings("all")
+public class FunConfiguration extends ReflectedYaml
 {
     public CommandSection command;
 

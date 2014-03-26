@@ -25,13 +25,12 @@ import java.util.Map;
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.i18n.ClonedLanguage;
 import de.cubeisland.engine.core.i18n.I18n;
-import de.cubeisland.engine.core.i18n.Language;
-import de.cubeisland.engine.core.i18n.NormalLanguage;
-
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.i18n.language.ClonedLanguage;
+import de.cubeisland.engine.i18n.language.Language;
+import de.cubeisland.engine.i18n.language.NormalLanguage;
 import de.cubeisland.engine.shout.Shout;
 import gnu.trove.map.hash.THashMap;
 

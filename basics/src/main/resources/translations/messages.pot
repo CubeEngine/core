@@ -16,22 +16,15 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 21:08+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: de.cubeisland.engine:basics:1.0.0-SNAPSHOT\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-25 20:26:11+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:116
 msgid "Who are you!?"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:131
-msgid "You cannot ipBan a player that has never player on the server before!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:222
@@ -247,10 +240,6 @@ msgstr ""
 msgid "Displays all loaded worlds"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/InformationCommands.java:365
-msgid "Displays chunk, memory, and world information."
-msgstr ""
-
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:604
 msgid "Displays informations from a player!"
 msgstr ""
@@ -297,10 +286,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:362
 msgid "Gives the specified Item to you"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
-msgid "Heals a Player"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/IgnoreCommands.java:82
@@ -479,10 +464,6 @@ msgid ""
 "you."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:158
-msgid "The user can use unlimited items"
-msgstr ""
-
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:684
 msgid "Toggles the god-mode!"
 msgstr ""
@@ -528,10 +509,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:198
 msgid "[radius] [player] [-entity]|[-mob]"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:293
-msgid "[types...] [radius] [in world] [-l] [-all]"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:49
@@ -600,10 +577,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:147
 msgid "Ascended a level!"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:680
-msgid "Banned by {user} on {inpt#date}: {input#reason} ({input#expire})"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:322
@@ -2184,4 +2157,52 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:439
 msgid "{world} ({input#environment}): {amount} chunks {amount} entities"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:131
+msgid "You cannot ip-ban a player that has never played on the server before!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:680
+msgid "Banned by {user} on {input#date}: {input#reason} ({input#expire})"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/InformationCommands.java:365
+msgid "Displays chunk, memory and world information."
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:158
+msgid "Grants unlimited items"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
+msgid "Heals a player"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:293
+msgid "[types...] [radius] [in <world>] [-l] [-all]"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:123
+msgid "If not used ingame you have to specify a world!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:119
+msgid "Spawned {amount} {input#message}!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:91
+msgid "You have to specify a world when using this command from the console!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:191
+msgid "ever"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:678
+msgid "for ever"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:116
+msgid "{input#entity} riding {input}"
 msgstr ""

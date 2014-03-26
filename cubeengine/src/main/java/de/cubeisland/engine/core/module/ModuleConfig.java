@@ -20,13 +20,14 @@ package de.cubeisland.engine.core.module;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.core.util.Version;
 
 /**
  * This configuration is used to parse the module.yml file.
  */
-public class ModuleConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class ModuleConfig extends ReflectedYaml
 {
     public String main;
     public String name;

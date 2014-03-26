@@ -17,21 +17,21 @@
  */
 package de.cubeisland.engine.backpack.converter;
 
-import net.minecraft.server.v1_7_R1.NBTTagCompound;
+import net.minecraft.server.v1_7_R2.NBTTagCompound;
 
-import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.ShortNode;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.ShortNode;
+import de.cubeisland.engine.reflect.node.StringNode;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
 
 public class NBTItemStackConverter implements Converter<ItemStack>
@@ -66,7 +66,7 @@ public class NBTItemStackConverter implements Converter<ItemStack>
                     ItemStack itemStack = new ItemStack(Material.valueOf(item.asText()));
                     itemStack.setDurability(((ShortNode)damage).getValue());
                     itemStack.setAmount(((IntNode)count).getValue());
-                    net.minecraft.server.v1_7_R1.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_7_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                     nms.tag = ((MapNode)tag).isEmpty() ? null : (NBTTagCompound)NBTUtils.convertNodeToNBT(tag);
                     return CraftItemStack.asBukkitCopy(nms);
                 }

@@ -29,11 +29,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.i18n.I18nUtil;
+import de.cubeisland.engine.i18n.language.Language;
 
 public class RuleBookFile
 {
@@ -52,9 +52,9 @@ public class RuleBookFile
         {
             for (Path file : directoryStream)
             {
-                Set<Language> languages = CubeEngine.getI18n().searchLanguages(StringUtils.stripFileExtension(file.getFileName().toString()));
-
-                if (languages.size() == 1)
+                String localeString = StringUtils.stripFileExtension(file.getFileName().toString());
+                Language language = CubeEngine.getI18n().getLanguage(I18nUtil.stringToLocale(localeString));
+                if (language != null)
                 {
                     files.add(file);
                 }
@@ -80,7 +80,7 @@ public class RuleBookFile
 
         try (FileChannel in = FileChannel.open(file))
         {
-            return FileUtil.readToString(in, Core.CHARSET);
+            return FileUtil.readToString(in, CubeEngine.CHARSET);
         }
     }
 
@@ -91,7 +91,7 @@ public class RuleBookFile
 
     public static void createFile(Path file, String txt) throws IOException
     {
-        try (BufferedWriter writer = Files.newBufferedWriter(file, Core.CHARSET))
+        try (BufferedWriter writer = Files.newBufferedWriter(file, CubeEngine.CHARSET))
         {
             writer.write(txt);
         }

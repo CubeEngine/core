@@ -326,7 +326,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender)
     {
-        return (sender instanceof User ? "/" : "") + implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.composeMessage(NONE, this.usage));
+        return (sender instanceof User ? "/" : "") + implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.getTranslation(NONE, this.usage));
     }
 
         /**
@@ -340,9 +340,7 @@ public abstract class CubeCommand
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        return (sender instanceof User ? "/" : "") +
-            implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender
-            .composeMessage(NONE, this.usage));
+        return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender.getTranslation(NONE, this.usage));
     }
 
     /**
@@ -355,7 +353,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + sender.composeMessage(NONE, this.usage);
+        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + sender.getTranslation(NONE, this.usage);
     }
 
     /**
@@ -508,8 +506,7 @@ public abstract class CubeCommand
             {
                 if (command.isAuthorized(sender))
                 {
-                    context.sendMessage(YELLOW + command.getName() + WHITE + ": " + GREY + sender.composeMessage(NONE, command
-                        .getDescription()));
+                    context.sendMessage(YELLOW + command.getName() + WHITE + ": " + GREY + sender.getTranslation(NONE, command.getDescription()));
                 }
             }
         }

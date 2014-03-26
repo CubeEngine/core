@@ -39,7 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -65,7 +64,7 @@ public class FileUtil
     public static List<String> readStringList(Path file) throws IOException
     {
         expectNotNull(file, "The file must not be null!");
-        try (BufferedReader reader = Files.newBufferedReader(file, Core.CHARSET))
+        try (BufferedReader reader = Files.newBufferedReader(file, CubeEngine.CHARSET))
         {
             return readStringList(reader);
         }
@@ -134,7 +133,7 @@ public class FileUtil
      */
     public static void saveFile(String string, Path file) throws IOException
     {
-        try (Writer out = Files.newBufferedWriter(file, Core.CHARSET))
+        try (Writer out = Files.newBufferedWriter(file, CubeEngine.CHARSET))
         {
             out.write(string);
         }

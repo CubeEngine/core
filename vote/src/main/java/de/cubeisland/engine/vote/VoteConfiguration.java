@@ -19,11 +19,12 @@ package de.cubeisland.engine.vote;
 
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 import org.joda.time.Duration;
 
-public class VoteConfiguration extends YamlConfiguration
+@SuppressWarnings("all")
+public class VoteConfiguration extends ReflectedYaml
 {
     public double voteReward = 100.0;
 

@@ -20,14 +20,15 @@ package de.cubeisland.engine.itemrepair;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlockConfig;
 
-public class ItemrepairConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class ItemrepairConfig extends ReflectedYaml
 {
     @Name("server.bank")
     public String serverBank = "server";

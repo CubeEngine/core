@@ -17,10 +17,11 @@
  */
 package de.cubeisland.engine.chat;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 
-public class ChatConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class ChatConfig extends ReflectedYaml
 {
     @Comment({"There at least the following variables available:" ,
                  "- {NAME} -> player name" ,

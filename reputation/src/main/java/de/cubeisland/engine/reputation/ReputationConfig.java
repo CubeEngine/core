@@ -17,7 +17,8 @@
  */
 package de.cubeisland.engine.reputation;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 
-public class ReputationConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class ReputationConfig extends ReflectedYaml
 {}

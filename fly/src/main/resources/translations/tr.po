@@ -1,0 +1,35 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# knoxand <anilceylan@hotmail.com>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: CubeEngine\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-30 11:02+0100\n"
+"PO-Revision-Date: 2014-01-07 18:07+0000\n"
+"Last-Translator: knoxand <anilceylan@hotmail.com>\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/cubeengine/language/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: de/cubeisland/engine/fly/FlyListener.java:74
+msgid "You dont have permission to use this!"
+msgstr "Bunu kullanmaya yetkin yok!"
+
+#: de/cubeisland/engine/fly/FlyListener.java:82
+msgid "You are not allowed to fly now!"
+msgstr "Şu an uçmaya izinli değilsin!"
+
+#: de/cubeisland/engine/fly/FlyListener.java:95
+msgid "You can now fly!"
+msgstr "Şu an uçabilirsin!"
+
+#: de/cubeisland/engine/fly/FlyListener.java:130
+msgid "You cannot fly anymore!"
+msgstr "Daha fazla uçamazsın!"

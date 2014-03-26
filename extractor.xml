@@ -7,20 +7,13 @@
 
     <methods>
       <method>
-        <name>translate</name>
-      </method>
-      <method>
-        <name>translateN</name>
-        <singular>1</singular>
-        <plural>2</plural>
-      </method>
-      <method>
         <name>getTranslation</name>
+        <singular>2</singular>
       </method>
       <method>
         <name>getTranslationN</name>
-        <singular>1</singular>
-        <plural>2</plural>
+        <singular>3</singular>
+        <plural>4</plural>
       </method>
       <method>
         <name>sendTranslated</name>
@@ -28,11 +21,8 @@
       </method>
       <method>
         <name>sendTranslatedN</name>
-        <singular>1</singular>
-        <plural>2</plural>
-      </method>
-      <method>
-        <name>_</name>
+        <singular>3</singular>
+        <plural>4</plural>
       </method>
     </methods>
 
@@ -52,7 +42,19 @@
     <removeUnusedMessages>true</removeUnusedMessages>
     <createEmptyTemplate>false</createEmptyTemplate>
     <template>${basedir}/src/main/resources/translations/messages.pot</template>
-    <header>https://raw.github.com/CubeEngineDev/CubeEngine/master/header.txt</header>
+    <header>
+      <comments>https://raw.github.com/CubeEngineDev/CubeEngine/master/header.txt</comments>
+      <metadata>
+        <entry key="Project-Id-Version">${groupId}:${artifactId}:${version}</entry>
+        <entry key="Report-Msgid-Bugs-To">development@cubeisland.de</entry>
+        <entry key="POT-Creation-Date" variable="true">${date.get('yyyy-MM-dd HH:mm:ssZ')}</entry>
+        <entry key="MIME-Version">1.0</entry>
+        <entry key="Content-Type">text/plain; charset=UTF-8</entry>
+        <entry key="Content-Transfer-Encoding">8bit</entry>
+        <entry key="Language">en_US</entry>
+        <entry key="Plural-Forms">nplurals=2; plural=(n != 1);</entry>
+      </metadata>
+    </header>
   </catalog>
 
 </extractor>

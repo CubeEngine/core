@@ -20,9 +20,9 @@ package de.cubeisland.engine.core.util.formatter;
 import java.util.Set;
 
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.formatter.context.MacroContext;
-import de.cubeisland.engine.formatter.context.Reader;
-import de.cubeisland.engine.formatter.formatter.AbstractFormatter;
+import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
+import de.cubeisland.engine.messagecompositor.macro.Reader;
 
 public abstract class ColoredFormatter<T> extends AbstractFormatter<T>
 {
@@ -42,9 +42,9 @@ public abstract class ColoredFormatter<T> extends AbstractFormatter<T>
     public static class ColorReader implements Reader<ChatFormat>
     {
         @Override
-        public ChatFormat getData(String raw)
+        public ChatFormat read(String raw)
         {
-            return ChatFormat.valueOf(raw);
+            return ChatFormat.valueOf(raw.toUpperCase());
         }
     }
 }

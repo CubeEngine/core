@@ -22,10 +22,10 @@ import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.configuration.Configuration;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
+import de.cubeisland.engine.reflect.ReflectedFile;
 
-public class BackpackData extends Configuration<NBTCodec>
+public class BackpackData extends ReflectedFile<NBTCodec>
 {
     public boolean allowItemsIn = true;
     public int pages = 1;

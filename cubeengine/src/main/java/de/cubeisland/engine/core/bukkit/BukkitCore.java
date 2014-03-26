@@ -43,8 +43,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.cubeisland.engine.configuration.ConfigurationFactory;
-import de.cubeisland.engine.configuration.codec.ConverterManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -91,9 +89,11 @@ import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.core.world.TableWorld;
-import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.messagecompositor.MessageCompositor;
+import de.cubeisland.engine.reflect.Reflector;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -123,7 +123,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private CorePerms corePerms;
     private BukkitBanManager banManager;
     private LogFactory logFactory;
-    private ConfigurationFactory configFactory;
+    private Reflector configFactory;
     private MessageCompositor messageCompositor;
     //endregion
 
@@ -160,7 +160,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         CubeEngine.initialize(this);
 
-        this.configFactory = new ConfigurationFactory();
+        this.configFactory = new Reflector();
         ConverterManager manager = this.configFactory.getDefaultConverterManager();
         manager.registerConverter(LogLevel.class, new LevelConverter());
         manager.registerConverter(ItemStack.class, new ItemStackConverter());
@@ -408,7 +408,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         if (this.i18n != null)
         {
-            this.i18n.clean();
+            // TODO i18n cleanup? this.i18n.clean();
             this.i18n = null;
         }
 
@@ -463,7 +463,7 @@ public final class BukkitCore extends JavaPlugin implements Core
             return;
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat("yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), Core.CHARSET))
+        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat("yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), CubeEngine.CHARSET))
         {
             Thread main = CubeEngine.getMainThread();
             int i = 1;
@@ -641,7 +641,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public ConfigurationFactory getConfigFactory()
+    public Reflector getConfigFactory()
     {
         return configFactory;
     }
@@ -651,10 +651,5 @@ public final class BukkitCore extends JavaPlugin implements Core
         return corePerms;
     }
 
-    @Override
-    public MessageCompositor getMessageCompositor()
-    {
-        return this.messageCompositor;
-    }
-//endregion
+    //endregion
 }

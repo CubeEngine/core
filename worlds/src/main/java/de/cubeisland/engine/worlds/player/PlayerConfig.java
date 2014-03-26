@@ -17,10 +17,11 @@
  */
 package de.cubeisland.engine.worlds.player;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
+import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.core.world.ConfigWorld;
 
-public class PlayerConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class PlayerConfig extends ReflectedYaml
 {
     public ConfigWorld lastWorld;
 }

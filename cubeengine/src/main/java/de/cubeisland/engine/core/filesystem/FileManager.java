@@ -52,8 +52,11 @@ public class FileManager implements Cleanable
     private final Path logPath;
     private final Path modulesPath;
     private final Path tempPath;
+    private final Path translationPath;
+
     private ConcurrentMap<Path, Resource> fileSources;
     private final FileAttribute<?>[] folderCreateAttributes;
+
 
     public FileManager(Logger logger, Path dataPath) throws IOException
     {
@@ -84,6 +87,8 @@ public class FileManager implements Cleanable
         this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), folderCreateAttributes);
 
         this.tempPath = Files.createDirectories(dataPath.resolve("temp"), folderCreateAttributes);
+
+        this.translationPath = Files.createDirectories(dataPath.resolve("translations"), folderCreateAttributes);
 
         this.fileSources = new ConcurrentHashMap<>();
 
@@ -141,13 +146,24 @@ public class FileManager implements Cleanable
     }
 
     /**
-     * Returns the modules directory
+     * Returns the temp directory
      *
      * @return the directory
      */
     public Path getTempPath()
     {
         return this.tempPath;
+    }
+
+
+    /**
+     * Returns the translation override directory
+     *
+     * @return the directory
+     */
+    public Path getTranslationPath()
+    {
+        return translationPath;
     }
 
     public void clearTempDir()

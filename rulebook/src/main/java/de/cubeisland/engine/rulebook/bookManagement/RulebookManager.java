@@ -33,8 +33,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import de.cubeisland.engine.core.i18n.Language;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.rulebook.Rulebook;
 
 public final class RulebookManager
@@ -64,12 +64,7 @@ public final class RulebookManager
 
     public Language getLanguage(String name)
     {
-        return this.getLanguage(name, 2);
-    }
-
-    public Language getLanguage(String name, int difference)
-    {
-        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(name, difference);
+        Set<Language> languages = this.module.getCore().getI18n().searchLanguages(name, 2);
         if(languages.size() == 1)
         {
             return languages.iterator().next();
@@ -80,17 +75,6 @@ public final class RulebookManager
     public Collection<Locale> getLocales()
     {
         return this.rulebooks.keySet();
-    }
-
-    public boolean contains(String languageName)
-    {
-        return this.contains(languageName, 2);
-    }
-
-    public boolean contains(String languageName, int editDistance)
-    {
-        Language language = this.getLanguage(languageName, editDistance);
-        return language != null && this.contains(language.getLocale());
     }
 
     public boolean contains(Locale locale)

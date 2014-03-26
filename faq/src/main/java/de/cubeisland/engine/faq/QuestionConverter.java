@@ -19,13 +19,13 @@ package de.cubeisland.engine.faq;
 
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.codec.ConverterManager;
-import de.cubeisland.engine.configuration.convert.Converter;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
 
 public class QuestionConverter implements Converter<Question>
 {
@@ -44,7 +44,7 @@ public class QuestionConverter implements Converter<Question>
     {
         if (node instanceof MapNode)
         {
-            Map<String, Node> content = ((MapNode)node).getMappedNodes();
+            Map<String, Node> content = ((MapNode)node).getValue();
             if (!content.containsKey("question") || !content.containsKey("answer") ||!content.containsKey("keywords"))
             {
                 throw ConversionException.of(this, node, "Missing keys, required: question, answer, keywords!");

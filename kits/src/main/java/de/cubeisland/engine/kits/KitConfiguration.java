@@ -22,13 +22,14 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Transient;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.core.util.StringUtils;
 import org.joda.time.Duration;
 
-public class KitConfiguration extends YamlConfiguration
+@SuppressWarnings("all")
+public class KitConfiguration extends ReflectedYaml
 {
     @Comment("Players that join your server the first time will receive this kit if set on true.")
     @Name("give-on-first-join")

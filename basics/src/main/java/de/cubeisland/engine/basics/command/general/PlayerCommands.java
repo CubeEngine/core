@@ -219,7 +219,7 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Heals a Player", max = 1, usage = "{player}")
+    @Command(desc = "Heals a player", max = 1, usage = "{player}")
     public void heal(CommandContext context)
     {
         if (context.hasArg(0))
@@ -675,9 +675,9 @@ public class PlayerCommands
             }
             else
             {
-                expires = context.getSender().composeMessage(MessageType.NONE, "for ever");
+                expires = context.getSender().getTranslation(MessageType.NONE, "for ever");
             }
-            context.sendTranslated(MessageType.NEUTRAL, "Banned by {user} on {inpt#date}: {input#reason} ({input#expire})", ban.getSource(), format.format(ban.getCreated()), ban.getReason(), expires);
+            context.sendTranslated(MessageType.NEUTRAL, "Banned by {user} on {input#date}: {input#reason} ({input#expire})", ban.getSource(), format.format(ban.getCreated()), ban.getReason(), expires);
         }
     }
 

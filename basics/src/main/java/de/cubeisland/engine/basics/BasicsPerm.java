@@ -26,11 +26,9 @@ import de.cubeisland.engine.core.util.Profiler;
 
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 
-
+@SuppressWarnings("all")
 public class BasicsPerm extends PermissionContainer<Basics>
 {
-
-
     public TpWorldPermissions tpWorld()
     {
         return tpWorld;

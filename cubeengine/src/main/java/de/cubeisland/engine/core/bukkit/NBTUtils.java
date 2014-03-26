@@ -17,39 +17,39 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.minecraft.server.v1_7_R1.NBTBase;
-import net.minecraft.server.v1_7_R1.NBTTagByte;
-import net.minecraft.server.v1_7_R1.NBTTagByteArray;
-import net.minecraft.server.v1_7_R1.NBTTagCompound;
-import net.minecraft.server.v1_7_R1.NBTTagDouble;
-import net.minecraft.server.v1_7_R1.NBTTagEnd;
-import net.minecraft.server.v1_7_R1.NBTTagFloat;
-import net.minecraft.server.v1_7_R1.NBTTagInt;
-import net.minecraft.server.v1_7_R1.NBTTagIntArray;
-import net.minecraft.server.v1_7_R1.NBTTagList;
-import net.minecraft.server.v1_7_R1.NBTTagLong;
-import net.minecraft.server.v1_7_R1.NBTTagShort;
-import net.minecraft.server.v1_7_R1.NBTTagString;
-import net.minecraft.server.v1_7_R1.TileEntity;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import net.minecraft.server.v1_7_R2.NBTBase;
+import net.minecraft.server.v1_7_R2.NBTTagByte;
+import net.minecraft.server.v1_7_R2.NBTTagByteArray;
+import net.minecraft.server.v1_7_R2.NBTTagCompound;
+import net.minecraft.server.v1_7_R2.NBTTagDouble;
+import net.minecraft.server.v1_7_R2.NBTTagEnd;
+import net.minecraft.server.v1_7_R2.NBTTagFloat;
+import net.minecraft.server.v1_7_R2.NBTTagInt;
+import net.minecraft.server.v1_7_R2.NBTTagIntArray;
+import net.minecraft.server.v1_7_R2.NBTTagList;
+import net.minecraft.server.v1_7_R2.NBTTagLong;
+import net.minecraft.server.v1_7_R2.NBTTagShort;
+import net.minecraft.server.v1_7_R2.NBTTagString;
+import net.minecraft.server.v1_7_R2.TileEntity;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.configuration.node.ByteNode;
-import de.cubeisland.engine.configuration.node.DoubleNode;
-import de.cubeisland.engine.configuration.node.FloatNode;
-import de.cubeisland.engine.configuration.node.IntNode;
-import de.cubeisland.engine.configuration.node.ListNode;
-import de.cubeisland.engine.configuration.node.LongNode;
-import de.cubeisland.engine.configuration.node.MapNode;
-import de.cubeisland.engine.configuration.node.Node;
-import de.cubeisland.engine.configuration.node.NullNode;
-import de.cubeisland.engine.configuration.node.ShortNode;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.node.ByteNode;
+import de.cubeisland.engine.reflect.node.DoubleNode;
+import de.cubeisland.engine.reflect.node.FloatNode;
+import de.cubeisland.engine.reflect.node.IntNode;
+import de.cubeisland.engine.reflect.node.ListNode;
+import de.cubeisland.engine.reflect.node.LongNode;
+import de.cubeisland.engine.reflect.node.MapNode;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
+import de.cubeisland.engine.reflect.node.ShortNode;
+import de.cubeisland.engine.reflect.node.StringNode;
 
 public class NBTUtils
 {
@@ -220,7 +220,7 @@ public class NBTUtils
         {
             boolean onlyByte = true;
             boolean onlyInt = true;
-            ArrayList<Node> listedNodes = ((ListNode)node).getListedNodes();
+            List<Node> listedNodes = ((ListNode)node).getValue();
             for (Node listedNode : listedNodes)
             {
                 if (!(listedNode instanceof IntNode))
@@ -265,7 +265,7 @@ public class NBTUtils
         if (node instanceof MapNode)
         {
             NBTTagCompound compound = new NBTTagCompound();
-            for (Entry<String, Node> entry : ((MapNode)node).getMappedNodes().entrySet())
+            for (Entry<String, Node> entry : ((MapNode)node).getValue().entrySet())
             {
                 compound.set(((MapNode)node).getOriginalKey(entry.getKey()),convertNodeToNBT(entry.getValue()));
             }

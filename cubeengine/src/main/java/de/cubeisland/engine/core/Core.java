@@ -17,9 +17,6 @@
  */
 package de.cubeisland.engine.core;
 
-import java.nio.charset.Charset;
-
-import de.cubeisland.engine.configuration.ConfigurationFactory;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
@@ -33,12 +30,11 @@ import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-import de.cubeisland.engine.formatter.MessageCompositor;
 import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.reflect.Reflector;
 
 /**
  * This interface specifies all the methods the core of the CubeEngine has to provide.
@@ -47,8 +43,6 @@ import de.cubeisland.engine.logging.Log;
  */
 public interface Core
 {
-    public static final Charset CHARSET = Charset.forName("UTF-8");
-
     /**
      * Returns the version of the core
      *
@@ -177,7 +171,7 @@ public interface Core
 
     LogFactory getLogFactory();
 
-    ConfigurationFactory getConfigFactory();
+    Reflector getConfigFactory();
 
     /**
      * Returns true after the first server tick happened
@@ -185,6 +179,4 @@ public interface Core
      * @return false if the startup has not finished yet
      */
     boolean isStartupFinished();
-
-    MessageCompositor getMessageCompositor();
 }

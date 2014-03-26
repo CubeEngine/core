@@ -20,12 +20,12 @@ package de.cubeisland.engine.stats.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 
-public class StatsConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class StatsConfig extends ReflectedYaml
 {
-
     @Comment({"Configurations for each stat"})
     public Map<String, DynamicSection> statConfigs = new HashMap<>();
 

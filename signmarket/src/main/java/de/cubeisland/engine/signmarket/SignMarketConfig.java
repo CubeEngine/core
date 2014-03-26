@@ -26,14 +26,15 @@ import java.util.Map.Entry;
 
 import org.bukkit.World;
 
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
-import de.cubeisland.engine.configuration.annotations.Name;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.annotations.Name;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.world.WorldManager;
 import org.jooq.types.UInteger;
 
-public class  SignMarketConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class SignMarketConfig extends ReflectedYaml
 {
     @Name("sign.admin.enable")
     public boolean enableAdmin = true;

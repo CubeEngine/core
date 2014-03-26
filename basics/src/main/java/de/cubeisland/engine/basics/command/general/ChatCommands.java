@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
-import de.cubeisland.engine.configuration.exception.ConversionException;
-import de.cubeisland.engine.configuration.node.StringNode;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.StringNode;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -188,7 +188,7 @@ public class ChatCommands
         basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() +
             (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
-        String timeString = dura.getMillis() == 0 ? user.composeMessage(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
+        String timeString = dura.getMillis() == 0 ? user.getTranslation(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
         user.sendTranslated(MessageType.NEGATIVE, "You are now muted for {input#amount}!", timeString);
         context.sendTranslated(MessageType.NEUTRAL, "You muted {user} globally for {input#amount}!", user.getName(), timeString);
     }

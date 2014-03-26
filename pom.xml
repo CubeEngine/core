@@ -26,7 +26,6 @@
   </distributionManagement>
 
   <modules>
-    <module>parent</module>
     <module>cubeengine</module>
     <module>fly</module>
     <module>conomy</module>
@@ -49,7 +48,6 @@
     <module>hide</module>
     <module>locker</module>
     <module>mystcube</module>
-    <module>fakeanticheat</module>
     <module>stats</module>
     <module>reputation</module>
     <module>worlds</module>
@@ -61,6 +59,7 @@
     <module>powertools</module>
     <module>kits</module>
     <module>spawner</module>
+    <module>bigdata</module>
   </modules>
 
   <build>

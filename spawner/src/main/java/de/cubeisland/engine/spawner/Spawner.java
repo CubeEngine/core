@@ -46,6 +46,9 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static org.bukkit.entity.EntityType.*;
 
+/**
+ * A module to gather monster spawners with sliktouch and reactivate them using spawneggs
+ */
 public class Spawner extends Module implements Listener
 {
     private ItemStack spawnerItem;
@@ -93,13 +96,19 @@ public class Spawner extends Module implements Listener
             event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH) &&
             event.getBlock().getType() == Material.MOB_SPAWNER)
         {
-            event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), spawnerItem.clone());
             User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            user.sendTranslated(MessageType.POSITIVE, "Spawner dropped!");
+
+            ItemStack clone = spawnerItem.clone();
+            ItemMeta itemMeta = clone.getItemMeta();
+            itemMeta.setDisplayName(user.getTranslation(MessageType.NONE, "Inactive Monster Spawner"));
+            clone.setItemMeta(itemMeta);
+            event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), clone);
+
+            user.sendTranslated(MessageType.POSITIVE, "Dropped inactive Monster Spawner!");
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event)
     {
         if (event.getBlockPlaced().getType() == Material.MOB_SPAWNER)
@@ -109,59 +118,57 @@ public class Spawner extends Module implements Listener
                 CreatureSpawner spawner = (CreatureSpawner)event.getBlock().getState();
                 spawner.setSpawnedType(EntityType.SNOWBALL);
                 User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                user.sendTranslated(MessageType.POSITIVE, "Inactive Spawner placed!");
+                user.sendTranslated(MessageType.POSITIVE, "Inactive Monster Spawner placed!");
             }
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInteract(PlayerInteractEvent event)
     {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
-            event.getClickedBlock().getType() == Material.MOB_SPAWNER)
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK
+         && event.getClickedBlock().getType() == Material.MOB_SPAWNER
+         && event.getPlayer().getItemInHand().getType() == Material.MONSTER_EGG)
         {
-            if (event.getPlayer().getItemInHand().getType() == Material.MONSTER_EGG)
+            event.setCancelled(true);
+            User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            CreatureSpawner state = (CreatureSpawner)event.getClickedBlock().getState();
+            if (state.getSpawnedType() == EntityType.SNOWBALL)
             {
-                User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-                CreatureSpawner state = (CreatureSpawner)event.getClickedBlock().getState();
-                if (state.getSpawnedType() == EntityType.SNOWBALL)
+                this.handleInteract(user, state, (SpawnEgg)event.getPlayer().getItemInHand().getData());
+                return;
+            }
+            user.sendTranslated(MessageType.NEGATIVE, "You can only change inactive Monster Spawner!");
+        }
+    }
+
+    private void handleInteract(User user, CreatureSpawner spawner, SpawnEgg egg)
+    {
+        Permission perm = this.perms.get(egg.getSpawnedType());
+        if (perm == null && !this.eggPerms.isAuthorized(user))
+        {
+            user.sendTranslated(MessageType.NEGATIVE, "Invalid SpawnEgg!");
+        }
+        else if (perm != null && !perm.isAuthorized(user))
+        {
+            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change Monster Spawner to this EntityType!");
+        }
+        else
+        {
+            spawner.setSpawnedType(egg.getSpawnedType());
+            spawner.update();
+            if (user.getGameMode() != GameMode.CREATIVE)
+            {
+                if (user.getItemInHand().getAmount() - 1 == 0)
                 {
-                    SpawnEgg egg = (SpawnEgg)event.getPlayer().getItemInHand().getData();
-                    Permission perm = this.perms.get(egg.getSpawnedType());
-                    if (perm == null && !this.eggPerms.isAuthorized(user))
-                    {
-                        user.sendTranslated(MessageType.NEGATIVE, "Invalid SpawnEgg!");
-                        event.setCancelled(true);
-                        return;
-                    }
-                    if (perm != null && !perm.isAuthorized(user))
-                    {
-                        user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change spawners to this EntityType!");
-                        event.setCancelled(true);
-                        return;
-                    }
-                    state.setSpawnedType(egg.getSpawnedType());
-                    state.update();
-                    if (user.getGameMode() != GameMode.CREATIVE)
-                    {
-                        if (user.getItemInHand().getAmount() - 1 == 0)
-                        {
-                            user.setItemInHand(null);
-                        }
-                        else
-                        {
-                            user.getItemInHand().setAmount(user.getItemInHand().getAmount() - 1);
-                        }
-                    }
-                    user.sendTranslated(MessageType.POSITIVE, "Spawner activated!");
-                    event.setCancelled(true);
+                    user.setItemInHand(null);
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "You can only change inactive spawners!");
-                    event.setCancelled(true);
+                    user.getItemInHand().setAmount(user.getItemInHand().getAmount() - 1);
                 }
             }
+            user.sendTranslated(MessageType.POSITIVE, "Monster Spawner activated!");
         }
     }
 }

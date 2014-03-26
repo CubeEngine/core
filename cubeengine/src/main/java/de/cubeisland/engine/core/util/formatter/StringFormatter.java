@@ -19,7 +19,9 @@ package de.cubeisland.engine.core.util.formatter;
 
 
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.formatter.context.MacroContext;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
+
+import static de.cubeisland.engine.messagecompositor.macro.AbstractFormatter.toSet;
 
 public class StringFormatter extends ColoredFormatter<String>
 {

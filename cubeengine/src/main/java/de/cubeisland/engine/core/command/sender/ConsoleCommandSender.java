@@ -25,7 +25,6 @@ import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.permissions.Permission;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.i18n.I18n;
 
 public class ConsoleCommandSender extends WrappedCommandSender implements org.bukkit.command.ConsoleCommandSender
 {
@@ -47,8 +46,7 @@ public class ConsoleCommandSender extends WrappedCommandSender implements org.bu
     @Override
     public String getDisplayName()
     {
-        final I18n i18n = this.getCore().getI18n();
-        return i18n.translate(Locale.getDefault(), "Console");
+        return this.getCore().getI18n().translate(Locale.getDefault(), "Console");
     }
 
     @Override

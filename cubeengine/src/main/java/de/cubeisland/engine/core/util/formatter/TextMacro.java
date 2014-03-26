@@ -20,10 +20,10 @@ package de.cubeisland.engine.core.util.formatter;
 import java.util.Set;
 
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.formatter.context.MacroContext;
-import de.cubeisland.engine.formatter.formatter.ConstantMacro;
+import de.cubeisland.engine.messagecompositor.macro.ConstantMacro;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
-import static de.cubeisland.engine.formatter.formatter.AbstractFormatter.toSet;
+import static de.cubeisland.engine.messagecompositor.macro.AbstractFormatter.toSet;
 
 public class TextMacro implements ConstantMacro
 {

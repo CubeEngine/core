@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.logging.LogLevel;
 import org.joda.time.Duration;
 
@@ -32,7 +32,8 @@ import org.joda.time.Duration;
  * This Configuration holds all basic settings for CubeEngine.
  * Changes in this configuration can/will affect all modules.
  */
-public class CoreConfiguration extends YamlConfiguration
+@SuppressWarnings("all")
+public class CoreConfiguration extends ReflectedYaml
 {
     @Comment("Sets the locale to choose by default.")
     public Locale defaultLocale = Locale.US;

@@ -32,15 +32,16 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.worlds.Worlds;
 
-public class WorldConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class WorldConfig extends ReflectedYaml
 {
     @Comment("Alias")
     public List<String> alias = new ArrayList<>();

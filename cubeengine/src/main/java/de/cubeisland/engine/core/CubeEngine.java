@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.core;
 
+import java.nio.charset.Charset;
+
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.UserManager;
@@ -27,6 +29,7 @@ import de.cubeisland.engine.logging.Log;
  */
 public final class CubeEngine
 {
+    public static final Charset CHARSET = Charset.forName("UTF-8");
     private static Core core = null;
     private static Thread mainThread;
 

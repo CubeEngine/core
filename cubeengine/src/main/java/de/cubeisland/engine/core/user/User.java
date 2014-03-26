@@ -63,9 +63,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.formatter.MessageCompositor;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
@@ -218,18 +216,15 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public String composeMessage(MessageType type, String message, Object... params)
+    public String getTranslation(MessageType type, String message, Object... params)
     {
-        message = this.getCore().getI18n().translate(this.getLocale(), message);
-        MessageCompositor messageCompositor = this.getCore().getMessageCompositor();
-        if (messageCompositor instanceof ColoredMessageCompositor)
-        {
-            return ((ColoredMessageCompositor)messageCompositor).composeMessage(type, this.getLocale(), message, params);
-        }
-        else
-        {
-            return messageCompositor.composeMessage(this.getLocale(), message, params);
-        }
+        return this.getCore().getI18n().translate(this.getLocale(), type, message, params);
+    }
+
+    @Override
+    public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
+    {
+        return this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params);
     }
 
     /**
@@ -242,7 +237,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.composeMessage(type, message, params));
+        this.sendMessage(this.getTranslation(type, message, params));
+    }
+
+    @Override
+    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
+    {
+        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
     }
 
     @Override

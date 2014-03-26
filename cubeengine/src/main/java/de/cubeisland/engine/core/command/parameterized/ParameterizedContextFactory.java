@@ -238,8 +238,9 @@ public class ParameterizedContextFactory implements ContextFactory
                         }
                         catch (InvalidArgumentException ex)
                         {
-                            throw new IncorrectUsageException(sender.composeMessage(MessageType.NEGATIVE, "Invalid argument for {input}: {}", param
-                                .getName(), sender.composeMessage(MessageType.NONE, ex.getMessage(), ex.getMessageArgs())));
+                            throw new IncorrectUsageException(sender.getTranslation(MessageType.NEGATIVE, "Invalid argument for {input}: {}", param
+                                .getName(), sender.getTranslation(MessageType.NONE, ex.getMessage(), ex
+                                .getMessageArgs())));
                         }
                     }
                     else // else is indexed param

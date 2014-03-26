@@ -19,12 +19,13 @@ package de.cubeisland.engine.worlds.config;
 
 import org.bukkit.GameMode;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.core.world.ConfigWorld;
 
-public class UniverseConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class UniverseConfig extends ReflectedYaml
 {
     @Comment("The main world in this universe")
     public ConfigWorld mainWorld;

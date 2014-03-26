@@ -19,7 +19,7 @@ package de.cubeisland.engine.itemrepair.repair.blocks;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.configuration.Section;
+import de.cubeisland.engine.reflect.Section;
 
 public class RepairBlockConfig implements Section
 {

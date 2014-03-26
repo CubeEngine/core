@@ -20,11 +20,12 @@ package de.cubeisland.engine.core.webapi;
 import java.util.Collections;
 import java.util.Set;
 
-import de.cubeisland.engine.configuration.Section;
-import de.cubeisland.engine.configuration.YamlConfiguration;
-import de.cubeisland.engine.configuration.annotations.Comment;
+import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.annotations.Comment;
 
-public class ApiConfig extends YamlConfiguration
+@SuppressWarnings("all")
+public class ApiConfig extends ReflectedYaml
 {
     public NetworkSection network;
 
