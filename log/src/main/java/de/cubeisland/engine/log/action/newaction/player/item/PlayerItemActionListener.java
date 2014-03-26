@@ -23,6 +23,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
 
@@ -31,13 +32,13 @@ import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
  * <p>Events:
  * {@link CraftItemEvent}
  * {@link EnchantItemEvent}
- * {@link PlayerItemDrop}
- * {@link PlayerItemDrop}
+ * {@link PlayerDropItemEvent}
+ * {@link PlayerPickupItemEvent}
  * <p>Actions:
  * {@link CraftItem}
  * {@link EnchantItem}
- * {@link PlayerDropItemEvent}
- * {@link PlayerDropItemEvent}
+ * {@link PlayerItemDrop}
+ * {@link PlayerItemPickup}
  */
 public class PlayerItemActionListener extends PlayerLogListener
 {
@@ -88,6 +89,18 @@ public class PlayerItemActionListener extends PlayerLogListener
         {
             this.setPlayerAndLocation(event.getPlayer(), action);
             action.setItem(event.getItemDrop());
+            this.logAction(action);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onItemPickup(PlayerPickupItemEvent event)
+    {
+        PlayerItemPickup action = this.newAction(PlayerItemPickup.class, event.getPlayer().getWorld());
+        if (action != null)
+        {
+            this.setPlayerAndLocation(event.getPlayer(), action);
+            action.setItem(event.getItem());
             this.logAction(action);
         }
     }

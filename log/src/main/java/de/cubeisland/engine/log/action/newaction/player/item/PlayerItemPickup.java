@@ -19,6 +19,7 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 
 import java.util.UUID;
 
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
@@ -79,5 +80,11 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
         }
         return user.getTranslation(POSITIVE, "{user} picked up {name#item} x{amount}",
                                    this.playerName, this.item.getType().name(), amount);
+    }
+
+    public void setItem(Item item)
+    {
+        this.item = item.getItemStack();
+        this.entityUUID = item.getUniqueId();
     }
 }
