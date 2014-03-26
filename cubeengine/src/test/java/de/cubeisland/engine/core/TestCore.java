@@ -61,9 +61,7 @@ import org.joda.time.Duration;
 public class TestCore implements Core
 {
     private final Version version = Version.ONE;
-    private final String sourceVersion = "master-testcore";
     private final Log logger;
-    private ObjectMapper jsonObjectMapper = null;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
     private ModuleManager moduleManager = null;
