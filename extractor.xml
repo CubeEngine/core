@@ -49,7 +49,7 @@
         <entry key="Report-Msgid-Bugs-To">development@cubeisland.de</entry>
         <entry key="POT-Creation-Date" variable="true">${date.get('yyyy-MM-dd HH:mm:ssZ')}</entry>
         <entry key="MIME-Version">1.0</entry>
-        <entry key="Content-Type">text/plain; charset=CHARSET</entry>
+        <entry key="Content-Type">text/plain; charset=UTF-8</entry>
         <entry key="Content-Transfer-Encoding">8bit</entry>
         <entry key="Language">en_US</entry>
         <entry key="Plural-Forms">nplurals=2; plural=(n != 1);</entry>
