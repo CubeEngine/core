@@ -26,8 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.minecraft.server.v1_7_R1.EntityTypes;
-import net.minecraft.server.v1_7_R1.NPC;
+import net.minecraft.server.v1_7_R2.EntityTypes;
+import net.minecraft.server.v1_7_R2.NPC;
 
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
@@ -233,7 +233,7 @@ public class EntityMatcher
      */
     public boolean canBeSpawnedBySpawnEgg(EntityType entityType)
     {
-        return EntityTypes.a.containsKey(entityType.getTypeId());
+        return EntityTypes.eggInfo.containsKey(entityType.getTypeId());
     }
 
     /**

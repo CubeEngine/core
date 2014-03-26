@@ -14,8 +14,8 @@
 
   <properties>
     <projectBase>${project.basedir}</projectBase>
-    <minecraftVersion>1.7.2</minecraftVersion>
-    <bukkitVersion>${minecraftVersion}-R0.4-SNAPSHOT</bukkitVersion>
+    <minecraftVersion>1.7.5</minecraftVersion>
+    <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
   </properties>
 
   <repositories>
