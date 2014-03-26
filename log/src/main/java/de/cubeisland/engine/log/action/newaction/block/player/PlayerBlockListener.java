@@ -29,8 +29,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerContainerBreak;
@@ -39,6 +37,7 @@ import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerNote
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerSignBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect.PlayerPortalBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect.PlayerWaterLilyBreak;
+import de.cubeisland.engine.log.action.newaction.block.player.place.PlayerBlockPlace;
 
 import static de.cubeisland.engine.core.util.BlockUtil.BLOCK_FACES;
 import static org.bukkit.Material.*;
@@ -51,7 +50,7 @@ import static org.bukkit.block.BlockFace.UP;
  * {@link BlockPlaceEvent}
  * <p>Actions:
  * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak}
- * {@link PlayerBlockPlace}
+ * {@link de.cubeisland.engine.log.action.newaction.block.player.place.PlayerBlockPlace}
  * <p>Indirect Actions:
  * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect.PlayerPortalBreak}
  * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect.PlayerWaterLilyBreak}
