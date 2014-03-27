@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 # Translators:
-# knoxand <anilceylan@hotmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:11+0100\n"
-"PO-Revision-Date: 2014-03-26 09:41+0000\n"
+"POT-Creation-Date: 2014-03-27 03:00:13+0100\n"
+"PO-Revision-Date: 2014-03-13 12:02+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: Turkish (http://www.transifex.com/projects/p/cubeengine/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -29,40 +28,22 @@ msgstr ""
 "Language: tr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: de/cubeisland/engine/writer/Writer.java:50
-msgid "Edit a sign or unsign a book"
+#: de/cubeisland/engine/selector/CuboidSelector.java:106
+msgid "First position set to ({integer}, {integer}, {integer})."
 msgstr ""
 
-#: de/cubeisland/engine/writer/Writer.java:105
-msgid "Could not change the sign!"
+#: de/cubeisland/engine/selector/SelectorCommand.java:98
+msgid "Found a Region-Selector Tool in your inventory!"
 msgstr ""
 
-#: de/cubeisland/engine/writer/Writer.java:60
-msgid "Edit what?"
+#: de/cubeisland/engine/selector/SelectorCommand.java:90
+msgid "Received a new Region-Selector Tool"
 msgstr ""
 
-#: de/cubeisland/engine/writer/Writer.java:70
-msgid "Or hold a signed book in your hand to edit it."
+#: de/cubeisland/engine/selector/CuboidSelector.java:111
+msgid "Second position set to ({integer}, {integer}, {integer})."
 msgstr ""
 
-#: de/cubeisland/engine/writer/Writer.java:113
-msgid "The sign has been changed!"
-msgstr ""
-
-#: de/cubeisland/engine/writer/Writer.java:75
-msgid ""
-"You need to have a signed book in hand or be looking at a sign less than 10 "
-"blocks away!"
-msgstr ""
-
-#: de/cubeisland/engine/writer/Writer.java:69
-msgid "You need to specify at least one parameter to edit a sign!"
-msgstr ""
-
-#: de/cubeisland/engine/writer/Writer.java:136
-msgid "Your book is now unsigned and ready to be edited."
-msgstr ""
-
-#: de/cubeisland/engine/writer/Writer.java:51
-msgid "[1 \"line1\"] [2 \"line2\"] [3 \"line3\"] [4 \"line4\"] "
+#: de/cubeisland/engine/selector/SelectorCommand.java:56
+msgid "You cannot hold a selection tool!"
 msgstr ""
