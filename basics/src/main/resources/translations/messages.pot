@@ -337,7 +337,7 @@ msgid "Pong!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:57
-msgid "Reads your mails."
+msgid "Reads your mail."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:426
@@ -381,11 +381,11 @@ msgid "Sends a private message to someone"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:176
-msgid "Sends mails to all players."
+msgid "Sends mail to all players."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:161
-msgid "Sends mails to other players."
+msgid "Sends mail to other players."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:211
@@ -393,7 +393,7 @@ msgid "Shows a random number from 0 to 100"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:135
-msgid "Shows the mails of other players."
+msgid "Shows the mail of other players."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:498
@@ -462,7 +462,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:50
 msgid ""
-"Teleports you x-amount of blocks into the air and puts a glassblock beneath "
+"Teleports you x-amount of blocks into the air and puts a glass block beneath "
 "you."
 msgstr ""
 
@@ -934,7 +934,7 @@ msgid "No need to repair this!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:86
-msgid "No one has send you a message that you could reply to!"
+msgid "No one has sent you a message that you could reply to!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:184
@@ -1070,7 +1070,7 @@ msgid "Repaired {amount} items!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:194
-msgid "Reseted the time for {user}!"
+msgid "Resetted the time for {user}!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:374
@@ -1170,7 +1170,7 @@ msgid "Teleported to {vector:x\\=:y\\=:z\\=} in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:172
-msgid "That awkward moment when you realize you do not have an inventory!"
+msgid "That awkward moment when you realize you do not have an inventory..."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:223
@@ -1194,7 +1194,7 @@ msgid "The butcher will come to YOU tonight!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:243
-msgid "The console has no mails!"
+msgid "The console has no mail!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:134
@@ -1275,7 +1275,7 @@ msgstr ""
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:100
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:170
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:240
-msgid "There are no users online at the moment!"
+msgid "There are no players online at the moment!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:104
@@ -1288,7 +1288,7 @@ msgid "This enchantment is not allowed for this item!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:273
-msgid "This enchantment-level is not allowed!"
+msgid "This enchantment level is not allowed!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:339
@@ -1333,7 +1333,7 @@ msgid "To use these type {text:&} followed by the code above"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:372
-msgid "Truely a hero! Trying to swap a users position with himself..."
+msgid "Truly a hero! Trying to swap a users position with himself..."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:227
@@ -1347,7 +1347,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:287
 msgid ""
-"Unfortunatly teleporting is still not implemented in the game {text:'Life'}!"
+"Unfortunately teleporting is still not implemented in the game {text:'Life'}!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:333
@@ -1359,7 +1359,7 @@ msgid "Unknown entity {input#entity}"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMob.java:85
-msgid "Unknown mob-type: {input#entityname} not found!"
+msgid "Unknown mob type: {input#entityname} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:89
@@ -1464,7 +1464,7 @@ msgid "World {input} not found"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:145
-msgid "Yeah you better put it away!"
+msgid "Yeah, you better put it away!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportRequestCommands.java:160
@@ -1501,11 +1501,11 @@ msgid "You are not allowed to butcher all types of living entities at once!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:567
-msgid "You are not allowed to change the afk-state of an other player!"
+msgid "You are not allowed to change the afk state of an other player!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:815
-msgid "You are not allowed to change the fly-mode of other user!"
+msgid "You are not allowed to change the fly mode of other user!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:358
@@ -1521,7 +1521,7 @@ msgid "You are not allowed to change the time of other players!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:765
-msgid "You are not allowed to change the walk-speed of other user!"
+msgid "You are not allowed to change the walk speed of other user!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:177
@@ -1545,7 +1545,7 @@ msgid "You are not allowed to god others!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:229
-msgid "You are not allowed to heal other user!"
+msgid "You are not allowed to heal other users!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/IgnoreCommands.java:102
@@ -1561,7 +1561,7 @@ msgid "You are not allowed to kill everyone!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:159
-msgid "You are not allowed to let other user starve!"
+msgid "You are not allowed to let other users starve!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:75
@@ -1581,7 +1581,7 @@ msgid "You are not allowed to teleport back!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:109
-msgid "You are not allowed to teleport other persons!"
+msgid "You are not allowed to teleport other people!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:130
@@ -1639,7 +1639,7 @@ msgid "You are suddenly starving!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:229
-msgid "You banned the IP {input#ip} from your server!"
+msgid "You banned the IP {input#ip} from the server!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:152
@@ -1664,7 +1664,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:232
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:284
-msgid "You can not enchant this item!"
+msgid "You can't enchant this item!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/PaintingListener.java:72
@@ -1692,7 +1692,7 @@ msgid "You can't execute this with a radius over {amount}"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:436
-msgid "You can't get enough of it. Don't you?"
+msgid "You can't get enough of it, can you?"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:160
@@ -1718,7 +1718,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:306
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:362
-msgid "You cannot moove an offline player!"
+msgid "You cannot move an offline player!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:184
@@ -1793,7 +1793,7 @@ msgid "You got healed by {sender}!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/DoorCommand.java:93
-msgid "You has to specify a location!"
+msgid "You have to specify a location!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:141
@@ -1813,7 +1813,7 @@ msgid "You healed everyone!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:87
-msgid "You hold nothing in your hands!"
+msgid "You are holding nothing in your hands!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:284
@@ -1825,7 +1825,7 @@ msgid "You just jumped!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:82
-msgid "You just lifted!"
+msgid "You have just been lifted!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:232
@@ -1901,7 +1901,7 @@ msgid "You now hold {user}'s head in your hands!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:193
-msgid "You now no longer have unlimited items to build!"
+msgid "You no longer have unlimited items!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/TeleportListener.java:117
@@ -1959,7 +1959,7 @@ msgid "You were teleported to {sender}"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:258
-msgid "You will never have mails here!"
+msgid "You will never have mail here!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:71
@@ -1979,7 +1979,7 @@ msgid "Your inventory has been cleared!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:131
-msgid "Your mails: {input#mails}"
+msgid "Your mail: {input#mails}"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:189
@@ -2004,7 +2004,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:249
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:267
-msgid "{input#ip} is not a valid IP-address!"
+msgid "{input#ip} is not a valid IP address!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:137
@@ -2037,7 +2037,7 @@ msgid "{sender} wants to teleport you to them!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:158
-msgid "{text:ProTip}: I assume you are looking right at your screen. Right?"
+msgid "{text:ProTip}: I assume you are looking right at your screen, right?"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:807
@@ -2081,14 +2081,14 @@ msgid "{user} did not accept your teleport-request."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:147
-msgid "{user} does not have any mails!"
+msgid "{user} does not have any mail!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:122
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:287
 msgid ""
 "{user} has never played on this server before! Use the -force flag to ban "
-"him anyways."
+"them anyway."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:134
@@ -2121,7 +2121,7 @@ msgid "{user} is no longer muted!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:205
-msgid "{user} is not banned, maybe you misspelled his name?"
+msgid "{user} is not banned, maybe you misspelled their name?"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:578
@@ -2154,7 +2154,7 @@ msgid "{user} was last seen {input#date}."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:157
-msgid "{user}'s mails: {input#mails}"
+msgid "{user}'s mail: {input#mails}"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:439
