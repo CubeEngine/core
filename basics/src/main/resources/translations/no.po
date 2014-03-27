@@ -17,9 +17,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-19 12:43+0100\n"
-"PO-Revision-Date: 2014-03-20 09:13+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-25 20:26:11+0100\n"
+"PO-Revision-Date: 2014-03-26 09:13+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: Norwegian (http://www.transifex.com/projects/p/cubeengine/language/no/)\n"
 "MIME-Version: 1.0\n"
@@ -2191,4 +2191,28 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:293
 msgid "[types...] [radius] [in <world>] [-l] [-all]"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:123
+msgid "If not used ingame you have to specify a world!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:119
+msgid "Spawned {amount} {input#message}!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:91
+msgid "You have to specify a world when using this command from the console!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:191
+msgid "ever"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:678
+msgid "for ever"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:116
+msgid "{input#entity} riding {input}"
 msgstr ""

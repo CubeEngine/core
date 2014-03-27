@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-22 22:57:18+0100\n"
-"PO-Revision-Date: 2014-03-23 09:06+0000\n"
+"POT-Creation-Date: 2014-03-26 03:00:08+0100\n"
+"PO-Revision-Date: 2014-03-26 09:06+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: Norwegian (http://www.transifex.com/projects/p/cubeengine/language/no/)\n"
 "MIME-Version: 1.0\n"
@@ -308,6 +308,7 @@ msgid "If you still want to op him, use the -force flag."
 msgstr ""
 
 #: de/cubeisland/engine/core/command/conversation/ConversationContextFactory.java:86
+#: de/cubeisland/engine/core/command/parameterized/ParameterizedContextFactory.java:241
 msgid "Invalid argument for {input}: {}"
 msgstr ""
 
@@ -746,4 +747,14 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:141
 msgid "All passwords reset!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:201
+msgid "Last seen: {input#date}"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:199
+msgid ""
+"Too many wrong passwords! \n"
+"For your security you were banned 10 seconds."
 msgstr ""
