@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-26 03:00:08+0100\n"
-"PO-Revision-Date: 2014-03-26 09:06+0000\n"
+"POT-Creation-Date: 2014-03-27 03:00:08+0100\n"
+"PO-Revision-Date: 2014-03-27 09:44+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: Norwegian (http://www.transifex.com/projects/p/cubeengine/language/no/)\n"
 "MIME-Version: 1.0\n"
@@ -729,10 +729,6 @@ msgstr ""
 msgid "{text:Usage:color=INDIGO}: {input#usage}"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:282
-msgid "{user} is no operator anymore!"
-msgstr ""
-
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:458
 msgid "{user} is not whitelisted anymore."
 msgstr ""
@@ -757,4 +753,8 @@ msgstr ""
 msgid ""
 "Too many wrong passwords! \n"
 "For your security you were banned 10 seconds."
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:282
+msgid "{user} is no longer an operator!"
 msgstr ""
