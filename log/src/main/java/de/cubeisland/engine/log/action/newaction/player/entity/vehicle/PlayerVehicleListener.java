@@ -17,7 +17,6 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.player.VehiclePrePlaceEvent;
 
 /**
  * A Listener for Player Actions with Items
@@ -72,7 +71,7 @@ public class PlayerVehicleListener extends LogListener
             }
             else
             {
-                return; // TODO who?
+                causer = event.getAttacker();
             }
         }
         else if (event.getVehicle().getPassenger() instanceof Player)

@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.player;
 
-
 import java.util.UUID;
 
 import org.bukkit.entity.Player;

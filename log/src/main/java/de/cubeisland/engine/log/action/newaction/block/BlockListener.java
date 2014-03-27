@@ -12,8 +12,8 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.log.action.logaction.block.player.PlayerGrow;
 import de.cubeisland.engine.log.action.newaction.LogListener;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerGrow;
 
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.FIRE;
@@ -143,7 +143,22 @@ public class BlockListener extends LogListener
         }
         else
         {
-            // TODO player Grow Action
+            if (this.isActive(PlayerGrow.class, event.getWorld()))
+            {
+                for (BlockState newState : event.getBlocks())
+                {
+                    BlockState oldState = newState.getBlock().getState();  // TODO is this working?
+                    if (oldState.getData().equals(newState.getData()))
+                    {
+                        continue;
+                    }
+                    PlayerGrow action = this.newAction(PlayerGrow.class);
+                    action.setNewBlock(newState);
+                    action.setOldBlock(oldState);
+                    action.setLocation(newState.getLocation());
+                    action.setPlayer(event.getPlayer());
+                }
+            }
         }
     }
 }

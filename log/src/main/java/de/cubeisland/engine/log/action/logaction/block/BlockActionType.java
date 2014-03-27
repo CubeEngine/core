@@ -136,7 +136,7 @@ public abstract class BlockActionType extends LogActionType
      */
     public final BlockState adjustBlockForDoubleBlocks(BlockState blockState)
     {
-        if (blockState.getType().equals(Material.WOODEN_DOOR) || blockState.getType().equals(Material.IRON_DOOR_BLOCK))
+        if (blockState.getType() == Material.WOODEN_DOOR || blockState.getType() == Material.IRON_DOOR_BLOCK)
         {
             if (blockState.getRawData() == 8 || blockState.getRawData() == 9)
             {
@@ -169,7 +169,7 @@ public abstract class BlockActionType extends LogActionType
 
     public void logAttachedBlocks(BlockState blockState, Entity player)
     {
-        if (!blockState.getType().isSolid() && !blockState.getType().equals(Material.SUGAR_CANE_BLOCK))
+        if (!blockState.getType().isSolid() && !(blockState.getType() == Material.SUGAR_CANE_BLOCK))
         {
             return; // cannot have attached
         }

@@ -27,8 +27,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.InventoryHolder;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
@@ -178,6 +181,46 @@ public class PlayerBlockListener extends LogListener
                 wAction.setNewBlock(AIR);
                 this.logAction(wAction);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSignChange(final SignChangeEvent event)
+    {
+        PlayerSignChange action = this.newAction(PlayerSignChange.class, event.getBlock().getWorld());
+        if (action != null)
+        {
+            String[] oldLines = ((Sign)event.getBlock().getState()).getLines();
+            boolean isEmpty = true;
+            boolean wasEmpty = true;
+            for (String line : event.getLines())
+            {
+                if (!line.isEmpty())
+                {
+                    isEmpty = false;
+                }
+            }
+            for (String line : oldLines)
+            {
+                if (!line.isEmpty())
+                {
+                    wasEmpty = false;
+                }
+            }
+            if (wasEmpty && isEmpty) return;
+            action.setPlayer(event.getPlayer());
+            action.setLocation(event.getBlock().getLocation());
+            action.setOldBlock(event.getBlock().getState());
+            action.setNewBlock(event.getBlock().getState());
+            if (!wasEmpty)
+            {
+                action.setOldLines(oldLines);
+            }
+            if (!isEmpty)
+            {
+                action.setNewLines(event.getLines());
+            }
+            this.logAction(action);
         }
     }
 }
