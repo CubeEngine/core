@@ -46,6 +46,16 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
 
     public Coordinate coord;
 
+    protected int countAttached()
+    {
+        int count = 1;
+        if (this.hasAttached())
+        {
+            count += this.getAttached().size();
+        }
+        return count;
+    }
+
     public static class Coordinate implements Section
     {
         public ConfigWorld world;

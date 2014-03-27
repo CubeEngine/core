@@ -21,14 +21,10 @@ public class FuelFurnaceMinecart extends PlayerEntityActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} gave fuel to a furnace-minecart",
                                     "{user} gave fuel to a furnace-minecart {amount} times",
-                                    this.playerName, amount);
+                                    this.playerName, count);
     }
 }

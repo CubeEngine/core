@@ -27,21 +27,17 @@ public class PlayerGrow extends PlayerBlockActionType<BlockListener>
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
+        int count = this.countAttached();
         if (this.oldBlock == AIR)
         {
-            return user.getTranslationN(POSITIVE, amount,
+            return user.getTranslationN(POSITIVE, count,
                                         "{user} let grow {name#block}",
                                         "{user} let grow {2:amount}x {name#block}",
-                                        this.playerName, this.newBlock.name(), amount);
+                                        this.playerName, this.newBlock.name(), count);
         }
-        return user.getTranslationN(POSITIVE, amount,
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} let grow {name#block} into {name#block}",
                                     "{user} let grow {3:amount}x {name#block} into {name#block}",
-                                    this.playerName, this.newBlock.name(), this.oldBlock.name(), amount);
+                                    this.playerName, this.newBlock.name(), this.oldBlock.name(), count);
     }
 }

@@ -34,22 +34,18 @@ public class LighterIgnite extends BlockActionType<BlockIgniteListener>
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
+        int count = this.countAttached();
         if (this.playerName == null)
         {
-            return user.getTranslationN(POSITIVE, amount,
+            return user.getTranslationN(POSITIVE, count,
                                         "A fire got set by a lighter",
                                         "{amount} fires got set using lighters",
-                                        amount);
+                                        count);
         }
-        return user.getTranslationN(POSITIVE, amount,
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} set fire",
                                     "{user} set {amount} fires",
-                                    this.playerName, amount);
+                                    this.playerName, count);
     }
 
     public void setPlayer(Player player)

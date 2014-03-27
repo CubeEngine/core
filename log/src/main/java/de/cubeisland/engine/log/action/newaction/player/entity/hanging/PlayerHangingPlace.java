@@ -24,14 +24,10 @@ public class PlayerHangingPlace extends PlayerHangingActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{name#hanging} got hung up by {user}",
                                     "{name#hanging} got hung up by {user} {amount} times",
-                                    this.hangingType.name(), this.playerName, amount);
+                                    this.hangingType.name(), this.playerName, count);
     }
 }

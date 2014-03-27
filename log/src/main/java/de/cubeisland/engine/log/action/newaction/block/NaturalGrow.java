@@ -25,21 +25,17 @@ public class NaturalGrow extends BlockActionType<BlockListener>
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
+        int count = this.countAttached();
         if (this.oldBlock == AIR)
         {
-            return user.getTranslationN(POSITIVE, amount,
+            return user.getTranslationN(POSITIVE, count,
                                         "{name#block} grew naturally",
                                         "{1:amount}x {name#block} grew naturally",
-                                        this.newBlock.name(), amount);
+                                        this.newBlock.name(), count);
         }
-        return user.getTranslationN(POSITIVE, amount,
+        return user.getTranslationN(POSITIVE, count,
                                     "{name#block} grew naturally into {name#block}",
                                     "{2:amount}x {name#block} grew naturally into {name#block}",
-                                    this.newBlock.name(), this.oldBlock.name(), amount);
+                                    this.newBlock.name(), this.oldBlock.name(), count);
     }
 }

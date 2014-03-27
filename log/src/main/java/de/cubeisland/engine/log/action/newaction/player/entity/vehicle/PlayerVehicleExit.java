@@ -26,14 +26,10 @@ public class PlayerVehicleExit extends PlayerVehicleActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} exited a {name#vehicle}",
                                     "{user} exited a {name#vehicle} {amount} times",
-                                    this.playerName, this.vehicleType.name(), amount);
+                                    this.playerName, this.vehicleType.name(), count);
     }
 }

@@ -21,14 +21,10 @@ public class LightningIgnite extends BlockActionType<BlockIgniteListener>
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "A fire got set by a lightning strike",
                                     "{amount} fires got set by lightning strikes",
-                                    amount);
+                                    count);
     }
 }

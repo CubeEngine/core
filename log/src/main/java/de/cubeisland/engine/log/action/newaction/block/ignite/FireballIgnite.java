@@ -44,36 +44,32 @@ public class FireballIgnite extends BlockActionType<BlockIgniteListener>
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
+        int count = this.countAttached();
         if (shooterType == PLAYER)
         {
-            return user.getTranslationN(POSITIVE, amount,
+            return user.getTranslationN(POSITIVE, count,
                                         "{user} shot a fireball setting this block on fire",
                                         "{user} shot fireballs setting {amount} blocks on fire",
-                                        this.playerName, amount);
+                                        this.playerName, count);
         }
         if (shooterType == GHAST)
         {
             if (playerName == null)
             {
-                return user.getTranslationN(POSITIVE, amount,
+                return user.getTranslationN(POSITIVE, count,
                                             "A Ghast shot a fireball setting this block on fire",
                                             "A Ghast shot fireballs setting {amount} blocks on fire",
-                                            amount);
+                                            count);
             }
-            return user.getTranslationN(POSITIVE, amount,
+            return user.getTranslationN(POSITIVE, count,
                                         "A Ghast shot a fireball at {user} setting this block on fire",
                                         "A Ghast shot fireballs at {user} setting {amount} blocks on fire",
-                                        this.playerName, amount);
+                                        this.playerName, count);
         }
-        return user.getTranslationN(POSITIVE, amount,
+        return user.getTranslationN(POSITIVE, count,
                                     "A fire got set by a fireball",
                                     "{amount} fires got set by fireballs",
-                                    amount);
+                                    count);
 
     }
 

@@ -29,15 +29,11 @@ public class PlayerEntityDye extends PlayerEntityActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} dyed a {name#entity} in {input#color}",
                                     "{user} dyed {3:amount} {name#entity} in {input#color}",
-                                    this.playerName, this.entityType.name(), this.color.name(), amount);
+                                    this.playerName, this.entityType.name(), this.color.name(), count);
     }
 
     public void setColor(DyeColor color)

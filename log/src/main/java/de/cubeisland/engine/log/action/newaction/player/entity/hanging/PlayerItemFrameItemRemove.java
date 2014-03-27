@@ -27,15 +27,11 @@ public class PlayerItemFrameItemRemove extends PlayerHangingActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} removed {name#item} from an itemframe",
                                     "{user} removed {2:amount} items from itemframes",
-                                    this.playerName, this.item.getType().name(), amount);
+                                    this.playerName, this.item.getType().name(), count);
     }
 
     // TODO redo/rollback

@@ -24,14 +24,10 @@ public class PlayerEntityShear extends PlayerEntityActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} sheared {name#entity}",
                                     "{user} sheared {2:amount} {name#entity}",
-                                    this.playerName, this.entityType.name(), amount);
+                                    this.playerName, this.entityType.name(), count);
     }
 }

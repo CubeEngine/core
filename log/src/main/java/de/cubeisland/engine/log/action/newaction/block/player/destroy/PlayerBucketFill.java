@@ -27,28 +27,24 @@ public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
+        int count = this.countAttached();
         if (this.oldBlock == LAVA || this.oldBlock == STATIONARY_LAVA)
         {
-            return user.getTranslationN(POSITIVE, amount,
+            return user.getTranslationN(POSITIVE, count,
                                         "{user} filled a bucket with lava",
                                         "{user} filled {amount} buckets with lava",
-                                       this.playerName, amount);
+                                       this.playerName, count);
         }
         if (this.oldBlock == WATER || this.oldBlock == STATIONARY_WATER)
         {
-            return user.getTranslationN(POSITIVE, amount,
+            return user.getTranslationN(POSITIVE, count,
                                         "{user} filled a bucket with water",
                                         "{user} filled {amount} buckets with water",
-                                       this.playerName, amount);
+                                       this.playerName, count);
         }
-        return user.getTranslationN(POSITIVE, amount,
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} filled a bucket with some random fluids",
                                     "{user} filled {amount} buckets with some random fluids!",
-                                    this.playerName, amount);
+                                    this.playerName, count);
     }
 }

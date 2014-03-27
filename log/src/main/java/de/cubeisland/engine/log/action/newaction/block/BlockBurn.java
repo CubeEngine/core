@@ -23,14 +23,10 @@ public class BlockBurn extends BlockActionType<BlockListener>
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "A {name#block} went up into flames",
                                     "{1:amount}x {name#block} went up into flames",
-                                    this.oldBlock.name(), amount);
+                                    this.oldBlock.name(), count);
     }
 }

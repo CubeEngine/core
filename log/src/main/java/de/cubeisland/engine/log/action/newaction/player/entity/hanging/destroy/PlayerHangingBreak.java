@@ -26,15 +26,11 @@ public class PlayerHangingBreak extends PlayerHangingActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{text:One} {name#hanging} got removed by {user}",
                                     "{3:amount} {name#hanging} got removed by {user}",
-                                    this.hangingType.name(), this.playerName, amount);
+                                    this.hangingType.name(), this.playerName, count);
     }
 
     public void setCause(ActionTypeBase action)

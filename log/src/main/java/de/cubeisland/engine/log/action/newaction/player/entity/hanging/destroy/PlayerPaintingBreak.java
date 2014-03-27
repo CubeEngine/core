@@ -25,14 +25,10 @@ public class PlayerPaintingBreak extends PlayerHangingBreak
     public String translateAction(User user)
     {
         // TODO indirect
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{text:One painting} got removed by {user}",
                                     "{1:amount} {text:painting} got removed by {user}",
-                                    this.playerName, amount);
+                                    this.playerName, count);
     }
 }

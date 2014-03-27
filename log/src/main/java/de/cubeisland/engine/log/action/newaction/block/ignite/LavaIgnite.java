@@ -26,15 +26,11 @@ public class LavaIgnite extends BlockActionType<BlockIgniteListener>
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "A fire got set by lava",
                                     "{amount} fires got set by lava",
-                                    amount);
+                                    count);
     }
 
     public void setSource(Location source)

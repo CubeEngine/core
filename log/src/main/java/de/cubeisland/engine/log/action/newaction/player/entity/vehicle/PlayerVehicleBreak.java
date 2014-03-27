@@ -26,14 +26,10 @@ public class PlayerVehicleBreak extends PlayerVehicleActionType
     @Override
     public String translateAction(User user)
     {
-        int amount = 1;
-        if (this.hasAttached())
-        {
-            amount += this.getAttached().size();
-        }
-        return user.getTranslationN(POSITIVE, amount,
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,
                                     "{user} broke a {name#vehicle}",
                                     "{user} broke {2:amount} {name#vehicle}",
-                                    this.playerName, this.vehicleType.name(), amount);
+                                    this.playerName, this.vehicleType.name(), count);
     }
 }
