@@ -19,10 +19,16 @@ package de.cubeisland.engine.log.action.newaction.player;
 
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 public abstract class PlayerLogListener extends LogListener
 {
+    protected PlayerLogListener(Module module)
+    {
+        super(module);
+    }
+
     protected void setPlayerAndLocation(Player player, PlayerActionType action)
     {
         action.setLocation(player.getLocation());

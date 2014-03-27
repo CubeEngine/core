@@ -31,9 +31,6 @@ public abstract class BlockActionType<ListenerType> extends ActionTypeBase<Liste
 
     public void setOldBlock(BlockState state)
     {
-
-
-
         this.setNewBlock(state.getType());
         // TODO data
         // TODO additional data

@@ -29,6 +29,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.InventoryHolder;
 
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerContainerBreak;
@@ -49,14 +50,19 @@ import static org.bukkit.block.BlockFace.UP;
  * {@link BlockBreakEvent}
  * {@link BlockPlaceEvent}
  * <p>Actions:
- * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak}
- * {@link de.cubeisland.engine.log.action.newaction.block.player.place.PlayerBlockPlace}
+ * {@link PlayerBlockBreak}
+ * {@link PlayerBlockPlace}
  * <p>Indirect Actions:
- * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect.PlayerPortalBreak}
- * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect.PlayerWaterLilyBreak}
+ * {@link PlayerPortalBreak}
+ * {@link PlayerWaterLilyBreak}
  */
 public class PlayerBlockListener extends LogListener
 {
+    public PlayerBlockListener(Module module)
+    {
+        super(module);
+    }
+
     //Doors / Beds only logged bottom / feet
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event)

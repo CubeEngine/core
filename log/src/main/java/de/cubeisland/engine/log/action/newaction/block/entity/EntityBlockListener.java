@@ -26,6 +26,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 import static org.bukkit.Material.AIR;
@@ -46,6 +47,11 @@ import static org.bukkit.Material.AIR;
  */
 public class EntityBlockListener extends LogListener
 {
+    public EntityBlockListener(Module module)
+    {
+        super(module);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityChangeBlock(final EntityChangeBlockEvent event)
     {

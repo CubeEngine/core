@@ -20,8 +20,17 @@ package de.cubeisland.engine.log.action.newaction;
 import org.bukkit.World;
 import org.bukkit.event.Listener;
 
+import de.cubeisland.engine.core.module.Module;
+
 public class LogListener implements Listener
 {
+    protected final Module module;
+
+    public LogListener(Module module)
+    {
+        this.module = module;
+    }
+
     protected final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz, World world)
     {
         if (!this.isActive(clazz, world))
