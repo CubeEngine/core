@@ -36,7 +36,7 @@ public class RoleChatFormatListener extends ChatFormatListener
         final RolesAttachment rolesAttachment = event.getUser().get(RolesAttachment.class);
         if (rolesAttachment == null)
         {
-            this.module.getLog().warn("Missing RolesAttachment!");
+            this.module.getLog().warn("Missing Roles Attachment!");
             return;
         }
         event.setVariable("ROLE.PREFIX", ChatFormat.parseFormats(rolesAttachment.getCurrentMetadataString("prefix")));
@@ -49,7 +49,7 @@ public class RoleChatFormatListener extends ChatFormatListener
         RolesAttachment rolesAttachment = user.get(RolesAttachment.class);
         if (rolesAttachment == null)
         {
-            this.module.getLog().warn("Missing RolesAttachment!");
+            this.module.getLog().warn("Missing Roles Attachment!");
             return this.module.getConfig().format;
         }
         String chatFormat = rolesAttachment.getCurrentMetadataString("chat-format");

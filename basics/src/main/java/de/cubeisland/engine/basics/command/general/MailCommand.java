@@ -49,12 +49,12 @@ public class MailCommand extends ContainerCommand
 
     public MailCommand(Basics module)
     {
-        super(module, "mail", "Manages your server-mails.");
+        super(module, "mail", "Manages your server mail.");
         this.module = module;
     }
 
     @Alias(names = "readmail")
-    @Command(desc = "Reads your mails.", usage = "[player]", max = 1)
+    @Command(desc = "Reads your mail.", usage = "[player]", max = 1)
     public void read(CommandContext context)
     {
         User sender;
@@ -69,7 +69,7 @@ public class MailCommand extends ContainerCommand
             }
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "If you wanted to look into other players mails use: {text:/mail spy} {input#player}.", context.getString(0));
+                context.sendTranslated(MessageType.NEUTRAL, "If you wanted to look into other players mail use: {text:/mail spy} {input#player}.", context.getString(0));
                 context.sendTranslated(MessageType.NEGATIVE, "Otherwise be quiet!");
                 return;
             }
@@ -128,11 +128,11 @@ public class MailCommand extends ContainerCommand
             i++;
             sb.append("\n").append(ChatFormat.WHITE).append(i).append(": ").append(mail.readMail());
         }
-        context.sendTranslated(MessageType.POSITIVE, "Your mails: {input#mails}", ChatFormat.parseFormats(sb.toString()));
+        context.sendTranslated(MessageType.POSITIVE, "Your mail: {input#mails}", ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "spymail")
-    @Command(desc = "Shows the mails of other players.", usage = "<player>", min = 1, max = 1)
+    @Command(desc = "Shows the mail of other players.", usage = "<player>", min = 1, max = 1)
     public void spy(CommandContext context)
     {
         User user = context.getUser(0);
@@ -144,7 +144,7 @@ public class MailCommand extends ContainerCommand
         List<Mail> mails = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().getMails();
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} does not have any mails!", user);
+            context.sendTranslated(MessageType.NEUTRAL, "{user} does not have any mail!", user);
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -154,7 +154,7 @@ public class MailCommand extends ContainerCommand
             i++;
             sb.append("\n").append(ChatFormat.WHITE).append(i).append(": ").append(mail.getMessage());
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{user}'s mails: {input#mails}", user, ChatFormat.parseFormats(sb.toString()));
+        context.sendTranslated(MessageType.NEUTRAL, "{user}'s mail: {input#mails}", user, ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "sendmail")
@@ -206,7 +206,7 @@ public class MailCommand extends ContainerCommand
                 dsl.batch(queries).execute();
             }
         },0);
-        context.sendTranslated(MessageType.POSITIVE, "Mail send to everyone!");
+        context.sendTranslated(MessageType.POSITIVE, "Sent mail to everyone!");
     }
 
     @Command(desc = "Removes a single mail", usage = "<mailId>", min = 1, max = 1)
@@ -244,7 +244,7 @@ public class MailCommand extends ContainerCommand
         }
     }
 
-    @Command(names = {"clear"}, desc = "Clears your mails.",
+    @Command(names = {"clear"}, desc = "Clears your mail.",
              usage = "[player]", min = 0, max = 1)
     public void clear(CommandContext context)
     {
@@ -255,7 +255,7 @@ public class MailCommand extends ContainerCommand
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You will never have mails here!");
+            context.sendTranslated(MessageType.NEGATIVE, "You will never have mail here!");
             return;
         }
         if (!context.hasArg(0))
@@ -271,7 +271,7 @@ public class MailCommand extends ContainerCommand
             return;
         }
         sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMailFrom(from);
-        context.sendTranslated(MessageType.NEUTRAL, "Cleared all mails from {user}!", from == null ? "console" : from.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "Cleared all mail from {user}!", from == null ? "console" : from.getName());
     }
 
     private void mail(String message, CommandSender from, User... users)

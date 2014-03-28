@@ -84,7 +84,7 @@ public class DoorCommand
 
         if(radius > this.basics.getConfiguration().commands.maxDoorRadius)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You can't execute this with a radius over {amount}", this.basics.getConfiguration().commands.maxDoorRadius);
+            context.sendTranslated(MessageType.NEGATIVE, "You can't use this with a radius over {amount}", this.basics.getConfiguration().commands.maxDoorRadius);
             return;
         }
 

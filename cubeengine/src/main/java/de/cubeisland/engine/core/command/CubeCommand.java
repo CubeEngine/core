@@ -717,7 +717,7 @@ public abstract class CubeCommand extends Command
         if (this.hasChildren())
         {
             context.sendMessage(" ");
-            context.sendTranslated(MessageType.NEUTRAL, "The following sub commands are available:");
+            context.sendTranslated(MessageType.NEUTRAL, "The following subcommands are available:");
             context.sendMessage(" ");
 
             final CommandSender sender = context.getSender();

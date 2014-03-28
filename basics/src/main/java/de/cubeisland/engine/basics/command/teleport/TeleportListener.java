@@ -114,7 +114,7 @@ public class TeleportListener implements Listener
                         }
                         loc.setY(loc.getY() + 1);
                         user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                        user.sendTranslated(MessageType.NEUTRAL, "You passed the wall");
+                        user.sendTranslated(MessageType.NEUTRAL, "You passed through a wall");
                         event.setCancelled(true);
                     }
             }

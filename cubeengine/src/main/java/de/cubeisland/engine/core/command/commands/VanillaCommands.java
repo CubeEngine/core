@@ -108,7 +108,7 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Reloading the whole server... (this may take some time)");
+            context.sendTranslated(MessageType.NEUTRAL, "Reloading the whole server... this may take some time.");
             // pre-translate to avoid a NPE
             Locale locale = context.getSender().getLocale();
             long time = System.currentTimeMillis();
@@ -166,7 +166,7 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated(MessageType.NONE, "The current difficulty level: {input}", world.getDifficulty().name());
+            context.sendTranslated(MessageType.NONE, "Current difficulty level: {input}", world.getDifficulty().name());
             if (this.core.getServer().isHardcore())
             {
                 context.sendTranslated(MessageType.NONE, "Your server has the hardcore mode enabled.");
