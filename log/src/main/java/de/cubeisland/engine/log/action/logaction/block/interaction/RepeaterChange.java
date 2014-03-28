@@ -63,7 +63,7 @@ public class RepeaterChange extends BlockActionType
         }
         if (logEntry.hasAttached() && oldTicks.intValue() == newTicks)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} touched the repeater but didn't change it{}", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} fiddled around with the repeater but did not change anything{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {

@@ -57,22 +57,22 @@ public class FireballExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball flying towards {user} blasted {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball flying towards {user} blasted away {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball blasted {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball blasted away {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball flying towards {user} blasted {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball flying towards {user} blasted away {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball blasted {name#block}{}", time, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Fireball blasted away {name#block}{}", time, logEntry.getOldBlock(), loc);
             }
         }
     }

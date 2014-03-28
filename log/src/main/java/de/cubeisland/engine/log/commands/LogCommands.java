@@ -51,13 +51,13 @@ public class LogCommands extends ContainerCommand
         this.module = module;
     }
 
-    @Command(desc = "Shows the current queue size.")
+    @Command(desc = "Shows the current queue-size.")
     public void queuesize(CommandContext context)
     {
         int size = module.getLogManager().getQueueSize();
         if (size == 0)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Logging queue is currently empty!");
+            context.sendTranslated(MessageType.POSITIVE, "Logging-queue is currently empty!");
         }
         else
         {
@@ -131,7 +131,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated(MessageType.POSITIVE, "Received a new log tool!");
+            user.sendTranslated(MessageType.POSITIVE, "Received a new Log-Tool!");
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class,this.module);
             logAttachment.createNewLookup(material);
 
@@ -142,7 +142,7 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated(MessageType.POSITIVE, "Found a log tool in your inventory!");
+        user.sendTranslated(MessageType.POSITIVE, "Found a Log-Tool in your inventory!");
     }
 
     @Alias(names = "lb")
@@ -161,7 +161,7 @@ public class LogCommands extends ContainerCommand
             Material blockMaterial = this.matchType(context.getString(0),true);
             if (blockMaterial == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log type. Use chest, container, player, block or kills instead!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context.getString(0));
                 return;
             }
             User user = (User) context.getSender();
@@ -169,7 +169,7 @@ public class LogCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Why don't you check in your log file? You won't need a block there!");
+            context.sendTranslated(MessageType.NEGATIVE, "Why don't you check in your log-file? You won't need a block there!");
         }
     }
 
@@ -189,7 +189,7 @@ public class LogCommands extends ContainerCommand
             Material blockMaterial = this.matchType(context.getString(0),false);
             if (blockMaterial == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log type. Use chest, container, player, block or kills instead!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context.getString(0));
                 return;
             }
             User user = (User) context.getSender();
@@ -197,7 +197,7 @@ public class LogCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Why don't you check in your log file? You won't need a block there!");
+            context.sendTranslated(MessageType.NEGATIVE, "Why don't you check in your log-file? You won't need a block there!");
         }
     }
 
@@ -229,7 +229,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated(MessageType.POSITIVE, "Received a new region selector Tool");
+            user.sendTranslated(MessageType.POSITIVE, "Received a new Region-Selector Tool");
             return;
         }
         user.getInventory().removeItem(found);
@@ -237,7 +237,7 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated(MessageType.POSITIVE, "Found a region selector Tool in your inventory!");
+        user.sendTranslated(MessageType.POSITIVE, "Found a Region-Selector Tool in your inventory!");
     }
 
     @Command(desc = "Gives you a item to select a region with.")

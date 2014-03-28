@@ -56,11 +56,11 @@ public class WaterBucket extends BlockActionType
         if (logEntry.hasAttached())
         {
             int amount = logEntry.getAttached().size()+1;
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} emptied {amount} water buckets{}", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} emptied {amount} water-buckets{}", time, logEntry.getCauserUser().getDisplayName(), amount, loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} emptied a water bucket{}", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} emptied a water-bucket{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
     }
 

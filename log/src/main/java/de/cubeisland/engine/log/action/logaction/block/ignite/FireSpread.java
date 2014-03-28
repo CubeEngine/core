@@ -70,7 +70,7 @@ public class FireSpread extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "{}Fire spread{}", time, loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}Fire spreaded{}", time, loc);
     }
 
     @Override

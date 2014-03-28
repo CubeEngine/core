@@ -68,7 +68,7 @@ public class Log extends Module implements Listener
         }
         catch (ClassNotFoundException ignored)
         {
-            this.getLog().warn("WorldEdit not found!");
+            this.getLog().warn("No WorldEdit found!");
         }
         this.getCore().getEventManager().registerListener(this, new ToolListener(this));
     }
