@@ -21,35 +21,67 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.reflect.Section;
 
 public abstract class BlockActionType<ListenerType> extends ActionTypeBase<ListenerType>
 {
-    public Material oldBlock;
-    public int oldData;
-    public Material newBlock;
-    public int newData;
+    public static class BlockSection implements Section
+    {
+        public Material material;
+
+        public BlockSection(BlockState state)
+        {
+            this(state.getType());
+        }
+
+        public BlockSection(Material material)
+        {
+            this.material = material;
+        }
+
+        /**
+         * Returns true if this BlockSection is one of given materials
+         * @param materials
+         * @return
+         */
+        public boolean is(Material... materials)
+        {
+            for (Material mat : materials)
+            {
+                if (this.material == mat)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public String name()
+        {
+            return this.material.name();
+        }
+    }
+
+    public BlockSection oldBlock;
+    public BlockSection newBlock;
 
     public void setOldBlock(BlockState state)
     {
-        this.setNewBlock(state.getType());
-        // TODO data
-        // TODO additional data
+        this.oldBlock = new BlockSection(state);
     }
 
     public void setNewBlock(BlockState state)
     {
-        this.setOldBlock(state.getType());
-        // TODO data
-        // TODO additional data
+        this.newBlock = new BlockSection(state);
     }
 
     public void setOldBlock(Material mat)
     {
-        this.oldBlock = mat;
+        this.oldBlock = new BlockSection(mat);
     }
 
     public void setNewBlock(Material mat)
     {
-        this.newBlock = mat;
+        this.newBlock = new BlockSection(mat);
     }
 }

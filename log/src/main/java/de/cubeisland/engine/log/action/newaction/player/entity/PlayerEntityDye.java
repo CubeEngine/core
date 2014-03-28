@@ -22,7 +22,7 @@ public class PlayerEntityDye extends PlayerEntityActionType
     {
         return action instanceof PlayerEntityDye
             && this.player.equals(((PlayerEntityDye)action).player)
-            && ((PlayerEntityDye)action).entityType == this.entityType
+            && ((PlayerEntityDye)action).entity.type == this.entity.type
             && ((PlayerEntityDye)action).color == this.color;
     }
 
@@ -33,7 +33,7 @@ public class PlayerEntityDye extends PlayerEntityActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} dyed a {name#entity} in {input#color}",
                                     "{user} dyed {3:amount} {name#entity} in {input#color}",
-                                    this.player.name, this.entityType.name(), this.color.name(), count);
+                                    this.player.name, this.entity.name(), this.color.name(), count);
     }
 
     public void setColor(DyeColor color)

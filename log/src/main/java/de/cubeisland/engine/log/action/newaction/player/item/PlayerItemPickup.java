@@ -17,13 +17,12 @@
  */
 package de.cubeisland.engine.log.action.newaction.player.item;
 
-import java.util.UUID;
-
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
 import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -37,7 +36,7 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
     // return this.lm.getConfig(world).ITEM_PICKUP_enable;
 
     public ItemStack item; // TODO item format
-    public UUID entityUUID;
+    public EntitySection entity;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
@@ -53,7 +52,7 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
         else if (action instanceof PlayerItemDrop) // TODO other ItemDrop
         {
             // Drop / Pickup Pair
-            return ((PlayerItemDrop)action).entityUUID.equals(this.entityUUID);
+            return this.entity.equals(((PlayerItemDrop)action).entity);
         }
         return action instanceof PlayerItemPickup 
             && this.player.equals(((PlayerItemPickup)action).player)
@@ -86,6 +85,6 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
     public void setItem(Item item)
     {
         this.item = item.getItemStack();
-        this.entityUUID = item.getUniqueId();
+        this.entity = new EntitySection(item);
     }
 }

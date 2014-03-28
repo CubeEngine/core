@@ -18,7 +18,7 @@ public class PlayerSoupFill extends PlayerEntityActionType
     {
         return action instanceof PlayerSoupFill
             && this.player.equals(((PlayerSoupFill)action).player)
-            && ((PlayerSoupFill)action).entityType == this.entityType;
+            && ((PlayerSoupFill)action).entity.type == this.entity.type;
     }
 
     @Override

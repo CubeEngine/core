@@ -15,7 +15,7 @@ public class FuelFurnaceMinecart extends PlayerEntityActionType
     {
         return action instanceof FuelFurnaceMinecart
             && this.player.equals(((FuelFurnaceMinecart)action).player)
-            && ((FuelFurnaceMinecart)action).entityUUID.equals(this.entityUUID);
+            && this.entity.equals(((FuelFurnaceMinecart)action).entity);
     }
 
     @Override

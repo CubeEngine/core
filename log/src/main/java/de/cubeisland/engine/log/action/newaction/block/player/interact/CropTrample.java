@@ -34,7 +34,7 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
         CropTrample action = this;
         if (this.hasAttached())
         {
-            if (this.oldBlock == SOIL)
+            if (this.oldBlock.is(SOIL))
             {
                 // replacing SOIL log with the crop log as the destroyed SOIL is implied
                 action = (CropTrample)this.getAttached().get(0);

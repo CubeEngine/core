@@ -20,7 +20,7 @@ public class PlayerHangingBreak extends PlayerHangingActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerPaintingBreak
-            && ((PlayerPaintingBreak)action).playerUUID.equals(this.playerUUID);
+            && this.player.equals(((PlayerPaintingBreak)action).player);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class PlayerHangingBreak extends PlayerHangingActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{text:One} {name#hanging} got removed by {user}",
                                     "{3:amount} {name#hanging} got removed by {user}",
-                                    this.hangingType.name(), this.playerName, count);
+                                    this.hangingType.name(), this.player.name, count);
     }
 
     public void setCause(ActionTypeBase action)

@@ -29,25 +29,45 @@ import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 
 public abstract class EntityBlockActionType<ListenerType> extends BlockActionType<ListenerType>
 {
-    public UUID entityUUID;
-    public EntityType entityType;
+    public EntitySection entity;
+
+    public static class EntitySection
+    {
+        public UUID uuid;
+        public EntityType type;
+
+        public EntitySection(Entity entity)
+        {
+            this.type = entity.getType();
+            this.uuid = entity.getUniqueId();
+        }
+
+        public boolean equals(EntitySection section)
+        {
+            return this.uuid.equals(section.uuid);
+        }
+
+        public String name()
+        {
+            return this.type.name();
+        }
+    }
 
     public void setEntity(Entity entity)
     {
-        this.entityUUID = entity.getUniqueId();
-        this.entityType = entity.getType();
+       this.entity = new EntitySection(entity);
     }
 
     protected final int countUniqueEntities()
     {
         Set<UUID> uuids = new HashSet<>();
-        uuids.add(this.entityUUID);
+        uuids.add(this.entity.uuid);
         int count = 1;
         for (ActionTypeBase action : this.getAttached())
         {
-            if (!uuids.contains(((EntityBlockActionType)action).entityUUID))
+            if (!uuids.contains(((EntityBlockActionType)action).entity.uuid))
             {
-                uuids.add(((EntityBlockActionType)action).entityUUID);
+                uuids.add(((EntityBlockActionType)action).entity.uuid);
                 count++;
             }
         }

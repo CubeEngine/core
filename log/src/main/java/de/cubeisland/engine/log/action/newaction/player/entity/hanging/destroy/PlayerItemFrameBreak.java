@@ -21,7 +21,7 @@ public class PlayerItemFrameBreak extends PlayerHangingBreak
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerItemFrameBreak
-            && ((PlayerItemFrameBreak)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerItemFrameBreak)action).player)
             && ((PlayerItemFrameBreak)action).item == null
             && this.item == null;
     }
@@ -33,15 +33,15 @@ public class PlayerItemFrameBreak extends PlayerHangingBreak
         if (this.hasAttached())
         {
             int amount = this.getAttached().size() + 1;
-            return user.getTranslation(POSITIVE, "{amount} empty {text:itemframes} got removed by {user}", amount, this.playerName);
+            return user.getTranslation(POSITIVE, "{amount} empty {text:itemframes} got removed by {user}", amount, this.player.name);
         }
         if (this.item == null)
         {
-            return user.getTranslation(POSITIVE, "{text:itemframe} got removed by {user}", this.playerName);
+            return user.getTranslation(POSITIVE, "{text:itemframe} got removed by {user}", this.player.name);
         }
         else
         {
-            return user.getTranslation(POSITIVE, "{user} broke an {text:item-frame} containing {name#item}", this.playerName, this.item.getType().name());
+            return user.getTranslation(POSITIVE, "{user} broke an {text:item-frame} containing {name#item}", this.player.name, this.item.getType().name());
         }
     }
 }

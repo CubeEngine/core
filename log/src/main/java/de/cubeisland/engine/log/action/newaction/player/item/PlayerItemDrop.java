@@ -17,13 +17,12 @@
  */
 package de.cubeisland.engine.log.action.newaction.player.item;
 
-import java.util.UUID;
-
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
 import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -37,13 +36,13 @@ public class PlayerItemDrop extends PlayerActionType<PlayerItemActionListener>
     // return this.lm.getConfig(world).ITEM_DROP_enable;
 
     public ItemStack item; // TODO item format
-    public UUID entityUUID;
+    public EntitySection entity;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerItemDrop
-            && ((PlayerItemDrop)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerItemDrop)action).player)
             && ((PlayerItemDrop)action).item.isSimilar(this.item);
     }
 
@@ -59,13 +58,13 @@ public class PlayerItemDrop extends PlayerActionType<PlayerItemActionListener>
             }
         }
         return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount}",
-                                   this.playerName, this.item.getType().name(), amount);
+                                   this.player.name, this.item.getType().name(), amount);
     }
 
     public void setItem(Item item)
     {
         this.item = item.getItemStack();
-        this.entityUUID = item.getUniqueId();
+        this.entity = new EntitySection(item);
     }
 
     // TODO chestDrop Action

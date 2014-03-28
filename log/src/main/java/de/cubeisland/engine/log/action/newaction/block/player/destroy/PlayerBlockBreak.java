@@ -51,9 +51,9 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} broke {name#block} x{amount}",
-                                       this.playerName, this.oldBlock.name(), this.getAttached().size() + 1);
+                                       this.player.name, this.oldBlock.name(), this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} broke {name#block}", this.playerName, this.oldBlock.name());
+        return user.getTranslation(POSITIVE, "{user} broke {name#block}", this.player.name, this.oldBlock.name());
     }
 
     // TODO physics

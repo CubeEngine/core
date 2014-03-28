@@ -30,7 +30,7 @@ public class ComparatorChange extends PlayerBlockActionType<PlayerBlockInteractL
         {
             return user.getTranslation(POSITIVE, "{user} changed the comparator state {amount} times", this.player.name, this.countAttached());
         }
-        if (this.newBlock == REDSTONE_COMPARATOR_ON)
+        if (this.newBlock.is(REDSTONE_COMPARATOR_ON))
         {
             return user.getTranslation(POSITIVE, "{user} activated the comparator", this.player.name);
         }

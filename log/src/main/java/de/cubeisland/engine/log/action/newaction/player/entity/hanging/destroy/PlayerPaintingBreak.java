@@ -18,7 +18,7 @@ public class PlayerPaintingBreak extends PlayerHangingBreak
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerPaintingBreak
-            && ((PlayerPaintingBreak)action).playerUUID.equals(this.playerUUID);
+            && this.player.equals(((PlayerPaintingBreak)action).player);
     }
 
     @Override
@@ -29,6 +29,6 @@ public class PlayerPaintingBreak extends PlayerHangingBreak
         return user.getTranslationN(POSITIVE, count,
                                     "{text:One painting} got removed by {user}",
                                     "{1:amount} {text:painting} got removed by {user}",
-                                    this.playerName, count);
+                                    this.player.name, count);
     }
 }

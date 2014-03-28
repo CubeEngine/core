@@ -22,7 +22,6 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
-
 /**
  * Represents an Entity breaking a block
  * <p>This will usually be a Zombie destroying doors
@@ -44,10 +43,12 @@ public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
         if (this.hasAttached())
         {
             int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count, "{text:One} {name#entity} destroyed {name#block} x{amount}!", "{3:amount} {name#entity} destroyed {name#block} x{amount}!", this.entityType
-                .name(), this.oldBlock.name(), this.getAttached().size() + 1, count);
+            return user.getTranslationN(POSITIVE, count,
+                                        "{text:One} {name#entity} destroyed {name#block} x{amount}!",
+                                        "{3:amount} {name#entity} destroyed {name#block} x{amount}!",
+                                        this.entity.name(), this.oldBlock.name(), this.getAttached().size() + 1, count);
         }
         return user.getTranslation(POSITIVE, "A {name#entity} destroyed {name#block}",
-                                   this.entityType.name(), this.oldBlock.name());
+                                   this.entity.name(), this.oldBlock.name());
     }
 }

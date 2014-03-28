@@ -18,7 +18,7 @@ public class PlayerEntityShear extends PlayerEntityActionType
     {
         return action instanceof PlayerEntityShear
             && this.player.equals(((PlayerEntityShear)action).player)
-            && ((PlayerEntityShear)action).entityType == this.entityType;
+            && ((PlayerEntityShear)action).entity.type == this.entity.type;
     }
 
     @Override
@@ -28,6 +28,6 @@ public class PlayerEntityShear extends PlayerEntityActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} sheared {name#entity}",
                                     "{user} sheared {2:amount} {name#entity}",
-                                    this.player.name, this.entityType.name(), count);
+                                    this.player.name, this.entity.name(), count);
     }
 }
