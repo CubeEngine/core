@@ -43,7 +43,7 @@ import de.cubeisland.engine.log.action.logaction.block.BlockBurn;
 import de.cubeisland.engine.log.action.logaction.block.BlockFade;
 import de.cubeisland.engine.log.action.logaction.block.BlockFall;
 import de.cubeisland.engine.log.action.logaction.block.BlockForm;
-import de.cubeisland.engine.log.action.logaction.block.BlockShift;
+import de.cubeisland.engine.log.action.newaction.block.BlockShift;
 import de.cubeisland.engine.log.action.logaction.block.BlockSpread;
 import de.cubeisland.engine.log.action.logaction.block.LeafDecay;
 import de.cubeisland.engine.log.action.logaction.block.NaturalGrow;
