@@ -168,7 +168,7 @@ public class SpawnCommands
         }
         if (user == null && !context.hasArg(0))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
             return;
         }
         if (context.hasArg(0))
@@ -176,7 +176,7 @@ public class SpawnCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             if (!user.isOnline())
@@ -228,6 +228,6 @@ public class SpawnCommands
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "ProTip: Teleport does not work IRL!");
+        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 }

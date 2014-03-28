@@ -126,7 +126,7 @@ public class WorldControlCommands
         }
         if (world.isThundering() != noThunder && world.hasStorm() != sunny) // weather is not changing
         {
-            context.sendTranslated(MessageType.POSITIVE, "Weather in {world} was already set to {input#weather}!", world, weather);
+            context.sendTranslated(MessageType.POSITIVE, "Weather in {world} is already set to {input#weather}!", world, weather);
         }
         else
         {
@@ -156,7 +156,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The butcher will come to YOU tonight!");
+                context.sendTranslated(MessageType.NEGATIVE, "The butcher will come for YOU tonight!");
                 return;
             }
             world = sender.getWorld();
@@ -176,7 +176,7 @@ public class WorldControlCommands
             radius = context.getArg(1, Integer.class, 0);
             if (radius <= 0)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The radius has to be a number greater than 0!");
+                context.sendTranslated(MessageType.NEGATIVE, "The radius has to be a whole number greater than 0!");
                 return;
             }
         }
@@ -281,11 +281,11 @@ public class WorldControlCommands
                 context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities in {world}!", entitiesRemoved, world.getName());
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities around you!", entitiesRemoved);
+            context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities nearby!", entitiesRemoved); // TODO a non-plural version if there is only 1 entity
         }
     }
 
-    @Command(desc = "Gets rid of mobs nearby you. Valid types are:\n" +
+    @Command(desc = "Gets rid of mobs close to you. Valid types are:\n" +
         "monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc.", flags = {
         @Flag(longName = "lightning", name = "l"), // die with style
         @Flag(longName = "all", name = "a")// infinite radius

@@ -19,9 +19,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 21:08+0100\n"
-"PO-Revision-Date: 2014-03-09 09:37+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-27 03:00:11+0100\n"
+"PO-Revision-Date: 2014-03-26 09:41+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -30,36 +30,40 @@ msgstr ""
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/writer/EditCommand.java:76
-msgid "Your book is now unsigned and ready to be edited"
-msgstr "Dein Buch ist jetzt nicht mehr signiert und kann wieder bearbeitet werden"
-
-#: de/cubeisland/engine/writer/EditCommand.java:108
-msgid "The sign has been changed"
-msgstr "Das Schild wurde abgeändert"
-
-#: de/cubeisland/engine/writer/EditCommand.java:40
+#: de/cubeisland/engine/writer/Writer.java:50
 msgid "Edit a sign or unsign a book"
 msgstr ""
 
-#: de/cubeisland/engine/writer/EditCommand.java:40
-msgid "[Line1 \"text\"] [Line2 \"text\"] [Line3 \"text\"] [Line4 \"text\"] "
-msgstr ""
-
-#: de/cubeisland/engine/writer/EditCommand.java:100
+#: de/cubeisland/engine/writer/Writer.java:105
 msgid "Could not change the sign!"
 msgstr ""
 
-#: de/cubeisland/engine/writer/EditCommand.java:62
+#: de/cubeisland/engine/writer/Writer.java:60
 msgid "Edit what?"
 msgstr ""
 
-#: de/cubeisland/engine/writer/EditCommand.java:112
-msgid ""
-"You need to have a signed book in hand or be looking at a sign less than 10 "
-"blocks away"
+#: de/cubeisland/engine/writer/Writer.java:70
+msgid "Or hold a signed book in your hand to edit it."
 msgstr ""
 
-#: de/cubeisland/engine/writer/EditCommand.java:87
-msgid "You need to specify at least one parameter"
+#: de/cubeisland/engine/writer/Writer.java:113
+msgid "The sign has been changed!"
+msgstr ""
+
+#: de/cubeisland/engine/writer/Writer.java:75
+msgid ""
+"You need to have a signed book in hand or be looking at a sign less than 10 "
+"blocks away!"
+msgstr ""
+
+#: de/cubeisland/engine/writer/Writer.java:69
+msgid "You need to specify at least one parameter to edit a sign!"
+msgstr ""
+
+#: de/cubeisland/engine/writer/Writer.java:136
+msgid "Your book is now unsigned and ready to be edited."
+msgstr ""
+
+#: de/cubeisland/engine/writer/Writer.java:51
+msgid "[1 \"line1\"] [2 \"line2\"] [3 \"line3\"] [4 \"line4\"] "
 msgstr ""

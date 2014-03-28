@@ -23,7 +23,7 @@ import de.cubeisland.engine.reflect.annotations.Comment;
 @SuppressWarnings("all")
 public class ChatConfig extends ReflectedYaml
 {
-    @Comment({"There at least the following variables available:" ,
+    @Comment({"The following variables are available:" ,
                  "- {NAME} -> player name" ,
                  "- {DISPLAY_NAME} -> display name" ,
                  "- {WORLD} -> the world the player is in" ,

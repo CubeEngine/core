@@ -81,7 +81,7 @@ public class TeleportCommands
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         if (!target.isOnline())
@@ -96,7 +96,7 @@ public class TeleportCommands
             target = context.getUser(1);
             if (target == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
                 return;
             }
             if (!target.isOnline())
@@ -106,7 +106,7 @@ public class TeleportCommands
             }
             if (target != context.getSender() && !module.perms().COMMAND_TP_OTHER.isAuthorized(context.getSender())) // teleport other persons
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport other persons!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport other people!");
                 return;
             }
             if (!force) // if force no need to check
@@ -176,7 +176,7 @@ public class TeleportCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         if (!user.isOnline())
@@ -225,13 +225,13 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
             return;
         }
         User target = context.getUser(0);
         if (target == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         if (!target.isOnline())
@@ -271,7 +271,7 @@ public class TeleportCommands
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
+            context.sendTranslated(MessageType.NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
             return;
         }
         boolean force = false;
@@ -351,6 +351,6 @@ public class TeleportCommands
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "{text:ProTip}: Teleport does not work IRL!");
+        context.sendTranslated(MessageType.NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
     }
 }

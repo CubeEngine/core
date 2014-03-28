@@ -18,10 +18,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:shout:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-21 09:58:44+0100\n"
+"POT-Creation-Date: 2014-03-27 23:27:27+0100\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: de/cubeisland/engine/shout/interactions/ShoutCommand.java:113
 msgid "Here is the list of announcements:"
@@ -88,4 +90,10 @@ msgstr ""
 
 #: de/cubeisland/engine/shout/interactions/ShoutCommand.java:151
 msgid "{input#locale} isn't a valid locale!"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:133
+msgid ""
+"<name> message \"<message>\" [delay \"<x minutes|hours|days>\"] [world "
+"<world>] [permission <permission node>] [locale <locale>] [-fixed-cycle]"
 msgstr ""

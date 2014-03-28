@@ -18,9 +18,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 21:08+0100\n"
-"PO-Revision-Date: 2014-03-09 09:22+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-27 03:00:12+0100\n"
+"PO-Revision-Date: 2014-03-23 09:24+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: Turkish (http://www.transifex.com/projects/p/cubeengine/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -72,11 +72,7 @@ msgstr ""
 msgid "Rightclick the block."
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:306
-msgid "Thats {decimal#percent:2}% less then the normal price"
-msgstr ""
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:302
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:303
 msgid "Thats {decimal#percent:2}% of the normal price!"
 msgstr ""
 
@@ -84,19 +80,7 @@ msgstr ""
 msgid "The repair has been cancelled!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:219
-msgid "The repair would cost {input:amount}"
-msgstr ""
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:211
-msgid "The repair would cost {input:amount} (+{decimal:2}%)"
-msgstr ""
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:215
-msgid "The repair would cost {input:amount} (-{decimal:2}%)"
-msgstr ""
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:227
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:228
 msgid "There are no items to repair!"
 msgstr ""
 
@@ -126,30 +110,46 @@ msgstr ""
 msgid "You are not allowed to use this repair block!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:286
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:287
 msgid "You broke some of your items when repairing!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:221
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:222
 msgid "You currently have {input#balance}"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:311
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:312
 msgid "You don't have enough money to repair these items!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:291
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:292
 msgid "You failed to repair some of your items!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:296
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:297
 msgid "You feel that some of your items lost their magical power!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:299
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:300
 msgid "You paid {input#amount} to repair your items!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:222
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:223
 msgid "{text:Leftclick} again to repair all your damaged items."
+msgstr ""
+
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:307
+msgid "Thats {decimal#percent:2}% less then the normal price!"
+msgstr ""
+
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:219
+msgid "The repair would cost {input#amount}"
+msgstr ""
+
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:211
+msgid "The repair would cost {input#amount} (+{decimal:2}%)"
+msgstr ""
+
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:215
+msgid "The repair would cost {input#amount} (-{decimal:2}%)"
 msgstr ""

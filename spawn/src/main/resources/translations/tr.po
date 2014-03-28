@@ -1,0 +1,126 @@
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: CubeEngine\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-21 09:58:52+0100\n"
+"PO-Revision-Date: 2014-03-09 09:35+0000\n"
+"Last-Translator: Phillip Schichtel\n"
+"Language-Team: Turkish (http://www.transifex.com/projects/p/cubeengine/language/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:60
+msgid "Changes the respawnpoint"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:151
+msgid "Teleport directly to the worlds spawn."
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:60
+msgid "[<role>|global] [<x> <y> <z>] [world]"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:151
+msgid "[player] [world <world>] [role <role>]"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:100
+msgid "Coordinates are invalid!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:126
+#: de/cubeisland/engine/spawn/SpawnCommands.java:263
+msgid "Could not find the role {input} in {world}!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:87
+#: de/cubeisland/engine/spawn/SpawnCommands.java:108
+msgid "If not used ingame you have to specify a world and coordinates!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:210
+msgid ""
+"Invalid spawn-location for the role of {user}! Please check your role-configurations!\n"
+"{}"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:275
+msgid ""
+"Invalid spawn-location for the role {name}! Please check your role-configuration!\n"
+"{}"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:301
+msgid ""
+"Invalid spawn-location for your role! Please check your role-configurations!\n"
+"{}"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:269
+msgid "The role {name} in {world} has no spawn-point!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:148
+msgid "The spawn in {world} is now set to {vector}"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:88
+#: de/cubeisland/engine/spawn/SpawnCommands.java:109
+msgid "Use {text:global} instead of the role-name to set the default spawn."
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:242
+msgid "User {user} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:79
+msgid "World {input} not found"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:178
+msgid "World {input} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:191
+msgid "You are not allowed to spawn everyone!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:252
+msgid "You are not allowed to spawn {user}!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:278
+msgid "You are now standing at the spawn of {name#role}!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:247
+msgid "You cannot teleport an offline player to spawn!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:184
+msgid "You have to specify a world!"
+msgstr ""
+
+#: de/cubeisland/engine/spawn/SpawnCommands.java:234
+msgid "{text:ProTip}: Teleport does not work IRL!"
+msgstr ""

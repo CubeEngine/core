@@ -27,10 +27,10 @@ file_filter = conomy/src/main/resources/translations/<lang>.po
 source_file = conomy/src/main/resources/translations/messages.pot
 source_lang = en_US
 
-[cubeengine.faq]
-file_filter = faq/src/main/resources/translations/<lang>.po
-source_file = faq/src/main/resources/translations/messages.pot
-source_lang = en_US
+;[cubeengine.faq]
+;file_filter = faq/src/main/resources/translations/<lang>.po
+;source_file = faq/src/main/resources/translations/messages.pot
+;source_lang = en_US
 
 [cubeengine.fly]
 file_filter = fly/src/main/resources/translations/<lang>.po

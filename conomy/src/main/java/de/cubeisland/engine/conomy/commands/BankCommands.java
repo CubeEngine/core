@@ -58,7 +58,7 @@ public class BankCommands extends ContainerCommand
             BankAccount bankAccount = this.manager.getBankAccount(context.getString(0), false);
             if (bankAccount == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
                 return;
             }
             boolean showHidden = context.hasFlag("f") && module.perms().COMMAND_BANK_BALANCE_SHOWHIDDEN.isAuthorized(context.getSender());
@@ -66,7 +66,7 @@ public class BankCommands extends ContainerCommand
             {
                 if (context.getSender() instanceof User && !bankAccount.hasAccess((User)context.getSender()))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
                     return;
                 }
             }
@@ -96,7 +96,7 @@ public class BankCommands extends ContainerCommand
             User user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             Set<BankAccount> bankAccounts = this.manager.getBankAccounts(user);
@@ -119,7 +119,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated(MessageType.NEUTRAL, "There are no banks currently!");
             return;
         }
-        context.sendTranslated(MessageType.POSITIVE, "The following banks do exist:");
+        context.sendTranslated(MessageType.POSITIVE, "The following banks are available:");
         for (String bank : allBanks)
         {
             context.sendMessage(format + bank);
@@ -135,7 +135,7 @@ public class BankCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         boolean force = context.hasFlag("f")
@@ -145,7 +145,7 @@ public class BankCommands extends ContainerCommand
             BankAccount account = this.getBankAccount(context.getString(1));
             if (account == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(1));
                 return;
             }
             if (!account.needsInvite())
@@ -204,7 +204,7 @@ public class BankCommands extends ContainerCommand
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
                 return;
             }
             other = true;
@@ -278,7 +278,7 @@ public class BankCommands extends ContainerCommand
                 user = context.getUser(1);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+                    context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
                     return;
                 }
                 other = true;
@@ -298,7 +298,7 @@ public class BankCommands extends ContainerCommand
                 account = this.getBankAccount(context.getString(0));
                 if (account == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+                    context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
                     return;
                 }
             }
@@ -311,7 +311,7 @@ public class BankCommands extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Please do specify a bank-account to leave");
+                    context.sendTranslated(MessageType.NEGATIVE, "Please do specify a bank account to leave");
                     return;
                 }
             }
@@ -344,13 +344,13 @@ public class BankCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user ==  null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
             return;
         }
         BankAccount bankAccount = this.getBankAccount(context.getString(1));
         if (bankAccount == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
             return;
         }
         if (bankAccount.isOwner(user) || module.perms().COMMAND_BANK_UNINVITE_FORCE.isAuthorized(context.getSender()))
@@ -378,7 +378,7 @@ public class BankCommands extends ContainerCommand
             BankAccount bankAccount = this.getBankAccount(context.getString(0));
             if (bankAccount == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
                 return;
             }
             if (bankAccount.isInvited(user))
@@ -421,7 +421,7 @@ public class BankCommands extends ContainerCommand
         BankAccount account = this.getBankAccount(context.getString(0));
         if (account == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
             return;
         }
         if (context.getSender() instanceof User)
@@ -456,7 +456,7 @@ public class BankCommands extends ContainerCommand
         BankAccount account = this.getBankAccount(context.getString(0));
         if (account == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
             return;
         }
         boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_RENAME_FORCE.isAuthorized(context.getSender());
@@ -473,7 +473,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated(MessageType.POSITIVE, "Bank renamed!");
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "There is already a bank names {input#bank}!", context.getString(1));
+        context.sendTranslated(MessageType.NEGATIVE, "Bank name {input#bank} has already been taken!", context.getString(1));
     }
 
     @Command(desc = "Sets given user as owner for a bank",
@@ -485,13 +485,13 @@ public class BankCommands extends ContainerCommand
         User user = context.getUser(1);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
             return;
         }
         BankAccount account = this.getBankAccount(context.getString(0));
         if (account == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
             return;
         }
         boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_SETOWNER_FORCE.isAuthorized(context.getSender());
@@ -551,7 +551,7 @@ public class BankCommands extends ContainerCommand
         BankAccount account = this.getBankAccount(context.getString(0));
         if (account == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
             return;
         }
         Set<String> owners = account.getOwners();
@@ -599,7 +599,7 @@ public class BankCommands extends ContainerCommand
             BankAccount account = this.getBankAccount(context.getString(0));
             if (account == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
                 return;
             }
             Double amount = context.getArg(1, Double.class, null);
@@ -680,7 +680,7 @@ public class BankCommands extends ContainerCommand
         BankAccount account = this.getBankAccount(context.getString(0));
         if (account == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(0));
             return;
         }
         if (!account.isOwner((User)context.getSender()))
@@ -709,7 +709,7 @@ public class BankCommands extends ContainerCommand
             target = this.manager.getBankAccount(context.getString(1), false);
             if (target == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "There is no bank-account named {input#bank}!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "There is no bank account named {input#bank}!", context.getString(1));
                 return;
             }
         }

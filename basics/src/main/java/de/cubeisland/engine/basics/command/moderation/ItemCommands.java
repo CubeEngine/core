@@ -190,7 +190,7 @@ public class ItemCommands
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "You now no longer have unlimited items to build!");
+                context.sendTranslated(MessageType.NEUTRAL, "You no longer have unlimited items to build!");
             }
             sender.get(BasicsAttachment.class).setUnlimitedItems(unlimited);
             return;
@@ -239,7 +239,7 @@ public class ItemCommands
                 level = context.getArg(1, Integer.class, 0);
                 if (level <= 0)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "The enchantment-level has to be a number greater than 0!");
+                    context.sendTranslated(MessageType.NEGATIVE, "The enchantment level has to be a number greater than 0!");
                     return;
                 }
             }
@@ -270,7 +270,7 @@ public class ItemCommands
                     context.sendTranslated(MessageType.POSITIVE, "Added enchantment: {input#enchantment} {integer#level} to your item!", Match.enchant().nameFor(ench), level);
                     return;
                 }
-                context.sendTranslated(MessageType.NEGATIVE, "This enchantment-level is not allowed!");
+                context.sendTranslated(MessageType.NEGATIVE, "This enchantment level is not allowed!");
                 return;
             }
             String possibleEnchs = this.getPossibleEnchantments(item);
@@ -324,7 +324,7 @@ public class ItemCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         ItemStack item = context.getArg(1, ItemStack.class, null);
@@ -433,7 +433,7 @@ public class ItemCommands
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You can't get enough of it. Don't you?");
+            context.sendTranslated(MessageType.NEGATIVE, "You can't get enough of it, can you?");
             return;
         }
         if (sender.getItemInHand() == null || sender.getItemInHand().getType() == Material.AIR)

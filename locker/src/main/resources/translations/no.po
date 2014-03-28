@@ -17,9 +17,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-11 00:08+0100\n"
-"PO-Revision-Date: 2014-03-09 09:24+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-27 03:00:12+0100\n"
+"PO-Revision-Date: 2014-03-26 09:26+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: Norwegian (http://www.transifex.com/projects/p/cubeengine/language/no/)\n"
 "MIME-Version: 1.0\n"
@@ -642,4 +642,24 @@ msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:615
 msgid "{user} used a KeyBook to access one of your protections!"
+msgstr ""
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:107
+msgid "This KeyBook"
+msgstr ""
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:108
+msgid "looks old and"
+msgstr ""
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:111
+msgid "open any containers!"
+msgstr ""
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:109
+msgid "used up. It"
+msgstr ""
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:110
+msgid "wont let you"
 msgstr ""
