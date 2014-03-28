@@ -64,7 +64,7 @@ public class PaintingListener implements Listener
             Painting playerPainting = this.paintingChange.get(user.getName());
             if(playerPainting == null && this.paintingChange.containsValue(painting))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This painting is veing used by another player.");
+                user.sendTranslated(MessageType.NEGATIVE, "This painting is being used by another player.");
             }
             else if (playerPainting == null)
             {
