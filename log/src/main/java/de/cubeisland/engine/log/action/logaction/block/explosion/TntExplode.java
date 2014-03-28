@@ -57,22 +57,22 @@ public class TntExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion induced by {user} got rid of {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT explosion induced by {user} got rid of {amount}x {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), amount, logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion got rid of {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT explosion got rid of {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
             }
         }
         else
         {
             if (logEntry.hasCauserUser())
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion induced by {user} got rid of {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT explosion induced by {user} got rid of {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
             }
             else
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A TNT-Explosion got rid of {name#block}{}", time, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A TNT explosion got rid of {name#block}{}", time, logEntry.getOldBlock(), loc);
             }
         }
     }

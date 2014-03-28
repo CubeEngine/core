@@ -99,7 +99,7 @@ public class QueryResults
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs!", compressedEntries.size());
+                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs!", compressedEntries.size()) // TODO maybe add in a line for if there is only 1 log, so not a plural
                 }
             }
         }

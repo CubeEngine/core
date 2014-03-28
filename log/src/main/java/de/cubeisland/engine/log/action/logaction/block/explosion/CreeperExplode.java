@@ -57,7 +57,7 @@ public class CreeperExplode extends BlockActionType
             int amount = logEntry.getAttached().size()+1;
             if (logEntry.getCauserUser() == null)
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A Creeper-Explosion wrecked {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Creeper explosion wrecked {amount}x {name#block}{}", time, amount, logEntry.getOldBlock(), loc);
             }
             else
             {
@@ -68,7 +68,7 @@ public class CreeperExplode extends BlockActionType
         {
             if (logEntry.getCauserUser() == null)
             {
-                user.sendTranslated(MessageType.POSITIVE, "{}A Creeper-Explosion wrecked {name#block}{}", time, logEntry.getOldBlock(), loc);
+                user.sendTranslated(MessageType.POSITIVE, "{}A Creeper explosion wrecked {name#block}{}", time, logEntry.getOldBlock(), loc);
             }
             else
             {

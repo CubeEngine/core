@@ -139,11 +139,11 @@ public class BlockShift extends BlockActionType
         }
         else if (logEntry.getNewBlock().material == PISTON_EXTENSION)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got moved away by a Piston{input#times}{}", time, logEntry.getOldBlock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} was pushed by a Piston{input#times}{}", time, logEntry.getOldBlock(), times, loc);
         }
         else if (logEntry.getNewBlock().material == AIR)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got retracted by a Piston{input#times}{}", time, logEntry.getOldBlock(), times, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{name#block} was pulled by a Piston{input#times}{}", time, logEntry.getOldBlock(), times, loc);
         }
         else
         {

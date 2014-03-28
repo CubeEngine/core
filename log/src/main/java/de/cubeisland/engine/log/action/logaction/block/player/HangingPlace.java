@@ -76,7 +76,7 @@ public class HangingPlace extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} got hung up by {user}{}", time, logEntry.getNewBlock(), logEntry.getCauserUser().getDisplayName(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{name#block} was hung by {user}{}", time, logEntry.getNewBlock(), logEntry.getCauserUser().getDisplayName(), loc);
     }
 
     @Override

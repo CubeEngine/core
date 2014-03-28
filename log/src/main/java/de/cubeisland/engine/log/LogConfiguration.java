@@ -28,7 +28,7 @@ import org.joda.time.Duration;
 @SuppressWarnings("all")
 public class LogConfiguration extends ReflectedYaml
 {
-    @Comment("The maximum of logs that may be logged at once.")
+    @Comment("The maximum number of logs that may be logged at once.")
     @Name("logging.batch-size")
     public int loggingBatchSize = 2000;
     @Comment("Shows log info in the console when logging at least that amount of logs at once")

@@ -56,7 +56,7 @@ public class CakeEat extends BlockActionType
         int piecesLeft = 6 - logEntry.getNewBlock().data;
         if (piecesLeft == 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}The cake is a lie! Ask {user} he knows it!{}", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}The cake is a lie! {user} knows all about it...{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {

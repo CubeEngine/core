@@ -66,7 +66,7 @@ public class ContainerAccess extends BlockActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "{}{user} looked into a {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} opened a {name#block}{}", time, logEntry.getCauserUser().getDisplayName(), logEntry.getOldBlock(), loc);
     }
 
 

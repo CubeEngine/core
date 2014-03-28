@@ -64,7 +64,7 @@ public class NoteBlockChange extends BlockActionType
         }
         if (oldClicks.intValue() == newClicks)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} fiddled around with the noteblock but did not change anything{}", time, logEntry.getCauserUser().getDisplayName(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} touched the noteblock but didn't change it{}", time, logEntry.getCauserUser().getDisplayName(), loc);
         }
         else
         {

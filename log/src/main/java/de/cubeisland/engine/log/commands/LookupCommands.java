@@ -404,7 +404,7 @@ public class LookupCommands
             }
             if (limit > 100)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Your page-limit is to high! Showing 100 logs per page.");
+                context.sendTranslated(MessageType.NEUTRAL, "Your page limit is to high! Showing 100 logs per page.");
                 limit = 100;
             }
             show.pagelimit = limit;
@@ -463,7 +463,7 @@ public class LookupCommands
             User user = this.module.getCore().getUserManager().getUser(name, false);
             if (user == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                sender.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", name);
                 return false;
             }
             if (negate)

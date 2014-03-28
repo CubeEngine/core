@@ -101,7 +101,7 @@ public class Portal
         user.sendTranslated(MessageType.POSITIVE, "Portal Information for {name#portal}", this.getName());
         if (this.config.safeTeleport)
         {
-            user.sendTranslated(MessageType.POSITIVE, "This Portal has safe-teleport enabled");
+            user.sendTranslated(MessageType.POSITIVE, "This Portal has safe teleport enabled");
         }
         if (this.config.teleportNonPlayers)
         {

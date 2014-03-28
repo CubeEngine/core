@@ -71,11 +71,11 @@ public class ItemInsert extends SimpleLogActionType
         }
         if (amount > 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount} {name#item} into {name#container}{}", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} put {amount} {name#item} into {name#container}{}", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else if (amount < 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} took {amount} {name#item} out of {name#container}{}", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} took {amount} {name#item} from {name#container}{}", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else
         {
@@ -114,7 +114,7 @@ public class ItemInsert extends SimpleLogActionType
                 HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
-                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
+                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item insert!");
                     return false;
                 }
                 return true;
@@ -167,14 +167,14 @@ public class ItemInsert extends SimpleLogActionType
                 HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
-                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
+                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item insert!");
                     return false;
                 }
                 return true;
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-insert!");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item insert!");
             }
             return false;
         }

@@ -35,7 +35,7 @@ import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 @SuppressWarnings("all")
 public class LoggingConfiguration extends ReflectedYaml
 {
-    @Comment("Completely enables or disabled logging")
+    @Comment("Completely enables or disables logging")
     @Name("logging.enable")
     public boolean enable = true;
 
@@ -78,7 +78,7 @@ public class LoggingConfiguration extends ReflectedYaml
             public boolean LAVA_BREAK_enable = true;
         }
 
-        @Comment("Blocks destroyed by an entity. Usually doors fom zombies.")
+        @Comment("Blocks destroyed by an entity. Usually zombies breaking doors.")
         @Name("break.by-entity")
         public boolean ENTITY_BREAK_enable = true;
 
@@ -178,7 +178,7 @@ public class LoggingConfiguration extends ReflectedYaml
             public boolean BLOCK_SPREAD_enable = false;
         }
 
-        @Comment("Fire-Ignition by fireballs, lighter, lava or lightning")
+        @Comment("Fire ignition by fireballs, lighter, lava or lightning")
         public Ignite ignite = new Ignite();
         public class Ignite implements Section
         {
@@ -194,7 +194,7 @@ public class LoggingConfiguration extends ReflectedYaml
             public boolean OTHER_IGNITE_enable = false;
         }
 
-        @Comment("Unhindered Lava or Water-flow. These can produce a lot of logs!")
+        @Comment("Unhindered Lava or Water flow. USE THIS WITH CAUTION, this can substantially increase your number of logs!")
         public Flow flow = new Flow();
         public class Flow implements Section
         {
@@ -237,7 +237,7 @@ public class LoggingConfiguration extends ReflectedYaml
         @Comment("Eating cake")
         @Name("change.cake")
         public boolean CAKE_EAT_enable = true;
-        @Comment("Log every worldedit change. WARNING! Big Worldedit-actions could crash your server!")
+        @Comment("Log every worldedit change. WARNING! Big Worldedit actions could crash your server!")
         @Name("worldedit")
         public boolean WORLDEDIT_enable = false;
     }
@@ -362,7 +362,7 @@ public class LoggingConfiguration extends ReflectedYaml
     @Comment("Entity spawned using a monster-egg")
     @Name("logging.spawn.monster-egg")
     public boolean MONSTER_EGG_USE_enable = true;
-    @Comment("Entity naturally spawning. This will cause A LOT of logs!")
+    @Comment("Entity naturally spawning. USE THIS WITH CAUTION, this can substantially increase your number of logs!")
     @Name("logging.spawn.natural")
     public boolean NATURAL_SPAWN_enable = false;
     @Comment("Entity spawned by a spawner")

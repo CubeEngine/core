@@ -71,7 +71,7 @@ public class ItemRemove extends SimpleLogActionType
         }
         if (amount > 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount} {name#item} into {name#container}{}", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} put {amount} {name#item} into {name#container}{}", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else if (amount < 0)
         {
@@ -116,7 +116,7 @@ public class ItemRemove extends SimpleLogActionType
                 {
                     if (force)
                     {
-                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
+                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item remove!");
                     }
                     return false;
                 }
@@ -124,7 +124,7 @@ public class ItemRemove extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item remove!");
             }
             return false;
         }
@@ -172,7 +172,7 @@ public class ItemRemove extends SimpleLogActionType
                 {
                     if (force)
                     {
-                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
+                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item remove!");
                     }
                     return false;
                 }
@@ -180,7 +180,7 @@ public class ItemRemove extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item remove!");
             }
             return false;
         }
