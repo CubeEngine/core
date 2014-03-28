@@ -47,7 +47,7 @@ public class ConfirmCommand extends CubeCommand
         pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
         if (pendingConfirmations > 0)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You now have {amount} pending confirmations", pendingConfirmations);
+            context.sendTranslated(MessageType.NEUTRAL, "You have {amount} pending confirmations", pendingConfirmations);
         }
         return null;
     }

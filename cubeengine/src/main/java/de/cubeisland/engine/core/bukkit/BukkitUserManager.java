@@ -94,7 +94,7 @@ public class BukkitUserManager extends AbstractUserManager
             user = it.next();
             if (!user.isOnline())
             {
-                core.getLog().warn("Found an offline user in the online users list: {}({})", user.getName(), user.getUniqueId());
+                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getName(), user.getUniqueId());
                 this.onlineUsers.remove(user);
                 it.remove();
             }
@@ -222,7 +222,7 @@ public class BukkitUserManager extends AbstractUserManager
 
             if (task == null || task.getTaskId() == -1)
             {
-                core.getLog().warn("The delayed removed of user '{}' could not be scheduled... removing him now.");
+                core.getLog().warn("The delayed removed of player '{}' could not be scheduled... removing them now.");
                 removeCachedUser(user);
                 return;
             }

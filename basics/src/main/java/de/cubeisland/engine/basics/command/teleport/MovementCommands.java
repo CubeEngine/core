@@ -47,7 +47,7 @@ public class MovementCommands
         this.module = module;
     }
 
-    @Command(desc = "Teleports you x-amount of blocks into the air and puts a glassblock beneath you.", usage = "<height>", min = 1, max = 1)
+    @Command(desc = "Teleports you X amount of blocks into the air and puts a glass block beneath you.", usage = "<height>", min = 1, max = 1)
     public void up(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -56,7 +56,7 @@ public class MovementCommands
             int height = context.getArg(0, Integer.class, -1);
             if ((height < 0))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Invalid height. The height has to be a number greater than 0!");
+                context.sendTranslated(MessageType.NEGATIVE, "Invalid height. The height has to be a whole number greater than 0!");
                 return;
             }
             Location loc = sender.getLocation();
@@ -79,11 +79,11 @@ public class MovementCommands
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
             {
-                context.sendTranslated(MessageType.POSITIVE, "You just lifted!");
+                context.sendTranslated(MessageType.POSITIVE, "You have just been lifted!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "ProTip: Teleport does not work IRL!");
+        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports to the highest point at your position.")
@@ -101,7 +101,7 @@ public class MovementCommands
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "ProTip: Teleport does not work IRL!");
+        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports you to the next safe spot upwards.", max = 0)
@@ -148,7 +148,7 @@ public class MovementCommands
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "ProTip: Teleport does not work IRL!");
+        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
@@ -184,7 +184,7 @@ public class MovementCommands
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "ProTip: Teleport does not work IRL!");
+        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(names = {
@@ -284,7 +284,7 @@ public class MovementCommands
             context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport back!");
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "Unfortunatly teleporting is still not implemented in the game {text:'Life'}!");
+        context.sendTranslated(MessageType.NEGATIVE, "Unfortunately teleporting is still not implemented in the game {text:'Life'}!");
     }
 
     @Command(names = {
@@ -298,12 +298,12 @@ public class MovementCommands
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             if (!user.isOnline())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You cannot moove an offline player!");
+                context.sendTranslated(MessageType.NEGATIVE, "You cannot move an offline player!");
                 return;
             }
             Location loc = sender.getTargetBlock(null, 350).getLocation();
@@ -324,7 +324,7 @@ public class MovementCommands
 
     }
 
-    @Command(desc = "Swaps your and another players position", min = 1, max = 2, usage = "<player> [player]")
+    @Command(desc = "Swaps you and another players position", min = 1, max = 2, usage = "<player> [player]")
     public void swap(CommandContext context)
     {
         User sender;
@@ -333,7 +333,7 @@ public class MovementCommands
             sender = context.getUser(1);
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
         }
@@ -359,17 +359,17 @@ public class MovementCommands
         }
         if (!user.isOnline() || !sender.isOnline())
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You cannot moove an offline player!");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot move an offline player!");
             return;
         }
         if (user == sender)
         {
             if (context.getSender() instanceof Player)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Swapped position with yourself!? Are you kidding me?");
+                context.sendTranslated(MessageType.NEGATIVE, "Swapping positions with yourself!? Are you kidding me?");
                 return;
             }
-            context.sendTranslated(MessageType.NEUTRAL, "Truely a hero! Trying to swap a users position with himself...");
+            context.sendTranslated(MessageType.NEUTRAL, "Truly a hero! Trying to swap a users position with himself...");
             return;
         }
         Location userLoc = user.getLocation();

@@ -42,7 +42,7 @@ public class CoreConfiguration extends ReflectedYaml
 
     public class CommandsSection implements Section
     {
-        @Comment("The maximum number of similar commands to offer when more than one command matched a mistyped command.")
+        @Comment("The maximum number of similar commands to offer when more than one command matches a mistyped command.")
         public int maxCorrectionOffers = 5;
 
         @Comment("The maximum number of offers given for a tab completion request (pressing tab).")

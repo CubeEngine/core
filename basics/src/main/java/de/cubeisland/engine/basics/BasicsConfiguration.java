@@ -46,7 +46,7 @@ public class BasicsConfiguration extends ReflectedYaml
         public int butcherDefaultRadius = 20;
 
         @Comment({"The seconds until a teleport request is automatically denied.",
-                  "Use -1 to never automatically deny. (Will loose information after some time when disconnecting)"})
+                  "Use -1 to never automatically deny. (Will lose information after some time when disconnecting)"})
         public int teleportRequestWait = -1;
 
         public int nearDefaultRadius = 20;

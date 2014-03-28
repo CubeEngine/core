@@ -58,8 +58,8 @@ public class KickBanCommands
     private final BanManager banManager;
     private final UserManager um;
 
-    private static final String kickMessage = "You got kicked from the server!\n";
-    private static final String banMessage = "You got banned from this server!\n";
+    private static final String kickMessage = "You have been kicked from the server!\n";
+    private static final String banMessage = "You have been banned from this server!\n";
 
     public KickBanCommands(Basics module)
     {
@@ -95,7 +95,7 @@ public class KickBanCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         user.kickPlayer(user.getTranslation(MessageType.NEGATIVE, kickMessage) + "\n" + ChatFormat.RESET + reason);
@@ -119,7 +119,7 @@ public class KickBanCommands
         }
         else if (!context.hasFlag("f"))
         {
-            context.sendTranslated(MessageType.NEGATIVE,"{user} has never played on this server before! Use the -force flag to ban him anyways.", player);
+            context.sendTranslated(MessageType.NEGATIVE,"{user} has never played on this server before! Use the -force flag to ban him anyway.", player);
             return;
         }
         String reason = this.getReasonFrom(context, 1, module.perms().COMMAND_BAN_NOREASON);
@@ -128,7 +128,7 @@ public class KickBanCommands
         {
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You cannot ip-ban a player that has never played on the server before!");
+                context.sendTranslated(MessageType.NEGATIVE, "You cannot IP ban a player that has never played on the server before!");
                 return;
             }
             if (user.getAddress() != null)
@@ -136,7 +136,7 @@ public class KickBanCommands
                 InetAddress ipAdress = user.getAddress().getAddress();
                 if (this.banManager.isIpBanned(ipAdress))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} is already ip-banned!", player);
+                    context.sendTranslated(MessageType.NEGATIVE, "{user} is already IP banned!", player);
                     return;
                 }
                 this.banManager.addBan(new IpBan(ipAdress,context.getSender().getName(), reason));
@@ -157,7 +157,7 @@ public class KickBanCommands
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "You cannot IP-ban this player because he was offline for too long!");
+                context.sendTranslated(MessageType.NEUTRAL, "You cannot IP ban this player because he was offline for too long!");
             }
             return;
         }
@@ -246,7 +246,7 @@ public class KickBanCommands
         }
         catch (UnknownHostException e)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{input#ip} is not a valid IP-address!", ipaddress);
+            context.sendTranslated(MessageType.NEGATIVE, "{input#ip} is not a valid IP address!", ipaddress);
         }
     }
 
@@ -264,7 +264,7 @@ public class KickBanCommands
         }
         catch (UnknownHostException e)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{input#ip} is not a valid IP-address!", ipadress);
+            context.sendTranslated(MessageType.NEGATIVE, "{input#ip} is not a valid IP address!", ipadress);
         }
     }
 
