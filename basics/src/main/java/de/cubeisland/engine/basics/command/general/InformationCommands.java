@@ -74,7 +74,7 @@ public class InformationCommands
                                                      .appendSeconds().appendSuffix(" second", " seconds").toFormatter();
     }
 
-    @Command(desc = "Displays the Biome type you are standing in.",
+    @Command(desc = "Displays the biome type you are standing in.",
              usage = "{world} {block-x} {block-z}", max = 3)
     public void biome(CommandContext context)
     {
