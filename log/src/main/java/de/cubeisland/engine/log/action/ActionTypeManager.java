@@ -105,7 +105,7 @@ import de.cubeisland.engine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.engine.log.action.logaction.interact.InteractEntityActionType;
 import de.cubeisland.engine.log.action.logaction.interact.ItemInFrameRemove;
 import de.cubeisland.engine.log.action.logaction.interact.MilkFill;
-import de.cubeisland.engine.log.action.logaction.interact.MonsterEggUse;
+import de.cubeisland.engine.log.action.newaction.entity.spawn.MonsterEggUse;
 import de.cubeisland.engine.log.action.logaction.interact.PotionSplash;
 import de.cubeisland.engine.log.action.logaction.interact.SoupFill;
 import de.cubeisland.engine.log.action.logaction.interact.VehicleBreak;
@@ -120,10 +120,10 @@ import de.cubeisland.engine.log.action.logaction.kill.NpcDeath;
 import de.cubeisland.engine.log.action.logaction.kill.OtherDeath;
 import de.cubeisland.engine.log.action.logaction.kill.PetDeath;
 import de.cubeisland.engine.log.action.logaction.kill.PlayerDeath;
-import de.cubeisland.engine.log.action.logaction.spawn.EntitySpawnActionType;
-import de.cubeisland.engine.log.action.logaction.spawn.NaturalSpawn;
-import de.cubeisland.engine.log.action.logaction.spawn.OtherSpawn;
-import de.cubeisland.engine.log.action.logaction.spawn.SpawnerSpawn;
+import de.cubeisland.engine.log.action.newaction.entity.EntityListener;
+import de.cubeisland.engine.log.action.newaction.entity.spawn.NaturalSpawn;
+import de.cubeisland.engine.log.action.newaction.entity.spawn.OtherSpawn;
+import de.cubeisland.engine.log.action.newaction.entity.spawn.SpawnerSpawn;
 import de.cubeisland.engine.log.action.logaction.worldedit.WorldEditActionType;
 
 import de.cubeisland.engine.log.storage.ActionTypeModel;
@@ -248,7 +248,7 @@ public class ActionTypeManager
             .registerActionType(new ContainerActionType())
             .registerActionType(new InteractEntityActionType())
             .registerActionType(new KillActionType())
-            .registerActionType(new EntitySpawnActionType());
+            .registerActionType(new EntityListener());
     }
 
     public ActionTypeManager registerActionType(ActionType actionType)

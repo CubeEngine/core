@@ -47,6 +47,11 @@ public abstract class EntityBlockActionType<ListenerType> extends BlockActionTyp
             return this.uuid.equals(section.uuid);
         }
 
+        public boolean isSameType(EntitySection section)
+        {
+            return this.type == section.type;
+        }
+
         public String name()
         {
             return this.type.name();

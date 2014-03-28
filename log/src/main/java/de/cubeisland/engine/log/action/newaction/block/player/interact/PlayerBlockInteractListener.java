@@ -27,11 +27,9 @@ import org.bukkit.material.Rails;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.engine.log.action.logaction.interact.FireworkUse;
-import de.cubeisland.engine.log.action.logaction.interact.MonsterEggUse;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.VehiclePrePlaceEvent;
-import de.cubeisland.engine.log.storage.ItemData;
 
 import static org.bukkit.DyeColor.BROWN;
 import static org.bukkit.DyeColor.WHITE;
@@ -73,23 +71,15 @@ public class PlayerBlockInteractListener extends LogListener
     {
         // TODO other event ...
         //TODO put item into itemframe
-        if (itemInHand.getType() == MONSTER_EGG)
-        {
-            MonsterEggUse monsterEggUse = this.manager.getActionType(MonsterEggUse.class);
-            if (monsterEggUse.isActive(state.getWorld()))
-            {
-                monsterEggUse.logSimple(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),
-                                        event.getPlayer(),new ItemData(itemInHand).serialize(this.om));
-            }
-        }
+
         else if (itemInHand.getType() == FIREWORK)
         {
             //System.out.print(itemInHand);//TODO remove
             FireworkUse fireworkUse = this.manager.getActionType(FireworkUse.class);
             if (fireworkUse.isActive(state.getWorld()))
             { //TODO perhaps serialize itemdata?
-                fireworkUse.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation()
-                    ,event.getPlayer(),null,null,null,null,null);
+                fireworkUse.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(), event
+                    .getPlayer(), null, null, null, null, null);
             }
         }
 
