@@ -60,7 +60,7 @@ public class NukeCommand
     }
 
     @Command(
-        desc = "Makes a TNT carpet fall on a player or where you're looking",
+        desc = "Makes a carpet of TNT fall on a player or where you're looking",
         max = 3,
         params =
             {
