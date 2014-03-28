@@ -53,13 +53,13 @@ import de.cubeisland.engine.log.action.logaction.block.entity.EntityBreak;
 import de.cubeisland.engine.log.action.logaction.block.entity.EntityChangeActionType;
 import de.cubeisland.engine.log.action.logaction.block.entity.EntityForm;
 import de.cubeisland.engine.log.action.logaction.block.entity.SheepEat;
-import de.cubeisland.engine.log.action.logaction.block.explosion.CreeperExplode;
-import de.cubeisland.engine.log.action.logaction.block.explosion.EnderdragonExplode;
-import de.cubeisland.engine.log.action.logaction.block.explosion.EntityExplode;
-import de.cubeisland.engine.log.action.logaction.block.explosion.ExplodeActionType;
-import de.cubeisland.engine.log.action.logaction.block.explosion.FireballExplode;
-import de.cubeisland.engine.log.action.logaction.block.explosion.TntExplode;
-import de.cubeisland.engine.log.action.logaction.block.explosion.WitherExplode;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.CreeperExplode;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.EnderdragonExplode;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.EntityExplode;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplodeListener;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.FireballExplode;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.TntExplode;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.WitherExplode;
 import de.cubeisland.engine.log.action.logaction.block.flow.FlowActionType;
 import de.cubeisland.engine.log.action.logaction.block.flow.LavaBreak;
 import de.cubeisland.engine.log.action.logaction.block.flow.LavaFlow;
@@ -240,7 +240,7 @@ public class ActionTypeManager
             .registerActionType(new CraftItem())
             .registerActionType(new ItemInFrameRemove());
         this.registerActionType(new EntityChangeActionType())
-            .registerActionType(new ExplodeActionType())
+            .registerActionType(new ExplodeListener())
             .registerActionType(new FlowActionType())
             .registerActionType(new IgniteActionType())
             .registerActionType(new RightClickActionType())
