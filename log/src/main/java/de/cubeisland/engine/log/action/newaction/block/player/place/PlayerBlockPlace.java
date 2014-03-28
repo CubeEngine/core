@@ -42,7 +42,7 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerBlockPlace
-            && ((PlayerBlockPlace)action).playerUUID == this.playerUUID
+            && this.player.equals(((PlayerBlockPlace)action).player)
             && ((PlayerBlockPlace)action).oldBlock == this.oldBlock
             && ((PlayerBlockPlace)action).newBlock == this.newBlock;
     }
@@ -56,18 +56,18 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
             if (this.oldBlock == AIR)
             {
                 return user.getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}{}",
-                                           this.playerName, amount, this.newBlock.name());
+                                           this.player.name, amount, this.newBlock.name());
             }
             return user.getTranslation(MessageType.POSITIVE, "{user} replaced {amount}x {name#block} with {name#block}{}",
-                                       this.playerName, amount, this.oldBlock.name(), this.newBlock.name());
+                                       this.player.name, amount, this.oldBlock.name(), this.newBlock.name());
         }
         // else single
         if (this.oldBlock == AIR)
         {
             return user.getTranslation(MessageType.POSITIVE, "{user} placed {name#block}{}",
-                                       this.playerName, this.newBlock.name());
+                                       this.player.name, this.newBlock.name());
         }
         return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}{}",
-                                   this.playerName, this.oldBlock.name(), this.newBlock.name());
+                                   this.player.name, this.oldBlock.name(), this.newBlock.name());
     }
 }

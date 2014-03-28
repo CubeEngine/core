@@ -14,7 +14,7 @@ public class FuelFurnaceMinecart extends PlayerEntityActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof FuelFurnaceMinecart
-            && ((FuelFurnaceMinecart)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((FuelFurnaceMinecart)action).player)
             && ((FuelFurnaceMinecart)action).entityUUID.equals(this.entityUUID);
     }
 
@@ -25,6 +25,6 @@ public class FuelFurnaceMinecart extends PlayerEntityActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} gave fuel to a furnace-minecart",
                                     "{user} gave fuel to a furnace-minecart {amount} times",
-                                    this.playerName, count);
+                                    this.player.name, count);
     }
 }

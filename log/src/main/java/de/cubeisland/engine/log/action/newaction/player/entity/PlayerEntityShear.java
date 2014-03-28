@@ -17,7 +17,7 @@ public class PlayerEntityShear extends PlayerEntityActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerEntityShear
-            && ((PlayerEntityShear)action).playerUUID .equals(this.playerUUID)
+            && this.player.equals(((PlayerEntityShear)action).player)
             && ((PlayerEntityShear)action).entityType == this.entityType;
     }
 
@@ -28,6 +28,6 @@ public class PlayerEntityShear extends PlayerEntityActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} sheared {name#entity}",
                                     "{user} sheared {2:amount} {name#entity}",
-                                    this.playerName, this.entityType.name(), count);
+                                    this.player.name, this.entityType.name(), count);
     }
 }

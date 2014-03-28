@@ -17,7 +17,7 @@ public class PlayerHangingPlace extends PlayerHangingActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerHangingPlace
-            && ((PlayerHangingPlace)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerHangingPlace)action).player)
             && ((PlayerHangingPlace)action).hangingType == this.hangingType;
     }
 
@@ -28,6 +28,6 @@ public class PlayerHangingPlace extends PlayerHangingActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{name#hanging} got hung up by {user}",
                                     "{name#hanging} got hung up by {user} {amount} times",
-                                    this.hangingType.name(), this.playerName, count);
+                                    this.hangingType.name(), this.player.name, count);
     }
 }

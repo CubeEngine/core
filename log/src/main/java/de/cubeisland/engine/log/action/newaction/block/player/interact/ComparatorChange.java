@@ -19,8 +19,8 @@ public class ComparatorChange extends PlayerBlockActionType<PlayerBlockInteractL
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof ComparatorChange
-            && this.playerUUID.equals(((ComparatorChange)action).playerUUID)
-            && this.coord.compareTo(action.coord);
+            && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.coord.equals(action.coord);
     }
 
     @Override
@@ -28,12 +28,12 @@ public class ComparatorChange extends PlayerBlockActionType<PlayerBlockInteractL
     {
         if (this.hasAttached())
         {
-            return user.getTranslation(POSITIVE, "{user} changed the comparator state {amount} times", this.playerName, this.countAttached());
+            return user.getTranslation(POSITIVE, "{user} changed the comparator state {amount} times", this.player.name, this.countAttached());
         }
         if (this.newBlock == REDSTONE_COMPARATOR_ON)
         {
-            return user.getTranslation(POSITIVE, "{user} activated the comparator", this.playerName);
+            return user.getTranslation(POSITIVE, "{user} activated the comparator", this.player.name);
         }
-        return user.getTranslation(POSITIVE, "{user} deactivated the comparator", this.playerName);
+        return user.getTranslation(POSITIVE, "{user} deactivated the comparator", this.player.name);
     }
 }

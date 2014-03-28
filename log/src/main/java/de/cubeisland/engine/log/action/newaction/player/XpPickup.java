@@ -36,7 +36,7 @@ public class XpPickup extends PlayerActionType<PlayerActionListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof XpPickup
-            && ((XpPickup)action).playerUUID.equals(this.playerUUID);
+            && this.player.equals(((XpPickup)action).player);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class XpPickup extends PlayerActionType<PlayerActionListener>
                 amount += ((XpPickup)action).exp;
             }
         }
-        return user.getTranslation(POSITIVE, "{user} earned {amount} experience", this.playerName, amount);
+        return user.getTranslation(POSITIVE, "{user} earned {amount} experience", this.player.name, amount);
     }
 
     public void setExp(int exp)

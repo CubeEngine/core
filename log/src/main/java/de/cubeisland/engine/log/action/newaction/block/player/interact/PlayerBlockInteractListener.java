@@ -50,7 +50,16 @@ import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
  * {@link DoorUse}
  * {@link LeverUse}
  * {@link ComparatorChange}
- * {@link LeverUse}
+ * {@link ButtonUse}
+ * {@link CakeEat}
+ * {@link NoteBlockChange}
+ * {@link RepeaterChange}
+ * {@link TntPrime}
+ * {@link BonemealUse}
+ * {@link CropTrample}
+ * {@link PlateStep}
+ * <p>Fired Events:
+ * {@link VehiclePrePlaceEvent}
  */
 public class PlayerBlockInteractListener extends LogListener
 {
@@ -129,7 +138,7 @@ public class PlayerBlockInteractListener extends LogListener
             }
             else if (state.getData() instanceof Button)
             {
-                action = this.newAction(ComparatorChange.class, state.getWorld());
+                action = this.newAction(ButtonUse.class, state.getWorld());
                 if (action != null)
                 {
                     Button button = (Button)state.getData();

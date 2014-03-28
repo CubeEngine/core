@@ -22,7 +22,7 @@ public class RepeaterChange extends PlayerBlockActionType<PlayerBlockInteractLis
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof RepeaterChange
-            && this.playerUUID.equals(((RepeaterChange)action).playerUUID)
+            && this.player.equals(((PlayerBlockActionType)action).player)
             && TimeUnit.MINUTES.toMillis(2) > Math.abs(this.date.getTime() - action.date.getTime());
     }
 
@@ -39,8 +39,8 @@ public class RepeaterChange extends PlayerBlockActionType<PlayerBlockInteractLis
         }
         if (this.hasAttached() && oldTicks.intValue() == newTicks)
         {
-            return user.getTranslation(POSITIVE, "{user} fiddled around with the repeater but did not change anything", this.playerName);
+            return user.getTranslation(POSITIVE, "{user} fiddled around with the repeater but did not change anything", this.player.name);
         }
-        return user.getTranslation(POSITIVE, "{user} set the repeater to {amount} ticks delay", this.playerName, newTicks);
+        return user.getTranslation(POSITIVE, "{user} set the repeater to {amount} ticks delay", this.player.name, newTicks);
     }
 }

@@ -20,7 +20,7 @@ public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerBucketFill
-            && ((PlayerBucketFill)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerBucketFill)action).player)
             && ((PlayerBucketFill)action).oldBlock == this.oldBlock;
     }
 
@@ -33,18 +33,18 @@ public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener
             return user.getTranslationN(POSITIVE, count,
                                         "{user} filled a bucket with lava",
                                         "{user} filled {amount} buckets with lava",
-                                       this.playerName, count);
+                                       this.player.name, count);
         }
         if (this.oldBlock == WATER || this.oldBlock == STATIONARY_WATER)
         {
             return user.getTranslationN(POSITIVE, count,
                                         "{user} filled a bucket with water",
                                         "{user} filled {amount} buckets with water",
-                                       this.playerName, count);
+                                       this.player.name, count);
         }
         return user.getTranslationN(POSITIVE, count,
                                     "{user} filled a bucket with some random fluids",
                                     "{user} filled {amount} buckets with some random fluids!",
-                                    this.playerName, count);
+                                    this.player.name, count);
     }
 }

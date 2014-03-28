@@ -83,7 +83,7 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
             return new BlockVector3(xz[0], y, xz[1]);
         }
 
-        public boolean compareTo(Coordinate coordinate)
+        public boolean equals(Coordinate coordinate)
         {
             return coordinate.worldUUID.equals(this.worldUUID)
                 && Arrays.equals(coordinate.xz, this.xz)

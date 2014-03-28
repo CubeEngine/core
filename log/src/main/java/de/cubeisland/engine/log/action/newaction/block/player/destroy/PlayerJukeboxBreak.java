@@ -36,7 +36,7 @@ public class PlayerJukeboxBreak extends PlayerBlockBreak
             return super.translateAction(user);
         }
         return user.getTranslation(POSITIVE, "{user} broke {name#block} with {name#item}",
-                                   this.playerName, this.oldBlock.name(), this.disc.name());
+                                   this.player.name, this.oldBlock.name(), this.disc.name());
     }
 
     public void setDisc(Material disc)

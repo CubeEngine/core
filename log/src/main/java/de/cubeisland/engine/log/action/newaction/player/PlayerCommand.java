@@ -36,7 +36,7 @@ public class PlayerCommand extends PlayerActionType<PlayerActionListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerCommand
-            && ((PlayerCommand)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerCommand)action).player)
             && ((PlayerCommand)action).command.equalsIgnoreCase(this.command);
     }
 
@@ -46,9 +46,9 @@ public class PlayerCommand extends PlayerActionType<PlayerActionListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\" x{amount}",
-                                       this.playerName, this.command, this.getAttached().size() + 1);
+                                       this.player.name, this.command, this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\"",this.playerName, this.command);
+        return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\"", this.player.name, this.command);
     }
 
     public void setCommand(String command)

@@ -19,6 +19,9 @@ package de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect;
 
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 
+/**
+ * Represents a player breaking a waterlily indirectly
+ */
 public class PlayerWaterLilyBreak extends PlayerBlockBreak
 {
 }

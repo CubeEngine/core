@@ -36,7 +36,7 @@ public class PlayerJoin extends PlayerActionType<PlayerActionListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerJoin
-            && ((PlayerJoin)action).playerUUID.equals(this.playerUUID);
+            && this.player.equals(((PlayerJoin)action).player);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class PlayerJoin extends PlayerActionType<PlayerActionListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} joined the server x{amount}",
-                                this.playerName, this.getAttached().size() + 1);
+                                this.player.name, this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} joined the server", this.playerName);
+        return user.getTranslation(POSITIVE, "{user} joined the server", this.player.name);
         // TODO ip if set
     }
 

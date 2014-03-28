@@ -17,7 +17,7 @@ public class PlayerVehiclePlace extends PlayerVehicleActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerVehicleBreak
-            && ((PlayerVehicleBreak)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerVehicleBreak)action).player)
             && ((PlayerVehicleBreak)action).vehicleType == this.vehicleType;
     }
 
@@ -28,6 +28,6 @@ public class PlayerVehiclePlace extends PlayerVehicleActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} placed a {name#vehicle}",
                                     "{user} placed {2:amount} {name#vehicle}",
-                                    this.playerName, this.vehicleType.name(), count);
+                                    this.player.name, this.vehicleType.name(), count);
     }
 }

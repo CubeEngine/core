@@ -19,7 +19,7 @@ public class PlayerVehicleExit extends PlayerVehicleActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerVehicleEnter
-            && ((PlayerVehicleEnter)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerVehicleEnter)action).player)
             && ((PlayerVehicleEnter)action).vehicleUUID.equals(this.vehicleUUID);
     }
 
@@ -30,6 +30,6 @@ public class PlayerVehicleExit extends PlayerVehicleActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} exited a {name#vehicle}",
                                     "{user} exited a {name#vehicle} {amount} times",
-                                    this.playerName, this.vehicleType.name(), count);
+                                    this.player.name, this.vehicleType.name(), count);
     }
 }

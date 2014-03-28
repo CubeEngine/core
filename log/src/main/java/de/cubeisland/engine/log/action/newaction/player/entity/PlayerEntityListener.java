@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.material.Dye;
 
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
 
 import static org.bukkit.Material.*;
@@ -30,6 +31,10 @@ import static org.bukkit.Material.*;
  */
 public class PlayerEntityListener extends PlayerLogListener
 {
+    public PlayerEntityListener(Module module)
+    {
+        super(module);
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event)

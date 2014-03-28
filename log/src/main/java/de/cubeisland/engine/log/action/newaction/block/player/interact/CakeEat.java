@@ -26,11 +26,11 @@ public class CakeEat extends PlayerBlockActionType<PlayerBlockInteractListener>
         int piecesLeft = 6 - logEntry.getNewBlock().data; // TODO
         if (piecesLeft == 0)
         {
-            return user.getTranslation(POSITIVE, "The cake is a lie! Ask {user} he knows it!", this.playerName);
+            return user.getTranslation(POSITIVE, "The cake is a lie! Ask {user} he knows it!", this.player.name);
         }
         else
         {
-            return user.getTranslation(POSITIVE, "{user} ate a piece of cake", this.playerName);
+            return user.getTranslation(POSITIVE, "{user} ate a piece of cake", this.player.name);
         }
     }
 }

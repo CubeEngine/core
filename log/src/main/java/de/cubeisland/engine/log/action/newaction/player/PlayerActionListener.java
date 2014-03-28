@@ -27,6 +27,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import de.cubeisland.engine.core.module.Module;
+
 /**
  * A Listener for Player Actions
  * <p>Events:
@@ -46,6 +48,11 @@ import org.bukkit.event.player.PlayerTeleportEvent;
  */
 public class PlayerActionListener extends PlayerLogListener
 {
+    public PlayerActionListener(Module module)
+    {
+        super(module);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {

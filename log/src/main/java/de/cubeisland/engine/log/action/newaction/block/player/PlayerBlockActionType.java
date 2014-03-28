@@ -22,15 +22,31 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+import de.cubeisland.engine.reflect.Section;
 
 public abstract class PlayerBlockActionType<ListenerType> extends BlockActionType<ListenerType>
 {
-    public UUID playerUUID;
-    public String playerName;
+    public PlayerSection player;
+
+    public static class PlayerSection implements Section
+    {
+        public UUID uuid;
+        public String name;
+
+        public PlayerSection(Player player)
+        {
+            this.name = player.getName();
+            this.uuid = player.getUniqueId();
+        }
+
+        public boolean equals(PlayerSection section)
+        {
+            return this.uuid.equals(section.uuid);
+        }
+    }
 
     public void setPlayer(Player player)
     {
-        this.playerName = player.getName();
-        this.playerUUID = player.getUniqueId();
+        this.player = new PlayerSection(player);
     }
 }

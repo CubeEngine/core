@@ -18,8 +18,8 @@ public class PlateStep extends PlayerBlockActionType<PlayerBlockInteractListener
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlateStep
-            && this.playerUUID.equals(((PlateStep)action).playerUUID)
-            && this.coord.compareTo(action.coord)
+            && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.coord.equals(action.coord)
             && this.oldBlock == ((PlateStep)action).oldBlock;
     }
 
@@ -30,6 +30,6 @@ public class PlateStep extends PlayerBlockActionType<PlayerBlockInteractListener
         return user.getTranslationN(POSITIVE, count,
                                    "{user} stepped on a {name#block}",
                                    "{user} stepped on a {name#block} {amount} times",
-                                   this.playerName, this.oldBlock.name(), count);
+                                   this.player.name, this.oldBlock.name(), count);
     }
 }

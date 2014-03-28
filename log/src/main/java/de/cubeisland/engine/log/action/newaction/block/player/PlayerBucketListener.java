@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBucketFill;
 import de.cubeisland.engine.log.action.newaction.block.player.place.PlayerLavaBucketPlace;
@@ -29,6 +30,11 @@ import static org.bukkit.Material.*;
  */
 public class PlayerBucketListener extends LogListener
 {
+    public PlayerBucketListener(Module module)
+    {
+        super(module);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event)
     {

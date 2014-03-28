@@ -35,7 +35,7 @@ public class BonemealUse extends PlayerBlockActionType<PlayerBlockInteractListen
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof BonemealUse
-            && this.playerUUID.equals(((BonemealUse)action).playerUUID)
+            && this.player.equals(((PlayerBlockActionType)action).player)
             && this.oldBlock == ((BonemealUse)action).oldBlock;
     }
 
@@ -46,6 +46,6 @@ public class BonemealUse extends PlayerBlockActionType<PlayerBlockInteractListen
         return user.getTranslationN(POSITIVE, count,
                                     "{user} used bonemeal on {name#block}",
                                     "{user} used bonemeal on {name#block} x{amount}",
-                                    this.playerName, this.oldBlock.name(), count);
+                                    this.player.name, this.oldBlock.name(), count);
     }
 }

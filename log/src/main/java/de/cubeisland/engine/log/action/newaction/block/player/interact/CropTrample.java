@@ -21,7 +21,7 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
     {
         return action instanceof CropTrample
             && !this.hasAttached()
-            && this.playerUUID.equals(((CropTrample)action).playerUUID)
+            && this.player.equals(((PlayerBlockActionType)action).player)
             && 50 > Math.abs(this.date.getTime() - action.date.getTime())
             && this.coord.worldUUID.equals(action.coord.worldUUID)
             && Math.abs(this.coord.y - action.coord.y) == 1;
@@ -40,6 +40,6 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
                 action = (CropTrample)this.getAttached().get(0);
             }
         }
-        return user.getTranslation(POSITIVE, "{user} trampeled down {name#block}", action.playerName, action.oldBlock.name());
+        return user.getTranslation(POSITIVE, "{user} trampeled down {name#block}", action.player.name, action.oldBlock.name());
     }
 }

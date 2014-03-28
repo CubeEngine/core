@@ -18,7 +18,8 @@ public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof LeverUse
-            && this.coord.compareTo(action.coord);
+            && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.coord.equals(action.coord);
     }
 
     @Override
@@ -28,12 +29,12 @@ public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
         if ((logEntry.getNewBlock().data & 0x8) == 0x8)
         {
             return user.getTranslation(POSITIVE, "{user} activated the lever",
-                                       this.playerName);
+                                       this.player.name);
         }
         else
         {
             return user.getTranslation(POSITIVE, "{user} deactivated the lever",
-                                       this.playerName);
+                                       this.player.name);
         }
     }
 }

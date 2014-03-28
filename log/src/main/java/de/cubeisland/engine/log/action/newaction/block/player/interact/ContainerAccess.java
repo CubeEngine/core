@@ -21,8 +21,8 @@ public class ContainerAccess extends PlayerBlockActionType<PlayerBlockInteractLi
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof ContainerAccess
-            && this.playerUUID.equals(((ContainerAccess)action).playerUUID)
-            && this.coord.compareTo(action.coord);
+            && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.coord.equals(action.coord);
     }
 
     @Override
@@ -32,6 +32,6 @@ public class ContainerAccess extends PlayerBlockActionType<PlayerBlockInteractLi
         return user.getTranslationN(POSITIVE, count,
                                     "{user} looked into a {name#container}",
                                     "{user} looked into {2:amount} {name#container}",
-                                    this.playerName, this.oldBlock.name(), count);
+                                    this.player.name, this.oldBlock.name(), count);
     }
 }

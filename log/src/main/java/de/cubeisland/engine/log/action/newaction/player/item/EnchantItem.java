@@ -44,7 +44,7 @@ public class EnchantItem extends PlayerActionType<PlayerItemActionListener>
     {
         // same player
         return action instanceof EnchantItem
-            && ((EnchantItem)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((EnchantItem)action).player)
             && ((EnchantItem)action).enchantItem.isSimilar(this.enchantItem);
     }
 
@@ -54,10 +54,10 @@ public class EnchantItem extends PlayerActionType<PlayerItemActionListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} enchanted {name#item} x{amount}",
-                        this.playerName, this.enchantItem.getType().name(), this.getAttached().size() + 1);
+                        this.player.name, this.enchantItem.getType().name(), this.getAttached().size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} enchanted {name#item}",
-                    this.playerName, this.enchantItem.getType().name());
+                    this.player.name, this.enchantItem.getType().name());
         // TODO list enchantments
         // TODO enchant block used
     }

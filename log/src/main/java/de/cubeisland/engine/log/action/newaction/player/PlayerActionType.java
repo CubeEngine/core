@@ -17,20 +17,17 @@
  */
 package de.cubeisland.engine.log.action.newaction.player;
 
-import java.util.UUID;
-
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
 
 public abstract class PlayerActionType<ListenerType> extends ActionTypeBase<ListenerType>
 {
-    public UUID playerUUID;
-    public String playerName;
+    public PlayerSection player;
 
     public void setPlayer(Player player)
     {
-        this.playerName = player.getName();
-        this.playerUUID = player.getUniqueId();
+        this.player = new PlayerSection(player);
     }
 }

@@ -39,7 +39,7 @@ public class PlayerChat extends PlayerActionType<PlayerActionListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerChat
-            && ((PlayerChat)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerChat)action).player)
             && ((PlayerChat)action).message.equalsIgnoreCase(this.message)
             && Math.abs(TimeUnit.MILLISECONDS.toSeconds(action.date.getTime() - this.date.getTime())) < 30;
     }
@@ -52,13 +52,13 @@ public class PlayerChat extends PlayerActionType<PlayerActionListener>
             if (this.getAttached().size() >= 4)
             {
                 return user.getTranslation(POSITIVE, "{user} spammed \"{input#message}\" x{amount}",
-                                           this.playerName, this.message, this.getAttached().size() + 1);
+                                           this.player.name, this.message, this.getAttached().size() + 1);
             }
             return user.getTranslation(POSITIVE, "{user} chatted \"{input#message}\" x{amount}",
-                                       this.playerName, this.message, this.getAttached().size() + 1);
+                                       this.player.name, this.message, this.getAttached().size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} chatted \"{input#message}\"",
-                                   this.playerName, this.message);
+                                   this.player.name, this.message);
     }
 
     public void setMessage(String message)

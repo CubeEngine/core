@@ -55,8 +55,9 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
             // Drop / Pickup Pair
             return ((PlayerItemDrop)action).entityUUID.equals(this.entityUUID);
         }
-        return action instanceof PlayerItemPickup && ((PlayerItemPickup)action).playerUUID
-            .equals(this.playerUUID) && ((PlayerItemPickup)action).item.isSimilar(this.item);
+        return action instanceof PlayerItemPickup 
+            && this.player.equals(((PlayerItemPickup)action).player)
+            && ((PlayerItemPickup)action).item.isSimilar(this.item);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
                 PlayerItemDrop dropAction = (PlayerItemDrop)this.getAttached().get(0);
                 // Drop / Pickup Pair
                 return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} and {user} picked it up again",
-                                          dropAction.playerName, this.item.getType().name(), amount, this.playerName);
+                                          dropAction.player.name, this.item.getType().name(), amount, this.player.name);
             }
             for (ActionTypeBase action : this.getAttached())
             {
@@ -79,7 +80,7 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
             }
         }
         return user.getTranslation(POSITIVE, "{user} picked up {name#item} x{amount}",
-                                   this.playerName, this.item.getType().name(), amount);
+                                   this.player.name, this.item.getType().name(), amount);
     }
 
     public void setItem(Item item)

@@ -41,7 +41,7 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerBlockBreak
-            && ((PlayerBlockBreak)action).playerUUID == playerUUID
+            && this.player.equals(((PlayerBlockBreak)action).player)
             && ((PlayerBlockBreak)action).oldBlock == this.oldBlock;
     }
 

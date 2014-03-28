@@ -19,7 +19,7 @@ public class PlayerGrow extends PlayerBlockActionType<BlockListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerGrow
-            && ((PlayerGrow)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerGrow)action).player)
             && ((PlayerGrow)action).oldBlock == this.oldBlock
             && ((PlayerGrow)action).newBlock == this.newBlock;
     }
@@ -33,11 +33,11 @@ public class PlayerGrow extends PlayerBlockActionType<BlockListener>
             return user.getTranslationN(POSITIVE, count,
                                         "{user} let grow {name#block}",
                                         "{user} let grow {2:amount}x {name#block}",
-                                        this.playerName, this.newBlock.name(), count);
+                                        this.player.name, this.newBlock.name(), count);
         }
         return user.getTranslationN(POSITIVE, count,
                                     "{user} let grow {name#block} into {name#block}",
                                     "{user} let grow {3:amount}x {name#block} into {name#block}",
-                                    this.playerName, this.newBlock.name(), this.oldBlock.name(), count);
+                                    this.player.name, this.newBlock.name(), this.oldBlock.name(), count);
     }
 }

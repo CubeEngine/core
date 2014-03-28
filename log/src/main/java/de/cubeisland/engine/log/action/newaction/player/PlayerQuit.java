@@ -36,7 +36,7 @@ public class PlayerQuit extends PlayerActionType<PlayerActionListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerQuit
-            && ((PlayerQuit)action).playerUUID.equals(this.playerUUID);
+            && this.player.equals(((PlayerQuit)action).player);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class PlayerQuit extends PlayerActionType<PlayerActionListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} left the server x{amount}",
-                                       this.playerName, this.getAttached().size() + 1);
+                                       this.player.name, this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} left the server", this.playerName);
+        return user.getTranslation(POSITIVE, "{user} left the server", this.player.name);
         // TODO reason
     }
 

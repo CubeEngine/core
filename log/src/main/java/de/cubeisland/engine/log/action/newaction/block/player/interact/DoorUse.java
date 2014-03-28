@@ -18,7 +18,7 @@ public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof DoorUse
-            && this.playerUUID.equals(((DoorUse)action).playerUUID)
+            && this.player.equals(((PlayerBlockActionType)action).player)
             && this.oldBlock == ((DoorUse)action).oldBlock;
     }
 
@@ -28,12 +28,12 @@ public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
         // TODO plurals
         if (!((logEntry.getOldBlock().data & 0x4) == 0x4))
         {
-            return user.getTranslation(POSITIVE, "{user} opened the {name#block}", this.playerName, this.oldBlock
+            return user.getTranslation(POSITIVE, "{user} opened the {name#block}", this.player.name, this.oldBlock
                 .name());
         }
         else
         {
-            return user.getTranslation(POSITIVE, "{user} closed the {name#block}", this.playerName, this.oldBlock
+            return user.getTranslation(POSITIVE, "{user} closed the {name#block}", this.player.name, this.oldBlock
                 .name());
         }
     }

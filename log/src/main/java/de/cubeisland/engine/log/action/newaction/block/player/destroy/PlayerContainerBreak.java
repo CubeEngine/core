@@ -20,7 +20,6 @@ package de.cubeisland.engine.log.action.newaction.block.player.destroy;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -48,12 +47,12 @@ public class PlayerContainerBreak extends PlayerBlockBreak
         }
         if (amount == 0)
         {
-            return user.getTranslation(POSITIVE, "{user} broke an empty {name#container}", this.playerName, this.oldBlock.name());
+            return user.getTranslation(POSITIVE, "{user} broke an empty {name#container}", this.player.name, this.oldBlock.name());
         }
         return user.getTranslationN(POSITIVE, amount,
                                     "{user} broke {name#container} with a single stack of items",
                                     "{user} broke {name#container} with {amount} stacks of items",
-                                    this.playerName, amount);
+                                    this.player.name, amount);
     }
 
     public void setContents(ItemStack[] contents)

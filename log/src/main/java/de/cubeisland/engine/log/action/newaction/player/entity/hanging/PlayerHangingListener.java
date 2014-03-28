@@ -96,8 +96,7 @@ public class PlayerHangingListener extends LogListener
                     {
                         action.setLocation(location);
                         action.setHanging(hanging);
-                        action.playerName = ((PlayerBlockActionType)cause).playerName;
-                        action.playerUUID = ((PlayerBlockActionType)cause).playerUUID;
+                        action.player = ((PlayerBlockActionType)cause).player;
                         action.setCause(cause);
                         this.logAction(action);
                     }

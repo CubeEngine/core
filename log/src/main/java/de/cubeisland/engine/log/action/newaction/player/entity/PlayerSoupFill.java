@@ -17,7 +17,7 @@ public class PlayerSoupFill extends PlayerEntityActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerSoupFill
-            && ((PlayerSoupFill)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((PlayerSoupFill)action).player)
             && ((PlayerSoupFill)action).entityType == this.entityType;
     }
 
@@ -28,6 +28,6 @@ public class PlayerSoupFill extends PlayerEntityActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} made a soup using mooshrooms",
                                     "{user} made {amount} soups using mooshrooms",
-                                    this.playerName, count);
+                                    this.player.name, count);
     }
 }

@@ -21,7 +21,7 @@ public class PlayerItemFrameItemRemove extends PlayerHangingActionType
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerItemFrameItemRemove
-            && ((PlayerItemFrameItemRemove)action).playerUUID.equals(this.playerUUID);
+            && this.player.equals(((PlayerItemFrameItemRemove)action).player);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class PlayerItemFrameItemRemove extends PlayerHangingActionType
         return user.getTranslationN(POSITIVE, count,
                                     "{user} removed {name#item} from an itemframe",
                                     "{user} removed {2:amount} items from itemframes",
-                                    this.playerName, this.item.getType().name(), count);
+                                    this.player.name, this.item.getType().name(), count);
     }
 
     // TODO redo/rollback

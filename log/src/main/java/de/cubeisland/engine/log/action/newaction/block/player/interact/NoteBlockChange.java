@@ -20,7 +20,7 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof NoteBlockChange
-            && this.playerUUID.equals(((NoteBlockChange)action).playerUUID)
+            && this.player.equals(((PlayerBlockActionType)action).player)
             && TimeUnit.MINUTES.toMillis(2) > Math.abs(this.date.getTime() - action.date.getTime());
     }
 
@@ -38,8 +38,8 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
 
         if (oldClicks.intValue() == newClicks)
         {
-            return user.getTranslation(MessageType.POSITIVE, "{user} fiddled around with the noteblock but did not change anything", this.playerName);
+            return user.getTranslation(MessageType.POSITIVE, "{user} fiddled around with the noteblock but did not change anything", this.player.name);
         }
-        return user.getTranslation(MessageType.POSITIVE, "{user} set the noteblock to {amount} clicks", this.playerName, newClicks);
+        return user.getTranslation(MessageType.POSITIVE, "{user} set the noteblock to {amount} clicks", this.player.name, newClicks);
     }
 }

@@ -31,10 +31,10 @@ public class PlayerSignChange extends PlayerBlockActionType<PlayerBlockListener>
         if (oldLines == null || oldLines.length == 0)
         {
             return user.getTranslation(POSITIVE, "{user} wrote {input#signtext} on a sign",
-                                       this.playerName, StringUtils.implode(delim, newLines));
+                                       this.player.name, StringUtils.implode(delim, newLines));
         }
         return user.getTranslation(POSITIVE, "{user} wrote {input#signtext} on a sign",
-                                   this.playerName, StringUtils.implode(delim, newLines)) + "\n" +
+                                   this.player.name, StringUtils.implode(delim, newLines)) + "\n" +
                user.getTranslation(POSITIVE, "    The old signtext was {input#signtext}",
                                    StringUtils.implode(delim, oldLines));
     }

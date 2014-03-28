@@ -39,7 +39,7 @@ public class CraftItem extends PlayerActionType<PlayerItemActionListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof CraftItem
-            && ((CraftItem)action).playerUUID.equals(this.playerUUID)
+            && this.player.equals(((CraftItem)action).player)
             && ((CraftItem)action).craftItem.isSimilar(this.craftItem);
     }
 
@@ -49,10 +49,10 @@ public class CraftItem extends PlayerActionType<PlayerItemActionListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} crafted {name#item} x{amount}",
-                        this.playerName, this.craftItem.getType().name(), this.getAttached().size() + 1);
+                        this.player.name, this.craftItem.getType().name(), this.getAttached().size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} crafted {name#item}",
-                    this.playerName, this.craftItem.getType().name());
+                    this.player.name, this.craftItem.getType().name());
     }
 
     public void setItem(ItemStack result)
