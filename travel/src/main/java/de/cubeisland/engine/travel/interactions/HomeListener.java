@@ -57,7 +57,7 @@ public class HomeListener implements Listener
                         Home home = tpManager.getHome(user, "home");
                         home.setLocation(user.getLocation());
                         home.update();
-                        user.sendTranslated(MessageType.POSITIVE, "Your home have been set!");
+                        user.sendTranslated(MessageType.POSITIVE, "Your home has been set!");
                     }
                     else
                     {

@@ -87,7 +87,7 @@ public class SelectorCommand extends CubeCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated(MessageType.POSITIVE, "Received a new Region-Selector Tool");
+            user.sendTranslated(MessageType.POSITIVE, "Received a new region selector tool");
             return;
         }
         user.getInventory().removeItem(found);
@@ -95,6 +95,6 @@ public class SelectorCommand extends CubeCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated(MessageType.POSITIVE, "Found a Region-Selector Tool in your inventory!");
+        user.sendTranslated(MessageType.POSITIVE, "Found a region selector tool in your inventory!");
     }
 }

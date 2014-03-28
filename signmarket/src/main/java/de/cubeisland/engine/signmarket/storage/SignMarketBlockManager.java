@@ -47,7 +47,7 @@ public class SignMarketBlockManager
         {
             this.blockModels.put(model.getLocation(),model);
         }
-        this.module.getLog().debug("{} block-models loaded", this.blockModels.size());
+        this.module.getLog().debug("{} block models loaded", this.blockModels.size());
     }
 
     public Collection<SignMarketBlockModel> getLoadedModels()

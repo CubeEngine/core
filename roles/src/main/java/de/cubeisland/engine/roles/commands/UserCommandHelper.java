@@ -69,7 +69,7 @@ public class UserCommandHelper extends ContainerCommand
         }
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(pos));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(pos));
             return null;
         }
         return user;

@@ -65,7 +65,7 @@ public class SpawnListener implements Listener
                 Location spawnLoc = this.getSpawnLocation(spawnString);
                 if (spawnLoc == null)
                 {
-                    roles.getLog().warn("Invalid Location. Check your role-configuration!");
+                    roles.getLog().warn("Invalid Location. Check your role configuration!");
                     return;
                 }
                 user.teleport(spawnLoc.add(0.5,0,0.5), TeleportCause.PLUGIN);
@@ -91,7 +91,7 @@ public class SpawnListener implements Listener
                 Location spawnLoc = this.getSpawnLocation(roleSpawnMeta.getValue());
                 if (spawnLoc == null)
                 {
-                    roles.getLog().warn("Invalid Location. Check your role-configuration!");
+                    roles.getLog().warn("Invalid Location. Check your role configuration!");
                     return;
                 }
                 event.setRespawnLocation(spawnLoc.add(0.5,0,0.5));
