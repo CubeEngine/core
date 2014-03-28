@@ -182,7 +182,7 @@ public class NBTUtils
             }
             return list;
         }
-        throw new IllegalStateException("Unknown NBT Tag Type! "+ nbtBase.getClass().getName());
+        throw new IllegalStateException("Unknown NBT tag type! "+ nbtBase.getClass().getName());
     }
 
     @SuppressWarnings("unchecked")
@@ -271,7 +271,7 @@ public class NBTUtils
             }
             return compound;
         }
-        throw new IllegalStateException("Cannot convert nodes to NBT Tags! "+ node.getClass().getName());
+        throw new IllegalStateException("Cannot convert nodes to NBT tags! "+ node.getClass().getName());
     }
 
     private abstract static class HelperNBTBase extends NBTBase
