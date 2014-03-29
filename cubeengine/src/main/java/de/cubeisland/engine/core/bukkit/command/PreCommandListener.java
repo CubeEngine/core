@@ -35,6 +35,7 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
+import static de.cubeisland.engine.core.util.StringUtils.implode;
 
 public class PreCommandListener implements Listener
 {
@@ -75,17 +76,17 @@ public class PreCommandListener implements Listener
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(this.core.getI18n().translate(language, MessageType.NEGATIVE, "Couldn't find {input#command}. Did you mean {input#command}?"));
+                    sender.sendMessage(this.core.getI18n().translate(language, MessageType.NEGATIVE, "Couldn't find {input#command}. Did you mean {input#command}?", label, matches.iterator().next()));
                 }
                 else
                 {
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
-                    sender.sendMessage(this.core.getI18n().translate(language, MessageType.NEUTRAL, "Did you mean one of these: {input#command}?"));
+                    sender.sendMessage(this.core.getI18n().translate(language, MessageType.NEUTRAL, "Did you mean one of these: {input#command}?", implode(", /", matches)));
                 }
             }
             else
             {
-                sender.sendMessage(this.core.getI18n().translate(language, MessageType.NEGATIVE, "I couldn't find any command for {input#command} ..."));
+                sender.sendMessage(this.core.getI18n().translate(language, MessageType.NEGATIVE, "I couldn't find any command for {input#command} ...", label));
             }
             return true;
         }

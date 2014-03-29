@@ -396,7 +396,7 @@ public class InformationCommands
         {
             color = ChatFormat.parseFormats(tps > 17 ? ChatFormat.YELLOW.toString() : tps > 10 ? ChatFormat.RED.toString() : ChatFormat.DARK_RED.toString());
             Date date = new Date(lowestTPS.getLeft());
-            context.sendTranslated(MessageType.POSITIVE, "Lowest TPS was {decimal#tps:1} ({input#date})", color, lowestTPS.getRight(), df.format(date));
+            context.sendTranslated(MessageType.POSITIVE, "Lowest TPS was {}{decimal#tps:1} ({input#date})", color, lowestTPS.getRight(), df.format(date));
             long timeSinceLastLowTPS = System.currentTimeMillis() - this.module.getLagTimer().getLastLowTPS();
             if (tps == 20 && TimeUnit.MINUTES.convert(timeSinceLastLowTPS,TimeUnit.MILLISECONDS) < 1)
             {
