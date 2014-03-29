@@ -330,7 +330,7 @@ public class WorldsCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Lists all worls")
+    @Command(desc = "Lists all worlds")
     public void list(CommandContext context)
     {
         context.sendTranslated(MessageType.POSITIVE, "The following worlds do exist:");
@@ -502,7 +502,7 @@ public class WorldsCommands extends ContainerCommand
         context.sendTranslated(MessageType.NEGATIVE, "This command can only be used ingame!");
     }
 
-    @Command(desc = "Loads a players inventory etc. for his current world", usage = "<user>", min = 1, max = 1)
+    @Command(desc = "Loads a players state for their current world", usage = "<user>", min = 1, max = 1)
     public void loadPlayer(CommandContext context)
     {
         User user = context.getUser(0);
@@ -516,7 +516,7 @@ public class WorldsCommands extends ContainerCommand
         context.sendTranslated(MessageType.POSITIVE, "Loaded {user}'s data from file!", user);
     }
 
-    @Command(desc = "Save a players inventory etc. for his current world", usage = "<user>", min = 1, max = 1)
+    @Command(desc = "Save a players state for their current world", usage = "<user>", min = 1, max = 1)
     public void savePlayer(CommandContext context)
     {
         User user = context.getUser(0);
