@@ -17,50 +17,65 @@
  */
 package de.cubeisland.engine.log.action.newaction.death;
 
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.entity.Player;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
-import de.cubeisland.engine.log.storage.LogEntry;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * player-death
- * <p>Events: {@link DeathListener}</p>
+ * Represents a players death
  */
-public class PlayerDeath extends SimpleLogActionType
+public class PlayerDeath extends DeathAction
 {
     // return "player-death";
     // return this.lm.getConfig(world).death.PLAYER_DEATH_enable;
 
-
+    public PlayerSection killed;
 
     @Override
-    protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
+    public boolean canAttach(ActionTypeBase action)
     {
-        // TODO missing time & loc
-        if (logEntry.hasCauserUser())
-        {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} got slaughtered by {user}{}", time, logEntry.getUserFromData().getDisplayName(), logEntry.getCauserUser().getDisplayName(), loc);
-        }
-        else if (logEntry.hasCauserEntity())
-        {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} could not escape {name#entity}{}", time, logEntry.getUserFromData().getDisplayName(), logEntry.getCauserEntity(), loc);
-        }
-        else // something else
-        {
-            JsonNode json = logEntry.getAdditional();
-            DamageCause dmgC = DamageCause.valueOf(json.get("dmgC").asText());
-            if (logEntry.getUserFromData() == null)
-            {
-                user.sendTranslated(MessageType.POSITIVE, "{}A Player died ({name#cause}){}", time, dmgC.name(), loc);//TODO get pretty name for dmgC
-                return;
-            }
-
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} died ({name#cause}){}", time, logEntry.getUserFromData().getName(), dmgC.name(), loc);//TODO get pretty name for dmgC
-        }
+        return action instanceof PlayerDeath
+            && this.killer != null && ((DeathAction)action).killer != null
+            && this.killer.fetch(KillAction.class).canAttach(((DeathAction)action).killer.fetch(KillAction.class));
     }
 
+    @Override
+    public String translateAction(User user)
+    {
+        KillAction fetch = this.killer.fetch(KillAction.class);
+        if (fetch.isPlayerKiller())
+        {
+            if (this.hasAttached())
+            {
+                return user.getTranslation(POSITIVE, "{amount} players got killed by {user}", this.countAttached(), fetch.playerKiller.name);
+            }
+            return user.getTranslation(POSITIVE, "{user} got killed by {user}", this.killed.name, fetch.playerKiller.name);
+        }
+        if (fetch.isEntityKiller())
+        {
+            if (this.hasAttached())
+            {
+                return user.getTranslation(POSITIVE, "{amount} players could not escape {name#entity}", this.countAttached(), fetch.entityKiller.name());
+            }
+            return user.getTranslation(POSITIVE, "{user} could not escape {name#entity}", this.killed.name, fetch.entityKiller.name());
+        }
+        if (fetch.isOtherKiller())
+        {
+            if (this.hasAttached())
+            {
+                return user.getTranslation(POSITIVE, "{amount} players died of {name#cause}", this.countAttached(), fetch.otherKiller.name());
+            }
+            return user.getTranslation(POSITIVE, "{user} died of {name#cause}", this.killed.name, fetch.otherKiller.name());
+        }
+        return user.getTranslation(POSITIVE, "{user} died", this.killed.name);
+    }
 
+    public void setPlayer(Player player)
+    {
+        this.killed = new PlayerSection(player);
+    }
 }

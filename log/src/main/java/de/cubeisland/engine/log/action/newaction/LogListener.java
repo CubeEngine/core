@@ -20,13 +20,15 @@ package de.cubeisland.engine.log.action.newaction;
 import org.bukkit.World;
 import org.bukkit.event.Listener;
 
-import de.cubeisland.engine.core.module.Module;
+import com.mongodb.DBRefBase;
+import de.cubeisland.engine.bigdata.Reference;
+import de.cubeisland.engine.log.Log;
 
 public class LogListener implements Listener
 {
-    protected final Module module;
+    protected final Log module;
 
-    public LogListener(Module module)
+    public LogListener(Log module)
     {
         this.module = module;
     }
@@ -57,9 +59,18 @@ public class LogListener implements Listener
         // TODO
     }
 
-    protected final boolean isActive(Class<?> clazz, World world)
+    protected final boolean isActive(Class<? extends ActionTypeBase> clazz, World world)
     {
         // TODO
         return true;
+    }
+
+    public <T extends ActionTypeBase> Reference<T> reference(ActionTypeBase action)
+    {
+        if (action == null)
+        {
+            return null;
+        }
+        return new Reference<>(module.getCore().getConfigFactory(), new DBRefBase(db, collection, action.getId()));
     }
 }

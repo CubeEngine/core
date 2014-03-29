@@ -18,10 +18,16 @@
 package de.cubeisland.engine.bigdata;
 
 import de.cubeisland.engine.reflect.Reflected;
+import org.bson.types.ObjectId;
 
 public class ReflectedMongoDB extends Reflected<MongoDBCodec, RDBObject>
 {
-    // TODO set ObjectID after saving
+    transient ObjectId _id;
+
+    public ObjectId getId()
+    {
+        return _id;
+    }
 
     @Override
     public void save(RDBObject rdbo)

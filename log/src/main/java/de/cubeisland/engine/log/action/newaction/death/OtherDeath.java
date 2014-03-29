@@ -18,13 +18,10 @@
 package de.cubeisland.engine.log.action.newaction.death;
 
 
-import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
-
 /**
- * other-death
- * <p>Events: {@link DeathListener}</p>
+ * Represents a living entity dying
  */
-public class OtherDeath extends SimpleLogActionType
+public class OtherDeath extends EntityDeathAction
 {
     // return "other-death";
     // return this.lm.getConfig(world).death.OTHER_DEATH_enable;

@@ -85,6 +85,10 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
             saveObject.append("_id", rdbo.getDBObject().get("_id"));
         }
         rdbo.getCollection().save(saveObject);
+        if (reflected instanceof ReflectedMongoDB)
+        {
+            ((ReflectedMongoDB)reflected)._id = (ObjectId)saveObject.get("_id");
+        }
     }
 
     private BasicDBObject convertMapNode(MapNode mapNode)
@@ -177,11 +181,11 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
         }
         else if (value instanceof ObjectId)
         {
-            nodeValue = ObjectIdNode.of((ObjectId)value);
+            nodeValue = new ObjectIdNode((ObjectId)value);
         }
         else if (value instanceof DBRefBase)
         {
-            nodeValue = DBRefBaseNode.of((DBRefBase)value);
+            nodeValue = new DBRefBaseNode((DBRefBase)value);
         }
         else
         {

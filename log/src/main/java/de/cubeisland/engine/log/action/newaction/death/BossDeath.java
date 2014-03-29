@@ -17,16 +17,14 @@
  */
 package de.cubeisland.engine.log.action.newaction.death;
 
-import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
-
 /**
- * boss-death
- * <p>Events: {@link DeathListener}</p>
+ * Represents a boss dying
  */
-public class BossDeath extends SimpleLogActionType
+public class BossDeath extends EntityDeathAction
 {
     // return "boss-death";
     // return this.lm.getConfig(world).death.BOSS_DEATH_enable;
+
 
 
 }

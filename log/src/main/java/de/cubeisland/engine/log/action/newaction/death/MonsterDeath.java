@@ -17,14 +17,11 @@
  */
 package de.cubeisland.engine.log.action.newaction.death;
 
-import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
-
 /**
- * monster-death
- * <p>Events: {@link DeathListener}</p>
+ * Represents a monster dying
  * <p>This action-type is ignored when doing a rollback unless specifically set
  */
-public class MonsterDeath extends SimpleLogActionType
+public class MonsterDeath extends EntityDeathAction
 {
     // return "monster-death";
     // return this.lm.getConfig(world).death.MONSTER_DEATH_enable;

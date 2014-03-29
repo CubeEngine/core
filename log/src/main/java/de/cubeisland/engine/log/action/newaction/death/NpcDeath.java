@@ -21,10 +21,9 @@ package de.cubeisland.engine.log.action.newaction.death;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 
 /**
- * npc-death
- * <p>Events: {@link DeathListener}</p>
+ * Represents a NPC dying
  */
-public class NpcDeath extends SimpleLogActionType
+public class NpcDeath extends EntityDeathAction
 {
     // return "npc-death";
     // return this.lm.getConfig(world).death.NPC_DEATH_enable;

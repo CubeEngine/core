@@ -17,26 +17,16 @@
  */
 package de.cubeisland.engine.log.action.newaction.death;
 
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
-import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
-import org.bukkit.entity.Villager.Profession;
 import org.bukkit.entity.Wither;
-import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -44,21 +34,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.projectiles.ProjectileSource;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.logaction.ItemDrop;
-import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
+import de.cubeisland.engine.bigdata.Reference;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
-import de.cubeisland.engine.log.storage.ItemData;
-import de.cubeisland.engine.log.storage.LogEntry;
 
 /**
  * Container-ActionType for kills
@@ -72,27 +53,24 @@ import de.cubeisland.engine.log.storage.LogEntry;
  * {@link MonsterDeath},
  * {@link OtherDeath},
  */
+
+
+/**
+ * A Listener for Death related Actions
+ * <p>Events:
+ * {@link EntityDeathEvent}
+ * <p>Actions:
+ * {@link KillAction}
+ * {@link PlayerDeath}
+ * {@link PlayerDeathDrop}
+ * {@link EntityDeathAction}
+ * {@link EntityDeathDrop}
+ */
 public class DeathListener extends LogListener
 {
-    public DeathListener(Module module)
+    public DeathListener(Log module)
     {
         super(module);
-    }
-
-    private void logDeathDrops(EntityDeathEvent event)
-    {
-        if (!event.getDrops().isEmpty()) // TODO log drops later
-        {
-            ItemDrop itemDrop = this.manager.getActionType(ItemDrop.class);
-            if (itemDrop.isActive(event.getEntity().getWorld()))
-            {
-                for (ItemStack itemStack : event.getDrops())
-                {
-                    String itemData = new ItemData(itemStack).serialize(this.om);
-                    itemDrop.logSimple(event.getEntity(),itemData);
-                }
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -144,182 +122,86 @@ public class DeathListener extends LogListener
             }
             this.logAction(killAction);
         }
+
+        // TODO do not forget ref to killAction
+        Reference<KillAction> reference = this.reference(killAction);
         LivingEntity killed = event.getEntity();
-        Location location = event.getEntity().getLocation();
-        SimpleLogActionType actionType;
         if (killed instanceof Player)
         {
-            actionType = this.manager.getActionType(PlayerDeath.class);
+            PlayerDeath action = this.newAction(PlayerDeath.class, killed.getWorld());
+            if (action != null)
+            {
+                action.killer = reference;
+                action.setPlayer((Player)killed);
+                this.logAction(action);
+            }
+            if (this.isActive(EntityDeathDrop.class, event.getEntity().getWorld()))
+            {
+                Reference<PlayerDeath> deathRef = this.reference(action);
+                for (ItemStack itemStack : event.getDrops())
+                {
+                    PlayerDeathDrop dropAction = newAction(PlayerDeathDrop.class);
+                    dropAction.item = itemStack;
+                    dropAction.death = deathRef;
+                    this.logAction(dropAction);
+                }
+            }
+            return;
         }
-        else if (killed instanceof Wither || killed instanceof EnderDragon)
+
+        Class<? extends EntityDeathAction> actionType;
+        if (killed instanceof Wither || killed instanceof EnderDragon)
         {
-            actionType = this.manager.getActionType(BossDeath.class);
+            actionType = BossDeath.class;
         }
         else if (killed instanceof Animals)
         {
             if (killed instanceof Tameable && ((Tameable) killed).isTamed())
             {
-                actionType = this.manager.getActionType(PetDeath.class);
+                actionType = PetDeath.class;
             }
             else
             {
-                actionType = this.manager.getActionType(AnimalDeath.class);
+                actionType = AnimalDeath.class;
             }
         }
         else if (killed instanceof Villager)
         {
-            actionType = this.manager.getActionType(NpcDeath.class);
+            actionType = NpcDeath.class;
         }
         else if (killed instanceof Monster)
         {
-            actionType = this.manager.getActionType(MonsterDeath.class);
+            actionType = MonsterDeath.class;
         }
         else
         {
-            actionType = this.manager.getActionType(OtherDeath.class);
+            actionType = OtherDeath.class;
         }
-        EntityDamageEvent dmgEvent = killed.getLastDamageCause();
-        if (dmgEvent == null)
+        EntityDeathAction action = this.newAction(actionType, killed.getWorld());
+        if (action != null)
         {
-            this.logDeathDrops(event);
-            return; // should not happen anymore (but i'll leave it in to prevent NPE)
+            action.setKilled(killed);
+            action.killer = reference;
+            this.logAction(action);
         }
-        String additionalData = actionType.serializeData(dmgEvent.getCause(), killed,null);
-        if (dmgEvent instanceof EntityDamageByEntityEvent)
+        Reference<EntityDeathAction> deathRef = this.reference(action);
+        if (this.isActive(EntityDeathDrop.class, event.getEntity().getWorld()))
         {
-            Entity damager = ((EntityDamageByEntityEvent)dmgEvent).getDamager();
-            if (damager instanceof Projectile)
+            for (ItemStack itemStack : event.getDrops())
             {
-                ProjectileSource causer = ((Projectile) damager).getShooter();
-                if (causer instanceof Player)
-                {
-                    if (false) //TODO player is Killer
-                    {
-                        this.logDeathDrops(event);
-                        return;
-                    }
-                }
-                else if (causer instanceof Skeleton || causer instanceof Ghast)
-                {
-                    if (false) //TODO monster is Killer
-                    {
-                        this.logDeathDrops(event);
-                        return;
-                    }
-                }
-                else if (causer instanceof Wither)
-                {
-                    if (false) //TODO boss is Killer
-                    {
-                        this.logDeathDrops(event);
-                        return;
-                    }
-                }
-                else // Projectile shot by Dispenser // TODO better
-                {
-                    if (false)
-                    {
-                        this.module.getLog().debug("Unknown shooter: {}", ((Projectile) damager).getShooter());
-                        this.logDeathDrops(event);
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                if (damager instanceof Player)
-                {
-                    if (false) //TODO player is Killer
-                    {
-                        this.logDeathDrops(event);
-                        return;
-                    }
-                }
-                else if (damager instanceof Wither || damager instanceof EnderDragon)
-                {
-                    if (false) //TODO boss is Killer
-                    {
-                        this.logDeathDrops(event);
-                        return;
-                    }
-                }
-                else
-                {
-                    if (false) //TODO monster is Killer
-                    {
-                        this.logDeathDrops(event);
-                        return;
-                    }
-                }
-                actionType.logSimple(location,damager,killed,additionalData);
-                this.logDeathDrops(event);
-            }
-        }
-        else
-        {
-            if (false) //TODO environement is Killer
-            {
-                this.logDeathDrops(event);
-                return;
-            }
-            actionType.logSimple(location,null,killed,additionalData);
-            this.logDeathDrops(event);
-        }
-    }
-
-    static void showSubActionLogEntry(User user, LogEntry logEntry, String time, String loc)
-    {
-        int amount = 1;
-        if (logEntry.hasAttached())
-        {
-            amount += logEntry.getAttached().size();
-        }
-        if (logEntry.hasCauserUser())
-        {
-            if (amount == 1)
-            {
-                user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} got slaughtered by {user}{}", time, logEntry.getEntityFromData(), logEntry.getCauserUser().getDisplayName(), loc);
-            }
-            else
-            {
-                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#entity} got slaughtered by {user}{}", time, amount, logEntry.getEntityFromData(), logEntry.getCauserUser().getDisplayName(), loc);
-            }
-        }
-        else if (logEntry.hasCauserEntity())
-        {
-            if (amount == 1)
-            {
-                user.sendTranslated(MessageType.POSITIVE,  "{}{name#entity} could not escape {name#entity}{}", time, logEntry.getEntityFromData(), logEntry.getCauserEntity(), loc);
-            }
-            else
-            {
-                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#entity} could not escape {name#entity}{}", time, amount, logEntry.getEntityFromData(), logEntry.getCauserEntity(), loc);
-            }
-
-        }
-        else // something else
-        {
-            if (amount == 1)
-            {
-                user.sendTranslated(MessageType.POSITIVE, "{}{name#entity} died ({input#cause}){}", time, logEntry.getEntityFromData(), logEntry.getAdditional().get("dmgC").toString(), loc);
-            }
-            else
-            {
-                user.sendTranslated(MessageType.POSITIVE, "{}{amount}x {name#entity} died ({input#cause}){}", time, amount, logEntry.getEntityFromData(), logEntry.getAdditional().get("dmgC").toString(), loc);
+                EntityDeathDrop dropAction = newAction(EntityDeathDrop.class);
+                dropAction.item = itemStack;
+                dropAction.death = deathRef;
+                this.logAction(dropAction);
             }
         }
     }
 
-    public static boolean isSimilarSubAction(LogEntry logEntry, LogEntry other)
-    {
-        if (logEntry.getActionType() != other.getActionType()) return false;
-        return logEntry.getCauser().equals(other.getCauser())
-            && logEntry.getData() == other.getData()
-            && logEntry.getWorld() == other.getWorld();
-    }
+    /*
 
     public static boolean rollbackDeath(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
+        // TODO warning if rollback multiple times
         if (!preview)
         {
             Location location = logEntry.getLocation();
@@ -377,4 +259,5 @@ public class DeathListener extends LogListener
             }
         }
     }
+    */
 }
