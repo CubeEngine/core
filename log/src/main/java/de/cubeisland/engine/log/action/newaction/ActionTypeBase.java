@@ -43,6 +43,7 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
     public Date date = new Date();
     public Coordinate coord;
     public String action = this.getClass().getName();
+    private transient List<ActionTypeBase> attached;
 
     protected int countAttached()
     {
@@ -53,42 +54,6 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
         }
         return count;
     }
-
-    public static class Coordinate implements Section
-    {
-        public ConfigWorld world;
-        public UUID worldUUID;
-        public int[] xz;
-        public int y;
-
-        public Coordinate(Location loc)
-        {
-            this.world = new ConfigWorld(CubeEngine.getCore().getWorldManager(), loc.getWorld());
-            this.worldUUID = loc.getWorld().getUID();
-            this.xz = new int[2];
-            this.xz[0] = loc.getBlockX();
-            this.y = loc.getBlockY();
-            this.xz[1] = loc.getBlockZ();
-        }
-
-        public World getWorld()
-        {
-            return world.getWorld();
-        }
-
-        public BlockVector3 toBlockVector()
-        {
-            return new BlockVector3(xz[0], y, xz[1]);
-        }
-
-        public boolean equals(Coordinate coordinate)
-        {
-            return coordinate.worldUUID.equals(this.worldUUID) && Arrays
-                .equals(coordinate.xz, this.xz) && coordinate.y == this.y;
-        }
-    }
-
-    private transient List<ActionTypeBase> attached;
 
     public final void setLocation(Location loc)
     {
@@ -124,4 +89,38 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
     }
 
     public abstract String translateAction(User user);
+
+    public static class Coordinate implements Section
+    {
+        public ConfigWorld world;
+        public UUID worldUUID;
+        public int[] xz;
+        public int y;
+
+        public Coordinate(Location loc)
+        {
+            this.world = new ConfigWorld(CubeEngine.getCore().getWorldManager(), loc.getWorld());
+            this.worldUUID = loc.getWorld().getUID();
+            this.xz = new int[2];
+            this.xz[0] = loc.getBlockX();
+            this.y = loc.getBlockY();
+            this.xz[1] = loc.getBlockZ();
+        }
+
+        public World getWorld()
+        {
+            return world.getWorld();
+        }
+
+        public BlockVector3 toBlockVector()
+        {
+            return new BlockVector3(xz[0], y, xz[1]);
+        }
+
+        public boolean equals(Coordinate coordinate)
+        {
+            return coordinate.worldUUID.equals(this.worldUUID) && Arrays
+                .equals(coordinate.xz, this.xz) && coordinate.y == this.y;
+        }
+    }
 }

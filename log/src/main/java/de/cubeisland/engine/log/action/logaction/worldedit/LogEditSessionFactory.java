@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.log.action.logaction.worldedit;
 
-import de.cubeisland.engine.log.Log;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EditSessionFactory;
 import com.sk89q.worldedit.LocalPlayer;
@@ -26,6 +24,7 @@ import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+import de.cubeisland.engine.log.Log;
 
 public class LogEditSessionFactory extends EditSessionFactory
 {
@@ -49,9 +48,26 @@ public class LogEditSessionFactory extends EditSessionFactory
         return false;
     }
 
+    public static void shutdown()
+    {
+        WorldEdit instance = WorldEdit.getInstance();
+        if (instance != null)
+        {
+            EditSessionFactory editSessionFactory = instance.getEditSessionFactory();
+            if (editSessionFactory instanceof LogEditSessionFactory)
+            {
+                ((LogEditSessionFactory)editSessionFactory).module.getLog()
+                                                                  .debug("WorldEdit EditSessionFactory restored!");
+                instance.setEditSessionFactory(((LogEditSessionFactory)editSessionFactory).oldFactory);
+            }
+        }
+    }
+
     private boolean ignoreWorldEdit(LocalWorld world)
     {
-        return world instanceof BukkitWorld && !this.module.getActionTypeManager().getActionType(WorldEditActionType.class).isActive(((BukkitWorld)world).getWorld());
+        return world instanceof BukkitWorld && !this.module.getActionTypeManager()
+                                                           .getActionType(WorldEditActionType.class)
+                                                           .isActive(((BukkitWorld)world).getWorld());
     }
 
     @Override
@@ -103,20 +119,6 @@ public class LogEditSessionFactory extends EditSessionFactory
         else
         {
             return new LogEditSession(world, maxBlocks, blockBag, this.module);
-        }
-    }
-
-    public static void shutdown()
-    {
-        WorldEdit instance = WorldEdit.getInstance();
-        if (instance != null)
-        {
-            EditSessionFactory editSessionFactory = instance.getEditSessionFactory();
-            if (editSessionFactory instanceof LogEditSessionFactory)
-            {
-                ((LogEditSessionFactory)editSessionFactory).module.getLog().debug("WorldEdit EditSessionFactory restored!");
-                instance.setEditSessionFactory(((LogEditSessionFactory)editSessionFactory).oldFactory);
-            }
         }
     }
 }

@@ -38,7 +38,7 @@ public abstract class SimpleLogActionType extends LogActionType
 {
     public void logSimple(Entity player, String additional)
     {
-        this.queueLog(player.getLocation(),player,null,null,null,null,additional);
+        this.queueLog(player.getLocation(), player, null, null, null, null, additional);
     }
 
     public void logSimple(Location location, Entity causer, Entity data, String additional)
@@ -90,7 +90,7 @@ public abstract class SimpleLogActionType extends LogActionType
         {
             json.put("prof", ((Villager)entity).getProfession().name());
         }
-        if (entity instanceof Tameable && ((Tameable) entity).isTamed())
+        if (entity instanceof Tameable && ((Tameable)entity).isTamed())
         {
             if (((Tameable)entity).getOwner() != null)
             {
@@ -107,11 +107,11 @@ public abstract class SimpleLogActionType extends LogActionType
 
     public void logSimple(Location location, Entity player, ContainerType type, String additional)
     {
-        this.queueLog(location,player,type.name,null,null,null,additional);
+        this.queueLog(location, player, type.name, null, null, null, additional);
     }
 
     public void logSimple(Location location, Entity player, String additional)
     {
-        this.queueLog(location,player,null,null,null,null,additional);
+        this.queueLog(location, player, null, null, null, null, additional);
     }
 }

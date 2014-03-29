@@ -31,6 +31,27 @@ public abstract class EntityBlockActionType<ListenerType> extends BlockActionTyp
 {
     public EntitySection entity;
 
+    public void setEntity(Entity entity)
+    {
+        this.entity = new EntitySection(entity);
+    }
+
+    protected final int countUniqueEntities()
+    {
+        Set<UUID> uuids = new HashSet<>();
+        uuids.add(this.entity.uuid);
+        int count = 1;
+        for (ActionTypeBase action : this.getAttached())
+        {
+            if (!uuids.contains(((EntityBlockActionType)action).entity.uuid))
+            {
+                uuids.add(((EntityBlockActionType)action).entity.uuid);
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static class EntitySection
     {
         public UUID uuid;
@@ -56,27 +77,6 @@ public abstract class EntityBlockActionType<ListenerType> extends BlockActionTyp
         {
             return this.type.name();
         }
-    }
-
-    public void setEntity(Entity entity)
-    {
-        this.entity = new EntitySection(entity);
-    }
-
-    protected final int countUniqueEntities()
-    {
-        Set<UUID> uuids = new HashSet<>();
-        uuids.add(this.entity.uuid);
-        int count = 1;
-        for (ActionTypeBase action : this.getAttached())
-        {
-            if (!uuids.contains(((EntityBlockActionType)action).entity.uuid))
-            {
-                uuids.add(((EntityBlockActionType)action).entity.uuid);
-                count++;
-            }
-        }
-        return count;
     }
 
     // TODO additional

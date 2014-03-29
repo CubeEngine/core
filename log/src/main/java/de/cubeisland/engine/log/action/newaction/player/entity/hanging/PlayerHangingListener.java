@@ -36,7 +36,6 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.LogListener;
@@ -71,13 +70,13 @@ public class PlayerHangingListener extends LogListener
 {
     // TODO place item in frame
 
+    private final Map<Location, ActionTypeBase> plannedHangingBreak = new ConcurrentHashMap<>();
+    private volatile boolean clearPlanned = false;
+
     public PlayerHangingListener(Log module)
     {
         super(module);
     }
-
-    private volatile boolean clearPlanned = false;
-    private final Map<Location, ActionTypeBase> plannedHangingBreak = new ConcurrentHashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHangingBreak(HangingBreakEvent event)

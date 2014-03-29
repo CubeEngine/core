@@ -40,7 +40,6 @@ public class Lookup implements Cloneable
 
     /**
      * Lookup excluding nothing
-     * @return
      */
     public static Lookup general(Log module)
     {
@@ -50,6 +49,7 @@ public class Lookup implements Cloneable
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
+
     /**
      * Lookup only including container-actions
      */
@@ -102,7 +102,7 @@ public class Lookup implements Cloneable
     {
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
         attachment.setLastLookup(this);
-        this.queryResults.show(user,queryParameter,attachment.getShowParameter());
+        this.queryResults.show(user, queryParameter, attachment.getShowParameter());
     }
 
     public void setQueryResults(QueryResults queryResults)

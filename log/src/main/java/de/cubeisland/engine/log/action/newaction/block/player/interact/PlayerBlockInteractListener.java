@@ -41,15 +41,12 @@ import org.bukkit.material.Openable;
 import org.bukkit.material.PressurePlate;
 import org.bukkit.material.Rails;
 
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.engine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.VehiclePrePlaceEvent;
 
-import static org.bukkit.DyeColor.BROWN;
 import static org.bukkit.DyeColor.WHITE;
 import static org.bukkit.GameMode.CREATIVE;
 import static org.bukkit.Material.*;

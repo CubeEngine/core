@@ -17,7 +17,9 @@
  */
 package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 
-import org.bukkit.Location;import org.bukkit.event.Event;import org.bukkit.event.HandlerList;
+import org.bukkit.Location;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
@@ -34,6 +36,11 @@ public class HangingPreBreakEvent extends Event
         this.cause = cause;
     }
 
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
+
     public Location getLocation()
     {
         return location;
@@ -46,11 +53,6 @@ public class HangingPreBreakEvent extends Event
 
     @Override
     public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
     {
         return handlers;
     }

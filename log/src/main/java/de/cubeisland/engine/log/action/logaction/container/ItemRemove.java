@@ -60,7 +60,7 @@ public class ItemRemove extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        ItemData itemData= logEntry.getItemData();
+        ItemData itemData = logEntry.getItemData();
         int amount = itemData.amount;
         if (logEntry.hasAttached())
         {
@@ -71,21 +71,25 @@ public class ItemRemove extends SimpleLogActionType
         }
         if (amount > 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount} {name#item} into {name#container}{}", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount} {name#item} into {name#container}{}", time, logEntry
+                .getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else if (amount < 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} took {amount} {name#item} out of {name#container}{}", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} took {amount} {name#item} out of {name#container}{}", time, logEntry
+                .getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} did not change the amount of {name#item} in {name#container}{}", time, logEntry.getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} did not change the amount of {name#item} in {name#container}{}", time, logEntry
+                .getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
     }
+
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return ContainerActionType.isSubActionSimilar(logEntry,other);
+        return ContainerActionType.isSubActionSimilar(logEntry, other);
     }
 
     @Override
@@ -111,12 +115,13 @@ public class ItemRemove extends SimpleLogActionType
                 ItemData itemData = logEntry.getItemData();
                 InventoryHolder holder = (InventoryHolder)block;
                 itemData.amount = -itemData.amount;
-                HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
+                HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
                     if (force)
                     {
-                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
+                        attachment.getHolder()
+                                  .sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
                     }
                     return false;
                 }
@@ -124,7 +129,8 @@ public class ItemRemove extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
+                attachment.getHolder()
+                          .sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
             }
             return false;
         }
@@ -167,12 +173,13 @@ public class ItemRemove extends SimpleLogActionType
                 ItemData itemData = logEntry.getItemData();
                 InventoryHolder holder = (InventoryHolder)block;
                 itemData.amount = -itemData.amount;
-                HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
+                HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
                     if (force)
                     {
-                        attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
+                        attachment.getHolder()
+                                  .sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
                     }
                     return false;
                 }
@@ -180,7 +187,8 @@ public class ItemRemove extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
+                attachment.getHolder()
+                          .sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
             }
             return false;
         }

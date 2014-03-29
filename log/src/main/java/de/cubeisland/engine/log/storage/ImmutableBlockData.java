@@ -32,7 +32,7 @@ public class ImmutableBlockData
 
     public ImmutableBlockData(Material material)
     {
-        this(material,null);
+        this(material, null);
     }
 
     public ImmutableBlockData(Material material, Byte data)

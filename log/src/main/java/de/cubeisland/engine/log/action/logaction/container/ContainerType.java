@@ -39,25 +39,7 @@ public class ContainerType
         this.name = name;
     }
 
-    public static ContainerType ofName(String name)
-    {
-        String match = Match.string().matchString(name, 
-              Material.STORAGE_MINECART.name(), 
-              Material.CHEST.name(),
-              Material.FURNACE.name(),
-              Material.DISPENSER.name(),
-              Material.DROPPER.name(),
-              Material.HOPPER.name(),
-              Material.BREWING_STAND.name()
-              );// TODO HopperMinecart??
-        if (match == null)
-        {
-            return null;
-        }
-        return new ContainerType(match);
-    }
-
-    public ContainerType (InventoryHolder holder)
+    public ContainerType(InventoryHolder holder)
     {
         if (holder instanceof StorageMinecart)
         {
@@ -97,10 +79,17 @@ public class ContainerType
         }
     }
 
-    @Override
-    public String toString()
+    public static ContainerType ofName(String name)
     {
-        return name;
+        String match = Match.string()
+                            .matchString(name, Material.STORAGE_MINECART.name(), Material.CHEST.name(), Material.FURNACE
+                                .name(), Material.DISPENSER.name(), Material.DROPPER.name(), Material.HOPPER
+                                             .name(), Material.BREWING_STAND.name());// TODO HopperMinecart??
+        if (match == null)
+        {
+            return null;
+        }
+        return new ContainerType(match);
     }
 
     public static Material getMaterial(String material)
@@ -108,6 +97,12 @@ public class ContainerType
         material = material.replace("-", "_"); // For old names saved in db
         material = material.toUpperCase(); // For old names saved in db
         return Material.matchMaterial(material);
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
     }
 
     @Override

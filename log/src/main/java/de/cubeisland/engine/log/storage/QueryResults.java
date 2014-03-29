@@ -66,8 +66,9 @@ public class QueryResults
             show.pagelimit = 80;
         }
 
-        int totalPages = (this.logEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
-        user.sendTranslated(MessageType.POSITIVE, "{amount} distinct logs ({amount} pages)", this.logEntries.size(), totalPages);
+        int totalPages = (this.logEntries.size() + show.pagelimit - 1) / show.pagelimit; // rounded up
+        user.sendTranslated(MessageType.POSITIVE, "{amount} distinct logs ({amount} pages)", this.logEntries
+            .size(), totalPages);
         Iterator<LogEntry> entries = this.logEntries.iterator();
         LogEntry entry = entries.next();
         LogEntry lastAttach = entry;
@@ -92,14 +93,16 @@ public class QueryResults
             }
             if (compressedEntries.size() < this.logEntries.size())
             {
-                totalPages = (compressedEntries.size()+show.pagelimit-1) / show.pagelimit; // rounded up
+                totalPages = (compressedEntries.size() + show.pagelimit - 1) / show.pagelimit; // rounded up
                 if (totalPages > 1)
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs! ({amount} pages)", compressedEntries.size(), totalPages);
+                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs! ({amount} pages)", compressedEntries
+                        .size(), totalPages);
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs!", compressedEntries.size());
+                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs!", compressedEntries
+                        .size());
                 }
             }
         }
@@ -116,9 +119,9 @@ public class QueryResults
         {
             showing = compressedEntries.size();
         }
-        else if (compressedEntries.size() - ((show.page-1) * show.pagelimit) < show.pagelimit)
+        else if (compressedEntries.size() - ((show.page - 1) * show.pagelimit) < show.pagelimit)
         {
-            showing = compressedEntries.size() - ((show.page-1) * show.pagelimit);
+            showing = compressedEntries.size() - ((show.page - 1) * show.pagelimit);
         }
         if (show.page == 1)
         {
@@ -139,14 +142,16 @@ public class QueryResults
         {
             navigableSet = compressedEntries;
         }
-		CubeEngine.getLog().info("Showing {}/{}/{} logentries to {} (page {})", showing, navigableSet.size(), this.logEntries.size() , user.getName(), show.page);
+        CubeEngine.getLog()
+                  .info("Showing {}/{}/{} logentries to {} (page {})", showing, navigableSet.size(), this.logEntries
+                      .size(), user.getName(), show.page);
         for (LogEntry logEntry : navigableSet)
         {
             if (cpage == show.page)
             {
                 try
                 {
-                    logEntry.getActionType().showLogEntry(user,parameter,logEntry, show);
+                    logEntry.getActionType().showLogEntry(user, parameter, logEntry, show);
                 }
                 catch (Exception e)
                 {
@@ -171,14 +176,16 @@ public class QueryResults
     public void rollback(LogAttachment attachment, boolean preview)
     {
         // Find the oldest entry at a location
-        Map<Location,LogEntry> finalBlock = new HashMap<>();
-        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<>();
+        Map<Location, LogEntry> finalBlock = new HashMap<>();
+        Map<Location, LinkedList<LogEntry>> blockChanges = new HashMap<>();
         TreeSet<LogEntry> filteredLogs = new TreeSet<>();
         for (LogEntry logEntry : this.logEntries.descendingSet())
         {
             if (logEntry.getActionType().canRollback()) // can rollback
             {
-                if (logEntry.getActionType() instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.getActionType()))
+                if (logEntry.getActionType() instanceof MonsterDeath && !this.lookup.getQueryParameter()
+                                                                                    .containsAction(logEntry
+                                                                                                        .getActionType()))
                 {
                     continue; // ignoring Monster-respawning when not explicitly wanted
                 }
@@ -213,7 +220,7 @@ public class QueryResults
         }
         filteredLogs.addAll(finalBlock.values());
         // Start Rollback 1st Round
-        Set <LogEntry> rollbackRound2 = new LinkedHashSet<>();
+        Set<LogEntry> rollbackRound2 = new LinkedHashSet<>();
         for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
         {
             if (logEntry.getWorld() == null)
@@ -221,7 +228,8 @@ public class QueryResults
                 this.module.getLog().warn("LogEntry #{} belongs to a deleted world!", logEntry.getId().longValue());
                 continue;
             }
-            if (!logEntry.rollback(attachment, false, preview)) // Rollback failed (cannot set yet (torches etc)) try again later
+            if (!logEntry
+                .rollback(attachment, false, preview)) // Rollback failed (cannot set yet (torches etc)) try again later
             {
                 rollbackRound2.add(logEntry);
             }
@@ -242,8 +250,8 @@ public class QueryResults
     public void redo(LogAttachment attachment, boolean preview)
     {
         // Find the newest entry at a location
-        Map<Location,LogEntry> finalBlock = new HashMap<>();
-        Map<Location,LinkedList<LogEntry>> blockChanges = new HashMap<>();
+        Map<Location, LogEntry> finalBlock = new HashMap<>();
+        Map<Location, LinkedList<LogEntry>> blockChanges = new HashMap<>();
         TreeSet<LogEntry> filteredLogs = new TreeSet<>();
         for (LogEntry logEntry : this.logEntries)
         {
@@ -280,7 +288,7 @@ public class QueryResults
         }
         filteredLogs.addAll(finalBlock.values());
         // Start Rollback 1st Round
-        Set <LogEntry> rollbackRound2 = new LinkedHashSet<>();
+        Set<LogEntry> rollbackRound2 = new LinkedHashSet<>();
         for (LogEntry logEntry : filteredLogs.descendingSet()) // Rollback normal blocks
         {
             if (logEntry.getWorld() == null)
@@ -288,7 +296,8 @@ public class QueryResults
                 this.module.getLog().warn("LogEntry #{} belongs to a deleted world!", logEntry.getId().longValue());
                 continue;
             }
-            if (!logEntry.redo(attachment, false, preview)) // Redo failed (cannot set yet (torches etc)) try again later
+            if (!logEntry
+                .redo(attachment, false, preview)) // Redo failed (cannot set yet (torches etc)) try again later
             {
                 rollbackRound2.add(logEntry);
             }

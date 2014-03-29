@@ -54,7 +54,8 @@ public class LogManager
         }
         catch (IOException e)
         {
-            throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder.toAbsolutePath(), e);
+            throw new FolderNotFoundException("Couldn't create the worlds folder: " + this.worldsFolder
+                .toAbsolutePath(), e);
         }
         this.globalConfig = this.module.getCore().getConfigFactory().
             load(LoggingConfiguration.class, module.getFolder().resolve("globalconfig.yml").toFile());

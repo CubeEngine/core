@@ -17,7 +17,9 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
-import org.bukkit.material.Lever;import de.cubeisland.engine.core.user.User;
+import org.bukkit.material.Lever;
+
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 

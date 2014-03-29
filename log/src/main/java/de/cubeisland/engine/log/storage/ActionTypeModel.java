@@ -26,7 +26,7 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.log.storage.TableActionTypes.TABLE_ACTION_TYPE;
 
-public class ActionTypeModel  extends UpdatableRecordImpl<ActionTypeModel> implements Record2<UInteger, String>
+public class ActionTypeModel extends UpdatableRecordImpl<ActionTypeModel> implements Record2<UInteger, String>
 {
     public ActionTypeModel()
     {
@@ -39,20 +39,24 @@ public class ActionTypeModel  extends UpdatableRecordImpl<ActionTypeModel> imple
         return this;
     }
 
-    public void setId(UInteger value) {
+    public UInteger getId()
+    {
+        return (UInteger)getValue(0);
+    }
+
+    public void setId(UInteger value)
+    {
         setValue(0, value);
     }
 
-    public UInteger getId() {
-        return (UInteger) getValue(0);
+    public String getName()
+    {
+        return (String)getValue(1);
     }
 
-    public void setName(String value) {
+    public void setName(String value)
+    {
         setValue(1, value);
-    }
-
-    public String getName() {
-        return (String) getValue(1);
     }
 
     // -------------------------------------------------------------------------
@@ -60,8 +64,9 @@ public class ActionTypeModel  extends UpdatableRecordImpl<ActionTypeModel> imple
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UInteger> key() {
-        return (Record1) super.key();
+    public Record1<UInteger> key()
+    {
+        return (Record1)super.key();
     }
 
     // -------------------------------------------------------------------------
@@ -69,32 +74,38 @@ public class ActionTypeModel  extends UpdatableRecordImpl<ActionTypeModel> imple
     // -------------------------------------------------------------------------
 
     @Override
-    public Row2<UInteger, String> fieldsRow() {
-        return (Row2) super.fieldsRow();
+    public Row2<UInteger, String> fieldsRow()
+    {
+        return (Row2)super.fieldsRow();
     }
 
     @Override
-    public Row2<UInteger, String> valuesRow() {
-        return (Row2) super.valuesRow();
+    public Row2<UInteger, String> valuesRow()
+    {
+        return (Row2)super.valuesRow();
     }
 
     @Override
-    public Field<UInteger> field1() {
+    public Field<UInteger> field1()
+    {
         return TABLE_ACTION_TYPE.ID;
     }
 
     @Override
-    public Field<String> field2() {
+    public Field<String> field2()
+    {
         return TABLE_ACTION_TYPE.NAME;
     }
 
     @Override
-    public UInteger value1() {
+    public UInteger value1()
+    {
         return getId();
     }
 
     @Override
-    public String value2() {
+    public String value2()
+    {
         return getName();
     }
 }

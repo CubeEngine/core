@@ -28,6 +28,11 @@ public abstract class PlayerBlockActionType<ListenerType> extends BlockActionTyp
 {
     public PlayerSection player;
 
+    public void setPlayer(Player player)
+    {
+        this.player = new PlayerSection(player);
+    }
+
     public static class PlayerSection implements Section
     {
         public UUID uuid;
@@ -43,10 +48,5 @@ public abstract class PlayerBlockActionType<ListenerType> extends BlockActionTyp
         {
             return this.uuid.equals(section.uuid);
         }
-    }
-
-    public void setPlayer(Player player)
-    {
-        this.player = new PlayerSection(player);
     }
 }

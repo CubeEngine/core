@@ -48,6 +48,7 @@ public class BlockFall extends BlockActionType<BlockListener>
         {
             return user.getTranslation(POSITIVE, "{name#block} did fall to a lower place", this.oldBlock.name());
         }
-        return user.getTranslation(POSITIVE, "{name#block} did fall to a lower place because of {user}", this.oldBlock.name(), cause.fetch(PlayerBlockActionType.class).player.name);
+        return user.getTranslation(POSITIVE, "{name#block} did fall to a lower place because of {user}", this.oldBlock
+            .name(), cause.fetch(PlayerBlockActionType.class).player.name);
     }
 }

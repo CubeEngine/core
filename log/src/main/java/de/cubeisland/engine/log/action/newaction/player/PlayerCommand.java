@@ -52,13 +52,13 @@ public class PlayerCommand extends PlayerActionType<PlayerActionListener>
             .getTranslation(POSITIVE, "{user} used the command \"{input#command}\"", this.player.name, this.command);
     }
 
-    public void setCommand(String command)
-    {
-        this.command = command;
-    }
-
     public String getCommand()
     {
         return command;
+    }
+
+    public void setCommand(String command)
+    {
+        this.command = command;
     }
 }

@@ -44,8 +44,7 @@ public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     public String translateAction(User user)
     {
         // TODO plurals
-        @SuppressWarnings("deprecation")
-        boolean open = this.newBlock.as(Door.class).isOpen();
+        @SuppressWarnings("deprecation") boolean open = this.newBlock.as(Door.class).isOpen();
         if (open)
         {
             return user

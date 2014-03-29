@@ -17,7 +17,9 @@
  */
 package de.cubeisland.engine.log.action.newaction.block;
 
-import java.lang.reflect.Constructor;import org.bukkit.Material;
+import java.lang.reflect.Constructor;
+
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
 
@@ -26,6 +28,29 @@ import de.cubeisland.engine.reflect.Section;
 
 public abstract class BlockActionType<ListenerType> extends ActionTypeBase<ListenerType>
 {
+    public BlockSection oldBlock;
+    public BlockSection newBlock;
+
+    public void setOldBlock(BlockState state)
+    {
+        this.oldBlock = new BlockSection(state);
+    }
+
+    public void setNewBlock(BlockState state)
+    {
+        this.newBlock = new BlockSection(state);
+    }
+
+    public void setOldBlock(Material mat)
+    {
+        this.oldBlock = new BlockSection(mat);
+    }
+
+    public void setNewBlock(Material mat)
+    {
+        this.newBlock = new BlockSection(mat);
+    }
+
     public static class BlockSection implements Section
     {
         public Material material;
@@ -77,28 +102,5 @@ public abstract class BlockActionType<ListenerType> extends ActionTypeBase<Liste
                 return null;
             }
         }
-    }
-
-    public BlockSection oldBlock;
-    public BlockSection newBlock;
-
-    public void setOldBlock(BlockState state)
-    {
-        this.oldBlock = new BlockSection(state);
-    }
-
-    public void setNewBlock(BlockState state)
-    {
-        this.newBlock = new BlockSection(state);
-    }
-
-    public void setOldBlock(Material mat)
-    {
-        this.oldBlock = new BlockSection(mat);
-    }
-
-    public void setNewBlock(Material mat)
-    {
-        this.newBlock = new BlockSection(mat);
     }
 }

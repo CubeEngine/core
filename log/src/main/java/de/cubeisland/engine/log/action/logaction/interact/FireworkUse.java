@@ -64,7 +64,8 @@ public class FireworkUse extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        user.sendTranslated(MessageType.POSITIVE, "{}{user} used a firework rocket{}", time, logEntry.getCauserUser().getDisplayName(), loc);
+        user.sendTranslated(MessageType.POSITIVE, "{}{user} used a firework rocket{}", time, logEntry.getCauserUser()
+                                                                                                     .getDisplayName(), loc);
     }
 
     @Override

@@ -30,16 +30,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.potion.PotionEffect;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import gnu.trove.set.hash.TShortHashSet;
 
 import static de.cubeisland.engine.log.action.ActionTypeCategory.*;
@@ -61,6 +60,7 @@ public class PotionSplash extends SimpleLogActionType
     {
         return false;
     }
+
     @Override
     public String getName()
     {
@@ -72,13 +72,14 @@ public class PotionSplash extends SimpleLogActionType
     {
         if (this.isActive(event.getPotion().getWorld()))
         {
-            if (event.getPotion().getShooter() instanceof  LivingEntity)
+            if (event.getPotion().getShooter() instanceof LivingEntity)
             {
                 LivingEntity livingEntity = (LivingEntity)event.getPotion().getShooter();
                 String additionalData = this.serializePotionLog(event);
-                this.logSimple(livingEntity,additionalData);
+                this.logSimple(livingEntity, additionalData);
             }
-            else {
+            else
+            {
                 // TODO other shooter
             }
         }
@@ -146,18 +147,23 @@ public class PotionSplash extends SimpleLogActionType
                     amountAffected += entry.getAdditional().get("amount").asInt();
                 }
             }
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} used {amount} splash potions {input#effects} onto {amount} entities in total{}", time, logEntry.getCauserUser().getName(), logEntry.getAttached().size() + 1, effects, amountAffected, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} used {amount} splash potions {input#effects} onto {amount} entities in total{}", time, logEntry
+                .getCauserUser().getName(), logEntry.getAttached().size() + 1, effects, amountAffected, loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} used a {text:splash potion} {input#effects} onto {amount} entities{}", time, logEntry.getCauserUser().getName(), effects, amountAffected, loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} used a {text:splash potion} {input#effects} onto {amount} entities{}", time, logEntry
+                .getCauserUser().getName(), effects, amountAffected, loc);
         }
     }
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        if (!super.isSimilar(logEntry, other) || logEntry.getAdditional() == null || other.getAdditional() == null) return false;
+        if (!super.isSimilar(logEntry, other) || logEntry.getAdditional() == null || other.getAdditional() == null)
+        {
+            return false;
+        }
         JsonNode effects = logEntry.getAdditional().get("effects");
         JsonNode effectsOther = other.getAdditional().get("effects");
         return effects != null && effectsOther != null && effects.equals(effectsOther);

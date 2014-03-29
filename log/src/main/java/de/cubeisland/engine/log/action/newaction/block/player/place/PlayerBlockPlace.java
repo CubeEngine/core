@@ -21,7 +21,8 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
+import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 
 import static org.bukkit.Material.AIR;
 

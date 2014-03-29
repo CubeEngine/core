@@ -34,6 +34,11 @@ public class BlockPreFallEvent extends Event
         this.action = action;
     }
 
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
+
     public Location getLocation()
     {
         return location;
@@ -46,11 +51,6 @@ public class BlockPreFallEvent extends Event
 
     @Override
     public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
     {
         return handlers;
     }

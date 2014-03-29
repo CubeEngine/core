@@ -63,12 +63,30 @@ import static de.cubeisland.engine.core.util.InventoryUtil.getMissingSpace;
  */
 public class ContainerActionType extends ActionTypeContainer
 {
+    private final TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<>();
+
     public ContainerActionType()
     {
         super("CONTAINER");
     }
 
-    private final TLongObjectHashMap<TObjectIntHashMap<ItemData>> inventoryChanges = new TLongObjectHashMap<>();
+    static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
+    {
+        if (logEntry.getActionType() == other.getActionType() || ((logEntry
+            .getActionType() instanceof ItemInsert || logEntry.getActionType() instanceof ItemRemove) && (other
+            .getActionType() instanceof ItemInsert || other.getActionType() instanceof ItemRemove)))
+        {
+            if (logEntry.getCauser().equals(other.getCauser()) && logEntry.getWorld() == other.getWorld() && logEntry
+                .getVector().equals(other.getVector()) && (logEntry.getBlock() == other.getBlock() || logEntry
+                .getBlock().equals(other.getBlock()))) // InventoryType
+            {
+                ItemData itemData1 = logEntry.getItemData();
+                ItemData itemData2 = other.getItemData();
+                return itemData1.equals(itemData2); // this is ignoring amount
+            }
+        }
+        return false;
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event)
@@ -80,11 +98,17 @@ public class ContainerActionType extends ActionTypeContainer
             if (itemDataMap != null)
             {
                 Location location = this.getLocationForHolder(event.getInventory().getHolder());
-                if (location == null) return;
+                if (location == null)
+                {
+                    return;
+                }
                 for (ItemData itemData : itemDataMap.keySet())
                 {
                     int amount = itemDataMap.get(itemData);
-                    if (amount == 0) continue;
+                    if (amount == 0)
+                    {
+                        continue;
+                    }
                     itemData.amount = amount;
                     String additional = itemData.serialize(this.om);
                     SimpleLogActionType actionType;
@@ -96,7 +120,8 @@ public class ContainerActionType extends ActionTypeContainer
                     {
                         actionType = this.manager.getActionType(ItemInsert.class);
                     }
-                    actionType.logSimple(location,event.getPlayer(),new ContainerType(event.getInventory().getHolder()),additional);
+                    actionType.logSimple(location, event.getPlayer(), new ContainerType(event.getInventory()
+                                                                                             .getHolder()), additional);
                 }
             }
             this.inventoryChanges.remove(user.getId());
@@ -138,7 +163,7 @@ public class ContainerActionType extends ActionTypeContainer
                 if (!config.container.CONTAINER_ignore.contains(type))
                 {
                     User user = this.um.getExactUser(event.getPlayer().getName());
-                    this.inventoryChanges.put(user.getId(),new TObjectIntHashMap<ItemData>());
+                    this.inventoryChanges.put(user.getId(), new TObjectIntHashMap<ItemData>());
                 }
             }
         }
@@ -150,7 +175,10 @@ public class ContainerActionType extends ActionTypeContainer
         if (event.getWhoClicked() instanceof Player)
         {
             final User user = this.um.getExactUser(event.getWhoClicked().getName());
-            if (!this.inventoryChanges.containsKey(user.getId())) return;
+            if (!this.inventoryChanges.containsKey(user.getId()))
+            {
+                return;
+            }
             Inventory inventory = event.getInventory();
             int amount = 0;
             for (Entry<Integer, ItemStack> entry : event.getNewItems().entrySet())
@@ -175,7 +203,10 @@ public class ContainerActionType extends ActionTypeContainer
         {
             // TODO use the new inventoryStuff
             final User user = this.um.getExactUser(event.getWhoClicked().getName());
-            if (!this.inventoryChanges.containsKey(user.getId())) return;
+            if (!this.inventoryChanges.containsKey(user.getId()))
+            {
+                return;
+            }
             Inventory inventory = event.getInventory();
             InventoryHolder holder = inventory.getHolder();
             ItemStack inventoryItem = event.getCurrentItem();
@@ -184,8 +215,9 @@ public class ContainerActionType extends ActionTypeContainer
             //System.out.print("Cursor: "+ cursorItem + " | Inventory: "+ inventoryItem);
             //System.out.print((event.getRawSlot() < event.getView().getTopInventory().getSize() ? "TOP " : "BOT ")
             //+ (event.isShiftClick() ? "SHIFT-" : "") + (event.isRightClick() ? "RIGHT" : "LEFT"));
-            if ((inventoryItem == null || inventoryItem.getType().equals(Material.AIR))
-               && (cursorItem == null || cursorItem.getType().equals(Material.AIR)))
+            if ((inventoryItem == null || inventoryItem.getType()
+                                                       .equals(Material.AIR)) && (cursorItem == null || cursorItem
+                .getType().equals(Material.AIR)))
             {
                 return; // nothing to log
             }
@@ -197,19 +229,20 @@ public class ContainerActionType extends ActionTypeContainer
                     {
                         return;
                     }
-                    int missingSpace = getMissingSpace(event.getView().getTopInventory(),inventoryItem);
+                    int missingSpace = getMissingSpace(event.getView().getTopInventory(), inventoryItem);
                     int amountTake = inventoryItem.getAmount() - missingSpace;
                     if (amountTake > 0)
                     {
-                        this.prepareForLogging(user, new ItemData(inventoryItem),-amountTake);
+                        this.prepareForLogging(user, new ItemData(inventoryItem), -amountTake);
                     }
                 }
                 else
                 {
-                    if (cursorItem == null ||cursorItem.getType().equals(Material.AIR)) // remove items
+                    if (cursorItem == null || cursorItem.getType().equals(Material.AIR)) // remove items
                     {
-                        int remove = event.isLeftClick() ? inventoryItem.getAmount() : (inventoryItem.getAmount() + 1) / 2;
-                        this.prepareForLogging(user, new ItemData(inventoryItem),-remove);
+                        int remove = event.isLeftClick() ? inventoryItem.getAmount() : (inventoryItem
+                            .getAmount() + 1) / 2;
+                        this.prepareForLogging(user, new ItemData(inventoryItem), -remove);
                     }
                     else if (inventoryItem == null || inventoryItem.getType().equals(Material.AIR)) // put items
                     {
@@ -223,7 +256,8 @@ public class ContainerActionType extends ActionTypeContainer
                                     return;
                                 }
                             }
-                            else if (cursorItem.getType().equals(Material.POTION) || cursorItem.getType().equals(Material.GLASS_BOTTLE)) // bottle slot
+                            else if (cursorItem.getType().equals(Material.POTION) || cursorItem.getType()
+                                                                                               .equals(Material.GLASS_BOTTLE)) // bottle slot
                             {
                                 put = 1;
                             }
@@ -232,7 +266,7 @@ public class ContainerActionType extends ActionTypeContainer
                                 return;
                             }
                         }
-                        this.prepareForLogging(user, new ItemData(cursorItem),put);
+                        this.prepareForLogging(user, new ItemData(cursorItem), put);
                     }
                     else
                     {
@@ -241,10 +275,14 @@ public class ContainerActionType extends ActionTypeContainer
                             int put = event.isLeftClick() ? inventoryItem.getAmount() : 1;
                             if (put > inventoryItem.getMaxStackSize() - inventoryItem.getAmount()) //if stack to big
                             {
-                                put = inventoryItem.getMaxStackSize() - inventoryItem.getAmount(); //set to missing to fill
+                                put = inventoryItem.getMaxStackSize() - inventoryItem
+                                    .getAmount(); //set to missing to fill
                             }
-                            if (put == 0) return;
-                            this.prepareForLogging(user, new ItemData(inventoryItem),put);
+                            if (put == 0)
+                            {
+                                return;
+                            }
+                            this.prepareForLogging(user, new ItemData(inventoryItem), put);
                         }
                         else
                         {
@@ -257,9 +295,13 @@ public class ContainerActionType extends ActionTypeContainer
                                         return;
                                     }
                                 }
-                                else if (cursorItem.getType().equals(Material.POTION) || cursorItem.getType().equals(Material.GLASS_BOTTLE)) // bottle slot
+                                else if (cursorItem.getType().equals(Material.POTION) || cursorItem.getType()
+                                                                                                   .equals(Material.GLASS_BOTTLE)) // bottle slot
                                 {
-                                    if (cursorItem.getAmount() > 1) return; // nothing happens when more than 1
+                                    if (cursorItem.getAmount() > 1)
+                                    {
+                                        return; // nothing happens when more than 1
+                                    }
                                     // else swap items
                                 }
                                 else
@@ -267,8 +309,8 @@ public class ContainerActionType extends ActionTypeContainer
                                     return;
                                 }
                             }
-                            this.prepareForLogging(user, new ItemData(cursorItem),cursorItem.getAmount());
-                            this.prepareForLogging(user, new ItemData(inventoryItem),-inventoryItem.getAmount());
+                            this.prepareForLogging(user, new ItemData(cursorItem), cursorItem.getAmount());
+                            this.prepareForLogging(user, new ItemData(inventoryItem), -inventoryItem.getAmount());
                         }
                     }
                 }
@@ -281,7 +323,7 @@ public class ContainerActionType extends ActionTypeContainer
                 }
                 if (holder instanceof BrewingStand)
                 {
-                    BrewerInventory brewerInventory = (BrewerInventory) event.getView().getTopInventory();
+                    BrewerInventory brewerInventory = (BrewerInventory)event.getView().getTopInventory();
                     if (BukkitUtils.canBePlacedInBrewingstand(inventoryItem.getType()))
                     {
                         if (inventoryItem.isSimilar(brewerInventory.getIngredient())) // could fit into inventory
@@ -291,19 +333,22 @@ public class ContainerActionType extends ActionTypeContainer
                             if (brewerItem.getAmount() + inventoryItem.getAmount() > inventoryItem.getMaxStackSize())
                             {
                                 amountPutIn = inventoryItem.getMaxStackSize() - brewerItem.getAmount();
-                                if (amountPutIn <= 0) return;
+                                if (amountPutIn <= 0)
+                                {
+                                    return;
+                                }
                             }
-                            this.prepareForLogging(user,new ItemData(inventoryItem), amountPutIn);
+                            this.prepareForLogging(user, new ItemData(inventoryItem), amountPutIn);
                         }
                     }
                     else if (inventoryItem.getType().equals(Material.POTION))
                     {
-                        for (int i = 0 ; i <= 2; ++i)
+                        for (int i = 0; i <= 2; ++i)
                         {
                             ItemStack item = brewerInventory.getItem(i);
                             if (item == null) // space for a potion?
                             {
-                                this.prepareForLogging(user,new ItemData(inventoryItem), inventoryItem.getAmount());
+                                this.prepareForLogging(user, new ItemData(inventoryItem), inventoryItem.getAmount());
                                 return;
                             }
                             // else no space found
@@ -313,12 +358,12 @@ public class ContainerActionType extends ActionTypeContainer
                     {
                         int bottlesFound = 0;
                         int bottleSlots = 0;
-                        for (int i = 0 ; i <= 2; ++i)
+                        for (int i = 0; i <= 2; ++i)
                         {
                             ItemStack item = brewerInventory.getItem(i);
                             if (item == null) // space for the stack ?
                             {
-                                this.prepareForLogging(user,new ItemData(inventoryItem), inventoryItem.getAmount());
+                                this.prepareForLogging(user, new ItemData(inventoryItem), inventoryItem.getAmount());
                                 return;
                             }
                             else if (item.getType().equals(Material.GLASS_BOTTLE))
@@ -330,19 +375,22 @@ public class ContainerActionType extends ActionTypeContainer
                         if (bottleSlots > 0)
                         {
                             int space = Material.GLASS_BOTTLE.getMaxStackSize() * bottleSlots - bottlesFound;
-                            if (space <= 0) return;
+                            if (space <= 0)
+                            {
+                                return;
+                            }
                             int putInto = inventoryItem.getAmount();
                             if (putInto > space)
                             {
                                 putInto = space;
                             }
-                            this.prepareForLogging(user,new ItemData(inventoryItem), putInto);
+                            this.prepareForLogging(user, new ItemData(inventoryItem), putInto);
                         }
                     }
                 }
                 else if (holder instanceof Furnace)
                 {
-                    FurnaceInventory furnaceInventory= (FurnaceInventory) event.getView().getTopInventory();
+                    FurnaceInventory furnaceInventory = (FurnaceInventory)event.getView().getTopInventory();
                     int putInto = 0;
                     if (BukkitUtils.isSmeltable(inventoryItem))
                     {
@@ -354,7 +402,10 @@ public class ContainerActionType extends ActionTypeContainer
                         else if (inventoryItem.isSimilar(item))
                         {
                             int space = inventoryItem.getMaxStackSize() - item.getAmount();
-                            if (space <= 0) return;
+                            if (space <= 0)
+                            {
+                                return;
+                            }
                             putInto = inventoryItem.getAmount();
                             if (putInto > space)
                             {
@@ -372,7 +423,10 @@ public class ContainerActionType extends ActionTypeContainer
                         else if (inventoryItem.isSimilar(item))
                         {
                             int space = inventoryItem.getMaxStackSize() - item.getAmount();
-                            if (space <= 0) return;
+                            if (space <= 0)
+                            {
+                                return;
+                            }
                             putInto = inventoryItem.getAmount();
                             if (putInto > space)
                             {
@@ -380,18 +434,21 @@ public class ContainerActionType extends ActionTypeContainer
                             }
                         }
                     }
-                    if (putInto == 0) return;
-                    this.prepareForLogging(user,new ItemData(inventoryItem), putInto);
+                    if (putInto == 0)
+                    {
+                        return;
+                    }
+                    this.prepareForLogging(user, new ItemData(inventoryItem), putInto);
                 }
                 else
                 {
                     event.getView().getTopInventory().getContents();
 
-                    int missingSpace = getMissingSpace(event.getView().getTopInventory(),inventoryItem);
+                    int missingSpace = getMissingSpace(event.getView().getTopInventory(), inventoryItem);
                     int amountPut = inventoryItem.getAmount() - missingSpace;
                     if (amountPut > 0)
                     {
-                        this.prepareForLogging(user, new ItemData(inventoryItem),amountPut);
+                        this.prepareForLogging(user, new ItemData(inventoryItem), amountPut);
                     }
                 }
             }
@@ -404,12 +461,13 @@ public class ContainerActionType extends ActionTypeContainer
         if (itemDataMap == null)
         {
             itemDataMap = new TObjectIntHashMap<>();
-            this.inventoryChanges.put(user.getId(),itemDataMap);
+            this.inventoryChanges.put(user.getId(), itemDataMap);
         }
         int oldAmount = itemDataMap.get(itemData); // if not yet set this returns 0
-        itemDataMap.put(itemData,oldAmount + amount);
+        itemDataMap.put(itemData, oldAmount + amount);
         //System.out.print((amount < 0 ? "TAKE " : "PUT ") + itemData.material.name()+":"+itemData.dura+" x"+amount);//TODO remove this
     }
+    //TODO getter in logentry block is InventoryType
 
     @EventHandler
     public void onItemMove(InventoryMoveItemEvent event)
@@ -435,33 +493,14 @@ public class ContainerActionType extends ActionTypeContainer
         ItemTransfer itemTransfer = this.manager.getActionType(ItemTransfer.class);
         if (itemTransfer.isActive(targetLocation.getWorld()))
         {
-            if (this.lm.getConfig(targetLocation.getWorld()).container.ITEM_TRANSFER_ignore.contains(event.getItem().getType()))
+            if (this.lm.getConfig(targetLocation.getWorld()).container.ITEM_TRANSFER_ignore
+                .contains(event.getItem().getType()))
             {
                 return;
             }
             String additional = new ItemData(event.getItem()).serialize(this.om);
-            itemTransfer.logSimple(sourceLocation,null,new ContainerType(source.getHolder()),additional);
+            itemTransfer.logSimple(sourceLocation, null, new ContainerType(source.getHolder()), additional);
         }
-    }
-    //TODO getter in logentry block is InventoryType
-
-    static boolean isSubActionSimilar(LogEntry logEntry, LogEntry other)
-    {
-        if (logEntry.getActionType() == other.getActionType() ||
-            ((logEntry.getActionType() instanceof ItemInsert || logEntry.getActionType() instanceof  ItemRemove)
-          && (other.getActionType() instanceof ItemInsert || other.getActionType() instanceof  ItemRemove)))
-        {
-            if (logEntry.getCauser().equals(other.getCauser())
-                && logEntry.getWorld() == other.getWorld()
-                && logEntry.getVector().equals(other.getVector())
-                && (logEntry.getBlock() == other.getBlock() || logEntry.getBlock().equals(other.getBlock()))) // InventoryType
-            {
-                ItemData itemData1 = logEntry.getItemData();
-                ItemData itemData2 = other.getItemData();
-                return itemData1.equals(itemData2); // this is ignoring amount
-            }
-        }
-        return false;
     }
 
     @Override

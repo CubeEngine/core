@@ -227,6 +227,4 @@ public class PlayerBlockListener extends LogListener
             this.logAction(action);
         }
     }
-
-
 }

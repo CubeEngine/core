@@ -69,4 +69,5 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
     {
         super.setOldBlock(state);
         this.note = ((NoteBlock)state).getNote().getId();
-    }}
+    }
+}

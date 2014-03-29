@@ -18,8 +18,6 @@
 package de.cubeisland.engine.log.action.newaction.death;
 
 
-import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
-
 /**
  * Represents a NPC dying
  */

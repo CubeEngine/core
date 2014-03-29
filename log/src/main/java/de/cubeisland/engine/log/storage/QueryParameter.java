@@ -85,7 +85,8 @@ public class QueryParameter implements Cloneable
         if (locations.length == 1)
         {
             this.worldID = this.module.getCore().getWorldManager().getWorldId(locations[0].getWorld());
-            this.location1 = new BlockVector3(locations[0].getBlockX(),locations[0].getBlockY(),locations[0].getBlockZ());
+            this.location1 = new BlockVector3(locations[0].getBlockX(), locations[0].getBlockY(), locations[0]
+                .getBlockZ());
         }
         else
         {
@@ -97,8 +98,8 @@ public class QueryParameter implements Cloneable
     {
         this.resetLocations();
         this.worldID = this.module.getCore().getWorldManager().getWorldId(loc1.getWorld());
-        this.location1 = new BlockVector3(loc1.getBlockX(),loc1.getBlockY(),loc1.getBlockZ());
-        this.location2 = new BlockVector3(loc2.getBlockX(),loc2.getBlockY(),loc2.getBlockZ());
+        this.location1 = new BlockVector3(loc1.getBlockX(), loc1.getBlockY(), loc1.getBlockZ());
+        this.location2 = new BlockVector3(loc2.getBlockX(), loc2.getBlockY(), loc2.getBlockZ());
     }
 
     public void setLocationRadius(Location loc, int radius)
@@ -227,27 +228,24 @@ public class QueryParameter implements Cloneable
         {
             if (this.location2 != null)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found in between {vector} and {vector} in {world}!",
-                                    new BlockVector3(this.location1.x, this.location1.y, this.location1.z),
-                                    new BlockVector3(this.location2.x, this.location2.y, this.location2.z),
-                                    this.module.getCore().getWorldManager().getWorld(worldID));
+                user.sendTranslated(MessageType.NEUTRAL, "No logs found in between {vector} and {vector} in {world}!", new BlockVector3(this.location1.x, this.location1.y, this.location1.z), new BlockVector3(this.location2.x, this.location2.y, this.location2.z), this.module
+                    .getCore().getWorldManager().getWorld(worldID));
             }
             else if (this.radius == null)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found at {vector} in {world}!",
-                                    new BlockVector3(this.location1.x, this.location1.y, this.location1.z),
-                                    this.module.getCore().getWorldManager().getWorld(worldID));
+                user.sendTranslated(MessageType.NEUTRAL, "No logs found at {vector} in {world}!", new BlockVector3(this.location1.x, this.location1.y, this.location1.z), this.module
+                    .getCore().getWorldManager().getWorld(worldID));
             }
-            else if (user.getLocation().getBlockX() == location1.x
-                  && user.getLocation().getBlockY() == location1.y
-                  && user.getLocation().getBlockZ() == location1.z)
+            else if (user.getLocation().getBlockX() == location1.x && user.getLocation()
+                                                                          .getBlockY() == location1.y && user
+                .getLocation().getBlockZ() == location1.z)
             {
                 user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around you!", radius);
             }
             else
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around {vector} in {world}!",
-                    this.radius, new BlockVector3(this.location1.x, this.location1.y, this.location1.z), this.module.getCore().getWorldManager().getWorld(worldID));
+                user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around {vector} in {world}!", this.radius, new BlockVector3(this.location1.x, this.location1.y, this.location1.z), this.module
+                    .getCore().getWorldManager().getWorld(worldID));
             }
         }
         else
@@ -283,7 +281,10 @@ public class QueryParameter implements Cloneable
     {
         for (Boolean include : this.actions.values())
         {
-            if (include) return true; // if one is included exclusion do not matter
+            if (include)
+            {
+                return true; // if one is included exclusion do not matter
+            }
         }
         return false; // all excluded
     }
@@ -292,7 +293,10 @@ public class QueryParameter implements Cloneable
     {
         for (Boolean include : this.blocks.values())
         {
-            if (include) return true; // if one is included exclusion do not matter
+            if (include)
+            {
+                return true; // if one is included exclusion do not matter
+            }
         }
         return false; // all excluded
     }
@@ -301,7 +305,10 @@ public class QueryParameter implements Cloneable
     {
         for (Boolean include : this.users.values())
         {
-            if (include) return true; // if one is included exclusion do not matter
+            if (include)
+            {
+                return true; // if one is included exclusion do not matter
+            }
         }
         return false; // all excluded
     }
@@ -309,7 +316,10 @@ public class QueryParameter implements Cloneable
     public boolean containsAction(ActionType actionType)
     {
         Boolean set = this.actions.get(actionType);
-        if (set == null) return false;
+        if (set == null)
+        {
+            return false;
+        }
         return set;
     }
 }

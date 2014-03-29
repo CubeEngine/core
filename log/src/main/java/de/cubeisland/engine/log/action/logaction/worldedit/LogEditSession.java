@@ -20,8 +20,6 @@ package de.cubeisland.engine.log.action.logaction.worldedit;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 
-import de.cubeisland.engine.log.Log;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalPlayer;
 import com.sk89q.worldedit.LocalWorld;
@@ -30,6 +28,7 @@ import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+import de.cubeisland.engine.log.Log;
 
 public class LogEditSession extends EditSession
 {
@@ -67,18 +66,19 @@ public class LogEditSession extends EditSession
     @Override
     public boolean rawSetBlock(Vector pt, BaseBlock block)
     {
-        if (this.player instanceof BukkitPlayer && this.player.getWorld() instanceof BukkitWorld )
+        if (this.player instanceof BukkitPlayer && this.player.getWorld() instanceof BukkitWorld)
         {
             World world = ((BukkitWorld)this.player.getWorld()).getWorld();
             BlockState oldState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
             boolean success = super.rawSetBlock(pt, block);
             if (success)
             {
-                WorldEditActionType actionType = this.module.getActionTypeManager().getActionType(WorldEditActionType.class);
+                WorldEditActionType actionType = this.module.getActionTypeManager()
+                                                            .getActionType(WorldEditActionType.class);
                 if (actionType.isActive(world))
                 {
-                    BlockState newState =  world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
-                    actionType.logBlockChange(((BukkitPlayer)this.player).getPlayer(),oldState,newState,null);
+                    BlockState newState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
+                    actionType.logBlockChange(((BukkitPlayer)this.player).getPlayer(), oldState, newState, null);
                 }
             }
             return success;

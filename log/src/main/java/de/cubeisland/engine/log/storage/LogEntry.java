@@ -43,17 +43,25 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.log.storage.TableLogEntry.TABLE_LOG_ENTRY;
 
-public class LogEntry extends UpdatableRecordImpl<LogEntry>
-    implements Record13<UInteger, Timestamp, UInteger, Integer, Integer, Integer, UInteger, Long, String, Long, String, Byte, String>
+public class LogEntry extends UpdatableRecordImpl<LogEntry> implements Record13<UInteger, Timestamp, UInteger, Integer, Integer, Integer, UInteger, Long, String, Long, String, Byte, String>
 {
 
+    public static final Comparator<LogEntry> COMPARATOR = new Comparator<LogEntry>()
+    {
+        @Override
+        public int compare(LogEntry o1, LogEntry o2)
+        {
+            return (int)(o1.getId().longValue() - o2.getId().longValue());
+        }
+    };
+    private final TreeSet<LogEntry> attached = new TreeSet<>();
     private Log module;
     private UserManager um;
-    private final TreeSet<LogEntry> attached = new TreeSet<>();
     private ActionType actionType;
     private World world;
     private BlockVector3 location;
     private JsonNode additional;
+    private Location bukkitLoc = null;
 
     public LogEntry()
     {
@@ -65,7 +73,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         this.module = module;
         this.um = module.getCore().getUserManager();
 
-        this.location = new BlockVector3(this.getX(),this.getY(),this.getZ());
+        this.location = new BlockVector3(this.getX(), this.getY(), this.getZ());
         this.actionType = this.module.getActionTypeManager().getActionType(this.getAction().intValue());
         this.world = module.getCore().getWorldManager().getWorld(this.getWorldID().longValue());
         this.additional = this.getAdditionaldata() == null ? null : this.readJson(this.getAdditionaldata());
@@ -84,7 +92,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         }
         catch (IOException e)
         {
-            throw new IllegalArgumentException("Could not read additional data: "+ string, e);
+            throw new IllegalArgumentException("Could not read additional data: " + string, e);
         }
     }
 
@@ -95,7 +103,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     public boolean isSimilar(LogEntry other)
     {
-        return this.actionType.isSimilar(this,other);
+        return this.actionType.isSimilar(this, other);
     }
 
     public boolean hasAttached()
@@ -113,26 +121,31 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         return this.world;
     }
 
+    public void setWorld(UInteger value)
+    {
+        setValue(2, value);
+    }
+
     public ImmutableBlockData getOldBlock()
     {
-        return new ImmutableBlockData(Material.getMaterial(this.getBlock()),this.getData().byteValue());
+        return new ImmutableBlockData(Material.getMaterial(this.getBlock()), this.getData().byteValue());
     }
 
     public ImmutableBlockData getNewBlock()
     {
-        return new ImmutableBlockData(Material.getMaterial(this.getNewblock()),this.getNewdata());
+        return new ImmutableBlockData(Material.getMaterial(this.getNewblock()), this.getNewdata());
     }
 
     public ImmutableBlockData getMaterialFromNewBlock()
     {
-        return new ImmutableBlockData(Material.getMaterial(this.getNewblock()),(byte)0);
+        return new ImmutableBlockData(Material.getMaterial(this.getNewblock()), (byte)0);
     }
 
     public EntityData getCauserEntity()
     {
         if (this.hasCauserEntity())
         {
-            return new EntityData(EntityType.fromId((int)-getCauser()),this.getAdditional());
+            return new EntityData(EntityType.fromId((int)-getCauser()), this.getAdditional());
         }
         else
         {
@@ -147,17 +160,14 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     /**
      * Gets the Entity represented by the negative value in data.
-     * @return
      */
     public EntityData getEntityFromData()
     {
-        return new EntityData(EntityType.fromId(-getData().intValue()),this.getAdditional());
+        return new EntityData(EntityType.fromId(-getData().intValue()), this.getAdditional());
     }
 
     /**
-     *
      * Gets the itemdata from the json additional
-     * @return
      */
     public ItemData getItemData()
     {
@@ -170,7 +180,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         {
             return this.um.getUser(getData());
         }
-        throw new IllegalStateException("No User-Data in the data field: "+getData());
+        throw new IllegalStateException("No User-Data in the data field: " + getData());
     }
 
     public JsonNode getAdditional()
@@ -231,8 +241,6 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         return this.actionType.canRedo() && this.actionType.redo(attachment, this, force, preview);
     }
 
-    private Location bukkitLoc = null;
-
     public Location getLocation()
     {
         if (bukkitLoc == null)
@@ -242,124 +250,136 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
         return bukkitLoc;
     }
 
+    // Direct Getter & Setter
+
     public void clearAttached()
     {
         this.attached.clear();
     }
 
-    public static final Comparator<LogEntry> COMPARATOR = new Comparator<LogEntry>()
+    public UInteger getId()
     {
-        @Override
-        public int compare(LogEntry o1, LogEntry o2)
-        {
-            return (int)(o1.getId().longValue() - o2.getId().longValue());
-        }
-    };
+        return (UInteger)getValue(0);
+    }
 
-    // Direct Getter & Setter
-
-    public void setId(UInteger value) {
+    public void setId(UInteger value)
+    {
         setValue(0, value);
     }
 
-    public UInteger getId() {
-        return (UInteger) getValue(0);
+    public Timestamp getTimestamp()
+    {
+        return (Timestamp)getValue(1);
     }
 
-    public void setTimestamp(Timestamp value) {
+    public void setTimestamp(Timestamp value)
+    {
         setValue(1, value);
     }
 
-    public Timestamp getTimestamp() {
-        return (Timestamp) getValue(1);
+    public UInteger getWorldID()
+    {
+        return (UInteger)getValue(2);
     }
 
-    public void setWorld(UInteger value) {
-        setValue(2, value);
+    public Integer getX()
+    {
+        return (Integer)getValue(3);
     }
 
-    public UInteger getWorldID() {
-        return (UInteger) getValue(2);
-    }
-
-    public void setX(Integer value) {
+    public void setX(Integer value)
+    {
         setValue(3, value);
     }
 
-    public Integer getX() {
-        return (Integer) getValue(3);
+    public Integer getY()
+    {
+        return (Integer)getValue(4);
     }
 
-    public void setY(Integer value) {
+    public void setY(Integer value)
+    {
         setValue(4, value);
     }
 
-    public Integer getY() {
-        return (Integer) getValue(4);
+    public Integer getZ()
+    {
+        return (Integer)getValue(5);
     }
 
-    public void setZ(Integer value) {
+    public void setZ(Integer value)
+    {
         setValue(5, value);
     }
 
-    public Integer getZ() {
-        return (Integer) getValue(5);
+    public UInteger getAction()
+    {
+        return (UInteger)getValue(6);
     }
 
-    public void setAction(UInteger value) {
+    public void setAction(UInteger value)
+    {
         setValue(6, value);
     }
 
-    public UInteger getAction() {
-        return (UInteger) getValue(6);
+    public Long getCauser()
+    {
+        return (Long)getValue(7);
     }
 
-    public void setCauser(Long value) {
+    public void setCauser(Long value)
+    {
         setValue(7, value);
     }
 
-    public Long getCauser() {
-        return (Long) getValue(7);
+    public String getBlock()
+    {
+        return (String)getValue(8);
     }
 
-    public void setBlock(String value) {
+    public void setBlock(String value)
+    {
         setValue(8, value);
     }
 
-    public String getBlock() {
-        return (String) getValue(8);
+    public Long getData()
+    {
+        return (Long)getValue(9);
     }
 
-    public void setData(Long value) {
+    public void setData(Long value)
+    {
         setValue(9, value);
     }
 
-    public Long getData() {
-        return (Long) getValue(9);
+    public String getNewblock()
+    {
+        return (String)getValue(10);
     }
 
-    public void setNewblock(String value) {
+    public void setNewblock(String value)
+    {
         setValue(10, value);
     }
 
-    public String getNewblock() {
-        return (String) getValue(10);
+    public Byte getNewdata()
+    {
+        return (Byte)getValue(11);
     }
 
-    public void setNewdata(Byte value) {
+    public void setNewdata(Byte value)
+    {
         setValue(11, value);
     }
 
-    public Byte getNewdata() {
-        return (Byte) getValue(11);
+    public String getAdditionaldata()
+    {
+        return (String)getValue(12);
     }
 
-    public void setAdditionaldata(String value) {
+    public void setAdditionaldata(String value)
+    {
         setValue(12, value);
-    }
-
-    public String getAdditionaldata() {
-        return (String) getValue(12);
     }
 
     // -------------------------------------------------------------------------
@@ -367,8 +387,9 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
     // -------------------------------------------------------------------------
 
     @Override
-    public org.jooq.Record1<UInteger> key() {
-        return (org.jooq.Record1) super.key();
+    public org.jooq.Record1<UInteger> key()
+    {
+        return (org.jooq.Record1)super.key();
     }
 
     // -------------------------------------------------------------------------
@@ -376,142 +397,170 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<UInteger, Timestamp, UInteger, Integer, Integer, Integer, UInteger, Long, String, Long, String, Byte, String> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row13<UInteger, Timestamp, UInteger, Integer, Integer, Integer, UInteger, Long, String, Long, String, Byte, String> fieldsRow()
+    {
+        return (Row13)super.fieldsRow();
     }
 
     @Override
-    public Row13<UInteger, Timestamp, UInteger, Integer, Integer, Integer, UInteger, Long, String, Long, String, Byte, String> valuesRow() {
-        return (Row13) super.valuesRow();
+    public Row13<UInteger, Timestamp, UInteger, Integer, Integer, Integer, UInteger, Long, String, Long, String, Byte, String> valuesRow()
+    {
+        return (Row13)super.valuesRow();
     }
 
     @Override
-    public Field<UInteger> field1() {
+    public Field<UInteger> field1()
+    {
         return TABLE_LOG_ENTRY.ID;
     }
 
     @Override
-    public Field<Timestamp> field2() {
+    public Field<Timestamp> field2()
+    {
         return TABLE_LOG_ENTRY.DATE;
     }
 
     @Override
-    public Field<UInteger> field3() {
+    public Field<UInteger> field3()
+    {
         return TABLE_LOG_ENTRY.WORLD;
     }
 
     @Override
-    public Field<Integer> field4() {
+    public Field<Integer> field4()
+    {
         return TABLE_LOG_ENTRY.X;
     }
 
     @Override
-    public Field<Integer> field5() {
+    public Field<Integer> field5()
+    {
         return TABLE_LOG_ENTRY.Y;
     }
 
     @Override
-    public Field<Integer> field6() {
+    public Field<Integer> field6()
+    {
         return TABLE_LOG_ENTRY.Z;
     }
 
     @Override
-    public Field<UInteger> field7() {
+    public Field<UInteger> field7()
+    {
         return TABLE_LOG_ENTRY.ACTION;
     }
 
     @Override
-    public Field<Long> field8() {
+    public Field<Long> field8()
+    {
         return TABLE_LOG_ENTRY.CAUSER;
     }
 
     @Override
-    public Field<String> field9() {
+    public Field<String> field9()
+    {
         return TABLE_LOG_ENTRY.BLOCK;
     }
 
     @Override
-    public Field<Long> field10() {
+    public Field<Long> field10()
+    {
         return TABLE_LOG_ENTRY.DATA;
     }
 
     @Override
-    public Field<String> field11() {
+    public Field<String> field11()
+    {
         return TABLE_LOG_ENTRY.NEWBLOCK;
     }
 
     @Override
-    public Field<Byte> field12() {
+    public Field<Byte> field12()
+    {
         return TABLE_LOG_ENTRY.NEWDATA;
     }
 
     @Override
-    public Field<String> field13() {
+    public Field<String> field13()
+    {
         return TABLE_LOG_ENTRY.ADDITIONALDATA;
     }
 
     @Override
-    public UInteger value1() {
+    public UInteger value1()
+    {
         return getId();
     }
 
     @Override
-    public Timestamp value2() {
+    public Timestamp value2()
+    {
         return getTimestamp();
     }
 
     @Override
-    public UInteger value3() {
+    public UInteger value3()
+    {
         return getWorldID();
     }
 
     @Override
-    public Integer value4() {
+    public Integer value4()
+    {
         return getX();
     }
 
     @Override
-    public Integer value5() {
+    public Integer value5()
+    {
         return getY();
     }
 
     @Override
-    public Integer value6() {
+    public Integer value6()
+    {
         return getZ();
     }
 
     @Override
-    public UInteger value7() {
+    public UInteger value7()
+    {
         return getAction();
     }
 
     @Override
-    public Long value8() {
+    public Long value8()
+    {
         return getCauser();
     }
 
     @Override
-    public String value9() {
+    public String value9()
+    {
         return getBlock();
     }
 
     @Override
-    public Long value10() {
+    public Long value10()
+    {
         return getData();
     }
 
     @Override
-    public String value11() {
+    public String value11()
+    {
         return getNewblock();
     }
 
     @Override
-    public Byte value12() {
+    public Byte value12()
+    {
         return getNewdata();
     }
 
     @Override
-    public String value13() {
+    public String value13()
+    {
         return getAdditionaldata();
     }
 }

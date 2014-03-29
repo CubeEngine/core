@@ -100,7 +100,7 @@ public abstract class BlockActionType extends LogActionType
         }
         else
         {
-            state.update(true,false);
+            state.update(true, false);
         }
         switch (blockData.material)
         {
@@ -123,9 +123,9 @@ public abstract class BlockActionType extends LogActionType
                     signText = (ArrayNode)logEntry.getAdditional().get("sign");
                 }
                 sign.setLine(0, signText.get(0).textValue());
-                sign.setLine(1,signText.get(1).textValue());
+                sign.setLine(1, signText.get(1).textValue());
                 sign.setLine(2, signText.get(2).textValue());
-                sign.setLine(3,signText.get(3).textValue());
+                sign.setLine(3, signText.get(3).textValue());
                 if (preview)
                 {
                     attachment.addToPreview(sign);

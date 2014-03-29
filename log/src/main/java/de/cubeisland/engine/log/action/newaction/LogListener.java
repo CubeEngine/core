@@ -37,6 +37,46 @@ public class LogListener implements Listener
         this.module = module;
     }
 
+    /**
+     * Only the bottom half of doors and the feet of a bed is logged!
+     *
+     * @param blockState the blockstate to adjust
+     *
+     * @return the adjusted blockstate
+     */
+    public static BlockState adjustBlockForDoubleBlocks(BlockState blockState)
+    {
+        if (blockState.getType() == Material.WOODEN_DOOR || blockState.getType() == Material.IRON_DOOR_BLOCK)
+        {
+            if (blockState.getRawData() == 8 || blockState.getRawData() == 9)
+            {
+                if (blockState.getRawData() == 9)
+                {
+                    blockState = blockState.getBlock().getRelative(BlockFace.DOWN).getState();
+                    blockState.setRawData((byte)(blockState.getRawData() + 8));
+                    return blockState;
+                }
+                return blockState.getBlock().getRelative(BlockFace.DOWN).getState();
+            }
+            else
+            {
+                if (blockState.getBlock().getRelative(BlockFace.UP).getState().getRawData() == 9)
+                {
+                    blockState.setRawData((byte)(blockState.getRawData() + 8));
+                }
+            }
+        }
+        else if (blockState.getData() instanceof Bed)
+        {
+            Bed bed = (Bed)blockState.getData();
+            if (bed.isHeadOfBed())
+            {
+                return blockState.getBlock().getRelative(bed.getFacing().getOppositeFace()).getState();
+            }
+        }
+        return blockState;
+    }
+
     protected final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz, World world)
     {
         if (!this.isActive(clazz, world))
@@ -76,45 +116,5 @@ public class LogListener implements Listener
             return null;
         }
         return new Reference<>(module.getCore().getConfigFactory(), new DBRefBase(db, collection, action.getId()));
-    }
-
-    /**
-     * Only the bottom half of doors and the feet of a bed is logged!
-     *
-     * @param blockState the blockstate to adjust
-     *
-     * @return the adjusted blockstate
-     */
-    public static BlockState adjustBlockForDoubleBlocks(BlockState blockState)
-    {
-        if (blockState.getType() == Material.WOODEN_DOOR || blockState.getType() == Material.IRON_DOOR_BLOCK)
-        {
-            if (blockState.getRawData() == 8 || blockState.getRawData() == 9)
-            {
-                if (blockState.getRawData() == 9)
-                {
-                    blockState = blockState.getBlock().getRelative(BlockFace.DOWN).getState();
-                    blockState.setRawData((byte)(blockState.getRawData() + 8));
-                    return blockState;
-                }
-                return blockState.getBlock().getRelative(BlockFace.DOWN).getState();
-            }
-            else
-            {
-                if (blockState.getBlock().getRelative(BlockFace.UP).getState().getRawData() == 9)
-                {
-                    blockState.setRawData((byte)(blockState.getRawData() + 8));
-                }
-            }
-        }
-        else if (blockState.getData() instanceof Bed)
-        {
-            Bed bed = (Bed)blockState.getData();
-            if (bed.isHeadOfBed())
-            {
-                return blockState.getBlock().getRelative(bed.getFacing().getOppositeFace()).getState();
-            }
-        }
-        return blockState;
     }
 }

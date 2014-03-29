@@ -26,7 +26,9 @@ import org.jooq.types.UInteger;
 public class TableActionTypes extends AutoIncrementTable<ActionTypeModel, UInteger>
 {
     public static TableActionTypes TABLE_ACTION_TYPE;
-
+    public final TableField<ActionTypeModel, UInteger> ID = createField("id", U_INTEGER.nullable(false), this);
+    public final TableField<ActionTypeModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32)
+                                                                                                   .nullable(false), this);
     public TableActionTypes(String prefix)
     {
         super(prefix + "log_actiontypes", new Version(1));
@@ -36,11 +38,9 @@ public class TableActionTypes extends AutoIncrementTable<ActionTypeModel, UInteg
         TABLE_ACTION_TYPE = this;
     }
 
-    public final TableField<ActionTypeModel, UInteger> ID = createField("id", U_INTEGER.nullable(false), this);
-    public final TableField<ActionTypeModel, String> NAME = createField("name", SQLDataType.VARCHAR.length(32).nullable(false), this);
-
     @Override
-    public Class<ActionTypeModel> getRecordType() {
+    public Class<ActionTypeModel> getRecordType()
+    {
         return ActionTypeModel.class;
     }
 }

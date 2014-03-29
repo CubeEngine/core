@@ -52,13 +52,13 @@ import de.cubeisland.engine.log.action.newaction.LogListener;
  */
 public class PlayerVehicleListener extends LogListener
 {
+    private transient final Map<Location, Entity> plannedVehiclePlace = new ConcurrentHashMap<>();
+    private transient volatile boolean clearPlanned = false;
+
     public PlayerVehicleListener(Log module)
     {
         super(module);
     }
-
-    private transient volatile boolean clearPlanned = false;
-    private transient final Map<Location, Entity> plannedVehiclePlace = new ConcurrentHashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleDestroy(final VehicleDestroyEvent event)

@@ -35,6 +35,11 @@ public class VehiclePrePlaceEvent extends Event
         this.player = player;
     }
 
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
+
     public Location getLocation()
     {
         return location;
@@ -47,11 +52,6 @@ public class VehiclePrePlaceEvent extends Event
 
     @Override
     public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
     {
         return handlers;
     }

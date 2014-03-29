@@ -60,7 +60,7 @@ public class ItemInsert extends SimpleLogActionType
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
     {
-        ItemData itemData= logEntry.getItemData();
+        ItemData itemData = logEntry.getItemData();
         int amount = itemData.amount;
         if (logEntry.hasAttached())
         {
@@ -71,22 +71,25 @@ public class ItemInsert extends SimpleLogActionType
         }
         if (amount > 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount} {name#item} into {name#container}{}", time, logEntry.getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} placed {amount} {name#item} into {name#container}{}", time, logEntry
+                .getCauserUser().getName(), amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else if (amount < 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} took {amount} {name#item} out of {name#container}{}", time, logEntry.getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} took {amount} {name#item} out of {name#container}{}", time, logEntry
+                .getCauserUser().getName(), -amount, itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "{}{user} did not change the amount of {name#item} in {name#container}{}", time, logEntry.getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
+            user.sendTranslated(MessageType.POSITIVE, "{}{user} did not change the amount of {name#item} in {name#container}{}", time, logEntry
+                .getCauserUser().getName(), itemData, logEntry.getContainerTypeFromBlock(), loc);
         }
     }
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)
     {
-        return ContainerActionType.isSubActionSimilar(logEntry,other);
+        return ContainerActionType.isSubActionSimilar(logEntry, other);
     }
 
     @Override
@@ -111,7 +114,7 @@ public class ItemInsert extends SimpleLogActionType
             {
                 ItemData itemData = logEntry.getItemData();
                 InventoryHolder holder = (InventoryHolder)block;
-                HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
+                HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
                     attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
@@ -121,7 +124,8 @@ public class ItemInsert extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-insert!");
+                attachment.getHolder()
+                          .sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-insert!");
             }
             return false;
         }
@@ -164,7 +168,7 @@ public class ItemInsert extends SimpleLogActionType
             {
                 ItemData itemData = logEntry.getItemData();
                 InventoryHolder holder = (InventoryHolder)block;
-                HashMap<Integer,ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
+                HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
                 if (!couldNotRemove.isEmpty())
                 {
                     attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
@@ -174,7 +178,8 @@ public class ItemInsert extends SimpleLogActionType
             }
             if (force)
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-insert!");
+                attachment.getHolder()
+                          .sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-insert!");
             }
             return false;
         }

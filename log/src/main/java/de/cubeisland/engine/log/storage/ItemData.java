@@ -41,7 +41,7 @@ public class ItemData
     public int amount;
     public String displayName;
     public List<String> lore;
-    public Map<Enchantment,Integer> enchantments;
+    public Map<Enchantment, Integer> enchantments;
 
     public ItemData(Material material, short dura, int amount, String displayName, List<String> lore, Map<Enchantment, Integer> enchantments)
     {
@@ -76,32 +76,6 @@ public class ItemData
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ItemData itemData = (ItemData) o;
-        if (dura != itemData.dura) return false;
-        if (displayName != null ? !displayName.equals(itemData.displayName) : itemData.displayName != null)
-            return false;
-        if (enchantments != null ? !enchantments.equals(itemData.enchantments) : itemData.enchantments != null)
-            return false;
-        if (lore != null ? !lore.equals(itemData.lore) : itemData.lore != null) return false;
-        if (material != itemData.material) return false;
-        // ignore amount
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = material != null ? material.hashCode() : 0;
-        result = 31 * result + (int) dura;
-        result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
-        result = 31 * result + (lore != null ? lore.hashCode() : 0);
-        result = 31 * result + (enchantments != null ? enchantments.hashCode() : 0);
-        return result;
-    }
-
     public static ItemData deserialize(JsonNode json)
     {
         if (json == null)
@@ -113,7 +87,7 @@ public class ItemData
         int amount = json.get("amount").asInt();
         String name = null;
         List<String> lore = null;
-        Map<Enchantment,Integer> enchantments = null;
+        Map<Enchantment, Integer> enchantments = null;
         if (json.get("name") != null)
         {
             name = json.get("name").asText();
@@ -131,14 +105,61 @@ public class ItemData
         {
             enchantments = new HashMap<>();
             ObjectNode jsonEnchs = (ObjectNode)json.get("enchs");
-            Iterator<Entry<String,JsonNode>> enchs = jsonEnchs.fields();
+            Iterator<Entry<String, JsonNode>> enchs = jsonEnchs.fields();
             while (enchs.hasNext())
             {
-                Entry<String,JsonNode> entry = enchs.next();
-                enchantments.put(Enchantment.getById(Integer.valueOf(entry.getKey())),entry.getValue().asInt());
+                Entry<String, JsonNode> entry = enchs.next();
+                enchantments.put(Enchantment.getById(Integer.valueOf(entry.getKey())), entry.getValue().asInt());
             }
         }
-        return new ItemData(mat,dura,amount,name,lore,enchantments);
+        return new ItemData(mat, dura, amount, name, lore, enchantments);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        ItemData itemData = (ItemData)o;
+        if (dura != itemData.dura)
+        {
+            return false;
+        }
+        if (displayName != null ? !displayName.equals(itemData.displayName) : itemData.displayName != null)
+        {
+            return false;
+        }
+        if (enchantments != null ? !enchantments.equals(itemData.enchantments) : itemData.enchantments != null)
+        {
+            return false;
+        }
+        if (lore != null ? !lore.equals(itemData.lore) : itemData.lore != null)
+        {
+            return false;
+        }
+        if (material != itemData.material)
+        {
+            return false;
+        }
+        // ignore amount
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = material != null ? material.hashCode() : 0;
+        result = 31 * result + (int)dura;
+        result = 31 * result + (displayName != null ? displayName.hashCode() : 0);
+        result = 31 * result + (lore != null ? lore.hashCode() : 0);
+        result = 31 * result + (enchantments != null ? enchantments.hashCode() : 0);
+        return result;
     }
 
     public String serialize(ObjectMapper mapper)
@@ -162,10 +183,10 @@ public class ItemData
         if (this.enchantments != null)
         {
             ObjectNode enchs = mapper.createObjectNode();
-            json.put("enchs",enchs);
-            for (Entry<Enchantment,Integer> ench : this.enchantments.entrySet())
+            json.put("enchs", enchs);
+            for (Entry<Enchantment, Integer> ench : this.enchantments.entrySet())
             {
-                enchs.put(String.valueOf(ench.getKey().getId()),ench.getValue());
+                enchs.put(String.valueOf(ench.getKey().getId()), ench.getValue());
             }
         }
         return json.toString();
@@ -173,7 +194,7 @@ public class ItemData
 
     public ItemStack toItemStack()
     {
-        ItemStack itemStack = new ItemStack(material,amount,dura);
+        ItemStack itemStack = new ItemStack(material, amount, dura);
         ItemMeta meta = itemStack.getItemMeta();
         if (displayName != null)
         {
@@ -195,10 +216,10 @@ public class ItemData
     @Override
     public String toString()
     {
-        String result = this.material.name()+":"+this.dura;
+        String result = this.material.name() + ":" + this.dura;
         if (this.displayName != null)
         {
-            result += " ("+ this.displayName+ ")";
+            result += " (" + this.displayName + ")";
         }
         return result;
     }
