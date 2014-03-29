@@ -8,21 +8,21 @@
     <methods>
       <method>
         <name>getTranslation</name>
-        <singular>2</singular>
+        <singular>1</singular>
       </method>
       <method>
         <name>getTranslationN</name>
-        <singular>3</singular>
-        <plural>4</plural>
+        <singular>2</singular>
+        <plural>3</plural>
       </method>
       <method>
         <name>sendTranslated</name>
-        <singular>2</singular>
+        <singular>1</singular>
       </method>
       <method>
         <name>sendTranslatedN</name>
-        <singular>3</singular>
-        <plural>4</plural>
+        <singular>2</singular>
+        <plural>3</plural>
       </method>
     </methods>
 

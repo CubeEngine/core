@@ -96,7 +96,7 @@ public class UserInformationCommands extends UserCommandHelper
         if (user.isOnline()) // Can have superperm
         {
             boolean superPerm = user.hasPermission(permission);
-            context.sendTranslated(MessageType.NEUTRAL, "SuperPerm Node: {name}", superPerm);
+            context.sendTranslated(MessageType.NEUTRAL, "SuperPerm Node: {bool}", superPerm);
         }
         if (resolvedPermission == null)
         {
