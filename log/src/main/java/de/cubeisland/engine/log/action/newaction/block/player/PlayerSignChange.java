@@ -47,13 +47,14 @@ public class PlayerSignChange extends PlayerBlockActionType<PlayerBlockListener>
         String delim = ChatFormat.GREY + " | " + ChatFormat.GOLD;
         if (oldLines == null || oldLines.length == 0)
         {
-            return user.getTranslation(POSITIVE, "{user} wrote {input#signtext} on a sign",
-                                       this.player.name, StringUtils.implode(delim, newLines));
+            return user
+                .getTranslation(POSITIVE, "{user} wrote {input#signtext} on a sign", this.player.name, StringUtils
+                    .implode(delim, newLines));
         }
-        return user.getTranslation(POSITIVE, "{user} wrote {input#signtext} on a sign",
-                                   this.player.name, StringUtils.implode(delim, newLines)) + "\n" +
-               user.getTranslation(POSITIVE, "    The old signtext was {input#signtext}",
-                                   StringUtils.implode(delim, oldLines));
+        return user.getTranslation(POSITIVE, "{user} wrote {input#signtext} on a sign", this.player.name, StringUtils
+            .implode(delim, newLines)) + "\n" +
+            user.getTranslation(POSITIVE, "    The old signtext was {input#signtext}", StringUtils
+                .implode(delim, oldLines));
     }
 
     public void setNewLines(String[] newLines)

@@ -27,6 +27,4 @@ public class NpcDeath extends EntityDeathAction
 {
     // return "npc-death";
     // return this.lm.getConfig(world).death.NPC_DEATH_enable;
-
-
 }

@@ -24,7 +24,4 @@ public class BossDeath extends EntityDeathAction
 {
     // return "boss-death";
     // return this.lm.getConfig(world).death.BOSS_DEATH_enable;
-
-
-
 }

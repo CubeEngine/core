@@ -32,7 +32,7 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 
@@ -53,7 +53,7 @@ import static org.bukkit.Material.FIRE;
  */
 public class BlockIgniteListener extends LogListener
 {
-    public BlockIgniteListener(Module module)
+    public BlockIgniteListener(Log module)
     {
         super(module);
     }
@@ -86,7 +86,6 @@ public class BlockIgniteListener extends LogListener
                         ((FireballIgnite)action).setPlayer((Player)shooter);
                     }
                 }
-
             }
             break;
         case LAVA:

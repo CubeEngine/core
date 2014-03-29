@@ -51,13 +51,16 @@ public class BlockShift extends BlockActionType<BlockListener>
                 {
                     return user.getTranslation(POSITIVE, "A piston extended");
                 }
-                return user.getTranslation(POSITIVE, "A piston extended pushing {name#block} away", this.oldBlock.name());
+                return user
+                    .getTranslation(POSITIVE, "A piston extended pushing {name#block} away", this.oldBlock.name());
             }
             if (this.oldBlock.is(AIR))
             {
                 return user.getTranslation(POSITIVE, "A piston pushed {name#block} into place", this.newBlock.name());
             }
-            return user.getTranslation(POSITIVE, "A piston pushed {name#block} into the place of {name#block}", this.newBlock.name(), this.oldBlock.name());
+            return user
+                .getTranslation(POSITIVE, "A piston pushed {name#block} into the place of {name#block}", this.newBlock
+                    .name(), this.oldBlock.name());
         }
         if (this.newBlock.is(AIR))
         {

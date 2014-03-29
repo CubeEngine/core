@@ -36,18 +36,16 @@ public class PlayerHangingBreak extends PlayerHangingActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerPaintingBreak
-            && this.player.equals(((PlayerPaintingBreak)action).player);
+        return action instanceof PlayerPaintingBreak && this.player.equals(((PlayerPaintingBreak)action).player);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{text:One} {name#hanging} got removed by {user}",
-                                    "{3:amount} {name#hanging} got removed by {user}",
-                                    this.hangingType.name(), this.player.name, count);
+        return user
+            .getTranslationN(POSITIVE, count, "{text:One} {name#hanging} got removed by {user}", "{3:amount} {name#hanging} got removed by {user}", this.hangingType
+                .name(), this.player.name, count);
     }
 
     public void setCause(ActionTypeBase action)

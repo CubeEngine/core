@@ -24,7 +24,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.entity.spawn.MonsterEggUse;
 import de.cubeisland.engine.log.action.newaction.entity.spawn.NaturalSpawn;
@@ -47,7 +47,7 @@ import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
  */
 public class EntityListener extends LogListener
 {
-    public EntityListener(Module module)
+    public EntityListener(Log module)
     {
         super(module);
     }

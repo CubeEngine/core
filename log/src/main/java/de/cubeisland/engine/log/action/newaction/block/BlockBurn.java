@@ -33,17 +33,15 @@ public class BlockBurn extends BlockActionType<BlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof BlockBurn
-            && ((BlockBurn)action).oldBlock == this.oldBlock;
+        return action instanceof BlockBurn && ((BlockBurn)action).oldBlock == this.oldBlock;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "A {name#block} went up into flames",
-                                    "{1:amount}x {name#block} went up into flames",
-                                    this.oldBlock.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "A {name#block} went up into flames", "{1:amount}x {name#block} went up into flames", this.oldBlock
+                .name(), count);
     }
 }

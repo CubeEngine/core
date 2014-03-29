@@ -32,7 +32,7 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 /**
@@ -52,13 +52,13 @@ import de.cubeisland.engine.log.action.newaction.LogListener;
  */
 public class PlayerVehicleListener extends LogListener
 {
-    public PlayerVehicleListener(Module module)
+    public PlayerVehicleListener(Log module)
     {
         super(module);
     }
 
     private transient volatile boolean clearPlanned = false;
-    private transient final Map<Location,Entity> plannedVehiclePlace = new ConcurrentHashMap<>();
+    private transient final Map<Location, Entity> plannedVehiclePlace = new ConcurrentHashMap<>();
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleDestroy(final VehicleDestroyEvent event)

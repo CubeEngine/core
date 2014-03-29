@@ -33,18 +33,16 @@ public class PlayerEntityShear extends PlayerEntityActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerEntityShear
-            && this.player.equals(((PlayerEntityShear)action).player)
-            && ((PlayerEntityShear)action).entity.type == this.entity.type;
+        return action instanceof PlayerEntityShear && this.player
+            .equals(((PlayerEntityShear)action).player) && ((PlayerEntityShear)action).entity.type == this.entity.type;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{user} sheared {name#entity}",
-                                    "{user} sheared {2:amount} {name#entity}",
-                                    this.player.name, this.entity.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} sheared {name#entity}", "{user} sheared {2:amount} {name#entity}", this.player.name, this.entity
+                .name(), count);
     }
 }

@@ -38,9 +38,8 @@ public class CraftItem extends PlayerActionType<PlayerItemActionListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof CraftItem
-            && this.player.equals(((CraftItem)action).player)
-            && ((CraftItem)action).craftItem.isSimilar(this.craftItem);
+        return action instanceof CraftItem && this.player
+            .equals(((CraftItem)action).player) && ((CraftItem)action).craftItem.isSimilar(this.craftItem);
     }
 
     @Override
@@ -48,11 +47,12 @@ public class CraftItem extends PlayerActionType<PlayerItemActionListener>
     {
         if (this.hasAttached())
         {
-            return user.getTranslation(POSITIVE, "{user} crafted {name#item} x{amount}",
-                        this.player.name, this.craftItem.getType().name(), this.getAttached().size() + 1);
+            return user
+                .getTranslation(POSITIVE, "{user} crafted {name#item} x{amount}", this.player.name, this.craftItem
+                    .getType().name(), this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} crafted {name#item}",
-                    this.player.name, this.craftItem.getType().name());
+        return user
+            .getTranslation(POSITIVE, "{user} crafted {name#item}", this.player.name, this.craftItem.getType().name());
     }
 
     public void setItem(ItemStack result)

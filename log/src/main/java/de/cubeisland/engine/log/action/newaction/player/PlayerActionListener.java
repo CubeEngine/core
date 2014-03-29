@@ -27,7 +27,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 
 /**
  * A Listener for Player Actions
@@ -48,7 +48,7 @@ import de.cubeisland.engine.core.module.Module;
  */
 public class PlayerActionListener extends PlayerLogListener
 {
-    public PlayerActionListener(Module module)
+    public PlayerActionListener(Log module)
     {
         super(module);
     }
@@ -57,7 +57,10 @@ public class PlayerActionListener extends PlayerLogListener
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
         // TODO canceled chat?
-        if (event.getMessage().trim().isEmpty()) return;
+        if (event.getMessage().trim().isEmpty())
+        {
+            return;
+        }
         PlayerChat action = this.newAction(PlayerChat.class, event.getPlayer().getWorld());
         if (action != null)
         {
@@ -72,7 +75,10 @@ public class PlayerActionListener extends PlayerLogListener
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event)
     {
         // TODO permission check for base commands?
-        if (event.getMessage().trim().isEmpty()) return;
+        if (event.getMessage().trim().isEmpty())
+        {
+            return;
+        }
         PlayerCommand action = this.newAction(PlayerCommand.class, event.getPlayer().getWorld());
         if (action != null)
         {

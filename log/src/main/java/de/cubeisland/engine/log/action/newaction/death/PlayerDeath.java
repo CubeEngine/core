@@ -38,9 +38,8 @@ public class PlayerDeath extends DeathAction
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerDeath
-            && this.killer != null && ((DeathAction)action).killer != null
-            && this.killer.fetch(KillAction.class).canAttach(((DeathAction)action).killer.fetch(KillAction.class));
+        return action instanceof PlayerDeath && this.killer != null && ((DeathAction)action).killer != null && this.killer
+            .fetch(KillAction.class).canAttach(((DeathAction)action).killer.fetch(KillAction.class));
     }
 
     @Override
@@ -51,25 +50,32 @@ public class PlayerDeath extends DeathAction
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} players got killed by {user}", this.countAttached(), fetch.playerKiller.name);
+                return user.getTranslation(POSITIVE, "{amount} players got killed by {user}", this
+                    .countAttached(), fetch.playerKiller.name);
             }
-            return user.getTranslation(POSITIVE, "{user} got killed by {user}", this.killed.name, fetch.playerKiller.name);
+            return user
+                .getTranslation(POSITIVE, "{user} got killed by {user}", this.killed.name, fetch.playerKiller.name);
         }
         if (fetch.isEntityKiller())
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} players could not escape {name#entity}", this.countAttached(), fetch.entityKiller.name());
+                return user.getTranslation(POSITIVE, "{amount} players could not escape {name#entity}", this
+                    .countAttached(), fetch.entityKiller.name());
             }
-            return user.getTranslation(POSITIVE, "{user} could not escape {name#entity}", this.killed.name, fetch.entityKiller.name());
+            return user
+                .getTranslation(POSITIVE, "{user} could not escape {name#entity}", this.killed.name, fetch.entityKiller
+                    .name());
         }
         if (fetch.isOtherKiller())
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} players died of {name#cause}", this.countAttached(), fetch.otherKiller.name());
+                return user.getTranslation(POSITIVE, "{amount} players died of {name#cause}", this
+                    .countAttached(), fetch.otherKiller.name());
             }
-            return user.getTranslation(POSITIVE, "{user} died of {name#cause}", this.killed.name, fetch.otherKiller.name());
+            return user
+                .getTranslation(POSITIVE, "{user} died of {name#cause}", this.killed.name, fetch.otherKiller.name());
         }
         return user.getTranslation(POSITIVE, "{user} died", this.killed.name);
     }

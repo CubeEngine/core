@@ -38,8 +38,6 @@ public class WaterSourceCreation extends BlockActionType<FlowListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "A water source formed",
-                                    "{amount} water sources formed", count);
+        return user.getTranslationN(POSITIVE, count, "A water source formed", "{amount} water sources formed", count);
     }
 }

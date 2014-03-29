@@ -25,7 +25,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 import de.cubeisland.engine.log.action.newaction.block.BlockForm;
@@ -48,7 +48,7 @@ import static org.bukkit.block.BlockFace.DOWN;
  */
 public class FlowListener extends LogListener
 {
-    public FlowListener(Module module)
+    public FlowListener(Log module)
     {
         super(module);
     }
@@ -143,9 +143,12 @@ public class FlowListener extends LogListener
     {
         for (final BlockFace face : BLOCK_FACES)
         {
-            if (face.equals(BlockFace.UP))continue;
+            if (face.equals(BlockFace.UP))
+            {
+                continue;
+            }
             final Block nearBlock = event.getToBlock().getRelative(face);
-            if (nearBlock.getType() == LAVA && nearBlock.getState().getRawData() <=4)
+            if (nearBlock.getType() == LAVA && nearBlock.getState().getRawData() <= 4)
             {
                 this.log(BlockForm.class, nearBlock.getState(), COBBLESTONE);
             }

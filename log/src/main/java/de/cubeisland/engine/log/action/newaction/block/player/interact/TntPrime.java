@@ -41,9 +41,7 @@ public class TntPrime extends PlayerBlockActionType<PlayerBlockInteractListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{user} ignited one TNT",
-                                    "{user} ignited {amount} TNT",
-                                    this.player.name, count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} ignited one TNT", "{user} ignited {amount} TNT", this.player.name, count);
     }
 }

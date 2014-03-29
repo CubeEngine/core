@@ -37,6 +37,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
@@ -70,7 +71,7 @@ public class PlayerHangingListener extends LogListener
 {
     // TODO place item in frame
 
-    public PlayerHangingListener(Module module)
+    public PlayerHangingListener(Log module)
     {
         super(module);
     }

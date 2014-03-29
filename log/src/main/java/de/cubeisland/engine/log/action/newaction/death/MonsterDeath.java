@@ -25,6 +25,4 @@ public class MonsterDeath extends EntityDeathAction
 {
     // return "monster-death";
     // return this.lm.getConfig(world).death.MONSTER_DEATH_enable;
-
-
 }

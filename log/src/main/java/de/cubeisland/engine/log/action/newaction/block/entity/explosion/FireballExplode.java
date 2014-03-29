@@ -33,11 +33,10 @@ public class FireballExplode extends ExplosionActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof FireballExplode
-            && this.oldBlock.equals(((FireballExplode)action).oldBlock)
-            && this.entity.equals(((FireballExplode)action).entity)
-            && ((this.player == null && ((FireballExplode)action).player == null)
-            || (this.player != null && this.player.equals(((FireballExplode)action).player)));
+        return action instanceof FireballExplode && this.oldBlock
+            .equals(((FireballExplode)action).oldBlock) && this.entity
+            .equals(((FireballExplode)action).entity) && ((this.player == null && ((FireballExplode)action).player == null) || (this.player != null && this.player
+            .equals(((FireballExplode)action).player)));
     }
 
     @Override
@@ -46,14 +45,12 @@ public class FireballExplode extends ExplosionActionType
         int count = this.countAttached();
         if (this.player == null)
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "A Fireball blasted away {name#block}",
-                                        "A Fireball blasted away {1:amount}x {name#block}",
-                                        this.oldBlock.name(), count);
+            return user
+                .getTranslationN(POSITIVE, count, "A Fireball blasted away {name#block}", "A Fireball blasted away {1:amount}x {name#block}", this.oldBlock
+                    .name(), count);
         }
-        return user.getTranslationN(POSITIVE, count,
-                                    "A Fireball flying towards {user} blasted away {name#block}",
-                                    "A Fireball flying towards {user} blasted away {2:amount}x {name#block}",
-                                    this.player.name, this.oldBlock.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "A Fireball flying towards {user} blasted away {name#block}", "A Fireball flying towards {user} blasted away {2:amount}x {name#block}", this.player.name, this.oldBlock
+                .name(), count);
     }
 }

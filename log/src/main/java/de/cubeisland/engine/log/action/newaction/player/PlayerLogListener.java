@@ -19,12 +19,12 @@ package de.cubeisland.engine.log.action.newaction.player;
 
 import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 public abstract class PlayerLogListener extends LogListener
 {
-    protected PlayerLogListener(Module module)
+    protected PlayerLogListener(Log module)
     {
         super(module);
     }

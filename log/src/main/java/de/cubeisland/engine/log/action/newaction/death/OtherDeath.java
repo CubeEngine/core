@@ -25,5 +25,4 @@ public class OtherDeath extends EntityDeathAction
 {
     // return "other-death";
     // return this.lm.getConfig(world).death.OTHER_DEATH_enable;
-
 }

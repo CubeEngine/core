@@ -36,8 +36,8 @@ public class PlayerSignBreak extends PlayerBlockBreak
         }
         String delim = ChatFormat.GREY + " | " + ChatFormat.GOLD;
         return super.translateAction(user) + "\n" +
-            user.getTranslation(POSITIVE, "    with {input#signtext} written on it",
-                                StringUtils.implode(delim, this.oldLines));
+            user.getTranslation(POSITIVE, "    with {input#signtext} written on it", StringUtils
+                .implode(delim, this.oldLines));
     }
 
     public void setLines(String[] lines)

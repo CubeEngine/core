@@ -41,9 +41,8 @@ public class PlayerItemDrop extends PlayerActionType<PlayerItemActionListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerItemDrop
-            && this.player.equals(((PlayerItemDrop)action).player)
-            && ((PlayerItemDrop)action).item.isSimilar(this.item);
+        return action instanceof PlayerItemDrop && this.player
+            .equals(((PlayerItemDrop)action).player) && ((PlayerItemDrop)action).item.isSimilar(this.item);
     }
 
     @Override
@@ -57,8 +56,9 @@ public class PlayerItemDrop extends PlayerActionType<PlayerItemActionListener>
                 amount += ((PlayerItemDrop)action).item.getAmount();
             }
         }
-        return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount}",
-                                   this.player.name, this.item.getType().name(), amount);
+        return user
+            .getTranslation(POSITIVE, "{user} dropped {name#item} x{amount}", this.player.name, this.item.getType()
+                                                                                                         .name(), amount);
     }
 
     public void setItem(Item item)

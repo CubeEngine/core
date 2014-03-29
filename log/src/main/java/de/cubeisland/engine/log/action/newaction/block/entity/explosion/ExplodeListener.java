@@ -38,6 +38,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 import static org.bukkit.Material.AIR;
@@ -56,7 +57,7 @@ import static org.bukkit.Material.AIR;
  */
 public class ExplodeListener extends LogListener
 {
-    public ExplodeListener(Module module)
+    public ExplodeListener(Log module)
     {
         super(module);
     }
@@ -90,7 +91,6 @@ public class ExplodeListener extends LogListener
             {
                 player = (Player)((Creeper)entity).getTarget();
             }
-
         }
         else if (entity instanceof TNTPrimed)
         {
@@ -103,8 +103,8 @@ public class ExplodeListener extends LogListener
         else if (entity instanceof WitherSkull)
         {
             actionClazz = WitherExplode.class;
-            if (((WitherSkull)entity).getShooter() instanceof Wither
-                && ((Wither)((WitherSkull)entity).getShooter()).getTarget() instanceof Player)
+            if (((WitherSkull)entity).getShooter() instanceof Wither && ((Wither)((WitherSkull)entity).getShooter())
+                .getTarget() instanceof Player)
             {
                 player = (Player)((Wither)((WitherSkull)entity).getShooter()).getTarget();
             }
@@ -154,9 +154,9 @@ public class ExplodeListener extends LogListener
         {
             for (Block block : blocks)
             {
-                if ((block.getType().equals(Material.WOODEN_DOOR)
-                    || block.getType().equals(Material.IRON_DOOR_BLOCK))
-                    && block.getData() >= 8)
+                if ((block.getType().equals(Material.WOODEN_DOOR) || block.getType()
+                                                                          .equals(Material.IRON_DOOR_BLOCK)) && block
+                    .getData() >= 8)
                 {
                     continue; // ignore upper door halves
                 }

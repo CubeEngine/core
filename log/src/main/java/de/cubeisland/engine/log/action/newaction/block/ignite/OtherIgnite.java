@@ -41,9 +41,7 @@ public class OtherIgnite extends BlockActionType<BlockIgniteListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "A fire got set by an explosion or something else",
-                                    "{amount} fires got set by explosions or something else",
-                                    count);
+        return user
+            .getTranslationN(POSITIVE, count, "A fire got set by an explosion or something else", "{amount} fires got set by explosions or something else", count);
     }
 }

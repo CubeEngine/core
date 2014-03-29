@@ -33,6 +33,7 @@ import org.bukkit.inventory.InventoryHolder;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerContainerBreak;
@@ -61,7 +62,7 @@ import static org.bukkit.block.BlockFace.UP;
  */
 public class PlayerBlockListener extends LogListener
 {
-    public PlayerBlockListener(Module module)
+    public PlayerBlockListener(Log module)
     {
         super(module);
     }
@@ -156,8 +157,9 @@ public class PlayerBlockListener extends LogListener
             action.setOldBlock(event.getBlockReplacedState());
             action.setNewBlock(blockPlaced.getState());
             this.logAction(action);
-            if (blockPlaced.getRelative(BlockFace.DOWN).getType() == AIR
-                && (blockPlaced.getType().hasGravity() || blockPlaced.getType() == DRAGON_EGG))
+            if (blockPlaced.getRelative(BlockFace.DOWN).getType() == AIR && (blockPlaced.getType()
+                                                                                        .hasGravity() || blockPlaced
+                .getType() == DRAGON_EGG))
             {
                 // TODO block fall
                 /*
@@ -207,7 +209,10 @@ public class PlayerBlockListener extends LogListener
                     wasEmpty = false;
                 }
             }
-            if (wasEmpty && isEmpty) return;
+            if (wasEmpty && isEmpty)
+            {
+                return;
+            }
             action.setPlayer(event.getPlayer());
             action.setLocation(event.getBlock().getLocation());
             action.setOldBlock(event.getBlock().getState());

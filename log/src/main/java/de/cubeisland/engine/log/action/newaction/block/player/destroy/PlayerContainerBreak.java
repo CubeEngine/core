@@ -47,12 +47,12 @@ public class PlayerContainerBreak extends PlayerBlockBreak
         }
         if (amount == 0)
         {
-            return user.getTranslation(POSITIVE, "{user} broke an empty {name#container}", this.player.name, this.oldBlock.name());
+            return user
+                .getTranslation(POSITIVE, "{user} broke an empty {name#container}", this.player.name, this.oldBlock
+                    .name());
         }
-        return user.getTranslationN(POSITIVE, amount,
-                                    "{user} broke {name#container} with a single stack of items",
-                                    "{user} broke {name#container} with {amount} stacks of items",
-                                    this.player.name, amount);
+        return user
+            .getTranslationN(POSITIVE, amount, "{user} broke {name#container} with a single stack of items", "{user} broke {name#container} with {amount} stacks of items", this.player.name, amount);
     }
 
     public void setContents(ItemStack[] contents)

@@ -34,11 +34,10 @@ public class CreeperExplode extends ExplosionActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof CreeperExplode
-            && this.oldBlock.equals(((CreeperExplode)action).oldBlock)
-            && this.entity.equals(((CreeperExplode)action).entity)
-            && ((this.player == null && ((CreeperExplode)action).player == null)
-             || (this.player != null && this.player.equals(((CreeperExplode)action).player)));
+        return action instanceof CreeperExplode && this.oldBlock
+            .equals(((CreeperExplode)action).oldBlock) && this.entity
+            .equals(((CreeperExplode)action).entity) && ((this.player == null && ((CreeperExplode)action).player == null) || (this.player != null && this.player
+            .equals(((CreeperExplode)action).player)));
     }
 
     @Override
@@ -47,16 +46,12 @@ public class CreeperExplode extends ExplosionActionType
         int count = this.countAttached();
         if (this.player == null)
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "A Creeper-Explosion wrecked {name#block}",
-                                        "A Creeper-Explosion wrecked {1:amount}x {name#block}",
-                                        this.oldBlock.name(), count);
+            return user
+                .getTranslationN(POSITIVE, count, "A Creeper-Explosion wrecked {name#block}", "A Creeper-Explosion wrecked {1:amount}x {name#block}", this.oldBlock
+                    .name(), count);
         }
-        return user.getTranslationN(POSITIVE, count,
-                                   "{user} let a Creeper detonate and destroy {name#block}",
-                                   "{user} let a Creeper detonate and destroy {amount}x {name#block}",
-                                   this.player.name, this.oldBlock.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} let a Creeper detonate and destroy {name#block}", "{user} let a Creeper detonate and destroy {amount}x {name#block}", this.player.name, this.oldBlock
+                .name(), count);
     }
-
-
 }

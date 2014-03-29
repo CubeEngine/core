@@ -38,10 +38,9 @@ public class PlayerChat extends PlayerActionType<PlayerActionListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerChat
-            && this.player.equals(((PlayerChat)action).player)
-            && ((PlayerChat)action).message.equalsIgnoreCase(this.message)
-            && Math.abs(TimeUnit.MILLISECONDS.toSeconds(action.date.getTime() - this.date.getTime())) < 30;
+        return action instanceof PlayerChat && this.player
+            .equals(((PlayerChat)action).player) && ((PlayerChat)action).message.equalsIgnoreCase(this.message) && Math
+            .abs(TimeUnit.MILLISECONDS.toSeconds(action.date.getTime() - this.date.getTime())) < 30;
     }
 
     @Override
@@ -51,14 +50,15 @@ public class PlayerChat extends PlayerActionType<PlayerActionListener>
         {
             if (this.getAttached().size() >= 4)
             {
-                return user.getTranslation(POSITIVE, "{user} spammed \"{input#message}\" x{amount}",
-                                           this.player.name, this.message, this.getAttached().size() + 1);
+                return user
+                    .getTranslation(POSITIVE, "{user} spammed \"{input#message}\" x{amount}", this.player.name, this.message, this
+                        .getAttached().size() + 1);
             }
-            return user.getTranslation(POSITIVE, "{user} chatted \"{input#message}\" x{amount}",
-                                       this.player.name, this.message, this.getAttached().size() + 1);
+            return user
+                .getTranslation(POSITIVE, "{user} chatted \"{input#message}\" x{amount}", this.player.name, this.message, this
+                    .getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} chatted \"{input#message}\"",
-                                   this.player.name, this.message);
+        return user.getTranslation(POSITIVE, "{user} chatted \"{input#message}\"", this.player.name, this.message);
     }
 
     public void setMessage(String message)

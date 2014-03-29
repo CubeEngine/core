@@ -156,7 +156,7 @@ public class DeathListener extends LogListener
         }
         else if (killed instanceof Animals)
         {
-            if (killed instanceof Tameable && ((Tameable) killed).isTamed())
+            if (killed instanceof Tameable && ((Tameable)killed).isTamed())
             {
                 actionType = PetDeath.class;
             }

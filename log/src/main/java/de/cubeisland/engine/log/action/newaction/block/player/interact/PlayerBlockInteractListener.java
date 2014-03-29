@@ -42,6 +42,7 @@ import org.bukkit.material.PressurePlate;
 import org.bukkit.material.Rails;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.engine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.engine.log.action.newaction.LogListener;
@@ -78,7 +79,7 @@ import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
  */
 public class PlayerBlockInteractListener extends LogListener
 {
-    public PlayerBlockInteractListener(Module module)
+    public PlayerBlockInteractListener(Log module)
     {
         super(module);
     }
@@ -89,7 +90,7 @@ public class PlayerBlockInteractListener extends LogListener
         // TODO other event ...
         //TODO put item into itemframe
 
-        else if (itemInHand.getType() == FIREWORK)
+        if (itemInHand.getType() == FIREWORK)
         {
             //System.out.print(itemInHand);//TODO remove
             FireworkUse fireworkUse = this.manager.getActionType(FireworkUse.class);
@@ -99,8 +100,6 @@ public class PlayerBlockInteractListener extends LogListener
                     .getPlayer(), null, null, null, null, null);
             }
         }
-
-
 
         if (event.getAction() == RIGHT_CLICK_BLOCK)
         {
@@ -140,7 +139,8 @@ public class PlayerBlockInteractListener extends LogListener
                 action = this.newAction(ComparatorChange.class, state.getWorld());
                 if (action != null)
                 {
-                    newState.setType(state.getType() == REDSTONE_COMPARATOR_ON ? REDSTONE_COMPARATOR_OFF : REDSTONE_COMPARATOR_ON);
+                    newState.setType(state
+                                         .getType() == REDSTONE_COMPARATOR_ON ? REDSTONE_COMPARATOR_OFF : REDSTONE_COMPARATOR_ON);
                 }
             }
             else if (state.getData() instanceof Button)
@@ -155,20 +155,22 @@ public class PlayerBlockInteractListener extends LogListener
             }
             else if (state.getData() instanceof Rails)
             {
-                if (itemInHand.getType() == Material.MINECART
-                    || itemInHand.getType() == Material.STORAGE_MINECART
-                    || itemInHand.getType() == Material.POWERED_MINECART
-                    || itemInHand.getType() == Material.HOPPER_MINECART
-                    || itemInHand.getType() == Material.EXPLOSIVE_MINECART) // BOAT is done down below
+                if (itemInHand.getType() == Material.MINECART || itemInHand
+                    .getType() == Material.STORAGE_MINECART || itemInHand
+                    .getType() == Material.POWERED_MINECART || itemInHand
+                    .getType() == Material.HOPPER_MINECART || itemInHand
+                    .getType() == Material.EXPLOSIVE_MINECART) // BOAT is done down below
                 {
-                    VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(UP).getLocation(), event.getPlayer());
+                    VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(UP)
+                                                                                .getLocation(), event.getPlayer());
                     this.module.getCore().getEventManager().fireEvent(vEvent);
                 }
                 action = null;
             }
             else if (itemInHand.getType().equals(Material.BOAT))
             {
-                VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(UP).getLocation(), event.getPlayer());
+                VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(UP)
+                                                                            .getLocation(), event.getPlayer());
                 this.module.getCore().getEventManager().fireEvent(vEvent);
                 action = null;
             }
@@ -214,7 +216,7 @@ public class PlayerBlockInteractListener extends LogListener
                 action = this.newAction(RepeaterChange.class, state.getWorld());
                 if (action != null)
                 {
-                    Diode diode = (Diode) state.getData();
+                    Diode diode = (Diode)state.getData();
                     Integer delay = diode.getDelay() + 1;
                     if (delay == 5)
                     {
@@ -227,7 +229,7 @@ public class PlayerBlockInteractListener extends LogListener
             else if (state.getType() == TNT)
             {
                 action = null;
-                if(itemInHand.getType() == FLINT_AND_STEEL)
+                if (itemInHand.getType() == FLINT_AND_STEEL)
                 {
                     action = this.newAction(TntPrime.class, state.getWorld());
                     if (action != null)
@@ -241,7 +243,8 @@ public class PlayerBlockInteractListener extends LogListener
             {
                 action = null;
                 // placing cocoa-pods // TODO was this fixed by bukkit?
-                if (itemInHand.getData() instanceof Dye && ((Dye)itemInHand.getData()).getColor() == BROWN) // COCOA-Beans
+                if (itemInHand.getData() instanceof Dye && ((Dye)itemInHand.getData())
+                    .getColor() == BROWN) // COCOA-Beans
                 {
                     BlockPlace blockPlace = this.manager.getActionType(BlockPlace.class);
                     if (blockPlace.isActive(state.getWorld()))
@@ -249,7 +252,7 @@ public class PlayerBlockInteractListener extends LogListener
                         BlockData newData = BlockData.of(state);
                         newData.material = COCOA;
                         newData.data = 1;
-                        blockPlace.logBlockChange(location,event.getPlayer(),BlockData.of(state),newData,null);
+                        blockPlace.logBlockChange(location, event.getPlayer(), BlockData.of(state), newData, null);
                     }
                 }
             }

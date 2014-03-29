@@ -37,8 +37,6 @@ import de.cubeisland.engine.reflect.Section;
 /**
  * The Base for any Loggable Action
  * <p>The ListenerType will listen for given action
- *
- * @param <ListenerType>
  */
 public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
 {
@@ -85,9 +83,8 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
 
         public boolean equals(Coordinate coordinate)
         {
-            return coordinate.worldUUID.equals(this.worldUUID)
-                && Arrays.equals(coordinate.xz, this.xz)
-                && coordinate.y == this.y;
+            return coordinate.worldUUID.equals(this.worldUUID) && Arrays
+                .equals(coordinate.xz, this.xz) && coordinate.y == this.y;
         }
     }
 

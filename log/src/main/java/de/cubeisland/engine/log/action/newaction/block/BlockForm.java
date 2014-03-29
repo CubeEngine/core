@@ -33,17 +33,15 @@ public class BlockForm extends BlockActionType<BlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof BlockForm
-            && ((BlockForm)action).newBlock == this.newBlock;
+        return action instanceof BlockForm && ((BlockForm)action).newBlock == this.newBlock;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{name#block} formed naturally",
-                                    "{1:amount}x {name#block} formed naturally",
-                                    this.newBlock.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "{name#block} formed naturally", "{1:amount}x {name#block} formed naturally", this.newBlock
+                .name(), count);
     }
 }

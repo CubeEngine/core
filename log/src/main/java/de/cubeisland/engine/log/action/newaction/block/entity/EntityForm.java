@@ -34,9 +34,7 @@ public class EntityForm extends EntityBlockActionType<EntityBlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EntityBreakBlock
-            && ((EntityBreakBlock)action).entity.type == this.entity.type
-            && ((EntityBreakBlock)action).newBlock == this.newBlock;
+        return action instanceof EntityBreakBlock && ((EntityBreakBlock)action).entity.type == this.entity.type && ((EntityBreakBlock)action).newBlock == this.newBlock;
     }
 
     @Override
@@ -45,12 +43,11 @@ public class EntityForm extends EntityBlockActionType<EntityBlockListener>
         if (this.hasAttached())
         {
             int count = this.countUniqueEntities();
-            return user.getTranslationN(POSITIVE, count,
-                                        "{text:One} {name#entity} formed {name#block} x{amount}!",
-                                        "{3:amount} {name#entity} formed {name#block} x{amount}!",
-                                        this.entity.name(), this.oldBlock.name(), this.getAttached().size() + 1, count);
+            return user
+                .getTranslationN(POSITIVE, count, "{text:One} {name#entity} formed {name#block} x{amount}!", "{3:amount} {name#entity} formed {name#block} x{amount}!", this.entity
+                    .name(), this.oldBlock.name(), this.getAttached().size() + 1, count);
         }
-        return user.getTranslation(POSITIVE, "A {name#entity} formed {name#block}",
-                                   this.entity.name(), this.oldBlock.name());
+        return user
+            .getTranslation(POSITIVE, "A {name#entity} formed {name#block}", this.entity.name(), this.oldBlock.name());
     }
 }

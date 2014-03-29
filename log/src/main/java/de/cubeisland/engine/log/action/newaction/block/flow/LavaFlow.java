@@ -34,17 +34,14 @@ public class LavaFlow extends BlockActionType<FlowListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof LavaFlow
-            && action.coord.equals(this.coord);
+        return action instanceof LavaFlow && action.coord.equals(this.coord);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "Lava occupied this block",
-                                    "Lava occupied this block {amount} times",
-                                   count);
+        return user
+            .getTranslationN(POSITIVE, count, "Lava occupied this block", "Lava occupied this block {amount} times", count);
     }
 }

@@ -86,8 +86,8 @@ public class PlayerBucketListener extends LogListener
     public void onPlayerBucketFill(final PlayerBucketFillEvent event)
     {
         BlockState blockState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
-        if (blockState.getType() == Material.WATER || blockState.getType() == Material.STATIONARY_WATER
-            || blockState.getType() == Material.LAVA || blockState.getType() == Material.STATIONARY_LAVA)
+        if (blockState.getType() == Material.WATER || blockState.getType() == Material.STATIONARY_WATER || blockState
+            .getType() == Material.LAVA || blockState.getType() == Material.STATIONARY_LAVA)
         {
             PlayerBucketFill action = this.newAction(PlayerBucketFill.class, event.getPlayer().getWorld());
             if (action != null)
@@ -111,5 +111,4 @@ public class PlayerBucketListener extends LogListener
             }
         }
     }
-
 }

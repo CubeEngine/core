@@ -25,7 +25,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
 
 /**
@@ -43,7 +43,7 @@ import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
  */
 public class PlayerItemActionListener extends PlayerLogListener
 {
-    public PlayerItemActionListener(Module module)
+    public PlayerItemActionListener(Log module)
     {
         super(module);
     }

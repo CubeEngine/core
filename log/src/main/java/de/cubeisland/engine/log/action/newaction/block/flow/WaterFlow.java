@@ -41,9 +41,7 @@ public class WaterFlow extends BlockActionType<FlowListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "Water flooded this block",
-                                    "Water flooded this block {amount} times",
-                                    count);
+        return user
+            .getTranslationN(POSITIVE, count, "Water flooded this block", "Water flooded this block {amount} times", count);
     }
 }

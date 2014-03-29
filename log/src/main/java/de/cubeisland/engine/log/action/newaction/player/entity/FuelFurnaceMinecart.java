@@ -30,18 +30,15 @@ public class FuelFurnaceMinecart extends PlayerEntityActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof FuelFurnaceMinecart
-            && this.player.equals(((FuelFurnaceMinecart)action).player)
-            && this.entity.equals(((FuelFurnaceMinecart)action).entity);
+        return action instanceof FuelFurnaceMinecart && this.player
+            .equals(((FuelFurnaceMinecart)action).player) && this.entity.equals(((FuelFurnaceMinecart)action).entity);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{user} gave fuel to a furnace-minecart",
-                                    "{user} gave fuel to a furnace-minecart {amount} times",
-                                    this.player.name, count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} gave fuel to a furnace-minecart", "{user} gave fuel to a furnace-minecart {amount} times", this.player.name, count);
     }
 }

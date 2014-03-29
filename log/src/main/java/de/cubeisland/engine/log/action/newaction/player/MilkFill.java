@@ -34,17 +34,14 @@ public class MilkFill extends PlayerActionType<PlayerBucketListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof MilkFill
-            && this.player.equals(((MilkFill)action).player);
+        return action instanceof MilkFill && this.player.equals(((MilkFill)action).player);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{user} milked a cow",
-                                    "{user} milked {amount} cows",
-                                    this.player.name, count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} milked a cow", "{user} milked {amount} cows", this.player.name, count);
     }
 }

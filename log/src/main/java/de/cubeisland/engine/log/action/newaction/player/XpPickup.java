@@ -35,8 +35,7 @@ public class XpPickup extends PlayerActionType<PlayerActionListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof XpPickup
-            && this.player.equals(((XpPickup)action).player);
+        return action instanceof XpPickup && this.player.equals(((XpPickup)action).player);
     }
 
     @Override

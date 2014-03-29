@@ -31,7 +31,9 @@ public class PlayerLavaBucketPlace extends PlayerBlockPlace
     {
         if (this.hasAttached())
         {
-            return user.getTranslation(POSITIVE, "{user} emptied {amount} lava-buckets", this.player.name, this.getAttached().size() + 1);
+            return user
+                .getTranslation(POSITIVE, "{user} emptied {amount} lava-buckets", this.player.name, this.getAttached()
+                                                                                                        .size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} emptied a lava-bucket", this.player.name);
     }

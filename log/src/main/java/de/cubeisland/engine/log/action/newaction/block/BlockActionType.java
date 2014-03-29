@@ -41,8 +41,6 @@ public abstract class BlockActionType<ListenerType> extends ActionTypeBase<Liste
 
         /**
          * Returns true if this BlockSection is one of given materials
-         * @param materials
-         * @return
          */
         public boolean is(Material... materials)
         {

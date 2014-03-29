@@ -35,17 +35,15 @@ public class OtherSpawn extends EntityActionType<EntityListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof NaturalSpawn
-            && this.entity.isSameType(((NaturalSpawn)action).entity);
+        return action instanceof NaturalSpawn && this.entity.isSameType(((NaturalSpawn)action).entity);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{name#entity} spawned",
-                                    "{name#entity} spawned {amount} times",
-                                    this.entity.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "{name#entity} spawned", "{name#entity} spawned {amount} times", this.entity
+                .name(), count);
     }
 }

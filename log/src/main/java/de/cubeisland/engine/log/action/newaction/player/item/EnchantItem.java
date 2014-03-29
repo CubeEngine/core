@@ -43,9 +43,8 @@ public class EnchantItem extends PlayerActionType<PlayerItemActionListener>
     public boolean canAttach(ActionTypeBase action)
     {
         // same player
-        return action instanceof EnchantItem
-            && this.player.equals(((EnchantItem)action).player)
-            && ((EnchantItem)action).enchantItem.isSimilar(this.enchantItem);
+        return action instanceof EnchantItem && this.player
+            .equals(((EnchantItem)action).player) && ((EnchantItem)action).enchantItem.isSimilar(this.enchantItem);
     }
 
     @Override
@@ -53,11 +52,13 @@ public class EnchantItem extends PlayerActionType<PlayerItemActionListener>
     {
         if (this.hasAttached())
         {
-            return user.getTranslation(POSITIVE, "{user} enchanted {name#item} x{amount}",
-                        this.player.name, this.enchantItem.getType().name(), this.getAttached().size() + 1);
+            return user
+                .getTranslation(POSITIVE, "{user} enchanted {name#item} x{amount}", this.player.name, this.enchantItem
+                    .getType().name(), this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} enchanted {name#item}",
-                    this.player.name, this.enchantItem.getType().name());
+        return user
+            .getTranslation(POSITIVE, "{user} enchanted {name#item}", this.player.name, this.enchantItem.getType()
+                                                                                                        .name());
         // TODO list enchantments
         // TODO enchant block used
     }

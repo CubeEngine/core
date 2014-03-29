@@ -31,8 +31,9 @@ public class PlayerWaterBucketPlace extends PlayerBlockPlace
     {
         if (this.hasAttached())
         {
-            return user.getTranslation(POSITIVE, "{user} emptied {amount} water-buckets", this.player.name, this
-                .getAttached().size() + 1);
+            return user
+                .getTranslation(POSITIVE, "{user} emptied {amount} water-buckets", this.player.name, this.getAttached()
+                                                                                                         .size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} emptied a water-bucket", this.player.name);
     }

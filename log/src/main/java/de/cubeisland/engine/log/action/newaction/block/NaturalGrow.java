@@ -34,9 +34,7 @@ public class NaturalGrow extends BlockActionType<BlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof NaturalGrow
-            && ((NaturalGrow)action).oldBlock == this.oldBlock
-            && ((NaturalGrow)action).newBlock == this.newBlock;
+        return action instanceof NaturalGrow && ((NaturalGrow)action).oldBlock == this.oldBlock && ((NaturalGrow)action).newBlock == this.newBlock;
     }
 
     @Override
@@ -45,14 +43,12 @@ public class NaturalGrow extends BlockActionType<BlockListener>
         int count = this.countAttached();
         if (this.oldBlock.is(AIR))
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "{name#block} grew naturally",
-                                        "{1:amount}x {name#block} grew naturally",
-                                        this.newBlock.name(), count);
+            return user
+                .getTranslationN(POSITIVE, count, "{name#block} grew naturally", "{1:amount}x {name#block} grew naturally", this.newBlock
+                    .name(), count);
         }
-        return user.getTranslationN(POSITIVE, count,
-                                    "{name#block} grew naturally into {name#block}",
-                                    "{2:amount}x {name#block} grew naturally into {name#block}",
-                                    this.newBlock.name(), this.oldBlock.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "{name#block} grew naturally into {name#block}", "{2:amount}x {name#block} grew naturally into {name#block}", this.newBlock
+                .name(), this.oldBlock.name(), count);
     }
 }

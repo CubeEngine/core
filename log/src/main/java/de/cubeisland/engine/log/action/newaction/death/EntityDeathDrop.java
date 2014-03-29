@@ -21,7 +21,10 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemDrop;import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemDrop;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents an entity dropping items on death
@@ -34,9 +37,8 @@ public class EntityDeathDrop extends ActionTypeBase<DeathListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EntityDeathDrop
-            && this.death != null && ((EntityDeathDrop)action).death != null
-            && this.death.equals(((EntityDeathDrop)action).death);
+        return action instanceof EntityDeathDrop && this.death != null && ((EntityDeathDrop)action).death != null && this.death
+            .equals(((EntityDeathDrop)action).death);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class EntityDeathDrop extends ActionTypeBase<DeathListener>
                 amount += ((PlayerItemDrop)action).item.getAmount();
             }
         }
-        return user.getTranslation(POSITIVE, "{name#entity} dropped {name#item} x{amount} upon death",
-                                   this.death.fetch(EntityDeathAction.class).killed.name(), this.item.getType().name(), amount);
+        return user.getTranslation(POSITIVE, "{name#entity} dropped {name#item} x{amount} upon death", this.death
+            .fetch(EntityDeathAction.class).killed.name(), this.item.getType().name(), amount);
     }
 }

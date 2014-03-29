@@ -60,7 +60,7 @@ public abstract class EntityBlockActionType<ListenerType> extends BlockActionTyp
 
     public void setEntity(Entity entity)
     {
-       this.entity = new EntitySection(entity);
+        this.entity = new EntitySection(entity);
     }
 
     protected final int countUniqueEntities()

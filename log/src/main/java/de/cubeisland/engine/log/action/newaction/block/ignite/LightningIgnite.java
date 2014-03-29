@@ -39,9 +39,7 @@ public class LightningIgnite extends BlockActionType<BlockIgniteListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "A fire got set by a lightning strike",
-                                    "{amount} fires got set by lightning strikes",
-                                    count);
+        return user
+            .getTranslationN(POSITIVE, count, "A fire got set by a lightning strike", "{amount} fires got set by lightning strikes", count);
     }
 }

@@ -35,10 +35,8 @@ public class PlayerGrow extends PlayerBlockActionType<BlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerGrow
-            && this.player.equals(((PlayerGrow)action).player)
-            && ((PlayerGrow)action).oldBlock == this.oldBlock
-            && ((PlayerGrow)action).newBlock == this.newBlock;
+        return action instanceof PlayerGrow && this.player
+            .equals(((PlayerGrow)action).player) && ((PlayerGrow)action).oldBlock == this.oldBlock && ((PlayerGrow)action).newBlock == this.newBlock;
     }
 
     @Override
@@ -47,14 +45,12 @@ public class PlayerGrow extends PlayerBlockActionType<BlockListener>
         int count = this.countAttached();
         if (this.oldBlock == AIR)
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "{user} let grow {name#block}",
-                                        "{user} let grow {2:amount}x {name#block}",
-                                        this.player.name, this.newBlock.name(), count);
+            return user
+                .getTranslationN(POSITIVE, count, "{user} let grow {name#block}", "{user} let grow {2:amount}x {name#block}", this.player.name, this.newBlock
+                    .name(), count);
         }
-        return user.getTranslationN(POSITIVE, count,
-                                    "{user} let grow {name#block} into {name#block}",
-                                    "{user} let grow {3:amount}x {name#block} into {name#block}",
-                                    this.player.name, this.newBlock.name(), this.oldBlock.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} let grow {name#block} into {name#block}", "{user} let grow {3:amount}x {name#block} into {name#block}", this.player.name, this.newBlock
+                .name(), this.oldBlock.name(), count);
     }
 }

@@ -39,11 +39,8 @@ public class LighterIgnite extends BlockActionType<BlockIgniteListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof LighterIgnite
-            && ((this.player == null
-              && ((LighterIgnite)action).player == null)
-             || (this.player != null
-              && this.player.equals(((LighterIgnite)action).player)));
+        return action instanceof LighterIgnite && ((this.player == null && ((LighterIgnite)action).player == null) || (this.player != null && this.player
+            .equals(((LighterIgnite)action).player)));
     }
 
     @Override
@@ -52,15 +49,11 @@ public class LighterIgnite extends BlockActionType<BlockIgniteListener>
         int count = this.countAttached();
         if (this.player == null)
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "A fire got set by a lighter",
-                                        "{amount} fires got set using lighters",
-                                        count);
+            return user
+                .getTranslationN(POSITIVE, count, "A fire got set by a lighter", "{amount} fires got set using lighters", count);
         }
-        return user.getTranslationN(POSITIVE, count,
-                                    "{user} set fire",
-                                    "{user} set {amount} fires",
-                                    this.player.name, count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} set fire", "{user} set {amount} fires", this.player.name, count);
     }
 
     public void setPlayer(Player player)

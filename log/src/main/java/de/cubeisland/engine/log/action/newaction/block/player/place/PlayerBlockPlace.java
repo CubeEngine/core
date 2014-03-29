@@ -29,7 +29,7 @@ import static org.bukkit.Material.AIR;
 /**
  * Represents a player placing a block
  * <p>Sub Actions:
- *
+ * <p/>
  * <p>External Actions:
  * {@link PlayerWaterLilyBreak}
  */
@@ -41,10 +41,8 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerBlockPlace
-            && this.player.equals(((PlayerBlockPlace)action).player)
-            && ((PlayerBlockPlace)action).oldBlock == this.oldBlock
-            && ((PlayerBlockPlace)action).newBlock == this.newBlock;
+        return action instanceof PlayerBlockPlace && this.player
+            .equals(((PlayerBlockPlace)action).player) && ((PlayerBlockPlace)action).oldBlock == this.oldBlock && ((PlayerBlockPlace)action).newBlock == this.newBlock;
     }
 
     @Override
@@ -52,22 +50,26 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
     {
         if (this.hasAttached())
         {
-            int amount = this.getAttached().size()+1;
+            int amount = this.getAttached().size() + 1;
             if (this.oldBlock == AIR)
             {
-                return user.getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}{}",
-                                           this.player.name, amount, this.newBlock.name());
+                return user
+                    .getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}{}", this.player.name, amount, this.newBlock
+                        .name());
             }
-            return user.getTranslation(MessageType.POSITIVE, "{user} replaced {amount}x {name#block} with {name#block}{}",
-                                       this.player.name, amount, this.oldBlock.name(), this.newBlock.name());
+            return user
+                .getTranslation(MessageType.POSITIVE, "{user} replaced {amount}x {name#block} with {name#block}{}", this.player.name, amount, this.oldBlock
+                    .name(), this.newBlock.name());
         }
         // else single
         if (this.oldBlock == AIR)
         {
-            return user.getTranslation(MessageType.POSITIVE, "{user} placed {name#block}{}",
-                                       this.player.name, this.newBlock.name());
+            return user
+                .getTranslation(MessageType.POSITIVE, "{user} placed {name#block}{}", this.player.name, this.newBlock
+                    .name());
         }
-        return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}{}",
-                                   this.player.name, this.oldBlock.name(), this.newBlock.name());
+        return user
+            .getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}{}", this.player.name, this.oldBlock
+                .name(), this.newBlock.name());
     }
 }

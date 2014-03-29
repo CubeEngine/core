@@ -25,7 +25,7 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- *  Represents a player breaking an image
+ * Represents a player breaking an image
  */
 public class PlayerPaintingBreak extends PlayerHangingBreak
 {
@@ -34,8 +34,7 @@ public class PlayerPaintingBreak extends PlayerHangingBreak
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerPaintingBreak
-            && this.player.equals(((PlayerPaintingBreak)action).player);
+        return action instanceof PlayerPaintingBreak && this.player.equals(((PlayerPaintingBreak)action).player);
     }
 
     @Override
@@ -43,9 +42,7 @@ public class PlayerPaintingBreak extends PlayerHangingBreak
     {
         // TODO indirect
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{text:One painting} got removed by {user}",
-                                    "{1:amount} {text:painting} got removed by {user}",
-                                    this.player.name, count);
+        return user
+            .getTranslationN(POSITIVE, count, "{text:One painting} got removed by {user}", "{1:amount} {text:painting} got removed by {user}", this.player.name, count);
     }
 }

@@ -33,17 +33,15 @@ public class BlockFade extends BlockActionType<BlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof BlockFade
-            && ((BlockFade)action).oldBlock == this.oldBlock;
+        return action instanceof BlockFade && ((BlockFade)action).oldBlock == this.oldBlock;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "{name#block} faded away",
-                                    "{1:amount}x {name#block} faded away",
-                                    this.oldBlock.name(), count);
+        return user
+            .getTranslationN(POSITIVE, count, "{name#block} faded away", "{1:amount}x {name#block} faded away", this.oldBlock
+                .name(), count);
     }
 }

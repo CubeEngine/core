@@ -36,9 +36,8 @@ public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerBucketFill
-            && this.player.equals(((PlayerBucketFill)action).player)
-            && ((PlayerBucketFill)action).oldBlock == this.oldBlock;
+        return action instanceof PlayerBucketFill && this.player
+            .equals(((PlayerBucketFill)action).player) && ((PlayerBucketFill)action).oldBlock == this.oldBlock;
     }
 
     @Override
@@ -47,21 +46,15 @@ public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener
         int count = this.countAttached();
         if (this.oldBlock.is(LAVA, STATIONARY_LAVA))
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "{user} filled a bucket with lava",
-                                        "{user} filled {amount} buckets with lava",
-                                       this.player.name, count);
+            return user
+                .getTranslationN(POSITIVE, count, "{user} filled a bucket with lava", "{user} filled {amount} buckets with lava", this.player.name, count);
         }
         if (this.oldBlock.is(WATER, STATIONARY_WATER))
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "{user} filled a bucket with water",
-                                        "{user} filled {amount} buckets with water",
-                                       this.player.name, count);
+            return user
+                .getTranslationN(POSITIVE, count, "{user} filled a bucket with water", "{user} filled {amount} buckets with water", this.player.name, count);
         }
-        return user.getTranslationN(POSITIVE, count,
-                                    "{user} filled a bucket with some random fluids",
-                                    "{user} filled {amount} buckets with some random fluids!",
-                                    this.player.name, count);
+        return user
+            .getTranslationN(POSITIVE, count, "{user} filled a bucket with some random fluids", "{user} filled {amount} buckets with some random fluids!", this.player.name, count);
     }
 }

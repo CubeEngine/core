@@ -30,7 +30,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.material.Dye;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
 
 import static org.bukkit.Material.*;
@@ -48,7 +48,7 @@ import static org.bukkit.Material.*;
  */
 public class PlayerEntityListener extends PlayerLogListener
 {
-    public PlayerEntityListener(Module module)
+    public PlayerEntityListener(Log module)
     {
         super(module);
     }
@@ -56,7 +56,10 @@ public class PlayerEntityListener extends PlayerLogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event)
     {
-        if (!(event.getRightClicked() instanceof LivingEntity)) return;
+        if (!(event.getRightClicked() instanceof LivingEntity))
+        {
+            return;
+        }
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
         PlayerEntityActionType action;
@@ -64,7 +67,7 @@ public class PlayerEntityListener extends PlayerLogListener
         {
             action = this.newAction(FuelFurnaceMinecart.class, entity.getWorld());
         }
-        else if(player.getItemInHand().getType() == INK_SACK && entity instanceof Sheep || entity instanceof Wolf)
+        else if (player.getItemInHand().getType() == INK_SACK && entity instanceof Sheep || entity instanceof Wolf)
         {
             action = this.newAction(PlayerEntityDye.class, entity.getWorld());
             if (action != null)
@@ -76,7 +79,10 @@ public class PlayerEntityListener extends PlayerLogListener
         {
             action = this.newAction(PlayerSoupFill.class, entity.getWorld());
         }
-        else return;
+        else
+        {
+            return;
+        }
         if (action != null)
         {
             action.setEntity(entity);

@@ -43,6 +43,4 @@ public class WaterBreak extends BlockActionType<FlowListener>
         // TODO plurals
         return user.getTranslation(POSITIVE, "{name#block} got flushed away by water!", this.oldBlock.name());
     }
-
-
 }

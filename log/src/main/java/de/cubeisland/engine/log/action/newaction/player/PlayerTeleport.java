@@ -38,12 +38,9 @@ public class PlayerTeleport extends PlayerActionType<PlayerActionListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerTeleport
-            && this.player.equals(((PlayerTeleport)action).player)
-            && !this.hasAttached()
-            && ((PlayerTeleport)action).fromToDirection != this.fromToDirection
-            && action.coord.equals(this.toCoord)
-            && this.coord.equals(((PlayerTeleport)action).toCoord);
+        return action instanceof PlayerTeleport && this.player.equals(((PlayerTeleport)action).player) && !this
+            .hasAttached() && ((PlayerTeleport)action).fromToDirection != this.fromToDirection && action.coord
+            .equals(this.toCoord) && this.coord.equals(((PlayerTeleport)action).toCoord);
     }
 
     @Override
@@ -53,16 +50,19 @@ public class PlayerTeleport extends PlayerActionType<PlayerActionListener>
         {
             Coordinate from = fromToDirection ? this.coord : this.toCoord;
             Coordinate to = fromToDirection ? this.toCoord : this.coord;
-            return user.getTranslation(POSITIVE, "{user} teleported from {vector} in {world} to {vector} in {world}",
-                        this.player.name, to.toBlockVector(), to.getWorld(), from.toBlockVector(), from.getWorld());
+            return user
+                .getTranslation(POSITIVE, "{user} teleported from {vector} in {world} to {vector} in {world}", this.player.name, to
+                    .toBlockVector(), to.getWorld(), from.toBlockVector(), from.getWorld());
         }
         if (this.fromToDirection)
         {
-            return user.getTranslation(POSITIVE, "{user} teleported to {vector} in {world}", this.player.name, this.toCoord
-                .toBlockVector(), this.toCoord.getWorld());
+            return user
+                .getTranslation(POSITIVE, "{user} teleported to {vector} in {world}", this.player.name, this.toCoord
+                    .toBlockVector(), this.toCoord.getWorld());
         }
-        return user.getTranslation(POSITIVE, "{user} teleported here from {vector} in {world}",
-                                   this.player.name, this.coord.toBlockVector(), this.coord.getWorld());
+        return user
+            .getTranslation(POSITIVE, "{user} teleported here from {vector} in {world}", this.player.name, this.coord
+                .toBlockVector(), this.coord.getWorld());
     }
 
     public void setOtherLocation(Location otherLocation, boolean fromTo)

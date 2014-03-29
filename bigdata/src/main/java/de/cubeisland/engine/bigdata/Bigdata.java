@@ -37,7 +37,7 @@ public class Bigdata extends Module
         }
         catch (UnknownHostException e)
         {
-            throw new IllegalArgumentException("Invalid host" + e);
+            throw new IllegalArgumentException("Invalid host", e);
         }
         MongoDBCodec mongoDBCodec = new MongoDBCodec();
         this.getCore().getConfigFactory().getCodecManager().registerCodec(mongoDBCodec);

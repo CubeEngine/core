@@ -44,10 +44,8 @@ public class FireSpread extends BlockActionType<BlockIgniteListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "Fire spread to this block",
-                                    "Fire spread to {amount} blocks",
-                                    count);
+        return user
+            .getTranslationN(POSITIVE, count, "Fire spread to this block", "Fire spread to {amount} blocks", count);
     }
 
     public void setSource(Location source)

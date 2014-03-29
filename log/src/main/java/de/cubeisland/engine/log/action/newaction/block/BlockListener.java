@@ -33,6 +33,7 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.material.PistonExtensionMaterial;
 
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerGrow;
@@ -65,7 +66,7 @@ import static org.bukkit.Material.PISTON_EXTENSION;
  */
 public class BlockListener extends LogListener
 {
-    public BlockListener(Module module)
+    public BlockListener(Log module)
     {
         super(module);
     }
@@ -105,7 +106,10 @@ public class BlockListener extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event)
     {
-        if (event instanceof EntityBlockFormEvent) return;
+        if (event instanceof EntityBlockFormEvent)
+        {
+            return;
+        }
         // TODO block.form.BLOCK_FORM_ignore
         BlockForm action = this.newAction(BlockForm.class, event.getBlock().getWorld());
         if (action != null)
@@ -234,7 +238,10 @@ public class BlockListener extends LogListener
                     action.setPush();
                     this.logAction(action);
                 }
-                if (block.getType() == AIR) continue;
+                if (block.getType() == AIR)
+                {
+                    continue;
+                }
 
                 BlockState newState = block.getRelative(event.getDirection()).getState();
                 newState.setData(state.getData());

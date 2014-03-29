@@ -26,7 +26,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 import static org.bukkit.Material.AIR;
@@ -47,7 +47,7 @@ import static org.bukkit.Material.AIR;
  */
 public class EntityBlockListener extends LogListener
 {
-    public EntityBlockListener(Module module)
+    public EntityBlockListener(Log module)
     {
         super(module);
     }
@@ -56,11 +56,11 @@ public class EntityBlockListener extends LogListener
     public void onEntityChangeBlock(final EntityChangeBlockEvent event)
     {
         EntityBlockActionType action;
-        if(event.getEntityType().equals(EntityType.SHEEP))
+        if (event.getEntityType().equals(EntityType.SHEEP))
         {
             action = this.newAction(SheepEat.class, event.getBlock().getWorld());
         }
-        else if(event.getEntity() instanceof Enderman)
+        else if (event.getEntity() instanceof Enderman)
         {
             if (event.getTo().equals(AIR))
             {
