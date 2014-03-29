@@ -28,7 +28,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.logaction.block.BlockFall;
+import de.cubeisland.engine.log.action.newaction.block.BlockFall;
 import de.cubeisland.engine.log.action.logaction.container.ContainerActionType;
 import de.cubeisland.engine.log.action.logaction.container.ItemInsert;
 import de.cubeisland.engine.log.action.logaction.container.ItemRemove;

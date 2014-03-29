@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.LogActionType;
-import de.cubeisland.engine.log.storage.ImmutableBlockData;
+import de.cubeisland.engine.log.action.newaction.block.BlockFall;import de.cubeisland.engine.log.storage.ImmutableBlockData;
 import de.cubeisland.engine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType

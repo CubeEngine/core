@@ -17,14 +17,14 @@
  */
 package de.cubeisland.engine.log.action.newaction.block;
 
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.event.EventHandler;
+import java.util.Map;import java.util.concurrent.ConcurrentHashMap;import org.bukkit.Location;import org.bukkit.Material;import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;import org.bukkit.block.BlockState;
+import org.bukkit.entity.Entity;import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -32,12 +32,14 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.material.PistonExtensionMaterial;
 
-import com.sun.xml.internal.bind.v2.TODO;
-import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.newaction.LogListener;
+import com.fasterxml.jackson.databind.node.ObjectNode;import com.sun.xml.internal.bind.v2.TODO;
+import de.cubeisland.engine.core.util.Pair;import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.action.logaction.block.*;import de.cubeisland.engine.log.action.logaction.block.BlockActionType;import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;import de.cubeisland.engine.log.action.newaction.LogListener;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerGrow;
 
 import static org.bukkit.Material.*;
+import static org.bukkit.block.BlockFace.DOWN;
 
 /**
  * A Listener for EntityBlock Actions
@@ -63,6 +65,9 @@ import static org.bukkit.Material.*;
  */
 public class BlockListener extends LogListener
 {
+    private static final PistonExtensionMaterial PISTON_HEAD = new PistonExtensionMaterial(PISTON_EXTENSION);
+    private final Map<Location, PlayerBlockActionType> plannedFall = new ConcurrentHashMap<>();
+
     public BlockListener(Log module)
     {
         super(module);
@@ -189,8 +194,6 @@ public class BlockListener extends LogListener
         }
     }
 
-    private static final PistonExtensionMaterial PISTON_HEAD = new PistonExtensionMaterial(PISTON_EXTENSION);
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPistonExtend(final BlockPistonExtendEvent event)
     {
@@ -287,5 +290,50 @@ public class BlockListener extends LogListener
                 this.logAction(action);
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockPhysics(final BlockPhysicsEvent event)
+    {
+        if (!this.isActive(BlockFall.class, event.getBlock().getWorld())) return;
+        BlockState state = event.getBlock().getState();
+        if (state.getType().hasGravity() || state.getType() == DRAGON_EGG)
+        { // falling blocks
+            if (event.getBlock().getRelative(DOWN).getType() == AIR)
+            {
+                Location loc = state.getLocation();
+
+                BlockFall action = this.newAction(BlockFall.class, state.getWorld());
+                if (action != null)
+                {
+                    PlayerBlockActionType cause = this.plannedFall.remove(loc);
+                    action.cause = this.reference(cause);
+                    action.setOldBlock(state);
+                    action.setNewBlock(AIR);
+                    action.setLocation(state.getLocation());
+                    this.logAction(action);
+
+                    Block onTop = state.getBlock().getRelative(BlockFace.UP);
+                    if (onTop.getType().hasGravity() || onTop.getType() == DRAGON_EGG)
+                    {
+                        this.preplanBlockFall(new BlockPreFallEvent(onTop.getLocation(), cause));
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void preplanBlockFall(final BlockPreFallEvent event)
+    {
+        plannedFall.put(event.getLocation(), event.getAction());
+        this.module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                plannedFall.remove(event.getLocation());
+            }
+        }, 3);
     }
 }
