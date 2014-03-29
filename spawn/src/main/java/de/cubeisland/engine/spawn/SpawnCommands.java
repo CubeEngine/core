@@ -161,7 +161,7 @@ public class SpawnCommands
         }
         else if (module.getConfiguration().mainWorld == null || module.getConfiguration().mainWorld.getWorld() == null)
         {
-            context.sendTranslated(MessageType.CRITICAL, "Unknown configured main world!");
+            context.sendTranslated(MessageType.CRITICAL, "Unknown main world configured!");
             context.sendTranslated(MessageType.CRITICAL, "Show this error to an administrator!");
             return;
         }
