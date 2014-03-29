@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.log.action.newaction.block;
 
-import org.bukkit.Material;
+import java.lang.reflect.Constructor;import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.material.MaterialData;
 
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.reflect.Section;
@@ -28,15 +29,18 @@ public abstract class BlockActionType<ListenerType> extends ActionTypeBase<Liste
     public static class BlockSection implements Section
     {
         public Material material;
+        public byte data;
 
         public BlockSection(BlockState state)
         {
             this(state.getType());
+            this.data = state.getRawData();
         }
 
         public BlockSection(Material material)
         {
             this.material = material;
+            this.data = 0;
         }
 
         /**
@@ -57,6 +61,21 @@ public abstract class BlockActionType<ListenerType> extends ActionTypeBase<Liste
         public String name()
         {
             return this.material.name();
+        }
+
+        public <T extends MaterialData> T as(Class<T> clazz)
+        {
+            try
+            {
+                Constructor<T> constructor = clazz.getConstructor(Material.class);
+                T instance = constructor.newInstance(material);
+                instance.setData(this.data);
+                return instance;
+            }
+            catch (ReflectiveOperationException e)
+            {
+                return null;
+            }
         }
     }
 

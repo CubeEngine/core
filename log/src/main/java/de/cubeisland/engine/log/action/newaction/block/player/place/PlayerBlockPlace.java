@@ -21,17 +21,18 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
-import de.cubeisland.engine.log.action.newaction.block.player.destroy.indirect.PlayerWaterLilyBreak;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 
 import static org.bukkit.Material.AIR;
 
 /**
  * Represents a player placing a block
  * <p>Sub Actions:
- * <p/>
+ * {@link PlayerLavaBucketPlace}
+ * {@link PlayerWaterBucketPlace}
+ * {@link PlayerBlockBreak}
  * <p>External Actions:
- * {@link PlayerWaterLilyBreak}
+ * {@link PlayerBlockBreak} for waterlily
  */
 public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
 {
@@ -51,7 +52,7 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
         if (this.hasAttached())
         {
             int amount = this.getAttached().size() + 1;
-            if (this.oldBlock == AIR)
+            if (this.oldBlock.is(AIR))
             {
                 return user
                     .getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}{}", this.player.name, amount, this.newBlock
@@ -62,7 +63,7 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
                     .name(), this.newBlock.name());
         }
         // else single
-        if (this.oldBlock == AIR)
+        if (this.oldBlock.is(AIR))
         {
             return user
                 .getTranslation(MessageType.POSITIVE, "{user} placed {name#block}{}", this.player.name, this.newBlock

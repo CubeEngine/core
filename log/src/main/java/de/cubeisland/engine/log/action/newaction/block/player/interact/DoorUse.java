@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
+import org.bukkit.material.Door;
+
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
@@ -42,7 +44,9 @@ public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     public String translateAction(User user)
     {
         // TODO plurals
-        if (!((logEntry.getOldBlock().data & 0x4) == 0x4))
+        @SuppressWarnings("deprecation")
+        boolean open = this.newBlock.as(Door.class).isOpen();
+        if (open)
         {
             return user
                 .getTranslation(POSITIVE, "{user} opened the {name#block}", this.player.name, this.oldBlock.name());

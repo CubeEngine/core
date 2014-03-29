@@ -19,10 +19,11 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.material.Diode;
+
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
-import de.cubeisland.engine.log.storage.LogEntry;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -46,15 +47,14 @@ public class RepeaterChange extends PlayerBlockActionType<PlayerBlockInteractLis
     @Override
     public String translateAction(User user)
     {
-        // TODO
-        Long oldTicks = (logEntry.getData() >> 2) + 1;
-        Integer newTicks = (logEntry.getNewdata() >> 2) + 1;
+        int oldTicks = this.oldBlock.as(Diode.class).getDelay();
+        int newTicks = this.newBlock.as(Diode.class).getDelay();
         if (this.hasAttached())
         {
-            LogEntry last = this.getAttached().get(this.getAttached().size() - 1);
-            newTicks = (last.getNewdata() >> 2) + 1;
+            RepeaterChange action = (RepeaterChange)this.getAttached().get(this.getAttached().size() - 1);
+            newTicks = action.newBlock.as(Diode.class).getDelay();
         }
-        if (this.hasAttached() && oldTicks.intValue() == newTicks)
+        if (oldTicks == newTicks)
         {
             return user
                 .getTranslation(POSITIVE, "{user} fiddled around with the repeater but did not change anything", this.player.name);

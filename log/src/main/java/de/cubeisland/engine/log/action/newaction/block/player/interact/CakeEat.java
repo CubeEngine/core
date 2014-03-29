@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
+import org.bukkit.material.Cake;
+
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
@@ -40,7 +42,7 @@ public class CakeEat extends PlayerBlockActionType<PlayerBlockInteractListener>
     @Override
     public String translateAction(User user)
     {
-        int piecesLeft = 6 - logEntry.getNewBlock().data; // TODO
+        int piecesLeft = this.newBlock.as(Cake.class).getSlicesRemaining();
         if (piecesLeft == 0)
         {
             return user.getTranslation(POSITIVE, "The cake is a lie! Ask {user} he knows it!", this.player.name);

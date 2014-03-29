@@ -29,19 +29,15 @@ import org.bukkit.block.Jukebox;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Hanging;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.Bed;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.LogActionType;
-import de.cubeisland.engine.log.action.logaction.block.player.BlockBreak;
-import de.cubeisland.engine.log.action.logaction.block.player.HangingBreak;
 import de.cubeisland.engine.log.storage.ImmutableBlockData;
 import de.cubeisland.engine.log.storage.LogEntry;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public abstract class BlockActionType extends LogActionType
 {
@@ -128,82 +124,9 @@ public abstract class BlockActionType extends LogActionType
         }
     }
 
-    /**
-     * Only the bottom half of doors and the feet of a bed is logged!
-     *
-     * @param blockState
-     * @return
-     */
-    public final BlockState adjustBlockForDoubleBlocks(BlockState blockState)
-    {
-        if (blockState.getType() == Material.WOODEN_DOOR || blockState.getType() == Material.IRON_DOOR_BLOCK)
-        {
-            if (blockState.getRawData() == 8 || blockState.getRawData() == 9)
-            {
-                if (blockState.getRawData() == 9)
-                {
-                    blockState = blockState.getBlock().getRelative(BlockFace.DOWN).getState();
-                    blockState.setRawData((byte)(blockState.getRawData()+8));
-                    return blockState;
-                }
-                return blockState.getBlock().getRelative(BlockFace.DOWN).getState();
-            }
-            else
-            {
-                if (blockState.getBlock().getRelative(BlockFace.UP).getState().getRawData() == 9)
-                {
-                    blockState.setRawData((byte)(blockState.getRawData()+8));
-                }
-            }
-        }
-        else if (blockState.getData() instanceof Bed)
-        {
-            Bed bed = (Bed)blockState.getData();
-            if (bed.isHeadOfBed())
-            {
-                return blockState.getBlock().getRelative(bed.getFacing().getOppositeFace()).getState();
-            }
-        }
-        return blockState;
-    }
 
-    public void logAttachedBlocks(BlockState blockState, Entity player)
-    {
-        if (!blockState.getType().isSolid() && !(blockState.getType() == Material.SUGAR_CANE_BLOCK))
-        {
-            return; // cannot have attached
-        }
-        BlockBreak blockBreak = this.manager.getActionType(BlockBreak.class);
-        if (blockBreak.isActive(blockState.getWorld()))
-        {
-            for (Block block : BlockUtil.getAttachedBlocks(blockState.getBlock()))
-            {
-                blockBreak.preplanBlockPhyiscs(block.getLocation(), player, this);
-            }
-            for (Block block : BlockUtil.getDetachableBlocksOnTop(blockState.getBlock()))
-            {
-                if (block.getData() < 8
-                    || !(block.getType().equals(Material.WOODEN_DOOR)
-                      || block.getType().equals(Material.IRON_DOOR_BLOCK))) // ignore upper door halfs
-                {
-                    blockBreak.preplanBlockPhyiscs(block.getLocation(), player, this);
-                }
-            }
-        }
-        HangingBreak hangingBreak = this.manager.getActionType(HangingBreak.class);
-        if (hangingBreak.isActive(blockState.getWorld()))
-        {
-            Location location = blockState.getLocation();
-            Location entityLocation = blockState.getLocation();
-            for (Entity entity : blockState.getBlock().getChunk().getEntities())
-            {
-                if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
-                {
-                    hangingBreak.preplanHangingBreak(entity.getLocation(), player, this);
-                }
-            }
-        }
-    }
+
+
 
     public void logFallingBlocks(BlockState blockState, Entity player)
     {

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.player.destroy;
 
+import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
@@ -37,6 +38,8 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
     // return "block-break";
     // return this.lm.getConfig(world).block.BLOCK_BREAK_enable;
 
+    public Reference<PlayerBlockActionType> reference; // TODO use in message
+
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
@@ -54,83 +57,4 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
         }
         return user.getTranslation(POSITIVE, "{user} broke {name#block}", this.player.name, this.oldBlock.name());
     }
-
-    // TODO physics
-    /*
-
- **
- * Blocks broken by a player directly OR blocks broken indirectly.
- * <p>Events: {@link BlockBreakEvent}, {@link BlockPhysicsEvent}</p>
- * <p>External Actions: {@link ItemDrop} when Breaking InventoryHolder,
- * {@link BlockActionType#logAttachedBlocks BlockBreak and HangingBreak} when attached Blocks will fall
- * {@link BlockActionType#logFallingBlocks BlockFall} when relative Blocks will fall
- *
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockPhysics(final BlockPhysicsEvent event)
-    {
-        if (!this.isActive(event.getBlock().getWorld())) return;
-        BlockState oldState = event.getBlock().getState();
-        BlockData oldData = BlockData.of(oldState);
-        Block blockAttachedTo;
-        if (oldState.getData() instanceof Attachable)
-        {
-            Attachable attachable = (Attachable) oldState.getData();
-            if (attachable.getAttachedFace() == null) return; // is not attached !?
-            blockAttachedTo = event.getBlock().getRelative(attachable.getAttachedFace());
-        }
-        else // block on bottom missing
-        {
-            if (!BlockUtil.isDetachableFromBelow(oldState.getType()))
-            {
-                return;
-            }
-            blockAttachedTo = event.getBlock().getRelative(BlockFace.DOWN);
-        }
-        if (blockAttachedTo == null) return;
-        if (!blockAttachedTo.getType().isSolid())
-        {
-            Location loc = oldState.getLocation();
-            Pair<Entity,BlockActionType> cause = this.plannedPyhsics.remove(loc);
-            if (cause != null)
-            {
-                oldState = this.adjustBlockForDoubleBlocks(oldState);
-                oldData.data = oldState.getRawData();
-
-                if (oldState instanceof Sign)
-                {
-                    ObjectNode json = this.om.createObjectNode();
-                    ArrayNode sign = json.putArray("oldSign");
-                    for (String line : ((Sign)oldState).getLines())
-                    {
-                        sign.add(line);
-                    }
-                    cause.getRight().logBlockChange(loc, cause.getLeft(), oldData, AIR, json.toString());
-                    return;
-                }
-                cause.getRight().logBlockChange(loc, cause.getLeft(), oldData, AIR, null);
-            }
-        }
-    }
-
-    private volatile boolean clearPlanned = false;
-    private final Map<Location,Pair<Entity,BlockActionType>> plannedPyhsics = new ConcurrentHashMap<>();
-    public void preplanBlockPhyiscs(Location location, Entity player, BlockActionType reason)
-    {
-        plannedPyhsics.put(location,new Pair<>(player,reason));
-        if (!clearPlanned)
-        {
-            clearPlanned = true;
-            BlockBreak.this.module.getCore().getTaskManager().runTask(module, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    clearPlanned = false;
-                    BlockBreak.this.plannedPyhsics.clear();
-                }
-            });
-        }
-    }
-     */
 }

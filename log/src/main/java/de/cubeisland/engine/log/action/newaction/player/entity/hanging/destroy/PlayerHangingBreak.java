@@ -31,8 +31,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerHangingBreak extends PlayerHangingActionType
 {
-
-
     @Override
     public boolean canAttach(ActionTypeBase action)
     {

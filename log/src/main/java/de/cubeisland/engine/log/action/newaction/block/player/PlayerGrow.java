@@ -43,7 +43,7 @@ public class PlayerGrow extends PlayerBlockActionType<BlockListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        if (this.oldBlock == AIR)
+        if (this.oldBlock.is(AIR))
         {
             return user
                 .getTranslationN(POSITIVE, count, "{user} let grow {name#block}", "{user} let grow {2:amount}x {name#block}", this.player.name, this.newBlock

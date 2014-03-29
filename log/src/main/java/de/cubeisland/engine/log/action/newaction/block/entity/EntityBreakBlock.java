@@ -34,7 +34,7 @@ public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EntityBreakBlock && ((EntityBreakBlock)action).entityType == this.entityType;
+        return action instanceof EntityBreakBlock && this.entity.isSameType(((EntityBreakBlock)action).entity);
     }
 
     @Override

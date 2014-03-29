@@ -118,7 +118,7 @@ public class PlayerBlockInteractListener extends LogListener
                 action = this.newAction(DoorUse.class, state.getWorld());
                 if (action != null)
                 {
-                    state = adjustBlockForDoubleBlocks(state); // TODO
+                    state = adjustBlockForDoubleBlocks(state);
                     Openable openable = (Openable)state.getData();
                     openable.setOpen(!openable.isOpen());
                     newState.setData((MaterialData)openable);
@@ -236,23 +236,6 @@ public class PlayerBlockInteractListener extends LogListener
                     {
                         action.setNewBlock(AIR);
                         newState = null;
-                    }
-                }
-            }
-            else if (state.getType() == LOG)
-            {
-                action = null;
-                // placing cocoa-pods // TODO was this fixed by bukkit?
-                if (itemInHand.getData() instanceof Dye && ((Dye)itemInHand.getData())
-                    .getColor() == BROWN) // COCOA-Beans
-                {
-                    BlockPlace blockPlace = this.manager.getActionType(BlockPlace.class);
-                    if (blockPlace.isActive(state.getWorld()))
-                    {
-                        BlockData newData = BlockData.of(state);
-                        newData.material = COCOA;
-                        newData.data = 1;
-                        blockPlace.logBlockChange(location, event.getPlayer(), BlockData.of(state), newData, null);
                     }
                 }
             }

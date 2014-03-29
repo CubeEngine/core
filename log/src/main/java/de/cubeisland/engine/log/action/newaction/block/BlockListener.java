@@ -32,15 +32,12 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.material.PistonExtensionMaterial;
 
-import de.cubeisland.engine.core.module.Module;
+import com.sun.xml.internal.bind.v2.TODO;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.logaction.block.BlockActionType.BlockData;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerGrow;
 
-import static org.bukkit.Material.AIR;
-import static org.bukkit.Material.FIRE;
-import static org.bukkit.Material.PISTON_EXTENSION;
+import static org.bukkit.Material.*;
 
 /**
  * A Listener for EntityBlock Actions
@@ -77,9 +74,9 @@ public class BlockListener extends LogListener
         BlockBurn action = this.newAction(BlockBurn.class, event.getBlock().getWorld());
         if (action != null)
         {
-            action.setLocation(event.getBlock().getLocation());
-            // TODO blockState = this.adjustBlockForDoubleBlocks(blockState);
-            action.setOldBlock(event.getBlock().getState());
+            BlockState state = adjustBlockForDoubleBlocks(event.getBlock().getState());
+            action.setOldBlock(state);
+            action.setLocation(state.getLocation());
             action.setNewBlock(AIR);
             this.logAction(action);
         }

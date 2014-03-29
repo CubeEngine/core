@@ -19,17 +19,21 @@ package de.cubeisland.engine.log.action.newaction.player.entity.vehicle;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
-public class VehiclePrePlaceEvent // TODO
+public class VehiclePrePlaceEvent extends Event
 {
+    private static final HandlerList handlers = new HandlerList();
+
+    private Location location;
+    private Entity player;
+
     public VehiclePrePlaceEvent(Location location, Entity player)
     {
         this.location = location;
         this.player = player;
     }
-
-    private Location location;
-    private Entity player;
 
     public Location getLocation()
     {
@@ -39,5 +43,16 @@ public class VehiclePrePlaceEvent // TODO
     public Entity getPlayer()
     {
         return player;
+    }
+
+    @Override
+    public HandlerList getHandlers()
+    {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
     }
 }

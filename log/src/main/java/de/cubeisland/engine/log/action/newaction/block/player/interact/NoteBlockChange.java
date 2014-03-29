@@ -19,11 +19,13 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.block.BlockState;
+import org.bukkit.block.NoteBlock;
+
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
-import de.cubeisland.engine.log.storage.LogEntry;
 
 /**
  * Represents a player changing the tune of a noteblock
@@ -32,6 +34,8 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
 {
     // return "noteblock-change";
     // return this.lm.getConfig(world).block.NOTEBLOCK_CHANGE_enable;
+
+    public byte note;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
@@ -44,21 +48,25 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
     @Override
     public String translateAction(User user)
     {
-        // TODO
-        Long oldClicks = logEntry.getData();
-        Integer newClicks = logEntry.getNewdata().intValue();
+        byte newNote = (byte)(this.note + 1);
         if (this.hasAttached())
         {
-            LogEntry last = logEntry.getAttached().last();
-            newClicks = last.getNewdata().intValue();
+            newNote = (byte)(((NoteBlockChange)this.getAttached().get(this.getAttached().size() - 1)).note + 1);
         }
-
-        if (oldClicks.intValue() == newClicks)
+        newNote %= 25;
+        if (this.note == newNote)
         {
             return user
                 .getTranslation(MessageType.POSITIVE, "{user} fiddled around with the noteblock but did not change anything", this.player.name);
         }
         return user
-            .getTranslation(MessageType.POSITIVE, "{user} set the noteblock to {amount} clicks", this.player.name, newClicks);
+            .getTranslation(MessageType.POSITIVE, "{user} set the noteblock to {amount} clicks", this.player.name, newNote);
     }
-}
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void setOldBlock(BlockState state)
+    {
+        super.setOldBlock(state);
+        this.note = ((NoteBlock)state).getNote().getId();
+    }}

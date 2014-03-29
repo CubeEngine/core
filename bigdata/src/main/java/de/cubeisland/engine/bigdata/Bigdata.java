@@ -20,7 +20,7 @@ package de.cubeisland.engine.bigdata;
 import java.net.UnknownHostException;
 
 import com.mongodb.MongoClient;
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.Module;import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 
 public class Bigdata extends Module
 {
@@ -37,7 +37,7 @@ public class Bigdata extends Module
         }
         catch (UnknownHostException e)
         {
-            throw new IllegalArgumentException("Invalid host", e);
+            throw new ModuleLoadError("Invalid host", e);
         }
         MongoDBCodec mongoDBCodec = new MongoDBCodec();
         this.getCore().getConfigFactory().getCodecManager().registerCodec(mongoDBCodec);

@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
-import de.cubeisland.engine.core.user.User;
+import org.bukkit.material.Lever;import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
@@ -42,13 +42,10 @@ public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     public String translateAction(User user)
     {
         // TODO plural
-        if ((logEntry.getNewBlock().data & 0x8) == 0x8)
+        if (this.newBlock.as(Lever.class).isPowered())
         {
             return user.getTranslation(POSITIVE, "{user} activated the lever", this.player.name);
         }
-        else
-        {
-            return user.getTranslation(POSITIVE, "{user} deactivated the lever", this.player.name);
-        }
+        return user.getTranslation(POSITIVE, "{user} deactivated the lever", this.player.name);
     }
 }

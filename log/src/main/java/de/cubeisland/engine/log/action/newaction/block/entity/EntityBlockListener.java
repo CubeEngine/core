@@ -91,12 +91,10 @@ public class EntityBlockListener extends LogListener
         EntityBlockActionType action = this.newAction(EntityBreakBlock.class, event.getBlock().getWorld());
         if (action != null)
         {
-            action.setLocation(event.getBlock().getLocation());
             action.setEntity(event.getEntity());
-            BlockState state = event.getBlock().getState();
-            state = this.adjustBlockForDoubleBlocks(state);
-            // TODO adjust for Door
-            action.setOldBlock(event.getBlock().getState());
+            BlockState state = adjustBlockForDoubleBlocks(event.getBlock().getState());
+            action.setLocation(state.getLocation());
+            action.setOldBlock(state);
             action.setNewBlock(event.getTo());
             this.logAction(action);
         }

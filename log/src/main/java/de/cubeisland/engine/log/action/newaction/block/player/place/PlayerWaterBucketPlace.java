@@ -21,6 +21,9 @@ import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
+/**
+ * Represents a player emptying a waterbucket
+ */
 public class PlayerWaterBucketPlace extends PlayerBlockPlace
 {
     // return "water-bucket";
