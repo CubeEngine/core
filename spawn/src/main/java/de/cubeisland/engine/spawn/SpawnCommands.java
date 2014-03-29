@@ -180,16 +180,17 @@ public class SpawnCommands
                 context.sendTranslated(MessageType.NEGATIVE, "Could not find the role {input} in {world}!", roleName, world);
                 return;
             }
-            String rolespawn = role.getRawMetadata().get("rolespawn");
-            if (rolespawn == null)
+            String roleSpawn = role.getRawMetadata().get("rolespawn");
+            if (roleSpawn == null)
             {
                 context.sendTranslated(MessageType.NEGATIVE, "The role {name} in {world} has no spawn point!", role.getName(), world);
                 return;
             }
-            spawnLocation = this.getSpawnLocation(rolespawn);
+            spawnLocation = this.getSpawnLocation(roleSpawn);
             if (spawnLocation == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Invalid spawn location for the role {name}! Please check your role configuration!\n{}", role.getName(), rolespawn);
+                context.sendTranslated(MessageType.CRITICAL, "Invalid spawn location for the role {name}! Please check your role configuration!", role.getName());
+                context.sendMessage(roleSpawn);
                 return;
             }
         }
@@ -295,8 +296,8 @@ public class SpawnCommands
                 this.roles.getLog().warn("Missing RolesAttachment!");
                 return;
             }
-            String rolespawn = rolesAttachment.getCurrentMetadataString("rolespawn");
-            if (rolespawn == null)
+            String roleSpawn = rolesAttachment.getCurrentMetadataString("rolespawn");
+            if (roleSpawn == null)
             {
                 spawnLocation = world.getSpawnLocation();
                 Location userLocation = user.getLocation();
@@ -306,10 +307,11 @@ public class SpawnCommands
             }
             else
             {
-                spawnLocation = this.getSpawnLocation(rolespawn);
+                spawnLocation = this.getSpawnLocation(roleSpawn);
                 if (spawnLocation == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Invalid spawn location for your role! Please check your role configurations!\n{}", rolespawn);
+                    context.sendTranslated(MessageType.CRITICAL, "Invalid spawn location for the role! Please check your role configuration!");
+                    context.sendMessage(roleSpawn);
                     return;
                 }
                 context.sendTranslated(MessageType.POSITIVE, "You are now standing at your role spawn!");
