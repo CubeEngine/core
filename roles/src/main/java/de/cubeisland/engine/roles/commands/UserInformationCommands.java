@@ -57,7 +57,7 @@ public class UserInformationCommands extends UserCommandHelper
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // List all assigned roles
-        context.sendTranslated(MessageType.NEUTRAL, "Roles of {user} in {world}:", user);
+        context.sendTranslated(MessageType.NEUTRAL, "Roles of {user} in {world}:", user, world);
         for (Role pRole : rolesAttachment.getDataHolder(world).getRoles())
             {
             if (pRole.isGlobal())
