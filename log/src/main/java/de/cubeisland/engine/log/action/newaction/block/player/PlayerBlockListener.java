@@ -17,19 +17,12 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.player;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Jukebox;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Hanging;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -37,9 +30,7 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.material.Attachable;
 
-import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
@@ -48,10 +39,10 @@ import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerJuke
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerNoteBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerSignBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.place.PlayerBlockPlace;
-import de.cubeisland.engine.log.action.newaction.player.entity.hanging.HangingPreBreakEvent;
-import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerHangingBreak;
 
 import static de.cubeisland.engine.core.util.BlockUtil.BLOCK_FACES;
+import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logAttachedBlocks;
+import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logFallingBlocks;
 import static org.bukkit.Material.*;
 import static org.bukkit.block.BlockFace.UP;
 
@@ -68,9 +59,6 @@ import static org.bukkit.block.BlockFace.UP;
  */
 public class PlayerBlockListener extends LogListener
 {
-    private volatile boolean clearPlanned = false;
-    private final Map<Location,PlayerBlockBreak> plannedPyhsics = new ConcurrentHashMap<>();
-
     public PlayerBlockListener(Log module)
     {
         super(module);
@@ -151,43 +139,8 @@ public class PlayerBlockListener extends LogListener
             }
         }
         // TODO attached & falling
-        this.logAttachedBlocks(blockState, action);
-        this.logFallingBlocks(blockState, event.getPlayer());
-    }
-
-    private void logAttachedBlocks(BlockState state, PlayerBlockBreak action)
-    {
-        if (!state.getType().isSolid() && !(state.getType() == Material.SUGAR_CANE_BLOCK))
-        {
-            return; // cannot have attached
-        }
-
-        for (Block block : BlockUtil.getAttachedBlocks(state.getBlock()))
-        {
-            this.preplanBlockPhyiscs(block.getLocation(),  action);
-        }
-        for (Block block : BlockUtil.getDetachableBlocksOnTop(state.getBlock()))
-        {
-            if (block.getData() < 8
-                || !(block.getType().equals(Material.WOODEN_DOOR)
-                || block.getType().equals(Material.IRON_DOOR_BLOCK))) // ignore upper door halfs
-            {
-                this.preplanBlockPhyiscs(block.getLocation(),  action);
-            }
-        }
-
-        if (this.isActive(PlayerHangingBreak.class, state.getWorld()))
-        {
-            Location location = state.getLocation();
-            Location entityLocation = state.getLocation();
-            for (Entity entity : state.getBlock().getChunk().getEntities())
-            {
-                if (entity instanceof Hanging && location.distanceSquared(entity.getLocation(entityLocation)) < 4)
-                {
-                    this.module.getCore().getEventManager().fireEvent(new HangingPreBreakEvent(entityLocation, action));
-                }
-            }
-        }
+        logAttachedBlocks(this, module.getCore().getEventManager(), event.getBlock(), action);
+        logFallingBlocks(this, module.getCore().getEventManager(), event.getBlock(), action);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -275,69 +228,5 @@ public class PlayerBlockListener extends LogListener
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockPhysics(final BlockPhysicsEvent event)
-    {
-        if (!this.isActive(PlayerBlockBreak.class, event.getBlock().getWorld())) return;
-        BlockState oldState = event.getBlock().getState();
-        Block blockAttachedTo;
-        if (oldState.getData() instanceof Attachable)
-        {
-            Attachable attachable = (Attachable) oldState.getData();
-            if (attachable.getAttachedFace() == null) return; // is not attached !?
-            blockAttachedTo = event.getBlock().getRelative(attachable.getAttachedFace());
-        }
-        else // block on bottom missing
-        {
-            if (!BlockUtil.isDetachableFromBelow(oldState.getType()))
-            {
-                return;
-            }
-            blockAttachedTo = event.getBlock().getRelative(BlockFace.DOWN);
-        }
-        if (blockAttachedTo == null) return;
-        if (!blockAttachedTo.getType().isSolid())
-        {
-            Location loc = oldState.getLocation();
-            PlayerBlockBreak cause = this.plannedPyhsics.remove(loc);
-            if (cause != null)
-            {
-                oldState = adjustBlockForDoubleBlocks(oldState);
-                PlayerBlockBreak action;
-                if (oldState instanceof Sign)
-                {
-                    action = this.newAction(PlayerSignBreak.class);
-                    ((PlayerSignBreak)action).setLines(((Sign)oldState).getLines());
-                }
-                else
-                {
-                    action = this.newAction(PlayerBlockBreak.class);
-                }
-                action.setOldBlock(oldState);
-                action.setNewBlock(AIR);
-                action.player = cause.player;
-                action.reference = this.reference(cause);
-                this.logAction(action);
-            }
-        }
-    }
-
-    private void preplanBlockPhyiscs(Location location, PlayerBlockBreak action)
-    {
-        plannedPyhsics.put(location,action);
-        if (!clearPlanned)
-        {
-            clearPlanned = true;
-            this.module.getCore().getTaskManager().runTask(module, new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    clearPlanned = false;
-                    plannedPyhsics.clear();
-                }
-            });
-        }
-    }
 
 }

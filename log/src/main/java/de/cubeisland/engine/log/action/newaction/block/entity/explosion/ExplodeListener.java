@@ -37,10 +37,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
+import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logAttachedBlocks;
+import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logFallingBlocks;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -143,8 +144,8 @@ public class ExplodeListener extends LogListener
                     this.logAction(eAction);
 
                     // TODO attached / falling / ignore blocks exploded
-                    actionType.logAttachedBlocks(block.getState());
-                    actionType.logFallingBlocks(block.getState());
+                    logAttachedBlocks(this, module.getCore().getEventManager(), block, eAction);
+                    logFallingBlocks(this, module.getCore().getEventManager(), block, eAction);
                 }
             }
             return;
@@ -160,10 +161,11 @@ public class ExplodeListener extends LogListener
                 {
                     continue; // ignore upper door halves
                 }
-                this.setInfoAndLog(this.newAction(actionClazz), entity, block, player);
+                ExplosionActionType action = this.newAction(actionClazz);
+                this.setInfoAndLog(action, entity, block, player);
                 // TODO attached / falling / ignore blocks exploded
-                actionType.logAttachedBlocks(block.getState(), player);
-                actionType.logFallingBlocks(block.getState(), player);
+                logAttachedBlocks(this, module.getCore().getEventManager(), block, action);
+                logFallingBlocks(this, module.getCore().getEventManager(), block, action);
             }
         }
     }

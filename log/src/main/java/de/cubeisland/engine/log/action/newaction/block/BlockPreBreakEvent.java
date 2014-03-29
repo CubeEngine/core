@@ -15,27 +15,43 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.block.entity;
+package de.cubeisland.engine.log.action.newaction.block;
 
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import org.bukkit.Location;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-
-/**
- * Represents an entity changing a block
- */
-public class OtherEntityChangeBlock extends EntityBlockActionType<EntityBlockListener>
+public class BlockPreBreakEvent extends Event
 {
-    @Override
-    public boolean canAttach(ActionTypeBase action)
+    private static final HandlerList handlers = new HandlerList();
+
+    private Location location;
+    private BlockActionType action;
+
+    public BlockPreBreakEvent(Location location, BlockActionType action)
     {
-        return false;
+        this.location = location;
+        this.action = action;
+    }
+
+    public Location getLocation()
+    {
+        return location;
+    }
+
+    public BlockActionType getAction()
+    {
+        return action;
     }
 
     @Override
-    public String translateAction(User user)
+    public HandlerList getHandlers()
     {
-        return user.getTranslation(POSITIVE, "{name#entity} changed {name#block} to {name#block}", this.entity.name(), this.oldBlock.name(), this.newBlock.name());
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
     }
 }

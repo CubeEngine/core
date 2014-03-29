@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.LogActionType;
-import de.cubeisland.engine.log.action.newaction.block.BlockFall;import de.cubeisland.engine.log.storage.ImmutableBlockData;
+import de.cubeisland.engine.log.storage.ImmutableBlockData;
 import de.cubeisland.engine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType
@@ -128,19 +128,7 @@ public abstract class BlockActionType extends LogActionType
 
 
 
-    public void logFallingBlocks(BlockState blockState, Entity player)
-    {
-        // Falling Blocks
-        BlockFall blockFall = this.manager.getActionType(BlockFall.class);
-        if (blockFall.isActive(blockState.getWorld()))
-        {
-            Block onTop = blockState.getBlock().getRelative(BlockFace.UP);
-            if (onTop.getType().hasGravity()||onTop.getType().equals(Material.DRAGON_EGG))
-            {
-                blockFall.preplanBlockFall(onTop.getLocation(),player,this);
-            }
-        }
-    }
+
 
     @Override
     public boolean isSimilar(LogEntry logEntry, LogEntry other)

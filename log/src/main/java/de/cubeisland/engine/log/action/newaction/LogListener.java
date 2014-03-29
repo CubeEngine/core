@@ -63,7 +63,7 @@ public class LogListener implements Listener
         // TODO
     }
 
-    protected final boolean isActive(Class<? extends ActionTypeBase> clazz, World world)
+    public final boolean isActive(Class<? extends ActionTypeBase> clazz, World world)
     {
         // TODO
         return true;

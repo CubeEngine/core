@@ -21,16 +21,14 @@ import org.bukkit.Location;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
-
 public class BlockPreFallEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
 
     private Location location;
-    private PlayerBlockActionType action;
+    private BlockActionType action;
 
-    public BlockPreFallEvent(Location location, PlayerBlockActionType action)
+    public BlockPreFallEvent(Location location, BlockActionType action)
     {
         this.location = location;
         this.action = action;
@@ -41,7 +39,7 @@ public class BlockPreFallEvent extends Event
         return location;
     }
 
-    public PlayerBlockActionType getAction()
+    public BlockActionType getAction()
     {
         return action;
     }
