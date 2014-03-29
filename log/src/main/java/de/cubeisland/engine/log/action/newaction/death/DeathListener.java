@@ -41,6 +41,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
@@ -51,10 +52,11 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.engine.log.action.logaction.ItemDrop;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.action.newaction.LogListener;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
 import de.cubeisland.engine.log.storage.ItemData;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -96,6 +98,52 @@ public class DeathListener extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event)
     {
+        KillAction killAction = this.newAction(KillAction.class, event.getEntity().getWorld());
+        if (killAction != null)
+        {
+            killAction.setLocation(event.getEntity().getLocation());
+            EntityDamageEvent cause = event.getEntity().getLastDamageCause();
+            if (cause == null)
+            {
+                killAction.otherKiller = DamageCause.CUSTOM;
+            }
+            else if (cause instanceof EntityDamageByEntityEvent)
+            {
+                Entity damager = ((EntityDamageByEntityEvent)cause).getDamager();
+                if (damager instanceof Player)
+                {
+                    killAction.playerKiller = new PlayerSection((Player)damager);
+                }
+                else if (damager instanceof Projectile)
+                {
+                    killAction.projectile = true;
+                    if (((Projectile)damager).getShooter() instanceof Entity)
+                    {
+                        if (((Projectile)damager).getShooter() instanceof Player)
+                        {
+                            killAction.playerKiller = new PlayerSection((Player)((Projectile)damager).getShooter());
+                        }
+                        else
+                        {
+                            killAction.entityKiller = new EntitySection((Entity)((Projectile)damager).getShooter());
+                        }
+                    }
+                    else
+                    {
+                        killAction.entityKiller = new EntitySection(damager);
+                    }
+                }
+                else
+                {
+                    killAction.entityKiller = new EntitySection(damager);
+                }
+            }
+            else
+            {
+                killAction.otherKiller = cause.getCause();
+            }
+            this.logAction(killAction);
+        }
         LivingEntity killed = event.getEntity();
         Location location = event.getEntity().getLocation();
         SimpleLogActionType actionType;

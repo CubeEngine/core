@@ -17,15 +17,29 @@
  */
 package de.cubeisland.engine.log.action.newaction.death;
 
-import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
+import com.mongodb.DBRef;
+import com.mongodb.DBRefBase;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 /**
- * animal-death
- * <p>Events: {@link DeathListener}</p>
+ * Represents an animal dying
  */
-public class AnimalDeath extends SimpleLogActionType
+public class AnimalDeath extends EntityDeathAction
 {
     // return "animal-death";
     // return this.lm.getConfig(world).death.ANIMAL_DEATH_enable;
 
+    @Override
+    public boolean canAttach(ActionTypeBase action)
+    {
+        return action instanceof AnimalDeath
+            && this.killedEntity.isSameType(((AnimalDeath)action).killedEntity);
+        // TODO same kill reason
+    }
+
+    @Override
+    public String translateAction(User user)
+    {
+    }
 }

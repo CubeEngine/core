@@ -43,8 +43,8 @@ import de.cubeisland.engine.reflect.Section;
 public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
 {
     public Date date = new Date();
-
     public Coordinate coord;
+    public String action = this.getClass().getName();
 
     protected int countAttached()
     {
