@@ -303,7 +303,7 @@ public class SpawnCommands
                 Location userLocation = user.getLocation();
                 spawnLocation.setPitch(userLocation.getPitch());
                 spawnLocation.setYaw(userLocation.getYaw());
-                context.sendTranslated(MessageType.POSITIVE, "You are now standing at the spawn of {world}!", world);
+                context.sendTranslated(MessageType.POSITIVE, "You are now standing at the spawn in {world}!", world);
             }
             else
             {
@@ -314,7 +314,7 @@ public class SpawnCommands
                     context.sendMessage(roleSpawn);
                     return;
                 }
-                context.sendTranslated(MessageType.POSITIVE, "You are now standing at your role spawn!");
+                context.sendTranslated(MessageType.POSITIVE, "You are now standing at your role's spawn!");
             }
         }
         else
