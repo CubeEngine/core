@@ -17,18 +17,13 @@
  */
 package de.cubeisland.engine.log.action.logaction.block;
 
-import java.util.concurrent.TimeUnit;
-
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Jukebox;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Entity;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.Bed;
 
@@ -41,135 +36,6 @@ import de.cubeisland.engine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType
 {
-    public void logBlockChange(Location location, Entity causer, BlockData oldState, BlockData newState, String additional)
-    {
-        this.logBlockChange(location, causer,
-                            oldState.material.name(), oldState.data.longValue(),
-                            newState.material.name(), newState.data, additional);
-    }
-
-    public void logBlockChange(Location location, Entity causer, BlockData oldState, Material newState, String additional)
-    {
-        this.logBlockChange(location,causer,oldState.material.name(),oldState.data.longValue(),newState.name(),(byte)0,additional);
-    }
-
-    public void logBlockChange(Location location, Entity causer, Material oldState, BlockData newState, String additional)
-    {
-        this.logBlockChange(location,causer,oldState.name(),0L,newState.material.name(),newState.data,additional);
-    }
-
-    private void logBlockChange(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additional)
-    {
-        if (this.isBreakingBlockIgnored(location.getWorld(),block) || this.isPlacingBlockIgnored(location.getWorld(),newBlock))
-        {
-            return;
-        }
-        this.queueLog(location,causer,block,data,newBlock,newData,additional);
-    }
-
-    private boolean isBreakingBlockIgnored(World world, String block)
-    {
-        if (block == null || block.equals("AIR"))
-        {
-            return false;
-        }
-        Material mat = Material.getMaterial(block);
-        return this.lm.getConfig(world).block.breakNoLogging.contains(mat);
-    }
-    private boolean isPlacingBlockIgnored(World world, String block)
-    {
-        if (block == null || block.equals("AIR"))
-        {
-            return false;
-        }
-        Material mat = Material.getMaterial(block);
-        return this.lm.getConfig(world).block.placeNoLogging.contains(mat);
-    }
-
-    public void logBlockChange(Location location, Entity causer, Material oldBlock, Material newBlock, String additional)
-    {
-        this.logBlockChange(location, causer, oldBlock.name(), 0L, newBlock.name(), (byte)0, additional);
-    }
-
-    public void logBlockChange(Entity causer, BlockState oldBlock, BlockState newBlock, String additional)
-    {
-        this.logBlockChange(oldBlock.getLocation(),causer,BlockData.of(oldBlock),BlockData.of(newBlock),additional);
-    }
-
-    public static class BlockData
-    {
-        public Material material;
-        public Byte data;
-
-        private BlockData(BlockState blockState)
-        {
-            material = blockState.getType();
-            data = blockState.getRawData();
-        }
-
-        public BlockData(Material mat, byte data)
-        {
-            this.material = mat;
-            this.data = data;
-        }
-
-        public static BlockData of(BlockState state)
-        {
-            return new BlockData(state);
-        }
-
-        public static BlockData of(Material mat, byte data)
-        {
-            return new BlockData(mat,data);
-        }
-    }
-
-
-
-
-
-
-
-    @Override
-    public boolean isSimilar(LogEntry logEntry, LogEntry other)
-    {
-        if (!super.isSimilar(logEntry, other)) return false;
-        if ((logEntry.getNewblock() == other.getNewblock() || logEntry.getNewblock().equals(other.getNewblock()))
-            && logEntry.getWorld() == other.getWorld()
-            && logEntry.getCauser().equals(other.getCauser())
-            && logEntry.getAdditional() == other.getAdditional()) // additional
-        {
-            if (logEntry.getBlock().equals(other.getBlock()))
-            {
-                return nearTimeFrame(logEntry,other);
-            }
-            else
-            {
-                if (logEntry.getBlock().equals("LAVA") || logEntry.getBlock().equals("STATIONARY_LAVA"))
-                {
-                    if (other.getBlock().equals("LAVA") || other.getBlock().equals("STATIONARY_LAVA"))
-                    {
-                        return nearTimeFrame(logEntry,other);
-                    }
-                }
-                else if (logEntry.getBlock().equals("WATER") || logEntry.getBlock().equals("STATIONARY_WATER"))
-                {
-                    if (other.getBlock().equals("WATER") || other.getBlock().equals("STATIONARY_WATER"))
-                    {
-                        return nearTimeFrame(logEntry,other);
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    protected boolean nearTimeFrame(LogEntry logEntry, LogEntry other)
-    {
-        return logEntry.getCauser() <= 0 ||
-            Math.abs(TimeUnit.MILLISECONDS.toSeconds(logEntry.getTimestamp().getTime() - other.getTimestamp().getTime())) < 5;
-    }
-
     @Override
     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
@@ -333,12 +199,6 @@ public abstract class BlockActionType extends LogActionType
     }
 
     @Override
-    public boolean canRedo()
-    {
-        return true;
-    }
-
-    @Override
     public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {
         ImmutableBlockData newBlock = logEntry.getNewBlock();
@@ -346,23 +206,5 @@ public abstract class BlockActionType extends LogActionType
         BlockState state = block.getState();
         state.setType(newBlock.material);
         return this.setBlock(newBlock, state, block, attachment, logEntry, preview, force, false);
-    }
-
-    @Override
-    public boolean canRollback()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isStackable()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isBlockBound()
-    {
-        return true;
     }
 }
