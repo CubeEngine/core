@@ -33,7 +33,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
+import de.cubeisland.engine.log.action.newaction.death.MonsterDeath;
 
 public class QueryResults
 {

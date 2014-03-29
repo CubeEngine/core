@@ -105,6 +105,7 @@ import de.cubeisland.engine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.engine.log.action.logaction.interact.InteractEntityActionType;
 import de.cubeisland.engine.log.action.logaction.interact.ItemInFrameRemove;
 import de.cubeisland.engine.log.action.logaction.interact.MilkFill;
+import de.cubeisland.engine.log.action.newaction.death.DeathListener;
 import de.cubeisland.engine.log.action.newaction.entity.spawn.MonsterEggUse;
 import de.cubeisland.engine.log.action.logaction.interact.PotionSplash;
 import de.cubeisland.engine.log.action.logaction.interact.SoupFill;
@@ -112,14 +113,13 @@ import de.cubeisland.engine.log.action.logaction.interact.VehicleBreak;
 import de.cubeisland.engine.log.action.logaction.interact.VehicleEnter;
 import de.cubeisland.engine.log.action.logaction.interact.VehicleExit;
 import de.cubeisland.engine.log.action.logaction.interact.VehiclePlace;
-import de.cubeisland.engine.log.action.logaction.kill.AnimalDeath;
-import de.cubeisland.engine.log.action.logaction.kill.BossDeath;
-import de.cubeisland.engine.log.action.logaction.kill.KillActionType;
-import de.cubeisland.engine.log.action.logaction.kill.MonsterDeath;
-import de.cubeisland.engine.log.action.logaction.kill.NpcDeath;
-import de.cubeisland.engine.log.action.logaction.kill.OtherDeath;
-import de.cubeisland.engine.log.action.logaction.kill.PetDeath;
-import de.cubeisland.engine.log.action.logaction.kill.PlayerDeath;
+import de.cubeisland.engine.log.action.newaction.death.AnimalDeath;
+import de.cubeisland.engine.log.action.newaction.death.BossDeath;
+import de.cubeisland.engine.log.action.newaction.death.MonsterDeath;
+import de.cubeisland.engine.log.action.newaction.death.NpcDeath;
+import de.cubeisland.engine.log.action.newaction.death.OtherDeath;
+import de.cubeisland.engine.log.action.newaction.death.PetDeath;
+import de.cubeisland.engine.log.action.newaction.death.PlayerDeath;
 import de.cubeisland.engine.log.action.newaction.entity.EntityListener;
 import de.cubeisland.engine.log.action.newaction.entity.spawn.NaturalSpawn;
 import de.cubeisland.engine.log.action.newaction.entity.spawn.OtherSpawn;
@@ -247,7 +247,7 @@ public class ActionTypeManager
             .registerActionType(new BucketEmpty())
             .registerActionType(new ContainerActionType())
             .registerActionType(new InteractEntityActionType())
-            .registerActionType(new KillActionType())
+            .registerActionType(new DeathListener())
             .registerActionType(new EntityListener());
     }
 

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.logaction.kill;
+package de.cubeisland.engine.log.action.newaction.death;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -47,12 +47,14 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.logaction.ActionTypeContainer;
 import de.cubeisland.engine.log.action.logaction.ItemDrop;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
+import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.storage.ItemData;
 import de.cubeisland.engine.log.storage.LogEntry;
 
@@ -68,11 +70,11 @@ import de.cubeisland.engine.log.storage.LogEntry;
  * {@link MonsterDeath},
  * {@link OtherDeath},
  */
-public class KillActionType extends ActionTypeContainer
+public class DeathListener extends LogListener
 {
-    public KillActionType()
+    public DeathListener(Module module)
     {
-        super("KILL");
+        super(module);
     }
 
     private void logDeathDrops(EntityDeathEvent event)

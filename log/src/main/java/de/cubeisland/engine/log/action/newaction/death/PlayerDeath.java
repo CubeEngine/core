@@ -15,41 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.logaction.kill;
+package de.cubeisland.engine.log.action.newaction.death;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.bukkit.World;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.logaction.SimpleLogActionType;
 import de.cubeisland.engine.log.storage.LogEntry;
 
-import static de.cubeisland.engine.log.action.ActionTypeCategory.*;
-
 /**
  * player-death
- * <p>Events: {@link KillActionType}</p>
+ * <p>Events: {@link DeathListener}</p>
  */
 public class PlayerDeath extends SimpleLogActionType
 {
-    @Override
-    protected Set<ActionTypeCategory> getCategories()
-    {
-        return new HashSet<>(Arrays.asList(PLAYER, ENTITY, KILL));
-    }
+    // return "player-death";
+    // return this.lm.getConfig(world).death.PLAYER_DEATH_enable;
 
-    @Override
-    public String getName()
-    {
-        return "player-death";
-    }
+
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)
@@ -77,28 +62,5 @@ public class PlayerDeath extends SimpleLogActionType
         }
     }
 
-    @Override
-    public boolean isSimilar(LogEntry logEntry, LogEntry other)
-    {
-        return KillActionType.isSimilarSubAction(logEntry,other);
-    }
 
-
-    @Override
-    public boolean isActive(World world)
-    {
-        return this.lm.getConfig(world).death.PLAYER_DEATH_enable;
-    }
-
-    @Override
-    public boolean canRollback()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean canRedo()
-    {
-        return false;
-    }
 }
