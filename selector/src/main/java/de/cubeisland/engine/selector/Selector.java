@@ -37,7 +37,7 @@ public class Selector extends Module implements Listener
         }
         catch (ClassNotFoundException ignored)
         {
-            this.getLog().warn("No WorldEdit found!");
+            this.getLog().warn("WorldEdit not found!");
         }
     }
 

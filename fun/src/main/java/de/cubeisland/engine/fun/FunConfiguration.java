@@ -67,22 +67,22 @@ public class FunConfiguration extends ReflectedYaml
 
         public class BurnSection implements Section
         {
-            @Comment("Sets the maximum time in seconds of burning players!")
+            @Comment("Sets the maximum time in seconds for how long a player burns")
             @Name("max.time")
             public int maxTime = 30;
         }
 
         public class DiscoSection implements Section
         {
-            @Comment("Sets the minimum delay between changes of day to night and vice versa.")
+            @Comment("Sets the minimum delay between changes of day to night and vice versa")
             @Name("delay.min")
             public int minDelay = 1;
 
-            @Comment("Sets the maximum delay between changes of day to night and vice versa.")
+            @Comment("Sets the maximum delay between changes of day to night and vice versa")
             @Name("delay.max")
             public int maxDelay = 100;
 
-            @Comment("Sets the default delay of the disco command. Has to be between the max and the min value!")
+            @Comment("Sets the default delay of the disco command. Has to be between the max and the min value")
             @Name("delay.default")
             public int defaultDelay = 10;
         }
@@ -96,7 +96,7 @@ public class FunConfiguration extends ReflectedYaml
 
         public class RocketSection implements Section
         {
-            @Comment("Sets the maximum height a player can jump.")
+            @Comment("Sets the maximum height a player can jump")
             @Name("max.height")
             public int maxHeight = 100;
         }

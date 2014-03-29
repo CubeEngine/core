@@ -118,19 +118,19 @@ public class EditModeListener extends ConversationCommand
     {
         if (marketSign.isAdminSign() && !module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit Admin-Signs!");
+            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit admin signs!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
         else if (!marketSign.isAdminSign() && !module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit User-Signs!");
+            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit player signs!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
         if (!marketSign.isAdminSign() && !marketSign.isOwner(user) && !module.perms().SIGN_CREATE_USER_OTHER.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit Signs of other Users!");
+            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit Signs of other players!");
             this.currentSignLocation.remove(user.getId());
             return false;
         }
@@ -141,7 +141,7 @@ public class EditModeListener extends ConversationCommand
     public void removeUser(User user)
     {
         super.removeUser(user);
-        user.sendTranslated(MessageType.POSITIVE, "Edit mode quit!");
+        user.sendTranslated(MessageType.POSITIVE, "Exiting edit mode.");
     }
 
     @EventHandler
@@ -171,13 +171,13 @@ public class EditModeListener extends ConversationCommand
                 this.removeUser(user);
                 return null;
             }
-            user.sendTranslated(MessageType.NEGATIVE, "Please do select a sign to edit.");
+            user.sendTranslated(MessageType.NEGATIVE, "Please select a sign to edit.");
             return null;
         }
         MarketSign marketSign = this.signFactory.getSignAt(loc);
         if (marketSign == null)
         {
-            user.sendTranslated(MessageType.CRITICAL, "No market-sign at position! This should not happen!");
+            user.sendTranslated(MessageType.CRITICAL, "No market sign at position! This should not happen!");
             return null;
         }
         this.setEditingSign(user, marketSign);
@@ -186,19 +186,19 @@ public class EditModeListener extends ConversationCommand
             MarketSign prevMarketSign = this.previousMarketSign.get(user.getId());
             if (prevMarketSign == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "No market-sign at previous position.");
+                user.sendTranslated(MessageType.NEGATIVE, "No market sign at previous position.");
                 return null;
             }
             else
             {
                 if (prevMarketSign.isAdminSign() && !module.perms().SIGN_CREATE_ADMIN_CREATE.isAuthorized(user))
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to copy Admin-Signs!");
+                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to copy admin signs!");
                     return null;
                 }
                 else if (!prevMarketSign.isAdminSign() && !module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to copy User-Signs!");
+                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to copy player signs!");
                     return null;
                 }
                 marketSign.copyValuesFrom(prevMarketSign);
@@ -214,7 +214,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create admin-buy signs!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create admin buy signs!");
                     return null;
                 }
             }
@@ -226,7 +226,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create user-buy signs!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create player buy signs!");
                     return null;
                 }
             }
@@ -241,7 +241,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create admin-sell signs!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create admin sell signs!");
                     return null;
                 }
             }
@@ -253,7 +253,7 @@ public class EditModeListener extends ConversationCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create user-sell signs!");
+                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create player sell signs!");
                     return null;
                 }
             }
@@ -316,7 +316,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create admin-signs");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create admin signs");
                 return null;
             }
         }
@@ -332,7 +332,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create user-signs");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create player signs");
                 return null;
             }
         }
@@ -343,7 +343,7 @@ public class EditModeListener extends ConversationCommand
                 User owner = context.getParam("owner",null);
                 if (owner == null)
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString("owner"));
+                    user.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString("owner"));
                     return null;
                 }
                 else
@@ -353,7 +353,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create user-signs for other users");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create player signs for other players");
                 return null;
             }
         }
@@ -521,7 +521,7 @@ public class EditModeListener extends ConversationCommand
                             int maxUser = this.module.getConfig().maxUserStock;
                             if (maxUser != -1 && (size > maxUser || size == -1))
                             {
-                                context.sendTranslated(MessageType.NEGATIVE, "The maximum size of user-signs is set to {amount}!", maxUser);
+                                context.sendTranslated(MessageType.NEGATIVE, "The maximum size of player signs is set to {amount}!", maxUser);
                                 return null;
                             }
                             else
@@ -535,7 +535,7 @@ public class EditModeListener extends ConversationCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the sign-inventory-size.");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the sign inventory-size.");
                 return null;
             }
         }
@@ -585,7 +585,7 @@ public class EditModeListener extends ConversationCommand
                     {
                         if (!user.isSneaking())
                         {
-                            user.sendTranslated(MessageType.NEGATIVE, "This is not a market-sign!");
+                            user.sendTranslated(MessageType.NEGATIVE, "That is not a market sign!");
                             user.sendTranslated(MessageType.NEUTRAL, "Use shift leftclick to convert the sign.");
                             return;
                         }
@@ -635,7 +635,7 @@ public class EditModeListener extends ConversationCommand
                     if (user.getItemInHand() == null || user.getItemInHand().getTypeId() == 0) return;
                     if (!curSign.isAdminSign() && curSign.hasStock() && curSign.getStock() != 0)
                     {
-                        user.sendTranslated(MessageType.NEGATIVE, "You have to take all items out of the market-sign to be able to change the item in it!");
+                        user.sendTranslated(MessageType.NEGATIVE, "You have to take all items out of the market sign to be able to change the item in it!");
                         return;
                     }
                     curSign.setItemStack(user.getItemInHand(), true);
@@ -663,7 +663,7 @@ public class EditModeListener extends ConversationCommand
                 {
                     if (!module.perms().SIGN_CREATE_USER_CREATE.isAuthorized(user))
                     {
-                        user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create market-signs!");
+                        user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create market signs!");
                         event.setCancelled(true);
                         return;
                     }

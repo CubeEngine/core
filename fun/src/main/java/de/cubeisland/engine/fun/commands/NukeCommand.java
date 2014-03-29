@@ -60,7 +60,7 @@ public class NukeCommand
     }
 
     @Command(
-        desc = "A tnt carpet is falling at a player or the place the player is looking at.",
+        desc = "Makes a carpet of TNT fall on a player or where you're looking",
         max = 3,
         params =
             {
@@ -106,7 +106,7 @@ public class NukeCommand
             user = context.getUser("player");
             if(user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User not found");
+                context.sendTranslated(MessageType.NEGATIVE, "Player not found");
                 return;
             }
             location = user.getLocation();

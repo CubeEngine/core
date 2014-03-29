@@ -75,7 +75,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
                 if (ManagementCommands.curWorldOfConsole == null)
                 {
                     context.sendTranslated(MessageType.NEGATIVE, "You have to provide a world with {text:in world}!");
-                    context.sendTranslated(MessageType.NEUTRAL, "Or you can define a default-world with {text:/roles admin defaultworld <world>}");
+                    context.sendTranslated(MessageType.NEUTRAL, "Or you can define a default world with {text:/roles admin defaultworld <world>}");
                     return null;
                 }
                 world = ManagementCommands.curWorldOfConsole;

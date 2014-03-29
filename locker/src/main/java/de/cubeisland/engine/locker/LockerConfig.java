@@ -42,14 +42,14 @@ public class LockerConfig extends ReflectedYaml
     @Name("settings.protect.entity.living-from-damage")
     public boolean protectEntityFromDamage = true;
 
-    @Comment("If set to true protected living entities will receive no damage from environment in addition to damage done by players")
+    @Comment("If set to true protected living entities won't receive damage from environment in addition to damage done by players")
     @Name("settings.protect.entity.living-from-damage-by-environment")
     public boolean protectEntityFromEnvironementalDamage = true;
 
     @Name("settings.protect.entity.vehicle.from-break")
     public boolean protectVehicleFromBreak = true;
 
-    @Comment("If set to true protected vehicles will not break when receiving damage from environment in addition to the player-protection")
+    @Comment("If set to true protected vehicles won't break when receiving damage from environment in addition to the player-protection")
     @Name("settings.protect.entity.vehicle.from-break-by-environment")
     public boolean protectVehicleFromEnvironmental = true;
 
@@ -77,7 +77,7 @@ public class LockerConfig extends ReflectedYaml
     @Name("settings.protect.blocks.from-redstone")
     public boolean protectFromRedstone = true;
 
-    @Comment("Protection from Hoppers can potentially cause lag.\n" +
+    @Comment("Protection from hoppers can potentially cause lag.\n" +
                  "Set to true if you are experiencing lag because of protection from hoppers")
     @Name("settings.disable-hopper-protection")
     public boolean noProtectFromHopper = false;

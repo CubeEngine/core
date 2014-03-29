@@ -38,7 +38,7 @@ public class InvasionCommand
         this.module = module;
     }
 
-    @Command(desc = "spawns the mob next to every player on the server", min = 1, max = 1, usage = "<mob>")
+    @Command(desc = "Spawns a mob next to every player on the server", min = 1, max = 1, usage = "<mob>")
     public void invasion(CommandContext context)
     {
         EntityType entityType = Match.entity().mob(context.getString(0, null));

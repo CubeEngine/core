@@ -371,7 +371,7 @@ public class MarketSign
                         }
                         if (!this.openInventory(user))
                         {
-                            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to see the market-signs inventories");
+                            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to see the market signs inventories");
                         }
                     }
                     else
@@ -406,7 +406,7 @@ public class MarketSign
                             }
                             else if (itemInHand.getTypeId() != 0)
                             {
-                                user.sendTranslated(MessageType.NEGATIVE, "Use bare hands to break the sign!");
+                                user.sendTranslated(MessageType.NEGATIVE, "Use your bare hands to break the sign!");
                                 return;
                             }
                         }
@@ -421,7 +421,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break your own market-signs!");
+                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break your own market signs!");
                             }
                         }
                         else if (this.isAdminSign())
@@ -432,7 +432,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break admin-market-signs!");
+                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break admin market signs!");
                             }
                         }
                         else
@@ -443,7 +443,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break others market-signs!");
+                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break others market signs!");
                             }
                         }
                     }
@@ -458,7 +458,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break admin-signs!");
+                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break admin signs!");
                             }
                         }
                         else if (this.isOwner(user))
@@ -469,7 +469,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break your own market-signs!");
+                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to break your own market signs!");
                             }
                         }
                         else
@@ -481,7 +481,7 @@ public class MarketSign
                             }
                             else
                             {
-                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to destroy others market-signs!");
+                                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to destroy others market signs!");
                             }
                         }
                     }
@@ -699,10 +699,10 @@ public class MarketSign
                 amount = this.getMaxItemAmount() - this.getStock();
                 if (amount <= 0)
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "The market-sign inventory is full!");
+                    user.sendTranslated(MessageType.NEGATIVE, "The market sign inventory is full!");
                     return 0;
                 }
-                user.sendTranslated(MessageType.NEGATIVE, "The market-sign cannot hold all your items!");
+                user.sendTranslated(MessageType.NEGATIVE, "The market sign cannot hold all your items!");
             }
         }
         this.setStock(this.getStock() + amount);
@@ -783,7 +783,7 @@ public class MarketSign
             return true;
         }
         this.breakingSign.put(user.getId(), System.currentTimeMillis());
-        user.sendTranslated(MessageType.NEUTRAL, "Doubleclick to break the sign!");
+        user.sendTranslated(MessageType.NEUTRAL, "Double click to break the sign!");
         return false;
     }
 
@@ -840,7 +840,7 @@ public class MarketSign
             {
                 if (!module.perms().USE_BUY.isAuthorized(user))
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use buy-marketsigns!");
+                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use buy market signs!");
                     return;
                 }
             }
@@ -848,7 +848,7 @@ public class MarketSign
             {
                 if (!module.perms().USE_SELL.isAuthorized(user))
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use sell-marketsigns!");
+                    user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use sell market signs!");
                     return;
                 }
             }
@@ -862,13 +862,13 @@ public class MarketSign
                 {
                     if (!this.allowBuyIfEmpty())
                     {
-                        user.sendTranslated(MessageType.NEGATIVE, "This market-sign is {text:Sold Out:color=DARK_RED}!");
+                        user.sendTranslated(MessageType.NEGATIVE, "This market sign is {text:Sold Out:color=DARK_RED}!");
                         return;
                     }
                 }
                 if (!this.canAfford(user))
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "You cannot afford the price of these items!");
+                    user.sendTranslated(MessageType.NEGATIVE, "You can't afford these items!");
                     return;
                 }
                 //Account userAccount = this.economy.getUserAccount(user, true);
@@ -897,17 +897,17 @@ public class MarketSign
                     user.sendTranslated(MessageType.POSITIVE, "You bought {amount}x {input#item} for {input#price}.", this.getAmount(), Match.material().getNameFor(this.getItem()), price);
                     return;
                 }
-                user.sendTranslated(MessageType.NEGATIVE, "You do not have enough space for these items!");
+                user.sendTranslated(MessageType.NEGATIVE, "You don't have enough space in your inventory for these items!");
                 return;
             } // else Sell
             if (this.hasDemand() && this.isSatisfied())
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This market-sign is {text:satisfied:color=DARK_RED}! You can no longer sell items to it.");
+                user.sendTranslated(MessageType.NEGATIVE, "This market sign is {text:satisfied:color=DARK_RED}! You can no longer sell items to it.");
                 return;
             }
             if (this.isFull())
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This market-sign is {text:full:color=DARK_RED}! You can no longer sell items to it.");
+                user.sendTranslated(MessageType.NEGATIVE, "This market sign is {text:full:color=DARK_RED}! You can no longer sell items to it.");
                 return;
             }
             if (!this.isAdminSign() && !this.canAfford(this.getOwner()))
@@ -1182,7 +1182,7 @@ public class MarketSign
         }
         else
         {
-            this.module.getLog().warn("No sign found where a market-sign was expected! {}" , this.getLocation());
+            this.module.getLog().warn("No sign found where a market sign was expected! {}" , this.getLocation());
         }
     }
 
@@ -1454,7 +1454,7 @@ public class MarketSign
     {
         if (size == 0 || size < -1 || size > 6)
         {
-            throw new IllegalArgumentException("Invalid inventory-size!");
+            throw new IllegalArgumentException("Invalid inventory size!");
         }
         this.itemInfo.setSize(size.byteValue());
     }

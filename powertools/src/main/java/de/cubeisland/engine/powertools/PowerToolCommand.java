@@ -88,7 +88,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     }
 
     @Alias(names = "ptc")
-    @Command(desc = "Removes all command from your powertool",
+    @Command(desc = "Removes all commands from your powertool",
              flags = @Flag(longName = "all", name = "a"), usage = "[-a]")
     public void clear(ParameterizedContext context)
     {

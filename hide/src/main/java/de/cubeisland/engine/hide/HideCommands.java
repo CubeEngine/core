@@ -127,22 +127,22 @@ public class HideCommands implements CommandHolder
         {
             if (target == sender)
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are hidden right now!");
+                context.sendTranslated(MessageType.POSITIVE, "You are currently hidden!");
             }
             else
             {
-                context.sendTranslated(MessageType.POSITIVE, "{user} is hidden right now!", target.getDisplayName());
+                context.sendTranslated(MessageType.POSITIVE, "{user} is currently hidden!", target.getDisplayName());
             }
         }
         else
         {
             if (target == sender)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "You are visible right now!");
+                context.sendTranslated(MessageType.NEUTRAL, "You are currently visible!");
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "{user} is visible right now!", target.getDisplayName());
+                context.sendTranslated(MessageType.NEUTRAL, "{user} is currently visible!", target.getDisplayName());
             }
         }
         this.module.getHiddenUsers().contains(target.getName());
@@ -256,7 +256,7 @@ public class HideCommands implements CommandHolder
             User target = context.getUser(0);
             if (target == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return null;
             }
             return target;
@@ -267,7 +267,7 @@ public class HideCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "No user specified!");
+            context.sendTranslated(MessageType.NEGATIVE, "No player specified!");
             return null;
         }
     }
