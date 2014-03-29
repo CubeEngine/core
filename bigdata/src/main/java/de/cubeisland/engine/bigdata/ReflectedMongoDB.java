@@ -21,6 +21,8 @@ import de.cubeisland.engine.reflect.Reflected;
 
 public class ReflectedMongoDB extends Reflected<MongoDBCodec, RDBObject>
 {
+    // TODO set ObjectID after saving
+
     @Override
     public void save(RDBObject rdbo)
     {

@@ -36,6 +36,12 @@ public class RDBObject
         this(collection, null);
     }
 
+    public RDBObject(DBObject dbObject)
+    {
+        this.dbObject = dbObject;
+        this.collection = null;
+    }
+
     public DBCollection getCollection()
     {
         return collection;

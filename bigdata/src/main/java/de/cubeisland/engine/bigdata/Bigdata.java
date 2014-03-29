@@ -39,6 +39,9 @@ public class Bigdata extends Module
         {
             throw new IllegalArgumentException("Invalid host" + e);
         }
+        MongoDBCodec mongoDBCodec = new MongoDBCodec();
+        this.getCore().getConfigFactory().getCodecManager().registerCodec(mongoDBCodec);
+        mongoDBCodec.getConverterManager().registerConverter(Reference.class, new ReferenceConverter(this.getCore().getConfigFactory()));
     }
 
     @Override

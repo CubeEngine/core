@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.DBRefBase;
+import de.cubeisland.engine.bigdata.node.DBRefBaseNode;
+import de.cubeisland.engine.bigdata.node.ObjectIdNode;
 import de.cubeisland.engine.reflect.Reflected;
 import de.cubeisland.engine.reflect.codec.Codec;
 import de.cubeisland.engine.reflect.exception.CodecIOException;
@@ -33,6 +37,7 @@ import de.cubeisland.engine.reflect.node.ListNode;
 import de.cubeisland.engine.reflect.node.MapNode;
 import de.cubeisland.engine.reflect.node.Node;
 import de.cubeisland.engine.reflect.node.ParentNode;
+import org.bson.types.ObjectId;
 
 public class MongoDBCodec extends Codec<RDBObject, RDBObject>
 {
@@ -144,6 +149,54 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
     @Override
     protected MapNode load(RDBObject rdbo, Reflected reflected) throws ConversionException
     {
-        return (MapNode)Node.wrapIntoNode(rdbo.getDBObject().toMap());
+        return convertDBObjectToNode(rdbo.getDBObject());
+    }
+
+    private MapNode convertDBObjectToNode(DBObject dbObject)
+    {
+        MapNode mapNode = MapNode.emptyMap();
+        for (String key : dbObject.keySet())
+        {
+            Object value = dbObject.get(key);
+            Node nodeValue = this.convertDBObjectToNode((DBObject)value);
+            mapNode.setExactNode(key, nodeValue);
+        }
+        return mapNode;
+    }
+
+    private Node convertObjectToNode(Object value)
+    {
+        Node nodeValue;
+        if (value instanceof DBObject)
+        {
+            nodeValue = this.convertDBObjectToNode((DBObject)value);
+        }
+        else if (value instanceof List)
+        {
+            nodeValue = this.convertListToNode((List)value);
+        }
+        else if (value instanceof ObjectId)
+        {
+            nodeValue = ObjectIdNode.of((ObjectId)value);
+        }
+        else if (value instanceof DBRefBase)
+        {
+            nodeValue = DBRefBaseNode.of((DBRefBase)value);
+        }
+        else
+        {
+            nodeValue = Node.wrapIntoNode(value);
+        }
+        return nodeValue;
+    }
+
+    private Node convertListToNode(List list)
+    {
+        ListNode listNode = ListNode.emptyList();
+        for (Object value : list)
+        {
+            listNode.addNode(this.convertObjectToNode(value));
+        }
+        return listNode;
     }
 }
