@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-25 20:26:11+0100\n"
-"PO-Revision-Date: 2014-03-26 09:13+0000\n"
+"POT-Creation-Date: 2014-03-27 23:27:26+0100\n"
+"PO-Revision-Date: 2014-03-28 09:45+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -2216,4 +2216,10 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:116
 msgid "{input#entity} riding {input}"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:288
+msgid ""
+"Gets rid of mobs nearby you. Valid types are:\n"
+"monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc."
 msgstr ""
