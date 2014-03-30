@@ -66,7 +66,7 @@ public class PlayerItemListener extends PlayerLogListener
             if (action != null)
             {
                 this.setPlayerAndLocation((Player)event.getWhoClicked(), action);
-                action.setItem(event.getRecipe().getResult());
+                action.setItemstack(event.getRecipe().getResult());
                 this.logAction(action);
             }
         }
@@ -87,7 +87,7 @@ public class PlayerItemListener extends PlayerLogListener
             {
                 action.setLocation(event.getEnchantBlock().getLocation());
             }
-            action.setItem(event.getItem());
+            action.setItemstack(event.getItem());
             action.setEnchants(event.getEnchantsToAdd());
         }
     }

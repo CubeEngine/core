@@ -18,24 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.player.item;
 
 import org.bukkit.entity.Item;
-import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player dropping an item
  */
-public class PlayerItemDrop extends PlayerActionType<PlayerItemListener>
+public class PlayerItemDrop extends PlayerItemActionType<PlayerItemListener>
 {
     // return "item-drop";
     // return this.lm.getConfig(world).ITEM_DROP_enable;
 
-    public ItemStack item; // TODO item format
     public EntitySection entity;
 
     @Override
@@ -62,7 +59,7 @@ public class PlayerItemDrop extends PlayerActionType<PlayerItemListener>
 
     public void setItem(Item item)
     {
-        this.item = item.getItemStack();
+        this.setItemstack(item.getItemStack());
         this.entity = new EntitySection(item);
     }
 

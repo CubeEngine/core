@@ -34,7 +34,7 @@ import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionType;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ContainerType;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
 import org.jooq.Field;
 import org.jooq.Record13;
 import org.jooq.Row13;

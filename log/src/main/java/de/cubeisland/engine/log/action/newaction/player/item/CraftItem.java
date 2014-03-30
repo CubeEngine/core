@@ -17,29 +17,24 @@
  */
 package de.cubeisland.engine.log.action.newaction.player.item;
 
-import org.bukkit.inventory.ItemStack;
-
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player crafting an item
  */
-public class CraftItem extends PlayerActionType<PlayerItemListener>
+public class CraftItem extends PlayerItemActionType<PlayerItemListener>
 {
     // return "craft-item";
     // return this.lm.getConfig(world).CRAFT_ITEM_enable;
-
-    public ItemStack craftItem; // TODO item format
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof CraftItem && this.player.equals(((CraftItem)action).player)
-            && ((CraftItem)action).craftItem.isSimilar(this.craftItem);
+            && ((CraftItem)action).item.isSimilar(this.item);
     }
 
     @Override
@@ -48,14 +43,11 @@ public class CraftItem extends PlayerActionType<PlayerItemListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} crafted {name#item} x{amount}", this.player.name,
-                                       this.craftItem.getType().name(), this.getAttached().size() + 1);
+                                       this.item.getType().name(), this.getAttached().size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} crafted {name#item}", this.player.name,
-                                   this.craftItem.getType().name());
+                                   this.item.getType().name());
     }
 
-    public void setItem(ItemStack result)
-    {
-        this.craftItem = result;
-    }
+
 }

@@ -21,7 +21,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ContainerType;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 

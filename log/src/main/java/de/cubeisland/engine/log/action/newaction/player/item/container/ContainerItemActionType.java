@@ -1,0 +1,212 @@
+package de.cubeisland.engine.log.action.newaction.player.item.container;
+
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemActionType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+
+public abstract class ContainerItemActionType extends PlayerItemActionType<ContainerListener>
+{
+    public ContainerType type;
+
+    @Override
+    public boolean canAttach(ActionTypeBase action)
+    {
+        return action instanceof ContainerItemActionType && this.player.equals(((ContainerItemActionType)action).player)
+            && this.coord.equals(action.coord) && this.type.equals(((ContainerItemActionType)action).type)
+            && this.item.isSimilar(((ContainerItemActionType)action).item);
+    }
+
+    @Override
+    public String translateAction(User user)
+    {
+        int amount = this.item.getAmount();
+        if (this instanceof ItemRemove)
+        {
+            amount *= -1;
+        }
+        if (this.hasAttached())
+        {
+            for (ActionTypeBase action : this.getAttached())
+            {
+                if (action instanceof ItemInsert)
+                {
+                    amount += ((ItemInsert)action).item.getAmount();
+                }
+                else if (action instanceof ItemRemove)
+                {
+                    amount -= ((ItemRemove)action).item.getAmount();
+                }
+            }
+        }
+        if (amount > 0)
+        {
+            return user.getTranslation(POSITIVE, "{user} placed {amount} {name#item} into {name#container}{}",
+                                       this.player.name, amount, this.item.getType().name(), this.type.name);
+        }
+        if (amount < 0)
+        {
+            return user.getTranslation(POSITIVE, "{user} took {amount} {name#item} out of {name#container}{}",
+                                       this.player.name, amount, this.item.getType().name(), this.type.name);
+        }
+        return user.getTranslation(POSITIVE, "{user} did not change the amount of {name#item} in {name#container}{}",
+                                   this.player.name, this.item.getType().name(), this.type.name);
+    }
+
+    /*
+
+    @Override
+    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        Location loc = logEntry.getLocation();
+        Material material = logEntry.getContainerTypeFromBlock().getMaterial();
+        if (material.equals(Material.STORAGE_MINECART))
+        {
+            // TODO MinecartInventoryHolders  // would need UUID
+        }
+        else
+        {
+            BlockState block = loc.getBlock().getState();
+            if (block instanceof InventoryHolder && block.getType().equals(material)) // Same container
+            {
+                ItemData itemData = logEntry.getItemData();
+                InventoryHolder holder = (InventoryHolder)block;
+                HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
+                if (!couldNotRemove.isEmpty())
+                {
+                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
+                    return false;
+                }
+                return true;
+            }
+            if (force)
+            {
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE,
+                                                      "Invalid Container to rollback item-insert!");
+            }
+            return false;
+        }
+        return false;
+    }
+    // TODO remove duplicated logic from itemInsert & ItemRemove
+    @Override
+    public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        Location loc = logEntry.getLocation();
+        Material material = logEntry.getContainerTypeFromBlock().getMaterial();
+        if (material.equals(Material.STORAGE_MINECART))
+        {
+            // TODO MinecartInventoryHolders  // would need UUID
+        }
+        else
+        {
+            BlockState block = loc.getBlock().getState();
+            if (block instanceof InventoryHolder && block.getType().equals(material)) // Same container
+            {
+                ItemData itemData = logEntry.getItemData();
+                InventoryHolder holder = (InventoryHolder)block;
+                HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
+                if (!couldNotRemove.isEmpty())
+                {
+                    attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-insert!");
+                    return false;
+                }
+                return true;
+            }
+            if (force)
+            {
+                attachment.getHolder().sendTranslated(MessageType.NEGATIVE,
+                                                      "Invalid Container to rollback item-insert!");
+            }
+            return false;
+        }
+        return false;
+    }
+
+
+
+
+
+     */
+
+    /*
+    @Override
+     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+{
+    Location loc = logEntry.getLocation();
+    Material material = logEntry.getContainerTypeFromBlock().getMaterial();
+    if (material.equals(Material.STORAGE_MINECART))
+    {
+        // TODO MinecartInventoryHolders
+    }
+    else
+    {
+        BlockState block = loc.getBlock().getState();
+        if (block instanceof InventoryHolder && block.getType().equals(material)) // Same containertype
+        {
+            ItemData itemData = logEntry.getItemData();
+            InventoryHolder holder = (InventoryHolder)block;
+            itemData.amount = -itemData.amount;
+            HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().addItem(itemData.toItemStack());
+            if (!couldNotRemove.isEmpty())
+            {
+                if (force)
+                {
+                    attachment.getHolder()
+                              .sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
+                }
+                return false;
+            }
+            return true;
+        }
+        if (force)
+        {
+            attachment.getHolder()
+                      .sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
+        }
+        return false;
+    }
+    return false;
+}
+
+    @Override
+    public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
+    {
+        Location loc = logEntry.getLocation();
+        Material material = logEntry.getContainerTypeFromBlock().getMaterial();
+        if (material.equals(Material.STORAGE_MINECART))
+        {
+            // TODO MinecartInventoryHolders
+        }
+        else
+        {
+            BlockState block = loc.getBlock().getState();
+            if (block instanceof InventoryHolder && block.getType().equals(material)) // Same containertype
+            {
+                ItemData itemData = logEntry.getItemData();
+                InventoryHolder holder = (InventoryHolder)block;
+                itemData.amount = -itemData.amount;
+                HashMap<Integer, ItemStack> couldNotRemove = holder.getInventory().removeItem(itemData.toItemStack());
+                if (!couldNotRemove.isEmpty())
+                {
+                    if (force)
+                    {
+                        attachment.getHolder()
+                                  .sendTranslated(MessageType.NEGATIVE, "Could not rollback an item-remove!");
+                    }
+                    return false;
+                }
+                return true;
+            }
+            if (force)
+            {
+                attachment.getHolder()
+                          .sendTranslated(MessageType.NEGATIVE, "Invalid Container to rollback item-remove!");
+            }
+            return false;
+        }
+        return false;
+    }
+     */
+}

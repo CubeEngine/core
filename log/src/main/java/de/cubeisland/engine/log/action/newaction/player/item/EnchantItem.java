@@ -20,31 +20,26 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 import java.util.Map;
 
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player enchanting an item
  */
-public class EnchantItem extends PlayerActionType<PlayerItemListener>
+public class EnchantItem extends PlayerItemActionType<PlayerItemListener>
 {
     // return "enchant-item";
     // return this.lm.getConfig(world).ENCHANT_ITEM_enable;
-
-    public ItemStack enchantItem; // TODO item format
-
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
         // same player
         return action instanceof EnchantItem && this.player.equals(((EnchantItem)action).player)
-            && ((EnchantItem)action).enchantItem.isSimilar(this.enchantItem);
+            && ((EnchantItem)action).item.isSimilar(this.item);
     }
 
     @Override
@@ -53,17 +48,12 @@ public class EnchantItem extends PlayerActionType<PlayerItemListener>
         if (this.hasAttached())
         {
             return user.getTranslation(POSITIVE, "{user} enchanted {name#item} x{amount}", this.player.name,
-                                       this.enchantItem.getType().name(), this.getAttached().size() + 1);
+                                       this.item.getType().name(), this.getAttached().size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} enchanted {name#item}", this.player.name,
-                                   this.enchantItem.getType().name());
+                                   this.item.getType().name());
         // TODO list enchantments
         // TODO enchant block used
-    }
-
-    public void setItem(ItemStack itemToEnchant)
-    {
-        this.enchantItem = itemToEnchant;
     }
 
     public void setEnchants(Map<Enchantment, Integer> enchantsToAdd)

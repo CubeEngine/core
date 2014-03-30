@@ -31,9 +31,9 @@ import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.MoveItem;
 import de.cubeisland.engine.log.action.newaction.block.player.worldedit.WorldEditAction;
 import de.cubeisland.engine.log.action.newaction.block.BlockFall;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ContainerActionType;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ItemInsert;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ItemRemove;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerListener;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ItemInsert;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ItemRemove;
 import de.cubeisland.engine.log.action.newaction.player.item.FireworkUse;
 import de.cubeisland.engine.log.action.newaction.player.item.PotionSplash;
 import de.cubeisland.engine.log.action.newaction.block.BlockBurn;
@@ -216,7 +216,7 @@ public class ActionTypeManager
             .registerActionType(new IgniteActionType())
             .registerActionType(new RightClickActionType())
             .registerActionType(new BucketEmpty())
-            .registerActionType(new ContainerActionType())
+            .registerActionType(new ContainerListener())
             .registerActionType(new InteractEntityActionType())
             .registerActionType(new DeathListener())
             .registerActionType(new EntityListener());

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.block.player.interact.container;
+package de.cubeisland.engine.log.action.newaction.player.item.container;
 
 import org.bukkit.Material;
 import org.bukkit.block.BrewingStand;
@@ -111,27 +111,9 @@ public class ContainerType
         return name;
     }
 
-    @Override
-    public boolean equals(Object o)
+    public boolean equals(ContainerType other)
     {
-        if (this == o)
-        {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass())
-        {
-            return false;
-        }
-
-        ContainerType that = (ContainerType)o;
-
-        return !(name != null ? !name.equals(that.name) : that.name != null);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return name != null ? name.hashCode() : 0;
+        return name.equals(other.name);
     }
 
     public Material getMaterial()

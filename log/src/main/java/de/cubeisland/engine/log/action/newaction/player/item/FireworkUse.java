@@ -26,7 +26,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents a player launching a firework
  */
-public class FireworkUse extends PlayerActionType<PlayerItemListener>
+public class FireworkUse extends PlayerActionType<PlayerItemListener> // TODO item
 {
     // return "firework-use";
     // return this.lm.getConfig(world).FIREWORK_USE_enable;

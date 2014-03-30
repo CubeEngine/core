@@ -25,7 +25,7 @@ import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 /**
  * Represents a player using SplashPotions
  */
-public class PotionSplash extends PlayerActionType<PlayerItemListener>
+public class PotionSplash extends PlayerActionType<PlayerItemListener> // TODO potion item
 {
     // return "potion-splash";
     // return this.lm.getConfig(world).POTION_SPLASH_enable;

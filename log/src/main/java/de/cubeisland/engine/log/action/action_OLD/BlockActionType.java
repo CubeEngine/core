@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.logaction.block;
+package de.cubeisland.engine.log.action.action_OLD;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -24,10 +25,20 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Jukebox;
 import org.bukkit.block.NoteBlock;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Wolf;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.Bed;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.LogActionType;
@@ -36,6 +47,58 @@ import de.cubeisland.engine.log.storage.LogEntry;
 
 public abstract class BlockActionType extends LogActionType
 {
+    public String serializeData(EntityDamageEvent.DamageCause cause, Entity entity, DyeColor newColor)
+    {// TODO from simpleLogActionType
+        ObjectNode json = this.om.createObjectNode();
+        if (cause != null)
+        {
+            json.put("dmgC", cause.name());
+        }
+        if (entity instanceof Player)
+        {
+            if (cause == null)
+            {
+                return null;
+            }
+            return json.toString(); // only save cause
+        }
+        if (entity instanceof Ageable)
+        {
+            json.put("isAdult", ((Ageable)entity).isAdult() ? 1 : 0);
+        }
+        if (entity instanceof Ocelot)
+        {
+            json.put("isSit", ((Ocelot)entity).isSitting() ? 1 : 0);
+        }
+        if (entity instanceof Wolf)
+        {
+            json.put("isSit", ((Wolf)entity).isSitting() ? 1 : 0);
+            json.put("color", ((Wolf)entity).getCollarColor().name());
+        }
+        if (entity instanceof Sheep)
+        {
+            json.put("color", ((Sheep)entity).getColor().name());
+        }
+        if (entity instanceof Villager)
+        {
+            json.put("prof", ((Villager)entity).getProfession().name());
+        }
+        if (entity instanceof Tameable && ((Tameable)entity).isTamed())
+        {
+            if (((Tameable)entity).getOwner() != null)
+            {
+                json.put("owner", ((Tameable)entity).getOwner().getName());
+            }
+        }
+        if (newColor != null)
+        {
+            json.put("nColor", newColor.name());
+        }
+        json.put("UUID", entity.getUniqueId().toString()); // TODO this makes rollback for dying etc possible
+        return json.toString();
+    }
+
+
     @Override
     public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
     {

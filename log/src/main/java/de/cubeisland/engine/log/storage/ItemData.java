@@ -17,37 +17,26 @@
  */
 package de.cubeisland.engine.log.storage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 public class ItemData
 {
     public Material material;
     public short dura;
-    public int amount;
     public String displayName;
     public List<String> lore;
     public Map<Enchantment, Integer> enchantments;
 
-    public ItemData(Material material, short dura, int amount, String displayName, List<String> lore, Map<Enchantment, Integer> enchantments)
+    public ItemData(Material material, short dura, String displayName, List<String> lore, Map<Enchantment, Integer> enchantments)
     {
         this.material = material;
         this.dura = dura;
-        this.amount = amount;
         this.displayName = displayName;
         this.lore = lore;
         this.enchantments = enchantments;
@@ -57,7 +46,6 @@ public class ItemData
     {
         this.material = itemStack.getType();
         this.dura = itemStack.getDurability();
-        this.amount = itemStack.getAmount();
         if (itemStack.hasItemMeta())
         {
             ItemMeta meta = itemStack.getItemMeta();
@@ -74,45 +62,6 @@ public class ItemData
                 enchantments = meta.getEnchants();
             }
         }
-    }
-
-    public static ItemData deserialize(JsonNode json)
-    {
-        if (json == null)
-        {
-            return null;
-        }
-        Material mat = Material.getMaterial(json.get("mats").asText());
-        Short dura = (short)json.get("dura").asInt();
-        int amount = json.get("amount").asInt();
-        String name = null;
-        List<String> lore = null;
-        Map<Enchantment, Integer> enchantments = null;
-        if (json.get("name") != null)
-        {
-            name = json.get("name").asText();
-        }
-        if (json.get("lore") != null)
-        {
-            lore = new ArrayList<>();
-            ArrayNode jsonLore = (ArrayNode)json.get("lore");
-            for (JsonNode elem : jsonLore)
-            {
-                lore.add(elem.asText());
-            }
-        }
-        if (json.get("enchs") != null)
-        {
-            enchantments = new HashMap<>();
-            ObjectNode jsonEnchs = (ObjectNode)json.get("enchs");
-            Iterator<Entry<String, JsonNode>> enchs = jsonEnchs.fields();
-            while (enchs.hasNext())
-            {
-                Entry<String, JsonNode> entry = enchs.next();
-                enchantments.put(Enchantment.getById(Integer.valueOf(entry.getKey())), entry.getValue().asInt());
-            }
-        }
-        return new ItemData(mat, dura, amount, name, lore, enchantments);
     }
 
     @Override
@@ -162,39 +111,9 @@ public class ItemData
         return result;
     }
 
-    public String serialize(ObjectMapper mapper)
-    {
-        ObjectNode json = mapper.createObjectNode();
-        json.put("mats", this.material.name());
-        json.put("dura", this.dura);
-        json.put("amount", this.amount);
-        if (this.displayName != null)
-        {
-            json.put("name", this.displayName);
-        }
-        if (this.lore != null)
-        {
-            ArrayNode lore = json.putArray("lore");
-            for (String loreLine : this.lore)
-            {
-                lore.add(loreLine);
-            }
-        }
-        if (this.enchantments != null)
-        {
-            ObjectNode enchs = mapper.createObjectNode();
-            json.put("enchs", enchs);
-            for (Entry<Enchantment, Integer> ench : this.enchantments.entrySet())
-            {
-                enchs.put(String.valueOf(ench.getKey().getId()), ench.getValue());
-            }
-        }
-        return json.toString();
-    }
-
     public ItemStack toItemStack()
     {
-        ItemStack itemStack = new ItemStack(material, amount, dura);
+        ItemStack itemStack = new ItemStack(material, 1, dura);
         ItemMeta meta = itemStack.getItemMeta();
         if (displayName != null)
         {

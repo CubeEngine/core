@@ -9,7 +9,8 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ContainerType;
+import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
 
 /**
  * A Listener for Player Actions with Items
@@ -20,6 +21,11 @@ import de.cubeisland.engine.log.action.newaction.block.player.interact.container
  */
 public class MoveItemListener extends LogListener
 {
+    public MoveItemListener(Log module)
+    {
+        super(module);
+    }
+
     @EventHandler
     public void onItemMove(InventoryMoveItemEvent event)
     {
