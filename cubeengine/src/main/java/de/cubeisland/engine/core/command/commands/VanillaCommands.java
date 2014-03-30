@@ -391,7 +391,7 @@ public class VanillaCommands implements CommandHolder
             context.sendTranslated(MessageType.NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
             context.sendTranslated(MessageType.NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated(MessageType.NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion().toString());
             showSourceVersion(context, core.getSourceVersion());
         }
     }
