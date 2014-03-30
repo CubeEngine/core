@@ -18,8 +18,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:13+0100\n"
-"PO-Revision-Date: 2014-03-13 12:44+0000\n"
+"POT-Creation-Date: 2014-03-29 12:20:50+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -120,6 +120,10 @@ msgstr ""
 msgid "Location: {vector} to {vector} in {world}"
 msgstr ""
 
+#: de/cubeisland/engine/portals/PortalModifyCommand.java:55
+msgid "Player {user} not found!"
+msgstr ""
+
 #: de/cubeisland/engine/portals/PortalCommands.java:111
 #: de/cubeisland/engine/portals/PortalModifyCommand.java:175
 msgid "Please select a cuboid first!"
@@ -192,7 +196,7 @@ msgid "The portal {name} will teleport entities too"
 msgstr ""
 
 #: de/cubeisland/engine/portals/Portal.java:104
-msgid "This Portal has safe-teleport enabled"
+msgid "This Portal has safe teleport enabled"
 msgstr ""
 
 #: de/cubeisland/engine/portals/Portal.java:108
@@ -223,10 +227,6 @@ msgstr ""
 msgid "Toggled debug mode!"
 msgstr ""
 
-#: de/cubeisland/engine/portals/PortalModifyCommand.java:55
-msgid "User {user} not found!"
-msgstr ""
-
 #: de/cubeisland/engine/portals/PortalCommands.java:84
 #: de/cubeisland/engine/portals/PortalModifyCommand.java:133
 msgid "World {input} not found!"
@@ -240,9 +240,6 @@ msgstr ""
 msgid "You are now in portal debug mode!"
 msgstr ""
 
-#: de/cubeisland/engine/portals/PortalCommands.java:115
-#: de/cubeisland/engine/portals/PortalCommands.java:134
-#: de/cubeisland/engine/portals/PortalCommands.java:216
 #: de/cubeisland/engine/portals/PortalModifyCommand.java:178
 #: de/cubeisland/engine/portals/PortalModifyCommand.java:214
 msgid "You have to be ingame to do this!"
@@ -250,6 +247,12 @@ msgstr ""
 
 #: de/cubeisland/engine/portals/config/Destination.java:92
 msgid "You have to leave your current vehicle to pass a portal!"
+msgstr ""
+
+#: de/cubeisland/engine/portals/PortalCommands.java:115
+#: de/cubeisland/engine/portals/PortalCommands.java:134
+#: de/cubeisland/engine/portals/PortalCommands.java:216
+msgid "You must be ingame to do this!"
 msgstr ""
 
 #: de/cubeisland/engine/portals/PortalCommands.java:157

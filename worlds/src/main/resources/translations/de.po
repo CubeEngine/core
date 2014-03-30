@@ -19,9 +19,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:13+0100\n"
-"PO-Revision-Date: 2014-03-15 13:21+0000\n"
-"Last-Translator: jeti83 <jeti83@hotmail.de>\n"
+"POT-Creation-Date: 2014-03-29 12:20:50+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
+"Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -120,8 +120,8 @@ msgid "Unload a loaded world"
 msgstr "Schließt eine geladene Welt"
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:261
-msgid "/worlds setMainWorld <world>"
-msgstr "/worlds setMainWorld <Welt>"
+msgid "/worlds setmainworld <world>"
+msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:182
 msgid "A critical Error occured while creating the world!"
@@ -204,6 +204,11 @@ msgstr "Daten von {user} aus Datei geladen!"
 msgid "Old world moved to {name#folder}"
 msgstr "Alte Welt nach {name#folder} verschoben"
 
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:511
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:525
+msgid "Player {user} not found!"
+msgstr ""
+
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:530
 msgid "Saved {user}'s data to file!"
 msgstr "Daten von {user} in Datei gespeichert! "
@@ -261,10 +266,9 @@ msgstr "Universum {name} nicht gefunden! "
 msgid "Unloaded the world {world}!"
 msgstr "Welt {world} wird geschlossen!"
 
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:511
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:525
-msgid "User {user} not found!"
-msgstr "Benutzer {user} nicht gefunden!"
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:363
+msgid "World information for {input#world}:"
+msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:456
 msgid "World successfully moved!"
@@ -284,10 +288,6 @@ msgstr "Welt {input} nicht gefunden!"
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:239
 msgid "World {world} loaded!"
 msgstr "Welt {world} geladen!"
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:363
-msgid "WorldInformation for {input#world}:"
-msgstr "Weltinformation für {input#world}:"
 
 #: de/cubeisland/engine/worlds/Multiverse.java:284
 msgid "You are not allowed to enter the universe {name#universe}!"

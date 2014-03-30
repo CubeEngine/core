@@ -15,12 +15,13 @@
 # along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 # Translators:
 # Faithcaio <Faithcaio@cubeisland.de>, 2014
+# Faithcaio <Faithcaio@cubeisland.de>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:08+0100\n"
-"PO-Revision-Date: 2014-03-27 09:44+0000\n"
+"POT-Creation-Date: 2014-03-29 12:20:45+0100\n"
+"PO-Revision-Date: 2014-03-30 11:15+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -28,34 +29,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:169
-msgid "Your password has been reset!"
-msgstr "Mot de passe réinitialisé!"
-
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:172
-msgid "Your server has the hardcore mode enabled."
-msgstr "Le serveur en en mode extrême."
-
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:195
-msgid "The following users are operators:"
-msgstr "Les joueurs suivant sont opérateurs:"
-
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:382
-msgid "Authors:"
-msgstr "Auteurs:"
-
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:480
-msgid "The following players are whitelisted:"
-msgstr "Les joueurs suivant sont sur la liste blanche:"
-
-#: de/cubeisland/engine/core/command/ContainerCommand.java:121
-msgid "The following actions are available:"
-msgstr "Les actions suivantes sont disponibles:"
-
-#: de/cubeisland/engine/core/command/CubeCommand.java:720
-msgid "The following sub commands are available:"
-msgstr "Les sous-commandes suivantes sont disponibles:"
 
 #: de/cubeisland/engine/core/command/commands/ModuleCommands.java:168
 msgid "<file name>"
@@ -252,6 +225,10 @@ msgstr ""
 msgid "{player}"
 msgstr ""
 
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:141
+msgid "All passwords reset!"
+msgstr "Tous les mots des passe réinitialisé!"
+
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:350
 msgid "All worlds have been saved to disk!"
 msgstr ""
@@ -263,6 +240,10 @@ msgstr ""
 #: de/cubeisland/engine/core/command/CubeCommand.java:609
 msgid "An unknown error occurred while executing this command!"
 msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:382
+msgid "Authors:"
+msgstr "Auteurs:"
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:392
 msgid "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}"
@@ -281,7 +262,11 @@ msgid "Could not find the module {name#module}!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:74
-msgid "CubeEngine-Reload completed in {integer#time}ms!"
+msgid "CubeEngine Reload completed in {integer#time}ms!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:169
+msgid "Current difficulty level: {input}"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/ModuleCommands.java:225
@@ -312,6 +297,10 @@ msgstr ""
 msgid "Invalid argument for {input}: {}"
 msgstr ""
 
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:201
+msgid "Last seen: {input#date}"
+msgstr ""
+
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:297
 msgid "Matched exactly! User: {user}"
 msgstr ""
@@ -329,7 +318,7 @@ msgid "Module soft-dependencies:"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:84
-msgid "Modules-Reload completed in {integer#time}ms!"
+msgid "Modules Reload completed in {integer#time}ms!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/ModuleCommands.java:224
@@ -345,7 +334,7 @@ msgid "No match found for {input}!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:109
-msgid "No user given!"
+msgid "No player given!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:216
@@ -354,6 +343,11 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:188
 msgid "Parameters:"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:99
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:163
+msgid "Player {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/CubeCommand.java:610
@@ -385,7 +379,7 @@ msgid "Reloading the modules..."
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:111
-msgid "Reloading the whole server... (this may take some time)"
+msgid "Reloading the whole server... this may take some time."
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:333
@@ -409,10 +403,6 @@ msgstr ""
 msgid "Successfully reloaded {amount} modules!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:169
-msgid "The current difficulty level: {input}"
-msgstr ""
-
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:277
 msgid "The current log level: {input#loglevel}"
 msgstr ""
@@ -420,6 +410,22 @@ msgstr ""
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:165
 msgid "The difficulty has been successfully set!"
 msgstr ""
+
+#: de/cubeisland/engine/core/command/ContainerCommand.java:121
+msgid "The following actions are available:"
+msgstr "Les actions suivantes sont disponibles:"
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:480
+msgid "The following players are whitelisted:"
+msgstr "Les joueurs suivant sont sur la liste blanche:"
+
+#: de/cubeisland/engine/core/command/CubeCommand.java:720
+msgid "The following subcommands are available:"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:195
+msgid "The following users are operators:"
+msgstr "Les joueurs suivant sont opérateurs:"
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:151
 msgid "The given difficulty level is unknown!"
@@ -510,6 +516,14 @@ msgstr ""
 msgid "The player you tried to deop is not an operator."
 msgstr ""
 
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:159
+msgid "The player's password has been reset!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:121
+msgid "The player's password has been set!"
+msgstr ""
+
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:351
 msgid "The saving took {integer#time} milliseconds."
 msgstr ""
@@ -520,14 +534,6 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:251
 msgid "The server is now in online-mode."
-msgstr ""
-
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:159
-msgid "The user's password has been reset!"
-msgstr ""
-
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:121
-msgid "The user's password has been set!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:508
@@ -591,15 +597,16 @@ msgid ""
 "This server is running {name#server} in version {input#version:color=INDIGO}"
 msgstr ""
 
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:199
+msgid ""
+"Too many wrong passwords! \n"
+"For your security you were banned 10 seconds."
+msgstr ""
+
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:239
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:290
 msgid "User {user} has been opped by {sender}!"
 msgstr ""
-
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:99
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:163
-msgid "User {user} not found!"
-msgstr "Joueur {user} inconnu!"
 
 #: de/cubeisland/engine/core/command/commands/ModuleCommands.java:226
 msgid "Version: {input}"
@@ -622,7 +629,7 @@ msgid "You are already logged in!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:115
-msgid "You are not allowed to change the password of an other user!"
+msgid "You are not allowed to change the password of an other player!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:145
@@ -630,7 +637,7 @@ msgid "You are not allowed to clear all passwords!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:152
-msgid "You are not allowed to clear the password of other users!"
+msgid "You are not allowed to clear the password of other players!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:267
@@ -657,16 +664,16 @@ msgstr ""
 msgid "You have to specify the player to remove from the whitelist!"
 msgstr ""
 
+#: de/cubeisland/engine/core/command/result/confirm/ConfirmCommand.java:50
+msgid "You have {amount} pending confirmations"
+msgstr ""
+
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:188
 msgid "You logged in successfully!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:239
 msgid "You might use /stop for this."
-msgstr ""
-
-#: de/cubeisland/engine/core/command/result/confirm/ConfirmCommand.java:50
-msgid "You now have {amount} pending confirmations"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:280
@@ -693,9 +700,17 @@ msgstr ""
 msgid "Your confirmation timed out...."
 msgstr ""
 
+#: de/cubeisland/engine/core/command/commands/CoreCommands.java:169
+msgid "Your password has been reset!"
+msgstr "Mot de passe réinitialisé!"
+
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:125
 msgid "Your password has been set!"
 msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:172
+msgid "Your server has the hardcore mode enabled."
+msgstr "Le serveur en en mode extrême."
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:160
 msgid "{input} is not a known difficulty!"
@@ -729,6 +744,10 @@ msgstr "{text:Usage:color=GREY}: {input}"
 msgid "{text:Usage:color=INDIGO}: {input#usage}"
 msgstr "{text:Usage:color=INDIGO}: {input#usage}"
 
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:282
+msgid "{user} is no longer an operator!"
+msgstr ""
+
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:458
 msgid "{user} is not whitelisted anymore."
 msgstr "{user} n'est plus sur la liste blanche."
@@ -740,21 +759,3 @@ msgstr "{user} est maintenant un operateur!"
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:437
 msgid "{user} is now whitelisted."
 msgstr "{user} est maintenant sur la liste blanche."
-
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:141
-msgid "All passwords reset!"
-msgstr "Tous les mots des passe réinitialisé!"
-
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:201
-msgid "Last seen: {input#date}"
-msgstr ""
-
-#: de/cubeisland/engine/core/command/commands/CoreCommands.java:199
-msgid ""
-"Too many wrong passwords! \n"
-"For your security you were banned 10 seconds."
-msgstr ""
-
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:282
-msgid "{user} is no longer an operator!"
-msgstr ""
