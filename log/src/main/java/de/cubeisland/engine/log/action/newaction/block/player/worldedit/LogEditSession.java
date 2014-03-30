@@ -86,6 +86,7 @@ public class LogEditSession extends EditSession
                     action.setOldBlock(oldState);
                     action.setNewBlock(newState);
                     action.setPlayer(((BukkitPlayer)this.player).getPlayer());
+                    action.setLocation(newState.getLocation());
                     this.listener.logAction(action);
                 }
             }

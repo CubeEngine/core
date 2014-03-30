@@ -454,7 +454,7 @@ public class QueryManager
                 // TODO if toLog has reference DO NOT log in batch!!!
                 logs.offer(toLog);
             }
-            Profiler.startProfiling("logging");
+
             int logSize = logs.size();
             List<DBObject> toLog = new ArrayList<>();
             for (ActionTypeBase<?> log : logs)
@@ -465,6 +465,7 @@ public class QueryManager
                 toLog.add(dbo);
                 dbo.append("action", log.getClass().getName());
             }
+            Profiler.startProfiling("logging");
             this.collection.insert(toLog); // Batch insert
             long nanos = Profiler.endProfiling("logging");
             timeSpend += nanos;
