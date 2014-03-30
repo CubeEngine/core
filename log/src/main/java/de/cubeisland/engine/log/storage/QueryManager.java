@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -624,7 +625,37 @@ public class QueryManager
         final QueryParameter params = lookup.getQueryParameter();
         BasicDBObject query = new BasicDBObject();
 
-        ArrayList<Condition> conditions = new ArrayList<>();
+        if (params.world != null) // has world
+        {
+            query.append("coord.world-uuid", params.world.getUID().toString());
+            //conditions.add(CURRENT_TABLE.WORLD.eq(UInteger.valueOf(params.worldID)));
+            if (params.location1 != null)
+            {
+                BlockVector3 loc1 = params.location1;
+                if (params.location2 != null)// has area
+                {
+                    BlockVector3 loc2 = params.location2;
+                    boolean locX = loc1.x < loc2.x;
+                    boolean locY = loc1.y < loc2.y;
+                    boolean locZ = loc1.z < loc2.z;
+                    //  conditions.add(CURRENT_TABLE.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
+                    // conditions.add(CURRENT_TABLE.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
+                    //  conditions.add(CURRENT_TABLE.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
+                }
+                else if (params.radius == null)// has single location
+                {
+                    query.append("coord.y", loc1.y);
+                    query.append("coord.xz", Arrays.asList(loc1.x, loc1.z));
+                }
+                else // has radius
+                {
+                    // conditions.add(CURRENT_TABLE.X.between(loc1.x - params.radius, loc1.x + params.radius));
+                    // conditions.add(CURRENT_TABLE.Y.between(loc1.y - params.radius, loc1.y + params.radius));
+                    // conditions.add(CURRENT_TABLE.Z.between(loc1.z - params.radius, loc1.z + params.radius));
+                }
+            }
+        }
+
         if (!params.actions.isEmpty())
         {
             boolean include = params.includeActions();
@@ -660,36 +691,7 @@ public class QueryManager
                 //conditions.add(CURRENT_TABLE.DATE.between(new Timestamp(params.from_since), new Timestamp(params.to_before)));
             }
         }
-        if (params.worldID != null) // has world
-        {
-            //conditions.add(CURRENT_TABLE.WORLD.eq(UInteger.valueOf(params.worldID)));
-            if (params.location1 != null)
-            {
-                BlockVector3 loc1 = params.location1;
-                if (params.location2 != null)// has area
-                {
-                    BlockVector3 loc2 = params.location2;
-                    boolean locX = loc1.x < loc2.x;
-                    boolean locY = loc1.y < loc2.y;
-                    boolean locZ = loc1.z < loc2.z;
-                    //  conditions.add(CURRENT_TABLE.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
-                    // conditions.add(CURRENT_TABLE.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
-                    //  conditions.add(CURRENT_TABLE.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
-                }
-                else if (params.radius == null)// has single location
-                {
-                    //  conditions.add(CURRENT_TABLE.X.eq(loc1.x));
-                    // conditions.add(CURRENT_TABLE.Y.eq(loc1.y));
-                    //  conditions.add(CURRENT_TABLE.Z.eq(loc1.z));
-                }
-                else // has radius
-                {
-                    // conditions.add(CURRENT_TABLE.X.between(loc1.x - params.radius, loc1.x + params.radius));
-                    // conditions.add(CURRENT_TABLE.Y.between(loc1.y - params.radius, loc1.y + params.radius));
-                    // conditions.add(CURRENT_TABLE.Z.between(loc1.z - params.radius, loc1.z + params.radius));
-                }
-            }
-        }
+
         if (!params.blocks.isEmpty())
         {
             // make sure there is data for blocks first
@@ -724,7 +726,7 @@ public class QueryManager
             }
             if (blockCondition != null)
             {
-                conditions.add(blockCondition);
+                //conditions.add(blockCondition);
             }
         }
         if (!params.users.isEmpty())
