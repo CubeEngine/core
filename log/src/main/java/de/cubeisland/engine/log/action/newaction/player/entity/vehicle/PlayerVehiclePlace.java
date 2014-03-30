@@ -33,16 +33,16 @@ public class PlayerVehiclePlace extends PlayerVehicleActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerVehicleBreak && this.player
-            .equals(((PlayerVehicleBreak)action).player) && ((PlayerVehicleBreak)action).vehicleType == this.vehicleType;
+        return action instanceof PlayerVehicleBreak && this.player.equals(((PlayerVehicleBreak)action).player)
+            && ((PlayerVehicleBreak)action).vehicleType == this.vehicleType;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{user} placed a {name#vehicle}", "{user} placed {2:amount} {name#vehicle}", this.player.name, this.vehicleType
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{user} placed a {name#vehicle}",
+                                    "{user} placed {2:amount} {name#vehicle}", this.player.name,
+                                    this.vehicleType.name(), count);
     }
 }

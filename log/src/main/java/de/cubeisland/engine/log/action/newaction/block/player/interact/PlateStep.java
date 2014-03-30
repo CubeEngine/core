@@ -34,16 +34,16 @@ public class PlateStep extends PlayerBlockActionType<PlayerBlockInteractListener
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlateStep && this.player.equals(((PlayerBlockActionType)action).player) && this.coord
-            .equals(action.coord) && this.oldBlock == ((PlateStep)action).oldBlock;
+        return action instanceof PlateStep && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.coord.equals(action.coord) && this.oldBlock == ((PlateStep)action).oldBlock;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{user} stepped on a {name#block}", "{user} stepped on a {name#block} {amount} times", this.player.name, this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{user} stepped on a {name#block}",
+                                    "{user} stepped on a {name#block} {amount} times", this.player.name,
+                                    this.oldBlock.name(), count);
     }
 }

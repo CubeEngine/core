@@ -40,8 +40,7 @@ public class LeafDecay extends BlockActionType<BlockListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{name#block} decayed", "{1:amount}x {name#block} decayed", this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#block} decayed", "{1:amount}x {name#block} decayed",
+                                    this.oldBlock.name(), count);
     }
 }

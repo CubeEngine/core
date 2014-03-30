@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.ignite;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -39,17 +38,17 @@ import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 import static org.bukkit.Material.FIRE;
 
 /**
- * A Listener for PlayerHanging Actions
+ * A Listener for {@link BlockIgniteAction} Actions
  * <p>Events:
  * {@link BlockIgniteEvent}
  * {@link BlockSpreadEvent}
- * <p>Actions:
+ * <p>All Actions:
  * {@link FireballIgnite}
- * {@link FireSpread}
  * {@link LavaIgnite}
  * {@link LightningIgnite}
  * {@link LighterIgnite}
  * {@link OtherIgnite}
+ * {@link FireSpread}
  */
 public class BlockIgniteListener extends LogListener
 {
@@ -109,7 +108,10 @@ public class BlockIgniteListener extends LogListener
         case EXPLOSION:
             action = this.newAction(OtherIgnite.class, oldState.getWorld());
             break;
+        case SPREAD:
+            return;
         default:
+            this.module.getLog().warn("Unknown IgniteCause! {}", event.getCause().name());
             return;
         }
         if (action != null)
@@ -124,7 +126,7 @@ public class BlockIgniteListener extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSpread(BlockSpreadEvent event)
     {
-        if (event.getNewState().getType().equals(Material.FIRE))
+        if (event.getNewState().getType() == FIRE)
         {
             Block oldBlock = event.getBlock();
             FireSpread action = this.newAction(FireSpread.class, oldBlock.getWorld());
@@ -134,6 +136,7 @@ public class BlockIgniteListener extends LogListener
                 action.setNewBlock(event.getNewState());
                 action.setLocation(oldBlock.getLocation());
                 action.setSource(event.getSource().getLocation());
+                this.logAction(action);
             }
         }
     }

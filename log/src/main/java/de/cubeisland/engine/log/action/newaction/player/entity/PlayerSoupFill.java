@@ -33,15 +33,15 @@ public class PlayerSoupFill extends PlayerEntityActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerSoupFill && this.player
-            .equals(((PlayerSoupFill)action).player) && ((PlayerSoupFill)action).entity.type == this.entity.type;
+        return action instanceof PlayerSoupFill && this.player.equals(((PlayerSoupFill)action).player)
+            && ((PlayerSoupFill)action).entity.type == this.entity.type;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{user} made a soup using mooshrooms", "{user} made {amount} soups using mooshrooms", this.player.name, count);
+        return user.getTranslationN(POSITIVE, count, "{user} made a soup using mooshrooms",
+                                    "{user} made {amount} soups using mooshrooms", this.player.name, count);
     }
 }

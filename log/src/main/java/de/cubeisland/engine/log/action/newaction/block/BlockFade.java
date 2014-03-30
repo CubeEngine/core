@@ -40,8 +40,7 @@ public class BlockFade extends BlockActionType<BlockListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{name#block} faded away", "{1:amount}x {name#block} faded away", this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#block} faded away", "{1:amount}x {name#block} faded away",
+                                    this.oldBlock.name(), count);
     }
 }

@@ -43,9 +43,8 @@ public class PlayerJoin extends PlayerActionType<PlayerActionListener>
     {
         if (this.hasAttached())
         {
-            return user
-                .getTranslation(POSITIVE, "{user} joined the server x{amount}", this.player.name, this.getAttached()
-                                                                                                      .size() + 1);
+            return user.getTranslation(POSITIVE, "{user} joined the server x{amount}", this.player.name,
+                                       this.getAttached().size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} joined the server", this.player.name);
         // TODO ip if set

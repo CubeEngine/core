@@ -37,8 +37,8 @@ public class PlayerDeathDrop extends ActionTypeBase<DeathListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerDeathDrop && this.death != null && ((PlayerDeathDrop)action).death != null && this.death
-            .equals(((PlayerDeathDrop)action).death);
+        return action instanceof PlayerDeathDrop && this.death != null && ((PlayerDeathDrop)action).death != null
+            && this.death.equals(((PlayerDeathDrop)action).death);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class PlayerDeathDrop extends ActionTypeBase<DeathListener>
                 amount += ((PlayerItemDrop)action).item.getAmount();
             }
         }
-        return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} upon death", this.death
-            .fetch(PlayerDeath.class).killed.name, this.item.getType().name(), amount);
+        return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} upon death", this.death.fetch(
+            PlayerDeath.class).killed.name, this.item.getType().name(), amount);
     }
 }

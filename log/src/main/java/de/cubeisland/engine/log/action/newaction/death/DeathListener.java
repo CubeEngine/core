@@ -42,20 +42,6 @@ import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionT
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
 
 /**
- * Container-ActionType for kills
- * <p>Events: {@link EntityDeathEvent}</p>
- * <p>External Actions:
- * {@link PlayerDeath},
- * {@link BossDeath},
- * {@link PetDeath},
- * {@link AnimalDeath},
- * {@link NpcDeath},
- * {@link MonsterDeath},
- * {@link OtherDeath},
- */
-
-
-/**
  * A Listener for Death related Actions
  * <p>Events:
  * {@link EntityDeathEvent}

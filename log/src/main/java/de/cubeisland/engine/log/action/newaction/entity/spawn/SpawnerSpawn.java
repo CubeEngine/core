@@ -44,8 +44,7 @@ public class SpawnerSpawn extends EntityActionType<EntityListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{name#entity} spawned from a spawner", "{name#entity} spawned from a spawner {amount} times", this.entity
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#entity} spawned from a spawner",
+                                    "{name#entity} spawned from a spawner {amount} times", this.entity.name(), count);
     }
 }

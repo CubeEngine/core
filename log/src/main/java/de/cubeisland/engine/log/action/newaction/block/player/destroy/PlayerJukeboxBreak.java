@@ -23,9 +23,11 @@ import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
+/**
+ * Represents a player breaking a jukebox
+ */
 public class PlayerJukeboxBreak extends PlayerBlockBreak
 {
-
     private Material disc; // TODO item format
 
     @Override
@@ -35,9 +37,8 @@ public class PlayerJukeboxBreak extends PlayerBlockBreak
         {
             return super.translateAction(user);
         }
-        return user
-            .getTranslation(POSITIVE, "{user} broke {name#block} with {name#item}", this.player.name, this.oldBlock
-                .name(), this.disc.name());
+        return user.getTranslation(POSITIVE, "{user} broke {name#block} with {name#item}", this.player.name,
+                                   this.oldBlock.name(), this.disc.name());
     }
 
     public void setDisc(Material disc)

@@ -42,9 +42,9 @@ public class EndermanPlace extends EntityBlockActionType<EntityBlockListener>
         if (this.hasAttached())
         {
             int endermanCount = this.countUniqueEntities();
-            return user
-                .getTranslationN(POSITIVE, endermanCount, "{text:One Enderman} placed {name#block} x{amount}!", "{2:amount} {text:Enderman} placed {name#block} x{amount}!", this.oldBlock
-                    .name(), this.getAttached().size() + 1, endermanCount);
+            return user.getTranslationN(POSITIVE, endermanCount, "{text:One Enderman} placed {name#block} x{amount}!",
+                                        "{2:amount} {text:Enderman} placed {name#block} x{amount}!",
+                                        this.oldBlock.name(), this.getAttached().size() + 1, endermanCount);
         }
         return user.getTranslation(POSITIVE, "An {text:Enderman} placed {name#block}", this.oldBlock.name());
     }

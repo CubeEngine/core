@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.log.action.newaction.death;
 
-
 /**
  * Represents a NPC dying
  */

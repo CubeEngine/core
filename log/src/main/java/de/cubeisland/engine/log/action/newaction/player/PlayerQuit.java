@@ -43,9 +43,8 @@ public class PlayerQuit extends PlayerActionType<PlayerActionListener>
     {
         if (this.hasAttached())
         {
-            return user
-                .getTranslation(POSITIVE, "{user} left the server x{amount}", this.player.name, this.getAttached()
-                                                                                                    .size() + 1);
+            return user.getTranslation(POSITIVE, "{user} left the server x{amount}", this.player.name,
+                                       this.getAttached().size() + 1);
         }
         return user.getTranslation(POSITIVE, "{user} left the server", this.player.name);
         // TODO reason

@@ -19,14 +19,13 @@ package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents water breaking blocks
  */
-public class WaterBreak extends BlockActionType<FlowListener>
+public class WaterBreak extends BlockFlowAction
 {
     // return "water-break";
     // return this.lm.getConfig(world).block.breakFlow.WATER_BREAK_enable;

@@ -40,17 +40,17 @@ public class MonsterEggUse extends EntityActionType<EntityListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof MonsterEggUse && this.entity.isSameType(((MonsterEggUse)action).entity) && this.player
-            .equals(((MonsterEggUse)action).player);
+        return action instanceof MonsterEggUse && this.entity.isSameType(((MonsterEggUse)action).entity)
+            && this.player.equals(((MonsterEggUse)action).player);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{user} spawned {name#entity} using a spawnegg", "{user} spawned {name#entity} using a spawnegg {amount} times", this.entity
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{user} spawned {name#entity} using a spawnegg",
+                                    "{user} spawned {name#entity} using a spawnegg {amount} times", this.entity.name(),
+                                    count);
     }
 
     public void setPlayer(Player player)

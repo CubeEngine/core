@@ -34,16 +34,16 @@ public class ButtonUse extends PlayerBlockActionType<PlayerBlockInteractListener
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof ButtonUse && this.player
-            .equals(((PlayerBlockActionType)action).player) && this.oldBlock == ((ButtonUse)action).oldBlock;
+        return action instanceof ButtonUse && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.oldBlock == ((ButtonUse)action).oldBlock;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{user} pressed a {name#block}", "{user} pressed a {name#block} {amount} times", this.player.name, this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{user} pressed a {name#block}",
+                                    "{user} pressed a {name#block} {amount} times", this.player.name,
+                                    this.oldBlock.name(), count);
     }
 }

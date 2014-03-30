@@ -43,8 +43,8 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
     {
         if (this.hasAttached())
         {
-            if (this.getAttached().size() == 1 && this.getAttached()
-                                                      .get(0) instanceof PlayerItemDrop) // TODO other ItemDrop
+            if (this.getAttached().size() == 1 && this.getAttached().get(
+                0) instanceof PlayerItemDrop) // TODO other ItemDrop
             {
                 // Drop / Pickup Pair
                 return false;
@@ -55,8 +55,8 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
             // Drop / Pickup Pair
             return this.entity.equals(((PlayerItemDrop)action).entity);
         }
-        return action instanceof PlayerItemPickup && this.player
-            .equals(((PlayerItemPickup)action).player) && ((PlayerItemPickup)action).item.isSimilar(this.item);
+        return action instanceof PlayerItemPickup && this.player.equals(((PlayerItemPickup)action).player)
+            && ((PlayerItemPickup)action).item.isSimilar(this.item);
     }
 
     @Override
@@ -70,18 +70,18 @@ public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
             {
                 PlayerItemDrop dropAction = (PlayerItemDrop)this.getAttached().get(0);
                 // Drop / Pickup Pair
-                return user
-                    .getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} and {user} picked it up again", dropAction.player.name, this.item
-                        .getType().name(), amount, this.player.name);
+                return user.getTranslation(POSITIVE,
+                                           "{user} dropped {name#item} x{amount} and {user} picked it up again",
+                                           dropAction.player.name, this.item.getType().name(), amount,
+                                           this.player.name);
             }
             for (ActionTypeBase action : this.getAttached())
             {
                 amount += ((PlayerItemPickup)action).item.getAmount();
             }
         }
-        return user
-            .getTranslation(POSITIVE, "{user} picked up {name#item} x{amount}", this.player.name, this.item.getType()
-                                                                                                           .name(), amount);
+        return user.getTranslation(POSITIVE, "{user} picked up {name#item} x{amount}", this.player.name,
+                                   this.item.getType().name(), amount);
     }
 
     public void setItem(Item item)

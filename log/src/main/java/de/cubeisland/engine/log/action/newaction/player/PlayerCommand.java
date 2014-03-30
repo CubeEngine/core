@@ -35,8 +35,8 @@ public class PlayerCommand extends PlayerActionType<PlayerActionListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerCommand && this.player
-            .equals(((PlayerCommand)action).player) && ((PlayerCommand)action).command.equalsIgnoreCase(this.command);
+        return action instanceof PlayerCommand && this.player.equals(((PlayerCommand)action).player)
+            && ((PlayerCommand)action).command.equalsIgnoreCase(this.command);
     }
 
     @Override
@@ -44,12 +44,11 @@ public class PlayerCommand extends PlayerActionType<PlayerActionListener>
     {
         if (this.hasAttached())
         {
-            return user
-                .getTranslation(POSITIVE, "{user} used the command \"{input#command}\" x{amount}", this.player.name, this.command, this
-                    .getAttached().size() + 1);
+            return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\" x{amount}",
+                                       this.player.name, this.command, this.getAttached().size() + 1);
         }
-        return user
-            .getTranslation(POSITIVE, "{user} used the command \"{input#command}\"", this.player.name, this.command);
+        return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\"", this.player.name,
+                                   this.command);
     }
 
     public String getCommand()

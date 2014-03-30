@@ -15,14 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.block.player.place;
+package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockPlace;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player emptying a waterbucket
+ * <p>Listener:
+ * {@link PlayerBucketListener}
  */
 public class PlayerWaterBucketPlace extends PlayerBlockPlace
 {
@@ -34,9 +37,8 @@ public class PlayerWaterBucketPlace extends PlayerBlockPlace
     {
         if (this.hasAttached())
         {
-            return user
-                .getTranslation(POSITIVE, "{user} emptied {amount} water-buckets", this.player.name, this.getAttached()
-                                                                                                         .size() + 1);
+            return user.getTranslation(POSITIVE, "{user} emptied {amount} water-buckets", this.player.name,
+                                       this.countAttached());
         }
         return user.getTranslation(POSITIVE, "{user} emptied a water-bucket", this.player.name);
     }

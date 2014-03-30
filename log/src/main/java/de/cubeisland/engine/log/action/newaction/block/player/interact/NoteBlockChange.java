@@ -40,9 +40,8 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof NoteBlockChange && this.player
-            .equals(((PlayerBlockActionType)action).player) && TimeUnit.MINUTES.toMillis(2) > Math
-            .abs(this.date.getTime() - action.date.getTime());
+        return action instanceof NoteBlockChange && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.isNearTimeFrame(TimeUnit.MINUTES, 2, action);
     }
 
     @Override
@@ -56,11 +55,12 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
         newNote %= 25;
         if (this.note == newNote)
         {
-            return user
-                .getTranslation(MessageType.POSITIVE, "{user} fiddled around with the noteblock but did not change anything", this.player.name);
+            return user.getTranslation(MessageType.POSITIVE,
+                                       "{user} fiddled around with the noteblock but did not change anything",
+                                       this.player.name);
         }
-        return user
-            .getTranslation(MessageType.POSITIVE, "{user} set the noteblock to {amount} clicks", this.player.name, newNote);
+        return user.getTranslation(MessageType.POSITIVE, "{user} set the noteblock to {amount} clicks",
+                                   this.player.name, newNote);
     }
 
     @Override

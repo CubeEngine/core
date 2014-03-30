@@ -42,8 +42,7 @@ public class NaturalSpawn extends EntityActionType<EntityListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{name#entity} spawned naturally", "{name#entity} spawned naturally {amount} times", this.entity
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#entity} spawned naturally",
+                                    "{name#entity} spawned naturally {amount} times", this.entity.name(), count);
     }
 }

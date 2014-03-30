@@ -45,10 +45,10 @@ import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logF
 import static org.bukkit.Material.AIR;
 
 /**
- * A Listener for EntityBlock Actions
+ * A Listener for {@link ExplosionActionType}
  * <p>Events:
  * {@link EntityExplodeEvent}
- * <p>Actions:
+ * <p>All Actions:
  * {@link CreeperExplode}
  * {@link TntExplode}
  * {@link WitherExplode}
@@ -104,8 +104,8 @@ public class ExplodeListener extends LogListener
         else if (entity instanceof WitherSkull)
         {
             actionClazz = WitherExplode.class;
-            if (((WitherSkull)entity).getShooter() instanceof Wither && ((Wither)((WitherSkull)entity).getShooter())
-                .getTarget() instanceof Player)
+            if (((WitherSkull)entity).getShooter() instanceof Wither
+                && ((Wither)((WitherSkull)entity).getShooter()).getTarget() instanceof Player)
             {
                 player = (Player)((Wither)((WitherSkull)entity).getShooter()).getTarget();
             }
@@ -155,14 +155,13 @@ public class ExplodeListener extends LogListener
         {
             for (Block block : blocks)
             {
-                if ((block.getType().equals(Material.WOODEN_DOOR) || block.getType()
-                                                                          .equals(Material.IRON_DOOR_BLOCK)) && block
-                    .getData() >= 8)
+                if ((block.getType().equals(Material.WOODEN_DOOR) || block.getType().equals(Material.IRON_DOOR_BLOCK))
+                    && block.getData() >= 8)
                 {
                     continue; // ignore upper door halves
                 }
                 ExplosionActionType action = this.newAction(actionClazz);
-                this.setInfoAndLog(action, entity, block, player);
+                this.setAndLog(action, entity, block, player);
                 // TODO attached / falling / ignore blocks exploded
                 logAttachedBlocks(this, module.getCore().getEventManager(), block, action);
                 logFallingBlocks(this, module.getCore().getEventManager(), block, action);
@@ -170,7 +169,7 @@ public class ExplodeListener extends LogListener
         }
     }
 
-    private void setInfoAndLog(ExplosionActionType action, Entity entity, Block block, Player player)
+    private void setAndLog(ExplosionActionType action, Entity entity, Block block, Player player)
     {
         action.setLocation(block.getLocation());
         action.setOldBlock(block.getState());

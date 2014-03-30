@@ -28,23 +28,23 @@ import org.bukkit.event.block.BlockFromToEvent;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
-import de.cubeisland.engine.log.action.newaction.block.BlockForm;
 
 import static de.cubeisland.engine.core.util.BlockUtil.*;
 import static org.bukkit.Material.*;
 import static org.bukkit.block.BlockFace.DOWN;
+import static org.bukkit.block.BlockFace.UP;
 
 /**
- * A Listener for BlockFlow Actions
+ * A Listener for {@link BlockFlowAction}
  * <p>Events:
  * {@link BlockFromToEvent}
- * <p>Actions:
+ * <p>All Actions:
  * {@link LavaBreak}
  * {@link LavaFlow}
  * {@link WaterBreak}
  * {@link WaterFlow}
  * {@link WaterSourceCreation}
- * {@link BlockForm}
+ * {@link LavaWaterForm}
  */
 public class FlowListener extends LogListener
 {
@@ -58,117 +58,121 @@ public class FlowListener extends LogListener
     public void onBlockFromTo(final BlockFromToEvent event)
     {
         // TODO CE-117 Lava currently impossible to log sometimes
-        BlockState toBlock = event.getToBlock().getState();
-        BlockState fromBlock = event.getBlock().getState();
-        if (fromBlock.getType() == LAVA || fromBlock.getType() == STATIONARY_LAVA)
+        BlockState toState = event.getToBlock().getState();
+        BlockState fromState = event.getBlock().getState();
+        if (fromState.getType() == LAVA || fromState.getType() == STATIONARY_LAVA)
         {
-            if (toBlock.getType() == AIR)
-            {
-                if (fromBlock.getRawData() <= 4 && isSurroundedByWater(event.getToBlock()))
-                {
-                    this.log(BlockForm.class, toBlock, COBBLESTONE);
-                    return;
-                }
-                this.logFlow(LavaFlow.class, toBlock, LAVA, fromBlock);
-            }
-            else if (toBlock.getType() == WATER || toBlock.getType() == STATIONARY_WATER)
-            {
-                if (event.getFace() == DOWN)
-                {
-                    this.log(BlockForm.class, toBlock, STONE);
-                }
-                else
-                {
-                    this.log(BlockForm.class, toBlock, COBBLESTONE);
-                }
-            }
-            else if (isNonFluidProofBlock(toBlock.getType()))
-            {
-                if (toBlock.getType() == Material.REDSTONE_WIRE && isSurroundedByWater(event.getToBlock()))
-                {
-                    this.log(BlockForm.class, toBlock, OBSIDIAN);
-                    return;
-                }
-                if (fromBlock.getRawData() <= 4 && isSurroundedByWater(event.getToBlock()))
-                {
-                    this.log(BlockForm.class, toBlock, COBBLESTONE);
-                    return;
-                }
-                this.logFlow(LavaBreak.class, toBlock, LAVA, fromBlock);
-            }
+            handleLavaFlow(event, toState, fromState);
         }
-        else if (fromBlock.getType() == WATER || fromBlock.getType() == STATIONARY_WATER)
+        else if (fromState.getType() == WATER || fromState.getType() == STATIONARY_WATER)
         {
-            if (toBlock.getType() == AIR)
-            {
-                this.waterFlowForm(event);
-                this.waterFlowFormSource(event, toBlock);
-                this.logFlow(WaterFlow.class, toBlock, WATER, fromBlock);
-            }
-            else if (toBlock.getType() == WATER || toBlock.getType() == STATIONARY_WATER)
-            {
-                this.waterFlowFormSource(event, toBlock);
-            }
-            else if (toBlock.getType() == LAVA || toBlock.getType() == STATIONARY_LAVA && toBlock.getRawData() <= 2)
-            {
-                this.log(BlockForm.class, toBlock, COBBLESTONE);
-            }
-            else if (isNonFluidProofBlock(toBlock.getType()))
-            {
-                this.waterFlowForm(event);
-                this.waterFlowFormSource(event, toBlock);
-                this.logFlow(WaterBreak.class, toBlock, WATER, fromBlock);
-            }
+            handleWaterFlow(event, toState, fromState);
         }
     }
 
-    private void waterFlowFormSource(BlockFromToEvent event, BlockState toBlock)
+    @SuppressWarnings("deprecation")
+    private void handleWaterFlow(BlockFromToEvent event, BlockState toState, BlockState fromState)
+    {
+        Material material = toState.getType();
+        if (material == WATER || material == STATIONARY_WATER)
+        {
+            this.waterFlowFormSource(event.getToBlock());
+        }
+        else if (material == LAVA || material == STATIONARY_LAVA && toState.getRawData() < 3)
+        {
+            this.log(LavaWaterForm.class, toState, COBBLESTONE);
+        }
+        else if (material == AIR || isNonFluidProofBlock(material))
+        {
+            this.waterFlowForm(event);
+            this.waterFlowFormSource(event.getToBlock());
+            this.logFlow(material == AIR ? WaterFlow.class : WaterBreak.class, toState, WATER, fromState);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void handleLavaFlow(BlockFromToEvent event, BlockState toState, BlockState fromState)
+    {
+        Material material = toState.getType();
+        if (material == WATER || material == STATIONARY_WATER)
+        {
+            if (event.getFace() == DOWN)
+            {
+                this.log(LavaWaterForm.class, toState, STONE);
+                return;
+            }
+            this.log(LavaWaterForm.class, toState, COBBLESTONE);
+        }
+        else if (material == AIR || isNonFluidProofBlock(material))
+        {
+            if (isSurroundedByWater(event.getToBlock()))
+            {
+                if (material == REDSTONE_WIRE)
+                {
+                    this.log(LavaWaterForm.class, toState, OBSIDIAN);
+                    return;
+                }
+                if (fromState.getRawData() <= 4) // TODO this seems odd
+                {
+                    this.log(LavaWaterForm.class, toState, COBBLESTONE);
+                    return;
+                }
+            }
+            this.logFlow(material == AIR ? LavaFlow.class : LavaBreak.class, toState, LAVA, fromState);
+        }
+    }
+
+    private void waterFlowFormSource(Block toBlock)
     {
         int sources = 0;
         for (BlockFace face : DIRECTIONS)
         {
-            Block nearBlock = event.getToBlock().getRelative(face);
-            if (nearBlock.getType() == Material.STATIONARY_WATER)
+            Block nearBlock = toBlock.getRelative(face);
+            if (nearBlock.getType() == STATIONARY_WATER)
             {
                 sources++;
             }
         }
-        if (sources >= 2) // created new source block
+        if (sources >= 2)
         {
-            this.log(WaterSourceCreation.class, toBlock, STATIONARY_WATER);
-        }// else only changing water-level do not log
+            // created new source block
+            this.log(WaterSourceCreation.class, toBlock.getState(), STATIONARY_WATER);
+        }
+        // else only changing water-level do not log
     }
 
     private void waterFlowForm(BlockFromToEvent event)
     {
         for (final BlockFace face : BLOCK_FACES)
         {
-            if (face.equals(BlockFace.UP))
+            if (face == UP)
             {
                 continue;
             }
             final Block nearBlock = event.getToBlock().getRelative(face);
             if (nearBlock.getType() == LAVA && nearBlock.getState().getRawData() <= 4)
             {
-                this.log(BlockForm.class, nearBlock.getState(), COBBLESTONE);
+                this.log(LavaWaterForm.class, nearBlock.getState(), COBBLESTONE);
             }
             if (nearBlock.getType() == STATIONARY_LAVA)
             {
-                this.log(BlockForm.class, nearBlock.getState(), OBSIDIAN);
+                this.log(LavaWaterForm.class, nearBlock.getState(), OBSIDIAN);
             }
         }
     }
 
-    private void logFlow(Class<? extends BlockActionType> clazz, BlockState state, Material to, BlockState from)
+    @SuppressWarnings("deprecation")
+    private void logFlow(Class<? extends BlockFlowAction> clazz, BlockState state, Material to, BlockState from)
     {
         BlockActionType action = this.newAction(clazz, state.getWorld());
         if (action != null)
         {
-            action.setLocation(state.getLocation());
-            action.setOldBlock(state);
             BlockState newState = state.getBlock().getState();
             newState.setType(to);
             newState.setRawData((byte)(from.getRawData() + 1));
+
+            action.setLocation(state.getLocation());
+            action.setOldBlock(state);
             action.setNewBlock(newState);
             this.logAction(action);
         }

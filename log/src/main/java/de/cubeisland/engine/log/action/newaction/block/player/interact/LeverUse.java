@@ -36,8 +36,8 @@ public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof LeverUse && this.player.equals(((PlayerBlockActionType)action).player) && this.coord
-            .equals(action.coord);
+        return action instanceof LeverUse && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.coord.equals(action.coord);
     }
 
     @Override

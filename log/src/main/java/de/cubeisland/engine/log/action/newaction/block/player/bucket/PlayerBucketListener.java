@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.block.player;
+package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -26,9 +27,7 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBucketFill;
-import de.cubeisland.engine.log.action.newaction.block.player.place.PlayerLavaBucketPlace;
-import de.cubeisland.engine.log.action.newaction.block.player.place.PlayerWaterBucketPlace;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 import de.cubeisland.engine.log.action.newaction.player.MilkFill;
 
 import static org.bukkit.Material.*;
@@ -38,7 +37,7 @@ import static org.bukkit.Material.*;
  * <p>Events:
  * {@link PlayerBucketEmptyEvent}
  * {@link PlayerBucketFillEvent}
- * <p>Actions:
+ * <p>All Actions:
  * {@link PlayerWaterBucketPlace}
  * {@link PlayerLavaBucketPlace}
  * {@link PlayerBucketFill}
@@ -56,48 +55,24 @@ public class PlayerBucketListener extends LogListener
     public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event)
     {
         BlockState state = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
-        if (event.getBucket().equals(Material.WATER_BUCKET))
+        if (event.getBucket() == WATER_BUCKET)
         {
-            PlayerWaterBucketPlace action = this.newAction(PlayerWaterBucketPlace.class, event.getPlayer().getWorld());
-            if (action != null)
-            {
-                action.setPlayer(event.getPlayer());
-                action.setLocation(state.getLocation());
-                action.setOldBlock(state);
-                action.setNewBlock(WATER);
-                this.logAction(action);
-            }
+            this.setAndLog(PlayerWaterBucketPlace.class, event.getPlayer(), state, WATER);
         }
-        else if (event.getBucket().equals(Material.LAVA_BUCKET))
+        else if (event.getBucket() == LAVA_BUCKET)
         {
-            PlayerLavaBucketPlace action = this.newAction(PlayerLavaBucketPlace.class, event.getPlayer().getWorld());
-            if (action != null)
-            {
-                action.setPlayer(event.getPlayer());
-                action.setLocation(state.getLocation());
-                action.setOldBlock(state);
-                action.setNewBlock(LAVA);
-                this.logAction(action);
-            }
+            this.setAndLog(PlayerLavaBucketPlace.class, event.getPlayer(), state, LAVA);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketFill(final PlayerBucketFillEvent event)
     {
-        BlockState blockState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
-        if (blockState.getType() == Material.WATER || blockState.getType() == Material.STATIONARY_WATER || blockState
-            .getType() == Material.LAVA || blockState.getType() == Material.STATIONARY_LAVA)
+        BlockState oldState = event.getBlockClicked().getRelative(event.getBlockFace()).getState();
+        if (oldState.getType() == WATER || oldState.getType() == STATIONARY_WATER || oldState.getType() == LAVA
+            || oldState.getType() == STATIONARY_LAVA)
         {
-            PlayerBucketFill action = this.newAction(PlayerBucketFill.class, event.getPlayer().getWorld());
-            if (action != null)
-            {
-                action.setPlayer(event.getPlayer());
-                action.setLocation(blockState.getLocation());
-                action.setOldBlock(blockState);
-                action.setNewBlock(AIR);
-                this.logAction(action);
-            }
+            this.setAndLog(PlayerBucketFill.class, event.getPlayer(), oldState, AIR);
         }
         else // TODO better check
         {
@@ -106,9 +81,23 @@ public class PlayerBucketListener extends LogListener
             if (action != null)
             {
                 action.setPlayer(event.getPlayer());
-                action.setLocation(blockState.getLocation());
+                action.setLocation(oldState.getLocation());
                 this.logAction(action);
             }
+        }
+    }
+
+    private void setAndLog(Class<? extends PlayerBlockActionType> clazz, Player player, BlockState oldState,
+                           Material newMat)
+    {
+        PlayerBlockActionType action = this.newAction(clazz, player.getWorld());
+        if (action != null)
+        {
+            action.setPlayer(player);
+            action.setLocation(oldState.getLocation());
+            action.setOldBlock(oldState);
+            action.setNewBlock(newMat);
+            this.logAction(action);
         }
     }
 }

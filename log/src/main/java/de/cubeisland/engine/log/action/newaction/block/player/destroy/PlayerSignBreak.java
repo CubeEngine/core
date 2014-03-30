@@ -23,6 +23,9 @@ import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
+/**
+ * Represents a player breaking a sign
+ */
 public class PlayerSignBreak extends PlayerBlockBreak
 {
     private String[] oldLines;

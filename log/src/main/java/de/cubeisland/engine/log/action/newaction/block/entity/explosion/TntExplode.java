@@ -33,9 +33,10 @@ public class TntExplode extends ExplosionActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof TntExplode && this.oldBlock.equals(((TntExplode)action).oldBlock) && this.entity
-            .equals(((TntExplode)action).entity) && ((this.player == null && ((TntExplode)action).player == null) || (this.player != null && this.player
-            .equals(((TntExplode)action).player)));
+        return action instanceof TntExplode && this.oldBlock.equals(((TntExplode)action).oldBlock)
+            && this.entity.equals(((TntExplode)action).entity) && (
+            (this.player == null && ((TntExplode)action).player == null) || (this.player != null && this.player.equals(
+                ((TntExplode)action).player)));
     }
 
     @Override
@@ -44,12 +45,12 @@ public class TntExplode extends ExplosionActionType
         int count = this.countAttached();
         if (this.player == null)
         {
-            return user
-                .getTranslationN(POSITIVE, count, "A TNT-Explosion got rid of {name#block}", "A TNT-Explosion got rid of {1:amount}x {name#block}", this.oldBlock
-                    .name(), count);
+            return user.getTranslationN(POSITIVE, count, "A TNT-Explosion got rid of {name#block}",
+                                        "A TNT-Explosion got rid of {1:amount}x {name#block}", this.oldBlock.name(),
+                                        count);
         }
-        return user
-            .getTranslationN(POSITIVE, count, "A TNT-Explosion induced by {user} got rid of {name#block}", "A TNT-Explosion induced by {user} got rid of {2:amount}x {name#block}", this.player.name, this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "A TNT-Explosion induced by {user} got rid of {name#block}",
+                                    "A TNT-Explosion induced by {user} got rid of {2:amount}x {name#block}",
+                                    this.player.name, this.oldBlock.name(), count);
     }
 }

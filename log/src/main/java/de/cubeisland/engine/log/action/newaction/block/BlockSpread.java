@@ -40,8 +40,7 @@ public class BlockSpread extends BlockActionType<BlockListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{name#block} spreaded", "{1:amount}x {name#block} spreaded", this.newBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#block} spreaded", "{1:amount}x {name#block} spreaded",
+                                    this.newBlock.name(), count);
     }
 }

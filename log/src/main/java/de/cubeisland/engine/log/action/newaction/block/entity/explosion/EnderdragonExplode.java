@@ -33,10 +33,10 @@ public class EnderdragonExplode extends ExplosionActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EnderdragonExplode && this.oldBlock
-            .equals(((EnderdragonExplode)action).oldBlock) && this.entity
-            .equals(((EnderdragonExplode)action).entity) && ((this.player == null && ((EnderdragonExplode)action).player == null) || (this.player != null && this.player
-            .equals(((EnderdragonExplode)action).player)));
+        return action instanceof EnderdragonExplode && this.oldBlock.equals(((EnderdragonExplode)action).oldBlock)
+            && this.entity.equals(((EnderdragonExplode)action).entity) && (
+            (this.player == null && ((EnderdragonExplode)action).player == null) || (this.player != null
+                && this.player.equals(((EnderdragonExplode)action).player)));
     }
 
     @Override
@@ -45,12 +45,13 @@ public class EnderdragonExplode extends ExplosionActionType
         int count = this.countAttached();
         if (this.player == null)
         {
-            return user
-                .getTranslationN(POSITIVE, count, "An enderdragon changed the integrity of {name#block}", "An enderdragon changed the integrity of {amount}x {name#block}", this.oldBlock
-                    .name(), count);
+            return user.getTranslationN(POSITIVE, count, "An enderdragon changed the integrity of {name#block}",
+                                        "An enderdragon changed the integrity of {amount}x {name#block}",
+                                        this.oldBlock.name(), count);
         }
-        return user
-            .getTranslationN(POSITIVE, count, "An enderdragon attacking {user} changed the integrity of {name#block}", "An enderdragon attacking {user} changed the integrity of {2:amount}x {name#block}", this.player.name, this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count,
+                                    "An enderdragon attacking {user} changed the integrity of {name#block}",
+                                    "An enderdragon attacking {user} changed the integrity of {2:amount}x {name#block}",
+                                    this.player.name, this.oldBlock.name(), count);
     }
 }

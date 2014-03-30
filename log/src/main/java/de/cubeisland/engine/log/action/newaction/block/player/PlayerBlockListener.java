@@ -33,17 +33,19 @@ import org.bukkit.inventory.InventoryHolder;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
+import de.cubeisland.engine.log.action.newaction.block.BlockFall;
+import de.cubeisland.engine.log.action.newaction.block.BlockPreFallEvent;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerContainerBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerJukeboxBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerNoteBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerSignBreak;
-import de.cubeisland.engine.log.action.newaction.block.player.place.PlayerBlockPlace;
 
 import static de.cubeisland.engine.core.util.BlockUtil.BLOCK_FACES;
 import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logAttachedBlocks;
 import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logFallingBlocks;
 import static org.bukkit.Material.*;
+import static org.bukkit.block.BlockFace.DOWN;
 import static org.bukkit.block.BlockFace.UP;
 
 /**
@@ -118,13 +120,13 @@ public class PlayerBlockListener extends LogListener
         action.setNewBlock(AIR);
         this.logAction(action);
 
-        if (blockState.getType().equals(OBSIDIAN)) // portal?
+        if (blockState.getType() == OBSIDIAN) // portal?
         {
             // TODO better & complete
             Block block = blockState.getBlock();
             for (BlockFace face : BLOCK_FACES)
             {
-                if (block.getRelative(face).getType().equals(PORTAL))
+                if (block.getRelative(face).getType() == PORTAL)
                 {
                     Block portal = block.getRelative(face);
                     PlayerBlockBreak pAction = this.newAction(PlayerBlockBreak.class);
@@ -155,18 +157,11 @@ public class PlayerBlockListener extends LogListener
             action.setOldBlock(event.getBlockReplacedState());
             action.setNewBlock(blockPlaced.getState());
             this.logAction(action);
-            if (blockPlaced.getRelative(BlockFace.DOWN).getType() == AIR && (blockPlaced.getType()
-                                                                                        .hasGravity() || blockPlaced
-                .getType() == DRAGON_EGG))
+            if (this.isActive(BlockFall.class, blockPlaced.getWorld()) && blockPlaced.getRelative(DOWN).getType() == AIR && (blockPlaced.getType().hasGravity()
+                || blockPlaced.getType() == DRAGON_EGG))
             {
-                // TODO block fall
-                /*
-                BlockFall blockFall = this.manager.getActionType(BlockFall.class);
-                if (blockFall.isActive(location.getWorld()))
-                {
-                    blockFall.preplanBlockFall(location.clone(), event.getPlayer(), this); // TODO this does not seem to work (check me)
-                }
-                 */
+                this.module.getCore().getEventManager().fireEvent(new BlockPreFallEvent(blockPlaced.getLocation(),
+                                                                                        action));
             }
         }
         Block lily = blockPlaced.getRelative(UP);

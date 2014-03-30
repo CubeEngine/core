@@ -34,9 +34,10 @@ public class WitherExplode extends ExplosionActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof WitherExplode && this.oldBlock.equals(((WitherExplode)action).oldBlock) && this.entity
-            .equals(((WitherExplode)action).entity) && ((this.player == null && ((WitherExplode)action).player == null) || (this.player != null && this.player
-            .equals(((WitherExplode)action).player)));
+        return action instanceof WitherExplode && this.oldBlock.equals(((WitherExplode)action).oldBlock)
+            && this.entity.equals(((WitherExplode)action).entity) && (
+            (this.player == null && ((WitherExplode)action).player == null) || (this.player != null
+                && this.player.equals(((WitherExplode)action).player)));
     }
 
     @Override
@@ -45,12 +46,12 @@ public class WitherExplode extends ExplosionActionType
         int count = this.countAttached();
         if (this.player == null)
         {
-            return user
-                .getTranslationN(POSITIVE, count, "{name#block} got destroyed in a Wither-Explosion", "{1:amount}x {name#block} got destroyed in a Wither-Explosion", this.oldBlock
-                    .name(), count);
+            return user.getTranslationN(POSITIVE, count, "{name#block} got destroyed in a Wither-Explosion",
+                                        "{1:amount}x {name#block} got destroyed in a Wither-Explosion",
+                                        this.oldBlock.name(), count);
         }
-        return user
-            .getTranslationN(POSITIVE, count, "A Wither hunting down {user} blasted away {name#block}", "A Wither hunting down {user} blasted away {2:amount}x {name#block}", this.player.name, this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "A Wither hunting down {user} blasted away {name#block}",
+                                    "A Wither hunting down {user} blasted away {2:amount}x {name#block}",
+                                    this.player.name, this.oldBlock.name(), count);
     }
 }

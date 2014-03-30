@@ -34,16 +34,15 @@ public class EntityExplode extends EntityBlockActionType<ExplodeListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EntityExplode && this.oldBlock.equals(((EntityExplode)action).oldBlock) && this.entity
-            .equals(((EntityExplode)action).entity);
+        return action instanceof EntityExplode && this.oldBlock.equals(((EntityExplode)action).oldBlock)
+            && this.entity.equals(((EntityExplode)action).entity);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "Something blew up {name#block}", "Something blew up {1:amount}x {name#block}", this.oldBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "Something blew up {name#block}",
+                                    "Something blew up {1:amount}x {name#block}", this.oldBlock.name(), count);
     }
 }

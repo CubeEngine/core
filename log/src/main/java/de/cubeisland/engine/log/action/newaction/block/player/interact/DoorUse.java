@@ -36,8 +36,8 @@ public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof DoorUse && this.player
-            .equals(((PlayerBlockActionType)action).player) && this.oldBlock == ((DoorUse)action).oldBlock;
+        return action instanceof DoorUse && this.player.equals(((PlayerBlockActionType)action).player)
+            && this.oldBlock == ((DoorUse)action).oldBlock;
     }
 
     @Override
@@ -47,13 +47,13 @@ public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
         @SuppressWarnings("deprecation") boolean open = this.newBlock.as(Door.class).isOpen();
         if (open)
         {
-            return user
-                .getTranslation(POSITIVE, "{user} opened the {name#block}", this.player.name, this.oldBlock.name());
+            return user.getTranslation(POSITIVE, "{user} opened the {name#block}", this.player.name,
+                                       this.oldBlock.name());
         }
         else
         {
-            return user
-                .getTranslation(POSITIVE, "{user} closed the {name#block}", this.player.name, this.oldBlock.name());
+            return user.getTranslation(POSITIVE, "{user} closed the {name#block}", this.player.name,
+                                       this.oldBlock.name());
         }
     }
 }

@@ -52,33 +52,35 @@ public class PetDeath extends EntityDeathAction
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} {name#entity} owned by {user} got killed by {user}", this
-                    .countAttached(), this.killed.name(), this.owner.name, fetch.playerKiller.name);
+                return user.getTranslation(POSITIVE, "{amount} {name#entity} owned by {user} got killed by {user}",
+                                           this.countAttached(), this.killed.name(), this.owner.name,
+                                           fetch.playerKiller.name);
             }
-            return user.getTranslation(POSITIVE, "{name#entity} owned by {user} got killed by {user}", this.killed
-                .name(), this.owner.name, fetch.playerKiller.name);
+            return user.getTranslation(POSITIVE, "{name#entity} owned by {user} got killed by {user}",
+                                       this.killed.name(), this.owner.name, fetch.playerKiller.name);
         }
         if (fetch.isEntityKiller())
         {
             if (this.hasAttached())
             {
-                return user
-                    .getTranslation(POSITIVE, "{amount} {name#entity} owned by {user} could not escape {name#entity}", this
-                        .countAttached(), this.killed.name(), this.owner.name, fetch.entityKiller.name());
+                return user.getTranslation(POSITIVE,
+                                           "{amount} {name#entity} owned by {user} could not escape {name#entity}",
+                                           this.countAttached(), this.killed.name(), this.owner.name,
+                                           fetch.entityKiller.name());
             }
-            return user
-                .getTranslation(POSITIVE, "{name#entity} owned by {user} could not escape {name#entity}", this.killed
-                    .name(), this.owner.name, fetch.entityKiller.name());
+            return user.getTranslation(POSITIVE, "{name#entity} owned by {user} could not escape {name#entity}",
+                                       this.killed.name(), this.owner.name, fetch.entityKiller.name());
         }
         if (fetch.isOtherKiller())
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} {name#entity} owned by {user} died of {name#cause}", this
-                    .countAttached(), this.killed.name(), this.owner.name, fetch.otherKiller.name());
+                return user.getTranslation(POSITIVE, "{amount} {name#entity} owned by {user} died of {name#cause}",
+                                           this.countAttached(), this.killed.name(), this.owner.name,
+                                           fetch.otherKiller.name());
             }
-            return user.getTranslation(POSITIVE, "{name#entity} owned by {user} died of {name#cause}", this.killed
-                .name(), this.owner.name, fetch.otherKiller.name());
+            return user.getTranslation(POSITIVE, "{name#entity} owned by {user} died of {name#cause}",
+                                       this.killed.name(), this.owner.name, fetch.otherKiller.name());
         }
         return user.getTranslation(POSITIVE, "{name#entity} owned by {user} died", this.killed.name(), this.owner.name);
     }

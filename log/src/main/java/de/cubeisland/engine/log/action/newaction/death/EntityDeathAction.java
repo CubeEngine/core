@@ -25,7 +25,6 @@ import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionT
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
-
 /**
  * Represents an Entity dying
  * <p>Sub Actions:
@@ -43,9 +42,9 @@ public class EntityDeathAction extends DeathAction
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof EntityDeathAction && this.killed
-            .isSameType(((EntityDeathAction)action).killed) && this.killer != null && ((DeathAction)action).killer != null && this.killer
-            .fetch(KillAction.class).canAttach(((DeathAction)action).killer.fetch(KillAction.class));
+        return action instanceof EntityDeathAction && this.killed.isSameType(((EntityDeathAction)action).killed)
+            && this.killer != null && ((DeathAction)action).killer != null && this.killer.fetch(
+            KillAction.class).canAttach(((DeathAction)action).killer.fetch(KillAction.class));
     }
 
     @Override
@@ -56,32 +55,31 @@ public class EntityDeathAction extends DeathAction
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} {name#entity} got killed by {user}", this
-                    .countAttached(), this.killed.name(), fetch.playerKiller.name);
+                return user.getTranslation(POSITIVE, "{amount} {name#entity} got killed by {user}",
+                                           this.countAttached(), this.killed.name(), fetch.playerKiller.name);
             }
-            return user.getTranslation(POSITIVE, "{name#entity} got killed by {user}", this.killed
-                .name(), fetch.playerKiller.name);
+            return user.getTranslation(POSITIVE, "{name#entity} got killed by {user}", this.killed.name(),
+                                       fetch.playerKiller.name);
         }
         if (fetch.isEntityKiller())
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} {name#entity} could not escape {name#entity}", this
-                    .countAttached(), this.killed.name(), fetch.entityKiller.name());
+                return user.getTranslation(POSITIVE, "{amount} {name#entity} could not escape {name#entity}",
+                                           this.countAttached(), this.killed.name(), fetch.entityKiller.name());
             }
-            return user.getTranslation(POSITIVE, "{name#entity} could not escape {name#entity}", this.killed
-                .name(), fetch.entityKiller.name());
+            return user.getTranslation(POSITIVE, "{name#entity} could not escape {name#entity}", this.killed.name(),
+                                       fetch.entityKiller.name());
         }
         if (fetch.isOtherKiller())
         {
             if (this.hasAttached())
             {
-                return user.getTranslation(POSITIVE, "{amount} {name#entity} died of {name#cause}", this
-                    .countAttached(), this.killed.name(), fetch.otherKiller.name());
+                return user.getTranslation(POSITIVE, "{amount} {name#entity} died of {name#cause}",
+                                           this.countAttached(), this.killed.name(), fetch.otherKiller.name());
             }
-            return user
-                .getTranslation(POSITIVE, "{name#entity} died of {name#cause}", this.killed.name(), fetch.otherKiller
-                    .name());
+            return user.getTranslation(POSITIVE, "{name#entity} died of {name#cause}", this.killed.name(),
+                                       fetch.otherKiller.name());
         }
         return user.getTranslation(POSITIVE, "{name#entity} died", this.killed.name());
     }

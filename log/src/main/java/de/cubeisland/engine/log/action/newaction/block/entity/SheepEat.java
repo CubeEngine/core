@@ -42,9 +42,9 @@ public class SheepEat extends EntityBlockActionType<EntityBlockListener>
         if (this.hasAttached())
         {
             int count = this.countUniqueEntities();
-            return user
-                .getTranslationN(POSITIVE, count, "{text:One sheep} ate {text:grass} x{amount}!", "{1:amount} {text:sheep} ate {text:grass} x{amount}!", this
-                    .getAttached().size() + 1, count);
+            return user.getTranslationN(POSITIVE, count, "{text:One sheep} ate {text:grass} x{amount}!",
+                                        "{1:amount} {text:sheep} ate {text:grass} x{amount}!",
+                                        this.getAttached().size() + 1, count);
         }
         return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
     }

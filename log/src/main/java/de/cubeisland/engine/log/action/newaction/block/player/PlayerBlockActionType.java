@@ -24,6 +24,9 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 import de.cubeisland.engine.reflect.Section;
 
+/**
+ * Represents a player changing a block
+ */
 public abstract class PlayerBlockActionType<ListenerType> extends BlockActionType<ListenerType>
 {
     public PlayerSection player;

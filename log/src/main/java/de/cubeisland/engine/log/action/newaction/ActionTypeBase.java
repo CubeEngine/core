@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -90,6 +91,11 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
 
     public abstract String translateAction(User user);
 
+    public final boolean isNearTimeFrame(TimeUnit unit, int i, ActionTypeBase action)
+    {
+        return unit.toMillis(i) > Math.abs(this.date.getTime() - action.date.getTime());
+    }
+
     public static class Coordinate implements Section
     {
         public ConfigWorld world;
@@ -119,8 +125,8 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedMongoDB
 
         public boolean equals(Coordinate coordinate)
         {
-            return coordinate.worldUUID.equals(this.worldUUID) && Arrays
-                .equals(coordinate.xz, this.xz) && coordinate.y == this.y;
+            return coordinate.worldUUID.equals(this.worldUUID) && Arrays.equals(coordinate.xz, this.xz)
+                && coordinate.y == this.y;
         }
     }
 }

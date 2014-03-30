@@ -15,23 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.block.player.place;
+package de.cubeisland.engine.log.action.newaction.block.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
+import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerLavaBucketPlace;
+import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerWaterBucketPlace;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 
 import static org.bukkit.Material.AIR;
 
 /**
  * Represents a player placing a block
- * <p>Sub Actions:
+ * <p>SubActions:
  * {@link PlayerLavaBucketPlace}
  * {@link PlayerWaterBucketPlace}
- * {@link PlayerBlockBreak}
  * <p>External Actions:
  * {@link PlayerBlockBreak} for waterlily
  */
@@ -43,8 +42,9 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerBlockPlace && this.player
-            .equals(((PlayerBlockPlace)action).player) && ((PlayerBlockPlace)action).oldBlock == this.oldBlock && ((PlayerBlockPlace)action).newBlock == this.newBlock;
+        return action instanceof PlayerBlockPlace && this.player.equals(((PlayerBlockPlace)action).player)
+            && ((PlayerBlockPlace)action).oldBlock == this.oldBlock
+            && ((PlayerBlockPlace)action).newBlock == this.newBlock;
     }
 
     @Override
@@ -55,23 +55,20 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
             int amount = this.getAttached().size() + 1;
             if (this.oldBlock.is(AIR))
             {
-                return user
-                    .getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}{}", this.player.name, amount, this.newBlock
-                        .name());
+                return user.getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}{}",
+                                           this.player.name, amount, this.newBlock.name());
             }
-            return user
-                .getTranslation(MessageType.POSITIVE, "{user} replaced {amount}x {name#block} with {name#block}{}", this.player.name, amount, this.oldBlock
-                    .name(), this.newBlock.name());
+            return user.getTranslation(MessageType.POSITIVE,
+                                       "{user} replaced {amount}x {name#block} with {name#block}{}", this.player.name,
+                                       amount, this.oldBlock.name(), this.newBlock.name());
         }
         // else single
         if (this.oldBlock.is(AIR))
         {
-            return user
-                .getTranslation(MessageType.POSITIVE, "{user} placed {name#block}{}", this.player.name, this.newBlock
-                    .name());
+            return user.getTranslation(MessageType.POSITIVE, "{user} placed {name#block}{}", this.player.name,
+                                       this.newBlock.name());
         }
-        return user
-            .getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}{}", this.player.name, this.oldBlock
-                .name(), this.newBlock.name());
+        return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}{}",
+                                   this.player.name, this.oldBlock.name(), this.newBlock.name());
     }
 }

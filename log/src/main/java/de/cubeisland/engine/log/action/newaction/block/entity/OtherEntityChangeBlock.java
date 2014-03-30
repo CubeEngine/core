@@ -36,7 +36,7 @@ public class OtherEntityChangeBlock extends EntityBlockActionType<EntityBlockLis
     @Override
     public String translateAction(User user)
     {
-        return user.getTranslation(POSITIVE, "{name#entity} changed {name#block} to {name#block}", this.entity
-            .name(), this.oldBlock.name(), this.newBlock.name());
+        return user.getTranslation(POSITIVE, "{name#entity} changed {name#block} to {name#block}", this.entity.name(),
+                                   this.oldBlock.name(), this.newBlock.name());
     }
 }

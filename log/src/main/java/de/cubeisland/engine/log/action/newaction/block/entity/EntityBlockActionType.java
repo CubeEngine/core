@@ -26,7 +26,19 @@ import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplosionActionType;
 
+/**
+ * Represents an Entity changing a block
+ * <p>SubActions:
+ * {@link ExplosionActionType}
+ * {@link SheepEat}
+ * {@link EndermanPickup}
+ * {@link EndermanPlace}
+ * {@link OtherEntityChangeBlock}
+ * {@link EntityBreakBlock} // TODO other events?
+ * {@link EntityForm}
+ */
 public abstract class EntityBlockActionType<ListenerType> extends BlockActionType<ListenerType>
 {
     public EntitySection entity;

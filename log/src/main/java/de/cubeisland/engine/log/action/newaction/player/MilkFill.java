@@ -19,7 +19,7 @@ package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBucketListener;
+import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerBucketListener;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -41,7 +41,7 @@ public class MilkFill extends PlayerActionType<PlayerBucketListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{user} milked a cow", "{user} milked {amount} cows", this.player.name, count);
+        return user.getTranslationN(POSITIVE, count, "{user} milked a cow", "{user} milked {amount} cows",
+                                    this.player.name, count);
     }
 }

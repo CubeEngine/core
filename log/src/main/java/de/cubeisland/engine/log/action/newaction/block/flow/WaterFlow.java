@@ -19,14 +19,13 @@ package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents water flowing
  */
-public class WaterFlow extends BlockActionType<FlowListener>
+public class WaterFlow extends BlockFlowAction
 {
     // return "water-flow";
     // return this.lm.getConfig(world).block.flow.WATER_FLOW_enable;
@@ -41,7 +40,7 @@ public class WaterFlow extends BlockActionType<FlowListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "Water flooded this block", "Water flooded this block {amount} times", count);
+        return user.getTranslationN(POSITIVE, count, "Water flooded this block",
+                                    "Water flooded this block {amount} times", count);
     }
 }

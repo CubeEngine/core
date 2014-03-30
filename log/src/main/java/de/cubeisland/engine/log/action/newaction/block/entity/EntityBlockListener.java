@@ -19,7 +19,7 @@ package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Enderman;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -30,14 +30,15 @@ import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 import static org.bukkit.Material.AIR;
+import static org.bukkit.entity.EntityType.SHEEP;
 
 /**
- * A Listener for EntityBlock Actions
+ * A Listener for {@link EntityBlockActionType}
  * <p>Events:
  * {@link EntityChangeBlockEvent}
  * {@link EntityBreakDoorEvent}
  * {@link EntityBlockFormEvent}
- * <p>Actions:
+ * <p>All Actions:
  * {@link SheepEat}
  * {@link EndermanPickup}
  * {@link EndermanPlace}
@@ -56,13 +57,13 @@ public class EntityBlockListener extends LogListener
     public void onEntityChangeBlock(final EntityChangeBlockEvent event)
     {
         EntityBlockActionType action;
-        if (event.getEntityType().equals(EntityType.SHEEP))
+        if (event.getEntityType() == SHEEP)
         {
             action = this.newAction(SheepEat.class, event.getBlock().getWorld());
         }
         else if (event.getEntity() instanceof Enderman)
         {
-            if (event.getTo().equals(AIR))
+            if (event.getTo() == AIR)
             {
                 action = this.newAction(EndermanPickup.class, event.getBlock().getWorld());
             }
@@ -77,11 +78,8 @@ public class EntityBlockListener extends LogListener
         }
         if (action != null)
         {
-            action.setLocation(event.getBlock().getLocation());
-            action.setEntity(event.getEntity());
-            action.setOldBlock(event.getBlock().getState());
             action.setNewBlock(event.getTo());
-            this.logAction(action);
+            this.setAndLog(action, event.getBlock().getState(), event.getEntity());
         }
     }
 
@@ -91,12 +89,8 @@ public class EntityBlockListener extends LogListener
         EntityBlockActionType action = this.newAction(EntityBreakBlock.class, event.getBlock().getWorld());
         if (action != null)
         {
-            action.setEntity(event.getEntity());
-            BlockState state = adjustBlockForDoubleBlocks(event.getBlock().getState());
-            action.setLocation(state.getLocation());
-            action.setOldBlock(state);
             action.setNewBlock(event.getTo());
-            this.logAction(action);
+            this.setAndLog(action, adjustBlockForDoubleBlocks(event.getBlock().getState()), event.getEntity());
         }
     }
 
@@ -106,11 +100,16 @@ public class EntityBlockListener extends LogListener
         EntityBlockActionType action = this.newAction(EntityForm.class, event.getBlock().getWorld());
         if (action != null)
         {
-            action.setLocation(event.getBlock().getLocation());
-            action.setEntity(event.getEntity());
-            action.setOldBlock(event.getBlock().getState());
             action.setNewBlock(event.getNewState());
-            this.logAction(action);
+            this.setAndLog(action, event.getBlock().getState(), event.getEntity());
         }
+    }
+
+    private void setAndLog(EntityBlockActionType action, BlockState state, Entity entity)
+    {
+        action.setLocation(state.getLocation());
+        action.setEntity(entity);
+        action.setOldBlock(state);
+        this.logAction(action);
     }
 }

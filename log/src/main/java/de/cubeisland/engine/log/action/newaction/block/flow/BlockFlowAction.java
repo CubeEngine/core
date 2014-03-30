@@ -15,29 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
+package de.cubeisland.engine.log.action.newaction.block.flow;
 
-import org.bukkit.entity.Player;
-
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 
 /**
- * Represents an Entity exploding
+ * Represents a fluid flowing
  * <p>SubActions:
- * {@link CreeperExplode}
- * {@link TntExplode}
- * {@link WitherExplode}
- * {@link FireballExplode}
- * {@link EnderdragonExplode}
- * {@link EntityExplode}
+ * {@link LavaBreak}
+ * {@link LavaFlow}
+ * {@link WaterBreak}
+ * {@link WaterFlow}
+ * {@link WaterSourceCreation}
  */
-public abstract class ExplosionActionType extends EntityBlockActionType<ExplodeListener>
+public abstract class BlockFlowAction extends BlockActionType<FlowListener>
 {
-    public PlayerSection player;
-
-    public void setPlayer(Player player)
-    {
-        this.player = new PlayerSection(player);
-    }
 }

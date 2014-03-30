@@ -43,8 +43,8 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerBlockBreak && this.player
-            .equals(((PlayerBlockBreak)action).player) && ((PlayerBlockBreak)action).oldBlock == this.oldBlock;
+        return action instanceof PlayerBlockBreak && this.player.equals(((PlayerBlockBreak)action).player)
+            && ((PlayerBlockBreak)action).oldBlock == this.oldBlock;
     }
 
     @Override
@@ -52,8 +52,8 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
     {
         if (this.hasAttached())
         {
-            return user.getTranslation(POSITIVE, "{user} broke {name#block} x{amount}", this.player.name, this.oldBlock
-                .name(), this.getAttached().size() + 1);
+            return user.getTranslation(POSITIVE, "{user} broke {name#block} x{amount}", this.player.name,
+                                       this.oldBlock.name(), this.countAttached());
         }
         return user.getTranslation(POSITIVE, "{user} broke {name#block}", this.player.name, this.oldBlock.name());
     }

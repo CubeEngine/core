@@ -19,14 +19,13 @@ package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents lava flowing
  */
-public class LavaFlow extends BlockActionType<FlowListener>
+public class LavaFlow extends BlockFlowAction
 {
     // return "lava-flow";
     // return this.lm.getConfig(world).block.flow.LAVA_FLOW_enable;
@@ -41,7 +40,7 @@ public class LavaFlow extends BlockActionType<FlowListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "Lava occupied this block", "Lava occupied this block {amount} times", count);
+        return user.getTranslationN(POSITIVE, count, "Lava occupied this block",
+                                    "Lava occupied this block {amount} times", count);
     }
 }

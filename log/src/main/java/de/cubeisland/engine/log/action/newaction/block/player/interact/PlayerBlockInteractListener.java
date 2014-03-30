@@ -93,8 +93,8 @@ public class PlayerBlockInteractListener extends LogListener
             FireworkUse fireworkUse = this.manager.getActionType(FireworkUse.class);
             if (fireworkUse.isActive(state.getWorld()))
             { //TODO perhaps serialize itemdata?
-                fireworkUse.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(), event
-                    .getPlayer(), null, null, null, null, null);
+                fireworkUse.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),
+                                     event.getPlayer(), null, null, null, null, null);
             }
         }
 
@@ -136,8 +136,8 @@ public class PlayerBlockInteractListener extends LogListener
                 action = this.newAction(ComparatorChange.class, state.getWorld());
                 if (action != null)
                 {
-                    newState.setType(state
-                                         .getType() == REDSTONE_COMPARATOR_ON ? REDSTONE_COMPARATOR_OFF : REDSTONE_COMPARATOR_ON);
+                    newState.setType(
+                        state.getType() == REDSTONE_COMPARATOR_ON ? REDSTONE_COMPARATOR_OFF : REDSTONE_COMPARATOR_ON);
                 }
             }
             else if (state.getData() instanceof Button)
@@ -152,22 +152,21 @@ public class PlayerBlockInteractListener extends LogListener
             }
             else if (state.getData() instanceof Rails)
             {
-                if (itemInHand.getType() == Material.MINECART || itemInHand
-                    .getType() == Material.STORAGE_MINECART || itemInHand
-                    .getType() == Material.POWERED_MINECART || itemInHand
-                    .getType() == Material.HOPPER_MINECART || itemInHand
-                    .getType() == Material.EXPLOSIVE_MINECART) // BOAT is done down below
+                if (itemInHand.getType() == Material.MINECART || itemInHand.getType() == Material.STORAGE_MINECART
+                    || itemInHand.getType() == Material.POWERED_MINECART
+                    || itemInHand.getType() == Material.HOPPER_MINECART
+                    || itemInHand.getType() == Material.EXPLOSIVE_MINECART) // BOAT is done down below
                 {
-                    VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(UP)
-                                                                                .getLocation(), event.getPlayer());
+                    VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(
+                        UP).getLocation(), event.getPlayer());
                     this.module.getCore().getEventManager().fireEvent(vEvent);
                 }
                 action = null;
             }
             else if (itemInHand.getType().equals(Material.BOAT))
             {
-                VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(UP)
-                                                                            .getLocation(), event.getPlayer());
+                VehiclePrePlaceEvent vEvent = new VehiclePrePlaceEvent(event.getClickedBlock().getRelative(
+                    UP).getLocation(), event.getPlayer());
                 this.module.getCore().getEventManager().fireEvent(vEvent);
                 action = null;
             }

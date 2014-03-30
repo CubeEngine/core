@@ -42,8 +42,7 @@ public class OtherSpawn extends EntityActionType<EntityListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{name#entity} spawned", "{name#entity} spawned {amount} times", this.entity
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#entity} spawned", "{name#entity} spawned {amount} times",
+                                    this.entity.name(), count);
     }
 }

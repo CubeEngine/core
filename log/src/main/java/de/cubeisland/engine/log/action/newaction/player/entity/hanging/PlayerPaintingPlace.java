@@ -35,8 +35,8 @@ public class PlayerPaintingPlace extends PlayerHangingPlace
     {
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{text:A painting} got hung up by {user}", // TODO art singular
-                                    "{2:amount} {text:paintings} got hung up by {user}", this.hangingType
-                .name(), this.player.name, count
+                                    "{2:amount} {text:paintings} got hung up by {user}", this.hangingType.name(),
+                                    this.player.name, count
                                    );
     }
 }

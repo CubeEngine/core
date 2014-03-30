@@ -37,17 +37,18 @@ public class PlayerEntityDye extends PlayerEntityActionType
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof PlayerEntityDye && this.player
-            .equals(((PlayerEntityDye)action).player) && ((PlayerEntityDye)action).entity.type == this.entity.type && ((PlayerEntityDye)action).color == this.color;
+        return action instanceof PlayerEntityDye && this.player.equals(((PlayerEntityDye)action).player)
+            && ((PlayerEntityDye)action).entity.type == this.entity.type
+            && ((PlayerEntityDye)action).color == this.color;
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{user} dyed a {name#entity} in {input#color}", "{user} dyed {3:amount} {name#entity} in {input#color}", this.player.name, this.entity
-                .name(), this.color.name(), count);
+        return user.getTranslationN(POSITIVE, count, "{user} dyed a {name#entity} in {input#color}",
+                                    "{user} dyed {3:amount} {name#entity} in {input#color}", this.player.name,
+                                    this.entity.name(), this.color.name(), count);
     }
 
     public void setColor(DyeColor color)

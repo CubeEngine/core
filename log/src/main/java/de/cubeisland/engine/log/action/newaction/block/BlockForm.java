@@ -40,8 +40,7 @@ public class BlockForm extends BlockActionType<BlockListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{name#block} formed naturally", "{1:amount}x {name#block} formed naturally", this.newBlock
-                .name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#block} formed naturally",
+                                    "{1:amount}x {name#block} formed naturally", this.newBlock.name(), count);
     }
 }

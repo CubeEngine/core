@@ -32,14 +32,12 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
     //return "crop-trample";
     // return this.lm.getConfig(world).block.CROP_TRAMPLE_enable;
 
-
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
-        return action instanceof CropTrample && !this.hasAttached() && this.player
-            .equals(((PlayerBlockActionType)action).player) && 50 > Math
-            .abs(this.date.getTime() - action.date.getTime()) && this.coord.worldUUID
-            .equals(action.coord.worldUUID) && Math.abs(this.coord.y - action.coord.y) == 1;
+        return action instanceof CropTrample && !this.hasAttached() && this.player.equals(
+            ((PlayerBlockActionType)action).player) && 50 > Math.abs(this.date.getTime() - action.date.getTime())
+            && this.coord.worldUUID.equals(action.coord.worldUUID) && Math.abs(this.coord.y - action.coord.y) == 1;
         // TODO xz check just to make sure?
     }
 
@@ -55,7 +53,7 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
                 action = (CropTrample)this.getAttached().get(0);
             }
         }
-        return user
-            .getTranslation(POSITIVE, "{user} trampeled down {name#block}", action.player.name, action.oldBlock.name());
+        return user.getTranslation(POSITIVE, "{user} trampeled down {name#block}", action.player.name,
+                                   action.oldBlock.name());
     }
 }

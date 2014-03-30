@@ -42,7 +42,7 @@ public class PlayerPaintingBreak extends PlayerHangingBreak
     {
         // TODO indirect
         int count = this.countAttached();
-        return user
-            .getTranslationN(POSITIVE, count, "{text:One painting} got removed by {user}", "{1:amount} {text:painting} got removed by {user}", this.player.name, count);
+        return user.getTranslationN(POSITIVE, count, "{text:One painting} got removed by {user}",
+                                    "{1:amount} {text:painting} got removed by {user}", this.player.name, count);
     }
 }
