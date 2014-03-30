@@ -28,12 +28,12 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.action.newaction.MoveItem;
 import de.cubeisland.engine.log.action.newaction.block.player.worldedit.WorldEditAction;
 import de.cubeisland.engine.log.action.newaction.block.BlockFall;
-import de.cubeisland.engine.log.action.logaction.container.ContainerActionType;
-import de.cubeisland.engine.log.action.logaction.container.ItemInsert;
-import de.cubeisland.engine.log.action.logaction.container.ItemRemove;
-import de.cubeisland.engine.log.action.logaction.container.ItemTransfer;
+import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ContainerActionType;
+import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ItemInsert;
+import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ItemRemove;
 import de.cubeisland.engine.log.action.newaction.player.item.FireworkUse;
 import de.cubeisland.engine.log.action.newaction.player.item.PotionSplash;
 import de.cubeisland.engine.log.action.newaction.block.BlockBurn;
@@ -201,7 +201,7 @@ public class ActionTypeManager
             .registerActionType(new EntityDye())
             .registerActionType(new ItemInsert())
             .registerActionType(new ItemRemove())
-            .registerActionType(new ItemTransfer())
+            .registerActionType(new MoveItem())
             .registerActionType(new PlayerCommand())
             .registerActionType(new PlayerChat())
             .registerActionType(new PlayerJoin())

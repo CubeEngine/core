@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.logaction.container;
+package de.cubeisland.engine.log.action.newaction.block.player.interact.container;
 
 import java.util.Map.Entry;
 
@@ -32,7 +32,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.FurnaceInventory;
@@ -59,7 +58,7 @@ import static de.cubeisland.engine.core.util.InventoryUtil.getMissingSpace;
  * <p>External Actions:
  * {@link ItemInsert},
  * {@link ItemRemove},
- * {@link ItemTransfer}
+ * {@link de.cubeisland.engine.log.action.newaction.MoveItem}
  */
 public class ContainerActionType extends ActionTypeContainer
 {
@@ -469,39 +468,6 @@ public class ContainerActionType extends ActionTypeContainer
     }
     //TODO getter in logentry block is InventoryType
 
-    @EventHandler
-    public void onItemMove(InventoryMoveItemEvent event)
-    {
-        Inventory source = event.getSource();
-        Inventory target = event.getDestination();
-        if (target == null || source == null)
-        {
-            this.module.getLog().debug("InventoryMoveItem has null {} -> {}", source, target);
-            // TODO remove if fixed
-            return;
-        }
-        Location sourceLocation = this.getLocationForHolder(source.getHolder());
-        if (sourceLocation == null)
-        {
-            return;
-        }
-        Location targetLocation = this.getLocationForHolder(target.getHolder());
-        if (targetLocation == null)
-        {
-            return;
-        }
-        ItemTransfer itemTransfer = this.manager.getActionType(ItemTransfer.class);
-        if (itemTransfer.isActive(targetLocation.getWorld()))
-        {
-            if (this.lm.getConfig(targetLocation.getWorld()).container.ITEM_TRANSFER_ignore
-                .contains(event.getItem().getType()))
-            {
-                return;
-            }
-            String additional = new ItemData(event.getItem()).serialize(this.om);
-            itemTransfer.logSimple(sourceLocation, null, new ContainerType(source.getHolder()), additional);
-        }
-    }
 
     @Override
     protected void showLogEntry(User user, LogEntry logEntry, String time, String loc)

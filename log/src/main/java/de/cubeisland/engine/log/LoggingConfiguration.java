@@ -30,7 +30,7 @@ import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.reflect.annotations.Name;
-import de.cubeisland.engine.log.action.logaction.container.ContainerType;
+import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ContainerType;
 
 @SuppressWarnings("all")
 public class LoggingConfiguration extends ReflectedYaml

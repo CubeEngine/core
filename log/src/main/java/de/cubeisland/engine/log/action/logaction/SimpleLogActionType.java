@@ -32,7 +32,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.LogActionType;
-import de.cubeisland.engine.log.action.logaction.container.ContainerType;
+import de.cubeisland.engine.log.action.newaction.block.player.interact.container.ContainerType;
 
 public abstract class SimpleLogActionType extends LogActionType
 {

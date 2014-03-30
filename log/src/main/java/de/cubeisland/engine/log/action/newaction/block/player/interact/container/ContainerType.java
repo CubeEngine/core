@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.logaction.container;
+package de.cubeisland.engine.log.action.newaction.block.player.interact.container;
 
 import org.bukkit.Material;
 import org.bukkit.block.BrewingStand;
@@ -25,10 +25,13 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Dropper;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Hopper;
+import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.InventoryHolder;
 
 import de.cubeisland.engine.core.util.matcher.Match;
+
+import static org.bukkit.Material.*;
 
 public class ContainerType
 {
@@ -43,51 +46,54 @@ public class ContainerType
     {
         if (holder instanceof StorageMinecart)
         {
-            this.name = Material.STORAGE_MINECART.name();
+            this.name = STORAGE_MINECART.name();
+        }
+        else if (holder instanceof HopperMinecart)
+        {
+            this.name = Material.HOPPER_MINECART.name();
         }
         else if (holder instanceof DoubleChest)
         {
-            this.name = Material.CHEST.name();
+            this.name = CHEST.name();
         }
         else if (holder instanceof Chest)
         {
-            this.name = Material.CHEST.name();
+            this.name = CHEST.name();
         }
         else if (holder instanceof Furnace)
         {
-            this.name = Material.FURNACE.name();
+            this.name = FURNACE.name();
         }
         else if (holder instanceof Dispenser)
         {
-            this.name = Material.DISPENSER.name();
+            this.name = DISPENSER.name();
         }
         else if (holder instanceof BrewingStand)
         {
-            this.name = Material.BREWING_STAND.name();
+            this.name = BREWING_STAND.name();
         }
         else if (holder instanceof Dropper)
         {
-            this.name = Material.DROPPER.name();
+            this.name = DROPPER.name();
         }
         else if (holder instanceof Hopper)
         {
-            this.name = Material.HOPPER.name();
+            this.name = HOPPER.name();
         }
         else
         {
-            this.name = null;
+            this.name = holder.getClass().getSimpleName();
         }
     }
 
     public static ContainerType ofName(String name)
     {
-        String match = Match.string()
-                            .matchString(name, Material.STORAGE_MINECART.name(), Material.CHEST.name(), Material.FURNACE
-                                .name(), Material.DISPENSER.name(), Material.DROPPER.name(), Material.HOPPER
-                                             .name(), Material.BREWING_STAND.name());// TODO HopperMinecart??
+        String match = Match.string().matchString(name, STORAGE_MINECART.name(), HOPPER_MINECART.name(), CHEST.name(),
+                                                  FURNACE.name(), DISPENSER.name(), DROPPER.name(), HOPPER.name(),
+                                                  BREWING_STAND.name());
         if (match == null)
         {
-            return null;
+            return new ContainerType(name);
         }
         return new ContainerType(match);
     }
