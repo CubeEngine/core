@@ -31,7 +31,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents a player enchanting an item
  */
-public class EnchantItem extends PlayerActionType<PlayerItemActionListener>
+public class EnchantItem extends PlayerActionType<PlayerItemListener>
 {
     // return "enchant-item";
     // return this.lm.getConfig(world).ENCHANT_ITEM_enable;

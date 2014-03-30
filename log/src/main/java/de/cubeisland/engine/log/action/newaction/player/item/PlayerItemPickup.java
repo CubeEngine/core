@@ -30,7 +30,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents a player picking up an item
  */
-public class PlayerItemPickup extends PlayerActionType<PlayerItemActionListener>
+public class PlayerItemPickup extends PlayerActionType<PlayerItemListener>
 {
     // return "item-pickup";
     // return this.lm.getConfig(world).ITEM_PICKUP_enable;

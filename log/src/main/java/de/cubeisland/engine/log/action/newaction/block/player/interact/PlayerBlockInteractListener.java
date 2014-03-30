@@ -42,7 +42,6 @@ import org.bukkit.material.PressurePlate;
 import org.bukkit.material.Rails;
 
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.logaction.interact.FireworkUse;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.VehiclePrePlaceEvent;
@@ -84,20 +83,7 @@ public class PlayerBlockInteractListener extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event)
     {
-        // TODO other event ...
         //TODO put item into itemframe
-
-        if (itemInHand.getType() == FIREWORK)
-        {
-            //System.out.print(itemInHand);//TODO remove
-            FireworkUse fireworkUse = this.manager.getActionType(FireworkUse.class);
-            if (fireworkUse.isActive(state.getWorld()))
-            { //TODO perhaps serialize itemdata?
-                fireworkUse.queueLog(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation(),
-                                     event.getPlayer(), null, null, null, null, null);
-            }
-        }
-
         if (event.getAction() == RIGHT_CLICK_BLOCK)
         {
             ItemStack itemInHand = event.getPlayer().getItemInHand();

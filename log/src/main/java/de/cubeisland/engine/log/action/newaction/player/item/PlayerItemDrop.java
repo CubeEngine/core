@@ -30,7 +30,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents a player dropping an item
  */
-public class PlayerItemDrop extends PlayerActionType<PlayerItemActionListener>
+public class PlayerItemDrop extends PlayerActionType<PlayerItemListener>
 {
     // return "item-drop";
     // return this.lm.getConfig(world).ITEM_DROP_enable;

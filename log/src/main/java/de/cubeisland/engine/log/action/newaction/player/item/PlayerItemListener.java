@@ -21,12 +21,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
+
+import static org.bukkit.Material.FIREWORK;
+import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 
 /**
  * A Listener for Player Actions with Items
@@ -41,9 +46,9 @@ import de.cubeisland.engine.log.action.newaction.player.PlayerLogListener;
  * {@link PlayerItemDrop}
  * {@link PlayerItemPickup}
  */
-public class PlayerItemActionListener extends PlayerLogListener
+public class PlayerItemListener extends PlayerLogListener
 {
-    public PlayerItemActionListener(Log module)
+    public PlayerItemListener(Log module)
     {
         super(module);
     }
@@ -108,6 +113,36 @@ public class PlayerItemActionListener extends PlayerLogListener
             this.setPlayerAndLocation(event.getPlayer(), action);
             action.setItem(event.getItem());
             this.logAction(action);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onFireworkLaunch(PlayerInteractEvent event)
+    {
+        if (event.getAction() == RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == FIREWORK)
+        {
+            FireworkUse action = this.newAction(FireworkUse.class, event.getPlayer().getWorld());
+            action.setPlayer(event.getPlayer());
+            action.setLocation(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation());
+            // TODO item
+            this.logAction(action);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPotionSplash(PotionSplashEvent event)
+    {
+        PotionSplash action = this.newAction(PotionSplash.class, event.getPotion().getWorld());
+        if (action != null)
+        {
+            if (event.getPotion().getShooter() instanceof Player)
+            {
+                action.setPlayer((Player)event.getPotion().getShooter());
+                action.setLocation(event.getPotion().getLocation());
+                // TODO item etc.
+                this.logAction(action);
+            }
+            // TODO other shooter
         }
     }
 }
