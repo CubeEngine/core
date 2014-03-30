@@ -29,7 +29,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.ActionTypeManager;
 import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 import de.cubeisland.engine.log.action.logaction.container.ContainerTypeConverter;
-import de.cubeisland.engine.log.action.logaction.worldedit.LogEditSessionFactory;
+import de.cubeisland.engine.log.action.newaction.block.player.worldedit.LogEditSessionFactory;
 import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
 import de.cubeisland.engine.log.storage.LogManager;

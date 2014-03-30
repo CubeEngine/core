@@ -77,7 +77,7 @@ public class LogListener implements Listener
         return blockState;
     }
 
-    protected final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz, World world)
+    public final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz, World world)
     {
         if (!this.isActive(clazz, world))
         {
@@ -86,7 +86,7 @@ public class LogListener implements Listener
         return this.newAction(clazz);
     }
 
-    protected final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz)
+    public final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz)
     {
         try
         {
@@ -98,7 +98,7 @@ public class LogListener implements Listener
         }
     }
 
-    protected final void logAction(ActionTypeBase action)
+    public final void logAction(ActionTypeBase action)
     {
         // TODO
     }

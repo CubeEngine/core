@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.logaction.worldedit;
+package de.cubeisland.engine.log.action.newaction.block.player.worldedit;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.EditSessionFactory;
@@ -25,16 +25,19 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bags.BlockBag;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.action.newaction.LogListener;
 
 public class LogEditSessionFactory extends EditSessionFactory
 {
     private final Log module;
     private final EditSessionFactory oldFactory;
+    private LogListener listener;
 
     public LogEditSessionFactory(Log module, EditSessionFactory oldFactory)
     {
         this.module = module;
         this.oldFactory = oldFactory;
+        this.listener = new LogListener(module);
     }
 
     public static boolean initialize(Log module)
@@ -56,8 +59,8 @@ public class LogEditSessionFactory extends EditSessionFactory
             EditSessionFactory editSessionFactory = instance.getEditSessionFactory();
             if (editSessionFactory instanceof LogEditSessionFactory)
             {
-                ((LogEditSessionFactory)editSessionFactory).module.getLog()
-                                                                  .debug("WorldEdit EditSessionFactory restored!");
+                ((LogEditSessionFactory)editSessionFactory).module.getLog().debug(
+                    "WorldEdit EditSessionFactory restored!");
                 instance.setEditSessionFactory(((LogEditSessionFactory)editSessionFactory).oldFactory);
             }
         }
@@ -65,9 +68,8 @@ public class LogEditSessionFactory extends EditSessionFactory
 
     private boolean ignoreWorldEdit(LocalWorld world)
     {
-        return world instanceof BukkitWorld && !this.module.getActionTypeManager()
-                                                           .getActionType(WorldEditActionType.class)
-                                                           .isActive(((BukkitWorld)world).getWorld());
+        return world instanceof BukkitWorld && !this.listener.isActive(WorldEditAction.class,
+                                                                       ((BukkitWorld)world).getWorld());
     }
 
     @Override
@@ -79,7 +81,7 @@ public class LogEditSessionFactory extends EditSessionFactory
         }
         else
         {
-            return new LogEditSession(world, maxBlocks, player, this.module);
+            return new LogEditSession(world, maxBlocks, player, this.module, this.listener);
         }
     }
 
@@ -92,7 +94,7 @@ public class LogEditSessionFactory extends EditSessionFactory
         }
         else
         {
-            return new LogEditSession(world, maxBlocks, blockBag, player, this.module);
+            return new LogEditSession(world, maxBlocks, blockBag, player, this.module, this.listener);
         }
     }
 
@@ -105,7 +107,7 @@ public class LogEditSessionFactory extends EditSessionFactory
         }
         else
         {
-            return new LogEditSession(world, maxBlocks, this.module);
+            return new LogEditSession(world, maxBlocks, this.module, this.listener);
         }
     }
 
@@ -118,7 +120,7 @@ public class LogEditSessionFactory extends EditSessionFactory
         }
         else
         {
-            return new LogEditSession(world, maxBlocks, blockBag, this.module);
+            return new LogEditSession(world, maxBlocks, blockBag, this.module, this.listener);
         }
     }
 }

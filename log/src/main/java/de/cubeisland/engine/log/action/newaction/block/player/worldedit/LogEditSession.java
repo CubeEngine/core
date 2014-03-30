@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.logaction.worldedit;
+package de.cubeisland.engine.log.action.newaction.block.player.worldedit;
 
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -29,38 +29,44 @@ import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.action.newaction.LogListener;
 
 public class LogEditSession extends EditSession
 {
     private final LocalPlayer player;
     private final Log module;
+    private LogListener listener;
 
-    public LogEditSession(LocalWorld world, int maxBlocks, LocalPlayer player, Log module)
+    public LogEditSession(LocalWorld world, int maxBlocks, LocalPlayer player, Log module, LogListener listener)
     {
         super(world, maxBlocks);
         this.player = player;
         this.module = module;
+        this.listener = listener;
     }
 
-    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player, Log module)
+    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player, Log module, LogListener listener)
     {
         super(world, maxBlocks, blockBag);
         this.player = player;
         this.module = module;
+        this.listener = listener;
     }
 
-    public LogEditSession(LocalWorld world, int maxBlocks, Log module)
+    public LogEditSession(LocalWorld world, int maxBlocks, Log module, LogListener listener)
     {
         super(world, maxBlocks);
         this.module = module;
         this.player = null;
+        this.listener = listener;
     }
 
-    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, Log module)
+    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, Log module, LogListener listener)
     {
         super(world, maxBlocks, blockBag);
         this.module = module;
         this.player = null;
+        this.listener = listener;
     }
 
     @Override
@@ -73,12 +79,14 @@ public class LogEditSession extends EditSession
             boolean success = super.rawSetBlock(pt, block);
             if (success)
             {
-                WorldEditActionType actionType = this.module.getActionTypeManager()
-                                                            .getActionType(WorldEditActionType.class);
-                if (actionType.isActive(world))
+                WorldEditAction action = this.listener.newAction(WorldEditAction.class, world);
+                if (action != null)
                 {
                     BlockState newState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();
-                    actionType.logBlockChange(((BukkitPlayer)this.player).getPlayer(), oldState, newState, null);
+                    action.setOldBlock(oldState);
+                    action.setNewBlock(newState);
+                    action.setPlayer(((BukkitPlayer)this.player).getPlayer());
+                    this.listener.logAction(action);
                 }
             }
             return success;
