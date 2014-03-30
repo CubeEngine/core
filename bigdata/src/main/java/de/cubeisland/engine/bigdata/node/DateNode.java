@@ -15,40 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.bigdata;
+package de.cubeisland.engine.bigdata.node;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import java.util.Date;
 
-public class RDBObject
+import de.cubeisland.engine.reflect.node.Node;
+
+public class DateNode extends Node<Date>
 {
-    private DBCollection collection;
-    private DBObject dbObject;
+    private Date date;
 
-    public RDBObject(DBCollection collection, DBObject dbObject)
+    public DateNode(Date date)
     {
-        this.collection = collection;
-        this.dbObject = dbObject;
+        this.date = date;
     }
 
-    public RDBObject(DBCollection collection)
+    @Override
+    public String asText()
     {
-        this(collection, null);
+        return date.toString();
     }
 
-    public RDBObject(DBObject dbObject)
+    @Override
+    public Date getValue()
     {
-        this.dbObject = dbObject;
-        this.collection = null;
+        return date;
     }
 
-    public DBCollection getCollection()
+    @Override
+    public String toString()
     {
-        return collection;
-    }
-
-    public DBObject getDBObject()
-    {
-        return dbObject;
+        return date.toString();
     }
 }

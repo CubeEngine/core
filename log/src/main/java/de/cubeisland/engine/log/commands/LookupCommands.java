@@ -42,7 +42,7 @@ import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionType;
 import de.cubeisland.engine.log.action.ActionTypeCompleter;
 import de.cubeisland.engine.log.action.ActionTypeManager;
-import de.cubeisland.engine.log.storage.ImmutableBlockData;
+import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
 import de.cubeisland.engine.log.storage.Lookup;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.ShowParameter;
@@ -506,7 +506,8 @@ public class LookupCommands
                 user.sendTranslated(MessageType.NEGATIVE, "Unknown Material: {name#material}", name);
                 return false;
             }
-            ImmutableBlockData blockData = new ImmutableBlockData(material, data);
+            BlockSection blockData = new BlockSection(material);
+            blockData.data = data == null ? 0 : data;
             if (negate)
             {
                 params.excludeBlock(blockData);

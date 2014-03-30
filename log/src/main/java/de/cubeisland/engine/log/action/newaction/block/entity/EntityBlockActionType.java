@@ -69,6 +69,10 @@ public abstract class EntityBlockActionType<ListenerType> extends BlockActionTyp
         public UUID uuid;
         public EntityType type;
 
+        public EntitySection()
+        {
+        }
+
         public EntitySection(Entity entity)
         {
             this.type = entity.getType();

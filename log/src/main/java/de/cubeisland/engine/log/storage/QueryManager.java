@@ -18,14 +18,13 @@
 package de.cubeisland.engine.log.storage;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -37,30 +36,24 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.storage.database.Database;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
-import org.joda.time.Duration;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
 import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Result;
-import org.jooq.SelectConditionStep;
-import org.jooq.SelectWhereStep;
 import org.jooq.types.UInteger;
-
-import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
-import static de.cubeisland.engine.log.storage.TableActionTypes.TABLE_ACTION_TYPE;
-import static de.cubeisland.engine.log.storage.TableLogEntry.TABLE_LOG_ENTRY;
 
 public class QueryManager
 {
-    final Queue<QueuedLog> queuedLogs = new ConcurrentLinkedQueue<>();
+    final Queue<ActionTypeBase> queuedLogs = new ConcurrentLinkedQueue<>();
     final Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
     private final Log module;
     private final ExecutorService storeExecutor;
@@ -69,9 +62,6 @@ public class QueryManager
     private final Runnable lookupRunner;
     private final Semaphore latch = new Semaphore(1);
     private final int cleanUpTaskId;
-    private final DSLContext dsl;
-    private final DSLContext cleanUpDsl;
-    private final Database database;
     private int batchSize;
     private Future<?> futureStore = null;
     private Future<?> futureLookup = null;
@@ -81,18 +71,16 @@ public class QueryManager
     private long logsLoggedFullLoad = 1;
     private CountDownLatch shutDownLatch = new CountDownLatch(0);
     private Connection insertConnection = null;
-    private TableLogEntry CURRENT_TABLE;
-    private TableLogEntry OPTIMIZE_TABLE;
     private boolean optimizeRunning = false;
     private boolean cleanUpRunning = false;
 
-    public QueryManager(Log module)
+    private final DBCollection collection;
+
+    public QueryManager(Log module, DBCollection collection)
     {
-        this.CURRENT_TABLE = TABLE_LOG_ENTRY;
-        this.database = module.getCore().getDB();
-        this.dsl = this.database.getDSL();
-        this.cleanUpDsl = this.database.getDSL();
+        this.collection = collection;
         this.module = module;
+
         this.batchSize = module.getConfiguration().loggingBatchSize;
 
         this.storeRunner = new Runnable()
@@ -141,10 +129,11 @@ public class QueryManager
         }, delay, delay);
     }
 
+
     /**
      * Cannot be executed in the main-thread!
      */
-    private void optimizeTable()
+    /*private void optimizeTable()
     {
         if (CubeEngine.isMainThread())
         {
@@ -188,11 +177,12 @@ public class QueryManager
         this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
         this.latch.release(); // Start normal logging again
     }
+    */
 
     /**
      * Analyse the indices of the log table
      */
-    public void analyze()
+    /*public void analyze()
     {
         if (optimizeRunning)
         {
@@ -208,9 +198,11 @@ public class QueryManager
             }
         }).start();
     }
+    */
 
     private void cleanUpLogs()
     {
+        /*
         if (CubeEngine.isMainThread())
         {
             throw new IllegalStateException("ONLY use Asynchronously!");
@@ -320,10 +312,13 @@ public class QueryManager
         this.latch.release(); // Start normal logging again
         this.analyze();
         this.cleanUpRunning = false;
+        */
+        System.out.println("CLEANUP currently not implemented!"); // TODO
     }
 
     private void cleanUpOldLogs(Timestamp until)
     {
+        /*
         Integer count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
                                   .where(TABLE_LOG_ENTRY.DATE.le(until)).fetchCount();
         if (count == 0)
@@ -351,6 +346,7 @@ public class QueryManager
 
     private int cleanUpOldLogsPart(UInteger from, UInteger to, MutableInteger totalCount, int depth)
     {
+        /*
         int count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
                               .where(TABLE_LOG_ENTRY.ID.between(from, to)).fetchCount();
         if (count == 0)
@@ -374,6 +370,8 @@ public class QueryManager
                 .repeat(" ", depth), del, new Duration(startTime, System.currentTimeMillis()).toString());
             return del;
         }
+        */
+        return 0;
     }
 
     private void doQueryLookup()
@@ -386,11 +384,20 @@ public class QueryManager
         final QueryAction queryAction = poll.action;
         final Lookup lookup = poll.lookup;
         final User user = poll.user;
-        Result<LogEntry> entries = poll.query.limit(10000).fetch();
+        DBCursor cursor = this.collection.find(poll.query); // limit 10000
         QueryResults results = new QueryResults(lookup, module);
-        for (LogEntry entry : entries)
+        for (DBObject entry : cursor)
         {
-            results.addResult(entry.init(module));
+            try
+            {
+                Class<? extends ActionTypeBase> action = (Class<? extends ActionTypeBase>)Class.forName((String)entry.get("action"));
+                results.addResult(module.getCore().getConfigFactory().load(action, entry));
+            }
+            catch (ClassNotFoundException e)
+            {
+                module.getLog().warn(e, "Could not find Action for DBObject! {}", entry);
+            }
+
         }
         lookup.setQueryResults(results);
         if (user != null && user.isOnline())
@@ -428,7 +435,7 @@ public class QueryManager
 
     private void doEmptyLogs(int amount)
     {
-        final Queue<QueuedLog> logs = new LinkedList<>();
+        final Queue<ActionTypeBase> logs = new LinkedList<>();
         try
         {
             this.latch.acquire();  // Wait if still doing inserts
@@ -438,33 +445,26 @@ public class QueryManager
             }
             for (int i = 0; i < amount; i++) // log <amount> next logs...
             {
-                QueuedLog toLog = this.queuedLogs.poll();
+                ActionTypeBase toLog = this.queuedLogs.poll();
                 if (toLog == null)
                 {
                     break;
                 }
+                // TODO if toLog has reference DO NOT log in batch!!!
                 logs.offer(toLog);
             }
             Profiler.startProfiling("logging");
             int logSize = logs.size();
-            // --- SQL ---
-            String sql = dsl
-                .insertInto(CURRENT_TABLE, CURRENT_TABLE.DATE, CURRENT_TABLE.ACTION, CURRENT_TABLE.WORLD, CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z, CURRENT_TABLE.CAUSER, CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA, CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA)
-                .values((Timestamp)null, null, null, null, null, null, null, null, null, null, null, null).getSQL();
-
-            if (this.insertConnection == null || this.insertConnection.isClosed())
+            List<DBObject> toLog = new ArrayList<>();
+            for (ActionTypeBase<?> log : logs)
             {
-                this.insertConnection = this.database.getConnection();
-                this.insertConnection.setAutoCommit(false);
+                BasicDBObject dbo = new BasicDBObject();
+                log.setTarget(dbo);
+                log.save();
+                toLog.add(dbo);
+                dbo.append("action", log.getClass().getName());
             }
-            PreparedStatement statement = this.insertConnection.prepareStatement(sql);
-            for (QueuedLog log : logs)
-            {
-                log.bindTo(statement);
-            }
-            statement.executeBatch();
-            this.insertConnection.commit();
-            // --- --- ---
+            this.collection.insert(toLog); // Batch insert
             long nanos = Profiler.endProfiling("logging");
             timeSpend += nanos;
             logsLogged += logSize;
@@ -545,9 +545,9 @@ public class QueryManager
         }
     }
 
-    protected void queueLog(QueuedLog log)
+    protected void queueLog(ActionTypeBase action)
     {
-        this.queuedLogs.offer(log);
+        this.queuedLogs.offer(action);
         if (this.latch.availablePermits() == 1 && (this.futureStore == null || this.futureStore.isDone()))
         {
             this.futureStore = storeExecutor.submit(storeRunner);
@@ -622,7 +622,8 @@ public class QueryManager
             }
         }
         final QueryParameter params = lookup.getQueryParameter();
-        SelectWhereStep<LogEntry> whereStep = this.dsl.selectFrom(CURRENT_TABLE);
+        BasicDBObject query = new BasicDBObject();
+
         ArrayList<Condition> conditions = new ArrayList<>();
         if (!params.actions.isEmpty())
         {
@@ -632,37 +633,36 @@ public class QueryManager
             {
                 if (!include || entry.getValue())
                 {
-                    actions.add(entry.getKey().getModel().getId());
+                  //  actions.add(entry.getKey().getModel().getId());
                 }
             }
             if (!include)
             {
-                conditions.add(CURRENT_TABLE.ACTION.notIn(actions));
+                //conditions.add(CURRENT_TABLE.ACTION.notIn(actions));
             }
             else
             {
-                conditions.add(CURRENT_TABLE.ACTION.in(actions));
+                //conditions.add(CURRENT_TABLE.ACTION.in(actions));
             }
         }
         if (params.hasTime()) // has since / before / from-to
         {
             if (params.from_since == null) // before
             {
-                conditions.add(CURRENT_TABLE.DATE.le(new Timestamp(params.to_before)));
+                //conditions.add(CURRENT_TABLE.DATE.le(new Timestamp(params.to_before)));
             }
             else if (params.to_before == null) // since
             {
-                conditions.add(CURRENT_TABLE.DATE.greaterThan(new Timestamp(params.from_since)));
+                //conditions.add(CURRENT_TABLE.DATE.greaterThan(new Timestamp(params.from_since)));
             }
             else // from - to
             {
-                conditions
-                    .add(CURRENT_TABLE.DATE.between(new Timestamp(params.from_since), new Timestamp(params.to_before)));
+                //conditions.add(CURRENT_TABLE.DATE.between(new Timestamp(params.from_since), new Timestamp(params.to_before)));
             }
         }
         if (params.worldID != null) // has world
         {
-            conditions.add(CURRENT_TABLE.WORLD.eq(UInteger.valueOf(params.worldID)));
+            //conditions.add(CURRENT_TABLE.WORLD.eq(UInteger.valueOf(params.worldID)));
             if (params.location1 != null)
             {
                 BlockVector3 loc1 = params.location1;
@@ -672,57 +672,53 @@ public class QueryManager
                     boolean locX = loc1.x < loc2.x;
                     boolean locY = loc1.y < loc2.y;
                     boolean locZ = loc1.z < loc2.z;
-                    conditions.add(CURRENT_TABLE.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
-                    conditions.add(CURRENT_TABLE.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
-                    conditions.add(CURRENT_TABLE.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
+                    //  conditions.add(CURRENT_TABLE.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
+                    // conditions.add(CURRENT_TABLE.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
+                    //  conditions.add(CURRENT_TABLE.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
                 }
                 else if (params.radius == null)// has single location
                 {
-                    conditions.add(CURRENT_TABLE.X.eq(loc1.x));
-                    conditions.add(CURRENT_TABLE.Y.eq(loc1.y));
-                    conditions.add(CURRENT_TABLE.Z.eq(loc1.z));
+                    //  conditions.add(CURRENT_TABLE.X.eq(loc1.x));
+                    // conditions.add(CURRENT_TABLE.Y.eq(loc1.y));
+                    //  conditions.add(CURRENT_TABLE.Z.eq(loc1.z));
                 }
                 else // has radius
                 {
-                    conditions.add(CURRENT_TABLE.X.between(loc1.x - params.radius, loc1.x + params.radius));
-                    conditions.add(CURRENT_TABLE.Y.between(loc1.y - params.radius, loc1.y + params.radius));
-                    conditions.add(CURRENT_TABLE.Z.between(loc1.z - params.radius, loc1.z + params.radius));
+                    // conditions.add(CURRENT_TABLE.X.between(loc1.x - params.radius, loc1.x + params.radius));
+                    // conditions.add(CURRENT_TABLE.Y.between(loc1.y - params.radius, loc1.y + params.radius));
+                    // conditions.add(CURRENT_TABLE.Z.between(loc1.z - params.radius, loc1.z + params.radius));
                 }
             }
         }
         if (!params.blocks.isEmpty())
         {
             // make sure there is data for blocks first
-            conditions.add(CURRENT_TABLE.BLOCK.isNotNull().
-                or(CURRENT_TABLE.DATA.isNotNull()).
-                                                  or(CURRENT_TABLE.NEWBLOCK.isNotNull()).
-                                                  or(CURRENT_TABLE.NEWDATA.isNotNull()));
+            // conditions.add(CURRENT_TABLE.BLOCK.isNotNull().or(CURRENT_TABLE.DATA.isNotNull()).or(CURRENT_TABLE.NEWBLOCK.isNotNull()).or(CURRENT_TABLE.NEWDATA.isNotNull()));
             // Start filter blocks:
             boolean include = params.includeBlocks();
             Condition blockCondition = null;
-            for (Entry<ImmutableBlockData, Boolean> data : params.blocks.entrySet())
+            for (Entry<BlockSection, Boolean> data : params.blocks.entrySet())
             {
                 if (!include || data.getValue()) // all exclude OR only include
                 {
                     String mat = data.getKey().material.name();
-                    Condition condition = CURRENT_TABLE.BLOCK.eq(mat).or(CURRENT_TABLE.NEWBLOCK.eq(mat));
+                    // Condition condition = CURRENT_TABLE.BLOCK.eq(mat).or(CURRENT_TABLE.NEWBLOCK.eq(mat));
                     Byte metadata = data.getKey().data;
                     if (metadata != null)
                     {
-                        condition = condition
-                            .and(CURRENT_TABLE.DATA.eq(metadata.longValue()).or(CURRENT_TABLE.NEWDATA.eq(metadata)));
+                        //    condition = condition.and(CURRENT_TABLE.DATA.eq(metadata.longValue()).or(CURRENT_TABLE.NEWDATA.eq(metadata)));
                     }
                     if (!include)
                     {
-                        condition = condition.not();
+                        //condition = condition.not();
                     }
                     if (blockCondition == null)
                     {
-                        blockCondition = condition;
+                        //blockCondition = condition;
                     }
                     else
                     {
-                        blockCondition = blockCondition.or(condition);
+                        //  blockCondition = blockCondition.or(condition);
                     }
                 }
             }
@@ -745,39 +741,21 @@ public class QueryManager
             }
             if (include)
             {
-                conditions.add(CURRENT_TABLE.CAUSER.in(users));
+                //    conditions.add(CURRENT_TABLE.CAUSER.in(users));
             }
             else
             {
-                conditions.add(CURRENT_TABLE.CAUSER.notIn(users));
+                //   conditions.add(CURRENT_TABLE.CAUSER.notIn(users));
             }
         }
         // TODO finish queryParams
 
-        SelectConditionStep<LogEntry> query = whereStep.where(conditions);
         this.module.getLog().debug("{}: Select Query queued!", user.getName());
         this.queuedLookups.offer(new QueuedSqlParams(lookup, user, query, action));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {
             this.futureLookup = lookupExecutor.submit(lookupRunner);
         }
-    }
-
-    public Collection<ActionTypeModel> getActionTypesFromDatabase()
-    {
-        return this.dsl.selectFrom(TABLE_ACTION_TYPE).fetch();
-    }
-
-    public ActionTypeModel registerActionType(String name)
-    {
-        ActionTypeModel actionTypeModel = this.dsl.newRecord(TABLE_ACTION_TYPE).newActionType(name);
-        actionTypeModel.insert();
-        return actionTypeModel;
-    }
-
-    public void unregisterActionType(String name)
-    {
-        this.dsl.delete(TABLE_ACTION_TYPE).where(TABLE_ACTION_TYPE.NAME.eq(name)).execute();
     }
 
     public enum QueryAction
@@ -793,10 +771,10 @@ public class QueryManager
     {
         public final Lookup lookup;
         public final QueryAction action;
-        public final SelectConditionStep<LogEntry> query;
+        public final BasicDBObject query;
         private final User user;
 
-        public QueuedSqlParams(Lookup lookup, User user, SelectConditionStep<LogEntry> query, QueryAction action)
+        public QueuedSqlParams(Lookup lookup, User user, BasicDBObject query, QueryAction action)
         {
             this.lookup = lookup;
             this.query = query;

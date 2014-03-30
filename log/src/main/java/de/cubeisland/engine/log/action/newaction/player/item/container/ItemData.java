@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.storage;
+package de.cubeisland.engine.log.action.newaction.player.item.container;
 
 import java.util.List;
 import java.util.Map;

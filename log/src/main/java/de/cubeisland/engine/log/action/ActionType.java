@@ -17,73 +17,20 @@
  */
 package de.cubeisland.engine.log.action;
 
-import java.sql.Timestamp;
 import java.util.Set;
 
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.storage.ActionTypeModel;
-import de.cubeisland.engine.log.storage.LogEntry;
 import de.cubeisland.engine.log.storage.LogManager;
-import de.cubeisland.engine.log.storage.QueryParameter;
-import de.cubeisland.engine.log.storage.QueuedLog;
-import de.cubeisland.engine.log.storage.ShowParameter;
 
 public abstract class ActionType
 {
-    private ActionTypeModel model;
-
     protected Log module;
     protected UserManager um;
     protected ObjectMapper om;
     protected ActionTypeManager manager;
     protected LogManager lm;
-
-    /**
-     * Queues in a log
-     *
-     * @param location
-     * @param causer
-     * @param block
-     * @param data
-     * @param newBlock
-     * @param newData
-     * @param additionalData
-     */
-    public void queueLog(Location location, Entity causer, String block, Long data, String newBlock, Byte newData, String additionalData)
-    {
-        long worldID = this.module.getCore().getWorldManager().getWorldId(location.getWorld());
-        Long causerID;
-        if (causer == null)
-        {
-            causerID = 0L;
-        }
-        else if (causer instanceof Player)
-        {
-            causerID = this.um.getExactUser(((Player)causer).getName()).getId();
-        }
-        else
-        {
-            // TODO This is not ideal as some ids are -1 in bukkitcode
-            causerID = -1L * Math.abs(causer.getType().getTypeId());
-        }
-        this.queueLog(worldID,location.getBlockX(),location.getBlockY(),location.getBlockZ(),causerID,block,data,newBlock,newData,additionalData);
-    }
-
-    public void queueLog(long worldID, int x, int y, int z, Long causer, String block, Long data, String newBlock, Byte newData, String additionalData)
-    {
-        QueuedLog log = new QueuedLog(new Timestamp(System.currentTimeMillis()),worldID,x,y,z,this.model.getId().longValue(),causer,block,data,newBlock,newData,additionalData);
-        this.lm.queueLog(log);
-    }
 
     /**
      * Register your events here
@@ -95,13 +42,7 @@ public abstract class ActionType
         this.om = module.getObjectMapper();
         this.manager = manager;
         this.lm = module.getLogManager();
-        if (this.getModel() != null)
-        {
-            for (ActionTypeCategory category : this.getCategories())
-            {
-                category.registerActionType(this);
-            }
-        }
+
         this.enable();
     }
 
@@ -111,65 +52,6 @@ public abstract class ActionType
     protected abstract Set<ActionTypeCategory> getCategories();
     public abstract void enable();
 
-    /**
-     * Returns whether the action is active in given world or not
-     *
-     * @param world
-     * @return
-     */
-    public abstract boolean isActive(World world);
-
-    /**
-     * Shows the user the logentry from given queryparams
-     *
-     * @param user
-     * @param params
-     * @param logEntry
-     * @param show
-     */
-    public abstract void showLogEntry(User user, QueryParameter params, LogEntry logEntry, ShowParameter show);
-
-    /**
-     * Returns true if the given log-entries can be put together to minimize output
-     *
-     * @param logEntry
-     * @param other
-     * @return
-     */
-    public boolean isSimilar(LogEntry logEntry, LogEntry other)
-    {
-        return logEntry.getActionType() == other.getActionType();
-    }
-
-    public void setModel(ActionTypeModel model)
-    {
-        this.model = model;
-    }
-
-    public ActionTypeModel getModel()
-    {
-        return this.model;
-    }
-
-    public boolean rollback(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
-    {
-        if (this.canRollback())
-        {
-            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Rollback: {name#actiontype}", logEntry.getActionType().getName());
-            throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
-        }
-        return false;
-    }
-
-    public boolean redo(LogAttachment attachment, LogEntry logEntry, boolean force, boolean preview)
-    {
-        if (this.canRedo())
-        {
-            attachment.getHolder().sendTranslated(MessageType.CRITICAL, "Encountered an unimplemented LogAction-Redo: {name#actiontype}", logEntry.getActionType().getName());
-            throw new UnsupportedOperationException("Not yet implemented! " + logEntry.getActionType().getName());
-        }
-        return false;
-    }
 
     /**
      * Returns whether this actionType can have more than one changes at a single location.

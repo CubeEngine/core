@@ -15,30 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.bigdata;
+package de.cubeisland.engine.log.action.newaction;
 
-import de.cubeisland.engine.reflect.Reflected;
-import org.bson.types.ObjectId;
+import de.cubeisland.engine.log.LogAttachment;
 
-public class ReflectedMongoDB extends Reflected<MongoDBCodec, RDBObject>
+public interface Redoable extends Recoverable
 {
-    transient ObjectId _id;
-
-    public ObjectId getId()
-    {
-        return _id;
-    }
-
-    @Override
-    public void save(RDBObject rdbo)
-    {
-        this.getCodec().saveReflected(this, rdbo);
-    }
-
-    @Override
-    public boolean loadFrom(RDBObject rdbo)
-    {
-        this.getCodec().loadReflected(this, rdbo);
-        return true;
-    }
+    boolean redo(LogAttachment attachment, boolean force, boolean preview);
 }

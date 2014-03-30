@@ -32,6 +32,7 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.ActionType;
+import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
 
 public class QueryParameter implements Cloneable
 {
@@ -53,7 +54,7 @@ public class QueryParameter implements Cloneable
     // Entity
     Map<Integer, Boolean> entities = new ConcurrentHashMap<>();
     // Blocks
-    Map<ImmutableBlockData, Boolean> blocks = new ConcurrentHashMap<>();
+    Map<BlockSection, Boolean> blocks = new ConcurrentHashMap<>();
 
     public QueryParameter(Log module)
     {
@@ -198,21 +199,21 @@ public class QueryParameter implements Cloneable
         this.entities.clear();
     }
 
-    public void setBlocks(Set<ImmutableBlockData> blockDatas, boolean include)
+    public void setBlocks(Set<BlockSection> blockDatas, boolean include)
     {
         this.blocks.clear();
-        for (ImmutableBlockData blockData : blockDatas)
+        for (BlockSection blockData : blockDatas)
         {
             this.blocks.put(blockData, include);
         }
     }
 
-    public void includeBlock(ImmutableBlockData data)
+    public void includeBlock(BlockSection data)
     {
         this.blocks.put(data, true);
     }
 
-    public void excludeBlock(ImmutableBlockData data)
+    public void excludeBlock(BlockSection data)
     {
         this.blocks.put(data, false);
     }

@@ -17,36 +17,11 @@
  */
 package de.cubeisland.engine.log.action.action_OLD;
 
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Jukebox;
-import org.bukkit.block.NoteBlock;
-import org.bukkit.block.Sign;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Ocelot;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.Wolf;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.material.Attachable;
-import org.bukkit.material.Bed;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.cubeisland.engine.core.util.BlockUtil;
-import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.LogActionType;
-import de.cubeisland.engine.log.storage.ImmutableBlockData;
-import de.cubeisland.engine.log.storage.LogEntry;
-
-public abstract class BlockActionType extends LogActionType
+public abstract class BlockActionType
 {
+    /*
+
+
     public String serializeData(EntityDamageEvent.DamageCause cause, Entity entity, DyeColor newColor)
     {// TODO from simpleLogActionType
         ObjectNode json = this.om.createObjectNode();
@@ -270,4 +245,5 @@ public abstract class BlockActionType extends LogActionType
         state.setType(newBlock.material);
         return this.setBlock(newBlock, state, block, attachment, logEntry, preview, force, false);
     }
+     */
 }

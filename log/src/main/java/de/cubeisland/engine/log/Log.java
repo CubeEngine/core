@@ -23,8 +23,10 @@ import org.bukkit.event.server.PluginEnableEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import de.cubeisland.engine.bigdata.Bigdata;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.ActionTypeManager;
 import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
@@ -33,8 +35,6 @@ import de.cubeisland.engine.log.action.newaction.block.player.worldedit.LogEditS
 import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
 import de.cubeisland.engine.log.storage.LogManager;
-import de.cubeisland.engine.log.storage.TableActionTypes;
-import de.cubeisland.engine.log.storage.TableLogEntry;
 import de.cubeisland.engine.log.tool.ToolListener;
 
 public class Log extends Module implements Listener
@@ -45,16 +45,16 @@ public class Log extends Module implements Listener
     private ActionTypeManager actionTypeManager;
     private boolean worldEditFound = false;
 
+    @Inject
+    private Bigdata bigdata;
+
     @Override
     public void onEnable()
     {
-        this.getCore().getDB().registerTable(TableActionTypes.class);
-        this.getCore().getDB().registerTable(TableLogEntry.initTable(this.getCore().getDB()));
-
         this.config = this.loadConfig(LogConfiguration.class);
         this.getCore().getConfigFactory().getDefaultConverterManager().
             registerConverter(ContainerType.class, new ContainerTypeConverter());
-        this.logManager = new LogManager(this);
+        this.logManager = new LogManager(this, bigdata);
         this.actionTypeManager = new ActionTypeManager(this);
 
         final CommandManager cm = this.getCore().getCommandManager();

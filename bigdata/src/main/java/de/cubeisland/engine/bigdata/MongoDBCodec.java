@@ -20,6 +20,7 @@ package de.cubeisland.engine.bigdata;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -27,6 +28,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.DBRefBase;
 import de.cubeisland.engine.bigdata.node.DBRefBaseNode;
+import de.cubeisland.engine.bigdata.node.DateNode;
 import de.cubeisland.engine.bigdata.node.ObjectIdNode;
 import de.cubeisland.engine.reflect.Reflected;
 import de.cubeisland.engine.reflect.codec.Codec;
@@ -36,17 +38,18 @@ import de.cubeisland.engine.reflect.node.ErrorNode;
 import de.cubeisland.engine.reflect.node.ListNode;
 import de.cubeisland.engine.reflect.node.MapNode;
 import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
 import de.cubeisland.engine.reflect.node.ParentNode;
 import org.bson.types.ObjectId;
 
-public class MongoDBCodec extends Codec<RDBObject, RDBObject>
+public class MongoDBCodec extends Codec<DBObject, DBObject>
 {
     @Override
-    public Collection<ErrorNode> loadReflected(Reflected reflected, RDBObject rdbo)
+    public Collection<ErrorNode> loadReflected(Reflected reflected, DBObject dbo)
     {
         try
         {
-            return dumpIntoSection(reflected.getDefault(), reflected, this.load(rdbo, reflected), reflected);
+            return dumpIntoSection(reflected.getDefault(), reflected, this.load(dbo, reflected), reflected);
         }
         catch (ConversionException ex)
         {
@@ -60,11 +63,11 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
     }
 
     @Override
-    public void saveReflected(Reflected reflected, RDBObject rdbo)
+    public void saveReflected(Reflected reflected, DBObject dbo)
     {
         try
         {
-            this.save(convertSection(reflected.getDefault(), reflected, reflected), rdbo, reflected);
+            this.save(convertSection(reflected.getDefault(), reflected, reflected), dbo, reflected);
         }
         catch (ConversionException ex)
         {
@@ -77,39 +80,25 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
     }
 
     @Override
-    protected void save(MapNode mapNode, RDBObject rdbo, Reflected reflected) throws ConversionException
+    protected void save(MapNode mapNode, DBObject dbo, Reflected reflected) throws ConversionException
     {
-        BasicDBObject saveObject = this.convertMapNode(mapNode);
-        if (rdbo.getDBObject().get("_id") != null)
-        {
-            saveObject.append("_id", rdbo.getDBObject().get("_id"));
-        }
-        rdbo.getCollection().save(saveObject);
-        if (reflected instanceof ReflectedMongoDB)
-        {
-            ((ReflectedMongoDB)reflected)._id = (ObjectId)saveObject.get("_id");
-        }
+        this.convertMapNode(dbo, mapNode);
     }
 
-    private BasicDBObject convertMapNode(MapNode mapNode)
+    private DBObject convertMapNode(DBObject dbo, MapNode mapNode)
     {
         if (mapNode.isEmpty())
         {
-            return new BasicDBObject();
+            return dbo;
         }
-        BasicDBObject bdbo = null;
         for (Entry<String, Node> entry : mapNode.getMappedNodes().entrySet())
         {
-            if (bdbo == null)
+            if (!(entry.getValue() instanceof NullNode))
             {
-                bdbo = new BasicDBObject(entry.getKey(), convertNode(entry.getValue()));
-            }
-            else
-            {
-                bdbo.append(entry.getKey(), convertNode(entry.getValue()));
+                dbo.put(entry.getKey(), convertNode(entry.getValue()));
             }
         }
-        return bdbo;
+        return dbo;
     }
 
     private Object convertNode(Node node)
@@ -118,7 +107,7 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
         {
             if (node instanceof MapNode)
             {
-                return convertMapNode((MapNode)node);
+                return convertMapNode(new BasicDBObject(), (MapNode)node);
             }
             else if (node instanceof ListNode)
             {
@@ -149,11 +138,10 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
         return list;
     }
 
-
     @Override
-    protected MapNode load(RDBObject rdbo, Reflected reflected) throws ConversionException
+    protected MapNode load(DBObject dbo, Reflected reflected) throws ConversionException
     {
-        return convertDBObjectToNode(rdbo.getDBObject());
+        return convertDBObjectToNode(dbo);
     }
 
     private MapNode convertDBObjectToNode(DBObject dbObject)
@@ -162,8 +150,11 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
         for (String key : dbObject.keySet())
         {
             Object value = dbObject.get(key);
-            Node nodeValue = this.convertDBObjectToNode((DBObject)value);
-            mapNode.setExactNode(key, nodeValue);
+            Node nodeValue = this.convertObjectToNode(value);
+            if (!(nodeValue instanceof NullNode))
+            {
+                mapNode.setExactNode(key, nodeValue);
+            }
         }
         return mapNode;
     }
@@ -171,13 +162,13 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
     private Node convertObjectToNode(Object value)
     {
         Node nodeValue;
-        if (value instanceof DBObject)
-        {
-            nodeValue = this.convertDBObjectToNode((DBObject)value);
-        }
-        else if (value instanceof List)
+        if (value instanceof List)
         {
             nodeValue = this.convertListToNode((List)value);
+        }
+        else if (value instanceof DBObject)
+        {
+            nodeValue = this.convertDBObjectToNode((DBObject)value);
         }
         else if (value instanceof ObjectId)
         {
@@ -186,6 +177,10 @@ public class MongoDBCodec extends Codec<RDBObject, RDBObject>
         else if (value instanceof DBRefBase)
         {
             nodeValue = new DBRefBaseNode((DBRefBase)value);
+        }
+        else if (value instanceof Date)
+        {
+            nodeValue = new DateNode((Date)value);
         }
         else
         {

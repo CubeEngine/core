@@ -56,6 +56,10 @@ public abstract class BlockActionType<ListenerType> extends ActionTypeBase<Liste
         public Material material;
         public byte data;
 
+        public BlockSection()
+        {
+        }
+
         public BlockSection(BlockState state)
         {
             this(state.getType());

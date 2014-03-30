@@ -15,17 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action;
+package de.cubeisland.engine.log.action.newaction;
 
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
+import de.cubeisland.engine.log.LogAttachment;
 
-public abstract class BukkitActionType extends ActionType implements Listener
+public interface Rollbackable extends Recoverable
 {
-    private final Plugin plugin;
-
-    public BukkitActionType(Plugin plugin)
-    {
-        this.plugin = plugin;
-    }
+    boolean rollback(LogAttachment attachment, boolean force, boolean preview);
 }

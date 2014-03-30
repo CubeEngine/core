@@ -28,76 +28,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.newaction.MoveItem;
-import de.cubeisland.engine.log.action.newaction.block.player.worldedit.WorldEditAction;
-import de.cubeisland.engine.log.action.newaction.block.BlockFall;
-import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerListener;
-import de.cubeisland.engine.log.action.newaction.player.item.container.ItemInsert;
-import de.cubeisland.engine.log.action.newaction.player.item.container.ItemRemove;
-import de.cubeisland.engine.log.action.newaction.player.item.FireworkUse;
-import de.cubeisland.engine.log.action.newaction.player.item.PotionSplash;
-import de.cubeisland.engine.log.action.newaction.block.BlockBurn;
-import de.cubeisland.engine.log.action.newaction.block.BlockFade;
-import de.cubeisland.engine.log.action.newaction.block.BlockForm;
-import de.cubeisland.engine.log.action.newaction.block.BlockShift;
-import de.cubeisland.engine.log.action.newaction.block.BlockSpread;
-import de.cubeisland.engine.log.action.newaction.block.LeafDecay;
-import de.cubeisland.engine.log.action.newaction.block.NaturalGrow;
-import de.cubeisland.engine.log.action.newaction.block.entity.EndermanPickup;
-import de.cubeisland.engine.log.action.newaction.block.entity.EndermanPlace;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityForm;
-import de.cubeisland.engine.log.action.newaction.block.entity.SheepEat;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.CreeperExplode;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.EnderdragonExplode;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.EntityExplode;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplodeListener;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.FireballExplode;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.TntExplode;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.WitherExplode;
-import de.cubeisland.engine.log.action.newaction.block.flow.LavaBreak;
-import de.cubeisland.engine.log.action.newaction.block.flow.LavaFlow;
-import de.cubeisland.engine.log.action.newaction.block.flow.WaterBreak;
-import de.cubeisland.engine.log.action.newaction.block.flow.WaterFlow;
-import de.cubeisland.engine.log.action.newaction.block.ignite.FireSpread;
-import de.cubeisland.engine.log.action.newaction.block.ignite.FireballIgnite;
-import de.cubeisland.engine.log.action.newaction.block.ignite.LavaIgnite;
-import de.cubeisland.engine.log.action.newaction.block.ignite.LightningIgnite;
-import de.cubeisland.engine.log.action.newaction.block.ignite.OtherIgnite;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerGrow;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.BonemealUse;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.ButtonUse;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.CakeEat;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.ComparatorChange;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.ContainerAccess;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.CropTrample;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.DoorUse;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.LeverUse;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.NoteBlockChange;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.PlateStep;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.RepeaterChange;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.TntPrime;
-import de.cubeisland.engine.log.action.newaction.death.AnimalDeath;
-import de.cubeisland.engine.log.action.newaction.death.BossDeath;
-import de.cubeisland.engine.log.action.newaction.death.DeathListener;
-import de.cubeisland.engine.log.action.newaction.death.MonsterDeath;
-import de.cubeisland.engine.log.action.newaction.death.NpcDeath;
-import de.cubeisland.engine.log.action.newaction.death.OtherDeath;
-import de.cubeisland.engine.log.action.newaction.death.PetDeath;
-import de.cubeisland.engine.log.action.newaction.death.PlayerDeath;
-import de.cubeisland.engine.log.action.newaction.entity.EntityListener;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.MonsterEggUse;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.NaturalSpawn;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.OtherSpawn;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.SpawnerSpawn;
-import de.cubeisland.engine.log.action.newaction.player.MilkFill;
-import de.cubeisland.engine.log.action.newaction.player.PlayerChat;
-import de.cubeisland.engine.log.action.newaction.player.PlayerCommand;
-import de.cubeisland.engine.log.action.newaction.player.PlayerJoin;
-import de.cubeisland.engine.log.action.newaction.player.PlayerQuit;
-import de.cubeisland.engine.log.action.newaction.player.PlayerTeleport;
-import de.cubeisland.engine.log.action.newaction.player.XpPickup;
-import de.cubeisland.engine.log.action.newaction.player.item.EnchantItem;
-import de.cubeisland.engine.log.storage.ActionTypeModel;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class ActionTypeManager
@@ -108,143 +39,26 @@ public class ActionTypeManager
     private final Map<String, ActionTypeCategory> categories = new HashMap<>();
     private final Log module;
 
-    private final Map<String,ActionTypeModel> actionTypeModels;
-
     public ActionTypeManager(Log module)
     {
         this.module = module;
-        this.actionTypeModels = new HashMap<>();
-        for (ActionTypeModel actionTypeModel : this.module.getLogManager().getQueryManager().getActionTypesFromDatabase())
-        {
-            this.actionTypeModels.put(actionTypeModel.getName(), actionTypeModel);
-        }
         ActionTypeCompleter.manager = this;
         this.registerLogActionTypes();
     }
 
     public void registerLogActionTypes()
     {
-        this.registerActionType(new BlockBreak())
-            .registerActionType(new BlockBurn())
-            .registerActionType(new BlockFade())
-            .registerActionType(new LeafDecay())
-            .registerActionType(new WaterBreak())
-            .registerActionType(new LavaBreak())
-            .registerActionType(new EntityBreak())
-            .registerActionType(new EndermanPickup())
-            .registerActionType(new BucketFill())
-            .registerActionType(new CropTrample())
-            .registerActionType(new EntityExplode())
-            .registerActionType(new CreeperExplode())
-            .registerActionType(new TntExplode())
-            .registerActionType(new FireballExplode())
-            .registerActionType(new EnderdragonExplode())
-            .registerActionType(new WitherExplode())
-            .registerActionType(new TntPrime())
-            .registerActionType(new BlockPlace())
-            .registerActionType(new LavaBucket())
-            .registerActionType(new WaterBucket())
-            .registerActionType(new NaturalGrow())
-            .registerActionType(new PlayerGrow())
-            .registerActionType(new BlockForm())
-            .registerActionType(new EndermanPlace())
-            .registerActionType(new EntityForm())
-            .registerActionType(new FireSpread())
-            .registerActionType(new FireballIgnite())
-            .registerActionType(new Lighter())
-            .registerActionType(new LavaIgnite())
-            .registerActionType(new LightningIgnite())
-            .registerActionType(new BlockSpread())
-            .registerActionType(new WaterFlow())
-            .registerActionType(new LavaFlow())
-            .registerActionType(new OtherIgnite())
-            .registerActionType(new BlockShift())
-            .registerActionType(new BlockFall())
-            .registerActionType(new SignChange())
-            .registerActionType(new SheepEat())
-            .registerActionType(new BonemealUse())
-            .registerActionType(new LeverUse())
-            .registerActionType(new RepeaterChange())
-            .registerActionType(new NoteBlockChange())
-            .registerActionType(new DoorUse())
-            .registerActionType(new CakeEat())
-            .registerActionType(new ComparatorChange())
-            .registerActionType(new WorldEditAction())
-            .registerActionType(new ContainerAccess())
-            .registerActionType(new ButtonUse())
-            .registerActionType(new FireworkUse())
-            .registerActionType(new VehicleEnter())
-            .registerActionType(new VehicleExit())
-            .registerActionType(new PotionSplash())
-            .registerActionType(new PlateStep())
-            .registerActionType(new MilkFill())
-            .registerActionType(new SoupFill())
-            .registerActionType(new VehiclePlace())
-            .registerActionType(new HangingPlace())
-            .registerActionType(new VehicleBreak())
-            .registerActionType(new HangingBreak())
-            .registerActionType(new PlayerDeath())
-            .registerActionType(new MonsterDeath())
-            .registerActionType(new AnimalDeath())
-            .registerActionType(new PetDeath())
-            .registerActionType(new NpcDeath())
-            .registerActionType(new BossDeath())
-            .registerActionType(new OtherDeath())
-            .registerActionType(new MonsterEggUse())
-            .registerActionType(new NaturalSpawn())
-            .registerActionType(new SpawnerSpawn())
-            .registerActionType(new OtherSpawn())
-            .registerActionType(new ItemDrop())
-            .registerActionType(new ItemPickup())
-            .registerActionType(new XpPickup())
-            .registerActionType(new EntityShear())
-            .registerActionType(new EntityDye())
-            .registerActionType(new ItemInsert())
-            .registerActionType(new ItemRemove())
-            .registerActionType(new MoveItem())
-            .registerActionType(new PlayerCommand())
-            .registerActionType(new PlayerChat())
-            .registerActionType(new PlayerJoin())
-            .registerActionType(new PlayerQuit())
-            .registerActionType(new PlayerTeleport())
-            .registerActionType(new EnchantItem())
-            .registerActionType(new CraftItem())
-            .registerActionType(new ItemInFrameRemove());
-        this.registerActionType(new EntityChangeActionType())
-            .registerActionType(new ExplodeListener())
-            .registerActionType(new FlowActionType())
-            .registerActionType(new IgniteActionType())
-            .registerActionType(new RightClickActionType())
-            .registerActionType(new BucketEmpty())
-            .registerActionType(new ContainerListener())
-            .registerActionType(new InteractEntityActionType())
-            .registerActionType(new DeathListener())
-            .registerActionType(new EntityListener());
+        module.getCore().getEventManager().registerListener(module,new PlayerBlockListener(module));
     }
 
     public ActionTypeManager registerActionType(ActionType actionType)
     {
-        if (actionType.needsModel())
-        {
-            ActionTypeModel actionTypeModel = this.actionTypeModels.get(actionType.getName());
-            if (actionTypeModel == null)
-            {
-                actionTypeModel = this.module.getLogManager().getQueryManager().registerActionType(actionType.getName());
-                this.actionTypeModels.put(actionType.getName(), actionTypeModel);
-            }
-            actionType.setModel(actionTypeModel);
-            registeredIds.put(actionType.getModel().getId().longValue(), actionType);
-        }
         registeredActionTypes.put(actionType.getClass(), actionType);
         actionTypesByName.put(actionType.getName(), actionType);
         actionType.initialize(module, this);
-        if (actionType.getModel() != null)
+        for (ActionTypeCategory category : actionType.getCategories())
         {
-            for (ActionTypeCategory category : actionType.getCategories())
-            {
-                this.categories.put(category.name, category);
-            }
-            this.module.getLog().debug("ActionType registered: {} {}", actionType.getModel().getId(), actionType.getName());
+            this.categories.put(category.name, category);
         }
         return this;
     }

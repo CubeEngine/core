@@ -24,6 +24,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.event.Listener;
 import org.bukkit.material.Bed;
 
+import com.mongodb.DBCollection;
 import com.mongodb.DBRefBase;
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.log.Log;
@@ -88,33 +89,26 @@ public class LogListener implements Listener
 
     public final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz)
     {
-        try
-        {
-            return clazz.newInstance();
-        }
-        catch (InstantiationException | IllegalAccessException e)
-        {
-            throw new IllegalArgumentException("Given LogAction cannot be instantiated!");
-        }
+        return module.getCore().getConfigFactory().create(clazz);
     }
 
     public final void logAction(ActionTypeBase action)
     {
-        // TODO
+        this.module.getLogManager().queueLog(action);
     }
 
     public final boolean isActive(Class<? extends ActionTypeBase> clazz, World world)
     {
-        // TODO
         return true;
     }
 
-    public <T extends ActionTypeBase> Reference<T> reference(ActionTypeBase action)
+    public <T extends ActionTypeBase> Reference<T> reference(ActionTypeBase<?> action)
     {
         if (action == null)
         {
             return null;
         }
-        return new Reference<>(module.getCore().getConfigFactory(), new DBRefBase(db, collection, action.getId()));
+        DBCollection collection = module.getLogManager().getCollection();
+        return new Reference<>(module.getCore().getConfigFactory(), new DBRefBase(collection.getDB(), collection.getName(), action.getTarget().get("_id")));
     }
 }

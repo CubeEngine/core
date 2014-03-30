@@ -41,6 +41,9 @@ public abstract class PlayerBlockActionType<ListenerType> extends BlockActionTyp
         public UUID uuid;
         public String name;
 
+        public PlayerSection()
+        {}
+
         public PlayerSection(Player player)
         {
             this.name = player.getName();

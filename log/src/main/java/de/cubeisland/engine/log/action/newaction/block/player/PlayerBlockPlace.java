@@ -43,8 +43,8 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerBlockPlace && this.player.equals(((PlayerBlockPlace)action).player)
-            && ((PlayerBlockPlace)action).oldBlock == this.oldBlock
-            && ((PlayerBlockPlace)action).newBlock == this.newBlock;
+            && ((PlayerBlockPlace)action).oldBlock.material == this.oldBlock.material
+            && ((PlayerBlockPlace)action).newBlock.material == this.newBlock.material;
     }
 
     @Override
@@ -55,20 +55,20 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
             int amount = this.getAttached().size() + 1;
             if (this.oldBlock.is(AIR))
             {
-                return user.getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}{}",
+                return user.getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}",
                                            this.player.name, amount, this.newBlock.name());
             }
             return user.getTranslation(MessageType.POSITIVE,
-                                       "{user} replaced {amount}x {name#block} with {name#block}{}", this.player.name,
+                                       "{user} replaced {amount}x {name#block} with {name#block}", this.player.name,
                                        amount, this.oldBlock.name(), this.newBlock.name());
         }
         // else single
         if (this.oldBlock.is(AIR))
         {
-            return user.getTranslation(MessageType.POSITIVE, "{user} placed {name#block}{}", this.player.name,
+            return user.getTranslation(MessageType.POSITIVE, "{user} placed {name#block}", this.player.name,
                                        this.newBlock.name());
         }
-        return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}{}",
+        return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}",
                                    this.player.name, this.oldBlock.name(), this.newBlock.name());
     }
 }

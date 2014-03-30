@@ -18,7 +18,9 @@
 package de.cubeisland.engine.bigdata;
 
 import java.net.UnknownHostException;
+import java.util.Date;
 
+import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import de.cubeisland.engine.core.module.Module;import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 
@@ -41,6 +43,7 @@ public class Bigdata extends Module
         }
         MongoDBCodec mongoDBCodec = new MongoDBCodec();
         this.getCore().getConfigFactory().getCodecManager().registerCodec(mongoDBCodec);
+        mongoDBCodec.getConverterManager().registerConverter(Date.class, new DateConverter());
         mongoDBCodec.getConverterManager().registerConverter(Reference.class, new ReferenceConverter(this.getCore().getConfigFactory()));
     }
 
@@ -48,5 +51,10 @@ public class Bigdata extends Module
     public void onEnable()
     {
 
+    }
+
+    public DB getDatabae(String name)
+    {
+        return this.pool.getDB(name);
     }
 }

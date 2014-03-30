@@ -15,34 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.bigdata;
+package de.cubeisland.engine.log.action.newaction;
 
-import com.mongodb.DBRefBase;
-import de.cubeisland.engine.reflect.Reflector;
-
-public class Reference<T extends ReflectedDBObject>
+public interface Recoverable
 {
-    private final Reflector reflector;
-    protected DBRefBase dbRef;
-    private T fetched = null;
+    boolean isBlockBound();
 
-    public Reference(Reflector reflector, DBRefBase dbRefBase)
-    {
-        this.reflector = reflector;
-        this.dbRef = dbRefBase;
-    }
-
-    public T fetch(Class<T> clazz)
-    {
-        if (fetched == null)
-        {
-            this.fetched = this.reflector.load(clazz, dbRef.fetch());
-        }
-        return fetched;
-    }
-
-    public boolean equals(Reference<T> other)
-    {
-        return this.dbRef.equals(other.dbRef);
-    }
+    boolean isStackable();
 }

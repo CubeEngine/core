@@ -15,25 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.storage;
+package de.cubeisland.engine.bigdata;
 
-import org.bukkit.entity.EntityType;
+import java.util.Date;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import de.cubeisland.engine.bigdata.node.DateNode;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.Node;
 
-public class EntityData
+public class DateConverter implements Converter<Date>
 {
-    public final EntityType entityType;
-
-    public EntityData(EntityType entityType, JsonNode json)
+    @Override
+    public Node toNode(Date object, ConverterManager manager) throws ConversionException
     {
-        this.entityType = entityType;
-        //TODO get data from json
+        return new DateNode(object);
     }
 
     @Override
-    public String toString()
+    public Date fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        return entityType.name();  //TODO pretty name CE-294 http://git.cubeisland.de/cubeengine/cubeengine/issues/289
+        if (node instanceof DateNode)
+        {
+            return (Date)node.getValue();
+        }
+        throw ConversionException.of(this, node, "Not a DateNode");
     }
 }

@@ -44,7 +44,6 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.storage.ItemData;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import static de.cubeisland.engine.core.util.InventoryUtil.getMissingSpace;

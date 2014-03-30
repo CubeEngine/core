@@ -15,40 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.storage;
+package de.cubeisland.engine.bigdata;
 
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
+import com.mongodb.DBObject;
+import de.cubeisland.engine.reflect.Reflected;
 
-public class ImmutableBlockData
+public class ReflectedDBObject extends Reflected<MongoDBCodec, DBObject>
 {
-    public final Material material;
-    public final Byte data;
-
-    public ImmutableBlockData(BlockState blockState)
+    @Override
+    public void save(DBObject dbo)
     {
-        this(blockState.getType(), blockState.getRawData());
-    }
-
-    public ImmutableBlockData(Material material)
-    {
-        this(material, null);
-    }
-
-    public ImmutableBlockData(Material material, Byte data)
-    {
-        this.material = material;
-        this.data = data;
+        this.getCodec().saveReflected(this, dbo);
     }
 
     @Override
-    public String toString()
+    public boolean loadFrom(DBObject dbo)
     {
-        if (data == 0)
-        {
-            return material.name();
-        }
-        return material + ":" + data;
-        //Match.material() //TODO pretty name TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/289
+        this.getCodec().loadReflected(this, dbo);
+        return true;
     }
 }
