@@ -54,7 +54,7 @@ public class SignMarketConfig extends ReflectedYaml
     @Comment("Allows items taken out of signs to be overstacked up to 64.")
     public boolean allowOverStackedOutOfSign = false;
 
-    @Comment("The maximum amount of inventory-lines a admin-sign can have.\n" +
+    @Comment("The maximum amount of inventory-lines a admin sign can have.\n" +
             "Use -1 for infinite stock-size OR values from 1-6!")
     @Name("sign.admin.stock.max")
     public int maxAdminStock = -1;
@@ -66,7 +66,7 @@ public class SignMarketConfig extends ReflectedYaml
     @Name("sign.admin.stock.buy-if-empty.fee")
     public float factorIfAdminSignIsEmpty = 10;
 
-    @Comment("The maximum amount of inventory-lines a user-sign can have.\n" +
+    @Comment("The maximum amount of inventory lines a user-sign can have.\n" +
             "Use -1 for infinite stock-size OR values from 1-6!")
     @Name("sign.user.stock.max")
     public int maxUserStock = 6;

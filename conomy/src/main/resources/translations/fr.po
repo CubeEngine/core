@@ -17,20 +17,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 21:08+0100\n"
-"PO-Revision-Date: 2014-03-13 12:44+0000\n"
-"Last-Translator: Phillip Schichtel\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-29 12:20:47+0100\n"
+"PO-Revision-Date: 2014-03-30 10:55+0000\n"
+"Last-Translator: CubeIsland <development@cubeisland.de>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:483
-msgid "You already had an account!"
-msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:511
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:548
@@ -125,10 +121,6 @@ msgstr ""
 msgid "Creates a new bank"
 msgstr ""
 
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:435
-msgid "Creates a new user-account"
-msgstr ""
-
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:416
 msgid "Deletes a bank"
 msgstr ""
@@ -145,16 +137,8 @@ msgstr ""
 msgid "Gives money to a bank or all banks"
 msgstr ""
 
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:45
-msgid "Gives money to given user or all [online] users"
-msgstr ""
-
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:243
 msgid "Hides the account of given bank"
-msgstr ""
-
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:337
-msgid "Hides the account of given player"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:129
@@ -209,20 +193,12 @@ msgstr ""
 msgid "Scales the money from given banks"
 msgstr ""
 
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:285
-msgid "Scales the money from given users"
-msgstr ""
-
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:479
 msgid "Sets given user as owner for a bank"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:163
 msgid "Sets the money from given banks"
-msgstr ""
-
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:225
-msgid "Sets the money from given user"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:50
@@ -253,10 +229,6 @@ msgstr ""
 msgid "Unhides the account of given banks"
 msgstr ""
 
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:375
-msgid "Unhides the account of given player"
-msgstr ""
-
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:630
 msgid "Withdraws given amount of money from the bank"
 msgstr ""
@@ -282,6 +254,34 @@ msgstr ""
 msgid "[player]"
 msgstr ""
 
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:435
+msgid "Creates a new account"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:45
+msgid "Gives money to one or all players."
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:337
+msgid "Hides the account of a given player"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:285
+msgid "Scales the money of a given player"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:225
+msgid "Sets the money of a given player"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:375
+msgid "Unhides the account of a given player"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:476
+msgid "Bank name {input#bank} has already been taken!"
+msgstr ""
+
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:473
 msgid "Bank renamed!"
 msgstr ""
@@ -298,13 +298,7 @@ msgstr ""
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:95
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:172
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:122
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:235
-#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:170
 msgid "Could not parse amount!"
-msgstr ""
-
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:55
-msgid "Could not parse amount! {input#amount}"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:52
@@ -338,6 +332,10 @@ msgid ""
 "console."
 msgstr ""
 
+#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:170
+msgid "Invalid amount!"
+msgstr ""
+
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:213
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:294
 msgid "Invalid factor: {input#factor}"
@@ -367,8 +365,29 @@ msgstr ""
 msgid "Owners:"
 msgstr ""
 
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:99
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:138
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:207
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:281
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:347
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:488
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:86
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:153
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:205
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:266
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:323
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:353
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:391
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:422
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:466
+#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:82
+#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:191
+#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:224
+msgid "Player {user} not found!"
+msgstr ""
+
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:314
-msgid "Please do specify a bank-account to leave"
+msgid "Please do specify a bank account to leave"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:186
@@ -388,7 +407,7 @@ msgid "Please specify a player to leave!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/MoneyCommand.java:200
-msgid "Please specify a user to use his account."
+msgid "Please specify a player to use their account."
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:69
@@ -404,11 +423,11 @@ msgid "Scaled the balance of every bank by {decimal#factor}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:303
-msgid "Scaled the balance of every online user by {decimal#factor}!"
+msgid "Scaled the balance of every online player by {decimal#factor}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:313
-msgid "Scaled the balance of every user by {decimal#factor}!"
+msgid "Scaled the balance of every player by {decimal#factor}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:232
@@ -423,16 +442,16 @@ msgstr ""
 msgid "Sorry but robbing a bank is not allowed!"
 msgstr ""
 
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:235
+msgid "That isn't a valid amount!"
+msgstr ""
+
 #: de/cubeisland/engine/conomy/commands/MoneyCommand.java:262
 msgid "The Transaction was not successful!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:151
 msgid "The account of the bank {input#bank} got reset to {input#balance}!"
-msgstr ""
-
-#: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:193
-msgid "The account of the bank {input#bank} got set to {input#balance}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:667
@@ -457,11 +476,15 @@ msgid "The bank {input#bank} was not hidden!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:122
-msgid "The following banks do exist:"
+msgid "The following banks are available:"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:534
 msgid "The following players are invited:"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:193
+msgid "The money of bank account {input#bank} got set to {input#balance}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:541
@@ -473,10 +496,22 @@ msgid "There are no banks currently!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:403
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:476
 msgid "There is already a bank names {input#bank}!"
 msgstr ""
 
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:61
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:69
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:148
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:301
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:353
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:381
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:424
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:459
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:494
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:554
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:602
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:683
+#: de/cubeisland/engine/conomy/commands/BankCommands.java:712
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:112
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:146
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:189
@@ -490,22 +525,9 @@ msgstr ""
 msgid "There is no bank account named {input#name}!"
 msgstr ""
 
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:61
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:69
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:148
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:224
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:301
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:353
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:381
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:424
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:459
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:494
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:517
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:554
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:602
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:641
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:683
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:712
 msgid "There is no bank-account named {input#bank}!"
 msgstr ""
 
@@ -547,42 +569,28 @@ msgid ""
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:456
-msgid "Use the -force flag to create the account anyways."
+msgid "Use the -force flag to create the account anyway."
 msgstr ""
 
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:99
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:138
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:207
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:281
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:347
-#: de/cubeisland/engine/conomy/commands/BankCommands.java:488
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:697
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:86
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:153
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:205
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:266
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:323
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:353
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:391
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:422
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:466
-#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:82
-#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:191
-#: de/cubeisland/engine/conomy/commands/MoneyCommand.java:224
 msgid "User {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/MoneyCommand.java:175
-msgid "What are you trying there?"
-msgstr ""
-
-#: de/cubeisland/engine/conomy/commands/EcoCommands.java:166
-msgid "Withdrawed {input#amount} from your account."
+msgid "What are you trying to do?"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:664
 msgid ""
 "Withdrawn {input#amount} from {name#bank}! New Balance: {input#balance}"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:166
+msgid "Withdrew {input#amount} from your account."
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:483
+msgid "You already have an account!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:244
@@ -677,11 +685,11 @@ msgid "You gave {input#amount} to every bank!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:65
-msgid "You gave {input#amount} to every online user!"
+msgid "You gave {input#amount} to every online player!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:75
-msgid "You gave {input#amount} to every user!"
+msgid "You gave {input#amount} to every player!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:73
@@ -697,11 +705,11 @@ msgid "You have set every bank account to {input#balance}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:245
-msgid "You have set every online user account to {input#balance}!"
+msgid "You have set every online player account to {input#balance}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:255
-msgid "You have set every user account to {input#balance}!"
+msgid "You have set every player account to {input#balance}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:336
@@ -722,15 +730,15 @@ msgid "You need to be owner of a bank to rename it!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:136
-msgid "You resetted every bank account!"
+msgid "You reset every bank account!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:184
-msgid "You resetted every online user account!"
+msgid "You reset every online players' account!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:194
-msgid "You resetted every user account!"
+msgid "You reset every players' account!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:102
@@ -738,11 +746,11 @@ msgid "You took {input#amount} from every bank!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:132
-msgid "You took {input#amount} from every online user!"
+msgid "You took {input#amount} from every online player!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:142
-msgid "You took {input#amount} from every user!"
+msgid "You took {input#amount} from every player!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:116
@@ -758,21 +766,25 @@ msgid "You were granted {input#amount}."
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:487
-msgid "Your account got created!"
+msgid "Your account has now been created!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:219
-msgid "Your balance got resetted to {input#balance}."
+msgid "Your balance got reset to {input#balance}."
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:279
-msgid "Your balance got set to {input#balance}."
+msgid "Your balance has been set to {input#balance}."
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:608
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:652
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:719
 msgid "{input#amount} is not a valid amount!"
+msgstr ""
+
+#: de/cubeisland/engine/conomy/commands/EcoCommands.java:55
+msgid "{input#amount} is not a valid number!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/MoneyCommand.java:252
@@ -792,7 +804,7 @@ msgid "{user} account set to {input#balance}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoCommands.java:472
-msgid "{user} already had an account!"
+msgid "{user} already has an account!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/MoneyCommand.java:239
@@ -872,7 +884,7 @@ msgid "{user} is the owner of the following banks:"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/MoneyCommand.java:258
-msgid "{user} just payed you {input#amount}!"
+msgid "{user} just paid you {input#amount}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/BankCommands.java:252
@@ -880,8 +892,7 @@ msgid "{user} needs to be invited to join this bank!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:156
-msgid ""
-"{user} resetted the money of your bank {input#bank} to {input#balance}!"
+msgid "{user} reset the money of your bank {input#bank} to {input#balance}!"
 msgstr ""
 
 #: de/cubeisland/engine/conomy/commands/EcoBankCommands.java:237

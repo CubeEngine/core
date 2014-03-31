@@ -42,7 +42,7 @@ public class Chat extends Module implements Listener
         else
         {
             this.getCore().getEventManager().registerListener(this, new ChatFormatListener(this));
-            this.getLog().info("No Roles-Module found!");
+            this.getLog().info("No Roles Module found!");
         }
     }
 

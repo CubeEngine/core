@@ -83,7 +83,7 @@ public class ChatCommands
         }
         if (lastWhisper == null)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "No one has send you a message that you could reply to!");
+            context.sendTranslated(MessageType.NEUTRAL, "No one has sent you a message that you could reply to!");
             return;
         }
         if (!this.sendWhisperTo(lastWhisper, context.getStrings(0), context))
@@ -217,7 +217,7 @@ public class ChatCommands
     @Command(desc = "Displays the colors")
     public void chatcolors(CommandContext context)
     {
-        context.sendTranslated(MessageType.POSITIVE, "The following chat-codes are available:");
+        context.sendTranslated(MessageType.POSITIVE, "The following chat codes are available:");
         StringBuilder builder = new StringBuilder();
         int i = 0;
         for (ChatFormat chatFormat : ChatFormat.values())

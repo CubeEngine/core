@@ -86,7 +86,7 @@ public class WorldConfig extends ReflectedYaml
 
     public class Access implements Section
     {
-        @Comment("If true players wont need permissions to access this world")
+        @Comment("If true players wont need permission to access this world")
         public boolean free = true;
     }
 
@@ -252,14 +252,14 @@ public class WorldConfig extends ReflectedYaml
         }
         if (this.generation.environment == Environment.NETHER && !Bukkit.getServer().getAllowNether())
         {
-            CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("Nether-Worlds are disabled on this server!" +
+            CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("Nether worlds are disabled on this server!" +
                                                                                               " Disabled Auto-Loading for {}",
                                                                                           loadedFrom.getName());
             this.autoLoad = false;
         }
         if (this.generation.environment == Environment.THE_END && !Bukkit.getServer().getAllowEnd())
         {
-            CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("End-Worlds are disabled on this server! " +
+            CubeEngine.getCore().getModuleManager().getModule(Worlds.class).getLog().warn("End worlds are disabled on this server! " +
                                                                                               "Disabled Auto-Loading for {}",
                                                                                           loadedFrom.getName());
             this.autoLoad = false;

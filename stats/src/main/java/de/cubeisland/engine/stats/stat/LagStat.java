@@ -44,7 +44,7 @@ public class LagStat extends Stat
     /**
      * Fetch the current TPS and free memory and push it to the database
      */
-    @Scheduled(name = "fetcher", interval = 200, comment = "The task that fetches the memory and tps and pushes it to the database", async = true)
+    @Scheduled(name = "fetcher", interval = 200, comment = "The task that fetches the memory and TPS, and pushes it to the database", async = true)
     public void fetch()
     {
         Map<String, Object> data = new HashMap<>();

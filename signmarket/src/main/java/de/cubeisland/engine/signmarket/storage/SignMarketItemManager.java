@@ -45,7 +45,7 @@ public class SignMarketItemManager
         {
             this.itemInfoModels.put(model.getKey().longValue(), model);
         }
-        this.module.getLog().debug("{} item-models loaded", this.itemInfoModels.size());
+        this.module.getLog().debug("{} item models loaded", this.itemInfoModels.size());
     }
 
     public SignMarketItemModel getInfoModel(long key)
@@ -66,7 +66,7 @@ public class SignMarketItemManager
             if (!usedKeys.contains(key))
             {
                 this.itemInfoModels.remove(key).delete();
-                this.module.getLog().debug("deleted unused item-model #{}", key);
+                this.module.getLog().debug("deleted unused item model #{}", key);
             }
         }
     }

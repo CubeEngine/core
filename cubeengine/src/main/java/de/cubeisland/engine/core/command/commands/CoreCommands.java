@@ -73,7 +73,7 @@ public class CoreCommands extends ContainerCommand
         pm.disablePlugin(this.core);
         pm.enablePlugin(this.core);
         long time = Profiler.endProfiling("ceReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(MessageType.POSITIVE, "CubeEngine-Reload completed in {integer#time}ms!", time);
+        context.sendTranslated(MessageType.POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", time);
     }
 
     @Command(desc = "Reloads all of the modules!", usage = "[-f]", flags = @Flag(name = "f", longName = "file"))
@@ -83,7 +83,7 @@ public class CoreCommands extends ContainerCommand
         Profiler.startProfiling("modulesReload");
         context.getCore().getModuleManager().reloadModules(context.hasFlag("f"));
         long time = Profiler.endProfiling("modulesReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(MessageType.POSITIVE, "Modules-Reload completed in {integer#time}ms!", time);
+        context.sendTranslated(MessageType.POSITIVE, "Modules Reload completed in {integer#time}ms!", time);
     }
 
     @Command(names = {
@@ -98,7 +98,7 @@ public class CoreCommands extends ContainerCommand
             target = context.getUser(1);
             if (target == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!");
+                sender.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!");
                 return;
             }
         }
@@ -108,19 +108,19 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            sender.sendTranslated(MessageType.NEGATIVE, "No user given!");
+            sender.sendTranslated(MessageType.NEGATIVE, "No player given!");
             return;
         }
 
         if (target == sender && !sender.isAuthorized(core.perms().COMMAND_SETPASSWORD_OTHER))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the password of an other user!");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the password of an other player!");
             return;
         }
         core.getUserManager().setPassword(target, context.getString(0));
         if (sender == target)
         {
-            sender.sendTranslated(MessageType.POSITIVE, "The user's password has been set!");
+            sender.sendTranslated(MessageType.POSITIVE, "The player's password has been set!");
         }
         else
         {
@@ -151,18 +151,18 @@ public class CoreCommands extends ContainerCommand
         {
             if (!core.perms().COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear the password of other users!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear the password of other players!");
                 return;
             }
             User target = context.getUser(0);
             if (target != null)
             {
                 this.core.getUserManager().resetPassword(target);
-                sender.sendTranslated(MessageType.POSITIVE, "The user's password has been reset!");
+                sender.sendTranslated(MessageType.POSITIVE, "The player's password has been reset!");
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             }
         }
         else if (sender instanceof User)

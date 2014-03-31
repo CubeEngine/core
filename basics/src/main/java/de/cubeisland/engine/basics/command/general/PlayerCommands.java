@@ -79,14 +79,14 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Refills your hunger bar", max = 1, usage = "{players}")
+    @Command(desc = "Refills your hunger bar", max = 1, usage = "(players)")
     public void feed(CommandContext context)
     {
         if (context.hasArg(0))
         {
             if (!module.perms().COMMAND_FEED_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to feed other users!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to feed other players!");
                 return;
             }
             Collection<User> users;
@@ -97,7 +97,7 @@ public class PlayerCommands
                 users = this.um.getOnlineUsers();
                 if (users.isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "There are no users online at the moment!");
+                    context.sendTranslated(MessageType.NEGATIVE, "There are no players online at the moment!");
                     return;
                 }
                 context.sendTranslated(MessageType.POSITIVE, "You made everyone fat!");
@@ -112,17 +112,17 @@ public class PlayerCommands
                     User user = this.um.findUser(name);
                     if (user == null || !user.isOnline())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                        context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", name);
                         continue;
                     }
                     users.add(user);
                 }
                 if (users.isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Could not find any of those users to feed!");
+                    context.sendTranslated(MessageType.NEUTRAL, "Could not find any of those players to feed!");
                     return;
                 }
-                context.sendTranslated(MessageType.POSITIVE, "Feeded {amount} players!", users.size());
+                context.sendTranslated(MessageType.POSITIVE, "Fed {amount} players!", users.size());
             }
             for (User user : users)
             {
@@ -149,14 +149,14 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Empties the hunger bar", max = 1, usage = "{players}")
+    @Command(desc = "Empties the hunger bar", max = 1, usage = "(players)")
     public void starve(CommandContext context)
     {
         if (context.hasArg(0))
         {
             if (!module.perms().COMMAND_STARVE_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to let other user starve!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to let other players starve!");
                 return;
             }
             Collection<User> users;
@@ -167,7 +167,7 @@ public class PlayerCommands
                 users = this.um.getOnlineUsers();
                 if (users.isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "There are no users online at the moment!");
+                    context.sendTranslated(MessageType.NEGATIVE, "There are no players online at the moment!");
                     return;
                 }
                 context.sendTranslated(MessageType.NEUTRAL, "You let everyone starve to death!");
@@ -182,14 +182,14 @@ public class PlayerCommands
                     User user = this.um.findUser(name);
                     if (user == null || !user.isOnline())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                        context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", name);
                         continue;
                     }
                     users.add(user);
                 }
                 if (users.isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Could not find any of those users to starve!");
+                    context.sendTranslated(MessageType.NEUTRAL, "Could not find any of those players to starve!");
                     return;
                 }
                 context.sendTranslated(MessageType.POSITIVE, "Starved {amount} players!", users.size());
@@ -219,14 +219,14 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Heals a player", max = 1, usage = "{player}")
+    @Command(desc = "Heals a player", max = 1, usage = "(player)")
     public void heal(CommandContext context)
     {
         if (context.hasArg(0))
         {
             if (!module.perms().COMMAND_HEAL_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to heal other user!");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to heal other players!");
                 return;
             }
             Collection<User> users;
@@ -237,7 +237,7 @@ public class PlayerCommands
                 users = this.um.getOnlineUsers();
                 if (users.isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "There are no users online at the moment!");
+                    context.sendTranslated(MessageType.NEGATIVE, "There are no players online at the moment!");
                     return;
                 }
                 context.sendTranslated(MessageType.POSITIVE, "You healed everyone!");
@@ -252,14 +252,14 @@ public class PlayerCommands
                     User user = this.um.findUser(name);
                     if (user == null || !user.isOnline())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                        context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", name);
                         continue;
                     }
                     users.add(user);
                 }
                 if (users.isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Could not find any of those users to heal!");
+                    context.sendTranslated(MessageType.NEUTRAL, "Could not find any of those players to heal!");
                     return;
                 }
                 context.sendTranslated(MessageType.POSITIVE, "Healed {amount} players!", users.size());
@@ -324,7 +324,7 @@ public class PlayerCommands
     }
 
     @Command(names = {"gamemode", "gm"}, max = 2,
-            desc = "Changes the gamemode", usage = "{player} [gamemode]")
+            desc = "Changes the gamemode", usage = "(player) [gamemode]")
     public void gamemode(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -416,7 +416,7 @@ public class PlayerCommands
                     User user = this.um.findUser(name);
                     if (user == null || !user.isOnline())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "User {user} not found or offline!", name);
+                        context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found or offline!", name);
                         continue;
                     }
                     if (this.kill(user, lightning, context, false, force, quiet))
@@ -434,7 +434,7 @@ public class PlayerCommands
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Could not kill any of given users!");
+                    context.sendTranslated(MessageType.NEUTRAL, "Could not kill any of given players!");
                 }
                 return;
             }
@@ -528,7 +528,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         String s = context.getStrings(1);
@@ -556,7 +556,7 @@ public class PlayerCommands
         context.sendTranslated(MessageType.NEGATIVE, "You ended your life. Why? {text:\\:(:color=DARK_RED}");
     }
 
-    @Command(desc = "Displays that you are afk", max = 1, usage = "{player}")
+    @Command(desc = "Displays that you are afk", max = 1, usage = "(player)")
     public void afk(CommandContext context)
     {
         User user;
@@ -570,7 +570,7 @@ public class PlayerCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             if (!user.isOnline())
@@ -607,7 +607,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         if (!user.isOnline())
@@ -621,7 +621,7 @@ public class PlayerCommands
         if (user.hasPlayedBefore() || user.isOnline())
         {
             context.sendTranslated(MessageType.NEUTRAL, "Life: {decimal:0}/{decimal#max:0}", user.getHealth(), user.getMaxHealth());
-            context.sendTranslated(MessageType.NEUTRAL, "Hunger: {decimal#foodlvl:0}/{text:20} ({integer#saturation}/{decimal#foodlvl:0})", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
+            context.sendTranslated(MessageType.NEUTRAL, "Hunger: {integer#foodlvl:0}/{text:20} ({integer#saturation}/{integer#foodlvl:0})", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
             context.sendTranslated(MessageType.NEUTRAL, "Level: {integer#level} + {integer#percent}%", user.getLevel(), (int)(user.getExp() * 100));
             Location loc = user.getLocation();
             if (loc != null)
@@ -696,7 +696,7 @@ public class PlayerCommands
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             other = true;
@@ -762,7 +762,7 @@ public class PlayerCommands
         }
         if (other && !module.perms().COMMAND_WALKSPEED_OTHER.isAuthorized(context.getSender())) // PermissionChecks
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the walk-speed of other user!");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the walk speed of other user!");
             return;
         }
         user.setWalkSpeed(0.2f);
@@ -777,7 +777,7 @@ public class PlayerCommands
         {
             user.sendTranslated(MessageType.NEGATIVE, "It's over 9000!");
         }
-        user.sendTranslated(MessageType.NEUTRAL, "Walkspeed has to be a Number between {text:0} and {text:10}!");
+        user.sendTranslated(MessageType.NEUTRAL, "Walk speed has to be a Number between {text:0} and {text:10}!");
     }
 
     @Command(desc = "Lets you fly away", max = 2,
@@ -792,7 +792,7 @@ public class PlayerCommands
             target = context.getUser(1);
             if (target == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
                 return;
             }
         }
@@ -812,7 +812,7 @@ public class PlayerCommands
         // PermissionChecks
         if (sender != target && !module.perms().COMMAND_FLY_OTHER.isAuthorized(context.getSender()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the fly-mode of other user!");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the fly mode of other player!");
             return;
         }
         //I Believe I Can Fly ...

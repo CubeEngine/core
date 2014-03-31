@@ -104,7 +104,7 @@ public class Mystcube extends Module implements Listener
         meta.setDisplayName(ChatFormat.parseFormats("&6Linking Panel"));
         meta.setLore(Arrays.asList(ChatFormat.parseFormats("&eWhen used in an age or linking book"),
                                    ChatFormat.parseFormats("&eyou will get teleported"),
-                                   ChatFormat.parseFormats("&eby merely touching the panel")));
+                                   ChatFormat.parseFormats("&eby simply touching the panel")));
         item.setItemMeta(meta);
 
         LINKING_PANEL = item;

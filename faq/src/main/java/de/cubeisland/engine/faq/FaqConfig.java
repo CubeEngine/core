@@ -27,6 +27,6 @@ public class FaqConfig extends ReflectedYaml
 {
     public List<Question> questions = new ArrayList<>();
     {
-        questions.add(new Question("Can I get OP?", "Nope!", new String[] {"get", "OP"}));
+        questions.add(new Question("Can I have OP?", "Nope!", new String[] {"get", "OP"}));
     }
 }

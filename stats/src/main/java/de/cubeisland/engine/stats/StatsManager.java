@@ -279,7 +279,7 @@ public class StatsManager
                     .set(TABLE_STATSDATA.DATA, data).execute();
                 if (result != 1)
                 {
-                    log.warn("Tried to insert a row in the data table for statistics, but the row wasn't inserted!");
+                    log.warn("Failed to insert a row in the data table for statistics!");
                     log.debug("Result int from jOOQ was {}", result);
                 }
             }

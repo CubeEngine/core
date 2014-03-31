@@ -15,13 +15,14 @@
 # along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 # Translators:
 # SirSheepster <s.raupach92@googlemail.com>, 2014
+# boeserwolf91 <boeserwolf91@gmail.com>, 2014
 # R0qs3T <torbenrogge@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-11 00:08+0100\n"
-"PO-Revision-Date: 2014-03-09 09:27+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-29 12:20:48+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +35,7 @@ msgstr ""
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:226
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:280
 msgid "<language>"
-msgstr ""
+msgstr "<Sprache>"
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:158
 msgid "[-supported]"
@@ -42,19 +43,19 @@ msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:66
 msgid "[language] [Player <name>]"
-msgstr ""
+msgstr "[Sprache] [Spieler<Name>]"
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:277
 msgid "adds the book in hand as rulebook of the declared language"
-msgstr ""
+msgstr "Setzt das Buch, dass sich in deiner Hand befindet, als Regelbuch der angegebenen Sprache."
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:65
 msgid "gets the player the rulebook in the inventory"
-msgstr ""
+msgstr "Gibt dem Spieler das Regelbuch ins Inventar."
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:155
 msgid "list all available languages of the rulebooks."
-msgstr ""
+msgstr "Listet alle verfügbaren Sprachen für das Regelbuch auf."
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:225
 msgid "modified the rulebook of the declared language with the book in hand"
@@ -65,15 +66,15 @@ msgid "removes the declared language and languagefiles!"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:265
-msgid "An error ocurred by deleting the old rulebook"
+msgid "An error ocurred while deleting the old rulebook"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:286
+msgid "Are you illiterate?"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:112
 msgid "Can't match the language"
-msgstr ""
-
-#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:286
-msgid "I thought you are an analphabet?"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:242
@@ -86,7 +87,7 @@ msgid "It does not exist a rulebook yet"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:146
-msgid "Lot's of fun with your rulebook."
+msgid "Lots of fun with your rulebook."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:201
@@ -132,15 +133,11 @@ msgid "The rulebook {name} was succesful modified."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:313
-msgid "There is already a book with that language."
-msgstr ""
-
-#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:234
-msgid "You are not able to write, aren't you?"
+msgid "There is already a book in that language."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:271
-msgid "You can't modify a book which does not exist."
+msgid "You can't modify a non-existent book."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:85
@@ -149,8 +146,12 @@ msgid ""
 "other player"
 msgstr ""
 
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:234
+msgid "You're able to write, right?"
+msgstr ""
+
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:149
-msgid "Your old was removed"
+msgid "Your old rulebook was removed"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:171

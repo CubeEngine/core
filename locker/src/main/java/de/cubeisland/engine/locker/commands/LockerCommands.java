@@ -89,11 +89,11 @@ public class LockerCommands extends ContainerCommand
                         if (entity.getUniqueId().equals(lock.getEntityUID()))
                         {
                             Location loc = entity.getLocation();
-                            context.sendTranslated(MessageType.POSITIVE, "The entity-protection corresponding to this book is located at {vector} in {world}", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), loc.getWorld());
+                            context.sendTranslated(MessageType.POSITIVE, "The entity protection corresponding to this book is located at {vector} in {world}", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), loc.getWorld());
                             return;
                         }
                     }
-                    context.sendTranslated(MessageType.POSITIVE, "Your magic is not strong enough to locate the corresponding entity-protection!");
+                    context.sendTranslated(MessageType.POSITIVE, "Your magic is not strong enough to locate the corresponding entity protection!");
                 }
             }
             else
@@ -104,7 +104,7 @@ public class LockerCommands extends ContainerCommand
             return;
         }
         manager.commandListener.setCommandType(context.getSender(), CommandType.INFO, null, false);
-        context.sendTranslated(MessageType.POSITIVE, "Rightclick to show protection-info");
+        context.sendTranslated(MessageType.POSITIVE, "Right click to show protection-info");
     }
 
     @Alias(names = "cpersist")
@@ -133,7 +133,7 @@ public class LockerCommands extends ContainerCommand
             this.persist(context);
         }
         this.manager.commandListener.setCommandType(context.getSender(), CommandType.REMOVE, null);
-        context.sendTranslated(MessageType.POSITIVE, "Rightclick a protection to remove it!");
+        context.sendTranslated(MessageType.POSITIVE, "Right click a protection to remove it!");
     }
 
     @Alias(names = "cunlock")
@@ -147,7 +147,7 @@ public class LockerCommands extends ContainerCommand
             this.persist(context);
         }
         this.manager.commandListener.setCommandType(context.getSender(), CommandType.UNLOCK, context.getString(0));
-        context.sendTranslated(MessageType.POSITIVE, "Rightclick to unlock a password protected chest!");
+        context.sendTranslated(MessageType.POSITIVE, "Right click to unlock a password protected chest!");
     }
 
     @Alias(names = "cmodify")
@@ -177,7 +177,7 @@ public class LockerCommands extends ContainerCommand
             User user = this.getModule().getCore().getUserManager().getUser(name, false);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", name);
                 return;
             }
         } // All users do exist!
@@ -188,7 +188,7 @@ public class LockerCommands extends ContainerCommand
         else
         {
             this.manager.commandListener.setCommandType(context.getSender(), CommandType.MODIFY, context.getString(0));
-            context.sendTranslated(MessageType.POSITIVE, "Rightclick a protection to modify it!");
+            context.sendTranslated(MessageType.POSITIVE, "Right click a protection to modify it!");
         }
     }
 
@@ -206,7 +206,7 @@ public class LockerCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         this.manager.commandListener.setCommandType(context.getSender(), CommandType.GIVE, context.getString(0));
@@ -233,12 +233,12 @@ public class LockerCommands extends ContainerCommand
         if (context.hasFlag("i"))
         {
             this.manager.commandListener.setCommandType(context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));
-            context.sendTranslated(MessageType.POSITIVE, "Rightclick a protection to invalidate old KeyBooks for it!");
+            context.sendTranslated(MessageType.POSITIVE, "Right click a protection to invalidate old KeyBooks for it!");
         }
         else
         {
             this.manager.commandListener.setCommandType(context.getSender(), CommandType.KEYS, context.getString(0), true);
-            context.sendTranslated(MessageType.POSITIVE, "Rightclick a protection to with a book to create a new KeyBook!");
+            context.sendTranslated(MessageType.POSITIVE, "Right click a protection to with a book to create a new KeyBook!");
         }
     }
 
@@ -282,7 +282,7 @@ public class LockerCommands extends ContainerCommand
         {
             this.manager.commandListener.setCommandType(context.getSender(), CommandType.FLAGS_UNSET, context.getString("unset"));
         }
-        context.sendTranslated(MessageType.POSITIVE, "Rightclick a protection to change its flags!");
+        context.sendTranslated(MessageType.POSITIVE, "Right click a protection to change its flags!");
     }
 
     public static class FlagCompleter implements Completer

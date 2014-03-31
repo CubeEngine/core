@@ -17,9 +17,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 21:08+0100\n"
-"PO-Revision-Date: 2014-03-09 09:11+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-27 23:27:26+0100\n"
+"PO-Revision-Date: 2014-03-28 09:12+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -1019,4 +1019,42 @@ msgstr ""
 
 #: de/cubeisland/engine/log/action/logaction/block/player/SignChange.java:122
 msgid "{}{user} wrote {input#signtext} on a sign{}"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/LogActionType.java:120
+#: de/cubeisland/engine/log/action/LogActionType.java:131
+msgid "   at {vector} in {world}"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/LogActionType.java:125
+msgid "   in between {vector} nd {vector} in {world}"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:123
+msgid " {amount} times"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:149
+msgid ""
+"Gives you a block to check logs with.no log-type: Shows everything\n"
+"chest: Shows chest-interactions only\n"
+"player: Shows player-interacions only\n"
+"kills: Shows kill-interactions only\n"
+"block: Shows block-changes only"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:177
+msgid ""
+"Gives you a item to check logs with.\n"
+"no log-type: Shows everything\n"
+"chest: Shows chest-interactions only\n"
+"player: Shows player-interacions only\n"
+"kills: Shows kill-interactions only\n"
+"block: Shows block-changes only"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:89
+msgid ""
+"Queries a lookup in the database\n"
+"    Show availiable parameters with /lookup params"
 msgstr ""

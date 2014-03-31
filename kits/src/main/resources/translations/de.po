@@ -1,0 +1,126 @@
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+# Translators:
+# jeti83 <jeti83@hotmail.de>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: CubeEngine\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-29 12:20:51+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
+"Last-Translator: Phillip Schichtel\n"
+"Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: de/cubeisland/engine/kits/KitCommand.java:67
+msgid "<kitName> [-toolbar]"
+msgstr "<KitName> [-toolbar]"
+
+#: de/cubeisland/engine/kits/KitCommand.java:142
+msgid "<kitname> [player]"
+msgstr "<KitName> [player]"
+
+#: de/cubeisland/engine/kits/KitCommand.java:65
+msgid "Creates a new kit with the items in your inventory."
+msgstr "Erstellt mit den Items aus deinem Inventar ein neues Kit."
+
+#: de/cubeisland/engine/kits/KitCommand.java:130
+msgid "Lists all currently available kits."
+msgstr "Listet alle derzeit verfügbare Kits auf."
+
+#: de/cubeisland/engine/kits/KitCommand.java:142
+msgid "Gives a set of items."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:125
+msgid "Created the {name#kit} kit!"
+msgstr "Kit {name#kit} erstellt!"
+
+#: de/cubeisland/engine/kits/KitCommand.java:77
+msgid "Just log in or use the config!"
+msgstr "Lediglich einloggen oder die Config bearbeiten!"
+
+#: de/cubeisland/engine/kits/Kit.java:103
+msgid "Kit limit reached."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:158
+msgid "Kit {input} not found!"
+msgstr "Kit {input} nicht gefunden!"
+
+#: de/cubeisland/engine/kits/KitCommand.java:190
+msgid "No one received the kit!"
+msgstr "Keiner hat das Kit erhalten!"
+
+#: de/cubeisland/engine/kits/KitCommand.java:216
+msgid "Player {user} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:173
+msgid "Received the {name#kit} kit!"
+msgstr "Kit {name#kit} erhalten!"
+
+#: de/cubeisland/engine/kits/KitCommand.java:178
+#: de/cubeisland/engine/kits/KitCommand.java:230
+#: de/cubeisland/engine/kits/KitCommand.java:242
+msgid "Received the {name#kit} kit. Enjoy."
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:133
+msgid "The following kits are available:"
+msgstr "Die folgenden Kits sind verfügbar:"
+
+#: de/cubeisland/engine/kits/Kit.java:112
+msgid "This kit isn't available at the moment. Try again later!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/Kit.java:91
+msgid "You are not allowed to give this kit."
+msgstr "Du darfst dieses Kit nicht ausgeben."
+
+#: de/cubeisland/engine/kits/KitCommand.java:258
+msgid "You don't have enough space in your inventory for this kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:177
+#: de/cubeisland/engine/kits/KitCommand.java:239
+msgid "You gave {user} the {name#kit} kit!"
+msgstr "Du hast {user} das Kit {name#kit} gegeben!"
+
+#: de/cubeisland/engine/kits/KitCommand.java:211
+msgid "You need to specify a player!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:194
+msgid "{amount} players did not receive a kit!"
+msgstr "{amount} Spieler haben kein Kit erhalten!"
+
+#: de/cubeisland/engine/kits/KitCommand.java:117
+msgid ""
+"{name#kit} is is not a valid name! Do not use characters like *, | or ?"
+msgstr "{name#kit} ist ist kein gültiger Name! Benutze keine Sonderzeichen (*, | , ?)"
+
+#: de/cubeisland/engine/kits/KitCommand.java:254
+msgid "{user} has not enough space in your inventory for this kit!"
+msgstr ""
+
+#: de/cubeisland/engine/kits/KitCommand.java:221
+msgid "{user} is not online!"
+msgstr "{user} ist nicht online!"

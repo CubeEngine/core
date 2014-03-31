@@ -18,10 +18,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:worlds:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-21 09:58:59+0100\n"
+"POT-Creation-Date: 2014-03-31 03:00:12+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:71
 msgid "<name>"
@@ -69,16 +71,8 @@ msgstr ""
 msgid "Creates a new world"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:333
-msgid "Lists all worls"
-msgstr ""
-
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:368
 msgid "Lists the players in a world"
-msgstr ""
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:505
-msgid "Loads a players inventory etc. for his current world"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:188
@@ -91,10 +85,6 @@ msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:297
 msgid "Remove a world"
-msgstr ""
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:519
-msgid "Save a players inventory etc. for his current world"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:394
@@ -114,7 +104,7 @@ msgid "Unload a loaded world"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:261
-msgid "/worlds setMainWorld <world>"
+msgid "/worlds setmainworld <world>"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:182
@@ -198,6 +188,11 @@ msgstr ""
 msgid "Old world moved to {name#folder}"
 msgstr ""
 
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:511
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:525
+msgid "Player {user} not found!"
+msgstr ""
+
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:530
 msgid "Saved {user}'s data to file!"
 msgstr ""
@@ -255,9 +250,8 @@ msgstr ""
 msgid "Unloaded the world {world}!"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:511
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:525
-msgid "User {user} not found!"
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:363
+msgid "World information for {input#world}:"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:456
@@ -277,10 +271,6 @@ msgstr ""
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:206
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:239
 msgid "World {world} loaded!"
-msgstr ""
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:363
-msgid "WorldInformation for {input#world}:"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/Multiverse.java:284
@@ -334,4 +324,16 @@ msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:405
 msgid "{world} is now the main world of the universe {name}"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:333
+msgid "Lists all worlds"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:505
+msgid "Loads a player's state for their current world"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:519
+msgid "Save a player's state for their current world"
 msgstr ""

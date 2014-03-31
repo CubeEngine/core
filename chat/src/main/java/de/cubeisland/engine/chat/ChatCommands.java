@@ -40,7 +40,7 @@ public class ChatCommands
         this.module.getCore().getUserManager().broadcastStatus(message, context.getSender());
     }
 
-    @Command(desc = "Changes your DisplayName", usage = "<name>|-r [player]", min = 1, max = 2)
+    @Command(desc = "Changes your display name", usage = "<name>|-r [player]", min = 1, max = 2)
     public void nick(CommandContext context)
     {
         User forUser;
@@ -49,7 +49,7 @@ public class ChatCommands
             forUser = context.getUser(1);
             if (forUser == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
                 return;
            }
            if (forUser != context.getSender() && !module.perms().COMMAND_NICK_OTHER.isAuthorized(context.getSender()))
@@ -64,23 +64,23 @@ public class ChatCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You cannot change the consoles DisplayName");
+            context.sendTranslated(MessageType.NEGATIVE, "You cannot change the consoles display name");
             return;
         }
         String name = context.getString(0);
         if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
         {
             forUser.setDisplayName(context.getSender().getName());
-            context.sendTranslated(MessageType.POSITIVE, "DisplayName reset to {user}", context.getSender());
+            context.sendTranslated(MessageType.POSITIVE, "Display name reset to {user}", context.getSender());
         }
         else
         {
             if (module.getCore().getUserManager().getUser(name, false) != null && !module.perms().COMMAND_NICK_OFOTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "There already is another player named like this!");
+                context.sendTranslated(MessageType.NEGATIVE, "This name has been taken by another player!");
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "DisplayName changed from {user} to {user}", context.getSender(), name);
+            context.sendTranslated(MessageType.POSITIVE, "Display name changed from {user} to {user}", context.getSender(), name);
             ((User)context.getSender()).setDisplayName(name);
         }
     }

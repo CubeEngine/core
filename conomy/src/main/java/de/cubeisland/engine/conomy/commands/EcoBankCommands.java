@@ -34,7 +34,7 @@ public class EcoBankCommands extends ContainerCommand
 
     public EcoBankCommands(Conomy module)
     {
-        super(module, "bank", "Administrative commands for Conomy-Banks.");
+        super(module, "bank", "Administrative commands for Conomy Banks.");
         this.module = module;
         this.manager = module.getManager();
     }
@@ -133,7 +133,7 @@ public class EcoBankCommands extends ContainerCommand
         if (context.getString(0).equalsIgnoreCase("*"))
         {
             this.manager.setAll(false, true, this.manager.getDefaultBankBalance());
-            context.sendTranslated(MessageType.POSITIVE, "You resetted every bank account!");
+            context.sendTranslated(MessageType.POSITIVE, "You reset every bank account!");
         }
         else
         {
@@ -153,7 +153,7 @@ public class EcoBankCommands extends ContainerCommand
                 {
                     if (target.isOwner(onlineUser))
                     {
-                        onlineUser.sendTranslated(MessageType.POSITIVE, "{user} resetted the money of your bank {input#bank} to {input#balance}!", context.getSender(), bankString, format);
+                        onlineUser.sendTranslated(MessageType.POSITIVE, "{user} reset the money of your bank {input#bank} to {input#balance}!", context.getSender(), bankString, format);
                     }
                 }
             }
@@ -190,7 +190,7 @@ public class EcoBankCommands extends ContainerCommand
                     return;
                 }
                 target.set(amount);
-                context.sendTranslated(MessageType.POSITIVE, "The account of the bank {input#bank} got set to {input#balance}!", bankString, format);
+                context.sendTranslated(MessageType.POSITIVE, "The money of bank account {input#bank} got set to {input#balance}!", bankString, format);
                 for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
                 {
                     if (target.isOwner(onlineUser))

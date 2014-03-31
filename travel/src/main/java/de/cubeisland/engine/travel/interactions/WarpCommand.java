@@ -99,8 +99,8 @@ public class WarpCommand extends ContainerCommand
     {
         if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().warps.max)
         {
-            context.sendTranslated(MessageType.CRITICAL, "The server have reached it's maximum number of warps!");
-            context.sendTranslated(MessageType.NEGATIVE, "Some warps have to be delete for new ones to be made");
+            context.sendTranslated(MessageType.CRITICAL, "The server have reached its maximum number of warps!");
+            context.sendTranslated(MessageType.NEGATIVE, "Some warps must be deleted for new ones to be made");
             return;
         }
         if (context.getSender() instanceof User)
@@ -287,7 +287,7 @@ public class WarpCommand extends ContainerCommand
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             warps = telePointManager.listWarps(context.getUser(0), mask);

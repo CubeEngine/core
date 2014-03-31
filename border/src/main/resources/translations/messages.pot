@@ -18,10 +18,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:border:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-21 09:58:46+0100\n"
+"POT-Creation-Date: 2014-03-30 13:23:43+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: de/cubeisland/engine/border/BorderCommands.java:108
 msgid "<world>"
@@ -50,32 +52,32 @@ msgid ""
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderCommands.java:224
-msgid "Available Memory getting low! Pausing ChunkGeneration"
+msgid "Available Memory getting low! Pausing Chunk Generation"
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderCommands.java:80
-msgid "Center for Border in {world} set to world-spawn!"
+msgid "Center for Border in {world} set to world spawn!"
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderCommands.java:104
 msgid "Center for Border in {world} set!"
 msgstr ""
 
+#: de/cubeisland/engine/border/BorderCommands.java:269
+msgid "Chunk generation completed! Generated {amount} chunks"
+msgstr ""
+
 #: de/cubeisland/engine/border/BorderCommands.java:113
 msgid "Chunk generation is already running!"
 msgstr ""
 
-#: de/cubeisland/engine/border/BorderCommands.java:269
-msgid "Chunkgeneration completed! Generated {amount} chunks"
-msgstr ""
-
 #: de/cubeisland/engine/border/BorderCommands.java:256
 msgid ""
-"Chunkgeneration is at {integer#percent}% ({amount#done}/{amount#total})"
+"Chunk generation is at {integer#percent}% ({amount#done}/{amount#total})"
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderCommands.java:89
-msgid "Invalid Chunk-coordinates!"
+msgid "Invalid Chunk coordinates!"
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderListener.java:162
@@ -87,7 +89,7 @@ msgid "World {input} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderListener.java:114
-msgid "You are near the world-border! You might want to turn around."
+msgid "You are near the world border! You might want to turn around."
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderListener.java:88
@@ -99,7 +101,7 @@ msgid "You need to specify a world!"
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderCommands.java:100
-msgid "You need to specify the chunk-coordinates or use the -spawn flag"
+msgid "You need to specify the chunk coordinates or use the -spawn flag"
 msgstr ""
 
 #: de/cubeisland/engine/border/BorderListener.java:108

@@ -18,10 +18,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:log:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-25 20:26:12+0100\n"
+"POT-Creation-Date: 2014-03-30 13:23:42+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: de/cubeisland/engine/log/commands/LogCommands.java:243
 msgid "Gives you a item to select a region with."
@@ -47,6 +49,15 @@ msgstr ""
 
 #: de/cubeisland/engine/log/action/logaction/block/player/SignChange.java:127
 msgid "    The old signtext was {input#signtext}{}"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/LogActionType.java:120
+#: de/cubeisland/engine/log/action/LogActionType.java:131
+msgid "   at {vector} in {world}"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/LogActionType.java:125
+msgid "   in between {vector} nd {vector} in {world}"
 msgstr ""
 
 #: de/cubeisland/engine/log/action/logaction/block/player/BlockBreak.java:234
@@ -83,6 +94,10 @@ msgstr ""
 
 #: de/cubeisland/engine/log/commands/LookupCommands.java:82
 msgid " - world <world> default is your current world"
+msgstr ""
+
+#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:123
+msgid " {amount} times"
 msgstr ""
 
 #: de/cubeisland/engine/log/storage/QueryResults.java:102
@@ -125,6 +140,25 @@ msgstr ""
 
 #: de/cubeisland/engine/log/commands/LogCommands.java:240
 msgid "Found a Region-Selector Tool in your inventory!"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:149
+msgid ""
+"Gives you a block to check logs with.no log-type: Shows everything\n"
+"chest: Shows chest-interactions only\n"
+"player: Shows player-interacions only\n"
+"kills: Shows kill-interactions only\n"
+"block: Shows block-changes only"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LogCommands.java:177
+msgid ""
+"Gives you a item to check logs with.\n"
+"no log-type: Shows everything\n"
+"chest: Shows chest-interactions only\n"
+"player: Shows player-interacions only\n"
+"kills: Shows kill-interactions only\n"
+"block: Shows block-changes only"
 msgstr ""
 
 #: de/cubeisland/engine/log/storage/QueryResults.java:154
@@ -192,6 +226,12 @@ msgstr ""
 
 #: de/cubeisland/engine/log/storage/QueryManager.java:602
 msgid "Pleas"
+msgstr ""
+
+#: de/cubeisland/engine/log/commands/LookupCommands.java:89
+msgid ""
+"Queries a lookup in the database\n"
+"    Show availiable parameters with /lookup params"
 msgstr ""
 
 #: de/cubeisland/engine/log/commands/LogCommands.java:134
@@ -1014,17 +1054,4 @@ msgstr ""
 
 #: de/cubeisland/engine/log/action/logaction/block/player/SignChange.java:122
 msgid "{}{user} wrote {input#signtext} on a sign{}"
-msgstr ""
-
-#: de/cubeisland/engine/log/action/LogActionType.java:120
-#: de/cubeisland/engine/log/action/LogActionType.java:131
-msgid "   at {vector} in {world}"
-msgstr ""
-
-#: de/cubeisland/engine/log/action/LogActionType.java:125
-msgid "   in between {vector} nd {vector} in {world}"
-msgstr ""
-
-#: de/cubeisland/engine/log/action/logaction/block/BlockShift.java:123
-msgid " {amount} times"
 msgstr ""

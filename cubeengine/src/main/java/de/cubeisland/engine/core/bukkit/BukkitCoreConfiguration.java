@@ -30,7 +30,7 @@ public class BukkitCoreConfiguration extends CoreConfiguration
     @Name("commands.improve-vanilla")
     public boolean improveVanilla = true;
 
-    @Comment({"The enhanced system introduces a few user experience improvements,", "but my cause problems with different plugins that inject commands (ex. MCore)"})
+    @Comment({"The enhanced system introduces a few user experience improvements,", "but my cause problems with different plugins that inject commands (e.g. MCore)"})
     @Name("commands.use-enhanced-system")
     public boolean useEnhancedSystem = false;
 

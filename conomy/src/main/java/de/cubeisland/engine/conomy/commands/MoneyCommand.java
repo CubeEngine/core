@@ -79,7 +79,7 @@ public class MoneyCommand extends ContainerCommand
             user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
         }
@@ -167,12 +167,12 @@ public class MoneyCommand extends ContainerCommand
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not parse amount!");
+            context.sendTranslated(MessageType.NEGATIVE, "Invalid amount!");
             return;
         }
         if (amount < 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "What are you trying there?");
+            context.sendTranslated(MessageType.NEGATIVE, "What are you trying to do?");
             return;
         }
         String format = manager.format(amount);
@@ -188,7 +188,7 @@ public class MoneyCommand extends ContainerCommand
             sender = context.getUser("as");
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString("as"));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString("as"));
                 return;
             }
             asSomeOneElse = true;
@@ -197,7 +197,7 @@ public class MoneyCommand extends ContainerCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Please specify a user to use his account.");
+                context.sendTranslated(MessageType.NEGATIVE, "Please specify a player to use their account.");
                 return;
             }
             sender = (User)context.getSender();
@@ -221,7 +221,7 @@ public class MoneyCommand extends ContainerCommand
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 continue;
             }
             Account target = this.manager.getUserAccount(user, false);
@@ -255,7 +255,7 @@ public class MoneyCommand extends ContainerCommand
                 {
                     context.sendTranslated(MessageType.POSITIVE, "{input#amount} transferred to {user}'s account!", format, user);
                 }
-                user.sendTranslated(MessageType.POSITIVE, "{user} just payed you {input#amount}!", sender, format);
+                user.sendTranslated(MessageType.POSITIVE, "{user} just paid you {input#amount}!", sender, format);
             }
             else
             {

@@ -57,13 +57,13 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         LiftSignInfo signTypeInfo = sign.getSignTypeInfo();
         if (signTypeInfo.up == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You can not depart from this sign but only arrive!");
+            user.sendTranslated(MessageType.NEGATIVE, "You can only arrive from this sign!");
             return true;
         }
         Location targetLocation = signTypeInfo.findLiftSign(signTypeInfo.destFloor);
         if (targetLocation == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "Could not find any other sign to lift to! Perhaps it got destroyed?");
+            user.sendTranslated(MessageType.NEGATIVE, "Could not find any other sign to lift to! Has it been destroyed?");
             return true;
         }
         int y = targetLocation.getBlockY();

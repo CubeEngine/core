@@ -108,7 +108,7 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Reloading the whole server... (this may take some time)");
+            context.sendTranslated(MessageType.NEUTRAL, "Reloading the whole server... this may take some time.");
             // pre-translate to avoid a NPE
             Locale locale = context.getSender().getLocale();
             long time = System.currentTimeMillis();
@@ -119,7 +119,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Changes the difficulty level of the server",
-        usage = "[difficulty] {world <world>}",
+        usage = "[difficulty] (world <world>)",
         max = 1,
         params = @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)
     )
@@ -166,7 +166,7 @@ public class VanillaCommands implements CommandHolder
         }
         else
         {
-            context.sendTranslated(MessageType.NONE, "The current difficulty level: {input}", world.getDifficulty().name());
+            context.sendTranslated(MessageType.NONE, "Current difficulty level: {input}", world.getDifficulty().name());
             if (this.core.getServer().isHardcore())
             {
                 context.sendTranslated(MessageType.NONE, "Your server has the hardcore mode enabled.");
@@ -244,7 +244,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Revokes the operator status of a player",
-        usage = "{player}",
+        usage = "(player)",
         min = 0, max = 1,
         permDefault = FALSE
     )
@@ -391,7 +391,7 @@ public class VanillaCommands implements CommandHolder
             context.sendTranslated(MessageType.NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
             context.sendTranslated(MessageType.NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated(MessageType.NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion());
+            context.sendTranslated(MessageType.NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion().toString());
             showSourceVersion(context, core.getSourceVersion());
         }
     }

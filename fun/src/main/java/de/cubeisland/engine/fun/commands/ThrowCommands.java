@@ -109,27 +109,27 @@ public class ThrowCommands
 
         if (context.getArgCount() == 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You have to add the material you want to throw.");
+            context.sendTranslated(MessageType.NEGATIVE, "You have to specify the material you want to throw.");
             return;
         }
 
         int amount = context.getArg(1, Integer.class, -1);
         if ((amount > this.module.getConfig().command.throwSection.maxAmount || amount < 1) && amount != -1)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The amount has to be a number from 1 to {integer}", this.module.getConfig().command.throwSection.maxAmount);
+            context.sendTranslated(MessageType.NEGATIVE, "The amount must be a number from 1 to {integer}", this.module.getConfig().command.throwSection.maxAmount);
             return;
         }
 
         int delay = context.getParam("delay", 3);
         if (delay > this.module.getConfig().command.throwSection.maxDelay || delay < 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The delay has to be a number from 0 to {integer}", this.module.getConfig().command.throwSection.maxDelay);
+            context.sendTranslated(MessageType.NEGATIVE, "The delay must be a number from 0 to {integer}", this.module.getConfig().command.throwSection.maxDelay);
             return;
         }
         
         if(unsafe && !module.perms().COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ) )
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to execute this command in unsafe-mode.");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to execute this command in unsafe mode.");
             return;
         }
 
@@ -151,7 +151,7 @@ public class ThrowCommands
 
         if (!perms.get(type).isAuthorized(user))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to throw this");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to throw this.");
             return;
         }
 

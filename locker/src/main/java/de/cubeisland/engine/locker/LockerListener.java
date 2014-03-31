@@ -132,7 +132,7 @@ public class LockerListener implements Listener
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
         if (module.perms().DENY_ENTITY.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from reaching this Entity!");
+            user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from reaching this entity!");
             event.setCancelled(true);
             return;
         }

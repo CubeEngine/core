@@ -1,0 +1,114 @@
+# This file is part of CubeEngine.
+# CubeEngine is licensed under the GNU General Public License Version 3.
+# 
+# CubeEngine is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# CubeEngine is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+# Translators:
+# jeti83 <jeti83@hotmail.de>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: CubeEngine\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-29 12:20:50+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
+"Last-Translator: Phillip Schichtel\n"
+"Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:185
+msgid "<commandstring>"
+msgstr "<commandstring>"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:182
+msgid "Adds a command to your powertool"
+msgstr "Fügt einen Befehl zu deinem Powertool hinzu"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:219
+msgid "Lists your powertool-bindings."
+msgstr "Listet deine Powertool-Verknüpfungen auf."
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:125
+msgid "Removes a command from your powertool"
+msgstr "Entfernt einen Befehl von deinem Powertool"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:92
+msgid "[-a]"
+msgstr "[-a]"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:125
+msgid "[command] [-chat]"
+msgstr "[command] [-chat]"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:91
+msgid "Removes all commands from your powertool"
+msgstr ""
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:261
+msgid "No commands saved on this item!"
+msgstr "Es aind keine Befehle auf diesem Item gespeichert!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:175
+msgid "No more commands saved on this item!"
+msgstr "Keine weiteren Befehle auf dem Item gespeichert!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:119
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:140
+msgid "No more power for you!"
+msgstr "Du besitzt keine Power mehr!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:105
+msgid "Removed all commands bound to items in your inventory!"
+msgstr "Alle Befehle auf den Items in deinem Inventar wurden entfernt!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:115
+msgid "Removed all commands bound to the item in your hand!"
+msgstr "Alle Befehle auf dem Item in deiner Hand wurden entfernt! "
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:165
+msgid "Removed the command: {input#command} bound to this item!"
+msgstr "Der Befehl: {input#command} wurde von dem Item entfernt!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:150
+msgid "Removed the last command bound to this item!"
+msgstr "Der zuletzt gebundene Befehl der auf den Item wurde entfernt! "
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:169
+msgid "The command {input#command} was not found on this item!"
+msgstr "Der Befehl {input#command} ist nicht auf dem Item gebunden!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:215
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:252
+msgid "You already have enough power!"
+msgstr "Du hast bereits genügend Power!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:111
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:133
+msgid "You are not holding any item in your hand."
+msgstr "Du hältst kein Item in deiner Hand."
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:195
+msgid "You do not have an item in your hand to bind the command to!"
+msgstr "Du hast kein Item in deiner Hand auf der du den Befehl binden kannst!"
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:244
+msgid "You do not have an item in your hand."
+msgstr "Du hast kein Item in der Hand."
+
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:273
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:278
+msgid "{amount} command(s) bound to this item:{}"
+msgstr "{amount} Befehl(e) sind auf dem Item gebunden:{}"

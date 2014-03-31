@@ -81,7 +81,7 @@ public class KeyBook
             else
             {
                 currentHolder.sendTranslated(MessageType.NEGATIVE, "You try to open the container with your KeyBook\n" +
-                                        "but forcefully get pushed away!");
+                                        "but you get forcefully pushed away!");
                 this.invalidate();
                 currentHolder.playSound(effectLocation, Sound.GHAST_SCREAM, 1, 1);
                 final Vector userDirection = currentHolder.getLocation().getDirection();

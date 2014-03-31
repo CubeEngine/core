@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
 # Translators:
+# Phillip Schichtel, 2014
 # SirSheepster <s.raupach92@googlemail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-08 21:08+0100\n"
-"PO-Revision-Date: 2014-03-09 09:20+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-29 12:20:49+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -31,31 +32,31 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:203
 msgid "Checks whether a player can see hidden players."
-msgstr ""
+msgstr "Prüft ob der Spieler versteckte Spieler sehen kann."
 
 #: de/cubeisland/engine/hide/HideCommands.java:117
 msgid "Checks whether a player is hidden."
-msgstr ""
+msgstr "Prüft, ob der Spiele versteckt ist."
 
 #: de/cubeisland/engine/hide/HideCommands.java:47
 msgid "Hides a player."
-msgstr ""
+msgstr "Versteckt einen Spieler."
 
 #: de/cubeisland/engine/hide/HideCommands.java:151
 msgid "Lists all hidden players."
-msgstr ""
+msgstr "Listet alle versteckten Spieler auf."
 
 #: de/cubeisland/engine/hide/HideCommands.java:236
 msgid "Lists all players who can see hidden players."
-msgstr ""
+msgstr "Listet alle Spieler auf, die versteckte Spieler sehen können."
 
 #: de/cubeisland/engine/hide/HideCommands.java:167
 msgid "Toggles the ability to see hidden players."
-msgstr ""
+msgstr "Schaltet das Sehen von versteckten Spielern um."
 
 #: de/cubeisland/engine/hide/HideCommands.java:82
 msgid "Unhides a player."
-msgstr ""
+msgstr "Macht einen Spieler wieder sichtbar."
 
 #: de/cubeisland/engine/hide/HideCommands.java:47
 #: de/cubeisland/engine/hide/HideCommands.java:82
@@ -63,10 +64,10 @@ msgstr ""
 #: de/cubeisland/engine/hide/HideCommands.java:167
 #: de/cubeisland/engine/hide/HideCommands.java:203
 msgid "{player}"
-msgstr ""
+msgstr "{Spieler}"
 
 #: de/cubeisland/engine/hide/HideCommands.java:270
-msgid "No user specified!"
+msgid "No player specified!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:242
@@ -75,6 +76,10 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideListener.java:81
 msgid "Player {user} is now visible"
+msgstr ""
+
+#: de/cubeisland/engine/hide/HideCommands.java:259
+msgid "Player {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideListener.java:139
@@ -93,10 +98,6 @@ msgstr ""
 msgid "There are no hidden users!"
 msgstr ""
 
-#: de/cubeisland/engine/hide/HideCommands.java:259
-msgid "User {user} not found!"
-msgstr ""
-
 #: de/cubeisland/engine/hide/HideCommands.java:73
 msgid "You are already hidden!"
 msgstr ""
@@ -106,7 +107,11 @@ msgid "You are already visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:130
-msgid "You are hidden right now!"
+msgid "You are currently hidden!"
+msgstr ""
+
+#: de/cubeisland/engine/hide/HideCommands.java:141
+msgid "You are currently visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:61
@@ -115,10 +120,6 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:96
 msgid "You are now visible!"
-msgstr ""
-
-#: de/cubeisland/engine/hide/HideCommands.java:141
-msgid "You are visible right now!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideListener.java:108
@@ -186,7 +187,11 @@ msgid "{user} is already visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:134
-msgid "{user} is hidden right now!"
+msgid "{user} is currently hidden!"
+msgstr ""
+
+#: de/cubeisland/engine/hide/HideCommands.java:145
+msgid "{user} is currently visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:66
@@ -195,8 +200,4 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:101
 msgid "{user} is now visible!"
-msgstr ""
-
-#: de/cubeisland/engine/hide/HideCommands.java:145
-msgid "{user} is visible right now!"
 msgstr ""

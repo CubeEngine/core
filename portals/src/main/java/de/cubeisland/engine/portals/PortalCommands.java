@@ -114,7 +114,7 @@ public class PortalCommands extends ContainerCommand
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "You have to be ingame to do this!");
+        context.sendTranslated(MessageType.NEGATIVE, "You must be ingame to do this!");
     }
 
     @Alias(names = "mvps")
@@ -133,7 +133,7 @@ public class PortalCommands extends ContainerCommand
             context.sendTranslated(MessageType.POSITIVE, "Portal selected: {name}", context.getString(0));
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "You have to be ingame to do this!");
+        context.sendTranslated(MessageType.NEGATIVE, "You must be ingame to do this!");
     }
 
     @Alias(names ="mvpi")
@@ -215,6 +215,6 @@ public class PortalCommands extends ContainerCommand
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "You have to be ingame to do this!");
+        context.sendTranslated(MessageType.NEGATIVE, "You must be ingame to do this!");
     }
 }

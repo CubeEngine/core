@@ -31,7 +31,7 @@ import org.joda.time.Duration;
 @SuppressWarnings("all")
 public class KitConfiguration extends ReflectedYaml
 {
-    @Comment("Players that join your server the first time will receive this kit if set on true.")
+    @Comment("Players joining your server for the first time will receive this kit if set on true.")
     @Name("give-on-first-join")
     public boolean giveOnFirstJoin = false;
     @Comment("If not empty this message will be displayed when receiving this kit.")
@@ -49,7 +49,7 @@ public class KitConfiguration extends ReflectedYaml
     @Comment("The delay between each usage of this kit.")
     @Name("limit-usage-delay")
     public Duration limitUsageDelay = null;
-    @Comment("Limits the usage to x amount. Use 0 for infinite.")
+    @Comment("Limits the usage to X amount. Use 0 for infinite.")
     @Name("limit-usage")
     public int limitUsage = 0;
 

@@ -70,7 +70,7 @@ public class LagTimer implements Runnable
                 }
                 if (tps < 1)
                 {
-                    module.getLog().warn("Server is running slowly! Less then 1 Tick per Second!");
+                    module.getLog().warn("Server is running slowly! Less then 1 tick per Second!");
                 }
                 this.lastLowTps = currentTick;
             }

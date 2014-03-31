@@ -55,7 +55,7 @@ public class WarpAdminCommand extends ContainerCommand
     public CommandResult run(CommandContext context)
     {
         context.sendTranslated(MessageType.NEGATIVE, "This is not a command on it's own.");
-        context.sendTranslated(MessageType.NEUTRAL, "If you want to teleport to a users warp: {text:/warp <user>}");
+        context.sendTranslated(MessageType.NEUTRAL, "If you want to teleport to a players warp: {text:/warp <user>}");
         context.sendTranslated(MessageType.NEUTRAL, "To get a list of the admin commands: {text:/warp admin ?}");
         return null;
     }
@@ -63,7 +63,7 @@ public class WarpAdminCommand extends ContainerCommand
     @Alias(names = {
         "clearwarps"
     })
-    @Command(desc = "Clear all warps (of an user)", flags = {
+    @Command(desc = "Clear all warps (of a player)", flags = {
         @Flag(name = "pub", longName = "public"),
         @Flag(name = "priv", longName = "Private")
     }, permDefault =  PermDefault.OP, max = 1, usage = " <user> <-public> <-Private>")
@@ -71,14 +71,14 @@ public class WarpAdminCommand extends ContainerCommand
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
         {
-            context.sendMessage("You have permission to this command, but it has been disabled from in-game usage for security reasons.");
+            context.sendMessage("You have permission to this command, but it has been disabled from ingame usage for security reasons.");
             return null;
         }
         if (context.getArgCount() > 0)
         {
             if (module.getCore().getUserManager().getUser(context.getString(0), false) == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return null;
             }
             else
@@ -107,17 +107,17 @@ public class WarpAdminCommand extends ContainerCommand
             if (context.hasFlag("pub"))
             {
                 context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all public warps ever created on this server!?");
-                context.sendTranslated(MessageType.NEUTRAL, "To delete all the public warps of every user, do: {text:/confirm} before 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the public warps of every player, do: {text:/confirm} before 30 seconds has passed");
             }
             else if (context.hasFlag("priv"))
             {
                 context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all private warps ever created on this server?");
-                context.sendTranslated(MessageType.NEUTRAL, "To delete all the private warps of every user, do: {text:/confirm} before 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the private warps of every player, do: {text:/confirm} before 30 seconds has passed");
             }
             else
             {
                 context.sendTranslated(MessageType.NEUTRAL, "Are you sure you want to delete all warps ever created on this server!?");
-                context.sendTranslated(MessageType.NEUTRAL, "To delete all the warps of every user, do: {text:/confirm} before 30 seconds has passed");
+                context.sendTranslated(MessageType.NEUTRAL, "To delete all the warps of every player, do: {text:/confirm} before 30 seconds has passed");
             }
         }
         return new ConfirmResult(new Runnable()
@@ -159,7 +159,7 @@ public class WarpAdminCommand extends ContainerCommand
     }
 
     @Command(names = {"privae", "makeprivate"}, permDefault = PermDefault.OP,
-             desc = "Make a users warp private", min = 1, max = 1, usage = " owner:home")
+             desc = "Make a players warp private", min = 1, max = 1, usage = " owner:home")
     public void makePrivate(CommandContext context)
     {
         Warp warp;

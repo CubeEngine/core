@@ -281,11 +281,11 @@ public abstract class CubeCommand
     {
         if (sender instanceof User)
         {
-            return usage.replace('{', '[').replace('}', ']');
+            return usage.replace('(', '[').replace(')', ']');
         }
         else
         {
-            return usage.replace('{', '<').replace('}', '>');
+            return usage.replace('(', '<').replace(')', '>');
         }
     }
 
@@ -498,7 +498,7 @@ public abstract class CubeCommand
         if (this.hasChildren())
         {
             context.sendMessage(" ");
-            context.sendTranslated(NONE, "The following sub commands are available:");
+            context.sendTranslated(MessageType.NEUTRAL, "The following subcommands are available:");
             context.sendMessage(" ");
 
             final CommandSender sender = context.getSender();

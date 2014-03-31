@@ -70,7 +70,7 @@ public class WorldRoleProvider extends RoleProvider
         }
         if (this.defaultRoles.isEmpty())
         {
-            this.module.getLog().warn("The role-provider for {} has no default roles!", this.mirrorConfig.mainWorld.getName());
+            this.module.getLog().warn("The role provider for {} has no default roles!", this.mirrorConfig.mainWorld.getName());
         }
     }
 

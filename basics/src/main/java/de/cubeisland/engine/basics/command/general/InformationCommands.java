@@ -74,8 +74,8 @@ public class InformationCommands
                                                      .appendSeconds().appendSuffix(" second", " seconds").toFormatter();
     }
 
-    @Command(desc = "Displays the Biome-Type you are standing in.",
-             usage = "{world} {block-x} {block-z}", max = 3)
+    @Command(desc = "Displays the biome type you are standing in.",
+             usage = "(world) (block-x) (block-z)", max = 3)
     public void biome(CommandContext context)
     {
         World world;
@@ -93,7 +93,7 @@ public class InformationCommands
             z = context.getArg(2,Integer.class,null);
             if (x == null || z == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Please provide valid integer x and/or z coordinates!");
+                context.sendTranslated(MessageType.NEGATIVE, "Please provide valid whole number x and/or z coordinates!");
                 return;
             }
         }
@@ -114,7 +114,7 @@ public class InformationCommands
         context.sendTranslated(MessageType.NEUTRAL, "Biome at {vector:x\\=:z\\=}: {biome}", new BlockVector2(x, z), biome);
     }
 
-    @Command(desc = "Displays the seed of a world.", usage = "{world}", max = 1)
+    @Command(desc = "Displays the seed of a world.", usage = "(world)", max = 1)
     public void seed(CommandContext context)
     {
         World world = null;
@@ -155,7 +155,7 @@ public class InformationCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{text:ProTip}: I assume you are looking right at your screen. Right?");
+            context.sendTranslated(MessageType.NEUTRAL, "{text:ProTip}: I assume you are looking right at your screen, right?");
         }
     }
 
@@ -371,7 +371,7 @@ public class InformationCommands
             if (module.perms().COMMAND_LAG_RESET.isAuthorized(context.getSender()))
             {
                 this.module.getLagTimer().resetLowestTPS();
-                context.sendTranslated(MessageType.POSITIVE, "Resetted lowest TPS!");
+                context.sendTranslated(MessageType.POSITIVE, "Reset lowest TPS!");
             }
             else
             {
@@ -385,7 +385,7 @@ public class InformationCommands
                      context.getSender().getLocale());
         Date start = new Date(ManagementFactory.getRuntimeMXBean().getStartTime());
         Duration dura = new Duration(start.getTime(), System.currentTimeMillis());
-        context.sendTranslated(MessageType.POSITIVE, "Server is running since {input#uptime}", df.format(start));
+        context.sendTranslated(MessageType.POSITIVE, "Server has been running since {input#uptime}", df.format(start));
         context.sendTranslated(MessageType.POSITIVE, "Uptime: {input#uptime}", formatter.print(dura.toPeriod()));
         //TPS:
         float tps = this.module.getLagTimer().getAverageTPS();
@@ -396,7 +396,7 @@ public class InformationCommands
         {
             color = ChatFormat.parseFormats(tps > 17 ? ChatFormat.YELLOW.toString() : tps > 10 ? ChatFormat.RED.toString() : ChatFormat.DARK_RED.toString());
             Date date = new Date(lowestTPS.getLeft());
-            context.sendTranslated(MessageType.POSITIVE, "Lowest TPS was {decimal#tps:1} ({input#date})", color, lowestTPS.getRight(), df.format(date));
+            context.sendTranslated(MessageType.POSITIVE, "Lowest TPS was {}{decimal#tps:1} ({input#date})", color, lowestTPS.getRight(), df.format(date));
             long timeSinceLastLowTPS = System.currentTimeMillis() - this.module.getLagTimer().getLastLowTPS();
             if (tps == 20 && TimeUnit.MINUTES.convert(timeSinceLastLowTPS,TimeUnit.MILLISECONDS) < 1)
             {

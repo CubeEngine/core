@@ -19,9 +19,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-10 23:53+0100\n"
-"PO-Revision-Date: 2014-03-09 09:32+0000\n"
+"Report-Msgid-Bugs-To: development@cubeisland.de\n"
+"POT-Creation-Date: 2014-03-27 23:27:27+0100\n"
+"PO-Revision-Date: 2014-03-28 09:48+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -95,4 +95,10 @@ msgstr ""
 
 #: de/cubeisland/engine/shout/interactions/ShoutCommand.java:151
 msgid "{input#locale} isn't a valid locale!"
+msgstr ""
+
+#: de/cubeisland/engine/shout/interactions/ShoutCommand.java:133
+msgid ""
+"<name> message \"<message>\" [delay \"<x minutes|hours|days>\"] [world "
+"<world>] [permission <permission node>] [locale <locale>] [-fixed-cycle]"
 msgstr ""

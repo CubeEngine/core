@@ -260,10 +260,10 @@ public class UserDatabaseStore extends ResolvedDataHolder
             {
                 if (!attachment.isOfflineMsgReceived())
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "The server is currently running in offline-mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
+                    user.sendTranslated(MessageType.NEGATIVE, "The server is currently running in offline mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
                     attachment.setOfflineMsgReceived(true);
                 }
-                this.module.getLog().warn("Role-permissions not applied! Server is running in unsecured offline-mode!");
+                this.module.getLog().warn("Role permissions not applied! Server is running in unsecured offline mode!");
                 return;
             }
             user.setPermission(this.getResolvedPermissions());
@@ -283,7 +283,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         {
             if (this.getRawRoles().isEmpty() && this.getRawTempRoles().isEmpty())
             {
-                this.module.getLog().debug("{} had no roles applying default-roles", this.attachment.getHolder().getName());
+                this.module.getLog().debug("{} had no roles applying default roles", this.attachment.getHolder().getName());
 
                 for (Role role : ((WorldRoleProvider)this.provider).getDefaultRoles())
                 {

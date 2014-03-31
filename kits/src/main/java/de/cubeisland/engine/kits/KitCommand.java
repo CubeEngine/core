@@ -139,7 +139,7 @@ public class KitCommand extends ContainerCommand
     }
 
     @Alias(names = "kit")
-    @Command(desc = "Gives a kit of items.", usage = "<kitname> [player]", min = 1, max = 2, flags = {
+    @Command(desc = "Gives a set of items.", usage = "<kitname> [player]", min = 1, max = 2, flags = {
         @Flag(longName = "all", name = "a"),
         @Flag(longName = "force", name = "f")
     })
@@ -175,7 +175,7 @@ public class KitCommand extends ContainerCommand
                         else
                         {
                             context.sendTranslated(MessageType.POSITIVE, "You gave {user} the {name#kit} kit!", receiver, kit.getKitName());
-                            receiver.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy it!", kit.getKitName());
+                            receiver.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
                         }
                         gaveKit = true;
                     }
@@ -191,7 +191,7 @@ public class KitCommand extends ContainerCommand
             }
             else if (kitNotreceived > 0)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{amount} players did not receive a kit!", kitNotreceived);
+                context.sendTranslated(MessageType.NEGATIVE, "{amount} players did not receive a kit!", kitNotreceived); // TODO Have a string for if there is only one player, so non-plural
             }
         }
         else
@@ -208,12 +208,12 @@ public class KitCommand extends ContainerCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You need to specify a user!");
+                context.sendTranslated(MessageType.NEGATIVE, "You need to specify a player!");
                 return;
             }
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
                 return;
             }
             if (!user.isOnline())
@@ -227,7 +227,7 @@ public class KitCommand extends ContainerCommand
                 {
                     if (kit.getCustomMessage().equals(""))
                     {
-                        context.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy it!", kit.getKitName());
+                        context.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
                     }
                     else
                     {
@@ -239,7 +239,7 @@ public class KitCommand extends ContainerCommand
                     context.sendTranslated(MessageType.POSITIVE, "You gave {user} the {name#kit} kit!", user, kit.getKitName());
                     if (kit.getCustomMessage().equals(""))
                     {
-                        user.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy it!", kit.getKitName());
+                        user.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
                     }
                     else
                     {
@@ -251,11 +251,11 @@ public class KitCommand extends ContainerCommand
             {
                 if (other)
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "{user} has not enough inventory-space for this kit!", user);
+                    context.sendTranslated(MessageType.NEUTRAL, "{user} has not enough space in your inventory for this kit!", user);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "You don't have enough inventory-space for this kit!");
+                    context.sendTranslated(MessageType.NEUTRAL, "You don't have enough space in your inventory for this kit!");
                 }
             }
         }

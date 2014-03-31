@@ -31,12 +31,12 @@ public class UniverseConfig extends ReflectedYaml
     public ConfigWorld mainWorld;
 
     @Comment({"Players will keep their gamemode when changing worlds in this universe",
-             "You should not set this to true when players cannot change their gamemode in this universe"})
+             "You should set this to false if players cannot change their gamemode in this universe"})
     public boolean keepGameMode = false; // if false can use perm
 
     @Comment({"The gamemode to enforce in every world of this universe",
               "Players with the keep gamemode permission ignore this",
-              "leave empty to configure the gamemode for each world individualle"})
+              "leave empty to configure the gamemode for each world individually"})
     public GameMode enforceGameMode = null;
 
     @Comment("Players will keep their flymode when changing worlds in this universe")

@@ -143,10 +143,10 @@ public class RulebookCommands extends ContainerCommand
         }
 
         user.getInventory().addItem(this.rulebookManager.getBook(locale));
-        user.sendTranslated(MessageType.POSITIVE, "Lot's of fun with your rulebook.");
+        user.sendTranslated(MessageType.POSITIVE, "Lots of fun with your rulebook.");
         if(!books.isEmpty())
         {
-            user.sendTranslated(MessageType.POSITIVE, "Your old was removed");
+            user.sendTranslated(MessageType.POSITIVE, "Your old rulebook was removed");
         }
     }
 
@@ -231,7 +231,7 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You are not able to write, aren't you?");
+            context.sendTranslated(MessageType.NEUTRAL, "You're able to write, right?");
         }
         User user = (User) context.getSender();
 
@@ -262,13 +262,13 @@ public class RulebookCommands extends ContainerCommand
             }
             catch(IOException ex)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "An error ocurred by deleting the old rulebook");
+                context.sendTranslated(MessageType.NEUTRAL, "An error ocurred while deleting the old rulebook");
                 this.getModule().getLog().error(ex, "Error when deleting the files!");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You can't modify a book which does not exist.");
+            context.sendTranslated(MessageType.NEGATIVE, "You can't modify a non-existent book.");
         }
     }
 
@@ -283,7 +283,7 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "I thought you are an analphabet?");
+            context.sendTranslated(MessageType.NEUTRAL, "Are you illiterate?");
         }
         User user = (User) context.getSender();
 
@@ -310,7 +310,7 @@ public class RulebookCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "There is already a book with that language.");
+            context.sendTranslated(MessageType.NEUTRAL, "There is already a book in that language.");
         }
     }
 

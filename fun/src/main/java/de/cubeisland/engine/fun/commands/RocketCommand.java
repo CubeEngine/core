@@ -55,7 +55,7 @@ public class RocketCommand
         return this.rocketListener;
     }
 
-    @Command(desc = "rockets a player", max = 1, usage = "[height] [player <name>]", params = {
+    @Command(desc = "Shoots a player upwards with a cool smoke effect", max = 1, usage = "[height] [player <name>]", params = {
         @Param(names = {
             "player", "p"
         }, type = User.class)
@@ -69,7 +69,7 @@ public class RocketCommand
             user = context.getParam("player");
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString("player"));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString("player"));
                 return;
             }
         }
@@ -77,7 +77,7 @@ public class RocketCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You have to specify a user!");
+                context.sendTranslated(MessageType.NEGATIVE, "You have to specify a player!");
                 return;
             }
             user = (User)context.getSender();

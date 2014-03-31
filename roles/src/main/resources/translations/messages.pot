@@ -18,10 +18,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:roles:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-21 09:58:34+0100\n"
+"POT-Creation-Date: 2014-03-30 13:23:42+0200\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: de/cubeisland/engine/roles/commands/UserManagementCommands.java:205
 msgid " <player> <permission> [in <world>]"
@@ -240,10 +242,6 @@ msgstr ""
 msgid "Show the priority of given role [in world]"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:459
-msgid "Toggles whether given role is a default-role [in world]"
-msgstr ""
-
 #: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:303
 msgid "[in <world>]"
 msgstr ""
@@ -265,6 +263,10 @@ msgstr ""
 msgid "[world]"
 msgstr ""
 
+#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:459
+msgid "Toggles whether given role is a default role [in world]"
+msgstr ""
+
 #: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:233
 msgid "(Including inherited metadata)"
 msgstr ""
@@ -282,19 +284,19 @@ msgid "Added the role {name} to {user} in {world}."
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:241
-msgid "Added {name#role} as parent-role for the global role {name}!"
+msgid "Added {name#role} as parent role for the global role {name}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:244
-msgid "Added {name#role} as parent-role for the role {name} in {world}"
+msgid "Added {name#role} as parent role for the role {name} in {world}"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:321
-msgid "All parent-roles of the global role {name} cleared!"
+msgid "All parent roles of the global role {name} cleared!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:324
-msgid "All parent-roles of the role {name} in {world} cleared!"
+msgid "All parent roles of the role {name} in {world} cleared!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/ManagementCommands.java:77
@@ -311,7 +313,7 @@ msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:223
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:279
-msgid "Could not find the global parent-role {name}."
+msgid "Could not find the global parent role {name}."
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleCommandHelper.java:104
@@ -320,7 +322,7 @@ msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:226
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:282
-msgid "Could not find the parent-role {name} in {world}."
+msgid "Could not find the parent role {name} in {world}."
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleCommandHelper.java:109
@@ -390,12 +392,12 @@ msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:137
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:171
-msgid "Metadata {input#key} resetted for the global role {name}!"
+msgid "Metadata {input#key} reset for the global role {name}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:140
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:175
-msgid "Metadata {input#key} resetted for the role {name} in {world}!"
+msgid "Metadata {input#key} reset for the role {name} in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:145
@@ -425,7 +427,7 @@ msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleCommandHelper.java:78
 msgid ""
-"Or you can define a default-world with {text:/roles admin defaultworld "
+"Or you can define a default world with {text:/roles admin defaultworld "
 "<world>}"
 msgstr ""
 
@@ -478,6 +480,12 @@ msgstr ""
 msgid "Permissions of {user} in {world}."
 msgstr ""
 
+#: de/cubeisland/engine/roles/commands/UserCommandHelper.java:72
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:83
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:177
+msgid "Player {user} not found!"
+msgstr ""
+
 #: de/cubeisland/engine/roles/commands/UserCommandHelper.java:118
 msgid "Please provide a world."
 msgstr ""
@@ -491,11 +499,11 @@ msgid "Priority of the role {name} set to {input#priority} in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:290
-msgid "Removed the parent-role {name} from the global role {name}!"
+msgid "Removed the parent role {name} from the global role {name}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:293
-msgid "Removed the parent-role {name} from the role {name} in {world}!"
+msgid "Removed the parent role {name} from the role {name} in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/UserManagementCommands.java:123
@@ -519,7 +527,7 @@ msgid "Roles of {user} in {world}:"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/UserInformationCommands.java:99
-msgid "SuperPerm Node: {name}"
+msgid "SuperPerm Node: {bool}"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:69
@@ -577,7 +585,7 @@ msgstr ""
 
 #: de/cubeisland/engine/roles/role/UserDatabaseStore.java:263
 msgid ""
-"The server is currently running in offline-mode. Permissions will not be "
+"The server is currently running in offline mode. Permissions will not be "
 "applied until logging in! Contact an Administrator if you think this is an "
 "error."
 msgstr ""
@@ -616,9 +624,6 @@ msgstr ""
 msgid "Unknown setting: {input} Use {text:true},{text:false} or {text:reset}!"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserCommandHelper.java:72
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:83
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:177
 #: de/cubeisland/engine/roles/commands/UserManagementCommands.java:234
 #: de/cubeisland/engine/roles/commands/UserManagementCommands.java:257
 msgid "User {user} not found!"
@@ -697,41 +702,17 @@ msgstr ""
 msgid "{input#priority} is not a valid priority!"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:127
-#: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:131
-msgid "{name#permission} in the role {name}!"
-msgstr ""
-
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:76
-msgid "{name#permission} is now reset for the global role {name}!"
+msgid "{name#permission} has been reset for the global role {name}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:80
-msgid "{name#permission} is now reset for the role {name} in {world}!"
+msgid "{name#permission} has been reset for the role {name} in {world}!"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:98
-msgid ""
-"{name#permission} is now set to {text:false:color=DARK_RED} for the global "
-"role {name}!"
-msgstr ""
-
-#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:102
-msgid ""
-"{name#permission} is now set to {text:false:color=DARK_RED} for the role "
-"{name} in {world}!"
-msgstr ""
-
-#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:87
-msgid ""
-"{name#permission} is now set to {text:true:color=DARK_GREEN} for the global "
-"role {name}!"
-msgstr ""
-
-#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:91
-msgid ""
-"{name#permission} is now set to {text:true:color=DARK_GREEN} for the role "
-"{name} in {world}!"
+#: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:127
+#: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:131
+msgid "{name#permission} in the role {name}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleInformationCommands.java:115
@@ -758,33 +739,57 @@ msgid ""
 "in {world}."
 msgstr ""
 
+#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:98
+msgid ""
+"{name#permission} set to {text:false:color=DARK_RED} for the global role "
+"{name}!"
+msgstr ""
+
+#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:102
+msgid ""
+"{name#permission} set to {text:false:color=DARK_RED} for the role {name} in "
+"{world}!"
+msgstr ""
+
+#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:87
+msgid ""
+"{name#permission} set to {text:true:color=DARK_GREEN} for the global role "
+"{name}!"
+msgstr ""
+
+#: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:91
+msgid ""
+"{name#permission} set to {text:true:color=DARK_GREEN} for the role {name} in "
+"{world}!"
+msgstr ""
+
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:238
 msgid ""
 "{name#role} is a global role and cannot inherit from a non-global role!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:249
-msgid "{name#role} is already parent-role of the global role {name}!"
+msgid "{name#role} is already parent role of the global role {name}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:252
-msgid "{name#role} is already parent-role of the role {name} in {world}!"
+msgid "{name#role} is already parent role of the role {name} in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:478
-msgid "{name#role} is no longer a default-role in {world}!"
+msgid "{name#role} is no longer a default role in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:298
-msgid "{name#role} is not a parent-role of the global role {name}!"
+msgid "{name#role} is not a parent role of the global role {name}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:301
-msgid "{name#role} is not a parent-role of the role {name} in {world}!"
+msgid "{name#role} is not a parent role of the role {name} in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:475
-msgid "{name#role} is now a default-role in {world}!"
+msgid "{name#role} is now a default role in {world}!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/RoleManagementCommands.java:391
@@ -800,8 +805,11 @@ msgid "{text:Roles} reload complete!"
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/UserManagementCommands.java:84
-#: de/cubeisland/engine/roles/commands/UserManagementCommands.java:93
 msgid "{user} already had the role {name} in {world}."
+msgstr ""
+
+#: de/cubeisland/engine/roles/commands/UserManagementCommands.java:93
+msgid "{user} already has the role {name} in {world}."
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/UserManagementCommands.java:126
@@ -813,5 +821,5 @@ msgid "{user} has no permissions set in {world}."
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/UserInformationCommands.java:94
-msgid "{user} is Op!"
+msgid "{user} is op!"
 msgstr ""

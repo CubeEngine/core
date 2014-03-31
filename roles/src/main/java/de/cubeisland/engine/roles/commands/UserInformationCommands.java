@@ -57,7 +57,7 @@ public class UserInformationCommands extends UserCommandHelper
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // List all assigned roles
-        context.sendTranslated(MessageType.NEUTRAL, "Roles of {user} in {world}:", user);
+        context.sendTranslated(MessageType.NEUTRAL, "Roles of {user} in {world}:", user, world);
         for (Role pRole : rolesAttachment.getDataHolder(world).getRoles())
             {
             if (pRole.isGlobal())
@@ -80,7 +80,7 @@ public class UserInformationCommands extends UserCommandHelper
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         World world = this.getWorld(context);
@@ -91,12 +91,12 @@ public class UserInformationCommands extends UserCommandHelper
         ResolvedPermission resolvedPermission = rolesAttachment.getDataHolder(world).getPermissions().get(permission);
         if (user.isOp())
         {
-            context.sendTranslated(MessageType.POSITIVE, "{user} is Op!", user);
+            context.sendTranslated(MessageType.POSITIVE, "{user} is op!", user);
         }
         if (user.isOnline()) // Can have superperm
         {
             boolean superPerm = user.hasPermission(permission);
-            context.sendTranslated(MessageType.NEUTRAL, "SuperPerm Node: {name}", superPerm);
+            context.sendTranslated(MessageType.NEUTRAL, "SuperPerm Node: {bool}", superPerm);
         }
         if (resolvedPermission == null)
         {
@@ -174,7 +174,7 @@ public class UserInformationCommands extends UserCommandHelper
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         World world = this.getWorld(context);
