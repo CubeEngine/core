@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:itemrepair:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:44+0200\n"
+"POT-Creation-Date: 2014-03-31 03:00:11+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -136,15 +136,15 @@ msgstr ""
 msgid "You failed to repair some of your items!"
 msgstr ""
 
-#: de/cubeisland/engine/itemrepair/ItemRepairCommands.java:80
-msgid "You only need to right-click... {text:NOW!:color=DARK_RED}!\n"
-"Too slow."
-msgstr ""
-
 #: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:300
 msgid "You paid {input#amount} to repair your items!"
 msgstr ""
 
 #: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:223
 msgid "{text:Leftclick} again to repair all your damaged items."
+msgstr ""
+
+#: de/cubeisland/engine/itemrepair/ItemRepairCommands.java:80
+msgid "You only need to right-click... {text:NOW!:color=DARK_RED}\n"
+"Too slow."
 msgstr ""
