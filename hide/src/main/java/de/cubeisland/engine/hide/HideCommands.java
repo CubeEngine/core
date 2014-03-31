@@ -44,7 +44,7 @@ public class HideCommands implements CommandHolder
         return ReflectedCommand.class;
     }
 
-    @Command(desc = "Hides a player.", usage = "{player}", max = 1)
+    @Command(desc = "Hides a player.", usage = "(player)", max = 1)
     public void hide(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -79,7 +79,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Unhides a player.", usage = "{player}", max = 1)
+    @Command(desc = "Unhides a player.", usage = "(player)", max = 1)
     public void unhide(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -114,7 +114,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Checks whether a player is hidden.", usage = "{player}", max = 1)
+    @Command(desc = "Checks whether a player is hidden.", usage = "(player)", max = 1)
     public void hidden(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -164,7 +164,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Toggles the ability to see hidden players.", usage = "{player}", max = 1)
+    @Command(desc = "Toggles the ability to see hidden players.", usage = "(player)", max = 1)
     public void seehiddens(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -200,7 +200,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Checks whether a player can see hidden players.", usage = "{player}", max = 1)
+    @Command(desc = "Checks whether a player can see hidden players.", usage = "(player)", max = 1)
     public void canseehiddens(CommandContext context)
     {
         CommandSender sender = context.getSender();

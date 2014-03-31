@@ -75,7 +75,7 @@ public class InformationCommands
     }
 
     @Command(desc = "Displays the biome type you are standing in.",
-             usage = "{world} {block-x} {block-z}", max = 3)
+             usage = "(world) (block-x) (block-z)", max = 3)
     public void biome(CommandContext context)
     {
         World world;
@@ -114,7 +114,7 @@ public class InformationCommands
         context.sendTranslated(MessageType.NEUTRAL, "Biome at {vector:x\\=:z\\=}: {biome}", new BlockVector2(x, z), biome);
     }
 
-    @Command(desc = "Displays the seed of a world.", usage = "{world}", max = 1)
+    @Command(desc = "Displays the seed of a world.", usage = "(world)", max = 1)
     public void seed(CommandContext context)
     {
         World world = null;

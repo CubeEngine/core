@@ -77,7 +77,7 @@ public class WorldsCommands extends ContainerCommand
     // TODO universe create cmd
 
     @Command(desc = "Creates a new world",
-             usage = "<name> {universe} [env <environement>] [seed <seed>] [type <type>] [struct <true|false>] [gen <generator>] [-recreate] [-noload]",
+             usage = "<name> (universe) [env <environement>] [seed <seed>] [type <type>] [struct <true|false>] [gen <generator>] [-recreate] [-noload]",
              params = {@Param(names = {"environment","env"}, type = Environment.class),
                       @Param(names = "seed"),
                       @Param(names = {"worldtype","type"}, type = WorldType.class),
@@ -185,7 +185,7 @@ public class WorldsCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Loads a world from configuration", usage = "<world> {universe}", min = 1, max = 2)
+    @Command(desc = "Loads a world from configuration", usage = "<world> (universe)", min = 1, max = 2)
     public void load(CommandContext context)
     {
         World world = this.wm.getWorld(context.getString(0));

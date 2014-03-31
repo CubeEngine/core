@@ -247,11 +247,11 @@ public abstract class CubeCommand extends Command
     {
         if (sender instanceof User)
         {
-            return usage.replace('{', '[').replace('}', ']');
+            return usage.replace('(', '[').replace(')', ']');
         }
         else
         {
-            return usage.replace('{', '<').replace('}', '>');
+            return usage.replace('(', '<').replace(')', '>');
         }
     }
 
@@ -327,11 +327,8 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        StringBuilder usage = new StringBuilder(sender instanceof User ? "/" : "");
-        usage.append(StringUtils.implode(" ", parentLabels)).append(' ')
-            .append(this.getName()).append(' ')
-            .append(sender.getTranslation(MessageType.NONE, super.getUsage()));
-        return usage.toString();
+        return sender instanceof User ? "/" : "" + StringUtils.implode(" ", parentLabels) + ' ' + this
+            .getName() + ' ' + sender.getTranslation(MessageType.NONE, super.getUsage());
     }
 
     /**

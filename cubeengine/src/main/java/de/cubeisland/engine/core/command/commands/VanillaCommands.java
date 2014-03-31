@@ -119,7 +119,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Changes the difficulty level of the server",
-        usage = "[difficulty] {world <world>}",
+        usage = "[difficulty] (world <world>)",
         max = 1,
         params = @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)
     )
@@ -244,7 +244,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Revokes the operator status of a player",
-        usage = "{player}",
+        usage = "(player)",
         min = 0, max = 1,
         permDefault = FALSE
     )

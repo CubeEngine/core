@@ -79,7 +79,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Refills your hunger bar", max = 1, usage = "{players}")
+    @Command(desc = "Refills your hunger bar", max = 1, usage = "(players)")
     public void feed(CommandContext context)
     {
         if (context.hasArg(0))
@@ -149,7 +149,7 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Empties the hunger bar", max = 1, usage = "{players}")
+    @Command(desc = "Empties the hunger bar", max = 1, usage = "(players)")
     public void starve(CommandContext context)
     {
         if (context.hasArg(0))
@@ -219,7 +219,7 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Heals a player", max = 1, usage = "{player}")
+    @Command(desc = "Heals a player", max = 1, usage = "(player)")
     public void heal(CommandContext context)
     {
         if (context.hasArg(0))
@@ -324,7 +324,7 @@ public class PlayerCommands
     }
 
     @Command(names = {"gamemode", "gm"}, max = 2,
-            desc = "Changes the gamemode", usage = "{player} [gamemode]")
+            desc = "Changes the gamemode", usage = "(player) [gamemode]")
     public void gamemode(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -556,7 +556,7 @@ public class PlayerCommands
         context.sendTranslated(MessageType.NEGATIVE, "You ended your life. Why? {text:\\:(:color=DARK_RED}");
     }
 
-    @Command(desc = "Displays that you are afk", max = 1, usage = "{player}")
+    @Command(desc = "Displays that you are afk", max = 1, usage = "(player)")
     public void afk(CommandContext context)
     {
         User user;
@@ -621,7 +621,7 @@ public class PlayerCommands
         if (user.hasPlayedBefore() || user.isOnline())
         {
             context.sendTranslated(MessageType.NEUTRAL, "Life: {decimal:0}/{decimal#max:0}", user.getHealth(), user.getMaxHealth());
-            context.sendTranslated(MessageType.NEUTRAL, "Hunger: {decimal#foodlvl:0}/{text:20} ({integer#saturation}/{decimal#foodlvl:0})", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
+            context.sendTranslated(MessageType.NEUTRAL, "Hunger: {integer#foodlvl:0}/{text:20} ({integer#saturation}/{integer#foodlvl:0})", user.getFoodLevel(), (int)user.getSaturation(), user.getFoodLevel());
             context.sendTranslated(MessageType.NEUTRAL, "Level: {integer#level} + {integer#percent}%", user.getLevel(), (int)(user.getExp() * 100));
             Location loc = user.getLocation();
             if (loc != null)
