@@ -49,7 +49,7 @@ public class PlayerCommands
     }
     
     @Command(
-            desc = "sets the hat of the player",
+            desc = "Gives a player a hat",
             max = 1,
             params =
             {
@@ -85,7 +85,7 @@ public class PlayerCommands
             
             if(user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "Player not found!");
                 return;
             }
         }
@@ -95,7 +95,7 @@ public class PlayerCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You has to specify a user!");
+            context.sendTranslated(MessageType.NEGATIVE, "You have to specify a player!");
             return;
         }
         
@@ -177,13 +177,13 @@ public class PlayerCommands
         {
             if (!module.perms().COMMAND_EXPLOSION_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use the player parameter.");
+                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to specify a player.");
                 return;
             }
             user = context.getUser("player");
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "Player not found!");
                 return;
             }
             location = user.getLocation();
@@ -217,7 +217,7 @@ public class PlayerCommands
         }
         if (!module.perms().COMMAND_EXPLOSION_PLAYER_DAMAGE.isAuthorized(context.getSender()) && (context.hasFlag("p") || context.hasFlag("u")))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to damage an other player");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to damage another player");
             return;
         }
 
@@ -231,7 +231,7 @@ public class PlayerCommands
 
     @Command(names = {
         "lightning", "strike"
-    }, desc = "Strucks a player or the location you are looking at by lightning.", max = 0, params = {
+    }, desc = "Throws a lightning bolt at a player or where you're looking", max = 0, params = {
             @Param(names = {
                 "player", "p"
             }, type = User.class),
@@ -252,7 +252,7 @@ public class PlayerCommands
 
         if (damage != -1 && !module.perms().COMMAND_LIGHTNING_PLAYER_DAMAGE.isAuthorized(context.getSender()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed the use the damage parameter");
+            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to specify the damage!");
             return;
         }
         if (context.hasFlag("u") && !module.perms().COMMAND_LIGHTNING_UNSAFE.isAuthorized(context.getSender()))
@@ -266,7 +266,7 @@ public class PlayerCommands
             user = context.getUser("player");
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User not found!");
+                context.sendTranslated(MessageType.NEGATIVE, "Player not found!");
                 return;
             }
             location = user.getLocation();
@@ -308,7 +308,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User not found!");
+            context.sendTranslated(MessageType.NEGATIVE, "Player not found!");
             return;
         }
 
@@ -333,7 +333,7 @@ public class PlayerCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User not found!");
+            context.sendTranslated(MessageType.NEGATIVE, "Player not found!");
             return;
         }
 
@@ -345,7 +345,7 @@ public class PlayerCommands
         }
         else if (seconds < 1 || seconds > this.module.getConfig().command.burn.maxTime)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Only 1 to {integer} seconds are permitted!", this.module.getConfig().command.burn.maxTime);
+            context.sendTranslated(MessageType.NEGATIVE, "Only 1 to {integer} seconds are allowed!", this.module.getConfig().command.burn.maxTime);
             return;
         }
 

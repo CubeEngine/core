@@ -15,18 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.faq;
+package de.cubeisland.engine.core.util.formatter;
 
-import java.util.ArrayList;
-import java.util.List;
+import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
-import de.cubeisland.engine.reflect.ReflectedYaml;
-
-@SuppressWarnings("all")
-public class FaqConfig extends ReflectedYaml
+public class BooleanFormatter extends ColoredFormatter<Boolean>
 {
-    public List<Question> questions = new ArrayList<>();
+    public BooleanFormatter()
     {
-        questions.add(new Question("Can I have OP?", "Nope!", new String[] {"get", "OP"}));
+        super(toSet("bool"));
+    }
+
+    @Override
+    public String process(ChatFormat color, Boolean object, MacroContext context)
+    {
+        if (color == null)
+        {
+            color = ChatFormat.GOLD;
+        }
+        return color + String.valueOf(object);
     }
 }

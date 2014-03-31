@@ -126,7 +126,7 @@ public class LockManager implements Listener
                 @Override
                 public void onSuccess(Object o)
                 {
-                    LockManager.this.module.getLog().info("Finished Loading Locks");
+                    LockManager.this.module.getLog().info("Finished loading locks");
                 }
             });
         }
@@ -298,7 +298,7 @@ public class LockManager implements Listener
                         }
                         else if (user != null)
                         {
-                            user.sendTranslated(MessageType.CRITICAL, "Broken Protection detected! Try /cremove on nearby blocks!");
+                            user.sendTranslated(MessageType.CRITICAL, "Broken protection detected! Try /cremove on nearby blocks!");
                             user.sendTranslated(MessageType.NEUTRAL, "If this message keeps coming please contact an administrator!");
                         }
                         break;
@@ -313,7 +313,7 @@ public class LockManager implements Listener
                 lock.delete(user);
                 if (user != null)
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "Detected invalid BlockProtection is now deleted!");
+                    user.sendTranslated(MessageType.NEUTRAL, "Deleted invalid BlockProtection!");
                 }
             }
             return this.handleLockAccess(lock, access);
@@ -703,7 +703,7 @@ public class LockManager implements Listener
                 {
                     accessListModel.setLevel(accessType);
                     accessListModel.update();
-                    sender.sendTranslated(MessageType.POSITIVE, "Updated global access-level for {user}!", modifyUser);
+                    sender.sendTranslated(MessageType.POSITIVE, "Updated global access level for {user}!", modifyUser);
                 }
             }
             else

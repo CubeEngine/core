@@ -65,7 +65,7 @@ public class HomeAdminCommand extends ContainerCommand
             Home home;
             if (user == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                sender.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return null;
             }
 
@@ -121,14 +121,14 @@ public class HomeAdminCommand extends ContainerCommand
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
         {
-            context.sendMessage("You have permission to this command, but it has been disabled from in-game usage to enchant security.");
+            context.sendMessage("You have permission to this command, but it has been disabled from ingame usage to enhance security.");
             return null;
         }
         if (context.getArgCount() > 0)
         {
             if (context.getUser(0) == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return null;
             }
             else
@@ -200,7 +200,7 @@ public class HomeAdminCommand extends ContainerCommand
                         mask |= tpManager.PRIVATE;
                     }
                     tpManager.deleteHomes(user, mask);
-                    context.sendTranslated(MessageType.POSITIVE, "The homes are now deleted");
+                    context.sendTranslated(MessageType.POSITIVE, "Deleted homes.");
                 }
             }
         }, context);
@@ -242,7 +242,7 @@ public class HomeAdminCommand extends ContainerCommand
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             homes = tpManager.listHomes(user, mask);

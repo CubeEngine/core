@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:12+0100\n"
-"PO-Revision-Date: 2014-03-23 09:24+0000\n"
+"POT-Creation-Date: 2014-03-29 12:20:49+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -49,10 +49,8 @@ msgstr "Objets perdront tout enchantement avec une chance de {decimal:2}%"
 msgid "Items will not repair with a chance of {decimal:2}%"
 msgstr "Objets ne seront pas réparés avec une chance de {decimal:2}%"
 
-#: de/cubeisland/engine/itemrepair/ItemRepairCommands.java:80
-msgid ""
-"Ok now you only need to right-click {text:NOW:color=DARK_RED}!\n"
-"... too slow"
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:297
+msgid "Oh no! Some of your items lost their magical power."
 msgstr ""
 
 #: de/cubeisland/engine/itemrepair/ItemRepairCommands.java:108
@@ -72,6 +70,10 @@ msgstr "Bloc de réparation enlevé!"
 msgid "Rightclick the block."
 msgstr "Clique le bloc à droite."
 
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:307
+msgid "Thats {decimal#percent:2}% less then the normal price!"
+msgstr ""
+
 #: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:303
 msgid "Thats {decimal#percent:2}% of the normal price!"
 msgstr "C'est {decimal#percent:2}% du prix normal!"
@@ -79,6 +81,18 @@ msgstr "C'est {decimal#percent:2}% du prix normal!"
 #: de/cubeisland/engine/itemrepair/ItemRepairListener.java:133
 msgid "The repair has been cancelled!"
 msgstr "La réparation a été annulée!"
+
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:219
+msgid "The repair would cost {input#amount}"
+msgstr ""
+
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:211
+msgid "The repair would cost {input#amount} (+{decimal:2}%)"
+msgstr ""
+
+#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:215
+msgid "The repair would cost {input#amount} (-{decimal:2}%)"
+msgstr ""
 
 #: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:228
 msgid "There are no items to repair!"
@@ -126,9 +140,11 @@ msgstr "Pas assez d'argent pour réparer ces objets!"
 msgid "You failed to repair some of your items!"
 msgstr "Des objets n'ont pas été réparé!"
 
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:297
-msgid "You feel that some of your items lost their magical power!"
-msgstr "Des objets ont perdus leurs enchantements en réparant!"
+#: de/cubeisland/engine/itemrepair/ItemRepairCommands.java:80
+msgid ""
+"You only need to right-click... {text:NOW!:color=DARK_RED}!\n"
+"Too slow."
+msgstr ""
 
 #: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:300
 msgid "You paid {input#amount} to repair your items!"
@@ -137,19 +153,3 @@ msgstr "La réparation a coûté {input#amount}!"
 #: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:223
 msgid "{text:Leftclick} again to repair all your damaged items."
 msgstr "{text:Clique à gauche} de nouveau pour réparer tous les objets endomagés."
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:307
-msgid "Thats {decimal#percent:2}% less then the normal price!"
-msgstr ""
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:219
-msgid "The repair would cost {input#amount}"
-msgstr ""
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:211
-msgid "The repair would cost {input#amount} (+{decimal:2}%)"
-msgstr ""
-
-#: de/cubeisland/engine/itemrepair/repair/blocks/RepairBlock.java:215
-msgid "The repair would cost {input#amount} (-{decimal:2}%)"
-msgstr ""

@@ -18,8 +18,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:11+0100\n"
-"PO-Revision-Date: 2014-03-13 12:44+0000\n"
+"POT-Creation-Date: 2014-03-29 12:20:48+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -63,15 +63,15 @@ msgid "removes the declared language and languagefiles!"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:265
-msgid "An error ocurred by deleting the old rulebook"
+msgid "An error ocurred while deleting the old rulebook"
+msgstr ""
+
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:286
+msgid "Are you illiterate?"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:112
 msgid "Can't match the language"
-msgstr ""
-
-#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:286
-msgid "I thought you are an analphabet?"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:242
@@ -84,7 +84,7 @@ msgid "It does not exist a rulebook yet"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:146
-msgid "Lot's of fun with your rulebook."
+msgid "Lots of fun with your rulebook."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:201
@@ -130,15 +130,11 @@ msgid "The rulebook {name} was succesful modified."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:313
-msgid "There is already a book with that language."
-msgstr ""
-
-#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:234
-msgid "You are not able to write, aren't you?"
+msgid "There is already a book in that language."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:271
-msgid "You can't modify a book which does not exist."
+msgid "You can't modify a non-existent book."
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:85
@@ -147,8 +143,12 @@ msgid ""
 "other player"
 msgstr ""
 
+#: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:234
+msgid "You're able to write, right?"
+msgstr ""
+
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:149
-msgid "Your old was removed"
+msgid "Your old rulebook was removed"
 msgstr ""
 
 #: de/cubeisland/engine/rulebook/bookManagement/RulebookCommands.java:171

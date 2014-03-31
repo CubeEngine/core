@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:12+0100\n"
-"PO-Revision-Date: 2014-03-26 09:26+0000\n"
+"POT-Creation-Date: 2014-03-29 12:20:50+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -150,8 +150,8 @@ msgid "All flags are now unset!"
 msgstr "Alle Kennzeichen sind nun zurückgesetzt!"
 
 #: de/cubeisland/engine/locker/commands/LockerAdminCommands.java:118
-msgid "All locks from {user} are now deleted!"
-msgstr "Alle Banne von {user} sind nun gelöscht!"
+msgid "All locks for {user} are now deleted!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/CommandListener.java:260
 msgid "An unknown error occurred!"
@@ -169,13 +169,13 @@ msgstr "Wenn du das KeyBook eingehender untersuchst, wirst du feststellen dass s
 
 #: de/cubeisland/engine/locker/storage/Lock.java:753
 msgid ""
-"As you memorize the pass-phrase the magic aura protecting this allows you to"
+"As you memorize the pass phrase the magic aura protecting this allows you to"
 " interact"
-msgstr "Sobald du dich an den Geheimspruch erinnerst lässt dich die magische Aura dies benutzen"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/LockManager.java:301
-msgid "Broken Protection detected! Try /cremove on nearby blocks!"
-msgstr "Zerbrochener Schutz erkannt! Probiere /cremove auf umliegende Blöcke!"
+msgid "Broken protection detected! Try /cremove on nearby blocks!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/CommandListener.java:289
 msgid "Change the password to invalidate them!"
@@ -188,8 +188,8 @@ msgid ""
 msgstr "Konnte kein KeyBook erstellen! Du musst ein Buch in deiner Hand halten um dies zu tun!"
 
 #: de/cubeisland/engine/locker/storage/LockManager.java:316
-msgid "Detected invalid BlockProtection is now deleted!"
-msgstr "Der als ungültig erkannte Blockschutz ist nun gelöscht!"
+msgid "Deleted invalid BlockProtection!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:124
 msgid "Donation Lock created!"
@@ -278,6 +278,12 @@ msgid ""
 "{text:/cpersist}"
 msgstr "Dauermodus ist aktiv. Dein Befehl wird bis erneuter Eingabe wiederholt {text:/cpersist}"
 
+#: de/cubeisland/engine/locker/commands/LockerAdminCommands.java:114
+#: de/cubeisland/engine/locker/commands/LockerCommands.java:176
+#: de/cubeisland/engine/locker/commands/LockerCommands.java:205
+msgid "Player {user} not found!"
+msgstr ""
+
 #: de/cubeisland/engine/locker/commands/CommandListener.java:261
 msgid "Please report this error to an administrator."
 msgstr "Bitte melde diesen Fehler einem Administrator."
@@ -324,40 +330,40 @@ msgid "Removed {user}'s access to this protection!"
 msgstr "Den Zugang für {user} zu diesem Schutz entfernt!"
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:281
-msgid "Rightclick a protection to change its flags!"
-msgstr "Einen Schutz rechtsklicken um deren Kennzeichen zu ändern!"
+msgid "Right click a protection to change its flags!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:232
-msgid "Rightclick a protection to invalidate old KeyBooks for it!"
-msgstr "Einen Schutz rechtsklicken um alte KeyBooks für diesen ungültig zu machen!"
+msgid "Right click a protection to invalidate old KeyBooks for it!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:187
-msgid "Rightclick a protection to modify it!"
-msgstr "Einen Schutz rechtsklicken um ihn zu ändern!"
+msgid "Right click a protection to modify it!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:132
-msgid "Rightclick a protection to remove it!"
-msgstr "Einen Schutz rechtsklicken um ihn zu entfernen!"
+msgid "Right click a protection to remove it!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:237
-msgid "Rightclick a protection to with a book to create a new KeyBook!"
-msgstr "Einen Schutz mit einem Buch rechtsklicken um ein neues KeyBook zu erstellen!"
-
-#: de/cubeisland/engine/locker/commands/LockerCommands.java:103
-msgid "Rightclick to show protection-info"
-msgstr "Rechtsklicken um Schutz-Infos anzuzeigen"
-
-#: de/cubeisland/engine/locker/commands/LockerCommands.java:146
-msgid "Rightclick to unlock a password protected chest!"
-msgstr "Rechtsklicken um eine passwortgeschützte Truhe zu öffnen!"
+msgid "Right click a protection to with a book to create a new KeyBook!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCreateCommands.java:49
-msgid "Rightclick what you want to protect with a book in your hand!"
-msgstr "Etwas mit einem Buch in der Hand rechtsklicken um es zu schützen!"
+msgid "Right click the item you want to protect with a book in your hand!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCreateCommands.java:53
-msgid "Rightclick what you want to protect!"
-msgstr "Etwas rechtsklicken um es zu schützen!"
+msgid "Right click the item you want to protect!"
+msgstr ""
+
+#: de/cubeisland/engine/locker/commands/LockerCommands.java:103
+msgid "Right click to show protection-info"
+msgstr ""
+
+#: de/cubeisland/engine/locker/commands/LockerCommands.java:146
+msgid "Right click to unlock a password protected chest!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/LockerListener.java:113
 msgid "Strong magic prevents you from accessing any door!"
@@ -368,18 +374,18 @@ msgid "Strong magic prevents you from accessing any inventory!"
 msgstr "Starke Magie verweigert dir jeglichen Zugang zu einem Inventar!"
 
 #: de/cubeisland/engine/locker/LockerListener.java:135
-msgid "Strong magic prevents you from reaching this Entity!"
-msgstr "Starke Magie verweigert dir diese Sache zu erreichen!"
+msgid "Strong magic prevents you from reaching this entity!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:811
-msgid "Sudden pain makes you realize this was not the right pass-phrase!"
-msgstr "Plötzlicher Schmerz lässt dich erkennen, dass der Geheimspruch nicht korrekt war."
+msgid "Sudden pain makes you realize this was not the right passphrase!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:88
 msgid ""
-"The entity-protection corresponding to this book is located at {vector} in "
+"The entity protection corresponding to this book is located at {vector} in "
 "{world}"
-msgstr "Der Sachschutz der mit diesem Buch verbunden ist befindet sich bei {vector} in {world}"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:255
 msgid "The following flags are available:"
@@ -390,8 +396,8 @@ msgid "The following flags are set:"
 msgstr "Die folgenden Kennzeichen sind gesetzt:"
 
 #: de/cubeisland/engine/locker/storage/Lock.java:719
-msgid "The following users do have direct access to this protection"
-msgstr "Die folgenden Benutzer haben direkten Zugang zu diesem Schutz"
+msgid "The following users have direct access to this protection"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:553
 msgid "The magic surrounding this entity quivers as you hit it!"
@@ -435,12 +441,16 @@ msgid ""
 msgstr "Die starke Magie die dieses KeyBook umgibt erlaubt dir Zugriff zum zugehörigen Schutz"
 
 #: de/cubeisland/engine/locker/commands/CommandListener.java:173
-msgid "There is already a protection here!"
-msgstr "Es gibt hier bereits einen Schutz!"
+msgid "There is already protection here!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerAdminCommands.java:53
 msgid "There is no protection with the id {integer}"
 msgstr "Es gibt keinen Schutz mit dieser Kennung {integer}"
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:107
+msgid "This KeyBook"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:537
 msgid "This block is protected by {user}"
@@ -473,8 +483,8 @@ msgid "This protection is not yours!"
 msgstr "Dieser Schutz ist nicht deiner!"
 
 #: de/cubeisland/engine/locker/storage/Lock.java:293
-msgid "This protection is public and so accessible to everyone"
-msgstr "Dieser Schutz ist öffentlich und somit zugänglich für jedermann"
+msgid "This protection is public and so is accessible to everyone"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/CommandListener.java:308
 msgid "This protection is public!"
@@ -485,8 +495,8 @@ msgid "This protections covers {amount} blocks!"
 msgstr "Dieser Schutz umfasst {amount} Blöcke!"
 
 #: de/cubeisland/engine/locker/storage/LockManager.java:706
-msgid "Updated global access-level for {user}!"
-msgstr "Aktualisierte globale Zugangsebene für {user}!"
+msgid "Updated global access level for {user}!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:278
 msgid "Updated {user}'s access to admin access!"
@@ -498,24 +508,18 @@ msgstr "Aktualisierter Zugang von {user} zum Standard-Zugang!"
 
 #: de/cubeisland/engine/locker/storage/Lock.java:804
 msgid ""
-"Upon hearing the right pass-phrase the magic surrounding the container gets "
+"Upon hearing the right passphrase the magic surrounding the container gets "
 "thinner and lets you pass!"
-msgstr "Sobald der richtige Geheimspruch wahrgenommen wird nimmt die Magie die den Behälter umgibt ab und gewährt dir Zugang!"
-
-#: de/cubeisland/engine/locker/commands/LockerAdminCommands.java:114
-#: de/cubeisland/engine/locker/commands/LockerCommands.java:176
-#: de/cubeisland/engine/locker/commands/LockerCommands.java:205
-msgid "User {user} not found!"
-msgstr "Benutzer {user} nicht gefunden!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:296
-msgid "You are not allowed to modify the access-list of this protection!"
-msgstr "Dir ist es nicht erlaubt die Zugangsliste dieses Schutzes zu ändern!"
+msgid "You are not allowed to modify the access list of this protection!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/CommandListener.java:344
 #: de/cubeisland/engine/locker/commands/CommandListener.java:368
-msgid "You are not allowed to modify this protections flags!"
-msgstr "Dir ist es nicht erlaubt die Schutz-Kennzeichen zu ändern!"
+msgid "You are not allowed to modify the flags for this protection!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:261
 msgid "You can also unset {text:all}"
@@ -523,9 +527,9 @@ msgstr "Du kannst ebenso {text:alle} zurücksetzen"
 
 #: de/cubeisland/engine/locker/commands/CommandListener.java:187
 msgid ""
-"You can only apply guarded, donation and free protections to inventory-"
+"You can only apply guarded, donation and free protections to inventory "
 "holders!"
-msgstr "Du kannst nur bewachte, freie und Spendenschutze auf Inventar-Inhaber anwenden!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/CommandListener.java:288
 msgid "You cannot invalidate KeyBooks for password protected locks."
@@ -558,18 +562,18 @@ msgstr "Du bemerkst eine starke magische Aura wahr die dies schützt"
 #: de/cubeisland/engine/locker/storage/Lock.java:757
 msgid ""
 "You sense that the strong magic aura protecting this wont let you through "
-"without the right pass-phrase"
-msgstr "Du bemerkst, dass die starke magische Aura die dies schützt dich nicht durch lässt ohne den korrekten Geheimspruch"
+"without the right passphrase"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:817
-msgid "You try to open the container with a pass-phrase but nothing changes!"
-msgstr "Du versuchst den Behälter ohne Geheimspruch zu öffnen doch nichts geschieht!"
+msgid "You try to open the container with a passphrase but nothing changes!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/KeyBook.java:83
 msgid ""
 "You try to open the container with your KeyBook\n"
-"but forcefully get pushed away!"
-msgstr "Du versuchst den Behälter mit deinem KeyBook zu öffnen\naber du wirst gewaltsam weg gestoßen! "
+"but you get forcefully pushed away!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/KeyBook.java:95
 msgid "You try to open the container with your KeyBook but nothing happens!"
@@ -585,13 +589,13 @@ msgstr "Deine Befehle sind von nun an gültig!"
 
 #: de/cubeisland/engine/locker/commands/LockerCommands.java:92
 msgid ""
-"Your magic is not strong enough to locate the corresponding entity-"
+"Your magic is not strong enough to locate the corresponding entity "
 "protection!"
-msgstr "Deine Magie ist nicht stark genug um den zugehörigen Sachschutz zu lokalisieren!"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:773
-msgid "but is does not hinder you to put/take items in/out"
-msgstr "doch das hindert dich nicht Items herein/heraus zu legen/nehmen"
+msgid "but it does not hinder you when moving items"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:777
 msgid "but it lets you interact as if you were not there"
@@ -601,9 +605,21 @@ msgstr "aber es lässt dich interagieren als wärst du nicht da"
 msgid "last access was {input#time}"
 msgstr "letzter Zugriff {input#time}"
 
+#: de/cubeisland/engine/locker/storage/KeyBook.java:108
+msgid "looks old and"
+msgstr ""
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:111
+msgid "open any containers!"
+msgstr ""
+
 #: de/cubeisland/engine/locker/storage/Lock.java:684
 msgid "protects {input#type} since {input#time}"
 msgstr "schützt {input#type} seit {input#time}"
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:109
+msgid "used up. It"
+msgstr ""
 
 #: de/cubeisland/engine/locker/storage/Lock.java:653
 msgid "which is located at {vector} in {world}"
@@ -612,6 +628,10 @@ msgstr "der bei {vector} in {world} geortet ist"
 #: de/cubeisland/engine/locker/storage/Lock.java:643
 msgid "which is located at {vector} in {world}!"
 msgstr "der bei {vector} in {world} geortet ist!"
+
+#: de/cubeisland/engine/locker/storage/KeyBook.java:110
+msgid "wont let you"
+msgstr ""
 
 #: de/cubeisland/engine/locker/commands/LockerAdminCommands.java:47
 msgid "{input} is not a valid id!"
@@ -644,23 +664,3 @@ msgstr "{user} ist jetzt der Eigentümer dieses Schutzes."
 #: de/cubeisland/engine/locker/storage/Lock.java:615
 msgid "{user} used a KeyBook to access one of your protections!"
 msgstr "{user} benutzte ein KeyBook um auf eines deiner Schutze Zugang zu bekommen!"
-
-#: de/cubeisland/engine/locker/storage/KeyBook.java:107
-msgid "This KeyBook"
-msgstr ""
-
-#: de/cubeisland/engine/locker/storage/KeyBook.java:108
-msgid "looks old and"
-msgstr ""
-
-#: de/cubeisland/engine/locker/storage/KeyBook.java:111
-msgid "open any containers!"
-msgstr ""
-
-#: de/cubeisland/engine/locker/storage/KeyBook.java:109
-msgid "used up. It"
-msgstr ""
-
-#: de/cubeisland/engine/locker/storage/KeyBook.java:110
-msgid "wont let you"
-msgstr ""

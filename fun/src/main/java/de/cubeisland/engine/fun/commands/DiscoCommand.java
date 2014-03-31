@@ -43,7 +43,7 @@ public class DiscoCommand
     }
 
     @Command(
-        desc = "Changes from day to night and vice verca",
+        desc = "Rapidly changes from day to night",
         usage = "[world] [delay <value>]",
         max = 1,
         params = @Param(names = {"delay", "d"}, type = Integer.class)
@@ -105,7 +105,7 @@ public class DiscoCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The disco couldn not be started!");
+                context.sendTranslated(MessageType.NEGATIVE, "The disco can't be started!");
             }
         }
     }

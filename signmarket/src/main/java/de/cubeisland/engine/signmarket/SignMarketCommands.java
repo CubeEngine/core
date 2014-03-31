@@ -38,7 +38,7 @@ public class SignMarketCommands extends ContainerCommand
 
     @Alias(names = "medit")
     @Command(names = {"editMode","edit"},
-            desc = "Enters the editmode allowing to change market-signs easily")
+            desc = "Enters the editmode allowing to change market signs easily")
     public void editMode(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -57,12 +57,12 @@ public class SignMarketCommands extends ContainerCommand
                 this.module.getEditModeListener().addUser((User)context.getSender());
                 context.sendTranslated(MessageType.POSITIVE, "You are now in edit mode!");
                 context.sendTranslated(MessageType.POSITIVE, "Chat will now work as commands.");
-                context.sendTranslated(MessageType.NEUTRAL, "Type exit or use this command again to leave the editmode.");
+                context.sendTranslated(MessageType.NEUTRAL, "Type exit or use this command again to leave the edit mode.");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Only players can edit marketsigns!");
+            context.sendTranslated(MessageType.NEGATIVE, "Only players can edit market signs!");
         }
     }
 }

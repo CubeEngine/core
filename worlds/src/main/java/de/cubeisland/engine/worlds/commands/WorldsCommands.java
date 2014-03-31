@@ -258,7 +258,7 @@ public class WorldsCommands extends ContainerCommand
                 if (tpWorld == world)
                 {
                     context.sendTranslated(MessageType.NEGATIVE, "Cannot unload main world of main universe!");
-                    context.sendTranslated(MessageType.NEUTRAL, "/worlds setMainWorld <world>");
+                    context.sendTranslated(MessageType.NEUTRAL, "/worlds setmainworld <world>");
                     return;
                 }
             }
@@ -286,7 +286,7 @@ public class WorldsCommands extends ContainerCommand
                 context.sendTranslated(MessageType.NEGATIVE, "Could not unload {world}", world);
                 if (!world.getPlayers().isEmpty())
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "There are still {amount} players on that map!", world.getPlayers().size());
+                    context.sendTranslated(MessageType.NEUTRAL, "There are still {amount} players on that map!", world.getPlayers().size()); // TODO add in a message if there is only 1 player, so no plurals
                 }
             }
             return;
@@ -330,7 +330,7 @@ public class WorldsCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Lists all worls")
+    @Command(desc = "Lists all worlds")
     public void list(CommandContext context)
     {
         context.sendTranslated(MessageType.POSITIVE, "The following worlds do exist:");
@@ -360,7 +360,7 @@ public class WorldsCommands extends ContainerCommand
         {
             context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString(0));
         }
-        context.sendTranslated(MessageType.POSITIVE, "WorldInformation for {input#world}:", context.getString(0));
+        context.sendTranslated(MessageType.POSITIVE, "World information for {input#world}:", context.getString(0));
         context.sendMessage("TODO"); // TODO finish worlds info cmd
     }
     // info
@@ -502,13 +502,13 @@ public class WorldsCommands extends ContainerCommand
         context.sendTranslated(MessageType.NEGATIVE, "This command can only be used ingame!");
     }
 
-    @Command(desc = "Loads a players inventory etc. for his current world", usage = "<user>", min = 1, max = 1)
+    @Command(desc = "Loads a player's state for their current world", usage = "<user>", min = 1, max = 1)
     public void loadPlayer(CommandContext context)
     {
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         Universe universe = multiverse.getUniverseFrom(user.getWorld());
@@ -516,13 +516,13 @@ public class WorldsCommands extends ContainerCommand
         context.sendTranslated(MessageType.POSITIVE, "Loaded {user}'s data from file!", user);
     }
 
-    @Command(desc = "Save a players inventory etc. for his current world", usage = "<user>", min = 1, max = 1)
+    @Command(desc = "Save a player's state for their current world", usage = "<user>", min = 1, max = 1)
     public void savePlayer(CommandContext context)
     {
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         Universe universe = multiverse.getUniverseFrom(user.getWorld());

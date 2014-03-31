@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:worlds:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 23:27:28+0100\n"
+"POT-Creation-Date: 2014-03-30 13:23:44+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -116,7 +116,7 @@ msgid "Unload a loaded world"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:261
-msgid "/worlds setMainWorld <world>"
+msgid "/worlds setmainworld <world>"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:182
@@ -200,6 +200,11 @@ msgstr ""
 msgid "Old world moved to {name#folder}"
 msgstr ""
 
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:511
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:525
+msgid "Player {user} not found!"
+msgstr ""
+
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:530
 msgid "Saved {user}'s data to file!"
 msgstr ""
@@ -257,9 +262,8 @@ msgstr ""
 msgid "Unloaded the world {world}!"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:511
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:525
-msgid "User {user} not found!"
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:363
+msgid "World information for {input#world}:"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:456
@@ -279,10 +283,6 @@ msgstr ""
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:206
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:239
 msgid "World {world} loaded!"
-msgstr ""
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:363
-msgid "WorldInformation for {input#world}:"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/Multiverse.java:284

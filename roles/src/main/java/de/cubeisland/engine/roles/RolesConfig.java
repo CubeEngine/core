@@ -32,7 +32,7 @@ import de.cubeisland.engine.roles.config.MirrorConfig;
 public class RolesConfig extends ReflectedYaml
 {
     @Name("disable-permission-in-offlinemode")
-    @Comment("If this is set to true no permissions will be assigned to any user if the server runs in offline-mode")
+    @Comment("If this is set to true no permissions will be assigned to any user if the server runs in offline mode")
     public boolean doNotAssignPermIfOffline = true;
     @Name("default.roles")
     @Comment("The list of roles a user will get when first joining the server.\n" +

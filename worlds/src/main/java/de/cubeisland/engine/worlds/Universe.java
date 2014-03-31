@@ -128,7 +128,7 @@ public class Universe
             if (this.universeConfig.mainWorld == null)
             {
                 World world = this.worlds.iterator().next();
-                module.getLog().warn("The universe {} had no mainworld! {} is now the main world", dirUniverse.getFileName().toString(), world.getName());
+                module.getLog().warn("The universe {} had no main world! {} is now the main world", dirUniverse.getFileName().toString(), world.getName());
                 this.universeConfig.mainWorld = new ConfigWorld(this.wm, world);
                 this.universeConfig.save();
             }
@@ -145,13 +145,13 @@ public class Universe
             {
                 if (this.worlds.isEmpty())
                 {
-                    module.getLog().warn("Unknown world set as mainworld! Universe has no active worlds!");
+                    module.getLog().warn("Unknown world set as the main world! Universe has no active worlds!");
                     this.universeConfig.mainWorld = null;
                 }
                 else
                 {
                     mainWorld = this.worlds.iterator().next();
-                    module.getLog().warn("Unknown world set as mainworld! Mainworld {} replaced with {}!", this.universeConfig.mainWorld, mainWorld
+                    module.getLog().warn("Unknown world set as the main world! Mainworld {} replaced with {}!", this.universeConfig.mainWorld, mainWorld
                         .getName());
                     this.universeConfig.mainWorld = new ConfigWorld(this.wm, mainWorld);
                 }
@@ -232,7 +232,7 @@ public class Universe
             if (config.generation.seed == null)
             {
                 config.generation.seed = StringUtils.randomString(new Random(), 16, "qwertzuiopasdfghhjjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM12345677890");
-                module.getLog().warn("{} in {} had no seed and a random seed was created!", name, this.getName());
+                module.getLog().warn("{} in {} had no seed, so a random seed was created!", name, this.getName());
                 config.save();
             }
             if (Files.exists(Bukkit.getServer().getWorldContainer().toPath().resolve(name))) // world is just not loaded yet
@@ -446,7 +446,7 @@ public class Universe
                     {
                         return true;
                     }
-                    this.module.getLog().warn("EndTarget {} coming from {} is not a EndWorld!", target.getName(), world.getName());
+                    this.module.getLog().warn("End target {} coming from {} is not a End world!", target.getName(), world.getName());
                     return false;
                 }
                 return true;

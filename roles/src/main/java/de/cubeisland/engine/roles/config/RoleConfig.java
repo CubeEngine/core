@@ -39,7 +39,7 @@ public class RoleConfig extends ReflectedYaml
     public Priority priority = Priority.ABSULTEZERO;
     @Name("permissions")
     @Comment("The permission\n" +
-                 "permissions nodes can be assigned individually e.g.:\n" +
+                 "permission nodes can be assigned individually e.g.:\n" +
                  " - cubeengine.roles.command.assign\n" +
                  "or grouped into a tree (this will be done automatically) like this:\n" +
                  " - cubeengine.roles:\n" +

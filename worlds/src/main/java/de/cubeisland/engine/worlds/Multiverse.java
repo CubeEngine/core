@@ -253,7 +253,7 @@ public class Multiverse implements Listener
             {
                 errorFile = dirErrors.resolve(event.getFrom().getName() + "_" + event.getPlayer().getName() + "_" + i++ + ".dat");
             }
-            this.module.getLog().warn("The Player {} ported into a universe that couldn't get created! " +
+            this.module.getLog().warn("The Player {} teleported into a universe that couldn't get created! " +
                                           "The overwritten Inventory is saved under /errors/{}", event.getPlayer().getName(), errorFile.getFileName().toString());
             PlayerDataConfig pdc = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
             pdc.setHead(new SimpleDateFormat().format(new Date()) + " " +
@@ -451,7 +451,7 @@ public class Multiverse implements Listener
                     pdc.setHead(new SimpleDateFormat().format(new Date()) + " " +
                                     player.getName() + " did not spawn in " + config.lastWorld.getName() +
                                     " but instead in " + player.getWorld().getName(),
-                                "This are the items the player had when spawning. They got overwritten!");
+                                "These are the items the player had when spawning. They were overwritten!");
                     pdc.setFile(errorFile.toFile());
                     pdc.applyFromPlayer(player);
                     pdc.save();

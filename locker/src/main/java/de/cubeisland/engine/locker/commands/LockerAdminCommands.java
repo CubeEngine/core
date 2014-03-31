@@ -111,11 +111,11 @@ public class LockerAdminCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         this.manager.purgeLocksFrom(user);
-        context.sendTranslated(MessageType.POSITIVE, "All locks from {user} are now deleted!", user);
+        context.sendTranslated(MessageType.POSITIVE, "All locks for {user} are now deleted!", user);
     }
 
     // TODO admin cmds

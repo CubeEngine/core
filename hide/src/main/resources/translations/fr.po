@@ -18,8 +18,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:12+0100\n"
-"PO-Revision-Date: 2014-03-13 12:44+0000\n"
+"POT-Creation-Date: 2014-03-29 12:20:49+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: French (http://www.transifex.com/projects/p/cubeengine/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -65,7 +65,7 @@ msgid "{player}"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:270
-msgid "No user specified!"
+msgid "No player specified!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:242
@@ -74,6 +74,10 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideListener.java:81
 msgid "Player {user} is now visible"
+msgstr ""
+
+#: de/cubeisland/engine/hide/HideCommands.java:259
+msgid "Player {user} not found!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideListener.java:139
@@ -92,10 +96,6 @@ msgstr ""
 msgid "There are no hidden users!"
 msgstr ""
 
-#: de/cubeisland/engine/hide/HideCommands.java:259
-msgid "User {user} not found!"
-msgstr ""
-
 #: de/cubeisland/engine/hide/HideCommands.java:73
 msgid "You are already hidden!"
 msgstr ""
@@ -105,7 +105,11 @@ msgid "You are already visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:130
-msgid "You are hidden right now!"
+msgid "You are currently hidden!"
+msgstr ""
+
+#: de/cubeisland/engine/hide/HideCommands.java:141
+msgid "You are currently visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:61
@@ -114,10 +118,6 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:96
 msgid "You are now visible!"
-msgstr ""
-
-#: de/cubeisland/engine/hide/HideCommands.java:141
-msgid "You are visible right now!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideListener.java:108
@@ -185,7 +185,11 @@ msgid "{user} is already visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:134
-msgid "{user} is hidden right now!"
+msgid "{user} is currently hidden!"
+msgstr ""
+
+#: de/cubeisland/engine/hide/HideCommands.java:145
+msgid "{user} is currently visible!"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:66
@@ -194,8 +198,4 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:101
 msgid "{user} is now visible!"
-msgstr ""
-
-#: de/cubeisland/engine/hide/HideCommands.java:145
-msgid "{user} is visible right now!"
 msgstr ""

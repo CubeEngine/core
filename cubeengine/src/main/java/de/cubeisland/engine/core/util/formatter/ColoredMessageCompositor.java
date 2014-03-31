@@ -42,6 +42,7 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
         this.colorConfiguration = core.getConfigFactory().load(ColorConfiguration.class, core.getFileManager().getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
         this.registerMacro(new WorldFormatter())
             .registerMacro(new StringFormatter())
+            .registerMacro(new BooleanFormatter())
             .registerMacro(new IntegerFormatter())
             .registerMacro(new CommandSenderFormatter())
             .registerMacro(new TextMacro())

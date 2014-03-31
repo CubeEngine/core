@@ -294,7 +294,7 @@ public class RepairBlock
             }
             if (looseEnch)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You feel that some of your items lost their magical power!");
+                user.sendTranslated(MessageType.NEGATIVE, "Oh no! Some of your items lost their magical power.");
                 user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
             }
             user.sendTranslated(MessageType.POSITIVE, "You paid {input#amount} to repair your items!", economy.format(price));

@@ -290,10 +290,10 @@ public class Lock
                 }
                 return;
             }
-            user.sendTranslated(MessageType.NEUTRAL, "This protection is public and so accessible to everyone");
+            user.sendTranslated(MessageType.NEUTRAL, "This protection is public and so is accessible to everyone");
             return;
         }
-        user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to modify the access-list of this protection!");
+        user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to modify the access list of this protection!");
     }
 
     /**
@@ -716,7 +716,7 @@ public class Lock
             List<AccessListModel> accessors = this.getAccessors();
             if (!accessors.isEmpty())
             {
-                user.sendTranslated(MessageType.POSITIVE, "The following users do have direct access to this protection");
+                user.sendTranslated(MessageType.POSITIVE, "The following users have direct access to this protection");
                 for (AccessListModel listModel : accessors)
                 {
                     User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId().longValue());
@@ -750,11 +750,11 @@ public class Lock
             {
                 if (user.attachOrGet(LockerAttachment.class, this.manager.module).hasUnlocked(this))
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "As you memorize the pass-phrase the magic aura protecting this allows you to interact");
+                    user.sendTranslated(MessageType.POSITIVE, "As you memorize the pass phrase the magic aura protecting this allows you to interact");
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "You sense that the strong magic aura protecting this wont let you through without the right pass-phrase");
+                    user.sendTranslated(MessageType.POSITIVE, "You sense that the strong magic aura protecting this wont let you through without the right passphrase");
                 }
             }
             else
@@ -770,7 +770,7 @@ public class Lock
                         || this.getProtectedType() == ProtectedType.ENTITY_CONTAINER
                         || this.getProtectedType() == ProtectedType.ENTITY_CONTAINER_LIVING)
                     {
-                        user.sendTranslated(MessageType.POSITIVE, "but is does not hinder you to put/take items in/out");
+                        user.sendTranslated(MessageType.POSITIVE, "but it does not hinder you when moving items");
                     }
                     else
                     {
@@ -801,20 +801,20 @@ public class Lock
         {
             if (this.checkPass(pass))
             {
-                user.sendTranslated(MessageType.POSITIVE, "Upon hearing the right pass-phrase the magic surrounding the container gets thinner and lets you pass!");
+                user.sendTranslated(MessageType.POSITIVE, "Upon hearing the right passphrase the magic surrounding the container gets thinner and lets you pass!");
                 user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, 2);
                 user.playSound(soundLoc, Sound.PISTON_EXTEND, 1, (float)1.5);
                 user.attachOrGet(LockerAttachment.class, this.manager.module).addUnlock(this);
             }
             else
             {
-                user.sendTranslated(MessageType.NEUTRAL, "Sudden pain makes you realize this was not the right pass-phrase!");
+                user.sendTranslated(MessageType.NEUTRAL, "Sudden pain makes you realize this was not the right passphrase!");
                 user.damage(0);
             }
         }
         else
         {
-            user.sendTranslated(MessageType.NEUTRAL, "You try to open the container with a pass-phrase but nothing changes!");
+            user.sendTranslated(MessageType.NEUTRAL, "You try to open the container with a passphrase but nothing changes!");
         }
     }
 

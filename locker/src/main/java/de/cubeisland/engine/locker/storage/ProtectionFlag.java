@@ -85,7 +85,7 @@ public enum ProtectionFlag
         {
             if (flags.put(protectionFlag.flagname, protectionFlag) != null)
             {
-                throw new IllegalArgumentException("Duplicate ProtectionFlag!");
+                throw new IllegalArgumentException("Duplicate protection flag!");
             }
         }
     }

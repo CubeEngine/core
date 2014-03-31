@@ -35,7 +35,7 @@ public class TravelConfig extends ReflectedYaml
         @Comment("If users should be able to have multiple homes")
         public boolean multipleHomes = true;
 
-        @Comment("How many homes each user can have")
+        @Comment("How many homes each user can have (multiplehomes must be true)")
         public int max = 10;
     }
 

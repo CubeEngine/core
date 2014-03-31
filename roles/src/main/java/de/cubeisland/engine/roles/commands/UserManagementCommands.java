@@ -90,7 +90,7 @@ public class UserManagementCommands extends UserCommandHelper
             context.sendTranslated(MessageType.POSITIVE, "Added the role {name} to {user} in {world}.", roleName, user, world);
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{user} already had the role {name} in {world}.", user, roleName, world);
+        context.sendTranslated(MessageType.NEUTRAL, "{user} already has the role {name} in {world}.", user, roleName, world);
     }
 
     @Alias(names = {"remurole", "manudel"})

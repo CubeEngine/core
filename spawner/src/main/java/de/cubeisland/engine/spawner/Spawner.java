@@ -47,7 +47,7 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import static org.bukkit.entity.EntityType.*;
 
 /**
- * A module to gather monster spawners with sliktouch and reactivate them using spawneggs
+ * A module to gather monster spawners with silk touch and reactivate them using spawneggs
  */
 public class Spawner extends Module implements Listener
 {

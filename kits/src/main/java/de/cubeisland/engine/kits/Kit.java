@@ -100,7 +100,7 @@ public class Kit
                     where(TableKitsGiven.TABLE_KITS.KITNAME.like(this.name), TableKitsGiven.TABLE_KITS.USERID.eq(user.getEntity().getKey())).fetchOne();
                 if (record1 != null && record1.value1() >= this.limitUsagePerPlayer)
                 {
-                    sender.sendTranslated(MessageType.NEGATIVE, "Kit-limit reached.");
+                    sender.sendTranslated(MessageType.NEGATIVE, "Kit limit reached.");
                     throw new PermissionDeniedException();
                 }
             }
@@ -109,7 +109,7 @@ public class Kit
                 Long lastUsage = user.get(KitsAttachment.class).getKitUsage(this.name);
                 if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
                 {
-                    sender.sendTranslated(MessageType.NEUTRAL, "This kit not available at the moment. Try again later!");
+                    sender.sendTranslated(MessageType.NEUTRAL, "This kit isn't available at the moment. Try again later!");
                     throw new PermissionDeniedException();
                 }
             }

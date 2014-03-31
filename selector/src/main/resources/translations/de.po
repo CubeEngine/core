@@ -18,8 +18,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-27 03:00:13+0100\n"
-"PO-Revision-Date: 2014-03-13 12:02+0000\n"
+"POT-Creation-Date: 2014-03-29 12:20:50+0100\n"
+"PO-Revision-Date: 2014-03-29 23:01+0000\n"
 "Last-Translator: Phillip Schichtel\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -32,18 +32,18 @@ msgstr ""
 msgid "First position set to ({integer}, {integer}, {integer})."
 msgstr ""
 
-#: de/cubeisland/engine/selector/SelectorCommand.java:98
-msgid "Found a Region-Selector Tool in your inventory!"
-msgstr ""
-
-#: de/cubeisland/engine/selector/SelectorCommand.java:90
-msgid "Received a new Region-Selector Tool"
-msgstr ""
-
 #: de/cubeisland/engine/selector/CuboidSelector.java:111
 msgid "Second position set to ({integer}, {integer}, {integer})."
 msgstr ""
 
 #: de/cubeisland/engine/selector/SelectorCommand.java:56
 msgid "You cannot hold a selection tool!"
+msgstr ""
+
+#: de/cubeisland/engine/selector/SelectorCommand.java:98
+msgid "Found a region selector tool in your inventory!"
+msgstr ""
+
+#: de/cubeisland/engine/selector/SelectorCommand.java:90
+msgid "Received a new region selector tool"
 msgstr ""
