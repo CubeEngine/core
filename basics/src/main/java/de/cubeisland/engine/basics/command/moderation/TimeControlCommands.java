@@ -57,7 +57,7 @@ public class TimeControlCommands
     @Command(desc = "Changes the time of a world",
              flags = @Flag(longName = "lock", name = "l"),
              params = @Param(names = { "w", "worlds", "in"}),
-             max = -1, usage = "<time> [w <worlds>]")
+             max = 1, usage = "<time> [w <worlds>]")
     public void time(ParameterizedContext context)
     {
         List<World> worlds;
