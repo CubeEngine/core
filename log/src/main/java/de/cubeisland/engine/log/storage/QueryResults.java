@@ -52,7 +52,6 @@ public class QueryResults
     public void show(User user, QueryParameter parameter, ShowParameter show)
     {
         user.updateInventory();
-
         if (this.logEntries.isEmpty())
         {
             parameter.showNoLogsFound(user);

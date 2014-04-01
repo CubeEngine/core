@@ -22,10 +22,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.cubeisland.engine.bigdata.Bigdata;
+import de.cubeisland.engine.bigdata.MongoDBCodec;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Inject;
@@ -59,6 +61,8 @@ public class Log extends Module implements Listener
         cMan.registerConverter(ContainerType.class, new ContainerTypeConverter());
         cMan.registerConverter(EntityType.class, new EntityTypeConverter());
         cMan.registerConverter(DamageCause.class, new DamageCauseConverter());
+        this.getCore().getConfigFactory().getCodecManager().getCodec(MongoDBCodec.class).
+            getConverterManager().registerConverter(ItemStack.class, new ItemStackConverter());
         this.logManager = new LogManager(this, bigdata);
         this.actionTypeManager = new ActionTypeManager(this);
 

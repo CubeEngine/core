@@ -33,12 +33,13 @@ import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.log.storage.ShowParameter;
 import de.cubeisland.engine.reflect.Section;
+import org.bson.types.ObjectId;
 
 /**
  * The Base for any Loggable Action
  * <p>The ListenerType will listen for given action
  */
-public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject implements Comparable<ActionTypeBase>
+public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject implements Comparable<ActionTypeBase<?>>
 {
     public Date date = new Date();
     public Coordinate coord;
@@ -316,8 +317,8 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
     }
 
     @Override
-    public int compareTo(ActionTypeBase action)
+    public int compareTo(ActionTypeBase<?> action)
     {
-        return this.date.compareTo(action.date);
+        return ((ObjectId)this.getTarget().get("_id")).compareTo((ObjectId)action.getTarget().get("_id"));
     }
 }

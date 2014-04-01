@@ -41,6 +41,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+import com.mongodb.BasicDBObject;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
@@ -107,6 +108,8 @@ public class ContainerListener extends LogListener
                     action.setPlayer((Player)event.getPlayer());
                     action.type = new ContainerType(event.getInventory().getHolder());
 
+                    action.setTarget(new BasicDBObject());
+                    action.save();
                     this.logAction(action);
                 }
             }

@@ -397,7 +397,6 @@ public class QueryManager
             {
                 module.getLog().warn(e, "Could not find Action for DBObject! {}", entry);
             }
-
         }
         lookup.setQueryResults(results);
         if (user != null && user.isOnline())
@@ -464,6 +463,7 @@ public class QueryManager
                 log.getTarget().put("action", log.getClass().getName());
             }
             this.collection.insert(toLog); // Batch insert
+
             long nanos = Profiler.endProfiling("logging");
             timeSpend += nanos;
             logsLogged += logSize;

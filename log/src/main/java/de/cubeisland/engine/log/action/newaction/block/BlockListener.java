@@ -255,6 +255,7 @@ public class BlockListener extends LogListener
                     pistonHead.setSticky(event.isSticky());
                     pistonHead.setFacingDirection(event.getDirection());
                     BlockState newState = block.getState();
+                    newState.setType(pistonHead.getItemType());
                     newState.setData(pistonHead);
                     BlockShift action = this.set(BlockShift.class, state, newState);
                     action.setPush();
