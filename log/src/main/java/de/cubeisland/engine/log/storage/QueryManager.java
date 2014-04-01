@@ -459,11 +459,9 @@ public class QueryManager
             List<DBObject> toLog = new ArrayList<>();
             for (ActionTypeBase<?> log : logs)
             {
-                BasicDBObject dbo = new BasicDBObject();
-                log.setTarget(dbo);
                 log.save();
-                toLog.add(dbo);
-                dbo.append("action", log.getClass().getName());
+                toLog.add(log.getTarget());
+                log.getTarget().put("action", log.getClass().getName());
             }
             this.collection.insert(toLog); // Batch insert
             long nanos = Profiler.endProfiling("logging");

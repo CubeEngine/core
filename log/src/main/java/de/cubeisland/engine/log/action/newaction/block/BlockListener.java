@@ -267,6 +267,7 @@ public class BlockListener extends LogListener
 
                 BlockState oldState = block.getRelative(event.getDirection()).getState();
                 BlockState newState = oldState.getBlock().getState();
+                newState.setType(state.getType());
                 newState.setData(state.getData());
                 BlockShift action = this.set(BlockShift.class, oldState, newState);
                 action.setPush();

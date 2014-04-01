@@ -27,6 +27,7 @@ import org.bukkit.entity.EntityType;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
 import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplosionActionType;
+import de.cubeisland.engine.reflect.Section;
 
 /**
  * Represents an Entity changing a block
@@ -64,7 +65,7 @@ public abstract class EntityBlockActionType<ListenerType> extends BlockActionTyp
         return count;
     }
 
-    public static class EntitySection
+    public static class EntitySection implements Section
     {
         public UUID uuid;
         public EntityType type;

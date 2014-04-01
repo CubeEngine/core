@@ -24,10 +24,11 @@ import org.bukkit.block.BlockState;
 import org.bukkit.event.Listener;
 import org.bukkit.material.Bed;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBRefBase;
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.log.Log;
+
 
 public class LogListener implements Listener
 {
@@ -89,7 +90,9 @@ public class LogListener implements Listener
 
     public final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz)
     {
-        return module.getCore().getConfigFactory().create(clazz);
+        T action = module.getCore().getConfigFactory().create(clazz);
+        action.setTarget(new BasicDBObject());
+        return action;
     }
 
     public final void logAction(ActionTypeBase action)
@@ -109,6 +112,6 @@ public class LogListener implements Listener
             return null;
         }
         DBCollection collection = module.getLogManager().getCollection();
-        return new Reference<>(module.getCore().getConfigFactory(), new DBRefBase(collection.getDB(), collection.getName(), action.getTarget().get("_id")));
+        return new Reference<>(module.getCore().getConfigFactory(), collection, action.getTarget());
     }
 }

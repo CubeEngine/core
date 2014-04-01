@@ -167,6 +167,7 @@ public class DeathListener extends LogListener
         if (action != null)
         {
             action.setKilled(killed);
+            action.setLocation(killed.getLocation());
             action.killer = reference;
             this.logAction(action);
         }

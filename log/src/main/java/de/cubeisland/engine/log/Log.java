@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.log;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.server.PluginEnableEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +38,7 @@ import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
 import de.cubeisland.engine.log.storage.LogManager;
 import de.cubeisland.engine.log.tool.ToolListener;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
 
 public class Log extends Module implements Listener
 {
@@ -52,8 +55,10 @@ public class Log extends Module implements Listener
     public void onEnable()
     {
         this.config = this.loadConfig(LogConfiguration.class);
-        this.getCore().getConfigFactory().getDefaultConverterManager().
-            registerConverter(ContainerType.class, new ContainerTypeConverter());
+        ConverterManager cMan = this.getCore().getConfigFactory().getDefaultConverterManager();
+        cMan.registerConverter(ContainerType.class, new ContainerTypeConverter());
+        cMan.registerConverter(EntityType.class, new EntityTypeConverter());
+        cMan.registerConverter(DamageCause.class, new DamageCauseConverter());
         this.logManager = new LogManager(this, bigdata);
         this.actionTypeManager = new ActionTypeManager(this);
 

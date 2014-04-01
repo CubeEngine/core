@@ -24,6 +24,8 @@ import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+
 /**
  * Represents something killing a LivingEntity
  */
@@ -73,6 +75,26 @@ public class KillAction extends ActionTypeBase<DeathListener>
     @Override
     public String translateAction(User user)
     {
-        return null;
+        int count = this.countAttached();
+        if (this.isPlayerKiller())
+        {
+            return user.getTranslationN(POSITIVE, count,
+                                        "{user} killed an entity",
+                                        "{user} killed {amount} entities",
+                                        this.playerKiller.name, count);
+        }
+        if (this.isEntityKiller())
+        {
+            return user.getTranslationN(POSITIVE, count,
+                                        "{name#entity} killed an entity",
+                                        "{name#entity} killed {amount} entities",
+                                        this.entityKiller.name(), count);
+        }
+        if (this.isOtherKiller())
+        {
+            return user.getTranslationN(POSITIVE, count, "{name#cause} killed an entity",
+                                        "{name#cause} killed {amount} entities", this.otherKiller.name(), count);
+        }
+        return "INVALID KILLTYPE!";
     }
 }

@@ -15,38 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.bigdata;
+package de.cubeisland.engine.log;
 
-import com.mongodb.DBRefBase;
-import de.cubeisland.engine.bigdata.node.DBRefBaseNode;
-import de.cubeisland.engine.reflect.Reflector;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 import de.cubeisland.engine.reflect.codec.converter.Converter;
 import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
 
-public class ReferenceConverter implements Converter<Reference>
+public class DamageCauseConverter implements Converter<DamageCause>
 {
-    private final Reflector reflector;
-
-    public ReferenceConverter(Reflector reflector)
+    @Override
+    public Node toNode(DamageCause object, ConverterManager manager) throws ConversionException
     {
-        this.reflector = reflector;
+        return StringNode.of(object.name());
     }
 
     @Override
-    public Node toNode(Reference object, ConverterManager manager) throws ConversionException
+    public DamageCause fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        return new DBRefBaseNode(object.getDBRef());
-    }
-
-    @Override
-    public Reference fromNode(Node node, ConverterManager manager) throws ConversionException
-    {
-        if (node instanceof DBRefBaseNode)
-        {
-            return new Reference(reflector, (DBRefBase)node.getValue());
-        }
-        throw ConversionException.of(this, node, "Node is not a mapnode!");
+        return DamageCause.valueOf(node.asText());
     }
 }

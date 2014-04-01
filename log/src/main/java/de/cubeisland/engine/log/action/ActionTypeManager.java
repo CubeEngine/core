@@ -28,12 +28,29 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.action.newaction.LogListener;
+import de.cubeisland.engine.log.action.newaction.MoveItemListener;
+import de.cubeisland.engine.log.action.newaction.block.BlockListener;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockListener;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplodeListener;
+import de.cubeisland.engine.log.action.newaction.block.flow.FlowListener;
+import de.cubeisland.engine.log.action.newaction.block.ignite.BlockIgniteListener;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
+import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerBucketListener;
+import de.cubeisland.engine.log.action.newaction.block.player.interact.PlayerBlockInteractListener;
+import de.cubeisland.engine.log.action.newaction.death.DeathListener;
+import de.cubeisland.engine.log.action.newaction.entity.EntityListener;
+import de.cubeisland.engine.log.action.newaction.player.PlayerActionListener;
+import de.cubeisland.engine.log.action.newaction.player.entity.PlayerEntityListener;
+import de.cubeisland.engine.log.action.newaction.player.entity.hanging.PlayerHangingListener;
+import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.PlayerVehicleListener;
+import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemListener;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerListener;
 import gnu.trove.map.hash.TLongObjectHashMap;
 
 public class ActionTypeManager
 {
-    private final Map<Class<? extends ActionType>,ActionType> registeredActionTypes = new ConcurrentHashMap<>();
+    private final Map<Class<? extends ActionType>, ActionType> registeredActionTypes = new ConcurrentHashMap<>();
     private final Map<String, ActionType> actionTypesByName = new ConcurrentHashMap<>();
     private final TLongObjectHashMap<ActionType> registeredIds = new TLongObjectHashMap<>();
     private final Map<String, ActionTypeCategory> categories = new HashMap<>();
@@ -48,18 +65,28 @@ public class ActionTypeManager
 
     public void registerLogActionTypes()
     {
-        module.getCore().getEventManager().registerListener(module,new PlayerBlockListener(module));
+        this.registerListener(new BlockIgniteListener(module)).
+            registerListener(new BlockListener(module)).
+                registerListener(new ContainerListener(module)).
+                registerListener(new DeathListener(module)).
+                registerListener(new EntityBlockListener(module)).
+                registerListener(new EntityListener(module)).
+                registerListener(new ExplodeListener(module)).
+                registerListener(new FlowListener(module)).
+                registerListener(new MoveItemListener(module)).
+                registerListener(new PlayerActionListener(module)).
+                registerListener(new PlayerBlockInteractListener(module)).
+                registerListener(new PlayerBlockListener(module)).
+                registerListener(new PlayerBucketListener(module)).
+                registerListener(new PlayerEntityListener(module)).
+                registerListener(new PlayerHangingListener(module)).
+                registerListener(new PlayerItemListener(module)).
+                registerListener(new PlayerVehicleListener(module));
     }
 
-    public ActionTypeManager registerActionType(ActionType actionType)
+    public ActionTypeManager registerListener(LogListener listener)
     {
-        registeredActionTypes.put(actionType.getClass(), actionType);
-        actionTypesByName.put(actionType.getName(), actionType);
-        actionType.initialize(module, this);
-        for (ActionTypeCategory category : actionType.getCategories())
-        {
-            this.categories.put(category.name, category);
-        }
+        module.getCore().getEventManager().registerListener(module, listener);
         return this;
     }
 
@@ -81,7 +108,8 @@ public class ActionTypeManager
         {
             actionTypes.add(actionType.getName().replace("-", ChatFormat.WHITE + "-" + ChatFormat.GREY));
         }
-        return ChatFormat.GREY.toString() + ChatFormat.ITALIC + StringUtils.implode(ChatFormat.WHITE.toString() + ", " + ChatFormat.GREY + ChatFormat.ITALIC, actionTypes);
+        return ChatFormat.GREY.toString() + ChatFormat.ITALIC + StringUtils.implode(
+            ChatFormat.WHITE.toString() + ", " + ChatFormat.GREY + ChatFormat.ITALIC, actionTypes);
     }
 
     public Set<ActionType> getActionType(String actionString)
@@ -91,7 +119,10 @@ public class ActionTypeManager
         if (category == null)
         {
             String match = Match.string().matchString(actionString, this.actionTypesByName.keySet());
-            if (match == null) return null;
+            if (match == null)
+            {
+                return null;
+            }
             HashSet<ActionType> actionTypes = new HashSet<>();
             actionTypes.add(this.actionTypesByName.get(match));
             return actionTypes;

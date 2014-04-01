@@ -17,26 +17,40 @@
  */
 package de.cubeisland.engine.bigdata;
 
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.DBRefBase;
 import de.cubeisland.engine.reflect.Reflector;
 
 public class Reference<T extends ReflectedDBObject>
 {
     private final Reflector reflector;
-    protected DBRefBase dbRef;
+    private final DBCollection collection;
+    private final DBObject object;
+    private DBRefBase dbRef;
     private T fetched = null;
 
     public Reference(Reflector reflector, DBRefBase dbRefBase)
     {
         this.reflector = reflector;
         this.dbRef = dbRefBase;
+
+        this.collection = null;
+        this.object = null;
+    }
+
+    public Reference(Reflector reflector, DBCollection collection, DBObject object)
+    {
+        this.reflector = reflector;
+        this.collection = collection;
+        this.object = object;
     }
 
     public T fetch(Class<T> clazz)
     {
         if (fetched == null)
         {
-            this.fetched = this.reflector.load(clazz, dbRef.fetch());
+            this.fetched = this.reflector.load(clazz, this.getDBRef().fetch());
         }
         return fetched;
     }
@@ -44,5 +58,14 @@ public class Reference<T extends ReflectedDBObject>
     public boolean equals(Reference<T> other)
     {
         return this.dbRef.equals(other.dbRef);
+    }
+
+    public DBRefBase getDBRef()
+    {
+        if (this.dbRef == null)
+        {
+            this.dbRef = new DBRefBase(collection.getDB(), collection.getName(), object.get("_id"));
+        }
+        return this.dbRef;
     }
 }
