@@ -23,9 +23,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-29 12:20:47+0100\n"
-"PO-Revision-Date: 2014-03-30 11:08+0000\n"
-"Last-Translator: Phillip Schichtel\n"
+"POT-Creation-Date: 2014-03-31 20:53:13+0200\n"
+"PO-Revision-Date: 2014-03-31 18:53+0000\n"
+"Last-Translator: CubeIsland <development@cubeisland.de>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -483,28 +483,6 @@ msgstr ""
 msgid "[world] [<x> <y> <z>]"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:82
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:152
-msgid "{players}"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:559
-msgid "{player}"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:327
-msgid "{player} [gamemode]"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/InformationCommands.java:117
-msgid "{world}"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/InformationCommands.java:78
-msgid "{world} {block-x} {block-z}"
-msgstr ""
-
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:365
 msgid "Displays chunk, memory and world information."
 msgstr ""
@@ -535,12 +513,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:77
 msgid "Displays the biome type you are standing in."
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:288
-msgid ""
-"Gets rid of mobs close to you. Valid types are:\n"
-"monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc."
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:57
@@ -761,18 +733,18 @@ msgstr ""
 msgid "Gamemode: {input#gamemode}"
 msgstr ""
 
+#: de/cubeisland/engine/basics/command/moderation/WorldControlCommands.java:288
+msgid ""
+"Gets rid of mobs close to you. Valid types are:\n"
+"monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc."
+msgstr ""
+
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:658
 msgid "GodMode: {input#godmode}"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:265
 msgid "Healed {amount} players!"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:624
-msgid ""
-"Hunger: {decimal#foodlvl:0}/{text:20} "
-"({integer#saturation}/{decimal#foodlvl:0})"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:219
@@ -2238,4 +2210,32 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:439
 msgid "{world} ({input#environment}): {amount} chunks {amount} entities"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:559
+msgid "(player)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:327
+msgid "(player) [gamemode]"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:82
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:152
+msgid "(players)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/InformationCommands.java:117
+msgid "(world)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/InformationCommands.java:78
+msgid "(world) (block-x) (block-z)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:624
+msgid ""
+"Hunger: {integer#foodlvl:0}/{text:20} "
+"({integer#saturation}/{integer#foodlvl:0})"
 msgstr ""
