@@ -18,7 +18,6 @@
 package de.cubeisland.engine.log.action.newaction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -196,8 +195,7 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
     {
         public ConfigWorld world;
         public UUID worldUUID;
-        public Integer[] xz;
-        public int y;
+        public Block3DVector vector;
 
         public Coordinate()
         {
@@ -207,10 +205,7 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
         {
             this.world = new ConfigWorld(CubeEngine.getCore().getWorldManager(), loc.getWorld());
             this.worldUUID = loc.getWorld().getUID();
-            this.xz = new Integer[2];
-            this.xz[0] = loc.getBlockX();
-            this.y = loc.getBlockY();
-            this.xz[1] = loc.getBlockZ();
+            this.vector = new Block3DVector(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         }
 
         public World getWorld()
@@ -220,13 +215,12 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
 
         public BlockVector3 toBlockVector()
         {
-            return new BlockVector3(xz[0], y, xz[1]);
+            return new BlockVector3(this.vector.x, this.vector.y, this.vector.z);
         }
 
         public boolean equals(Coordinate coordinate)
         {
-            return coordinate.worldUUID.equals(this.worldUUID) && Arrays.equals(coordinate.xz, this.xz)
-                && coordinate.y == this.y;
+            return coordinate.worldUUID.equals(this.worldUUID) && this.vector.equals(coordinate.vector);
         }
 
         @Override
@@ -243,15 +237,11 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
 
             Coordinate that = (Coordinate)o;
 
-            if (y != that.y)
+            if (!vector.equals(that.vector))
             {
                 return false;
             }
             if (!worldUUID.equals(that.worldUUID))
-            {
-                return false;
-            }
-            if (!Arrays.equals(xz, that.xz))
             {
                 return false;
             }
@@ -263,9 +253,65 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
         public int hashCode()
         {
             int result = worldUUID.hashCode();
-            result = 31 * result + Arrays.hashCode(xz);
-            result = 31 * result + y;
+            result = 31 * result + vector.hashCode();
             return result;
+        }
+
+        public static class Block3DVector implements Section
+        {
+            public int x;
+            public int y;
+            public int z;
+
+            public Block3DVector()
+            {
+            }
+
+            public Block3DVector(int x, int y, int z)
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+
+            @Override
+            public boolean equals(Object o)
+            {
+                if (this == o)
+                {
+                    return true;
+                }
+                if (o == null || getClass() != o.getClass())
+                {
+                    return false;
+                }
+
+                Block3DVector that = (Block3DVector)o;
+
+                if (x != that.x)
+                {
+                    return false;
+                }
+                if (y != that.y)
+                {
+                    return false;
+                }
+                if (z != that.z)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            @Override
+            public int hashCode()
+            {
+                int result = x;
+                result = 31 * result + y;
+                result = 31 * result + z;
+                return result;
+            }
         }
     }
 

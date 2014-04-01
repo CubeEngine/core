@@ -37,7 +37,7 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
     {
         return action instanceof CropTrample && !this.hasAttached() && this.player.equals(
             ((PlayerBlockActionType)action).player) && 50 > Math.abs(this.date.getTime() - action.date.getTime())
-            && this.coord.worldUUID.equals(action.coord.worldUUID) && Math.abs(this.coord.y - action.coord.y) == 1;
+            && this.coord.worldUUID.equals(action.coord.worldUUID) && Math.abs(this.coord.vector.y - action.coord.vector.y) == 1;
         // TODO xz check just to make sure?
     }
 

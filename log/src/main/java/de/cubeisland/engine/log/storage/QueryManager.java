@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -645,8 +644,7 @@ public class QueryManager
                 }
                 else if (params.radius == null)// has single location
                 {
-                    query.append("coord.y", loc1.y);
-                    query.append("coord.xz", Arrays.asList(loc1.x, loc1.z));
+                    query.append("coord.vector.x", loc1.x).append("coord.vector.y", loc1.y).append("coord.vector.z", loc1.z);
                 }
                 else // has radius
                 {
