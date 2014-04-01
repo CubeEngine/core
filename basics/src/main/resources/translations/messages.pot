@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:basics:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:42+0200\n"
+"POT-Creation-Date: 2014-04-01 03:00:10+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -475,28 +475,6 @@ msgstr ""
 msgid "[world] [<x> <y> <z>]"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:82
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:152
-msgid "{players}"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:559
-msgid "{player}"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:327
-msgid "{player} [gamemode]"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/InformationCommands.java:117
-msgid "{world}"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/InformationCommands.java:78
-msgid "{world} {block-x} {block-z}"
-msgstr ""
-
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:365
 msgid "Displays chunk, memory and world information."
 msgstr ""
@@ -755,12 +733,6 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:265
 msgid "Healed {amount} players!"
-msgstr ""
-
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:624
-msgid ""
-"Hunger: {decimal#foodlvl:0}/{text:20} ({integer#saturation}/{decimal#foodlvl:"
-"0})"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:219
@@ -2225,4 +2197,32 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/InformationCommands.java:439
 msgid "{world} ({input#environment}): {amount} chunks {amount} entities"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:222
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:559
+msgid "(player)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:327
+msgid "(player) [gamemode]"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:82
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:152
+msgid "(players)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/InformationCommands.java:117
+msgid "(world)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/InformationCommands.java:78
+msgid "(world) (block-x) (block-z)"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:624
+msgid ""
+"Hunger: {integer#foodlvl:0}/{text:20} ({integer#saturation}/{integer#foodlvl:"
+"0})"
 msgstr ""
