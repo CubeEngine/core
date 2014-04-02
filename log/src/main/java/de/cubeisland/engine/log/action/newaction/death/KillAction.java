@@ -20,11 +20,13 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.DEATH;
 
 /**
  * Represents something killing a LivingEntity
@@ -33,8 +35,10 @@ public class KillAction extends ActionTypeBase<DeathListener>
 {
     public PlayerSection playerKiller = null;
     public EntitySection entityKiller = null;
-    public DamageCause otherKiller = null; // TODO converter ?
+    public DamageCause otherKiller = null;
     public boolean projectile = false;
+
+    // TODO item in hand
 
     public boolean isPlayerKiller()
     {
@@ -96,5 +100,17 @@ public class KillAction extends ActionTypeBase<DeathListener>
                                         "{name#cause} killed {amount} entities", this.otherKiller.name(), count);
         }
         return "INVALID KILLTYPE!";
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return DEATH;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "kill";
     }
 }

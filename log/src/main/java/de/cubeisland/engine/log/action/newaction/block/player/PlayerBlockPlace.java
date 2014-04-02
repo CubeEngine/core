@@ -19,11 +19,12 @@ package de.cubeisland.engine.log.action.newaction.block.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerLavaBucketPlace;
 import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerWaterBucketPlace;
-import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -31,12 +32,9 @@ import static org.bukkit.Material.AIR;
  * <p>SubActions:
  * {@link PlayerLavaBucketPlace}
  * {@link PlayerWaterBucketPlace}
- * <p>External Actions:
- * {@link PlayerBlockBreak} for waterlily
  */
 public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
 {
-    // return "block-place";
     // return this.lm.getConfig(world).block.BLOCK_PLACE_enable;
 
     @Override
@@ -70,5 +68,17 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
         }
         return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}",
                                    this.player.name, this.oldBlock.name(), this.newBlock.name());
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "place";
     }
 }

@@ -20,17 +20,18 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 import org.bukkit.material.Door;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player using a door
  */
 public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "door-use";
     // return this.lm.getConfig(world).block.DOOR_USE_enable;
 
     @Override
@@ -55,5 +56,17 @@ public class DoorUse extends PlayerBlockActionType<PlayerBlockInteractListener>
             return user.getTranslation(POSITIVE, "{user} closed the {name#block}", this.player.name,
                                        this.oldBlock.name());
         }
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "door";
     }
 }

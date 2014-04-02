@@ -19,17 +19,18 @@ package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 
 /**
  * Represents blocks falling
  */
 public class BlockFall extends BlockActionType<BlockListener>
 {
-    // return "block-fall";
     // return this.lm.getConfig(world).block.BLOCK_FALL_enable;
 
     public Reference<PlayerBlockActionType> cause;
@@ -50,5 +51,17 @@ public class BlockFall extends BlockActionType<BlockListener>
         }
         return user.getTranslation(POSITIVE, "{name#block} did fall to a lower place because of {user}",
                                    this.oldBlock.name(), cause.fetch(PlayerBlockActionType.class).player.name);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "fall";
     }
 }

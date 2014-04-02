@@ -21,16 +21,17 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
 
 /**
  * Represents items transferred by hoppers or droppers
  */
 public class MoveItem extends ActionTypeBase<MoveItemListener>
 {
-    // return "item-transfer";
     // return this.lm.getConfig(world).container.ITEM_TRANSFER_enable; // TODO make sure default is false! this can produce millions of logs in a very short time
 
     public ItemStack item;
@@ -57,5 +58,17 @@ public class MoveItem extends ActionTypeBase<MoveItemListener>
                                     this.direction.name(), this.item.getType().name(), count);
         // TODO from invType to invType
         // TODO separate for entity containers with uuid to be able to track position
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ITEM;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "move";
     }
 }

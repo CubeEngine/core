@@ -19,15 +19,17 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
+
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player using SplashPotions
  */
 public class PotionSplash extends PlayerActionType<PlayerItemListener> // TODO potion item
 {
-    // return "potion-splash";
     // return this.lm.getConfig(world).POTION_SPLASH_enable;
 
     @Override
@@ -46,5 +48,17 @@ public class PotionSplash extends PlayerActionType<PlayerItemListener> // TODO p
         user.sendTranslated(MessageType.POSITIVE, "{}{user} used a {text:splash potion} {input#effects} onto {amount} entities{}", time, logEntry
                 .getCauserUser().getName(), effects, amountAffected, loc);
          */
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "splashpotion";
     }
 }

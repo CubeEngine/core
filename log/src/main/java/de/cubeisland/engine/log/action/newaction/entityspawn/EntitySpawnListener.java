@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entity;
+package de.cubeisland.engine.log.action.newaction.entityspawn;
 
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
@@ -26,10 +26,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.MonsterEggUse;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.NaturalSpawn;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.OtherSpawn;
-import de.cubeisland.engine.log.action.newaction.entity.spawn.SpawnerSpawn;
 
 import static org.bukkit.Material.MONSTER_EGG;
 import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
@@ -45,11 +41,11 @@ import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
  * {@link OtherSpawn}
  * {@link MonsterEggUse}
  */
-public class EntityListener extends LogListener
+public class EntitySpawnListener extends LogListener
 {
-    public EntityListener(Log module)
+    public EntitySpawnListener(Log module)
     {
-        super(module);
+        super(module, NaturalSpawn.class, SpawnerSpawn.class, OtherSpawn.class, MonsterEggUse.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

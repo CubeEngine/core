@@ -18,16 +18,17 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 
 /**
  * Represents a block fading away
  */
 public class BlockFade extends BlockActionType<BlockListener>
 {
-    // return "block-fade";
     // return this.lm.getConfig(world).block.fade.enable;
 
     @Override
@@ -42,5 +43,17 @@ public class BlockFade extends BlockActionType<BlockListener>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} faded away", "{1:amount}x {name#block} faded away",
                                     this.oldBlock.name(), count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "fade";
     }
 }

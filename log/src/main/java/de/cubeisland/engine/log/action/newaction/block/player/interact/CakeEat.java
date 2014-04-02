@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 import org.bukkit.material.Cake;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
@@ -30,7 +31,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class CakeEat extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "cake-eat";
     // return this.lm.getConfig(world).block.CAKE_EAT_enable;
 
     @Override
@@ -51,5 +51,16 @@ public class CakeEat extends PlayerBlockActionType<PlayerBlockInteractListener>
         {
             return user.getTranslation(POSITIVE, "{user} ate a piece of cake", this.player.name);
         }
+    }
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "cake";
     }
 }

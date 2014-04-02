@@ -25,10 +25,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.IGNITE;
 import static org.bukkit.entity.EntityType.GHAST;
 import static org.bukkit.entity.EntityType.PLAYER;
 
@@ -91,5 +93,11 @@ public class FireballIgnite extends BlockIgniteAction
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "fireball";
     }
 }

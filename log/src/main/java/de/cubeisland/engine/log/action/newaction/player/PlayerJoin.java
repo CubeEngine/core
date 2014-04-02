@@ -18,16 +18,17 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.PLAYER;
 
 /**
  * Represents a Player joining the server
  */
 public class PlayerJoin extends PlayerActionType<PlayerActionListener>
 {
-    // return "player-join";
     // return this.lm.getConfig(world).PLAYER_JOIN_enable;
 
     public String ip;
@@ -53,5 +54,17 @@ public class PlayerJoin extends PlayerActionType<PlayerActionListener>
     public void setIp(String ip)
     {
         this.ip = ip;
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return PLAYER;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "join";
     }
 }

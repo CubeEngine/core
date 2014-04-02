@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockPlace;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -29,7 +30,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerLavaBucketPlace extends PlayerBlockPlace
 {
-    // return "lava-bucket";
     // return this.lm.getConfig(world).block.bucket.LAVA_BUCKET_enable;
 
     @Override
@@ -41,5 +41,17 @@ public class PlayerLavaBucketPlace extends PlayerBlockPlace
                                        this.countAttached());
         }
         return user.getTranslation(POSITIVE, "{user} emptied a lava-bucket", this.player.name);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.BUCKET;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lava";
     }
 }

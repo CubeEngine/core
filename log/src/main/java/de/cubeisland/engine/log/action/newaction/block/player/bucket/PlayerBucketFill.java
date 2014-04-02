@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
@@ -29,7 +30,6 @@ import static org.bukkit.Material.*;
  */
 public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener>
 {
-    // return "bucket-fill";
     // return this.lm.getConfig(world).block.bucket.BUCKET_FILL_enable;
 
     @Override
@@ -55,5 +55,17 @@ public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener
         }
         return user.getTranslationN(POSITIVE, count, "{user} filled a bucket with some random fluids",
                                     "{user} filled {amount} buckets with some random fluids!", this.player.name, count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.BUCKET;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "fill";
     }
 }

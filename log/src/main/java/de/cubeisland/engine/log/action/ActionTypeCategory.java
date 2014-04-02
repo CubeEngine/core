@@ -17,31 +17,44 @@
  */
 package de.cubeisland.engine.log.action;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 public class ActionTypeCategory
 {
-    public static final ActionTypeCategory ALL = new ActionTypeCategory("all");
-    public static final ActionTypeCategory PLAYER = new ActionTypeCategory("player");
-    public static final ActionTypeCategory BLOCK = new ActionTypeCategory("block");
-    public static final ActionTypeCategory ITEM = new ActionTypeCategory("item");
-    public static final ActionTypeCategory INVENTORY = new ActionTypeCategory("inventory");
+    public static final ActionTypeCategory EXPLODE = new ActionTypeCategory("explode");
+    public static final ActionTypeCategory ENTITY_ENDERMAN = new ActionTypeCategory("enderman");
     public static final ActionTypeCategory ENTITY = new ActionTypeCategory("entity");
+    public static final ActionTypeCategory ENTITY_SHEEP = new ActionTypeCategory("sheep");
+    public static final ActionTypeCategory LAVA = new ActionTypeCategory("lava");
+    public static final ActionTypeCategory WATER = new ActionTypeCategory("water");
+    public static final ActionTypeCategory IGNITE = new ActionTypeCategory("ignite");
+    public static final ActionTypeCategory BUCKET = new ActionTypeCategory("bucket");
+    public static final ActionTypeCategory BLOCK = new ActionTypeCategory("block");
+    public static final ActionTypeCategory USE = new ActionTypeCategory("use");
+    public static final ActionTypeCategory SIGN = new ActionTypeCategory("sign");
+    public static final ActionTypeCategory DEATH = new ActionTypeCategory("death");
+    public static final ActionTypeCategory ITEM = new ActionTypeCategory("item");
+    public static final ActionTypeCategory SPAWN = new ActionTypeCategory("spawn");
+    public static final ActionTypeCategory ENTITY_HANGING = new ActionTypeCategory("hanging");
+    public static final ActionTypeCategory PLAYER = new ActionTypeCategory("player");
+
+
+    public static final ActionTypeCategory ALL = new ActionTypeCategory("all");
+
+
+
+    public static final ActionTypeCategory INVENTORY = new ActionTypeCategory("inventory");
+
     public static final ActionTypeCategory BLOCK_ENTITY = new ActionTypeCategory("block-entity");
     public static final ActionTypeCategory ENVIRONEMENT = new ActionTypeCategory("environement");
     public static final ActionTypeCategory KILL = new ActionTypeCategory("kill");
-    public static final ActionTypeCategory EXPLOSION = new ActionTypeCategory("explosion");
+
     public static final ActionTypeCategory FLOW = new ActionTypeCategory("flow");
-    public static final ActionTypeCategory IGNITE = new ActionTypeCategory("ignite");
+
     public static final ActionTypeCategory FIRE = new ActionTypeCategory("fire");
-    public static final ActionTypeCategory BUCKET = new ActionTypeCategory("bucket");
+
     public static final ActionTypeCategory BUCKET_EMPTY = new ActionTypeCategory("bucket-empty");
     public static final ActionTypeCategory VEHICLE = new ActionTypeCategory("vehicle");
-    public static final ActionTypeCategory SPAWN = new ActionTypeCategory("spawn");
 
-    private final HashSet<ActionType> actionTypes = new HashSet<>();
+
 
     public final String name;
 
@@ -50,13 +63,4 @@ public class ActionTypeCategory
         this.name = name;
     }
 
-    public void registerActionType(ActionType actionType)
-    {
-        this.actionTypes.add(actionType);
-    }
-
-    public Set<ActionType> getActionTypes()
-    {
-        return Collections.unmodifiableSet(actionTypes);
-    }
 }

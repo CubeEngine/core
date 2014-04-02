@@ -23,6 +23,12 @@ package de.cubeisland.engine.log.action.newaction.death;
  */
 public class MonsterDeath extends EntityDeathAction
 {
-    // return "monster-death";
     // return this.lm.getConfig(world).death.MONSTER_DEATH_enable;
+
+    @Override
+    public String getName()
+    {
+        return "monster";
+    }
+
 }

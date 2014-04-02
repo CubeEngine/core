@@ -23,6 +23,11 @@ package de.cubeisland.engine.log.action.newaction.player.item.container;
  */
 public class ItemRemove extends ContainerItemActionType
 {
-    // return "item-remove";
     // return this.lm.getConfig(world).container.ITEM_REMOVE_enable;
+
+    @Override
+    public String getName()
+    {
+        return "remove";
+    }
 }

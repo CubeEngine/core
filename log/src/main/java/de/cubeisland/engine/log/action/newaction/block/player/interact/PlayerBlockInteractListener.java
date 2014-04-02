@@ -77,7 +77,9 @@ public class PlayerBlockInteractListener extends LogListener
 {
     public PlayerBlockInteractListener(Log module)
     {
-        super(module);
+        super(module, ContainerAccess.class, DoorUse.class, LeverUse.class, ComparatorChange.class,
+              ButtonUse.class, CakeEat.class, NoteBlockChange.class, RepeaterChange.class,
+              TntPrime.class, BonemealUse.class, CropTrample.class, PlateStep.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

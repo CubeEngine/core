@@ -91,7 +91,8 @@ public class BlockListener extends LogListener
 
     public BlockListener(Log module)
     {
-        super(module);
+        super(module, BlockBreak.class, BlockFade.class, BlockForm.class, BlockSpread.class, LeafDecay.class, NaturalGrow.class, BlockShift.class,
+              PlayerGrow.class, PlayerBlockBreak.class, PlayerSignBreak.class);
     }
 
     public static void logAttachedBlocks(LogListener ll, EventManager em, Block block, BlockActionType action)

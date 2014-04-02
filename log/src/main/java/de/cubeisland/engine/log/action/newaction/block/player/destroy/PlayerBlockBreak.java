@@ -19,11 +19,13 @@ package de.cubeisland.engine.log.action.newaction.block.player.destroy;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 
 /**
  * Represents a player breaking a block
@@ -35,7 +37,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
 {
-    // return "block-break";
     // return this.lm.getConfig(world).block.BLOCK_BREAK_enable;
 
     public Reference<PlayerBlockActionType> reference; // TODO use in message
@@ -56,5 +57,17 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
                                        this.oldBlock.name(), this.countAttached());
         }
         return user.getTranslation(POSITIVE, "{user} broke {name#block}", this.player.name, this.oldBlock.name());
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "break";
     }
 }

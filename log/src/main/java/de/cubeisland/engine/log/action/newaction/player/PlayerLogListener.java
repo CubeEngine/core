@@ -20,13 +20,14 @@ package de.cubeisland.engine.log.action.newaction.player;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 
 public abstract class PlayerLogListener extends LogListener
 {
-    protected PlayerLogListener(Log module)
+    protected PlayerLogListener(Log module, Class<? extends ActionTypeBase>... actions)
     {
-        super(module);
+        super(module, actions);
     }
 
     protected void setPlayerAndLocation(Player player, PlayerActionType action)

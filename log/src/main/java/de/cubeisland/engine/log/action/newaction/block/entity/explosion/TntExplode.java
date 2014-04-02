@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class TntExplode extends ExplosionActionType
 {
-    // return "tnt-explode";
     // return this.lm.getConfig(world).block.explode.TNT_EXPLODE_enable;
 
     @Override
@@ -52,5 +51,11 @@ public class TntExplode extends ExplosionActionType
         return user.getTranslationN(POSITIVE, count, "A TNT-Explosion induced by {user} got rid of {name#block}",
                                     "A TNT-Explosion induced by {user} got rid of {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "tnt";
     }
 }

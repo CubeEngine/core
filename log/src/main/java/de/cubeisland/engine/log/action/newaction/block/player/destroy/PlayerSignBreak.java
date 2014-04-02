@@ -20,8 +20,10 @@ package de.cubeisland.engine.log.action.newaction.block.player.destroy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.SIGN;
 
 /**
  * Represents a player breaking a sign
@@ -49,4 +51,11 @@ public class PlayerSignBreak extends PlayerBlockBreak
     }
 
     // TODO custom rollback/redo
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return SIGN;
+    }
 }

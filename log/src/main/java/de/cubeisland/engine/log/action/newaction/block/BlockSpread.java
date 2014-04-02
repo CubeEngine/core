@@ -18,16 +18,17 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 
 /**
  * Represents a block spreading
  */
 public class BlockSpread extends BlockActionType<BlockListener>
 {
-    // return "block-spread";
     // return this.lm.getConfig(world).block.spread.BLOCK_SPREAD_enable;
 
     @Override
@@ -42,5 +43,17 @@ public class BlockSpread extends BlockActionType<BlockListener>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} spreaded", "{1:amount}x {name#block} spreaded",
                                     this.newBlock.name(), count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "spread";
     }
 }

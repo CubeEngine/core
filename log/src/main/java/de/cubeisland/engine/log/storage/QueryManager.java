@@ -45,7 +45,6 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.ActionType;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
 import org.jooq.Condition;
@@ -390,6 +389,7 @@ public class QueryManager
         {
             try
             {
+                @SuppressWarnings("unchecked")
                 Class<? extends ActionTypeBase> action = (Class<? extends ActionTypeBase>)Class.forName((String)entry.get("action"));
                 results.addResult(module.getCore().getConfigFactory().load(action, entry));
             }
@@ -616,7 +616,7 @@ public class QueryManager
             case ROLLBACK_PREVIEW:
             case REDO_PREVIEW:
                 user.sendTranslated(MessageType.NEGATIVE, "This action is not possible while cleaning up the database!");
-                user.sendTranslated(MessageType.NEUTRAL, "Pleas");
+                user.sendTranslated(MessageType.NEUTRAL, "Please wait");
                 return;
             }
         }
@@ -636,19 +636,22 @@ public class QueryManager
                     boolean locX = loc1.x < loc2.x;
                     boolean locY = loc1.y < loc2.y;
                     boolean locZ = loc1.z < loc2.z;
-                    //  conditions.add(CURRENT_TABLE.X.between(locX ? loc1.x : loc2.x, locX ? loc2.x : loc1.x));
-                    // conditions.add(CURRENT_TABLE.Y.between(locY ? loc1.y : loc2.y, locY ? loc2.y : loc1.y));
-                    //  conditions.add(CURRENT_TABLE.Z.between(locZ ? loc1.z : loc2.z, locZ ? loc2.z : loc1.z));
+                    
+                    query.append("coord.vector.x", new BasicDBObject("$gte", locX ? loc1.x : loc2.x).append("$lte", locX ? loc2.x : loc1.x)).
+                          append("coord.vector.y", new BasicDBObject("$gte", locY ? loc1.y : loc2.y).append("$lte", locX ? loc2.y : loc1.y)).
+                          append("coord.vector.z", new BasicDBObject("$gte", locZ ? loc1.z : loc2.z).append("$lte", locX ? loc2.z : loc1.z));
                 }
                 else if (params.radius == null)// has single location
                 {
-                    query.append("coord.vector.x", loc1.x).append("coord.vector.y", loc1.y).append("coord.vector.z", loc1.z);
+                    query.append("coord.vector.x", loc1.x).
+                          append("coord.vector.y", loc1.y).
+                          append("coord.vector.z", loc1.z);
                 }
                 else // has radius
                 {
-                    // conditions.add(CURRENT_TABLE.X.between(loc1.x - params.radius, loc1.x + params.radius));
-                    // conditions.add(CURRENT_TABLE.Y.between(loc1.y - params.radius, loc1.y + params.radius));
-                    // conditions.add(CURRENT_TABLE.Z.between(loc1.z - params.radius, loc1.z + params.radius));
+                    query.append("coord.vector.x", new BasicDBObject("$gte", loc1.x - params.radius).append("$lte", loc1.x + params.radius)).
+                          append("coord.vector.y", new BasicDBObject("$gte", loc1.y - params.radius).append("$lte", loc1.y + params.radius)).
+                          append("coord.vector.z", new BasicDBObject("$gte", loc1.z - params.radius).append("$lte", loc1.z + params.radius));
                 }
             }
         }
@@ -657,7 +660,7 @@ public class QueryManager
         {
             boolean include = params.includeActions();
             Collection<UInteger> actions = new HashSet<>();
-            for (Entry<ActionType, Boolean> entry : params.actions.entrySet())
+            for (Entry<Class<? extends ActionTypeBase>, Boolean> entry : params.actions.entrySet())
             {
                 if (!include || entry.getValue())
                 {

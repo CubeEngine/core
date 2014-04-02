@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 
 /**
  * Represents a block breaking
@@ -37,5 +39,17 @@ public class BlockBreak extends BlockActionType<BlockListener>
     public String translateAction(User user)
     {
         return user.getTranslation(POSITIVE, "{name#block} got destroyed or moved", this.oldBlock.name());
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "break";
     }
 }

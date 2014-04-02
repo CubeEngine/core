@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class FireballExplode extends ExplosionActionType
 {
-    // return "fireball-explode";
     // return this.lm.getConfig(world).block.explode.FIREBALL_EXPLODE_enable;
 
     @Override
@@ -52,5 +51,11 @@ public class FireballExplode extends ExplosionActionType
         return user.getTranslationN(POSITIVE, count, "A Fireball flying towards {user} blasted away {name#block}",
                                     "A Fireball flying towards {user} blasted away {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "fireball";
     }
 }

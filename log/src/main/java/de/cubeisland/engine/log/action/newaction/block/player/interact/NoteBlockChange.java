@@ -24,15 +24,17 @@ import org.bukkit.block.NoteBlock;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player changing the tune of a noteblock
  */
 public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "noteblock-change";
     // return this.lm.getConfig(world).block.NOTEBLOCK_CHANGE_enable;
 
     public byte note;
@@ -69,5 +71,18 @@ public class NoteBlockChange extends PlayerBlockActionType<PlayerBlockInteractLi
     {
         super.setOldBlock(state);
         this.note = ((NoteBlock)state).getNote().getId();
+    }
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "noteblock";
     }
 }

@@ -50,13 +50,21 @@ import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionT
  * {@link PlayerDeath}
  * {@link PlayerDeathDrop}
  * {@link EntityDeathAction}
+ *  {@link BossDeath}
+ *  {@link PetDeath}
+ *  {@link AnimalDeath}
+ *  {@link NpcDeath}
+ *  {@link MonsterDeath}
+ *  {@link OtherDeath}
  * {@link EntityDeathDrop}
  */
 public class DeathListener extends LogListener
 {
     public DeathListener(Log module)
     {
-        super(module);
+        super(module, KillAction.class, PlayerDeath.class, PlayerDeathDrop.class,
+              EntityDeathAction.class, BossDeath.class, PlayerDeath.class, AnimalDeath.class, NpcDeath.class, MonsterDeath.class, OtherDeath.class,
+              EntityDeathDrop.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

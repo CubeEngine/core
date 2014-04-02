@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class EnderdragonExplode extends ExplosionActionType
 {
-    // return "enderdragon-explode";
     // return this.lm.getConfig(world).block.explode.ENDERDRAGON_EXPLODE_enable;
 
     @Override
@@ -53,5 +52,11 @@ public class EnderdragonExplode extends ExplosionActionType
                                     "An enderdragon attacking {user} changed the integrity of {name#block}",
                                     "An enderdragon attacking {user} changed the integrity of {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "enderdragon";
     }
 }

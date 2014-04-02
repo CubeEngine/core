@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -27,7 +28,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class LavaFlow extends BlockFlowAction
 {
-    // return "lava-flow";
     // return this.lm.getConfig(world).block.flow.LAVA_FLOW_enable;
 
     @Override
@@ -42,5 +42,18 @@ public class LavaFlow extends BlockFlowAction
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "Lava occupied this block",
                                     "Lava occupied this block {amount} times", count);
+    }
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.LAVA;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "flow";
     }
 }

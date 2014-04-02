@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
 
 /**
  * Represents an Entity breaking a block
@@ -28,7 +30,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
 {
-    // return "entity-break";
     // return this.lm.getConfig(world).block.ENTITY_BREAK_enable;
 
     @Override
@@ -49,5 +50,17 @@ public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
         }
         return user.getTranslation(POSITIVE, "A {name#entity} destroyed {name#block}", this.entity.name(),
                                    this.oldBlock.name());
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ENTITY;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "break";
     }
 }

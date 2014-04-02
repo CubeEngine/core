@@ -33,10 +33,18 @@ import de.cubeisland.engine.log.Log;
 public class LogListener implements Listener
 {
     protected final Log module;
+    private Class<? extends ActionTypeBase>[] actions;
 
-    public LogListener(Log module)
+    @SafeVarargs
+    public LogListener(Log module, Class<? extends ActionTypeBase>... actions)
     {
         this.module = module;
+        this.actions = actions;
+    }
+
+    public Class<? extends ActionTypeBase>[] getActions()
+    {
+        return actions;
     }
 
     /**

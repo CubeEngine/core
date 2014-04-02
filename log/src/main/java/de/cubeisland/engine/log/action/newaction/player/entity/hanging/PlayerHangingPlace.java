@@ -18,23 +18,24 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY_HANGING;
 
 /**
  * Represents a player placing a hanging entity
  */
 public class PlayerHangingPlace extends PlayerHangingActionType
 {
-    // return "hanging-place";
     // return this.lm.getConfig(world).HANGING_PLACE_enable;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
     {
         return action instanceof PlayerHangingPlace && this.player.equals(((PlayerHangingPlace)action).player)
-            && ((PlayerHangingPlace)action).hangingType == this.hangingType;
+            && ((PlayerHangingPlace)action).hanging.isSameType(this.hanging);
     }
 
     @Override
@@ -42,7 +43,19 @@ public class PlayerHangingPlace extends PlayerHangingActionType
     {
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#hanging} got hung up by {user}",
-                                    "{name#hanging} got hung up by {user} {amount} times", this.hangingType.name(),
+                                    "{name#hanging} got hung up by {user} {amount} times", this.hanging.name(),
                                     this.player.name, count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ENTITY_HANGING;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "place";
     }
 }

@@ -29,8 +29,9 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class FireSpread extends BlockIgniteAction
 {
-    //return  "fire-spread";
     //return this.lm.getConfig(world).block.spread.FIRE_SPREAD_enable;
+
+    public Coordinate source;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
@@ -49,6 +50,12 @@ public class FireSpread extends BlockIgniteAction
 
     public void setSource(Location source)
     {
-        // TODO
+        this.source = new Coordinate(source);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "spread";
     }
 }

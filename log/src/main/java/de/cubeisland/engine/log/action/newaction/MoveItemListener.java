@@ -40,7 +40,7 @@ public class MoveItemListener extends LogListener
 {
     public MoveItemListener(Log module)
     {
-        super(module);
+        super(module, MoveItem.class);
     }
 
     @EventHandler

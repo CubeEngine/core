@@ -20,17 +20,18 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.DEATH;
 
 /**
  * Represents a players death
  */
 public class PlayerDeath extends DeathAction
 {
-    // return "player-death";
     // return this.lm.getConfig(world).death.PLAYER_DEATH_enable;
 
     public PlayerSection killed;
@@ -82,5 +83,17 @@ public class PlayerDeath extends DeathAction
     public void setPlayer(Player player)
     {
         this.killed = new PlayerSection(player);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return DEATH;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "player";
     }
 }

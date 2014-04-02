@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
@@ -29,7 +30,6 @@ import static org.bukkit.Material.REDSTONE_COMPARATOR_ON;
  */
 public class ComparatorChange extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "comparator-change";
     // return this.lm.getConfig(world).block.COMPARATPR_CHANGE_enable;
 
     @Override
@@ -52,5 +52,17 @@ public class ComparatorChange extends PlayerBlockActionType<PlayerBlockInteractL
             return user.getTranslation(POSITIVE, "{user} activated the comparator", this.player.name);
         }
         return user.getTranslation(POSITIVE, "{user} deactivated the comparator", this.player.name);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "comparator";
     }
 }

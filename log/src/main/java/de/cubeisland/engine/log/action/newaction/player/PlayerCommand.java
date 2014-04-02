@@ -18,16 +18,17 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.PLAYER;
 
 /**
  * Represents a player executing a command
  */
 public class PlayerCommand extends PlayerActionType<PlayerActionListener>
 {
-    // return "player-command";
     // return this.lm.getConfig(world).PLAYER_COMMAND_enable;
 
     private String command;
@@ -59,5 +60,17 @@ public class PlayerCommand extends PlayerActionType<PlayerActionListener>
     public void setCommand(String command)
     {
         this.command = command;
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return PLAYER;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "command";
     }
 }

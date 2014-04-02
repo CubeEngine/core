@@ -15,24 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entity.spawn;
+package de.cubeisland.engine.log.action.newaction.entityspawn;
 
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
-import de.cubeisland.engine.log.action.newaction.entity.EntityActionType;
-import de.cubeisland.engine.log.action.newaction.entity.EntityListener;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.SPAWN;
 
 /**
  * Represents a player spawning a LivingEntity using a spawnegg
  */
-public class MonsterEggUse extends EntityActionType<EntityListener>
+public class MonsterEggUse extends EntityActionType<EntitySpawnListener>
 {
-    //return "monsteregg-use";
     //return this.lm.getConfig(world).MONSTER_EGG_USE_enable;
 
     public PlayerSection player;
@@ -55,6 +54,18 @@ public class MonsterEggUse extends EntityActionType<EntityListener>
 
     public void setPlayer(Player player)
     {
-        this.player = new PlayerSection(player);
+        this.player = new PlayerSection(player); // TODO dispenser
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return SPAWN;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "egg";
     }
 }

@@ -39,7 +39,7 @@ import org.bson.types.ObjectId;
  * The Base for any Loggable Action
  * <p>The ListenerType will listen for given action
  */
-public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject implements Comparable<ActionTypeBase<?>>
+public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject implements Comparable<ActionTypeBase<?>>, NamedAction
 {
     public Date date = new Date();
     public Coordinate coord;

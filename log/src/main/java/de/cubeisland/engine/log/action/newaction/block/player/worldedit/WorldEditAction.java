@@ -18,10 +18,12 @@
 package de.cubeisland.engine.log.action.newaction.block.player.worldedit;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -29,7 +31,6 @@ import static org.bukkit.Material.AIR;
  */
 public class WorldEditAction extends PlayerBlockActionType<LogEditSession>
 {
-    // return "worldedit";
     // return this.lm.getConfig(world).block.WORLDEDIT_enable;
 
     @Override
@@ -63,5 +64,17 @@ public class WorldEditAction extends PlayerBlockActionType<LogEditSession>
                                         "{user} used worldedit to replace {name#block} with {name#block} x{amount}",
                                         this.player.name, this.oldBlock.name(), this.newBlock.name(), count);
         }
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "worldedit";
     }
 }

@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
 
 /**
  * Represents an entity changing a block
@@ -38,5 +40,17 @@ public class OtherEntityChangeBlock extends EntityBlockActionType<EntityBlockLis
     {
         return user.getTranslation(POSITIVE, "{name#entity} changed {name#block} to {name#block}", this.entity.name(),
                                    this.oldBlock.name(), this.newBlock.name());
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ENTITY;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "change";
     }
 }

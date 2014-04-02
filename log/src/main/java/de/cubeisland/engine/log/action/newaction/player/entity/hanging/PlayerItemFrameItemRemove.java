@@ -20,16 +20,17 @@ package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
 
 /**
  * Represents a player removing an item from an item-frame
  */
 public class PlayerItemFrameItemRemove extends PlayerHangingActionType
 {
-    // return "remove-item";
     // return this.lm.getConfig(world).ITEM_REMOVE_FROM_FRAME;
 
     public ItemStack item;
@@ -51,4 +52,17 @@ public class PlayerItemFrameItemRemove extends PlayerHangingActionType
     }
 
     // TODO redo/rollback
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ITEM;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "remove";
+    }
 }

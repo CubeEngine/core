@@ -31,7 +31,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.ActionType;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
 
 public class QueryParameter implements Cloneable
@@ -48,7 +48,7 @@ public class QueryParameter implements Cloneable
     Integer radius;
     Set<Location> singleBlockLocations;
     // The actions to look for
-    Map<ActionType, Boolean> actions = new ConcurrentHashMap<>();
+    Map<Class<? extends ActionTypeBase>, Boolean> actions = new ConcurrentHashMap<>();
     // Users
     Map<Long, Boolean> users = new ConcurrentHashMap<>();
     // Entity
@@ -127,21 +127,21 @@ public class QueryParameter implements Cloneable
         this.to_before = to;
     }
 
-    public void setActions(Set<ActionType> actions, boolean include)
+    public void setActions(Set<Class<? extends ActionTypeBase>> actions, boolean include)
     {
         this.actions.clear();
-        for (ActionType action : actions)
+        for (Class<? extends ActionTypeBase> action : actions)
         {
             this.actions.put(action, include);
         }
     }
 
-    public void includeAction(ActionType action)
+    public void includeAction(Class<? extends ActionTypeBase> action)
     {
         this.actions.put(action, true);
     }
 
-    public void excludeAction(ActionType action)
+    public void excludeAction(Class<? extends ActionTypeBase> action)
     {
         this.actions.put(action, false);
     }
@@ -315,7 +315,7 @@ public class QueryParameter implements Cloneable
         return false; // all excluded
     }
 
-    public boolean containsAction(ActionType actionType)
+    public boolean containsAction(Class<? extends ActionTypeBase> actionType)
     {
         Boolean set = this.actions.get(actionType);
         if (set == null)

@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.entity.spawn;
+package de.cubeisland.engine.log.action.newaction.entityspawn;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.entity.EntityActionType;
-import de.cubeisland.engine.log.action.newaction.entity.EntityListener;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.SPAWN;
 
 /**
- * Represents a LivingEntity spawning naturally
+ * Represents a LivingEntity spawning
  */
-public class NaturalSpawn extends EntityActionType<EntityListener>
+public class OtherSpawn extends EntityActionType<EntitySpawnListener>
 {
-    //return "natural-spawn";
-    //return this.lm.getConfig(world).NATURAL_SPAWN_enable;
+    //return this.lm.getConfig(world).OTHER_SPAWN_enable;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
@@ -42,7 +41,19 @@ public class NaturalSpawn extends EntityActionType<EntityListener>
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count, "{name#entity} spawned naturally",
-                                    "{name#entity} spawned naturally {amount} times", this.entity.name(), count);
+        return user.getTranslationN(POSITIVE, count, "{name#entity} spawned", "{name#entity} spawned {amount} times",
+                                    this.entity.name(), count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return SPAWN;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "other";
     }
 }

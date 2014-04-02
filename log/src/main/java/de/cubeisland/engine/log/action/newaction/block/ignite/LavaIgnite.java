@@ -29,9 +29,9 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class LavaIgnite extends BlockIgniteAction
 {
-    // return "lava-ignite";
     // return this.lm.getConfig(world).block.ignite.LAVA_IGNITE_enable;
 
+    public Coordinate source;
 
     @Override
     public boolean canAttach(ActionTypeBase action)
@@ -48,6 +48,12 @@ public class LavaIgnite extends BlockIgniteAction
 
     public void setSource(Location source)
     {
-        // TODO
+        this.source = new Coordinate(source);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lava";
     }
 }

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
@@ -28,7 +29,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class ButtonUse extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "button-use";
     // return this.lm.getConfig(world).BUTTON_USE_enable;
 
     @Override
@@ -45,5 +45,17 @@ public class ButtonUse extends PlayerBlockActionType<PlayerBlockInteractListener
         return user.getTranslationN(POSITIVE, count, "{user} pressed a {name#block}",
                                     "{user} pressed a {name#block} {amount} times", this.player.name,
                                     this.oldBlock.name(), count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "button";
     }
 }

@@ -30,7 +30,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class LighterIgnite extends BlockIgniteAction
 {
-    // return  "lighter-ignite";
     // return this.lm.getConfig(world).block.ignite.LIGHTER_IGNITE_enable;
 
     public PlayerSection player;
@@ -58,5 +57,11 @@ public class LighterIgnite extends BlockIgniteAction
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lighter";
     }
 }

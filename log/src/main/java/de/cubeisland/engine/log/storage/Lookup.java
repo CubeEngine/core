@@ -23,8 +23,7 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.ActionType;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
+import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 public class Lookup implements Cloneable
 {
@@ -45,7 +44,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(new HashSet<ActionType>(), false); // exclude none
+        lookup.queryParameter.setActions(new HashSet<Class<? extends ActionTypeBase>>(), false); // exclude none
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
@@ -57,7 +56,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.INVENTORY.getActionTypes(), true); // include inv
+        // TODO lookup.queryParameter.setActions(ActionTypeCategory.INVENTORY.getActionTypes(), true); // include inv
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
@@ -69,7 +68,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.KILL.getActionTypes(), true); // include kills
+        // TODO lookup.queryParameter.setActions(ActionTypeCategory.KILL.getActionTypes(), true); // include kills
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
@@ -81,7 +80,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.PLAYER.getActionTypes(), true); // include player
+        // TODO lookup.queryParameter.setActions(ActionTypeCategory.PLAYER.getActionTypes(), true); // include player
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }
@@ -93,7 +92,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.BLOCK.getActionTypes(), true); // include block
+        // TODO lookup.queryParameter.setActions(ActionTypeCategory.BLOCK.getActionTypes(), true); // include block
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }

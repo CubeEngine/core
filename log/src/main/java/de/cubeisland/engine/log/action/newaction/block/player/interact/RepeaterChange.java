@@ -22,17 +22,18 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.material.Diode;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player changing the delay of a repeater
  */
 public class RepeaterChange extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "repeater-change";
     // return this.lm.getConfig(world).block.REPEATER_CHANGE_enable;
 
 
@@ -60,5 +61,18 @@ public class RepeaterChange extends PlayerBlockActionType<PlayerBlockInteractLis
         }
         return user.getTranslation(POSITIVE, "{user} set the repeater to {amount} ticks delay", this.player.name,
                                    newTicks);
+    }
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "repeater";
     }
 }

@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.log.commands;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Material;
@@ -39,7 +38,6 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.ActionType;
 import de.cubeisland.engine.log.action.ActionTypeCompleter;
 import de.cubeisland.engine.log.action.ActionTypeManager;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
@@ -68,7 +66,7 @@ public class LookupCommands
             return;
         }
         context.sendTranslated(MessageType.NEUTRAL, "Registered ActionTypes:"); //TODO colors
-        context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
+        //context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
         context.sendMessage("");
         context.sendTranslated(MessageType.NEUTRAL, "Lookup/Rollback/Redo-Parameters:");
         context.sendMessage("");
@@ -555,6 +553,8 @@ public class LookupCommands
 
     private boolean readActions(QueryParameter params, String input, User user)
     {
+        // TODO
+        /*
         if (input == null)
         {
             return true;
@@ -588,6 +588,8 @@ public class LookupCommands
                 }
             }
         }
+        return true;
+        */
         return true;
     }
 }

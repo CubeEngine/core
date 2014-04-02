@@ -18,16 +18,17 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY_SHEEP;
 
 /**
  * Represents a Sheep eating grass
  */
 public class SheepEat extends EntityBlockActionType<EntityBlockListener>
 {
-    // return "sheep-eat";
     // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
 
     @Override
@@ -47,5 +48,17 @@ public class SheepEat extends EntityBlockActionType<EntityBlockListener>
                                         this.getAttached().size() + 1, count);
         }
         return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ENTITY_SHEEP;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "eat";
     }
 }

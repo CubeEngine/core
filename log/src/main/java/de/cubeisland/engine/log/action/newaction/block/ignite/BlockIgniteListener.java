@@ -54,7 +54,7 @@ public class BlockIgniteListener extends LogListener
 {
     public BlockIgniteListener(Log module)
     {
-        super(module);
+        super(module, FireballIgnite.class, LavaIgnite.class, LighterIgnite.class, LighterIgnite.class, OtherIgnite.class, FireSpread.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

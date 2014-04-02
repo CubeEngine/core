@@ -18,17 +18,18 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.EXPLODE;
 
 /**
  * Represents an explosion caused by an entity
  */
 public class EntityExplode extends EntityBlockActionType<ExplodeListener>
 {
-    // return "entity-explode";
     // return this.lm.getConfig(world).block.explode.ENTITY_EXPLODE_enable;
 
     @Override
@@ -44,5 +45,17 @@ public class EntityExplode extends EntityBlockActionType<ExplodeListener>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "Something blew up {name#block}",
                                     "Something blew up {1:amount}x {name#block}", this.oldBlock.name(), count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return EXPLODE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "entity";
     }
 }

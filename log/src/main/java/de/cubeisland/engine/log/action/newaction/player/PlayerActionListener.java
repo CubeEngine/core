@@ -44,13 +44,13 @@ import de.cubeisland.engine.log.Log;
  * {@link PlayerJoin}
  * {@link PlayerQuit}
  * {@link XpPickup}
- * {@link XpPickup}
+ * {@link PlayerTeleport}
  */
 public class PlayerActionListener extends PlayerLogListener
 {
     public PlayerActionListener(Log module)
     {
-        super(module);
+        super(module, PlayerChat.class, PlayerCommand.class, PlayerJoin.class, PlayerQuit.class, XpPickup.class, PlayerTeleport.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

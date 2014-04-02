@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.block.BlockForm;
 
 /**

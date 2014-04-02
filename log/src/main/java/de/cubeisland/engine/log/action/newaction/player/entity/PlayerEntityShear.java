@@ -18,16 +18,17 @@
 package de.cubeisland.engine.log.action.newaction.player.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
 
 /**
  * Represents a player shearing a sheep or mooshroom
  */
 public class PlayerEntityShear extends PlayerEntityActionType
 {
-    // return "entity-shear";
     // return this.lm.getConfig(world).ENTITY_SHEAR_enable;
 
     @Override
@@ -44,5 +45,16 @@ public class PlayerEntityShear extends PlayerEntityActionType
         return user.getTranslationN(POSITIVE, count, "{user} sheared {name#entity}",
                                     "{user} sheared {2:amount} {name#entity}", this.player.name, this.entity.name(),
                                     count);
+    }
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ENTITY;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "shear";
     }
 }

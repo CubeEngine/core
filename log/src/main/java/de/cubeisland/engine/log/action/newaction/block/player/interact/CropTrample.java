@@ -18,10 +18,12 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 import static org.bukkit.Material.SOIL;
 
 /**
@@ -29,7 +31,6 @@ import static org.bukkit.Material.SOIL;
  */
 public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    //return "crop-trample";
     // return this.lm.getConfig(world).block.CROP_TRAMPLE_enable;
 
     @Override
@@ -55,5 +56,17 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
         }
         return user.getTranslation(POSITIVE, "{user} trampeled down {name#block}", action.player.name,
                                    action.oldBlock.name());
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "trample";
     }
 }

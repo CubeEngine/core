@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class CreeperExplode extends ExplosionActionType
 {
-    // return "creeper-explode";
     // return this.lm.getConfig(world).block.explode.CREEPER_EXPLODE_enable;
 
     @Override
@@ -52,5 +51,11 @@ public class CreeperExplode extends ExplosionActionType
         return user.getTranslationN(POSITIVE, count, "{user} let a Creeper detonate and destroy {name#block}",
                                     "{user} let a Creeper detonate and destroy {amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "creeper";
     }
 }

@@ -20,17 +20,18 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 import org.bukkit.entity.Item;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
 
 /**
  * Represents a player picking up an item
  */
 public class PlayerItemPickup extends PlayerItemActionType<PlayerItemListener>
 {
-    // return "item-pickup";
     // return this.lm.getConfig(world).ITEM_PICKUP_enable;
 
     public EntitySection entity;
@@ -85,5 +86,17 @@ public class PlayerItemPickup extends PlayerItemActionType<PlayerItemListener>
     {
         this.setItemstack(item.getItemStack());
         this.entity = new EntitySection(item);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ITEM;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "pickup";
     }
 }

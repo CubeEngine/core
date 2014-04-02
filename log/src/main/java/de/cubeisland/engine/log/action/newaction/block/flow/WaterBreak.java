@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -27,7 +28,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class WaterBreak extends BlockFlowAction
 {
-    // return "water-break";
     // return this.lm.getConfig(world).block.breakFlow.WATER_BREAK_enable;
 
     @Override
@@ -41,5 +41,18 @@ public class WaterBreak extends BlockFlowAction
     {
         // TODO plurals
         return user.getTranslation(POSITIVE, "{name#block} got flushed away by water!", this.oldBlock.name());
+    }
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.WATER;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "break";
     }
 }

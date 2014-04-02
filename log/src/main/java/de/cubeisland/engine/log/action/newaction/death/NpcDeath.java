@@ -22,6 +22,11 @@ package de.cubeisland.engine.log.action.newaction.death;
  */
 public class NpcDeath extends EntityDeathAction
 {
-    // return "npc-death";
     // return this.lm.getConfig(world).death.NPC_DEATH_enable;
+
+    @Override
+    public String getName()
+    {
+        return "npc";
+    }
 }

@@ -20,17 +20,18 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 import org.bukkit.material.Lever;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player using a lever
  */
 public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "lever-use";
     // return this.lm.getConfig(world).block.LEVER_USE_enable;
 
     @Override
@@ -49,5 +50,17 @@ public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
             return user.getTranslation(POSITIVE, "{user} activated the lever", this.player.name);
         }
         return user.getTranslation(POSITIVE, "{user} deactivated the lever", this.player.name);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lever";
     }
 }

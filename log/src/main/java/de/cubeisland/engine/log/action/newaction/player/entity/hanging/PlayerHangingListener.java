@@ -75,7 +75,8 @@ public class PlayerHangingListener extends LogListener
 
     public PlayerHangingListener(Log module)
     {
-        super(module);
+        super(module, PlayerHangingBreak.class, PlayerItemFrameBreak.class, PlayerPaintingBreak.class,
+              PlayerHangingPlace.class, PlayerPaintingPlace.class, PlayerItemFrameItemRemove.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

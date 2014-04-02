@@ -50,7 +50,7 @@ public class PlayerItemListener extends PlayerLogListener
 {
     public PlayerItemListener(Log module)
     {
-        super(module);
+        super(module, CraftItem.class, EnchantItem.class, PlayerItemDrop.class, PlayerItemPickup.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.action.newaction.player.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player fueling a furnace-minecart
@@ -40,5 +42,17 @@ public class FuelFurnaceMinecart extends PlayerEntityActionType
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{user} gave fuel to a furnace-minecart",
                                     "{user} gave fuel to a furnace-minecart {amount} times", this.player.name, count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "furnacecart";
     }
 }

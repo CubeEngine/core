@@ -50,7 +50,7 @@ public class PlayerEntityListener extends PlayerLogListener
 {
     public PlayerEntityListener(Log module)
     {
-        super(module);
+        super(module, FuelFurnaceMinecart.class, PlayerEntityDye.class, PlayerSoupFill.class, PlayerEntityShear.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

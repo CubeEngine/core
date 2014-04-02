@@ -67,7 +67,7 @@ public class ContainerListener extends LogListener
 
     public ContainerListener(Log module)
     {
-        super(module);
+        super(module, ItemInsert.class, ItemRemove.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

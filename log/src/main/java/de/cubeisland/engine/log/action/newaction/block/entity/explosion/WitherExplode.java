@@ -27,9 +27,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class WitherExplode extends ExplosionActionType
 {
-    // return "wither-explode";
     // return this.lm.getConfig(world).block.explode.WITHER_EXPLODE_enable;
-
 
     @Override
     public boolean canAttach(ActionTypeBase action)
@@ -53,5 +51,11 @@ public class WitherExplode extends ExplosionActionType
         return user.getTranslationN(POSITIVE, count, "A Wither hunting down {user} blasted away {name#block}",
                                     "A Wither hunting down {user} blasted away {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "wither";
     }
 }

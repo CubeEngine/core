@@ -21,10 +21,12 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemDrop;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.DEATH;
 
 /**
  * Represents an entity dropping items on death
@@ -54,5 +56,17 @@ public class EntityDeathDrop extends ActionTypeBase<DeathListener>
         }
         return user.getTranslation(POSITIVE, "{name#entity} dropped {name#item} x{amount} upon death", this.death.fetch(
             EntityDeathAction.class).killed.name(), this.item.getType().name(), amount);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return DEATH;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "drop";
     }
 }

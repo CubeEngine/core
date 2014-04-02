@@ -18,17 +18,18 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player igniting TnT with a lighter
  */
 public class TntPrime extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "tnt-prime";
     // return this.lm.getConfig(world).block.TNT_PRIME_enable;
 
     @Override
@@ -43,5 +44,18 @@ public class TntPrime extends PlayerBlockActionType<PlayerBlockInteractListener>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{user} ignited one TNT", "{user} ignited {amount} TNT",
                                     this.player.name, count);
+    }
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "tnt";
     }
 }

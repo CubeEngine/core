@@ -20,16 +20,17 @@ package de.cubeisland.engine.log.action.newaction.player;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.PLAYER;
 
 /**
  * Represents a player chatting
  */
 public class PlayerChat extends PlayerActionType<PlayerActionListener>
 {
-    // return "player-chat";
     // return this.lm.getConfig(world).PLAYER_CHAT_enable;
 
     private String message;
@@ -67,5 +68,17 @@ public class PlayerChat extends PlayerActionType<PlayerActionListener>
     public void setMessageFormat(String format)
     {
         this.messageFormat = format;
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return PLAYER;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "chat";
     }
 }

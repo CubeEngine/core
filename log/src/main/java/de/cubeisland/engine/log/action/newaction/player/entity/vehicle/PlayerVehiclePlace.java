@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerVehiclePlace extends PlayerVehicleActionType
 {
-    // return "vehicle-place";
     // return this.lm.getConfig(world).VEHICLE_PLACE_enable;
 
     @Override
@@ -44,5 +43,11 @@ public class PlayerVehiclePlace extends PlayerVehicleActionType
         return user.getTranslationN(POSITIVE, count, "{user} placed a {name#vehicle}",
                                     "{user} placed {2:amount} {name#vehicle}", this.player.name,
                                     this.vehicleType.name(), count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "place";
     }
 }

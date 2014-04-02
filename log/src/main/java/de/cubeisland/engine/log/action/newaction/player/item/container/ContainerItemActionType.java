@@ -18,10 +18,12 @@
 package de.cubeisland.engine.log.action.newaction.player.item.container;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
 
 public abstract class ContainerItemActionType extends PlayerItemActionType<ContainerListener>
 {
@@ -226,4 +228,10 @@ public abstract class ContainerItemActionType extends PlayerItemActionType<Conta
         return false;
     }
      */
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ITEM;
+    }
 }

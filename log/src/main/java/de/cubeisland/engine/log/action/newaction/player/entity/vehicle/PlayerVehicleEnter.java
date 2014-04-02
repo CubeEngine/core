@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerVehicleEnter extends PlayerVehicleActionType
 {
-    // return "vehicle-enter";
     // return this.lm.getConfig(world).VEHICLE_ENTER_enable;
 
     // TODO entity vehicle enter
@@ -46,5 +45,11 @@ public class PlayerVehicleEnter extends PlayerVehicleActionType
         return user.getTranslationN(POSITIVE, count, "{user} entered a {name#vehicle}",
                                     "{user} entered a {name#vehicle} {amount} times", this.player.name,
                                     this.vehicleType.name(), count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "enter";
     }
 }

@@ -48,7 +48,7 @@ public class PlayerBucketListener extends LogListener
 {
     public PlayerBucketListener(Log module)
     {
-        super(module);
+        super(module, PlayerWaterBucketPlace.class, PlayerLavaBucketPlace.class, PlayerBucketFill.class, MilkFill.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

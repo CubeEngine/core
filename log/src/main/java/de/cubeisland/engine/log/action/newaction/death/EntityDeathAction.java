@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.entity.Entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
 
@@ -35,7 +36,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  * {@link MonsterDeath}
  * {@link OtherDeath}
  */
-public class EntityDeathAction extends DeathAction
+public abstract class EntityDeathAction extends DeathAction
 {
     public EntitySection killed;
 
@@ -87,5 +88,11 @@ public class EntityDeathAction extends DeathAction
     public void setKilled(Entity entity)
     {
         this.killed = new EntitySection(entity); // TODO rollback info
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.DEATH;
     }
 }

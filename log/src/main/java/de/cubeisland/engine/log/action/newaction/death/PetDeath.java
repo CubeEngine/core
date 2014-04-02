@@ -33,7 +33,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PetDeath extends EntityDeathAction
 {
-    // return "pet-death";
     // return this.lm.getConfig(world).death.PET_DEATH_enable;
 
     public PlayerSection owner;
@@ -94,5 +93,11 @@ public class PetDeath extends EntityDeathAction
         {
             this.owner = new PlayerSection((Player)owner);
         }
+    }
+
+    @Override
+    public String getName()
+    {
+        return "pet";
     }
 }

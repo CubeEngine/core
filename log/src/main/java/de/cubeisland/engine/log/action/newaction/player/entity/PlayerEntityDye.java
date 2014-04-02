@@ -20,16 +20,17 @@ package de.cubeisland.engine.log.action.newaction.player.entity;
 import org.bukkit.DyeColor;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
 
 /**
  * Represents a player dyeing an entity
  */
 public class PlayerEntityDye extends PlayerEntityActionType
 {
-    // return "entity-dye";
     // return this.lm.getConfig(world).ENTITY_DYE_enable;
 
     private DyeColor color; // TODO converter ?
@@ -54,5 +55,17 @@ public class PlayerEntityDye extends PlayerEntityActionType
     public void setColor(DyeColor color)
     {
         this.color = color;
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ENTITY;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "dye";
     }
 }

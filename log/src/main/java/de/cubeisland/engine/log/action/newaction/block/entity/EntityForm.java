@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
 
 /**
  * Represents an Entity forming a block
@@ -28,7 +30,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class EntityForm extends EntityBlockActionType<EntityBlockListener>
 {
-    // return "entity-form";
     // return this.lm.getConfig(world).block.form.ENTITY_FORM_enable;
 
     @Override
@@ -50,5 +51,17 @@ public class EntityForm extends EntityBlockActionType<EntityBlockListener>
         }
         return user.getTranslation(POSITIVE, "A {name#entity} formed {name#block}", this.entity.name(),
                                    this.oldBlock.name());
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ENTITY;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "form";
     }
 }

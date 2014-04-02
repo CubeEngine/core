@@ -18,17 +18,18 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player stepping on a plate
  */
 public class PlateStep extends PlayerBlockActionType<PlayerBlockInteractListener>
 {
-    // return "plate-step";
     // return this.lm.getConfig(world).PLATE_STEP_enable;
 
     @Override
@@ -45,5 +46,18 @@ public class PlateStep extends PlayerBlockActionType<PlayerBlockInteractListener
         return user.getTranslationN(POSITIVE, count, "{user} stepped on a {name#block}",
                                     "{user} stepped on a {name#block} {amount} times", this.player.name,
                                     this.oldBlock.name(), count);
+    }
+
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "plate";
     }
 }

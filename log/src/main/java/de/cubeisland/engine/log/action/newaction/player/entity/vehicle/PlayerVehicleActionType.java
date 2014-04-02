@@ -22,7 +22,10 @@ import java.util.UUID;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
+
+import static de.cubeisland.engine.log.action.ActionTypeCategory.VEHICLE;
 
 public abstract class PlayerVehicleActionType extends PlayerActionType<PlayerVehicleListener>
 {
@@ -33,5 +36,11 @@ public abstract class PlayerVehicleActionType extends PlayerActionType<PlayerVeh
     {
         this.vehicleUUID = entity.getUniqueId();
         this.vehicleType = entity.getType();
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return VEHICLE;
     }
 }

@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class LightningIgnite extends BlockIgniteAction
 {
-    // return "lightning-ignite";
     // return this.lm.getConfig(world).block.ignite.LIGHTNING_IGNITE_enable;
 
     @Override
@@ -42,5 +41,11 @@ public class LightningIgnite extends BlockIgniteAction
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "A fire got set by a lightning strike",
                                     "{amount} fires got set by lightning strikes", count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "lightning";
     }
 }

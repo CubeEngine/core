@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
 
@@ -30,9 +31,7 @@ public class ContainerAccess extends PlayerBlockActionType<PlayerBlockInteractLi
 {
     // TODO no rollback/redo
 
-    // return "container-access";
     // return this.lm.getConfig(world).container.CONTAINER_ACCESS_enable;
-
 
     @Override
     public boolean canAttach(ActionTypeBase action)
@@ -48,5 +47,17 @@ public class ContainerAccess extends PlayerBlockActionType<PlayerBlockInteractLi
         return user.getTranslationN(POSITIVE, count, "{user} looked into a {name#container}",
                                     "{user} looked into {2:amount} {name#container}", this.player.name,
                                     this.oldBlock.name(), count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "container";
     }
 }

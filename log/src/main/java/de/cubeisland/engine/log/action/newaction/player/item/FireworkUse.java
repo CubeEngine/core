@@ -18,17 +18,18 @@
 package de.cubeisland.engine.log.action.newaction.player.item;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
 
 /**
  * Represents a player launching a firework
  */
 public class FireworkUse extends PlayerActionType<PlayerItemListener> // TODO item
 {
-    // return "firework-use";
     // return this.lm.getConfig(world).FIREWORK_USE_enable;
 
     @Override
@@ -44,5 +45,17 @@ public class FireworkUse extends PlayerActionType<PlayerItemListener> // TODO it
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{user} launched a firework",
                                    "{user} launched {amount} fireworks", this.player.name, count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return USE;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "firework";
     }
 }

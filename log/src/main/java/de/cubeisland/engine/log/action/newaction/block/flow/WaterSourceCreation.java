@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -38,5 +39,17 @@ public class WaterSourceCreation extends BlockFlowAction
     {
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "A water source formed", "{amount} water sources formed", count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.WATER;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "form";
     }
 }

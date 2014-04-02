@@ -18,16 +18,17 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.PLAYER;
 
 /**
  * Represents a Player leaving the server
  */
 public class PlayerQuit extends PlayerActionType<PlayerActionListener>
 {
-    // return "player-quit";
     // return this.lm.getConfig(world).PLAYER_QUIT_enable;
 
     public String reason;
@@ -53,5 +54,17 @@ public class PlayerQuit extends PlayerActionType<PlayerActionListener>
     public void setReason(String reason)
     {
         this.reason = reason;
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return PLAYER;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "quit";
     }
 }

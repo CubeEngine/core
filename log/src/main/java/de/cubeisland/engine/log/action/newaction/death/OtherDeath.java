@@ -22,6 +22,11 @@ package de.cubeisland.engine.log.action.newaction.death;
  */
 public class OtherDeath extends EntityDeathAction
 {
-    // return "other-death";
     // return this.lm.getConfig(world).death.OTHER_DEATH_enable;
+
+    @Override
+    public String getName()
+    {
+        return "other";
+    }
 }

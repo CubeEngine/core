@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -28,7 +30,6 @@ import static org.bukkit.Material.AIR;
  */
 public class NaturalGrow extends BlockActionType<BlockListener>
 {
-    // return "natural-grow";
     // return this.lm.getConfig(world).block.grow.NATURAL_GROW_enable;
 
     @Override
@@ -50,5 +51,17 @@ public class NaturalGrow extends BlockActionType<BlockListener>
         return user.getTranslationN(POSITIVE, count, "{name#block} grew naturally into {name#block}",
                                     "{2:amount}x {name#block} grew naturally into {name#block}", this.newBlock.name(),
                                     this.oldBlock.name(), count);
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "grow";
     }
 }

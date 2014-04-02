@@ -57,7 +57,7 @@ public class PlayerVehicleListener extends LogListener
 
     public PlayerVehicleListener(Log module)
     {
-        super(module);
+        super(module, PlayerVehicleBreak.class, PlayerVehicleEnter.class, PlayerVehicleExit.class, PlayerVehiclePlace.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

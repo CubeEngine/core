@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 import de.cubeisland.engine.log.action.newaction.player.entity.hanging.PlayerHangingActionType;
 
@@ -42,12 +43,24 @@ public class PlayerHangingBreak extends PlayerHangingActionType
     {
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{text:One} {name#hanging} got removed by {user}",
-                                    "{3:amount} {name#hanging} got removed by {user}", this.hangingType.name(),
+                                    "{3:amount} {name#hanging} got removed by {user}", this.hanging.name(),
                                     this.player.name, count);
     }
 
     public void setCause(ActionTypeBase action)
     {
         // TODO reference
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return ActionTypeCategory.ENTITY_HANGING;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "break";
     }
 }

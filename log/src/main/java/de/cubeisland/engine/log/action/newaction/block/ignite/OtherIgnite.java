@@ -27,7 +27,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class OtherIgnite extends BlockIgniteAction
 {
-    // return "other-ignite";
     // return this.lm.getConfig(world).block.ignite.OTHER_IGNITE_enable;
 
     @Override
@@ -42,5 +41,11 @@ public class OtherIgnite extends BlockIgniteAction
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "A fire got set by an explosion or something else",
                                     "{amount} fires got set by explosions or something else", count);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "other";
     }
 }

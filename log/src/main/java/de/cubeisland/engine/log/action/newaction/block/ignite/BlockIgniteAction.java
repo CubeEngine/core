@@ -17,11 +17,21 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.ignite;
 
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+
+import static de.cubeisland.engine.log.action.ActionTypeCategory.IGNITE;
 
 /**
  * Represents a block getting ignited
  */
 public abstract class BlockIgniteAction extends BlockActionType<BlockIgniteListener>
 {
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return IGNITE;
+    }
+
 }

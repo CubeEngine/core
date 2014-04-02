@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionTypeCategory;
 import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 import static org.bukkit.Material.PISTON_EXTENSION;
 
@@ -29,7 +31,6 @@ import static org.bukkit.Material.PISTON_EXTENSION;
  */
 public class BlockShift extends BlockActionType<BlockListener>
 {
-    // return "block-shift";
     // return this.lm.getConfig(world).block.BLOCK_SHIFT_enable;
 
     private boolean push;
@@ -80,5 +81,17 @@ public class BlockShift extends BlockActionType<BlockListener>
     public void setPush()
     {
         this.push = true;
+    }
+
+    @Override
+    public ActionTypeCategory getCategory()
+    {
+        return BLOCK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "shift";
     }
 }

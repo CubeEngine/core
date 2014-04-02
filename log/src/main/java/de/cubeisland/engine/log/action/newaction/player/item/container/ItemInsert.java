@@ -23,7 +23,11 @@ package de.cubeisland.engine.log.action.newaction.player.item.container;
  */
 public class ItemInsert extends ContainerItemActionType
 {
-    // return "item-insert"
     // return this.lm.getConfig(world).container.ITEM_INSERT_enable;
 
+    @Override
+    public String getName()
+    {
+        return "insert";
+    }
 }
