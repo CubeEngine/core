@@ -6,5 +6,6 @@ public interface NamedAction
 {
     // Categories ?
     ActionCategory getCategory();
+
     String getName();
 }

@@ -50,7 +50,8 @@ public class PlayerActionListener extends PlayerLogListener
 {
     public PlayerActionListener(Log module)
     {
-        super(module, PlayerChat.class, PlayerCommand.class, PlayerJoin.class, PlayerQuit.class, PlayerXp.class, PlayerTeleport.class);
+        super(module, PlayerChat.class, PlayerCommand.class, PlayerJoin.class, PlayerQuit.class, PlayerXp.class,
+              PlayerTeleport.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

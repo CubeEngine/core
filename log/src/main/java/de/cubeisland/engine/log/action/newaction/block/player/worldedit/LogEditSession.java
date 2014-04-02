@@ -45,7 +45,8 @@ public class LogEditSession extends EditSession
         this.listener = listener;
     }
 
-    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player, Log module, LogListener listener)
+    public LogEditSession(LocalWorld world, int maxBlocks, BlockBag blockBag, LocalPlayer player, Log module,
+                          LogListener listener)
     {
         super(world, maxBlocks, blockBag);
         this.player = player;

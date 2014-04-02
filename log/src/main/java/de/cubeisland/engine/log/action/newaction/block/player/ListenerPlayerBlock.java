@@ -57,17 +57,18 @@ import static org.bukkit.block.BlockFace.UP;
  * {@link BlockPhysicsEvent}
  * <p>Actions:
  * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak}
- *  {@link PlayerNoteBlockBreak}
- *  {@link PlayerSignBreak}
- *  {@link PlayerJukeboxBreak}
- *  {@link PlayerContainerBreak}
+ * {@link PlayerNoteBlockBreak}
+ * {@link PlayerSignBreak}
+ * {@link PlayerJukeboxBreak}
+ * {@link PlayerContainerBreak}
  * {@link PlayerBlockPlace}
  */
 public class ListenerPlayerBlock extends LogListener
 {
     public ListenerPlayerBlock(Log module)
     {
-        super(module, PlayerBlockBreak.class, PlayerBlockPlace.class, PlayerNoteBlockBreak.class, PlayerSignBreak.class, PlayerJukeboxBreak.class, PlayerContainerBreak.class, PlayerBlockPlace.class);
+        super(module, PlayerBlockBreak.class, PlayerBlockPlace.class, PlayerNoteBlockBreak.class, PlayerSignBreak.class,
+              PlayerJukeboxBreak.class, PlayerContainerBreak.class, PlayerBlockPlace.class);
     }
 
     //Doors / Beds only logged bottom / feet
@@ -161,8 +162,8 @@ public class ListenerPlayerBlock extends LogListener
             action.setOldBlock(event.getBlockReplacedState());
             action.setNewBlock(blockPlaced.getState());
             this.logAction(action);
-            if (this.isActive(BlockFall.class, blockPlaced.getWorld()) && blockPlaced.getRelative(DOWN).getType() == AIR && (blockPlaced.getType().hasGravity()
-                || blockPlaced.getType() == DRAGON_EGG))
+            if (this.isActive(BlockFall.class, blockPlaced.getWorld()) && blockPlaced.getRelative(DOWN).getType() == AIR
+                && (blockPlaced.getType().hasGravity() || blockPlaced.getType() == DRAGON_EGG))
             {
                 this.module.getCore().getEventManager().fireEvent(new BlockPreFallEvent(blockPlaced.getLocation(),
                                                                                         action));

@@ -54,9 +54,8 @@ public class PlayerBlockPlace extends ActionPlayerBlock<ListenerPlayerBlock>
                 return user.getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}",
                                            this.player.name, amount, this.newBlock.name());
             }
-            return user.getTranslation(MessageType.POSITIVE,
-                                       "{user} replaced {amount}x {name#block} with {name#block}", this.player.name,
-                                       amount, this.oldBlock.name(), this.newBlock.name());
+            return user.getTranslation(MessageType.POSITIVE, "{user} replaced {amount}x {name#block} with {name#block}",
+                                       this.player.name, amount, this.oldBlock.name(), this.newBlock.name());
         }
         // else single
         if (this.oldBlock.is(AIR))

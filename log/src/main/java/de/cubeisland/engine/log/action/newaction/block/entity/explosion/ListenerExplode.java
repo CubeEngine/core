@@ -60,7 +60,8 @@ public class ListenerExplode extends LogListener
 {
     public ListenerExplode(Log module)
     {
-        super(module, ExplodeCreeper.class, ExplodeTnt.class, ExplodeWither.class, ExplodeFireball.class, ExplodeEnderdragon.class, ExplodeEntity.class);
+        super(module, ExplodeCreeper.class, ExplodeTnt.class, ExplodeWither.class, ExplodeFireball.class,
+              ExplodeEnderdragon.class, ExplodeEntity.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

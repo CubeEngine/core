@@ -33,7 +33,8 @@ public class ItemData
     public List<String> lore;
     public Map<Enchantment, Integer> enchantments;
 
-    public ItemData(Material material, short dura, String displayName, List<String> lore, Map<Enchantment, Integer> enchantments)
+    public ItemData(Material material, short dura, String displayName, List<String> lore,
+                    Map<Enchantment, Integer> enchantments)
     {
         this.material = material;
         this.dura = dura;

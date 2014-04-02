@@ -30,5 +30,4 @@ public class DeathMonster extends EntityDeathAction
     {
         return "monster";
     }
-
 }

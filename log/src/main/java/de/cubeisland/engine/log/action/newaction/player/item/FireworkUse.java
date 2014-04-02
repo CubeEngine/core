@@ -35,16 +35,15 @@ public class FireworkUse extends ActionPlayer<PlayerItemListener> // TODO item
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return action instanceof FireworkUse
-            && this.player.equals(((FireworkUse)action).player);
+        return action instanceof FireworkUse && this.player.equals(((FireworkUse)action).player);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count, "{user} launched a firework",
-                                   "{user} launched {amount} fireworks", this.player.name, count);
+        return user.getTranslationN(POSITIVE, count, "{user} launched a firework", "{user} launched {amount} fireworks",
+                                    this.player.name, count);
     }
 
     @Override

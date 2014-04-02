@@ -37,7 +37,8 @@ public class PlayerBlockGrow extends ActionPlayerBlock<ListenerBlock>
     public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerBlockGrow && this.player.equals(((PlayerBlockGrow)action).player)
-            && ((PlayerBlockGrow)action).oldBlock == this.oldBlock && ((PlayerBlockGrow)action).newBlock == this.newBlock;
+            && ((PlayerBlockGrow)action).oldBlock == this.oldBlock
+            && ((PlayerBlockGrow)action).newBlock == this.newBlock;
     }
 
     @Override

@@ -43,19 +43,17 @@ public class ItemMove extends BaseAction<ListenerItemMove>
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return action instanceof ItemMove
-            && this.direction == ((ItemMove)action).direction
-            && this.coord.equals(action.coord);
+        return action instanceof ItemMove && this.direction == ((ItemMove)action).direction && this.coord.equals(
+            action.coord);
     }
 
     @Override
     public String translateAction(User user)
     {
         int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count,
-                                    "Moved {1:name#item} {name#direction}",
-                                    "Moved {2:count} items {name#direction}",
-                                    this.direction.name(), this.item.getType().name(), count);
+        return user.getTranslationN(POSITIVE, count, "Moved {1:name#item} {name#direction}",
+                                    "Moved {2:count} items {name#direction}", this.direction.name(),
+                                    this.item.getType().name(), count);
         // TODO from invType to invType
         // TODO separate for entity containers with uuid to be able to track position
     }

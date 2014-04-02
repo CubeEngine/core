@@ -42,7 +42,8 @@ public abstract class ActionPlayerBlock<ListenerType> extends ActionBlock<Listen
         public String name;
 
         public PlayerSection()
-        {}
+        {
+        }
 
         public PlayerSection(Player player)
         {

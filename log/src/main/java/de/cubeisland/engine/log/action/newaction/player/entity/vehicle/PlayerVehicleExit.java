@@ -46,6 +46,7 @@ public class PlayerVehicleExit extends PlayerVehicleAction
                                     "{user} exited a {name#vehicle} {amount} times", this.player.name,
                                     this.vehicleType.name(), count);
     }
+
     @Override
     public String getName()
     {

@@ -82,17 +82,13 @@ public class DeathKill extends BaseAction<ListenerDeath>
         int count = this.countAttached();
         if (this.isPlayerKiller())
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "{user} killed an entity",
-                                        "{user} killed {amount} entities",
+            return user.getTranslationN(POSITIVE, count, "{user} killed an entity", "{user} killed {amount} entities",
                                         this.playerKiller.name, count);
         }
         if (this.isEntityKiller())
         {
-            return user.getTranslationN(POSITIVE, count,
-                                        "{name#entity} killed an entity",
-                                        "{name#entity} killed {amount} entities",
-                                        this.entityKiller.name(), count);
+            return user.getTranslationN(POSITIVE, count, "{name#entity} killed an entity",
+                                        "{name#entity} killed {amount} entities", this.entityKiller.name(), count);
         }
         if (this.isOtherKiller())
         {

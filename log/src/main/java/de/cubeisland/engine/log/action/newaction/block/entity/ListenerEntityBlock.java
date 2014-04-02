@@ -50,7 +50,8 @@ public class ListenerEntityBlock extends LogListener
 {
     public ListenerEntityBlock(Log module)
     {
-        super(module, SheepEat.class, EndermanPickup.class, EndermanPlace.class, EntityChange.class, EntityBreak.class, EntityForm.class);
+        super(module, SheepEat.class, EndermanPickup.class, EndermanPlace.class, EntityChange.class, EntityBreak.class,
+              EntityForm.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

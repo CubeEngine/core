@@ -45,6 +45,7 @@ public class PlayerSoupFill extends PlayerEntityAction
         return user.getTranslationN(POSITIVE, count, "{user} made a soup using mooshrooms",
                                     "{user} made {amount} soups using mooshrooms", this.player.name, count);
     }
+
     @Override
     public ActionCategory getCategory()
     {

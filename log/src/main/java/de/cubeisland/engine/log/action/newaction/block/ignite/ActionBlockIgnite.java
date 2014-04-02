@@ -33,5 +33,4 @@ public abstract class ActionBlockIgnite extends ActionBlock<ListenerBlockIgnite>
     {
         return IGNITE;
     }
-
 }

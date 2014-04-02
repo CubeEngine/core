@@ -46,6 +46,7 @@ public class PlayerEntityShear extends PlayerEntityAction
                                     "{user} sheared {2:amount} {name#entity}", this.player.name, this.entity.name(),
                                     count);
     }
+
     @Override
     public ActionCategory getCategory()
     {

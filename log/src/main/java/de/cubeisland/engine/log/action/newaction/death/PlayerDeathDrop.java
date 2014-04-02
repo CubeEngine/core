@@ -26,7 +26,7 @@ import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemDrop;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionCategory.*;
+import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 
 /**
  * Represents a player dropping items on death

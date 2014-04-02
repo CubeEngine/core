@@ -52,6 +52,7 @@ public class UseCake extends ActionPlayerBlock<ListenerPlayerBlockInteract>
             return user.getTranslation(POSITIVE, "{user} ate a piece of cake", this.player.name);
         }
     }
+
     @Override
     public ActionCategory getCategory()
     {

@@ -50,7 +50,8 @@ public class ListenerFlow extends LogListener
 {
     public ListenerFlow(Log module)
     {
-        super(module, LavaBreak.class, LavaFlow.class, WaterBreak.class, WaterFlow.class, WaterForm.class, LavaWaterForm.class);
+        super(module, LavaBreak.class, LavaFlow.class, WaterBreak.class, WaterFlow.class, WaterForm.class,
+              LavaWaterForm.class);
     }
 
     // TODO TESTING
