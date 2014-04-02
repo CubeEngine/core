@@ -20,24 +20,24 @@ package de.cubeisland.engine.log.action.newaction.entityspawn;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.SPAWN;
+import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
 
 /**
  * Represents a player spawning a LivingEntity using a spawnegg
  */
-public class MonsterEggUse extends EntityActionType<EntitySpawnListener>
+public class MonsterEggUse extends EntityAction<EntitySpawnListener>
 {
     //return this.lm.getConfig(world).MONSTER_EGG_USE_enable;
 
     public PlayerSection player;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof MonsterEggUse && this.entity.isSameType(((MonsterEggUse)action).entity)
             && this.player.equals(((MonsterEggUse)action).player);
@@ -58,7 +58,7 @@ public class MonsterEggUse extends EntityActionType<EntitySpawnListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return SPAWN;
     }

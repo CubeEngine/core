@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.player.entity;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
 
 /**
  * Represents a player shearing a sheep or mooshroom
  */
-public class PlayerEntityShear extends PlayerEntityActionType
+public class PlayerEntityShear extends PlayerEntityAction
 {
     // return this.lm.getConfig(world).ENTITY_SHEAR_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerEntityShear && this.player.equals(((PlayerEntityShear)action).player)
             && ((PlayerEntityShear)action).entity.type == this.entity.type;
@@ -47,7 +47,7 @@ public class PlayerEntityShear extends PlayerEntityActionType
                                     count);
     }
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ENTITY;
     }

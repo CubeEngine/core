@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.player.item;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
+import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 
 /**
  * Represents a player crafting an item
  */
-public class CraftItem extends PlayerItemActionType<PlayerItemListener>
+public class CraftItem extends PlayerItemAction<PlayerItemListener>
 {
     // return this.lm.getConfig(world).CRAFT_ITEM_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof CraftItem && this.player.equals(((CraftItem)action).player)
             && ((CraftItem)action).item.isSimilar(this.item);
@@ -51,7 +51,7 @@ public class CraftItem extends PlayerItemActionType<PlayerItemListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ITEM;
     }

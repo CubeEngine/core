@@ -33,7 +33,7 @@ import static org.bukkit.Material.AIR;
 import static org.bukkit.entity.EntityType.SHEEP;
 
 /**
- * A Listener for {@link EntityBlockActionType}
+ * A Listener for {@link EntityBlockAction}
  * <p>Events:
  * {@link EntityChangeBlockEvent}
  * {@link EntityBreakDoorEvent}
@@ -56,7 +56,7 @@ public class EntityBlockListener extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityChangeBlock(final EntityChangeBlockEvent event)
     {
-        EntityBlockActionType action;
+        EntityBlockAction action;
         if (event.getEntityType() == SHEEP)
         {
             action = this.newAction(SheepEat.class, event.getBlock().getWorld());
@@ -86,7 +86,7 @@ public class EntityBlockListener extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBreakDoor(final EntityBreakDoorEvent event)
     {
-        EntityBlockActionType action = this.newAction(EntityBreakBlock.class, event.getBlock().getWorld());
+        EntityBlockAction action = this.newAction(EntityBreakBlock.class, event.getBlock().getWorld());
         if (action != null)
         {
             action.setNewBlock(event.getTo());
@@ -97,7 +97,7 @@ public class EntityBlockListener extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityBlockForm(final EntityBlockFormEvent event)
     {
-        EntityBlockActionType action = this.newAction(EntityForm.class, event.getBlock().getWorld());
+        EntityBlockAction action = this.newAction(EntityForm.class, event.getBlock().getWorld());
         if (action != null)
         {
             action.setNewBlock(event.getNewState());
@@ -105,7 +105,7 @@ public class EntityBlockListener extends LogListener
         }
     }
 
-    private void setAndLog(EntityBlockActionType action, BlockState state, Entity entity)
+    private void setAndLog(EntityBlockAction action, BlockState state, Entity entity)
     {
         action.setLocation(state.getLocation());
         action.setEntity(entity);

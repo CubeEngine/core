@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 
 /**
  * Represents a block spreading
  */
-public class BlockSpread extends BlockActionType<BlockListener>
+public class BlockSpread extends BlockAction<BlockListener>
 {
     // return this.lm.getConfig(world).block.spread.BLOCK_SPREAD_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof BlockForm && ((BlockForm)action).newBlock == this.newBlock;
     }
@@ -46,7 +46,7 @@ public class BlockSpread extends BlockActionType<BlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

@@ -18,19 +18,19 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.vehicle;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player placing a vehicle like minecart or boat
  */
-public class PlayerVehiclePlace extends PlayerVehicleActionType
+public class PlayerVehiclePlace extends PlayerVehicleAction
 {
     // return this.lm.getConfig(world).VEHICLE_PLACE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerVehicleBreak && this.player.equals(((PlayerVehicleBreak)action).player)
             && ((PlayerVehicleBreak)action).vehicleType == this.vehicleType;

@@ -18,25 +18,25 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player accessing an {@link org.bukkit.inventory.InventoryHolder}
  */
-public class ContainerAccess extends PlayerBlockActionType<PlayerBlockInteractListener>
+public class ContainerAccess extends PlayerBlockAction<PlayerBlockInteractListener>
 {
     // TODO no rollback/redo
 
     // return this.lm.getConfig(world).container.CONTAINER_ACCESS_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
-        return action instanceof ContainerAccess && this.player.equals(((PlayerBlockActionType)action).player)
+        return action instanceof ContainerAccess && this.player.equals(((PlayerBlockAction)action).player)
             && this.coord.equals(action.coord);
     }
 
@@ -50,9 +50,9 @@ public class ContainerAccess extends PlayerBlockActionType<PlayerBlockInteractLi
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.USE;
+        return ActionCategory.USE;
     }
 
     @Override

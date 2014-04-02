@@ -20,9 +20,9 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.entity.Entity;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -41,7 +41,7 @@ public abstract class EntityDeathAction extends DeathAction
     public EntitySection killed;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof EntityDeathAction && this.killed.isSameType(((EntityDeathAction)action).killed)
             && this.killer != null && ((DeathAction)action).killer != null && this.killer.fetch(
@@ -91,8 +91,8 @@ public abstract class EntityDeathAction extends DeathAction
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.DEATH;
+        return ActionCategory.DEATH;
     }
 }

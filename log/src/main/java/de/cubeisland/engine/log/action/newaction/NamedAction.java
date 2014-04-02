@@ -1,10 +1,10 @@
 package de.cubeisland.engine.log.action.newaction;
 
-import de.cubeisland.engine.log.action.ActionTypeCategory;
+import de.cubeisland.engine.log.action.ActionCategory;
 
 public interface NamedAction
 {
     // Categories ?
-    ActionTypeCategory getCategory();
+    ActionCategory getCategory();
     String getName();
 }

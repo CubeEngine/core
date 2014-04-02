@@ -15,19 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
+package de.cubeisland.engine.log.action.newaction.player.entity;
 
 import org.bukkit.entity.Entity;
 
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
+import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
 
-public abstract class PlayerHangingActionType extends PlayerActionType<PlayerHangingListener>
+public abstract class PlayerEntityAction extends PlayerAction<PlayerEntityListener>
 {
-    public EntitySection hanging;
+    public EntitySection entity;
 
-    public void setHanging(Entity entity)
+    public void setEntity(Entity entity)
     {
-        this.hanging = new EntitySection(entity);
+        this.entity = new EntitySection(entity);
     }
 }

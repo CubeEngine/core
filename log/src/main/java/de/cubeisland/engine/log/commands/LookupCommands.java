@@ -38,9 +38,9 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
+import de.cubeisland.engine.log.action.ActionManager;
 import de.cubeisland.engine.log.action.ActionTypeCompleter;
-import de.cubeisland.engine.log.action.ActionTypeManager;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction.BlockSection;
 import de.cubeisland.engine.log.storage.Lookup;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.ShowParameter;
@@ -48,7 +48,7 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 public class LookupCommands
 {
     private final Log module;
-    private final ActionTypeManager actionTypeManager;
+    private final ActionManager actionTypeManager;
 
     public LookupCommands(Log module)
     {

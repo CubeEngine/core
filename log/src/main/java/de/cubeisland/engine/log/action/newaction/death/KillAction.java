@@ -20,18 +20,18 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.DEATH;
+import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 
 /**
  * Represents something killing a LivingEntity
  */
-public class KillAction extends ActionTypeBase<DeathListener>
+public class KillAction extends BaseAction<DeathListener>
 {
     public PlayerSection playerKiller = null;
     public EntitySection entityKiller = null;
@@ -56,7 +56,7 @@ public class KillAction extends ActionTypeBase<DeathListener>
     }
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         if (action instanceof KillAction)
         {
@@ -103,7 +103,7 @@ public class KillAction extends ActionTypeBase<DeathListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return DEATH;
     }

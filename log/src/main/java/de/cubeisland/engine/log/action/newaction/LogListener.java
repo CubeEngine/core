@@ -33,16 +33,16 @@ import de.cubeisland.engine.log.Log;
 public class LogListener implements Listener
 {
     protected final Log module;
-    private Class<? extends ActionTypeBase>[] actions;
+    private Class<? extends BaseAction>[] actions;
 
     @SafeVarargs
-    public LogListener(Log module, Class<? extends ActionTypeBase>... actions)
+    public LogListener(Log module, Class<? extends BaseAction>... actions)
     {
         this.module = module;
         this.actions = actions;
     }
 
-    public Class<? extends ActionTypeBase>[] getActions()
+    public Class<? extends BaseAction>[] getActions()
     {
         return actions;
     }
@@ -87,7 +87,7 @@ public class LogListener implements Listener
         return blockState;
     }
 
-    public final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz, World world)
+    public final <T extends BaseAction<?>> T newAction(Class<T> clazz, World world)
     {
         if (!this.isActive(clazz, world))
         {
@@ -96,24 +96,24 @@ public class LogListener implements Listener
         return this.newAction(clazz);
     }
 
-    public final <T extends ActionTypeBase<?>> T newAction(Class<T> clazz)
+    public final <T extends BaseAction<?>> T newAction(Class<T> clazz)
     {
         T action = module.getCore().getConfigFactory().create(clazz);
         action.setTarget(new BasicDBObject());
         return action;
     }
 
-    public final void logAction(ActionTypeBase action)
+    public final void logAction(BaseAction action)
     {
         this.module.getLogManager().queueLog(action);
     }
 
-    public final boolean isActive(Class<? extends ActionTypeBase> clazz, World world)
+    public final boolean isActive(Class<? extends BaseAction> clazz, World world)
     {
         return true;
     }
 
-    public <T extends ActionTypeBase> Reference<T> reference(ActionTypeBase<?> action)
+    public <T extends BaseAction> Reference<T> reference(BaseAction<?> action)
     {
         if (action == null)
         {

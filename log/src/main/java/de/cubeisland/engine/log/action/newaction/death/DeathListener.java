@@ -38,8 +38,8 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
 /**
  * A Listener for Death related Actions

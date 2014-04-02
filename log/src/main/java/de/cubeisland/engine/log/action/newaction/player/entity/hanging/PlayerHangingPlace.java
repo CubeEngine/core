@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY_HANGING;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_HANGING;
 
 /**
  * Represents a player placing a hanging entity
  */
-public class PlayerHangingPlace extends PlayerHangingActionType
+public class PlayerHangingPlace extends PlayerHangingAction
 {
     // return this.lm.getConfig(world).HANGING_PLACE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerHangingPlace && this.player.equals(((PlayerHangingPlace)action).player)
             && ((PlayerHangingPlace)action).hanging.isSameType(this.hanging);
@@ -48,7 +48,7 @@ public class PlayerHangingPlace extends PlayerHangingActionType
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ENTITY_HANGING;
     }

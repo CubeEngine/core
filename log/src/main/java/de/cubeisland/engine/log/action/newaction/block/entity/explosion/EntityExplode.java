@@ -18,22 +18,22 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.EXPLODE;
+import static de.cubeisland.engine.log.action.ActionCategory.EXPLODE;
 
 /**
  * Represents an explosion caused by an entity
  */
-public class EntityExplode extends EntityBlockActionType<ExplodeListener>
+public class EntityExplode extends EntityBlockAction<ExplodeListener>
 {
     // return this.lm.getConfig(world).block.explode.ENTITY_EXPLODE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof EntityExplode && this.oldBlock.equals(((EntityExplode)action).oldBlock)
             && this.entity.equals(((EntityExplode)action).entity);
@@ -48,7 +48,7 @@ public class EntityExplode extends EntityBlockActionType<ExplodeListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return EXPLODE;
     }

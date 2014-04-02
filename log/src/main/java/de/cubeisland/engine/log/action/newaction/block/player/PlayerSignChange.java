@@ -20,15 +20,15 @@ package de.cubeisland.engine.log.action.newaction.block.player;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player changing the text on a sign
  */
-public class PlayerSignChange extends PlayerBlockActionType<PlayerBlockListener>
+public class PlayerSignChange extends PlayerBlockAction<PlayerBlockListener>
 {
     // return this.lm.getConfig(world).block.SIGN_CHANGE_enable;
 
@@ -36,7 +36,7 @@ public class PlayerSignChange extends PlayerBlockActionType<PlayerBlockListener>
     public String[] newLines;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return false;
     }
@@ -67,9 +67,9 @@ public class PlayerSignChange extends PlayerBlockActionType<PlayerBlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.SIGN;
+        return ActionCategory.SIGN;
     }
 
     @Override

@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.vehicle;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player exiting a vehicle
  */
-public class PlayerVehicleExit extends PlayerVehicleActionType
+public class PlayerVehicleExit extends PlayerVehicleAction
 {
     // return this.lm.getConfig(world).VEHICLE_EXIT_enable;
 
     // TODO entity vehicle enter
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerVehicleEnter && this.player.equals(((PlayerVehicleEnter)action).player)
             && ((PlayerVehicleEnter)action).vehicleUUID.equals(this.vehicleUUID);

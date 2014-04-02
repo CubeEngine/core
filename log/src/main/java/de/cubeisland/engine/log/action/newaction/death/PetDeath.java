@@ -23,8 +23,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -38,7 +38,7 @@ public class PetDeath extends EntityDeathAction
     public PlayerSection owner;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return super.canAttach(action) && action instanceof PetDeath && this.owner.equals(((PetDeath)action).owner);
     }

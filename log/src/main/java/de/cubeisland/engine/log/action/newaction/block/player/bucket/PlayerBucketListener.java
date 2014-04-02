@@ -27,7 +27,7 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 import de.cubeisland.engine.log.action.newaction.player.MilkFill;
 
 import static org.bukkit.Material.*;
@@ -87,10 +87,10 @@ public class PlayerBucketListener extends LogListener
         }
     }
 
-    private void setAndLog(Class<? extends PlayerBlockActionType> clazz, Player player, BlockState oldState,
+    private void setAndLog(Class<? extends PlayerBlockAction> clazz, Player player, BlockState oldState,
                            Material newMat)
     {
-        PlayerBlockActionType action = this.newAction(clazz, player.getWorld());
+        PlayerBlockAction action = this.newAction(clazz, player.getWorld());
         if (action != null)
         {
             action.setPlayer(player);

@@ -37,9 +37,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerHangingBreak;
 import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerItemFrameBreak;
 import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerPaintingBreak;
@@ -70,7 +70,7 @@ public class PlayerHangingListener extends LogListener
 {
     // TODO place item in frame
 
-    private final Map<Location, ActionTypeBase> plannedHangingBreak = new ConcurrentHashMap<>();
+    private final Map<Location, BaseAction> plannedHangingBreak = new ConcurrentHashMap<>();
     private volatile boolean clearPlanned = false;
 
     public PlayerHangingListener(Log module)
@@ -86,10 +86,10 @@ public class PlayerHangingListener extends LogListener
         {
             Hanging hanging = event.getEntity();
             Location location = hanging.getLocation();
-            ActionTypeBase cause = this.plannedHangingBreak.get(location);
+            BaseAction cause = this.plannedHangingBreak.get(location);
             if (cause != null)
             {
-                if (cause instanceof PlayerBlockActionType)
+                if (cause instanceof PlayerBlockAction)
                 {
                     PlayerHangingBreak action;
                     if (hanging instanceof ItemFrame)
@@ -114,7 +114,7 @@ public class PlayerHangingListener extends LogListener
                     {
                         action.setLocation(location);
                         action.setHanging(hanging);
-                        action.player = ((PlayerBlockActionType)cause).player;
+                        action.player = ((PlayerBlockAction)cause).player;
                         action.setCause(cause);
                         this.logAction(action);
                     }

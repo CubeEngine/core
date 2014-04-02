@@ -18,19 +18,19 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a wither causing an explosion
  */
-public class WitherExplode extends ExplosionActionType
+public class WitherExplode extends ExplosionAction
 {
     // return this.lm.getConfig(world).block.explode.WITHER_EXPLODE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof WitherExplode && this.oldBlock.equals(((WitherExplode)action).oldBlock)
             && this.entity.equals(((WitherExplode)action).entity) && (

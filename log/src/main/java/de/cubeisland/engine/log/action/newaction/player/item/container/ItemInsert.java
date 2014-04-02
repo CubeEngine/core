@@ -21,7 +21,7 @@ package de.cubeisland.engine.log.action.newaction.player.item.container;
  * Inserting items into a container
  * <p>Events: {@link ContainerListener}
  */
-public class ItemInsert extends ContainerItemActionType
+public class ItemInsert extends ContainerItemAction
 {
     // return this.lm.getConfig(world).container.ITEM_INSERT_enable;
 

@@ -26,9 +26,9 @@ public class BlockPreFallEvent extends Event
     private static final HandlerList handlers = new HandlerList();
 
     private Location location;
-    private BlockActionType action;
+    private BlockAction action;
 
-    public BlockPreFallEvent(Location location, BlockActionType action)
+    public BlockPreFallEvent(Location location, BlockAction action)
     {
         this.location = location;
         this.action = action;
@@ -44,7 +44,7 @@ public class BlockPreFallEvent extends Event
         return location;
     }
 
-    public BlockActionType getAction()
+    public BlockAction getAction()
     {
         return action;
     }

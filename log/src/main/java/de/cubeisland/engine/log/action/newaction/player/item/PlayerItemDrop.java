@@ -20,24 +20,24 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 import org.bukkit.entity.Item;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
+import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 
 /**
  * Represents a player dropping an item
  */
-public class PlayerItemDrop extends PlayerItemActionType<PlayerItemListener>
+public class PlayerItemDrop extends PlayerItemAction<PlayerItemListener>
 {
     // return this.lm.getConfig(world).ITEM_DROP_enable;
 
     public EntitySection entity;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerItemDrop && this.player.equals(((PlayerItemDrop)action).player)
             && ((PlayerItemDrop)action).item.isSimilar(this.item);
@@ -49,7 +49,7 @@ public class PlayerItemDrop extends PlayerItemActionType<PlayerItemListener>
         int amount = this.item.getAmount();
         if (this.hasAttached())
         {
-            for (ActionTypeBase action : this.getAttached())
+            for (BaseAction action : this.getAttached())
             {
                 amount += ((PlayerItemDrop)action).item.getAmount();
             }
@@ -65,7 +65,7 @@ public class PlayerItemDrop extends PlayerItemActionType<PlayerItemListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ITEM;
     }

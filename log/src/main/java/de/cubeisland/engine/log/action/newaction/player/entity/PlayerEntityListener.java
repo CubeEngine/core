@@ -62,7 +62,7 @@ public class PlayerEntityListener extends PlayerLogListener
         }
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
-        PlayerEntityActionType action;
+        PlayerEntityAction action;
         if (player.getItemInHand().getType() == COAL && entity instanceof PoweredMinecart)
         {
             action = this.newAction(FuelFurnaceMinecart.class, entity.getWorld());

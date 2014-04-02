@@ -27,7 +27,7 @@ import org.bukkit.event.block.BlockFromToEvent;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction;
 
 import static de.cubeisland.engine.core.util.BlockUtil.*;
 import static org.bukkit.Material.*;
@@ -164,7 +164,7 @@ public class FlowListener extends LogListener
     @SuppressWarnings("deprecation")
     private void logFlow(Class<? extends BlockFlowAction> clazz, BlockState state, Material to, BlockState from)
     {
-        BlockActionType action = this.newAction(clazz, state.getWorld());
+        BlockAction action = this.newAction(clazz, state.getWorld());
         if (action != null)
         {
             BlockState newState = state.getBlock().getState();
@@ -178,9 +178,9 @@ public class FlowListener extends LogListener
         }
     }
 
-    private void log(Class<? extends BlockActionType> clazz, BlockState state, Material to)
+    private void log(Class<? extends BlockAction> clazz, BlockState state, Material to)
     {
-        BlockActionType action = this.newAction(clazz, state.getWorld());
+        BlockAction action = this.newAction(clazz, state.getWorld());
         if (action != null)
         {
             action.setLocation(state.getLocation());

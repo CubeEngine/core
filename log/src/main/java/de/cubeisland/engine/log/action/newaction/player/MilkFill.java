@@ -18,22 +18,22 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerBucketListener;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BUCKET;
+import static de.cubeisland.engine.log.action.ActionCategory.BUCKET;
 
 /**
  * Represents a player filling a bucket with milk
  */
-public class MilkFill extends PlayerActionType<PlayerBucketListener>
+public class MilkFill extends PlayerAction<PlayerBucketListener>
 {
     // return this.lm.getConfig(world).BUCKET_FILL_milk;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof MilkFill && this.player.equals(((MilkFill)action).player);
     }
@@ -47,7 +47,7 @@ public class MilkFill extends PlayerActionType<PlayerBucketListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BUCKET;
     }

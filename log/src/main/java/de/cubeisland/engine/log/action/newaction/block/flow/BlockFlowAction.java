@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction;
 
 /**
  * Represents a fluid flowing
@@ -28,6 +28,6 @@ import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
  * {@link WaterFlow}
  * {@link WaterSourceCreation}
  */
-public abstract class BlockFlowAction extends BlockActionType<FlowListener>
+public abstract class BlockFlowAction extends BlockAction<FlowListener>
 {
 }

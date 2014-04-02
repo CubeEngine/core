@@ -18,22 +18,22 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
 
 /**
  * Represents an Entity forming a block
  * <p>This will usually be a SnowGolem making snow
  */
-public class EntityForm extends EntityBlockActionType<EntityBlockListener>
+public class EntityForm extends EntityBlockAction<EntityBlockListener>
 {
     // return this.lm.getConfig(world).block.form.ENTITY_FORM_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof EntityBreakBlock && ((EntityBreakBlock)action).entity.type == this.entity.type
             && ((EntityBreakBlock)action).newBlock == this.newBlock;
@@ -54,7 +54,7 @@ public class EntityForm extends EntityBlockActionType<EntityBlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ENTITY;
     }

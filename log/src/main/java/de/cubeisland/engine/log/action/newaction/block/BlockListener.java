@@ -47,7 +47,7 @@ import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerGrow;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerSignBreak;
@@ -85,8 +85,8 @@ import static org.bukkit.block.BlockFace.UP;
 public class BlockListener extends LogListener
 {
     private static final PistonExtensionMaterial PISTON_HEAD = new PistonExtensionMaterial(PISTON_EXTENSION);
-    private final Map<Location, BlockActionType> plannedFall = new HashMap<>();
-    private final Map<Location, BlockActionType> plannedPyhsics = new HashMap<>();
+    private final Map<Location, BlockAction> plannedFall = new HashMap<>();
+    private final Map<Location, BlockAction> plannedPyhsics = new HashMap<>();
     private volatile boolean clearPlanned = false;
 
     public BlockListener(Log module)
@@ -95,7 +95,7 @@ public class BlockListener extends LogListener
               PlayerGrow.class, PlayerBlockBreak.class, PlayerSignBreak.class);
     }
 
-    public static void logAttachedBlocks(LogListener ll, EventManager em, Block block, BlockActionType action)
+    public static void logAttachedBlocks(LogListener ll, EventManager em, Block block, BlockAction action)
     {
         if (!block.getType().isSolid() && !(block.getType() == SUGAR_CANE_BLOCK))
         {
@@ -134,7 +134,7 @@ public class BlockListener extends LogListener
         return block.getData() < 8 || !(block.getType() == WOODEN_DOOR || block.getType() == IRON_DOOR_BLOCK);
     }
 
-    public static void logFallingBlocks(LogListener ll, EventManager em, Block block, BlockActionType action)
+    public static void logFallingBlocks(LogListener ll, EventManager em, Block block, BlockAction action)
     {
         // Falling Blocks
         if (ll.isActive(BlockFall.class, block.getWorld()))
@@ -325,10 +325,10 @@ public class BlockListener extends LogListener
                 Location loc = state.getLocation();
 
                 BlockFall action = this.set(BlockFall.class, state, null);
-                BlockActionType<?> cause = this.plannedFall.remove(loc);
-                if (cause instanceof PlayerBlockActionType)
+                BlockAction<?> cause = this.plannedFall.remove(loc);
+                if (cause instanceof PlayerBlockAction)
                 {
-                    action.cause = this.reference((PlayerBlockActionType<?>)cause);
+                    action.cause = this.reference((PlayerBlockAction<?>)cause);
                 }
                 action.setNewBlock(AIR);
                 this.logAction(action);
@@ -370,9 +370,9 @@ public class BlockListener extends LogListener
         if (!blockAttachedTo.getType().isSolid())
         {
             Location loc = oldState.getLocation();
-            BlockActionType cause = this.plannedPyhsics.remove(loc); // TODO instanceof
+            BlockAction cause = this.plannedPyhsics.remove(loc); // TODO instanceof
             oldState = adjustBlockForDoubleBlocks(oldState);
-            if (cause instanceof PlayerBlockActionType)
+            if (cause instanceof PlayerBlockAction)
             {
                 PlayerBlockBreak action;
                 if (oldState instanceof Sign)
@@ -390,7 +390,7 @@ public class BlockListener extends LogListener
                 if (action != null)
                 {
                     action.setNewBlock(AIR);
-                    action.player = ((PlayerBlockActionType)cause).player;
+                    action.player = ((PlayerBlockAction)cause).player;
                     action.reference = this.reference(cause);
                     this.logAction(action);
                 }
@@ -419,10 +419,10 @@ public class BlockListener extends LogListener
         }
     }
 
-    private void setAndLog(Class<? extends BlockActionType> clazz, BlockState oldState, Material newMaterial)
+    private void setAndLog(Class<? extends BlockAction> clazz, BlockState oldState, Material newMaterial)
     {
         BlockState state = adjustBlockForDoubleBlocks(oldState);
-        BlockActionType action = this.set(clazz, state, null);
+        BlockAction action = this.set(clazz, state, null);
         if (action != null)
         {
             action.setNewBlock(newMaterial);
@@ -430,17 +430,17 @@ public class BlockListener extends LogListener
         }
     }
 
-    private void setAndLog(Class<? extends BlockActionType> clazz, BlockState oldState, BlockState newState)
+    private void setAndLog(Class<? extends BlockAction> clazz, BlockState oldState, BlockState newState)
     {
         BlockState state = adjustBlockForDoubleBlocks(oldState);
-        BlockActionType action = this.set(clazz, state, newState);
+        BlockAction action = this.set(clazz, state, newState);
         if (action != null)
         {
             this.logAction(action);
         }
     }
 
-    private <T extends BlockActionType> T set(Class<T> clazz, BlockState oldState, BlockState newState)
+    private <T extends BlockAction> T set(Class<T> clazz, BlockState oldState, BlockState newState)
     {
         T action = this.newAction(clazz, oldState.getWorld());
         if (action != null)

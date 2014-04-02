@@ -18,9 +18,9 @@
 package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static org.bukkit.Material.*;
@@ -28,12 +28,12 @@ import static org.bukkit.Material.*;
 /**
  * Represents a player filling a bucket
  */
-public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener>
+public class PlayerBucketFill extends PlayerBlockAction<PlayerBucketListener>
 {
     // return this.lm.getConfig(world).block.bucket.BUCKET_FILL_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerBucketFill && this.player.equals(((PlayerBucketFill)action).player)
             && ((PlayerBucketFill)action).oldBlock == this.oldBlock;
@@ -58,9 +58,9 @@ public class PlayerBucketFill extends PlayerBlockActionType<PlayerBucketListener
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.BUCKET;
+        return ActionCategory.BUCKET;
     }
 
     @Override

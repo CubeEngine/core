@@ -19,10 +19,10 @@ package de.cubeisland.engine.log.action.newaction.entityspawn;
 
 import org.bukkit.entity.Entity;
 
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
 
-public abstract class EntityActionType<ListenerType> extends ActionTypeBase<ListenerType>
+public abstract class EntityAction<ListenerType> extends BaseAction<ListenerType>
 {
     public EntitySection entity;
 

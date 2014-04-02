@@ -18,22 +18,22 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
 
 /**
  * Represents an Entity breaking a block
  * <p>This will usually be a Zombie destroying doors
  */
-public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
+public class EntityBreakBlock extends EntityBlockAction<EntityBlockListener>
 {
     // return this.lm.getConfig(world).block.ENTITY_BREAK_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof EntityBreakBlock && this.entity.isSameType(((EntityBreakBlock)action).entity);
     }
@@ -53,7 +53,7 @@ public class EntityBreakBlock extends EntityBlockActionType<EntityBlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ENTITY;
     }

@@ -15,19 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player;
+package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
-public abstract class PlayerActionType<ListenerType> extends ActionTypeBase<ListenerType>
+import static de.cubeisland.engine.log.action.ActionCategory.EXPLODE;
+
+/**
+ * Represents an Entity exploding
+ * <p>SubActions:
+ * {@link CreeperExplode}
+ * {@link TntExplode}
+ * {@link WitherExplode}
+ * {@link FireballExplode}
+ * {@link EnderdragonExplode}
+ * {@link EntityExplode}
+ */
+public abstract class ExplosionAction extends EntityBlockAction<ExplodeListener>
 {
     public PlayerSection player;
 
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player);
+    }
+
+    @Override
+    public ActionCategory getCategory()
+    {
+        return EXPLODE;
     }
 }

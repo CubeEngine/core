@@ -19,24 +19,24 @@ package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 
 /**
  * Represents blocks falling
  */
-public class BlockFall extends BlockActionType<BlockListener>
+public class BlockFall extends BlockAction<BlockListener>
 {
     // return this.lm.getConfig(world).block.BLOCK_FALL_enable;
 
-    public Reference<PlayerBlockActionType> cause;
+    public Reference<PlayerBlockAction> cause;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return false;
     }
@@ -50,11 +50,11 @@ public class BlockFall extends BlockActionType<BlockListener>
             return user.getTranslation(POSITIVE, "{name#block} did fall to a lower place", this.oldBlock.name());
         }
         return user.getTranslation(POSITIVE, "{name#block} did fall to a lower place because of {user}",
-                                   this.oldBlock.name(), cause.fetch(PlayerBlockActionType.class).player.name);
+                                   this.oldBlock.name(), cause.fetch(PlayerBlockAction.class).player.name);
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

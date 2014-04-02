@@ -20,8 +20,8 @@ package de.cubeisland.engine.log.action.newaction.block.ignite;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -35,7 +35,7 @@ public class LighterIgnite extends BlockIgniteAction
     public PlayerSection player;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof LighterIgnite && ((this.player == null && ((LighterIgnite)action).player == null) || (
             this.player != null && this.player.equals(((LighterIgnite)action).player)));

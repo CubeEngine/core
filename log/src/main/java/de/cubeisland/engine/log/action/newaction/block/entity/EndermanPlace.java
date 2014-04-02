@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY_ENDERMAN;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_ENDERMAN;
 
 /**
  * Represents an Enderman placing a block
  */
-public class EndermanPlace extends EntityBlockActionType<EntityBlockListener>
+public class EndermanPlace extends EntityBlockAction<EntityBlockListener>
 {
     // return this.lm.getConfig(world).block.enderman.ENDERMAN_PLACE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof EndermanPlace && ((EndermanPlace)action).newBlock == this.newBlock;
     }
@@ -51,7 +51,7 @@ public class EndermanPlace extends EntityBlockActionType<EntityBlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ENTITY_ENDERMAN;
     }

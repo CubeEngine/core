@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 public class Lookup implements Cloneable
 {
@@ -44,7 +44,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(new HashSet<Class<? extends ActionTypeBase>>(), false); // exclude none
+        lookup.queryParameter.setActions(new HashSet<Class<? extends BaseAction>>(), false); // exclude none
         lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
         return lookup;
     }

@@ -24,15 +24,14 @@ import java.util.UUID;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplosionActionType;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction;
 import de.cubeisland.engine.reflect.Section;
 
 /**
  * Represents an Entity changing a block
  * <p>SubActions:
- * {@link ExplosionActionType}
+ * {@link de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplosionAction}
  * {@link SheepEat}
  * {@link EndermanPickup}
  * {@link EndermanPlace}
@@ -40,7 +39,7 @@ import de.cubeisland.engine.reflect.Section;
  * {@link EntityBreakBlock} // TODO other events?
  * {@link EntityForm}
  */
-public abstract class EntityBlockActionType<ListenerType> extends BlockActionType<ListenerType>
+public abstract class EntityBlockAction<ListenerType> extends BlockAction<ListenerType>
 {
     public EntitySection entity;
 
@@ -54,11 +53,11 @@ public abstract class EntityBlockActionType<ListenerType> extends BlockActionTyp
         Set<UUID> uuids = new HashSet<>();
         uuids.add(this.entity.uuid);
         int count = 1;
-        for (ActionTypeBase action : this.getAttached())
+        for (BaseAction action : this.getAttached())
         {
-            if (!uuids.contains(((EntityBlockActionType)action).entity.uuid))
+            if (!uuids.contains(((EntityBlockAction)action).entity.uuid))
             {
-                uuids.add(((EntityBlockActionType)action).entity.uuid);
+                uuids.add(((EntityBlockAction)action).entity.uuid);
                 count++;
             }
         }

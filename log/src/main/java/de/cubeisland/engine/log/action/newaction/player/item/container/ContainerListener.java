@@ -90,7 +90,7 @@ public class ContainerListener extends LogListener
                     {
                         continue;
                     }
-                    ContainerItemActionType action;
+                    ContainerItemAction action;
                     if (amount < 0)
                     {
                         amount *= -1;
@@ -145,7 +145,7 @@ public class ContainerListener extends LogListener
     {
         if (event.getPlayer() instanceof Player)
         {
-            if (this.isActive(ContainerItemActionType.class, event.getPlayer().getWorld()))
+            if (this.isActive(ContainerItemAction.class, event.getPlayer().getWorld()))
             {
                 /* TODO
                 ContainerType type = new ContainerType(event.getInventory().getHolder());

@@ -22,21 +22,21 @@ import java.util.Map;
 import org.bukkit.enchantments.Enchantment;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
+import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 
 /**
  * Represents a player enchanting an item
  */
-public class EnchantItem extends PlayerItemActionType<PlayerItemListener>
+public class EnchantItem extends PlayerItemAction<PlayerItemListener>
 {
     // return this.lm.getConfig(world).ENCHANT_ITEM_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         // same player
         return action instanceof EnchantItem && this.player.equals(((EnchantItem)action).player)
@@ -64,7 +64,7 @@ public class EnchantItem extends PlayerItemActionType<PlayerItemListener>
 
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ITEM;
     }

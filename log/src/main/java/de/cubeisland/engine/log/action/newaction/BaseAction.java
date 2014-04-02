@@ -39,11 +39,11 @@ import org.bson.types.ObjectId;
  * The Base for any Loggable Action
  * <p>The ListenerType will listen for given action
  */
-public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject implements Comparable<ActionTypeBase<?>>, NamedAction
+public abstract class BaseAction<ListenerType> extends ReflectedDBObject implements Comparable<BaseAction<?>>, NamedAction
 {
     public Date date = new Date();
     public Coordinate coord;
-    private transient List<ActionTypeBase> attached;
+    private transient List<BaseAction> attached;
 
     protected int countAttached()
     {
@@ -60,7 +60,7 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
         this.coord = new Coordinate(loc);
     }
 
-    public final List<ActionTypeBase> getAttached()
+    public final List<BaseAction> getAttached()
     {
         return attached;
     }
@@ -70,9 +70,9 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
         return !(this.attached == null || this.attached.isEmpty());
     }
 
-    public abstract boolean canAttach(ActionTypeBase action);
+    public abstract boolean canAttach(BaseAction action);
 
-    public final void attach(ActionTypeBase action)
+    public final void attach(BaseAction action)
     {
         if (this.attached == null)
         {
@@ -187,7 +187,7 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
 
     public abstract String translateAction(User user);
 
-    public final boolean isNearTimeFrame(TimeUnit unit, int i, ActionTypeBase action)
+    public final boolean isNearTimeFrame(TimeUnit unit, int i, BaseAction action)
     {
         return unit.toMillis(i) > Math.abs(this.date.getTime() - action.date.getTime());
     }
@@ -317,7 +317,7 @@ public abstract class ActionTypeBase<ListenerType> extends ReflectedDBObject imp
     }
 
     @Override
-    public int compareTo(ActionTypeBase<?> action)
+    public int compareTo(BaseAction<?> action)
     {
         return ((ObjectId)this.getTarget().get("_id")).compareTo((ObjectId)action.getTarget().get("_id"));
     }

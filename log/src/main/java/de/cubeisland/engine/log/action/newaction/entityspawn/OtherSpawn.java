@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.entityspawn;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.SPAWN;
+import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
 
 /**
  * Represents a LivingEntity spawning
  */
-public class OtherSpawn extends EntityActionType<EntitySpawnListener>
+public class OtherSpawn extends EntityAction<EntitySpawnListener>
 {
     //return this.lm.getConfig(world).OTHER_SPAWN_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof NaturalSpawn && this.entity.isSameType(((NaturalSpawn)action).entity);
     }
@@ -46,7 +46,7 @@ public class OtherSpawn extends EntityActionType<EntitySpawnListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return SPAWN;
     }

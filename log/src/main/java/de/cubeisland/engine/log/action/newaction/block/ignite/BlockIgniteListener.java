@@ -33,7 +33,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction;
 
 import static org.bukkit.Material.FIRE;
 
@@ -61,7 +61,7 @@ public class BlockIgniteListener extends LogListener
     public void onIgnite(BlockIgniteEvent event)
     {
         BlockState oldState = event.getBlock().getState();
-        BlockActionType action;
+        BlockAction action;
         switch (event.getCause())
         {
         case FIREBALL:

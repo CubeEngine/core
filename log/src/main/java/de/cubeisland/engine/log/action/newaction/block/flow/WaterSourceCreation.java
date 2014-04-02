@@ -18,8 +18,8 @@
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -29,7 +29,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 public class WaterSourceCreation extends BlockFlowAction
 {
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof WaterSourceCreation;
     }
@@ -42,9 +42,9 @@ public class WaterSourceCreation extends BlockFlowAction
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.WATER;
+        return ActionCategory.WATER;
     }
 
     @Override

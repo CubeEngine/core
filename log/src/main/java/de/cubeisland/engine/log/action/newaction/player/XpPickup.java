@@ -18,23 +18,23 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.PLAYER;
+import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 
 /**
  * Represents a player picking up an xp-orb
  */
-public class XpPickup extends PlayerActionType<PlayerActionListener>
+public class XpPickup extends PlayerAction<PlayerActionListener>
 {
     // return this.lm.getConfig(world).XP_PICKUP_enable;
 
     private int exp;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof XpPickup && this.player.equals(((XpPickup)action).player);
     }
@@ -45,7 +45,7 @@ public class XpPickup extends PlayerActionType<PlayerActionListener>
         int amount = this.exp;
         if (this.hasAttached())
         {
-            for (ActionTypeBase action : this.getAttached())
+            for (BaseAction action : this.getAttached())
             {
                 amount += ((XpPickup)action).exp;
             }
@@ -59,7 +59,7 @@ public class XpPickup extends PlayerActionType<PlayerActionListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return PLAYER;
     }

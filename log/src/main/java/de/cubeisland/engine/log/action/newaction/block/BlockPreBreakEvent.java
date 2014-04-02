@@ -26,9 +26,9 @@ public class BlockPreBreakEvent extends Event
     private static final HandlerList handlers = new HandlerList();
 
     private Location location;
-    private BlockActionType action;
+    private BlockAction action;
 
-    public BlockPreBreakEvent(Location location, BlockActionType action)
+    public BlockPreBreakEvent(Location location, BlockAction action)
     {
         this.location = location;
         this.action = action;
@@ -44,7 +44,7 @@ public class BlockPreBreakEvent extends Event
         return location;
     }
 
-    public BlockActionType getAction()
+    public BlockAction getAction()
     {
         return action;
     }

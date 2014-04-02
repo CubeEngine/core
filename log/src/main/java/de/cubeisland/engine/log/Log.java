@@ -32,7 +32,7 @@ import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.log.action.ActionTypeManager;
+import de.cubeisland.engine.log.action.ActionManager;
 import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
 import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerTypeConverter;
 import de.cubeisland.engine.log.action.newaction.block.player.worldedit.LogEditSessionFactory;
@@ -47,7 +47,7 @@ public class Log extends Module implements Listener
     private LogManager logManager;
     private LogConfiguration config;
     private ObjectMapper objectMapper = null;
-    private ActionTypeManager actionTypeManager;
+    private ActionManager actionTypeManager;
     private boolean worldEditFound = false;
 
     @Inject
@@ -64,7 +64,7 @@ public class Log extends Module implements Listener
         this.getCore().getConfigFactory().getCodecManager().getCodec(MongoDBCodec.class).
             getConverterManager().registerConverter(ItemStack.class, new ItemStackConverter());
         this.logManager = new LogManager(this, bigdata);
-        this.actionTypeManager = new ActionTypeManager(this);
+        this.actionTypeManager = new ActionManager(this);
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommands(this, new LookupCommands(this), ReflectedCommand.class);
@@ -121,7 +121,7 @@ public class Log extends Module implements Listener
         return objectMapper;
     }
 
-    public ActionTypeManager getActionTypeManager()
+    public ActionManager getActionTypeManager()
     {
         return actionTypeManager;
     }

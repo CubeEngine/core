@@ -45,14 +45,14 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction.BlockSection;
 import org.jooq.Condition;
 import org.jooq.types.UInteger;
 
 public class QueryManager
 {
-    final Queue<ActionTypeBase> queuedLogs = new ConcurrentLinkedQueue<>();
+    final Queue<BaseAction> queuedLogs = new ConcurrentLinkedQueue<>();
     final Queue<QueuedSqlParams> queuedLookups = new ConcurrentLinkedQueue<>();
     private final Log module;
     private final ExecutorService storeExecutor;
@@ -390,7 +390,7 @@ public class QueryManager
             try
             {
                 @SuppressWarnings("unchecked")
-                Class<? extends ActionTypeBase> action = (Class<? extends ActionTypeBase>)Class.forName((String)entry.get("action"));
+                Class<? extends BaseAction> action = (Class<? extends BaseAction>)Class.forName((String)entry.get("action"));
                 results.addResult(module.getCore().getConfigFactory().load(action, entry));
             }
             catch (ClassNotFoundException e)
@@ -434,7 +434,7 @@ public class QueryManager
 
     private void doEmptyLogs(int amount)
     {
-        final Queue<ActionTypeBase> logs = new LinkedList<>();
+        final Queue<BaseAction> logs = new LinkedList<>();
         try
         {
             this.latch.acquire();  // Wait if still doing inserts
@@ -444,7 +444,7 @@ public class QueryManager
             }
             for (int i = 0; i < amount; i++) // log <amount> next logs...
             {
-                ActionTypeBase toLog = this.queuedLogs.poll();
+                BaseAction toLog = this.queuedLogs.poll();
                 if (toLog == null)
                 {
                     break;
@@ -456,7 +456,7 @@ public class QueryManager
             Profiler.startProfiling("logging");
             int logSize = logs.size();
             List<DBObject> toLog = new ArrayList<>();
-            for (ActionTypeBase<?> log : logs)
+            for (BaseAction<?> log : logs)
             {
                 log.save();
                 toLog.add(log.getTarget());
@@ -544,7 +544,7 @@ public class QueryManager
         }
     }
 
-    protected void queueLog(ActionTypeBase action)
+    protected void queueLog(BaseAction action)
     {
         this.queuedLogs.offer(action);
         if (this.latch.availablePermits() == 1 && (this.futureStore == null || this.futureStore.isDone()))
@@ -651,7 +651,9 @@ public class QueryManager
                 {
                     query.append("coord.vector.x", new BasicDBObject("$gte", loc1.x - params.radius).append("$lte", loc1.x + params.radius)).
                           append("coord.vector.y", new BasicDBObject("$gte", loc1.y - params.radius).append("$lte", loc1.y + params.radius)).
-                          append("coord.vector.z", new BasicDBObject("$gte", loc1.z - params.radius).append("$lte", loc1.z + params.radius));
+                          append("coord.vector.z", new BasicDBObject("$gte", loc1.z - params.radius).append("$lte",
+                                                                                                            loc1.z
+                                                                                                                + params.radius));
                 }
             }
         }
@@ -660,7 +662,7 @@ public class QueryManager
         {
             boolean include = params.includeActions();
             Collection<UInteger> actions = new HashSet<>();
-            for (Entry<Class<? extends ActionTypeBase>, Boolean> entry : params.actions.entrySet())
+            for (Entry<Class<? extends BaseAction>, Boolean> entry : params.actions.entrySet())
             {
                 if (!include || entry.getValue())
                 {

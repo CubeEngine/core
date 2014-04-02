@@ -15,13 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.block.flow;
+package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 
-import de.cubeisland.engine.log.action.newaction.block.BlockForm;
+import org.bukkit.entity.Entity;
 
-/**
- * Represents a block forming due to lava and water
- */
-public class LavaWaterForm extends BlockForm
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
+import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
+
+public abstract class PlayerHangingAction extends PlayerAction<PlayerHangingListener>
 {
+    public EntitySection hanging;
+
+    public void setHanging(Entity entity)
+    {
+        this.hanging = new EntitySection(entity);
+    }
 }

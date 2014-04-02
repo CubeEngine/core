@@ -18,7 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockPlace;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -44,9 +44,9 @@ public class PlayerLavaBucketPlace extends PlayerBlockPlace
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.BUCKET;
+        return ActionCategory.BUCKET;
     }
 
     @Override

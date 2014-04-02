@@ -21,23 +21,23 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemDrop;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.*;
+import static de.cubeisland.engine.log.action.ActionCategory.*;
 
 /**
  * Represents a player dropping items on death
  */
-public class PlayerDeathDrop extends ActionTypeBase<DeathListener>
+public class PlayerDeathDrop extends BaseAction<DeathListener>
 {
     public Reference<PlayerDeath> death;
     public ItemStack item;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerDeathDrop && this.death != null && ((PlayerDeathDrop)action).death != null
             && this.death.equals(((PlayerDeathDrop)action).death);
@@ -49,7 +49,7 @@ public class PlayerDeathDrop extends ActionTypeBase<DeathListener>
         int amount = this.item.getAmount();
         if (this.hasAttached())
         {
-            for (ActionTypeBase action : this.getAttached())
+            for (BaseAction action : this.getAttached())
             {
                 amount += ((PlayerItemDrop)action).item.getAmount();
             }
@@ -59,7 +59,7 @@ public class PlayerDeathDrop extends ActionTypeBase<DeathListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return DEATH;
     }

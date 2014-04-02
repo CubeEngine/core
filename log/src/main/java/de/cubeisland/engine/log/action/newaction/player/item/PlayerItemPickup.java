@@ -20,24 +20,24 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 import org.bukkit.entity.Item;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
+import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 
 /**
  * Represents a player picking up an item
  */
-public class PlayerItemPickup extends PlayerItemActionType<PlayerItemListener>
+public class PlayerItemPickup extends PlayerItemAction<PlayerItemListener>
 {
     // return this.lm.getConfig(world).ITEM_PICKUP_enable;
 
     public EntitySection entity;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         if (this.hasAttached())
         {
@@ -73,7 +73,7 @@ public class PlayerItemPickup extends PlayerItemActionType<PlayerItemListener>
                                            dropAction.player.name, this.item.getType().name(), amount,
                                            this.player.name);
             }
-            for (ActionTypeBase action : this.getAttached())
+            for (BaseAction action : this.getAttached())
             {
                 amount += ((PlayerItemPickup)action).item.getAmount();
             }
@@ -89,7 +89,7 @@ public class PlayerItemPickup extends PlayerItemActionType<PlayerItemListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ITEM;
     }

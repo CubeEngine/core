@@ -20,7 +20,7 @@ package de.cubeisland.engine.log.action.newaction.block.ignite;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -34,7 +34,7 @@ public class LavaIgnite extends BlockIgniteAction
     public Coordinate source;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof LavaIgnite;
     }

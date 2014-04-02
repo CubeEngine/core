@@ -18,19 +18,19 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a primed tnt exploding
  */
-public class TntExplode extends ExplosionActionType
+public class TntExplode extends ExplosionAction
 {
     // return this.lm.getConfig(world).block.explode.TNT_EXPLODE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof TntExplode && this.oldBlock.equals(((TntExplode)action).oldBlock)
             && this.entity.equals(((TntExplode)action).entity) && (

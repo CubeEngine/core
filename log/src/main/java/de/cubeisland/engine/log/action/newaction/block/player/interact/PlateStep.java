@@ -18,24 +18,24 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player stepping on a plate
  */
-public class PlateStep extends PlayerBlockActionType<PlayerBlockInteractListener>
+public class PlateStep extends PlayerBlockAction<PlayerBlockInteractListener>
 {
     // return this.lm.getConfig(world).PLATE_STEP_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
-        return action instanceof PlateStep && this.player.equals(((PlayerBlockActionType)action).player)
+        return action instanceof PlateStep && this.player.equals(((PlayerBlockAction)action).player)
             && this.coord.equals(action.coord) && this.oldBlock == ((PlateStep)action).oldBlock;
     }
 
@@ -50,7 +50,7 @@ public class PlateStep extends PlayerBlockActionType<PlayerBlockInteractListener
 
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return USE;
     }

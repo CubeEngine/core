@@ -20,24 +20,24 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 import org.bukkit.material.Lever;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player using a lever
  */
-public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
+public class LeverUse extends PlayerBlockAction<PlayerBlockInteractListener>
 {
     // return this.lm.getConfig(world).block.LEVER_USE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
-        return action instanceof LeverUse && this.player.equals(((PlayerBlockActionType)action).player)
+        return action instanceof LeverUse && this.player.equals(((PlayerBlockAction)action).player)
             && this.coord.equals(action.coord);
     }
 
@@ -53,7 +53,7 @@ public class LeverUse extends PlayerBlockActionType<PlayerBlockInteractListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return USE;
     }

@@ -43,7 +43,7 @@ import org.bukkit.material.Rails;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.VehiclePrePlaceEvent;
 
 import static org.bukkit.DyeColor.WHITE;
@@ -91,7 +91,7 @@ public class PlayerBlockInteractListener extends LogListener
             ItemStack itemInHand = event.getPlayer().getItemInHand();
             Location location = event.getClickedBlock().getLocation();
             BlockState state = event.getClickedBlock().getState();
-            PlayerBlockActionType action;
+            PlayerBlockAction action;
             BlockState newState = state.getBlock().getState();
 
             if (state instanceof InventoryHolder)

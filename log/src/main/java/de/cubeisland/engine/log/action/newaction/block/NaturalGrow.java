@@ -18,22 +18,22 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**
  * Represents trees or mushrooms growing
  */
-public class NaturalGrow extends BlockActionType<BlockListener>
+public class NaturalGrow extends BlockAction<BlockListener>
 {
     // return this.lm.getConfig(world).block.grow.NATURAL_GROW_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof NaturalGrow && ((NaturalGrow)action).oldBlock == this.oldBlock
             && ((NaturalGrow)action).newBlock == this.newBlock;
@@ -54,7 +54,7 @@ public class NaturalGrow extends BlockActionType<BlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

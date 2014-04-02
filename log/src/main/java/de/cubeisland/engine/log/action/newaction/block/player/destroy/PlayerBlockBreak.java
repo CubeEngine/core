@@ -19,13 +19,13 @@ package de.cubeisland.engine.log.action.newaction.block.player.destroy;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 
 /**
  * Represents a player breaking a block
@@ -35,14 +35,14 @@ import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
  * {@link PlayerJukeboxBreak}
  * {@link PlayerContainerBreak}
  */
-public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
+public class PlayerBlockBreak extends PlayerBlockAction<PlayerBlockListener>
 {
     // return this.lm.getConfig(world).block.BLOCK_BREAK_enable;
 
-    public Reference<PlayerBlockActionType> reference; // TODO use in message
+    public Reference<PlayerBlockAction> reference; // TODO use in message
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerBlockBreak && this.player.equals(((PlayerBlockBreak)action).player)
             && ((PlayerBlockBreak)action).oldBlock.material == this.oldBlock.material;
@@ -60,7 +60,7 @@ public class PlayerBlockBreak extends PlayerBlockActionType<PlayerBlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

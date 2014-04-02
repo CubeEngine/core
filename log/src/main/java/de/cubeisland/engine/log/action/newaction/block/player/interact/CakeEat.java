@@ -20,21 +20,21 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 import org.bukkit.material.Cake;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player eating a cake
  */
-public class CakeEat extends PlayerBlockActionType<PlayerBlockInteractListener>
+public class CakeEat extends PlayerBlockAction<PlayerBlockInteractListener>
 {
     // return this.lm.getConfig(world).block.CAKE_EAT_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return false;
     }
@@ -53,9 +53,9 @@ public class CakeEat extends PlayerBlockActionType<PlayerBlockInteractListener>
         }
     }
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.USE;
+        return ActionCategory.USE;
     }
 
     @Override

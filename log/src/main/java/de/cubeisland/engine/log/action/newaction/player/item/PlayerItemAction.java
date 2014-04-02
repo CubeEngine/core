@@ -15,32 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player.entity.vehicle;
+package de.cubeisland.engine.log.action.newaction.player.item;
 
-import java.util.UUID;
+import org.bukkit.inventory.ItemStack;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
 
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
-
-import static de.cubeisland.engine.log.action.ActionTypeCategory.VEHICLE;
-
-public abstract class PlayerVehicleActionType extends PlayerActionType<PlayerVehicleListener>
+public abstract class PlayerItemAction<ListenerType> extends PlayerAction<ListenerType>
 {
-    public UUID vehicleUUID;
-    public EntityType vehicleType;
+    public ItemStack item; // TODO item format
 
-    public void setVehicle(Entity entity)
+    public void setItemstack(ItemStack result)
     {
-        this.vehicleUUID = entity.getUniqueId();
-        this.vehicleType = entity.getType();
-    }
-
-    @Override
-    public ActionTypeCategory getCategory()
-    {
-        return VEHICLE;
+        this.item = result;
     }
 }

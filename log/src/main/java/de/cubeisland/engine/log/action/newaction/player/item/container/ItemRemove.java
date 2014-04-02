@@ -21,7 +21,7 @@ package de.cubeisland.engine.log.action.newaction.player.item.container;
  * Removing items from a container
  * <p>Events: {@link ContainerListener}
  */
-public class ItemRemove extends ContainerItemActionType
+public class ItemRemove extends ContainerItemAction
 {
     // return this.lm.getConfig(world).container.ITEM_REMOVE_enable;
 

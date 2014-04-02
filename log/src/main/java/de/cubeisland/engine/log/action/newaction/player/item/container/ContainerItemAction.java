@@ -18,23 +18,23 @@
 package de.cubeisland.engine.log.action.newaction.player.item.container;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ITEM;
+import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 
-public abstract class ContainerItemActionType extends PlayerItemActionType<ContainerListener>
+public abstract class ContainerItemAction extends PlayerItemAction<ContainerListener>
 {
     public ContainerType type;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
-        return action instanceof ContainerItemActionType && this.player.equals(((ContainerItemActionType)action).player)
-            && this.coord.equals(action.coord) && this.type.equals(((ContainerItemActionType)action).type)
-            && this.item.isSimilar(((ContainerItemActionType)action).item);
+        return action instanceof ContainerItemAction && this.player.equals(((ContainerItemAction)action).player)
+            && this.coord.equals(action.coord) && this.type.equals(((ContainerItemAction)action).type)
+            && this.item.isSimilar(((ContainerItemAction)action).item);
     }
 
     @Override
@@ -47,7 +47,7 @@ public abstract class ContainerItemActionType extends PlayerItemActionType<Conta
         }
         if (this.hasAttached())
         {
-            for (ActionTypeBase action : this.getAttached())
+            for (BaseAction action : this.getAttached())
             {
                 if (action instanceof ItemInsert)
                 {
@@ -230,7 +230,7 @@ public abstract class ContainerItemActionType extends PlayerItemActionType<Conta
      */
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ITEM;
     }

@@ -25,7 +25,7 @@ import de.cubeisland.engine.core.command.parameterized.Completer;
 
 public class ActionTypeCompleter implements Completer
 {
-    static ActionTypeManager manager;
+    static ActionManager manager;
 
     @Override
     public List<String> complete(CommandSender sender, String token)

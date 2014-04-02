@@ -20,16 +20,16 @@ package de.cubeisland.engine.log.action.newaction.player;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.PLAYER;
+import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 
 /**
  * Represents a player teleport from one location to an other
  */
-public class PlayerTeleport extends PlayerActionType<PlayerActionListener>
+public class PlayerTeleport extends PlayerAction<PlayerActionListener>
 {
     // return this.lm.getConfig(world).PLAYER_TELEPORT_enable;
 
@@ -37,7 +37,7 @@ public class PlayerTeleport extends PlayerActionType<PlayerActionListener>
     public boolean fromToDirection;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerTeleport && this.player.equals(((PlayerTeleport)action).player)
             && !this.hasAttached() && ((PlayerTeleport)action).fromToDirection != this.fromToDirection
@@ -71,7 +71,7 @@ public class PlayerTeleport extends PlayerActionType<PlayerActionListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return PLAYER;
     }

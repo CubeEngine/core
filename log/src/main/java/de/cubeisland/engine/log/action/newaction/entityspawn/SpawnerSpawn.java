@@ -18,23 +18,23 @@
 package de.cubeisland.engine.log.action.newaction.entityspawn;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.SPAWN;
+import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
 
 /**
  * Represents a LivingEntity spawning from a monsterspawner
  */
-public class SpawnerSpawn extends EntityActionType<EntitySpawnListener>
+public class SpawnerSpawn extends EntityAction<EntitySpawnListener>
 {
     //return this.lm.getConfig(world).SPAWNER_SPAWN_enable;
 
     // TODO spawner location && when lookup on spawner show spawned count
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof NaturalSpawn && this.entity.isSameType(((NaturalSpawn)action).entity);
     }
@@ -48,7 +48,7 @@ public class SpawnerSpawn extends EntityActionType<EntitySpawnListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return SPAWN;
     }

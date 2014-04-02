@@ -25,12 +25,10 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.IGNITE;
 import static org.bukkit.entity.EntityType.GHAST;
 import static org.bukkit.entity.EntityType.PLAYER;
 
@@ -48,7 +46,7 @@ public class FireballIgnite extends BlockIgniteAction
     public PlayerSection player;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof FireballIgnite
             // No Shooter or same Shooter

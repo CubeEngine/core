@@ -18,26 +18,26 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 import static org.bukkit.Material.SOIL;
 
 /**
  * Represents a player trampling crops
  */
-public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListener>
+public class CropTrample extends PlayerBlockAction<PlayerBlockInteractListener>
 {
     // return this.lm.getConfig(world).block.CROP_TRAMPLE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof CropTrample && !this.hasAttached() && this.player.equals(
-            ((PlayerBlockActionType)action).player) && 50 > Math.abs(this.date.getTime() - action.date.getTime())
+            ((PlayerBlockAction)action).player) && 50 > Math.abs(this.date.getTime() - action.date.getTime())
             && this.coord.worldUUID.equals(action.coord.worldUUID) && Math.abs(this.coord.vector.y - action.coord.vector.y) == 1;
         // TODO xz check just to make sure?
     }
@@ -59,7 +59,7 @@ public class CropTrample extends PlayerBlockActionType<PlayerBlockInteractListen
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

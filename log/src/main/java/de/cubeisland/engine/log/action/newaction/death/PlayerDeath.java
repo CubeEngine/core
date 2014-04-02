@@ -20,12 +20,12 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType.PlayerSection;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.DEATH;
+import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 
 /**
  * Represents a players death
@@ -37,7 +37,7 @@ public class PlayerDeath extends DeathAction
     public PlayerSection killed;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerDeath && this.killer != null && ((DeathAction)action).killer != null
             && this.killer.fetch(KillAction.class).canAttach(((DeathAction)action).killer.fetch(KillAction.class));
@@ -86,7 +86,7 @@ public class PlayerDeath extends DeathAction
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return DEATH;
     }

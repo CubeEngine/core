@@ -17,19 +17,19 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.ignite;
 
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction;
 
-import static de.cubeisland.engine.log.action.ActionTypeCategory.IGNITE;
+import static de.cubeisland.engine.log.action.ActionCategory.IGNITE;
 
 /**
  * Represents a block getting ignited
  */
-public abstract class BlockIgniteAction extends BlockActionType<BlockIgniteListener>
+public abstract class BlockIgniteAction extends BlockAction<BlockIgniteListener>
 {
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return IGNITE;
     }

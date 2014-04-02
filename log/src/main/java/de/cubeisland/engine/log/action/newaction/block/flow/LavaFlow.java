@@ -18,8 +18,8 @@
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -31,7 +31,7 @@ public class LavaFlow extends BlockFlowAction
     // return this.lm.getConfig(world).block.flow.LAVA_FLOW_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof LavaFlow && action.coord.equals(this.coord);
     }
@@ -46,9 +46,9 @@ public class LavaFlow extends BlockFlowAction
 
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.LAVA;
+        return ActionCategory.LAVA;
     }
 
     @Override

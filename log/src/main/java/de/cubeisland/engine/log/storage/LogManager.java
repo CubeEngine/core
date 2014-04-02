@@ -33,7 +33,7 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.storage.QueryManager.QueryAction;
 
 public class LogManager
@@ -141,7 +141,7 @@ public class LogManager
         return config;
     }
 
-    public void queueLog(ActionTypeBase action)
+    public void queueLog(BaseAction action)
     {
         this.queryManager.queueLog(action);
     }

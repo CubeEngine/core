@@ -20,7 +20,7 @@ package de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -34,7 +34,7 @@ public class PlayerItemFrameBreak extends PlayerHangingBreak
     public ItemStack item; // TODO item format
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerItemFrameBreak && this.player.equals(((PlayerItemFrameBreak)action).player)
             && ((PlayerItemFrameBreak)action).item == null && this.item == null;

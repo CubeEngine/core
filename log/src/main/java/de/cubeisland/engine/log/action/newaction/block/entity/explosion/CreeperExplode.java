@@ -18,19 +18,19 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a creeper blowing up blocks
  */
-public class CreeperExplode extends ExplosionActionType
+public class CreeperExplode extends ExplosionAction
 {
     // return this.lm.getConfig(world).block.explode.CREEPER_EXPLODE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof CreeperExplode && this.oldBlock.equals(((CreeperExplode)action).oldBlock)
             && this.entity.equals(((CreeperExplode)action).entity) && (

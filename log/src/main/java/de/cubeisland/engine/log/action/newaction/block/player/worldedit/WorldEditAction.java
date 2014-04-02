@@ -18,23 +18,23 @@
 package de.cubeisland.engine.log.action.newaction.block.player.worldedit;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**
  * Represents a player changing blocks using the worldedit plugin
  */
-public class WorldEditAction extends PlayerBlockActionType<LogEditSession>
+public class WorldEditAction extends PlayerBlockAction<LogEditSession>
 {
     // return this.lm.getConfig(world).block.WORLDEDIT_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof WorldEditAction && this.player.equals(((WorldEditAction)action).player)
             && this.newBlock.material == ((WorldEditAction)action).newBlock.material
@@ -67,7 +67,7 @@ public class WorldEditAction extends PlayerBlockActionType<LogEditSession>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

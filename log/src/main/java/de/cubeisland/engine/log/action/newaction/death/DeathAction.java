@@ -18,12 +18,12 @@
 package de.cubeisland.engine.log.action.newaction.death;
 
 import de.cubeisland.engine.bigdata.Reference;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 /**
  * Represents a LivingEntity dying
  */
-public abstract class DeathAction extends ActionTypeBase<DeathListener>
+public abstract class DeathAction extends BaseAction<DeathListener>
 {
     public Reference<KillAction> killer;
 }

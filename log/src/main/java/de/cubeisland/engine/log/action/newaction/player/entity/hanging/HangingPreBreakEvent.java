@@ -21,16 +21,16 @@ import org.bukkit.Location;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 public class HangingPreBreakEvent extends Event
 {
     private static final HandlerList handlers = new HandlerList();
 
     private Location location;
-    private ActionTypeBase cause;
+    private BaseAction cause;
 
-    public HangingPreBreakEvent(Location location, ActionTypeBase cause)
+    public HangingPreBreakEvent(Location location, BaseAction cause)
     {
         this.location = location;
         this.cause = cause;
@@ -46,7 +46,7 @@ public class HangingPreBreakEvent extends Event
         return location;
     }
 
-    public ActionTypeBase getCause()
+    public BaseAction getCause()
     {
         return cause;
     }

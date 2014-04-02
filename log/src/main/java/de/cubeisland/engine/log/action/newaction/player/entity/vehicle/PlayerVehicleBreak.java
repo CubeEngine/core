@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.vehicle;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents a player breaking a vehicle
  */
-public class PlayerVehicleBreak extends PlayerVehicleActionType
+public class PlayerVehicleBreak extends PlayerVehicleAction
 {
     // return this.lm.getConfig(world).VEHICLE_BREAK_enable;
 
     // TODO actionType entity / block breakVechicle
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerVehicleBreak && this.player.equals(((PlayerVehicleBreak)action).player)
             && ((PlayerVehicleBreak)action).vehicleType == this.vehicleType;

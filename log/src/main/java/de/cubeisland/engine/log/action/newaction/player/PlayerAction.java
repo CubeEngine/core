@@ -15,19 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player.entity;
+package de.cubeisland.engine.log.action.newaction.player;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockActionType.EntitySection;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
 
-public abstract class PlayerEntityActionType extends PlayerActionType<PlayerEntityListener>
+public abstract class PlayerAction<ListenerType> extends BaseAction<ListenerType>
 {
-    public EntitySection entity;
+    public PlayerSection player;
 
-    public void setEntity(Entity entity)
+    public void setPlayer(Player player)
     {
-        this.entity = new EntitySection(entity);
+        this.player = new PlayerSection(player);
     }
 }

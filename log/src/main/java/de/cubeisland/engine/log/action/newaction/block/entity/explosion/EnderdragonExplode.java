@@ -18,19 +18,19 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents the explosion an enderdragon makes when flying through blocks
  */
-public class EnderdragonExplode extends ExplosionActionType
+public class EnderdragonExplode extends ExplosionAction
 {
     // return this.lm.getConfig(world).block.explode.ENDERDRAGON_EXPLODE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof EnderdragonExplode && this.oldBlock.equals(((EnderdragonExplode)action).oldBlock)
             && this.entity.equals(((EnderdragonExplode)action).entity) && (

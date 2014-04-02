@@ -19,12 +19,12 @@ package de.cubeisland.engine.log.action.newaction.block.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerLavaBucketPlace;
 import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerWaterBucketPlace;
 
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**
@@ -33,12 +33,12 @@ import static org.bukkit.Material.AIR;
  * {@link PlayerLavaBucketPlace}
  * {@link PlayerWaterBucketPlace}
  */
-public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
+public class PlayerBlockPlace extends PlayerBlockAction<PlayerBlockListener>
 {
     // return this.lm.getConfig(world).block.BLOCK_PLACE_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerBlockPlace && this.player.equals(((PlayerBlockPlace)action).player)
             && ((PlayerBlockPlace)action).oldBlock.material == this.oldBlock.material
@@ -71,7 +71,7 @@ public class PlayerBlockPlace extends PlayerBlockActionType<PlayerBlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

@@ -31,8 +31,8 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase.Coordinate;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.BaseAction.Coordinate;
 import de.cubeisland.engine.log.action.newaction.Redoable;
 import de.cubeisland.engine.log.action.newaction.Rollbackable;
 
@@ -40,7 +40,7 @@ public class QueryResults
 {
     private final Lookup lookup;
     private final Module module;
-    private final TreeSet<ActionTypeBase> logEntries = new TreeSet<>();
+    private final TreeSet<BaseAction> logEntries = new TreeSet<>();
 
     public QueryResults(Lookup lookup, Module module)
     {
@@ -69,16 +69,16 @@ public class QueryResults
         int totalPages = (this.logEntries.size() + show.pagelimit - 1) / show.pagelimit; // rounded up
         user.sendTranslated(MessageType.POSITIVE, "{amount} distinct logs ({amount} pages)", this.logEntries.size(),
                             totalPages);
-        Iterator<ActionTypeBase> entries = this.logEntries.iterator();
-        ActionTypeBase entry = entries.next();
-        ActionTypeBase lastAttach = entry;
-        TreeSet<ActionTypeBase> compressedEntries = new TreeSet<>();
+        Iterator<BaseAction> entries = this.logEntries.iterator();
+        BaseAction entry = entries.next();
+        BaseAction lastAttach = entry;
+        TreeSet<BaseAction> compressedEntries = new TreeSet<>();
         if (show.compress)
         {
             compressedEntries.add(entry); // add first entry
             while (entries.hasNext())
             {
-                ActionTypeBase next = entries.next();
+                BaseAction next = entries.next();
                 if (lastAttach.canAttach(next)) // can be compressed ?
                 {
                     entry.attach(next);
@@ -133,7 +133,7 @@ public class QueryResults
         }
         int i = 0;
         int cpage = 1;
-        NavigableSet<ActionTypeBase> navigableSet;
+        NavigableSet<BaseAction> navigableSet;
         if (show.reverseOrder)
         {
             navigableSet = compressedEntries.descendingSet();
@@ -144,7 +144,7 @@ public class QueryResults
         }
         CubeEngine.getLog().info("Showing {}/{}/{} logentries to {} (page {})", showing, navigableSet.size(),
                                  this.logEntries.size(), user.getName(), show.page);
-        for (ActionTypeBase action : navigableSet)
+        for (BaseAction action : navigableSet)
         {
             if (cpage == show.page)
             {
@@ -170,7 +170,7 @@ public class QueryResults
         }
     }
 
-    public void addResult(ActionTypeBase logEntry)
+    public void addResult(BaseAction logEntry)
     {
         this.logEntries.add(logEntry);
     }
@@ -181,7 +181,7 @@ public class QueryResults
         Map<Coordinate, Rollbackable> finalBlock = new HashMap<>();
         Map<Coordinate, LinkedList<Rollbackable>> blockChanges = new HashMap<>();
         TreeSet<Rollbackable> filteredLogs = new TreeSet<>();
-        for (ActionTypeBase logEntry : this.logEntries.descendingSet())
+        for (BaseAction logEntry : this.logEntries.descendingSet())
         {
             if (logEntry instanceof Rollbackable) // can rollback
             {
@@ -245,7 +245,7 @@ public class QueryResults
             if (!logEntry.rollback(attachment, true, preview))
             {
                 attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not Rollback:");
-                ((ActionTypeBase)logEntry).showAction(attachment.getHolder(), show);
+                ((BaseAction)logEntry).showAction(attachment.getHolder(), show);
                 CubeEngine.getLog().warn("Could not rollback!");
             }
         }
@@ -257,7 +257,7 @@ public class QueryResults
         Map<Coordinate, Redoable> finalBlock = new HashMap<>();
         Map<Coordinate, LinkedList<Redoable>> blockChanges = new HashMap<>();
         TreeSet<Redoable> filteredLogs = new TreeSet<>();
-        for (ActionTypeBase<?> logEntry : this.logEntries)
+        for (BaseAction<?> logEntry : this.logEntries)
         {
             if (logEntry instanceof Redoable) // can redo
             {
@@ -312,7 +312,7 @@ public class QueryResults
             if (!logEntry.redo(attachment, true, preview))
             {
                 attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not Redo:");
-                ((ActionTypeBase)logEntry).showAction(attachment.getHolder(), show);
+                ((BaseAction)logEntry).showAction(attachment.getHolder(), show);
                 CubeEngine.getLog().warn("Could not redo!");
             }
         }

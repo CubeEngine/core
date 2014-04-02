@@ -23,10 +23,10 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
 
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.reflect.Section;
 
-public abstract class BlockActionType<ListenerType> extends ActionTypeBase<ListenerType>
+public abstract class BlockAction<ListenerType> extends BaseAction<ListenerType>
 {
     public BlockSection oldBlock;
     public BlockSection newBlock;

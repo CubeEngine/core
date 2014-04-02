@@ -19,21 +19,21 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
 
-import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player using SplashPotions
  */
-public class PotionSplash extends PlayerActionType<PlayerItemListener> // TODO potion item
+public class PotionSplash extends PlayerAction<PlayerItemListener> // TODO potion item
 {
     // return this.lm.getConfig(world).POTION_SPLASH_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return false; // TODO
     }
@@ -51,7 +51,7 @@ public class PotionSplash extends PlayerActionType<PlayerItemListener> // TODO p
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return USE;
     }

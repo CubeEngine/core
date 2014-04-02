@@ -18,23 +18,23 @@
 package de.cubeisland.engine.log.action.newaction.block.player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.BlockListener;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
 /**
  * Represents a player letting a tree or mushroom grow using bonemeal
  */
-public class PlayerGrow extends PlayerBlockActionType<BlockListener>
+public class PlayerGrow extends PlayerBlockAction<BlockListener>
 {
     // return this.lm.getConfig(world).block.grow.PLAYER_GROW_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerGrow && this.player.equals(((PlayerGrow)action).player)
             && ((PlayerGrow)action).oldBlock == this.oldBlock && ((PlayerGrow)action).newBlock == this.newBlock;
@@ -56,7 +56,7 @@ public class PlayerGrow extends PlayerBlockActionType<BlockListener>
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return BLOCK;
     }

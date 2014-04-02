@@ -18,22 +18,22 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player igniting TnT with a lighter
  */
-public class TntPrime extends PlayerBlockActionType<PlayerBlockInteractListener>
+public class TntPrime extends PlayerBlockAction<PlayerBlockInteractListener>
 {
     // return this.lm.getConfig(world).block.TNT_PRIME_enable;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return false;
     }
@@ -48,7 +48,7 @@ public class TntPrime extends PlayerBlockActionType<PlayerBlockInteractListener>
 
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return USE;
     }

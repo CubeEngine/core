@@ -45,7 +45,7 @@ import static de.cubeisland.engine.log.action.newaction.block.BlockListener.logF
 import static org.bukkit.Material.AIR;
 
 /**
- * A Listener for {@link ExplosionActionType}
+ * A Listener for {@link ExplosionAction}
  * <p>Events:
  * {@link EntityExplodeEvent}
  * <p>All Actions:
@@ -84,7 +84,7 @@ public class ExplodeListener extends LogListener
         }
 
         Player player = null;
-        Class<? extends ExplosionActionType> actionClazz;
+        Class<? extends ExplosionAction> actionClazz;
         if (entity instanceof Creeper)
         {
             actionClazz = CreeperExplode.class;
@@ -160,7 +160,7 @@ public class ExplodeListener extends LogListener
                 {
                     continue; // ignore upper door halves
                 }
-                ExplosionActionType action = this.newAction(actionClazz);
+                ExplosionAction action = this.newAction(actionClazz);
                 this.setAndLog(action, entity, block, player);
                 // TODO attached / falling / ignore blocks exploded
                 logAttachedBlocks(this, module.getCore().getEventManager(), block, action);
@@ -169,7 +169,7 @@ public class ExplodeListener extends LogListener
         }
     }
 
-    private void setAndLog(ExplosionActionType action, Entity entity, Block block, Player player)
+    private void setAndLog(ExplosionAction action, Entity entity, Block block, Player player)
     {
         action.setLocation(block.getLocation());
         action.setOldBlock(block.getState());

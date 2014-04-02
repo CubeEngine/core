@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.MoveItemListener;
 import de.cubeisland.engine.log.action.newaction.block.BlockListener;
@@ -43,12 +43,12 @@ import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.PlayerVeh
 import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemListener;
 import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerListener;
 
-public class ActionTypeManager
+public class ActionManager
 {
-    private final Map<String, ActionTypeCategory> categories = new HashMap<>();
+    private final Map<String, ActionCategory> categories = new HashMap<>();
     private final Log module;
 
-    public ActionTypeManager(Log module)
+    public ActionManager(Log module)
     {
         this.module = module;
         ActionTypeCompleter.manager = this;
@@ -76,10 +76,10 @@ public class ActionTypeManager
                 registerListener(new PlayerVehicleListener(module));
     }
 
-    public ActionTypeManager registerListener(LogListener listener)
+    public ActionManager registerListener(LogListener listener)
     {
         module.getCore().getEventManager().registerListener(module, listener);
-        for (Class<? extends ActionTypeBase> actionClass : listener.getActions())
+        for (Class<? extends BaseAction> actionClass : listener.getActions())
         {
 
         }

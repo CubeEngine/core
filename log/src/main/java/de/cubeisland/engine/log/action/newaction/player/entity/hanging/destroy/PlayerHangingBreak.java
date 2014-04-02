@@ -18,9 +18,9 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.player.entity.hanging.PlayerHangingActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.player.entity.hanging.PlayerHangingAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -30,10 +30,10 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  * {@link PlayerPaintingBreak}
  * {@link PlayerItemFrameBreak}
  */
-public class PlayerHangingBreak extends PlayerHangingActionType
+public class PlayerHangingBreak extends PlayerHangingAction
 {
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerPaintingBreak && this.player.equals(((PlayerPaintingBreak)action).player);
     }
@@ -47,15 +47,15 @@ public class PlayerHangingBreak extends PlayerHangingActionType
                                     this.player.name, count);
     }
 
-    public void setCause(ActionTypeBase action)
+    public void setCause(BaseAction action)
     {
         // TODO reference
     }
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
-        return ActionTypeCategory.ENTITY_HANGING;
+        return ActionCategory.ENTITY_HANGING;
     }
 
     @Override

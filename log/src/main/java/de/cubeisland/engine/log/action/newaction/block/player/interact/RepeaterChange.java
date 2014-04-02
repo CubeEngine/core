@@ -22,25 +22,25 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.material.Diode;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockActionType;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.USE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player changing the delay of a repeater
  */
-public class RepeaterChange extends PlayerBlockActionType<PlayerBlockInteractListener>
+public class RepeaterChange extends PlayerBlockAction<PlayerBlockInteractListener>
 {
     // return this.lm.getConfig(world).block.REPEATER_CHANGE_enable;
 
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
-        return action instanceof RepeaterChange && this.player.equals(((PlayerBlockActionType)action).player)
+        return action instanceof RepeaterChange && this.player.equals(((PlayerBlockAction)action).player)
             && TimeUnit.MINUTES.toMillis(2) > Math.abs(this.date.getTime() - action.date.getTime());
     }
 
@@ -65,7 +65,7 @@ public class RepeaterChange extends PlayerBlockActionType<PlayerBlockInteractLis
 
 
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return USE;
     }

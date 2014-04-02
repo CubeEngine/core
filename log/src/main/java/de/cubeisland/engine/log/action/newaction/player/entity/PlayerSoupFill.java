@@ -18,21 +18,21 @@
 package de.cubeisland.engine.log.action.newaction.player.entity;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionTypeCategory.ENTITY;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
 
 /**
  * Represents a player filling a bowl with mushroom-soup using a mooshroom
  */
-public class PlayerSoupFill extends PlayerEntityActionType
+public class PlayerSoupFill extends PlayerEntityAction
 {
     // return this.lm.getConfig(world).BOWL_FILL_SOUP;
 
     @Override
-    public boolean canAttach(ActionTypeBase action)
+    public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerSoupFill && this.player.equals(((PlayerSoupFill)action).player)
             && ((PlayerSoupFill)action).entity.type == this.entity.type;
@@ -46,7 +46,7 @@ public class PlayerSoupFill extends PlayerEntityActionType
                                     "{user} made {amount} soups using mooshrooms", this.player.name, count);
     }
     @Override
-    public ActionTypeCategory getCategory()
+    public ActionCategory getCategory()
     {
         return ENTITY;
     }

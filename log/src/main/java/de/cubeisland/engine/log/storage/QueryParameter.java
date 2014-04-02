@@ -31,8 +31,8 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.newaction.ActionTypeBase;
-import de.cubeisland.engine.log.action.newaction.block.BlockActionType.BlockSection;
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.BlockAction.BlockSection;
 
 public class QueryParameter implements Cloneable
 {
@@ -48,7 +48,7 @@ public class QueryParameter implements Cloneable
     Integer radius;
     Set<Location> singleBlockLocations;
     // The actions to look for
-    Map<Class<? extends ActionTypeBase>, Boolean> actions = new ConcurrentHashMap<>();
+    Map<Class<? extends BaseAction>, Boolean> actions = new ConcurrentHashMap<>();
     // Users
     Map<Long, Boolean> users = new ConcurrentHashMap<>();
     // Entity
@@ -127,21 +127,21 @@ public class QueryParameter implements Cloneable
         this.to_before = to;
     }
 
-    public void setActions(Set<Class<? extends ActionTypeBase>> actions, boolean include)
+    public void setActions(Set<Class<? extends BaseAction>> actions, boolean include)
     {
         this.actions.clear();
-        for (Class<? extends ActionTypeBase> action : actions)
+        for (Class<? extends BaseAction> action : actions)
         {
             this.actions.put(action, include);
         }
     }
 
-    public void includeAction(Class<? extends ActionTypeBase> action)
+    public void includeAction(Class<? extends BaseAction> action)
     {
         this.actions.put(action, true);
     }
 
-    public void excludeAction(Class<? extends ActionTypeBase> action)
+    public void excludeAction(Class<? extends BaseAction> action)
     {
         this.actions.put(action, false);
     }
@@ -315,7 +315,7 @@ public class QueryParameter implements Cloneable
         return false; // all excluded
     }
 
-    public boolean containsAction(Class<? extends ActionTypeBase> actionType)
+    public boolean containsAction(Class<? extends BaseAction> actionType)
     {
         Boolean set = this.actions.get(actionType);
         if (set == null)
