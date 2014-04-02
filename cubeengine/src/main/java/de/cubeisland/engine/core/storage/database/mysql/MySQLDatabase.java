@@ -168,7 +168,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         }
         catch (Exception e)
         {
-            this.core.getLog().warn("Could not execute structure update for the table {}", updater.getName(), e);
+            this.core.getLog().warn(e, "Could not execute structure update for the table {}", updater.getName());
         }
         return false;
     }

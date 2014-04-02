@@ -96,7 +96,7 @@ public class InviteManager
         {
             return invitedUsers;
         }
-        for (Record1<String> record1 : this.dsl.select(TABLE_USER.PLAYER).from(TABLE_USER)
+        for (Record1<String> record1 : this.dsl.select(TABLE_USER.LASTNAME).from(TABLE_USER)
                                                .where(TABLE_USER.KEY.in(keys)).fetch())
         {
             invitedUsers.add(record1.value1());

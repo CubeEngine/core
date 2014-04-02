@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:worlds:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:44+0200\n"
+"POT-Creation-Date: 2014-04-01 03:00:12+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -27,12 +27,6 @@ msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:71
 msgid "<name>"
-msgstr ""
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:80
-msgid ""
-"<name> {universe} [env <environement>] [seed <seed>] [type <type>] [struct "
-"<true|false>] [gen <generator>] [-recreate] [-noload]"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:461
@@ -59,10 +53,6 @@ msgstr ""
 msgid "<world> [-f]"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:188
-msgid "<world> {universe}"
-msgstr ""
-
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:71
 msgid "Creates a new universe"
 msgstr ""
@@ -71,16 +61,8 @@ msgstr ""
 msgid "Creates a new world"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:333
-msgid "Lists all worls"
-msgstr ""
-
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:368
 msgid "Lists the players in a world"
-msgstr ""
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:505
-msgid "Loads a players inventory etc. for his current world"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:188
@@ -93,10 +75,6 @@ msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:297
 msgid "Remove a world"
-msgstr ""
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:519
-msgid "Save a players inventory etc. for his current world"
 msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:394
@@ -336,4 +314,26 @@ msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:405
 msgid "{world} is now the main world of the universe {name}"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:333
+msgid "Lists all worlds"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:505
+msgid "Loads a player's state for their current world"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:519
+msgid "Save a player's state for their current world"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:80
+msgid ""
+"<name> (universe) [env <environement>] [seed <seed>] [type <type>] [struct "
+"<true|false>] [gen <generator>] [-recreate] [-noload]"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:188
+msgid "<world> (universe)"
 msgstr ""

@@ -128,10 +128,10 @@ public class BukkitUserManager extends AbstractUserManager
             if (foundUser == null)
             {
                 //Looking up saved users
-                UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
+                UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name)).fetchOne();
                 if (entity == null && searchDatabase) // Not found try matching
                 {
-                    entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.like("%"+ name + "%")).limit(1).fetchOne();
+                    entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.like("%"+ name + "%")).limit(1).fetchOne();
                 }
                 if (entity != null)
                 {

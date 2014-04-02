@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:hide:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:44+0200\n"
+"POT-Creation-Date: 2014-04-01 03:00:12+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -51,14 +51,6 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:82
 msgid "Unhides a player."
-msgstr ""
-
-#: de/cubeisland/engine/hide/HideCommands.java:47
-#: de/cubeisland/engine/hide/HideCommands.java:82
-#: de/cubeisland/engine/hide/HideCommands.java:117
-#: de/cubeisland/engine/hide/HideCommands.java:167
-#: de/cubeisland/engine/hide/HideCommands.java:203
-msgid "{player}"
 msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:270
@@ -195,4 +187,12 @@ msgstr ""
 
 #: de/cubeisland/engine/hide/HideCommands.java:101
 msgid "{user} is now visible!"
+msgstr ""
+
+#: de/cubeisland/engine/hide/HideCommands.java:47
+#: de/cubeisland/engine/hide/HideCommands.java:82
+#: de/cubeisland/engine/hide/HideCommands.java:117
+#: de/cubeisland/engine/hide/HideCommands.java:167
+#: de/cubeisland/engine/hide/HideCommands.java:203
+msgid "(player)"
 msgstr ""
