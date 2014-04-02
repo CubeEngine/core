@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a Player leaving the server
  */
-public class PlayerQuit extends PlayerAction<PlayerActionListener>
+public class PlayerQuit extends ActionPlayer<PlayerActionListener>
 {
     // return this.lm.getConfig(world).PLAYER_QUIT_enable;
 

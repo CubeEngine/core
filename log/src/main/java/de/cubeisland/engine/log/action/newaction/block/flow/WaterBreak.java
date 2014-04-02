@@ -26,7 +26,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents water breaking blocks
  */
-public class WaterBreak extends BlockFlowAction
+public class WaterBreak extends ActionFlow
 {
     // return this.lm.getConfig(world).block.breakFlow.WATER_BREAK_enable;
 

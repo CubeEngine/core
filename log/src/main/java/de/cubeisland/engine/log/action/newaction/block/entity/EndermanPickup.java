@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_ENDERMAN;
 /**
  * Represents an Enderman picking up a block
  */
-public class EndermanPickup extends EntityBlockAction<EntityBlockListener>
+public class EndermanPickup extends ActionEntityBlock<ListenerEntityBlock>
 {
     //return this.lm.getConfig(world).block.enderman.ENDERMAN_PICKUP_enable;
 

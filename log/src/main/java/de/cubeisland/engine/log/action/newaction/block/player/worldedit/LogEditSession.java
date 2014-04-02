@@ -79,7 +79,7 @@ public class LogEditSession extends EditSession
             boolean success = super.rawSetBlock(pt, block);
             if (success)
             {
-                WorldEditAction action = this.listener.newAction(WorldEditAction.class, world);
+                ActionWorldEdit action = this.listener.newAction(ActionWorldEdit.class, world);
                 if (action != null)
                 {
                     BlockState newState = world.getBlockAt(pt.getBlockX(), pt.getBlockY(), pt.getBlockZ()).getState();

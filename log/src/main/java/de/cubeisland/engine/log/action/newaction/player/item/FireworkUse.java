@@ -20,7 +20,7 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
+import de.cubeisland.engine.log.action.newaction.player.ActionPlayer;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.USE;
@@ -28,7 +28,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player launching a firework
  */
-public class FireworkUse extends PlayerAction<PlayerItemListener> // TODO item
+public class FireworkUse extends ActionPlayer<PlayerItemListener> // TODO item
 {
     // return this.lm.getConfig(world).FIREWORK_USE_enable;
 

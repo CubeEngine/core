@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block burning away
  */
-public class BlockBurn extends BlockAction<BlockListener>
+public class BlockBurn extends ActionBlock<ListenerBlock>
 {
     // return this.lm.getConfig(world).block.BLOCK_BURN_enable;
 

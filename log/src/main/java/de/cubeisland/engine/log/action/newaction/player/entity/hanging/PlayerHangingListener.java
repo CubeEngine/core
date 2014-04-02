@@ -39,7 +39,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
+import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
 import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerHangingBreak;
 import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerItemFrameBreak;
 import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerPaintingBreak;
@@ -89,7 +89,7 @@ public class PlayerHangingListener extends LogListener
             BaseAction cause = this.plannedHangingBreak.get(location);
             if (cause != null)
             {
-                if (cause instanceof PlayerBlockAction)
+                if (cause instanceof ActionPlayerBlock)
                 {
                     PlayerHangingBreak action;
                     if (hanging instanceof ItemFrame)
@@ -114,7 +114,7 @@ public class PlayerHangingListener extends LogListener
                     {
                         action.setLocation(location);
                         action.setHanging(hanging);
-                        action.player = ((PlayerBlockAction)cause).player;
+                        action.player = ((ActionPlayerBlock)cause).player;
                         action.setCause(cause);
                         this.logAction(action);
                     }

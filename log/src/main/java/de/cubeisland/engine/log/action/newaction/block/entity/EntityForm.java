@@ -28,15 +28,15 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
  * Represents an Entity forming a block
  * <p>This will usually be a SnowGolem making snow
  */
-public class EntityForm extends EntityBlockAction<EntityBlockListener>
+public class EntityForm extends ActionEntityBlock<ListenerEntityBlock>
 {
     // return this.lm.getConfig(world).block.form.ENTITY_FORM_enable;
 
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return action instanceof EntityBreakBlock && ((EntityBreakBlock)action).entity.type == this.entity.type
-            && ((EntityBreakBlock)action).newBlock == this.newBlock;
+        return action instanceof EntityBreak && ((EntityBreak)action).entity.type == this.entity.type
+            && ((EntityBreak)action).newBlock == this.newBlock;
     }
 
     @Override

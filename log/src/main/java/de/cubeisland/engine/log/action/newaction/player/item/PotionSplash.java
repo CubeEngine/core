@@ -21,14 +21,14 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
+import de.cubeisland.engine.log.action.newaction.player.ActionPlayer;
 
 import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player using SplashPotions
  */
-public class PotionSplash extends PlayerAction<PlayerItemListener> // TODO potion item
+public class PotionSplash extends ActionPlayer<PlayerItemListener> // TODO potion item
 {
     // return this.lm.getConfig(world).POTION_SPLASH_enable;
 

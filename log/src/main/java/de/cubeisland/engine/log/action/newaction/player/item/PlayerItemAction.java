@@ -19,9 +19,9 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
+import de.cubeisland.engine.log.action.newaction.player.ActionPlayer;
 
-public abstract class PlayerItemAction<ListenerType> extends PlayerAction<ListenerType>
+public abstract class PlayerItemAction<ListenerType> extends ActionPlayer<ListenerType>
 {
     public ItemStack item; // TODO item format
 

@@ -21,8 +21,6 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerLavaBucketPlace;
-import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerWaterBucketPlace;
 
 import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 import static org.bukkit.Material.AIR;
@@ -30,10 +28,10 @@ import static org.bukkit.Material.AIR;
 /**
  * Represents a player placing a block
  * <p>SubActions:
- * {@link PlayerLavaBucketPlace}
- * {@link PlayerWaterBucketPlace}
+ * {@link de.cubeisland.engine.log.action.newaction.block.player.bucket.BucketLava}
+ * {@link de.cubeisland.engine.log.action.newaction.block.player.bucket.BucketWater}
  */
-public class PlayerBlockPlace extends PlayerBlockAction<PlayerBlockListener>
+public class PlayerBlockPlace extends ActionPlayerBlock<ListenerPlayerBlock>
 {
     // return this.lm.getConfig(world).block.BLOCK_PLACE_enable;
 

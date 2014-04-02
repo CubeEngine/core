@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_SHEEP;
 /**
  * Represents a Sheep eating grass
  */
-public class SheepEat extends EntityBlockAction<EntityBlockListener>
+public class SheepEat extends ActionEntityBlock<ListenerEntityBlock>
 {
     // return this.lm.getConfig(world).block.SHEEP_EAT_enable;
 

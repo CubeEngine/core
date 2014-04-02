@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_ENDERMAN;
 /**
  * Represents an Enderman placing a block
  */
-public class EndermanPlace extends EntityBlockAction<EntityBlockListener>
+public class EndermanPlace extends ActionEntityBlock<ListenerEntityBlock>
 {
     // return this.lm.getConfig(world).block.enderman.ENDERMAN_PLACE_enable;
 

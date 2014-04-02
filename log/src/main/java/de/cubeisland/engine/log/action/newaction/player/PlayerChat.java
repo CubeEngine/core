@@ -29,7 +29,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a player chatting
  */
-public class PlayerChat extends PlayerAction<PlayerActionListener>
+public class PlayerChat extends ActionPlayer<PlayerActionListener>
 {
     // return this.lm.getConfig(world).PLAYER_CHAT_enable;
 

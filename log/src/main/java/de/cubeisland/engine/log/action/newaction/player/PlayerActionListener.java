@@ -43,14 +43,14 @@ import de.cubeisland.engine.log.Log;
  * {@link PlayerCommand}
  * {@link PlayerJoin}
  * {@link PlayerQuit}
- * {@link XpPickup}
+ * {@link PlayerXp}
  * {@link PlayerTeleport}
  */
 public class PlayerActionListener extends PlayerLogListener
 {
     public PlayerActionListener(Log module)
     {
-        super(module, PlayerChat.class, PlayerCommand.class, PlayerJoin.class, PlayerQuit.class, XpPickup.class, PlayerTeleport.class);
+        super(module, PlayerChat.class, PlayerCommand.class, PlayerJoin.class, PlayerQuit.class, PlayerXp.class, PlayerTeleport.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -116,7 +116,7 @@ public class PlayerActionListener extends PlayerLogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onExpPickup(PlayerExpChangeEvent event)
     {
-        XpPickup action = this.newAction(XpPickup.class, event.getPlayer().getWorld());
+        PlayerXp action = this.newAction(PlayerXp.class, event.getPlayer().getWorld());
         if (action != null)
         {
             this.setPlayerAndLocation(event.getPlayer(), action);

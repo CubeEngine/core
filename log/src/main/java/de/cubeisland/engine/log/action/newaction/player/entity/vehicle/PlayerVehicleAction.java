@@ -23,11 +23,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.log.action.ActionCategory;
-import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
+import de.cubeisland.engine.log.action.newaction.player.ActionPlayer;
 
 import static de.cubeisland.engine.log.action.ActionCategory.VEHICLE;
 
-public abstract class PlayerVehicleAction extends PlayerAction<PlayerVehicleListener>
+public abstract class PlayerVehicleAction extends ActionPlayer<PlayerVehicleListener>
 {
     public UUID vehicleUUID;
     public EntityType vehicleType;

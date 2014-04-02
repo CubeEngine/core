@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a player executing a command
  */
-public class PlayerCommand extends PlayerAction<PlayerActionListener>
+public class PlayerCommand extends ActionPlayer<PlayerActionListener>
 {
     // return this.lm.getConfig(world).PLAYER_COMMAND_enable;
 

@@ -26,7 +26,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents water flowing
  */
-public class WaterFlow extends BlockFlowAction
+public class WaterFlow extends ActionFlow
 {
     // return this.lm.getConfig(world).block.flow.WATER_FLOW_enable;
 

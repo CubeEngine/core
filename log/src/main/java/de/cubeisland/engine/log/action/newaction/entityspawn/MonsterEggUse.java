@@ -22,7 +22,7 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
+import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;

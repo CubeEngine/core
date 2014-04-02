@@ -29,7 +29,7 @@ import static org.bukkit.Material.PISTON_EXTENSION;
 /**
  * Represents blocks moved by pistons
  */
-public class BlockShift extends BlockAction<BlockListener>
+public class BlockShift extends ActionBlock<ListenerBlock>
 {
     // return this.lm.getConfig(world).block.BLOCK_SHIFT_enable;
 

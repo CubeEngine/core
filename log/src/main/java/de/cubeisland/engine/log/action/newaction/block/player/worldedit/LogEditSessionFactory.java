@@ -37,7 +37,7 @@ public class LogEditSessionFactory extends EditSessionFactory
     {
         this.module = module;
         this.oldFactory = oldFactory;
-        this.listener = new LogListener(module);
+        this.listener = new LogListener(module, ActionWorldEdit.class);
     }
 
     public static boolean initialize(Log module)
@@ -68,7 +68,7 @@ public class LogEditSessionFactory extends EditSessionFactory
 
     private boolean ignoreWorldEdit(LocalWorld world)
     {
-        return world instanceof BukkitWorld && !this.listener.isActive(WorldEditAction.class,
+        return world instanceof BukkitWorld && !this.listener.isActive(ActionWorldEdit.class,
                                                                        ((BukkitWorld)world).getWorld());
     }
 

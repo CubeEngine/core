@@ -22,21 +22,21 @@ import org.bukkit.entity.Entity;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
+import de.cubeisland.engine.log.action.newaction.block.entity.ActionEntityBlock.EntitySection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * Represents an Entity dying
  * <p>Sub Actions:
- * {@link BossDeath}
- * {@link PetDeath}
- * {@link AnimalDeath}
- * {@link NpcDeath}
- * {@link MonsterDeath}
- * {@link OtherDeath}
+ * {@link DeathBoss}
+ * {@link DeathPet}
+ * {@link DeathAnimal}
+ * {@link DeathNpc}
+ * {@link DeathMonster}
+ * {@link DeathOther}
  */
-public abstract class EntityDeathAction extends DeathAction
+public abstract class EntityDeathAction extends ActionDeath
 {
     public EntitySection killed;
 
@@ -44,14 +44,14 @@ public abstract class EntityDeathAction extends DeathAction
     public boolean canAttach(BaseAction action)
     {
         return action instanceof EntityDeathAction && this.killed.isSameType(((EntityDeathAction)action).killed)
-            && this.killer != null && ((DeathAction)action).killer != null && this.killer.fetch(
-            KillAction.class).canAttach(((DeathAction)action).killer.fetch(KillAction.class));
+            && this.killer != null && ((ActionDeath)action).killer != null && this.killer.fetch(
+            DeathKill.class).canAttach(((ActionDeath)action).killer.fetch(DeathKill.class));
     }
 
     @Override
     public String translateAction(User user)
     {
-        KillAction fetch = this.killer.fetch(KillAction.class);
+        DeathKill fetch = this.killer.fetch(DeathKill.class);
         if (fetch.isPlayerKiller())
         {
             if (this.hasAttached())

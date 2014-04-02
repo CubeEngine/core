@@ -19,10 +19,10 @@ package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 
 import org.bukkit.entity.Entity;
 
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction.EntitySection;
-import de.cubeisland.engine.log.action.newaction.player.PlayerAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.ActionEntityBlock.EntitySection;
+import de.cubeisland.engine.log.action.newaction.player.ActionPlayer;
 
-public abstract class PlayerHangingAction extends PlayerAction<PlayerHangingListener>
+public abstract class PlayerHangingAction extends ActionPlayer<PlayerHangingListener>
 {
     public EntitySection hanging;
 

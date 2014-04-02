@@ -24,17 +24,17 @@ import java.util.Set;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.ListenerItemMove;
 import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.MoveItemListener;
-import de.cubeisland.engine.log.action.newaction.block.BlockListener;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockListener;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ExplodeListener;
-import de.cubeisland.engine.log.action.newaction.block.flow.FlowListener;
-import de.cubeisland.engine.log.action.newaction.block.ignite.BlockIgniteListener;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
-import de.cubeisland.engine.log.action.newaction.block.player.bucket.PlayerBucketListener;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.PlayerBlockInteractListener;
-import de.cubeisland.engine.log.action.newaction.death.DeathListener;
+import de.cubeisland.engine.log.action.newaction.block.ListenerBlock;
+import de.cubeisland.engine.log.action.newaction.block.entity.ListenerEntityBlock;
+import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ListenerExplode;
+import de.cubeisland.engine.log.action.newaction.block.flow.ListenerFlow;
+import de.cubeisland.engine.log.action.newaction.block.ignite.ListenerBlockIgnite;
+import de.cubeisland.engine.log.action.newaction.block.player.ListenerPlayerBlock;
+import de.cubeisland.engine.log.action.newaction.block.player.bucket.ListenerBucket;
+import de.cubeisland.engine.log.action.newaction.block.player.interact.ListenerPlayerBlockInteract;
+import de.cubeisland.engine.log.action.newaction.death.ListenerDeath;
 import de.cubeisland.engine.log.action.newaction.entityspawn.EntitySpawnListener;
 import de.cubeisland.engine.log.action.newaction.player.PlayerActionListener;
 import de.cubeisland.engine.log.action.newaction.player.entity.PlayerEntityListener;
@@ -57,19 +57,19 @@ public class ActionManager
 
     public void registerLogActionTypes()
     {
-        this.registerListener(new BlockIgniteListener(module)).
-            registerListener(new BlockListener(module)).
+        this.registerListener(new ListenerBlockIgnite(module)).
+            registerListener(new ListenerBlock(module)).
                 registerListener(new ContainerListener(module)).
-                registerListener(new DeathListener(module)).
-                registerListener(new EntityBlockListener(module)).
+                registerListener(new ListenerDeath(module)).
+                registerListener(new ListenerEntityBlock(module)).
                 registerListener(new EntitySpawnListener(module)).
-                registerListener(new ExplodeListener(module)).
-                registerListener(new FlowListener(module)).
-                registerListener(new MoveItemListener(module)).
+                registerListener(new ListenerExplode(module)).
+                registerListener(new ListenerFlow(module)).
+                registerListener(new ListenerItemMove(module)).
                 registerListener(new PlayerActionListener(module)).
-                registerListener(new PlayerBlockInteractListener(module)).
-                registerListener(new PlayerBlockListener(module)).
-                registerListener(new PlayerBucketListener(module)).
+                registerListener(new ListenerPlayerBlockInteract(module)).
+                registerListener(new ListenerPlayerBlock(module)).
+                registerListener(new ListenerBucket(module)).
                 registerListener(new PlayerEntityListener(module)).
                 registerListener(new PlayerHangingListener(module)).
                 registerListener(new PlayerItemListener(module)).

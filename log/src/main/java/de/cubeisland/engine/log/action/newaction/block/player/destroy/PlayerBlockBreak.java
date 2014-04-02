@@ -21,8 +21,8 @@ import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockListener;
+import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
+import de.cubeisland.engine.log.action.newaction.block.player.ListenerPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
@@ -35,11 +35,11 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
  * {@link PlayerJukeboxBreak}
  * {@link PlayerContainerBreak}
  */
-public class PlayerBlockBreak extends PlayerBlockAction<PlayerBlockListener>
+public class PlayerBlockBreak extends ActionPlayerBlock<ListenerPlayerBlock>
 {
     // return this.lm.getConfig(world).block.BLOCK_BREAK_enable;
 
-    public Reference<PlayerBlockAction> reference; // TODO use in message
+    public Reference<ActionPlayerBlock> reference; // TODO use in message
 
     @Override
     public boolean canAttach(BaseAction action)

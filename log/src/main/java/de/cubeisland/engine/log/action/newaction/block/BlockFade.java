@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block fading away
  */
-public class BlockFade extends BlockAction<BlockListener>
+public class BlockFade extends ActionBlock<ListenerBlock>
 {
     // return this.lm.getConfig(world).block.fade.enable;
 

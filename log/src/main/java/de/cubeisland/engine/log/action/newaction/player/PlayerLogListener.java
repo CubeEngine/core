@@ -30,7 +30,7 @@ public abstract class PlayerLogListener extends LogListener
         super(module, actions);
     }
 
-    protected void setPlayerAndLocation(Player player, PlayerAction action)
+    protected void setPlayerAndLocation(Player player, ActionPlayer action)
     {
         action.setLocation(player.getLocation());
         action.setPlayer(player);

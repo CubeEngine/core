@@ -20,22 +20,22 @@ package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.log.action.ActionCategory;
-import de.cubeisland.engine.log.action.newaction.block.entity.EntityBlockAction;
-import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockAction.PlayerSection;
+import de.cubeisland.engine.log.action.newaction.block.entity.ActionEntityBlock;
+import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
 
 import static de.cubeisland.engine.log.action.ActionCategory.EXPLODE;
 
 /**
  * Represents an Entity exploding
  * <p>SubActions:
- * {@link CreeperExplode}
- * {@link TntExplode}
- * {@link WitherExplode}
- * {@link FireballExplode}
- * {@link EnderdragonExplode}
- * {@link EntityExplode}
+ * {@link ExplodeCreeper}
+ * {@link ExplodeTnt}
+ * {@link ExplodeWither}
+ * {@link ExplodeFireball}
+ * {@link ExplodeEnderdragon}
+ * {@link ExplodeEntity}
  */
-public abstract class ExplosionAction extends EntityBlockAction<ExplodeListener>
+public abstract class ExplosionAction extends ActionEntityBlock<ListenerExplode>
 {
     public PlayerSection player;
 

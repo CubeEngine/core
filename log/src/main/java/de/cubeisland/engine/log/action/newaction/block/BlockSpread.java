@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block spreading
  */
-public class BlockSpread extends BlockAction<BlockListener>
+public class BlockSpread extends ActionBlock<ListenerBlock>
 {
     // return this.lm.getConfig(world).block.spread.BLOCK_SPREAD_enable;
 

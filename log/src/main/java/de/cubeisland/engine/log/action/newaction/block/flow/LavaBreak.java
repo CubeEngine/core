@@ -26,7 +26,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents lava breaking blocks
  */
-public class LavaBreak extends BlockFlowAction
+public class LavaBreak extends ActionFlow
 {
     // return this.lm.getConfig(world).block.breakFlow.LAVA_BREAK_enable;
 

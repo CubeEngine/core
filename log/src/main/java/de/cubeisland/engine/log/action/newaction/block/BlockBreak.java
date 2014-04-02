@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block breaking
  */
-public class BlockBreak extends BlockAction<BlockListener>
+public class BlockBreak extends ActionBlock<ListenerBlock>
 {
     @Override
     public boolean canAttach(BaseAction action)

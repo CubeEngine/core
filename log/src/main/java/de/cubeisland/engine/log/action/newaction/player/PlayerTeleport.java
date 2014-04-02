@@ -29,7 +29,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a player teleport from one location to an other
  */
-public class PlayerTeleport extends PlayerAction<PlayerActionListener>
+public class PlayerTeleport extends ActionPlayer<PlayerActionListener>
 {
     // return this.lm.getConfig(world).PLAYER_TELEPORT_enable;
 

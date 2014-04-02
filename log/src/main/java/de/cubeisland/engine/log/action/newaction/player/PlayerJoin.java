@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a Player joining the server
  */
-public class PlayerJoin extends PlayerAction<PlayerActionListener>
+public class PlayerJoin extends ActionPlayer<PlayerActionListener>
 {
     // return this.lm.getConfig(world).PLAYER_JOIN_enable;
 

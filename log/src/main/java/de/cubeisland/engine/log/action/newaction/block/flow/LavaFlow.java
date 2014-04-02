@@ -26,7 +26,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 /**
  * Represents lava flowing
  */
-public class LavaFlow extends BlockFlowAction
+public class LavaFlow extends ActionFlow
 {
     // return this.lm.getConfig(world).block.flow.LAVA_FLOW_enable;
 

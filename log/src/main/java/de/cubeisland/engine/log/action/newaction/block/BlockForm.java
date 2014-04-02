@@ -27,7 +27,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block forming
  */
-public class BlockForm extends BlockAction<BlockListener>
+public class BlockForm extends ActionBlock<ListenerBlock>
 {
     // return this.lm.getConfig(world).block.form.BLOCK_FORM_enable;
 
