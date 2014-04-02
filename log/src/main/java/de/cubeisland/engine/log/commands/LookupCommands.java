@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log.commands;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Material;
@@ -256,7 +257,7 @@ public class LookupCommands
                 return true;
             }
             long before = StringUtils.convertTimeToMillis(beforeString);
-            params.before(System.currentTimeMillis() - before);
+            params.before(new Date(System.currentTimeMillis() - before));
             return true;
         }
         catch (TimeConversionException e)
@@ -273,11 +274,11 @@ public class LookupCommands
             if (sinceString != null)
             { // TODO date too
                 long since = StringUtils.convertTimeToMillis(sinceString);
-                params.since(System.currentTimeMillis() - since);
+                params.since(new Date(System.currentTimeMillis() - since));
             }
             else
             {
-                params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); // defaulted to last 30 days
+                params.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30))); // defaulted to last 30 days
             }
             return true;
         }
@@ -459,11 +460,11 @@ public class LookupCommands
             }
             if (negate)
             {
-                params.excludeUser(user.getId());
+                params.excludeUser(user.getUniqueId());
             }
             else
             {
-                params.includeUser(user.getId());
+                params.includeUser(user.getUniqueId());
             }
         }
         return true;

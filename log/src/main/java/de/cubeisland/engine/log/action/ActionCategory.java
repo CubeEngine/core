@@ -36,28 +36,19 @@ public class ActionCategory
     public static final ActionCategory ENTITY_HANGING = new ActionCategory("hanging");
     public static final ActionCategory PLAYER = new ActionCategory("player");
 
+// TODO Container Category
 
     public static final ActionCategory ALL = new ActionCategory("all");
-
-
-
     public static final ActionCategory INVENTORY = new ActionCategory("inventory");
-
     public static final ActionCategory BLOCK_ENTITY = new ActionCategory("block-entity");
     public static final ActionCategory ENVIRONEMENT = new ActionCategory("environement");
     public static final ActionCategory KILL = new ActionCategory("kill");
-
     public static final ActionCategory FLOW = new ActionCategory("flow");
-
     public static final ActionCategory FIRE = new ActionCategory("fire");
-
     public static final ActionCategory BUCKET_EMPTY = new ActionCategory("bucket-empty");
     public static final ActionCategory VEHICLE = new ActionCategory("vehicle");
 
-
-
     public final String name;
-
     private ActionCategory(String name)
     {
         this.name = name;

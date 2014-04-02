@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -47,7 +48,6 @@ import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.ActionBlock.BlockSection;
-import org.jooq.Condition;
 import org.jooq.types.UInteger;
 
 public class QueryManager
@@ -626,7 +626,6 @@ public class QueryManager
         if (params.world != null) // has world
         {
             query.append("coord.world-uuid", params.world.getUID().toString());
-            //conditions.add(CURRENT_TABLE.WORLD.eq(UInteger.valueOf(params.worldID)));
             if (params.location1 != null)
             {
                 BlockVector3 loc1 = params.location1;
@@ -651,105 +650,109 @@ public class QueryManager
                 {
                     query.append("coord.vector.x", new BasicDBObject("$gte", loc1.x - params.radius).append("$lte", loc1.x + params.radius)).
                           append("coord.vector.y", new BasicDBObject("$gte", loc1.y - params.radius).append("$lte", loc1.y + params.radius)).
-                          append("coord.vector.z", new BasicDBObject("$gte", loc1.z - params.radius).append("$lte",
-                                                                                                            loc1.z
-                                                                                                                + params.radius));
+                          append("coord.vector.z", new BasicDBObject("$gte", loc1.z - params.radius).append("$lte", loc1.z + params.radius));
                 }
             }
         }
-
         if (!params.actions.isEmpty())
         {
             boolean include = params.includeActions();
-            Collection<UInteger> actions = new HashSet<>();
+            Collection<String> actions = new HashSet<>();
             for (Entry<Class<? extends BaseAction>, Boolean> entry : params.actions.entrySet())
             {
                 if (!include || entry.getValue())
                 {
-                  //  actions.add(entry.getKey().getModel().getId());
+                    actions.add(entry.getKey().getName());
                 }
             }
             if (!include)
             {
-                //conditions.add(CURRENT_TABLE.ACTION.notIn(actions));
+                query.append("action", new BasicDBObject("$nin", actions));
             }
             else
             {
-                //conditions.add(CURRENT_TABLE.ACTION.in(actions));
+                query.append("action", new BasicDBObject("$in", actions));
             }
         }
         if (params.hasTime()) // has since / before / from-to
         {
             if (params.from_since == null) // before
             {
-                //conditions.add(CURRENT_TABLE.DATE.le(new Timestamp(params.to_before)));
+                query.append("date", new BasicDBObject("$lte", params.to_before));
             }
             else if (params.to_before == null) // since
             {
-                //conditions.add(CURRENT_TABLE.DATE.greaterThan(new Timestamp(params.from_since)));
+                query.append("date", new BasicDBObject("$gte", params.from_since));
             }
             else // from - to
             {
-                //conditions.add(CURRENT_TABLE.DATE.between(new Timestamp(params.from_since), new Timestamp(params.to_before)));
+                query.append("date", new BasicDBObject("$gte", params.from_since).append("$lte", params.to_before));
             }
         }
 
         if (!params.blocks.isEmpty())
         {
-            // make sure there is data for blocks first
-            // conditions.add(CURRENT_TABLE.BLOCK.isNotNull().or(CURRENT_TABLE.DATA.isNotNull()).or(CURRENT_TABLE.NEWBLOCK.isNotNull()).or(CURRENT_TABLE.NEWDATA.isNotNull()));
             // Start filter blocks:
             boolean include = params.includeBlocks();
-            Condition blockCondition = null;
+            List<DBObject> list = new ArrayList<>();
+            List<String> mList = new ArrayList<>();
+
             for (Entry<BlockSection, Boolean> data : params.blocks.entrySet())
             {
                 if (!include || data.getValue()) // all exclude OR only include
                 {
-                    String mat = data.getKey().material.name();
-                    // Condition condition = CURRENT_TABLE.BLOCK.eq(mat).or(CURRENT_TABLE.NEWBLOCK.eq(mat));
-                    Byte metadata = data.getKey().data;
-                    if (metadata != null)
+                    BlockSection block = data.getKey();
+                    if (block.data == null)
                     {
-                        //    condition = condition.and(CURRENT_TABLE.DATA.eq(metadata.longValue()).or(CURRENT_TABLE.NEWDATA.eq(metadata)));
-                    }
-                    if (!include)
-                    {
-                        //condition = condition.not();
-                    }
-                    if (blockCondition == null)
-                    {
-                        //blockCondition = condition;
+                        mList.add(block.material.name());
                     }
                     else
                     {
-                        //  blockCondition = blockCondition.or(condition);
+                        list.add(new BasicDBObject("material", block.material.name()).append("data", block.data));
                     }
                 }
             }
-            if (blockCondition != null)
+            List<BasicDBObject> blockQuery = new ArrayList<>();
+            if (!list.isEmpty())
             {
-                //conditions.add(blockCondition);
+                BasicDBObject dboL = new BasicDBObject("$in", list);
+                blockQuery.add(new BasicDBObject("old-block", dboL));
+                blockQuery.add(new BasicDBObject("new-block", dboL));
+            }
+            if (!mList.isEmpty())
+            {
+                BasicDBObject dboML = new BasicDBObject("$in", mList);
+                blockQuery.add(new BasicDBObject("old-block.material", dboML));
+                blockQuery.add(new BasicDBObject("new-block.material", dboML));
+            }
+            if (include)
+            {
+                query.append("$or", blockQuery);
+            }
+            else
+            {
+                query.append("$not", new BasicDBObject("$or", blockQuery));
             }
         }
         if (!params.users.isEmpty())
         {
             // Start filter users:
             boolean include = params.includeUsers();
-            Collection<Long> users = new HashSet<>();
-            for (Entry<Long, Boolean> data : params.users.entrySet())
+            List<String> players = new ArrayList<>();
+            for (Entry<UUID, Boolean> data : params.users.entrySet())
             {
                 if (!include || data.getValue()) // all exclude OR only include
                 {
-                    users.add(data.getKey());
+                    players.add(data.getKey().toString());
                 }
             }
             if (include)
             {
-                //    conditions.add(CURRENT_TABLE.CAUSER.in(users));
+                query.append("$in", players);
             }
             else
             {
-                //   conditions.add(CURRENT_TABLE.CAUSER.notIn(users));
+                query.append("$nin", players);
             }
         }
         // TODO finish queryParams

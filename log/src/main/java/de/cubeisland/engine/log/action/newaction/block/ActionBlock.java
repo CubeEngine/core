@@ -54,7 +54,7 @@ public abstract class ActionBlock<ListenerType> extends BaseAction<ListenerType>
     public static class BlockSection implements Section
     {
         public Material material;
-        public byte data;
+        public Byte data;
 
         public BlockSection()
         {

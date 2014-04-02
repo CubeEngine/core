@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.storage;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -39,8 +41,8 @@ public class QueryParameter implements Cloneable
     private final Log module;
 
     // When (since/before/from-to)
-    volatile Long from_since;
-    volatile Long to_before;
+    volatile Date from_since;
+    volatile Date to_before;
     // Where (in world / at location1 / in between location1 and location2)
     volatile World world;
     volatile BlockVector3 location1;
@@ -50,7 +52,7 @@ public class QueryParameter implements Cloneable
     // The actions to look for
     Map<Class<? extends BaseAction>, Boolean> actions = new ConcurrentHashMap<>();
     // Users
-    Map<Long, Boolean> users = new ConcurrentHashMap<>();
+    Map<UUID, Boolean> users = new ConcurrentHashMap<>();
     // Entity
     Map<Integer, Boolean> entities = new ConcurrentHashMap<>();
     // Blocks
@@ -109,19 +111,19 @@ public class QueryParameter implements Cloneable
         this.radius = radius;
     }
 
-    public void since(long date)
+    public void since(Date date)
     {
         this.from_since = date;
         this.to_before = null;
     }
 
-    public void before(long date)
+    public void before(Date date)
     {
         this.from_since = null;
         this.to_before = date;
     }
 
-    public void range(long from, long to)
+    public void range(Date from, Date to)
     {
         this.from_since = from;
         this.to_before = to;
@@ -151,21 +153,21 @@ public class QueryParameter implements Cloneable
         this.actions.clear();
     }
 
-    public void setUsers(Set<Long> users, boolean include)
+    public void setUsers(Set<UUID> users, boolean include)
     {
         this.users.clear();
-        for (Long user : users)
+        for (UUID user : users)
         {
             this.users.put(user, include);
         }
     }
 
-    public void includeUser(Long userId)
+    public void includeUser(UUID userId)
     {
         this.users.put(userId, true);
     }
 
-    public void excludeUser(Long userId)
+    public void excludeUser(UUID userId)
     {
         this.users.put(userId, false);
     }

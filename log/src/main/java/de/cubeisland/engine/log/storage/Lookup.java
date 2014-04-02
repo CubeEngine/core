@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log.storage;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +46,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         lookup.queryParameter.setActions(new HashSet<Class<? extends BaseAction>>(), false); // exclude none
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -57,7 +58,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         // TODO lookup.queryParameter.setActions(ActionTypeCategory.INVENTORY.getActionTypes(), true); // include inv
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -69,7 +70,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         // TODO lookup.queryParameter.setActions(ActionTypeCategory.KILL.getActionTypes(), true); // include kills
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -81,7 +82,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         // TODO lookup.queryParameter.setActions(ActionTypeCategory.PLAYER.getActionTypes(), true); // include player
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -93,7 +94,7 @@ public class Lookup implements Cloneable
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
         // TODO lookup.queryParameter.setActions(ActionTypeCategory.BLOCK.getActionTypes(), true); // include block
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
