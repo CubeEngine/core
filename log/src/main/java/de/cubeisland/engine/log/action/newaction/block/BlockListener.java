@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.log.action.newaction.block;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -85,8 +85,8 @@ import static org.bukkit.block.BlockFace.UP;
 public class BlockListener extends LogListener
 {
     private static final PistonExtensionMaterial PISTON_HEAD = new PistonExtensionMaterial(PISTON_EXTENSION);
-    private final Map<Location, BlockActionType> plannedFall = new ConcurrentHashMap<>();
-    private final Map<Location, BlockActionType> plannedPyhsics = new ConcurrentHashMap<>();
+    private final Map<Location, BlockActionType> plannedFall = new HashMap<>();
+    private final Map<Location, BlockActionType> plannedPyhsics = new HashMap<>();
     private volatile boolean clearPlanned = false;
 
     public BlockListener(Log module)
