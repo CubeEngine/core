@@ -27,6 +27,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
 
 /**
@@ -67,10 +68,11 @@ public class ListenerItemMove extends LogListener
         ItemMove action = this.newAction(ItemMove.class, targetLocation.getWorld());
         if (action != null)
         {
-            /* TODO
-            if (this.lm.getConfig(targetLocation.getWorld()).container.ITEM_TRANSFER_ignore
-                .contains(event.getItem().getType()))
-            */
+            LoggingConfiguration config = this.getConfig(targetLocation.getWorld());
+            if (config.container.moveIgnore.contains(event.getItem().getType()))
+            {
+                return;
+            }
             action.item = event.getItem();
             action.setLocation(sourceLocation);
             action.direction = sourceLocation.getBlock().getFace(targetLocation.getBlock());

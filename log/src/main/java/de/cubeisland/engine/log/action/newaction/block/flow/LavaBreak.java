@@ -32,14 +32,16 @@ public class LavaBreak extends ActionFlow
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return false;
+        return action instanceof LavaBreak
+            && this.oldBlock.material == ((LavaBreak)action).oldBlock.material;
     }
 
     @Override
     public String translateAction(User user)
     {
-        // TODO plurals
-        return user.getTranslation(POSITIVE, "{name#block} got destroyed by lava!", this.oldBlock.name());
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count, "{name#block} got destroyed by lava!",
+                                    "{1:amount} {name#block} got destroyed by lava", this.oldBlock.name(), count);
     }
 
     @Override

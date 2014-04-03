@@ -159,7 +159,10 @@ public class ListenerBlock extends LogListener
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event)
     {
-        // TODO if (!this.lm.getConfig(event.getBlock().getWorld()).block.fade.ignore.contains(event.getBlock().getType()))
+        if (this.getConfig(event.getBlock().getWorld()).block.fade.ignore.contains(event.getBlock().getType()))
+        {
+            return;
+        }
         this.setAndLog(BlockFade.class, event.getBlock().getState(), AIR);
     }
 
@@ -170,7 +173,6 @@ public class ListenerBlock extends LogListener
         {
             return;
         }
-        // TODO block.form.BLOCK_FORM_ignore
         this.setAndLog(BlockForm.class, event.getBlock().getState(), event.getNewState());
     }
 
@@ -198,7 +200,7 @@ public class ListenerBlock extends LogListener
             {
                 for (BlockState newState : event.getBlocks())
                 {
-                    BlockState oldState = newState.getBlock().getState();  // TODO is this working?
+                    BlockState oldState = newState.getBlock().getState();
                     if (oldState.getData().equals(newState.getData()))
                     {
                         continue;
@@ -213,7 +215,7 @@ public class ListenerBlock extends LogListener
             {
                 for (BlockState newState : event.getBlocks())
                 {
-                    BlockState oldState = newState.getBlock().getState();  // TODO is this working?
+                    BlockState oldState = newState.getBlock().getState();
                     if (oldState.getData().equals(newState.getData()))
                     {
                         continue;
@@ -371,7 +373,7 @@ public class ListenerBlock extends LogListener
         if (!blockAttachedTo.getType().isSolid())
         {
             Location loc = oldState.getLocation();
-            ActionBlock cause = this.plannedPyhsics.remove(loc); // TODO instanceof
+            ActionBlock cause = this.plannedPyhsics.remove(loc);
             oldState = adjustBlockForDoubleBlocks(oldState);
             if (cause instanceof ActionPlayerBlock)
             {

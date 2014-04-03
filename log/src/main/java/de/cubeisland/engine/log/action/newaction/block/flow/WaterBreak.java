@@ -32,14 +32,16 @@ public class WaterBreak extends ActionFlow
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return false;
+        return action instanceof WaterBreak
+            && this.oldBlock.material == ((WaterBreak)action).oldBlock.material;
     }
 
     @Override
     public String translateAction(User user)
     {
-        // TODO plurals
-        return user.getTranslation(POSITIVE, "{name#block} got flushed away by water!", this.oldBlock.name());
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count, "{name#block} got flushed away by water!",
+                                    "{1:amount} {name#block} got flushed away by water", this.oldBlock.name(), count);
     }
 
 

@@ -111,7 +111,7 @@ public class LogListener implements Listener
 
     public final boolean isActive(Class<? extends BaseAction> clazz, World world)
     {
-        LoggingConfiguration config = this.module.getLogManager().getConfig(world);
+        LoggingConfiguration config = this.getConfig(world);
         this.module.getActionManager().isActive(clazz, config);
         return true;
     }
@@ -124,5 +124,10 @@ public class LogListener implements Listener
         }
         DBCollection collection = module.getLogManager().getCollection();
         return new Reference<>(module.getCore().getConfigFactory(), collection, action.getTarget());
+    }
+
+    public LoggingConfiguration getConfig(World world)
+    {
+        return this.module.getLogManager().getConfig(world);
     }
 }

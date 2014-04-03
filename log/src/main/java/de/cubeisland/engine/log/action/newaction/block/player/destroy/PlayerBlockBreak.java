@@ -38,24 +38,32 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
  */
 public class PlayerBlockBreak extends ActionPlayerBlock<ListenerPlayerBlock>
 {
-    public Reference<ActionPlayerBlock> reference; // TODO use in message
+    public Reference<ActionPlayerBlock> reference;
 
     @Override
     public boolean canAttach(BaseAction action)
     {
         return action instanceof PlayerBlockBreak && this.player.equals(((PlayerBlockBreak)action).player)
-            && ((PlayerBlockBreak)action).oldBlock.material == this.oldBlock.material;
+            && ((PlayerBlockBreak)action).oldBlock.material == this.oldBlock.material
+            && ((this.reference == null && ((PlayerBlockBreak)action).reference == null) ||
+            (this.reference != null && this.reference.equals(((PlayerBlockBreak)action).reference)));
     }
 
     @Override
     public String translateAction(User user)
     {
-        if (this.hasAttached())
+        int count = this.countAttached();
+        if (this.reference == null)
         {
-            return user.getTranslation(POSITIVE, "{user} broke {name#block} x{amount}", this.player.name,
-                                       this.oldBlock.name(), this.countAttached());
+            return user.getTranslationN(POSITIVE, count,"{user} broke {name#block}",
+                                        "{user} broke {name#block} x{amount}", this.player.name, this.oldBlock.name(),
+                                        count);
         }
-        return user.getTranslation(POSITIVE, "{user} broke {name#block}", this.player.name, this.oldBlock.name());
+        // TODO better
+        return user.getTranslationN(POSITIVE, count,
+                                    "{user} broke {name#block} indirectly",
+                                    "{user} broke {name#block} x{amount} indirectly",
+                                    this.player.name, this.oldBlock.name(), count);
     }
 
     @Override

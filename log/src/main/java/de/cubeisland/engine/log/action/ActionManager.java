@@ -94,7 +94,9 @@ public class ActionManager
         {
             try
             {
-                this.actions.put(actionClass, actionClass.newInstance());
+                BaseAction action = actionClass.newInstance();
+                this.actions.put(actionClass, action);
+                action.getCategory().addAction(actionClass);
             }
             catch (ReflectiveOperationException e)
             {

@@ -17,6 +17,11 @@
  */
 package de.cubeisland.engine.log.action;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+
 public class ActionCategory
 {
     public static final ActionCategory EXPLODE = new ActionCategory("explode");
@@ -53,4 +58,15 @@ public class ActionCategory
         this.name = name;
     }
 
+    private Set<Class<? extends BaseAction>> actions = new HashSet<>();
+
+    public void addAction(Class<? extends BaseAction> action)
+    {
+        this.actions.add(action);
+    }
+
+    public Set<Class<? extends BaseAction>> getActions()
+    {
+        return actions;
+    }
 }

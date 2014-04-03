@@ -57,7 +57,7 @@ public class LoggingConfiguration extends ReflectedYaml
         {
             public boolean enable = false;
             @Comment("The blocks not to log when fading away (ICE, SNOW, GRASS)")
-            public Set<Material> IGNORELIST = new LinkedHashSet<>();
+            public Set<Material> ignore = new LinkedHashSet<>();
         }
 
         public boolean placeByEnderman = true;
@@ -169,7 +169,7 @@ public class LoggingConfiguration extends ReflectedYaml
 
         // TODO
         @Comment("Items to ignore when moved by a hopper or dropper")
-        public Set<Material> ITEM_TRANSFER_ignore = new LinkedHashSet<Material>()
+        public Set<Material> moveIgnore = new LinkedHashSet<Material>()
         {
             {
                 this.add(Material.EGG);

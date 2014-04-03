@@ -36,7 +36,7 @@ import de.cubeisland.engine.reflect.Section;
  * {@link EndermanPickup}
  * {@link EndermanPlace}
  * {@link EntityChange}
- * {@link EntityBreak} // TODO other events?
+ * {@link EntityBreak}
  * {@link EntityForm}
  */
 public abstract class ActionEntityBlock<ListenerType> extends ActionBlock<ListenerType>

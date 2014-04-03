@@ -54,7 +54,6 @@ public class ListenerFlow extends LogListener
               LavaWaterForm.class);
     }
 
-    // TODO TESTING
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockFromTo(final BlockFromToEvent event)
     {

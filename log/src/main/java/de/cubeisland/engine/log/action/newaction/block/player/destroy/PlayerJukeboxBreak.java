@@ -28,7 +28,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerJukeboxBreak extends PlayerBlockBreak
 {
-    private Material disc; // TODO item format
+    private Material disc;
 
     @Override
     public String translateAction(User user)
