@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.block.player;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class SignChange extends ActionPlayerBlock<ListenerPlayerBlock>
 {
-    // return this.lm.getConfig(world).block.SIGN_CHANGE_enable;
-
     public String[] oldLines;
     public String[] newLines;
 
@@ -76,5 +75,11 @@ public class SignChange extends ActionPlayerBlock<ListenerPlayerBlock>
     public String getName()
     {
         return "change";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.signChange;
     }
 }

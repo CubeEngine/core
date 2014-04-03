@@ -24,6 +24,7 @@ import org.bukkit.block.NoteBlock;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -35,8 +36,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
  */
 public class UseNoteblock extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
-    // return this.lm.getConfig(world).block.NOTEBLOCK_CHANGE_enable;
-
     public byte note;
 
     @Override
@@ -84,5 +83,11 @@ public class UseNoteblock extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public String getName()
     {
         return "noteblock";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.noteblock;
     }
 }

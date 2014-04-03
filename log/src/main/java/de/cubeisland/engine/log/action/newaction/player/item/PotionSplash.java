@@ -19,6 +19,7 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.player.ActionPlayer;
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
  */
 public class PotionSplash extends ActionPlayer<PlayerItemListener> // TODO potion item
 {
-    // return this.lm.getConfig(world).POTION_SPLASH_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -60,5 +59,11 @@ public class PotionSplash extends ActionPlayer<PlayerItemListener> // TODO potio
     public String getName()
     {
         return "splashpotion";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.splashpotion;
     }
 }

@@ -22,7 +22,6 @@ public class ActionCategory
     public static final ActionCategory EXPLODE = new ActionCategory("explode");
     public static final ActionCategory ENTITY_ENDERMAN = new ActionCategory("enderman");
     public static final ActionCategory ENTITY = new ActionCategory("entity");
-    public static final ActionCategory ENTITY_SHEEP = new ActionCategory("sheep");
     public static final ActionCategory LAVA = new ActionCategory("lava");
     public static final ActionCategory WATER = new ActionCategory("water");
     public static final ActionCategory IGNITE = new ActionCategory("ignite");

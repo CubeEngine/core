@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_HANGING;
  */
 public class PlayerHangingPlace extends PlayerHangingAction
 {
-    // return this.lm.getConfig(world).HANGING_PLACE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -57,5 +56,11 @@ public class PlayerHangingPlace extends PlayerHangingAction
     public String getName()
     {
         return "place";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.hanging.place;
     }
 }

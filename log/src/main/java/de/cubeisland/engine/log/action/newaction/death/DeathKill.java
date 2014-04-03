@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.entity.ActionEntityBlock.EntitySection;
@@ -108,5 +109,11 @@ public class DeathKill extends BaseAction<ListenerDeath>
     public String getName()
     {
         return "kill";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.death.killer.enable;
     }
 }

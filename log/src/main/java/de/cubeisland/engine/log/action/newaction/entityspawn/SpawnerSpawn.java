@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.entityspawn;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
  */
 public class SpawnerSpawn extends EntityAction<EntitySpawnListener>
 {
-    //return this.lm.getConfig(world).SPAWNER_SPAWN_enable;
-
     // TODO spawner location && when lookup on spawner show spawned count
 
     @Override
@@ -57,5 +56,11 @@ public class SpawnerSpawn extends EntityAction<EntitySpawnListener>
     public String getName()
     {
         return "spawner";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.spawn.spawner;
     }
 }

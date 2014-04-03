@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -31,8 +32,6 @@ import static org.bukkit.Material.SOIL;
  */
 public class BlockTrample extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
-    // return this.lm.getConfig(world).block.CROP_TRAMPLE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -69,5 +68,11 @@ public class BlockTrample extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public String getName()
     {
         return "trample";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.trample;
     }
 }

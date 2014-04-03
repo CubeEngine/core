@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.bucket.ListenerBucket;
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.BUCKET;
  */
 public class BucketMilk extends ActionPlayer<ListenerBucket>
 {
-    // return this.lm.getConfig(world).BUCKET_FILL_milk;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -56,5 +55,11 @@ public class BucketMilk extends ActionPlayer<ListenerBucket>
     public String getName()
     {
         return "milk";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.bucket.milk;
     }
 }

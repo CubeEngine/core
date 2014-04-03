@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.ListenerBlock;
@@ -31,8 +32,6 @@ import static org.bukkit.Material.AIR;
  */
 public class PlayerBlockGrow extends ActionPlayerBlock<ListenerBlock>
 {
-    // return this.lm.getConfig(world).block.grow.PLAYER_GROW_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -66,5 +65,11 @@ public class PlayerBlockGrow extends ActionPlayerBlock<ListenerBlock>
     public String getName()
     {
         return "grow";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.growByPlayer;
     }
 }

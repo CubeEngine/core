@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.worldedit;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -31,8 +32,6 @@ import static org.bukkit.Material.AIR;
  */
 public class ActionWorldEdit extends ActionPlayerBlock<LogEditSession>
 {
-    // return this.lm.getConfig(world).block.WORLDEDIT_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -76,5 +75,11 @@ public class ActionWorldEdit extends ActionPlayerBlock<LogEditSession>
     public String getName()
     {
         return "worldedit";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.worldedit;
     }
 }

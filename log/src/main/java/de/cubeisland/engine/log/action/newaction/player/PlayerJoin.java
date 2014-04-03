@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
  */
 public class PlayerJoin extends ActionPlayer<PlayerActionListener>
 {
-    // return this.lm.getConfig(world).PLAYER_JOIN_enable;
-
     public String ip;
 
     @Override
@@ -66,5 +65,11 @@ public class PlayerJoin extends ActionPlayer<PlayerActionListener>
     public String getName()
     {
         return "join";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.player.join_enable;
     }
 }

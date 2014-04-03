@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.player.item;
 import org.bukkit.entity.Item;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.entity.ActionEntityBlock.EntitySection;
@@ -32,8 +33,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
  */
 public class PlayerItemPickup extends PlayerItemAction<PlayerItemListener>
 {
-    // return this.lm.getConfig(world).ITEM_PICKUP_enable;
-
     public EntitySection entity;
 
     @Override
@@ -98,5 +97,11 @@ public class PlayerItemPickup extends PlayerItemAction<PlayerItemListener>
     public String getName()
     {
         return "pickup";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.item.pickup;
     }
 }

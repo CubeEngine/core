@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.block.ignite;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class IgniteLava extends ActionBlockIgnite
 {
-    // return this.lm.getConfig(world).block.ignite.LAVA_IGNITE_enable;
-
     public Coordinate source;
 
     @Override
@@ -55,5 +54,11 @@ public class IgniteLava extends ActionBlockIgnite
     public String getName()
     {
         return "lava";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.ignite.lava;
     }
 }

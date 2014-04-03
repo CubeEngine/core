@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemDrop;
@@ -68,5 +69,11 @@ public class DeathDrop extends BaseAction<ListenerDeath>
     public String getName()
     {
         return "drop";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.item.drop_onEntityDeath;
     }
 }

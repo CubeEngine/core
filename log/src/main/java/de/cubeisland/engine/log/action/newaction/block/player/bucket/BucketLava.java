@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockPlace;
 
@@ -53,5 +54,11 @@ public class BucketLava extends PlayerBlockPlace
     public String getName()
     {
         return "lava";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.bucket.lava;
     }
 }

@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 import org.bukkit.material.Cake;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -31,8 +32,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class UseCake extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
-    // return this.lm.getConfig(world).block.CAKE_EAT_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -63,5 +62,11 @@ public class UseCake extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public String getName()
     {
         return "cake";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.cake;
     }
 }

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
  */
 public class BlockSpread extends ActionBlock<ListenerBlock>
 {
-    // return this.lm.getConfig(world).block.spread.BLOCK_SPREAD_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -55,5 +54,11 @@ public class BlockSpread extends ActionBlock<ListenerBlock>
     public String getName()
     {
         return "spread";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.spreadByNature;
     }
 }

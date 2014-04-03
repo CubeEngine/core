@@ -17,17 +17,23 @@
  */
 package de.cubeisland.engine.log.action.newaction.player.item.container;
 
+import de.cubeisland.engine.log.LoggingConfiguration;
+
 /**
  * Removing items from a container
  * <p>Events: {@link ContainerListener}
  */
 public class ItemRemove extends ContainerItemAction
 {
-    // return this.lm.getConfig(world).container.ITEM_REMOVE_enable;
-
     @Override
     public String getName()
     {
         return "remove";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.container.remove;
     }
 }

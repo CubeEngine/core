@@ -17,17 +17,23 @@
  */
 package de.cubeisland.engine.log.action.newaction.player.item.container;
 
+import de.cubeisland.engine.log.LoggingConfiguration;
+
 /**
  * Inserting items into a container
  * <p>Events: {@link ContainerListener}
  */
 public class ItemInsert extends ContainerItemAction
 {
-    // return this.lm.getConfig(world).container.ITEM_INSERT_enable;
-
     @Override
     public String getName()
     {
         return "insert";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.container.insert;
     }
 }

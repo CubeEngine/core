@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.entityspawn;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
@@ -32,8 +33,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
  */
 public class MonsterEggUse extends EntityAction<EntitySpawnListener>
 {
-    //return this.lm.getConfig(world).MONSTER_EGG_USE_enable;
-
     public PlayerSection player;
 
     @Override
@@ -67,5 +66,11 @@ public class MonsterEggUse extends EntityAction<EntitySpawnListener>
     public String getName()
     {
         return "egg";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.spawn.monsterEgg;
     }
 }

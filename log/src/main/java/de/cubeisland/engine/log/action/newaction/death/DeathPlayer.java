@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.death;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
@@ -32,8 +33,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
  */
 public class DeathPlayer extends ActionDeath
 {
-    // return this.lm.getConfig(world).death.PLAYER_DEATH_enable;
-
     public PlayerSection killed;
 
     @Override
@@ -95,5 +94,11 @@ public class DeathPlayer extends ActionDeath
     public String getName()
     {
         return "player";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.death.player;
     }
 }

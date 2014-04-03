@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 public class UseContainer extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
     // TODO no rollback/redo
-
-    // return this.lm.getConfig(world).container.CONTAINER_ACCESS_enable;
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -59,5 +58,11 @@ public class UseContainer extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public String getName()
     {
         return "container";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.container;
     }
 }

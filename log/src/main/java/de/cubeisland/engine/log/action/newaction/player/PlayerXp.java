@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
  */
 public class PlayerXp extends ActionPlayer<PlayerActionListener>
 {
-    // return this.lm.getConfig(world).XP_PICKUP_enable;
-
     private int exp;
 
     @Override
@@ -68,5 +67,11 @@ public class PlayerXp extends ActionPlayer<PlayerActionListener>
     public String getName()
     {
         return "xp";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.player.xp;
     }
 }

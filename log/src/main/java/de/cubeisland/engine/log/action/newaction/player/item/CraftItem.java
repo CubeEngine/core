@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player.item;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
  */
 public class CraftItem extends PlayerItemAction<PlayerItemListener>
 {
-    // return this.lm.getConfig(world).CRAFT_ITEM_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -60,5 +59,11 @@ public class CraftItem extends PlayerItemAction<PlayerItemListener>
     public String getName()
     {
         return "craft";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.item.craft;
     }
 }

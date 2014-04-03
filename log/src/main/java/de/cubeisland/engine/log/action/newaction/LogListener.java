@@ -28,6 +28,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.LoggingConfiguration;
 
 
 public class LogListener implements Listener
@@ -110,6 +111,8 @@ public class LogListener implements Listener
 
     public final boolean isActive(Class<? extends BaseAction> clazz, World world)
     {
+        LoggingConfiguration config = this.module.getLogManager().getConfig(world);
+        this.module.getActionManager().isActive(clazz, config);
         return true;
     }
 

@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.player.entity.hanging;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -31,8 +32,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
  */
 public class PlayerItemFrameItemRemove extends PlayerHangingAction
 {
-    // return this.lm.getConfig(world).ITEM_REMOVE_FROM_FRAME;
-
     public ItemStack item;
 
     @Override
@@ -64,5 +63,11 @@ public class PlayerItemFrameItemRemove extends PlayerHangingAction
     public String getName()
     {
         return "remove";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.hanging.item_remove;
     }
 }

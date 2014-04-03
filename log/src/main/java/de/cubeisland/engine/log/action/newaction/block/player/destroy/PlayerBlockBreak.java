@@ -19,6 +19,7 @@ package de.cubeisland.engine.log.action.newaction.block.player.destroy;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -37,8 +38,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
  */
 public class PlayerBlockBreak extends ActionPlayerBlock<ListenerPlayerBlock>
 {
-    // return this.lm.getConfig(world).block.BLOCK_BREAK_enable;
-
     public Reference<ActionPlayerBlock> reference; // TODO use in message
 
     @Override
@@ -69,5 +68,11 @@ public class PlayerBlockBreak extends ActionPlayerBlock<ListenerPlayerBlock>
     public String getName()
     {
         return "break";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.destroyByPlayer;
     }
 }

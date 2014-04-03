@@ -54,7 +54,7 @@ public class LookupCommands
     public LookupCommands(Log module)
     {
         this.module = module;
-        this.actionTypeManager = module.getActionTypeManager();
+        this.actionTypeManager = module.getActionManager();
     }
 
     private void params(ParameterizedContext context)

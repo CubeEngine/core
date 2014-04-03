@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.player.entity;
 import org.bukkit.DyeColor;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -31,8 +32,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
  */
 public class PlayerEntityDye extends PlayerEntityAction
 {
-    // return this.lm.getConfig(world).ENTITY_DYE_enable;
-
     private DyeColor color; // TODO converter ?
 
     @Override
@@ -67,5 +66,11 @@ public class PlayerEntityDye extends PlayerEntityAction
     public String getName()
     {
         return "dye";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.entity.dye;
     }
 }

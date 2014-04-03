@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -52,5 +53,11 @@ public class EntityChange extends ActionEntityBlock<ListenerEntityBlock>
     public String getName()
     {
         return "change";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return false;
     }
 }

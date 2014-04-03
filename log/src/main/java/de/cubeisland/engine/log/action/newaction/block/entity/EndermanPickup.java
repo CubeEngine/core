@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_ENDERMAN;
  */
 public class EndermanPickup extends ActionEntityBlock<ListenerEntityBlock>
 {
-    //return this.lm.getConfig(world).block.enderman.ENDERMAN_PICKUP_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -61,5 +60,11 @@ public class EndermanPickup extends ActionEntityBlock<ListenerEntityBlock>
     public String getName()
     {
         return "pickup";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.destroyByEnderman;
     }
 }

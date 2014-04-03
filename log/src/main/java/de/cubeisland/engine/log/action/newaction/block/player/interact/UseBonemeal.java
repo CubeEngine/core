@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -29,8 +30,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class UseBonemeal extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
-    //return this.lm.getConfig(world).block.BONEMEAL_USE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -57,5 +56,11 @@ public class UseBonemeal extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public String getName()
     {
         return "bonemeal";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.bonemeal;
     }
 }

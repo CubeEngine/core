@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
 
@@ -33,8 +34,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class DeathPet extends EntityDeathAction
 {
-    // return this.lm.getConfig(world).death.PET_DEATH_enable;
-
     public PlayerSection owner;
 
     @Override
@@ -99,5 +98,11 @@ public class DeathPet extends EntityDeathAction
     public String getName()
     {
         return "pet";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.death.pet;
     }
 }

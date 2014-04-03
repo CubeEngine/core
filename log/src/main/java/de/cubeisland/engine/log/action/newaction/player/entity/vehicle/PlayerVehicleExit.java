@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player.entity.vehicle;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -27,8 +28,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerVehicleExit extends PlayerVehicleAction
 {
-    // return this.lm.getConfig(world).VEHICLE_EXIT_enable;
-
     // TODO entity vehicle enter
 
     @Override
@@ -51,5 +50,11 @@ public class PlayerVehicleExit extends PlayerVehicleAction
     public String getName()
     {
         return "exit";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.vehicle.exit;
     }
 }

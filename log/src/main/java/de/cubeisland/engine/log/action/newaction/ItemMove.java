@@ -21,6 +21,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerType;
 
@@ -32,8 +33,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
  */
 public class ItemMove extends BaseAction<ListenerItemMove>
 {
-    // return this.lm.getConfig(world).container.ITEM_TRANSFER_enable; // TODO make sure default is false! this can produce millions of logs in a very short time
-
     public ItemStack item;
     public BlockFace direction;
 
@@ -68,5 +67,11 @@ public class ItemMove extends BaseAction<ListenerItemMove>
     public String getName()
     {
         return "move";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.container.move;
     }
 }

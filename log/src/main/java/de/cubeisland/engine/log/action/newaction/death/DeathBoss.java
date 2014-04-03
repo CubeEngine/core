@@ -17,16 +17,22 @@
  */
 package de.cubeisland.engine.log.action.newaction.death;
 
+import de.cubeisland.engine.log.LoggingConfiguration;
+
 /**
  * Represents a boss dying
  */
 public class DeathBoss extends EntityDeathAction
 {
-    // return this.lm.getConfig(world).death.BOSS_DEATH_enable;
-
     @Override
     public String getName()
     {
         return "boss";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.death.boss;
     }
 }

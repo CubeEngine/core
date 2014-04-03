@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.player;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -31,8 +32,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
  */
 public class PlayerChat extends ActionPlayer<PlayerActionListener>
 {
-    // return this.lm.getConfig(world).PLAYER_CHAT_enable;
-
     private String message;
     private String messageFormat;
 
@@ -80,5 +79,11 @@ public class PlayerChat extends ActionPlayer<PlayerActionListener>
     public String getName()
     {
         return "chat";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.player.chat;
     }
 }

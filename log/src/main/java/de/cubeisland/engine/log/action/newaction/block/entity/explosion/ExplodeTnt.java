@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -27,8 +28,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class ExplodeTnt extends ExplosionAction
 {
-    // return this.lm.getConfig(world).block.explode.TNT_EXPLODE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -58,4 +57,11 @@ public class ExplodeTnt extends ExplosionAction
     {
         return "tnt";
     }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.explode.tnt;
+    }
 }
+

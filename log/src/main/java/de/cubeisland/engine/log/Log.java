@@ -47,7 +47,7 @@ public class Log extends Module implements Listener
     private LogManager logManager;
     private LogConfiguration config;
     private ObjectMapper objectMapper = null;
-    private ActionManager actionTypeManager;
+    private ActionManager actionManager;
     private boolean worldEditFound = false;
 
     @Inject
@@ -64,7 +64,7 @@ public class Log extends Module implements Listener
         this.getCore().getConfigFactory().getCodecManager().getCodec(MongoDBCodec.class).
             getConverterManager().registerConverter(ItemStack.class, new ItemStackConverter());
         this.logManager = new LogManager(this, bigdata);
-        this.actionTypeManager = new ActionManager(this);
+        this.actionManager = new ActionManager(this);
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommands(this, new LookupCommands(this), ReflectedCommand.class);
@@ -121,9 +121,9 @@ public class Log extends Module implements Listener
         return objectMapper;
     }
 
-    public ActionManager getActionTypeManager()
+    public ActionManager getActionManager()
     {
-        return actionTypeManager;
+        return actionManager;
     }
 
     public boolean hasWorldEdit()

@@ -19,6 +19,7 @@ package de.cubeisland.engine.log.action.newaction.block;
 
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -31,8 +32,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
  */
 public class BlockFall extends ActionBlock<ListenerBlock>
 {
-    // return this.lm.getConfig(world).block.BLOCK_FALL_enable;
-
     public Reference<ActionPlayerBlock> cause;
 
     @Override
@@ -63,5 +62,11 @@ public class BlockFall extends ActionBlock<ListenerBlock>
     public String getName()
     {
         return "fall";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.fall;
     }
 }

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -30,8 +31,6 @@ import static org.bukkit.Material.*;
  */
 public class BucketFill extends ActionPlayerBlock<ListenerBucket>
 {
-    // return this.lm.getConfig(world).block.bucket.BUCKET_FILL_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -67,5 +66,11 @@ public class BucketFill extends ActionPlayerBlock<ListenerBucket>
     public String getName()
     {
         return "fill";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.bucket.fill;
     }
 }

@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -28,8 +29,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class WaterFlow extends ActionFlow
 {
-    // return this.lm.getConfig(world).block.flow.WATER_FLOW_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -55,5 +54,11 @@ public class WaterFlow extends ActionFlow
     public String getName()
     {
         return "flow";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.flow.water;
     }
 }

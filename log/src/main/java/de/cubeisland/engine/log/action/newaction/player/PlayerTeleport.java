@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.player;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -31,8 +32,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
  */
 public class PlayerTeleport extends ActionPlayer<PlayerActionListener>
 {
-    // return this.lm.getConfig(world).PLAYER_TELEPORT_enable;
-
     public Coordinate toCoord;
     public boolean fromToDirection;
 
@@ -80,5 +79,11 @@ public class PlayerTeleport extends ActionPlayer<PlayerActionListener>
     public String getName()
     {
         return "teleport";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.player.teleport;
     }
 }

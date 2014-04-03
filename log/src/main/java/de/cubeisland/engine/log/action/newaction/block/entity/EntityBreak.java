@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.entity;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
  */
 public class EntityBreak extends ActionEntityBlock<ListenerEntityBlock>
 {
-    // return this.lm.getConfig(world).block.ENTITY_BREAK_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -62,5 +61,11 @@ public class EntityBreak extends ActionEntityBlock<ListenerEntityBlock>
     public String getName()
     {
         return "break";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.destroyByEntity;
     }
 }

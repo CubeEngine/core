@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.ignite;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -27,8 +28,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class IgniteOther extends ActionBlockIgnite
 {
-    // return this.lm.getConfig(world).block.ignite.OTHER_IGNITE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -47,5 +46,11 @@ public class IgniteOther extends ActionBlockIgnite
     public String getName()
     {
         return "other";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.ignite.other;
     }
 }

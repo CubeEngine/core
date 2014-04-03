@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.block.ignite;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
 
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class IgniteLighter extends ActionBlockIgnite
 {
-    // return this.lm.getConfig(world).block.ignite.LIGHTER_IGNITE_enable;
-
     public PlayerSection player;
 
     @Override
@@ -63,5 +62,11 @@ public class IgniteLighter extends ActionBlockIgnite
     public String getName()
     {
         return "lighter";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.ignite.lighter;
     }
 }

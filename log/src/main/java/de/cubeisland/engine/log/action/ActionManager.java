@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.cubeisland.engine.log.Log;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.ListenerItemMove;
 import de.cubeisland.engine.log.action.newaction.LogListener;
@@ -45,8 +46,18 @@ import de.cubeisland.engine.log.action.newaction.player.item.container.Container
 
 public class ActionManager
 {
+    // Map Category -> Category
     private final Map<String, ActionCategory> categories = new HashMap<>();
+    // TODO:
+    // Map Category-Name -> List<Class>
+    // Map Name -> List<Class>
+
+    // e.g searching for "water" yields water-break, water-flow, water-form, bucket-water
+
+
+    private final Map<Class<? extends BaseAction>, BaseAction> actions = new HashMap<>();
     private final Log module;
+
 
     public ActionManager(Log module)
     {
@@ -81,9 +92,15 @@ public class ActionManager
         module.getCore().getEventManager().registerListener(module, listener);
         for (Class<? extends BaseAction> actionClass : listener.getActions())
         {
-
+            try
+            {
+                this.actions.put(actionClass, actionClass.newInstance());
+            }
+            catch (ReflectiveOperationException e)
+            {
+                throw new IllegalArgumentException("Could not instantiate action", e);
+            }
         }
-
         return this;
     }
 
@@ -93,5 +110,23 @@ public class ActionManager
         HashSet<String> strings = new HashSet<>();
         strings.addAll(this.categories.keySet());
         return strings;
+    }
+
+    public boolean isActive(Class<? extends BaseAction> clazz, LoggingConfiguration config)
+    {
+        BaseAction action = this.actions.get(clazz);
+        if (action == null)
+        {
+            module.getLog().error("Action is not registered! {}", clazz.getName());
+            try
+            {
+                action = clazz.newInstance();
+            }
+            catch (ReflectiveOperationException e)
+            {
+                throw new IllegalArgumentException("Could not instantiate action", e);
+            }
+        }
+        return action.isActive(config);
     }
 }

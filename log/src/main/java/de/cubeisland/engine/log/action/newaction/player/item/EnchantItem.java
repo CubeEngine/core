@@ -22,6 +22,7 @@ import java.util.Map;
 import org.bukkit.enchantments.Enchantment;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -33,8 +34,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
  */
 public class EnchantItem extends PlayerItemAction<PlayerItemListener>
 {
-    // return this.lm.getConfig(world).ENCHANT_ITEM_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -73,5 +72,11 @@ public class EnchantItem extends PlayerItemAction<PlayerItemListener>
     public String getName()
     {
         return "enchant";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.item.enchant;
     }
 }

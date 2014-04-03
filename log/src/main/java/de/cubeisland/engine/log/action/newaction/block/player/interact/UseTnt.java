@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
  */
 public class UseTnt extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
-    // return this.lm.getConfig(world).block.TNT_PRIME_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -57,5 +56,11 @@ public class UseTnt extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public String getName()
     {
         return "tnt";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.tnt;
     }
 }

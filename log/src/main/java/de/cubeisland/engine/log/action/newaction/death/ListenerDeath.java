@@ -73,6 +73,7 @@ public class ListenerDeath extends LogListener
         DeathKill killAction = this.newAction(DeathKill.class, event.getEntity().getWorld());
         if (killAction != null)
         {
+            // TODO check config for killer type
             killAction.setLocation(event.getEntity().getLocation());
             EntityDamageEvent cause = event.getEntity().getLastDamageCause();
             if (cause == null)

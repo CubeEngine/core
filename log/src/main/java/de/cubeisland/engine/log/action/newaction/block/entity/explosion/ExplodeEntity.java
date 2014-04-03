@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.entity.ActionEntityBlock;
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.EXPLODE;
  */
 public class ExplodeEntity extends ActionEntityBlock<ListenerExplode>
 {
-    // return this.lm.getConfig(world).block.explode.ENTITY_EXPLODE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -57,5 +56,11 @@ public class ExplodeEntity extends ActionEntityBlock<ListenerExplode>
     public String getName()
     {
         return "entity";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.explode.other;
     }
 }

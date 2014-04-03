@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action.newaction.player.item;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.player.ActionPlayer;
@@ -30,8 +31,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
  */
 public class FireworkUse extends ActionPlayer<PlayerItemListener> // TODO item
 {
-    // return this.lm.getConfig(world).FIREWORK_USE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -56,5 +55,11 @@ public class FireworkUse extends ActionPlayer<PlayerItemListener> // TODO item
     public String getName()
     {
         return "firework";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.firework;
     }
 }

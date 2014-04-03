@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.newaction.block.player.interact;
 import org.bukkit.material.Door;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
@@ -32,8 +33,6 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
  */
 public class UseDoor extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
-    // return this.lm.getConfig(world).block.DOOR_USE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -68,5 +67,11 @@ public class UseDoor extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public String getName()
     {
         return "door";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.use.door;
     }
 }

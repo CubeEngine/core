@@ -31,6 +31,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.ConfigWorld;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.storage.ShowParameter;
 import de.cubeisland.engine.reflect.Section;
 import org.bson.types.ObjectId;
@@ -87,6 +88,8 @@ public abstract class BaseAction<ListenerType> extends ReflectedDBObject impleme
         user.sendMessage(msg);
         // TODO loc & time
     }
+
+    public abstract boolean isActive(LoggingConfiguration config);
 
     /*
 

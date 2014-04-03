@@ -29,8 +29,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerItemFrameBreak extends PlayerHangingBreak
 {
-    // return this.lm.getConfig(world).HANGING_BREAK_enable;
-
     public ItemStack item; // TODO item format
 
     @Override

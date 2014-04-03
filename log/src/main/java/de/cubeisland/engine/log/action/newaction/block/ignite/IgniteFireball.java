@@ -25,6 +25,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
 
@@ -37,9 +38,6 @@ import static org.bukkit.entity.EntityType.PLAYER;
  */
 public class IgniteFireball extends ActionBlockIgnite
 {
-    // return "fireball-ignite";
-    // return this.lm.getConfig(world).block.ignite.FIREBALL_IGNITE_enable;
-
     public UUID shooterUUID;
     public EntityType shooterType;
 
@@ -97,5 +95,11 @@ public class IgniteFireball extends ActionBlockIgnite
     public String getName()
     {
         return "fireball";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.ignite.fireball;
     }
 }

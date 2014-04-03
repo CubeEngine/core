@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log.action.newaction.block.flow;
 
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.newaction.block.BlockForm;
 
 /**
@@ -24,4 +25,9 @@ import de.cubeisland.engine.log.action.newaction.block.BlockForm;
  */
 public class LavaWaterForm extends BlockForm
 {
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.formByWaterLava;
+    }
 }

@@ -19,6 +19,7 @@ package de.cubeisland.engine.log.action.newaction.block.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
@@ -33,8 +34,6 @@ import static org.bukkit.Material.AIR;
  */
 public class PlayerBlockPlace extends ActionPlayerBlock<ListenerPlayerBlock>
 {
-    // return this.lm.getConfig(world).block.BLOCK_PLACE_enable;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -77,5 +76,11 @@ public class PlayerBlockPlace extends ActionPlayerBlock<ListenerPlayerBlock>
     public String getName()
     {
         return "place";
+    }
+
+    @Override
+    public boolean isActive(LoggingConfiguration config)
+    {
+        return config.block.placeByPlayer;
     }
 }
