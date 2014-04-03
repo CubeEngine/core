@@ -38,6 +38,7 @@ public class McUUID
 {
     private final static ObjectMapper mapper = new ObjectMapper();
     private static final String MOJANG_API_URL = "https://api.mojang.com/profiles/page/";
+    private static final String AGENT = "minecraft";
 
     static {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -50,7 +51,7 @@ public class McUUID
         {
             try
             {
-                map.put(profile.name, UUID.nameUUIDFromBytes(profile.id.getBytes()));
+                map.put(profile.name, getUUIDFromString(profile.id));
             }
             catch (Exception e)
             {
@@ -60,6 +61,11 @@ public class McUUID
         return map;
     }
 
+    private static UUID getUUIDFromString(String id)
+    {
+        return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" +id.substring(20, 32));
+    }
+
     private static List<Profile> getUUIDForNames0(List<String> playernames)
     {
         ArrayNode node = mapper.createArrayNode();
@@ -67,7 +73,7 @@ public class McUUID
         {
             ObjectNode criteria = mapper.createObjectNode();
             criteria.put("name", playername);
-            criteria.put("agent", "minecraft");
+            criteria.put("agent", AGENT);
             node.add(criteria);
         }
         int i = 1;
