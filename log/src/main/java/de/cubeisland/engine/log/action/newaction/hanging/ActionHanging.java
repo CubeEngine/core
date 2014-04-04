@@ -15,25 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player.item.container;
+package de.cubeisland.engine.log.action.newaction.hanging;
 
-import de.cubeisland.engine.log.LoggingConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
-/**
- * Inserting items into a container
- * <p>Events: {@link ListenerContainerItem}
- */
-public class ItemInsert extends ActionContainerItem
+import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.newaction.block.entity.ActionEntityBlock.EntitySection;
+import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
+
+public abstract class ActionHanging extends BaseAction<ListenerHanging>
 {
-    @Override
-    public String getName()
+    public EntitySection hanging;
+
+    public PlayerSection player;
+
+    public void setHanging(Entity entity)
     {
-        return "insert";
+        this.hanging = new EntitySection(entity);
     }
 
-    @Override
-    public boolean isActive(LoggingConfiguration config)
+    public void setPlayer(Player player)
     {
-        return config.container.insert;
+        this.player = new PlayerSection(player);
     }
 }

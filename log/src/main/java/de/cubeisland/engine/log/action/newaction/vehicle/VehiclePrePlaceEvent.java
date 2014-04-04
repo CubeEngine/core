@@ -15,25 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player.item.container;
+package de.cubeisland.engine.log.action.newaction.vehicle;
 
-import de.cubeisland.engine.log.LoggingConfiguration;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
-/**
- * Inserting items into a container
- * <p>Events: {@link ListenerContainerItem}
- */
-public class ItemInsert extends ActionContainerItem
+public class VehiclePrePlaceEvent extends Event
 {
-    @Override
-    public String getName()
+    private static final HandlerList handlers = new HandlerList();
+
+    private Location location;
+    private Entity player;
+
+    public VehiclePrePlaceEvent(Location location, Entity player)
     {
-        return "insert";
+        this.location = location;
+        this.player = player;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
+    }
+
+    public Location getLocation()
+    {
+        return location;
+    }
+
+    public Entity getPlayer()
+    {
+        return player;
     }
 
     @Override
-    public boolean isActive(LoggingConfiguration config)
+    public HandlerList getHandlers()
     {
-        return config.container.insert;
+        return handlers;
     }
 }

@@ -15,25 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.player.item.container;
+package de.cubeisland.engine.log.action.newaction.hanging;
 
-import de.cubeisland.engine.log.LoggingConfiguration;
+import org.bukkit.Art;
+
+import de.cubeisland.engine.core.user.User;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
- * Inserting items into a container
- * <p>Events: {@link ListenerContainerItem}
+ * Represents a player placing a painting
  */
-public class ItemInsert extends ActionContainerItem
+public class PaintingPlace extends HangingPlace
 {
-    @Override
-    public String getName()
-    {
-        return "insert";
-    }
+    public Art art;
 
     @Override
-    public boolean isActive(LoggingConfiguration config)
+    public String translateAction(User user)
     {
-        return config.container.insert;
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count, "{text:A painting} got hung up by {user}", // TODO art singular
+                                    "{2:amount} {text:paintings} got hung up by {user}", this.hanging.name(),
+                                    this.player.name, count);
     }
 }

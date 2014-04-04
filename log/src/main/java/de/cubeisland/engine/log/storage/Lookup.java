@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
 
 public class Lookup implements Cloneable
@@ -57,7 +58,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        // TODO lookup.queryParameter.setActions(ActionTypeCategory.INVENTORY.getActionTypes(), true); // include inv
+        lookup.queryParameter.setActions(ActionCategory.ITEM.getActions(), true); // TODO container category instead
         lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
@@ -69,7 +70,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        // TODO lookup.queryParameter.setActions(ActionTypeCategory.KILL.getActionTypes(), true); // include kills
+        lookup.queryParameter.setActions(ActionCategory.DEATH.getActions(), true); // include kills
         lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }

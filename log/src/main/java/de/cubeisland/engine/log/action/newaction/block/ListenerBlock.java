@@ -51,8 +51,8 @@ import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
 import de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockGrow;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak;
 import de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerSignBreak;
-import de.cubeisland.engine.log.action.newaction.player.entity.hanging.HangingPreBreakEvent;
-import de.cubeisland.engine.log.action.newaction.player.entity.hanging.destroy.PlayerHangingBreak;
+import de.cubeisland.engine.log.action.newaction.hanging.HangingPreBreakEvent;
+import de.cubeisland.engine.log.action.newaction.hanging.HangingBreak;
 
 import static org.bukkit.Material.*;
 import static org.bukkit.block.BlockFace.DOWN;
@@ -77,6 +77,7 @@ import static org.bukkit.block.BlockFace.UP;
  * {@link BlockDecay}
  * {@link BlockGrow}
  * {@link BlockShift}
+ * {@link BlockFall}
  * <p>External Actions:
  * {@link de.cubeisland.engine.log.action.newaction.block.player.PlayerBlockGrow}
  * {@link de.cubeisland.engine.log.action.newaction.block.player.destroy.PlayerBlockBreak}
@@ -93,7 +94,7 @@ public class ListenerBlock extends LogListener
     {
         super(module, de.cubeisland.engine.log.action.newaction.block.BlockBreak.class, BlockFade.class,
               BlockForm.class, BlockSpread.class, BlockDecay.class, BlockGrow.class, BlockShift.class,
-              PlayerBlockGrow.class, PlayerBlockBreak.class, PlayerSignBreak.class);
+              PlayerBlockGrow.class, PlayerBlockBreak.class, PlayerSignBreak.class, BlockFall.class);
     }
 
     public static void logAttachedBlocks(LogListener ll, EventManager em, Block block, ActionBlock action)
@@ -115,7 +116,7 @@ public class ListenerBlock extends LogListener
             }
         }
 
-        if (ll.isActive(PlayerHangingBreak.class, block.getWorld()))
+        if (ll.isActive(HangingBreak.class, block.getWorld()))
         {
             Location location = block.getLocation();
             Location entityLocation = block.getLocation();

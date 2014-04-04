@@ -15,65 +15,68 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.death;
+package de.cubeisland.engine.log.action.newaction.player.item;
 
-import org.bukkit.inventory.ItemStack;
+import java.util.Map;
 
-import de.cubeisland.engine.bigdata.Reference;
+import org.bukkit.enchantments.Enchantment;
+
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.player.item.ItemDrop;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
+import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 
 /**
- * Represents a player dropping items on death
+ * Represents a player enchanting an item
  */
-public class PlayerDeathDrop extends BaseAction<ListenerDeath>
+public class ItemEnchant extends ActionItem<ListenerItem>
 {
-    public Reference<DeathPlayer> death;
-    public ItemStack item;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return action instanceof PlayerDeathDrop && this.death != null && ((PlayerDeathDrop)action).death != null
-            && this.death.equals(((PlayerDeathDrop)action).death);
+        // same player
+        return action instanceof ItemEnchant && this.player.equals(((ItemEnchant)action).player)
+            && ((ItemEnchant)action).item.isSimilar(this.item);
     }
 
     @Override
     public String translateAction(User user)
     {
-        int amount = this.item.getAmount();
         if (this.hasAttached())
         {
-            for (BaseAction action : this.getAttached())
-            {
-                amount += ((ItemDrop)action).item.getAmount();
-            }
+            return user.getTranslation(POSITIVE, "{user} enchanted {name#item} x{amount}", this.player.name,
+                                       this.item.getType().name(), this.getAttached().size() + 1);
         }
-        return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} upon death", this.death.fetch(
-            DeathPlayer.class).killed.name, this.item.getType().name(), amount);
+        return user.getTranslation(POSITIVE, "{user} enchanted {name#item}", this.player.name,
+                                   this.item.getType().name());
+        // TODO list enchantments
+        // TODO enchant block used
     }
+
+    public void setEnchants(Map<Enchantment, Integer> enchantsToAdd)
+    {
+        // TODO
+    }
+
 
     @Override
     public ActionCategory getCategory()
     {
-        return DEATH;
+        return ITEM;
     }
 
     @Override
     public String getName()
     {
-        return "drop";
+        return "enchant";
     }
 
     @Override
     public boolean isActive(LoggingConfiguration config)
     {
-        return config.item.drop_onPlayerDeath;
+        return config.item.enchant;
     }
 }

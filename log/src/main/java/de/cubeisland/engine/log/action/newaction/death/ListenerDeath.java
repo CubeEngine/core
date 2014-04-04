@@ -62,7 +62,7 @@ public class ListenerDeath extends LogListener
 {
     public ListenerDeath(Log module)
     {
-        super(module, DeathKill.class, DeathPlayer.class, PlayerDeathDrop.class, EntityDeathAction.class,
+        super(module, DeathKill.class, DeathPlayer.class, PlayerDeathDrop.class,
               DeathBoss.class, DeathPlayer.class, DeathAnimal.class, DeathNpc.class, DeathMonster.class,
               DeathOther.class, DeathDrop.class);
     }

@@ -24,7 +24,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemDrop;
+import de.cubeisland.engine.log.action.newaction.player.item.ItemDrop;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
@@ -52,11 +52,11 @@ public class DeathDrop extends BaseAction<ListenerDeath>
         {
             for (BaseAction action : this.getAttached())
             {
-                amount += ((PlayerItemDrop)action).item.getAmount();
+                amount += ((ItemDrop)action).item.getAmount();
             }
         }
         return user.getTranslation(POSITIVE, "{name#entity} dropped {name#item} x{amount} upon death", this.death.fetch(
-            EntityDeathAction.class).killed.name(), this.item.getType().name(), amount);
+            EntityDeathAction.class).killed.name(), this.item.getType().name(), amount); // TODO this wont work as EntityDeathAction is abstract
     }
 
     @Override

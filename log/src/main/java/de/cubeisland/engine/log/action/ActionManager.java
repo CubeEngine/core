@@ -36,13 +36,13 @@ import de.cubeisland.engine.log.action.newaction.block.player.ListenerPlayerBloc
 import de.cubeisland.engine.log.action.newaction.block.player.bucket.ListenerBucket;
 import de.cubeisland.engine.log.action.newaction.block.player.interact.ListenerPlayerBlockInteract;
 import de.cubeisland.engine.log.action.newaction.death.ListenerDeath;
-import de.cubeisland.engine.log.action.newaction.entityspawn.EntitySpawnListener;
+import de.cubeisland.engine.log.action.newaction.entityspawn.ListenerEntitySpawn;
 import de.cubeisland.engine.log.action.newaction.player.PlayerActionListener;
-import de.cubeisland.engine.log.action.newaction.player.entity.PlayerEntityListener;
-import de.cubeisland.engine.log.action.newaction.player.entity.hanging.PlayerHangingListener;
-import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.PlayerVehicleListener;
-import de.cubeisland.engine.log.action.newaction.player.item.PlayerItemListener;
-import de.cubeisland.engine.log.action.newaction.player.item.container.ContainerListener;
+import de.cubeisland.engine.log.action.newaction.player.entity.ListenerPlayerEntity;
+import de.cubeisland.engine.log.action.newaction.hanging.ListenerHanging;
+import de.cubeisland.engine.log.action.newaction.player.item.ListenerItem;
+import de.cubeisland.engine.log.action.newaction.player.item.container.ListenerContainerItem;
+import de.cubeisland.engine.log.action.newaction.vehicle.ListenerVehicle;
 
 public class ActionManager
 {
@@ -70,10 +70,10 @@ public class ActionManager
     {
         this.registerListener(new ListenerBlockIgnite(module)).
             registerListener(new ListenerBlock(module)).
-                registerListener(new ContainerListener(module)).
+                registerListener(new ListenerContainerItem(module)).
                 registerListener(new ListenerDeath(module)).
                 registerListener(new ListenerEntityBlock(module)).
-                registerListener(new EntitySpawnListener(module)).
+                registerListener(new ListenerEntitySpawn(module)).
                 registerListener(new ListenerExplode(module)).
                 registerListener(new ListenerFlow(module)).
                 registerListener(new ListenerItemMove(module)).
@@ -81,10 +81,10 @@ public class ActionManager
                 registerListener(new ListenerPlayerBlockInteract(module)).
                 registerListener(new ListenerPlayerBlock(module)).
                 registerListener(new ListenerBucket(module)).
-                registerListener(new PlayerEntityListener(module)).
-                registerListener(new PlayerHangingListener(module)).
-                registerListener(new PlayerItemListener(module)).
-                registerListener(new PlayerVehicleListener(module));
+                registerListener(new ListenerPlayerEntity(module)).
+                registerListener(new ListenerHanging(module)).
+                registerListener(new ListenerItem(module)).
+                registerListener(new ListenerVehicle(module));
     }
 
     public ActionManager registerListener(LogListener listener)

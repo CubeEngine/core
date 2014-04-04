@@ -44,7 +44,7 @@ import org.bukkit.material.Rails;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.newaction.LogListener;
 import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock;
-import de.cubeisland.engine.log.action.newaction.player.entity.vehicle.VehiclePrePlaceEvent;
+import de.cubeisland.engine.log.action.newaction.vehicle.VehiclePrePlaceEvent;
 
 import static org.bukkit.DyeColor.WHITE;
 import static org.bukkit.GameMode.CREATIVE;

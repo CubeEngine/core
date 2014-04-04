@@ -190,13 +190,11 @@ public class QueryResults
                     continue;
                 }
                 /* TODO
-                if (logEntry.getActionType() instanceof MonsterDeath && !this.lookup.getQueryParameter()
-                                                                                    .containsAction(logEntry
-                                                                                                        .getActionType()))
+                if (logEntry.getActionType() instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.getActionType()))
                 {
                     continue; // ignoring Monster-respawning when not explicitly wanted
                 }
-                 */
+                */
                 if (((Rollbackable)logEntry).isBlockBound())
                 {
                     if (((Rollbackable)logEntry).isStackable())

@@ -15,65 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.death;
+package de.cubeisland.engine.log.action.newaction.vehicle;
 
-import org.bukkit.inventory.ItemStack;
-
-import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.player.item.ItemDrop;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 
 /**
- * Represents a player dropping items on death
+ * Represents a player placing a vehicle like minecart or boat
  */
-public class PlayerDeathDrop extends BaseAction<ListenerDeath>
+public class VehiclePlace extends ActionVehicle
 {
-    public Reference<DeathPlayer> death;
-    public ItemStack item;
-
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return action instanceof PlayerDeathDrop && this.death != null && ((PlayerDeathDrop)action).death != null
-            && this.death.equals(((PlayerDeathDrop)action).death);
+        return action instanceof VehicleBreak && this.player.equals(((VehicleBreak)action).player)
+            && ((VehicleBreak)action).vehicle.isSameType(this.vehicle);
     }
 
     @Override
     public String translateAction(User user)
     {
-        int amount = this.item.getAmount();
-        if (this.hasAttached())
-        {
-            for (BaseAction action : this.getAttached())
-            {
-                amount += ((ItemDrop)action).item.getAmount();
-            }
-        }
-        return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} upon death", this.death.fetch(
-            DeathPlayer.class).killed.name, this.item.getType().name(), amount);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return DEATH;
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count, "{user} placed a {name#vehicle}",
+                                    "{user} placed {2:amount} {name#vehicle}", this.player.name,
+                                    this.vehicle.name(), count);
     }
 
     @Override
     public String getName()
     {
-        return "drop";
+        return "place";
     }
 
     @Override
     public boolean isActive(LoggingConfiguration config)
     {
-        return config.item.drop_onPlayerDeath;
+        return config.vehicle.place;
     }
 }

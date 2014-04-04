@@ -21,9 +21,9 @@ import de.cubeisland.engine.log.LoggingConfiguration;
 
 /**
  * Removing items from a container
- * <p>Events: {@link ContainerListener}
+ * <p>Events: {@link ListenerContainerItem}
  */
-public class ItemRemove extends ContainerItemAction
+public class ItemRemove extends ActionContainerItem
 {
     @Override
     public String getName()

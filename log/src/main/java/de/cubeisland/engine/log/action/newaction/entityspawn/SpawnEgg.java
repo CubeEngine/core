@@ -15,65 +15,62 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.newaction.death;
+package de.cubeisland.engine.log.action.newaction.entityspawn;
 
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.player.item.ItemDrop;
+import de.cubeisland.engine.log.action.newaction.block.player.ActionPlayerBlock.PlayerSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
+import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
 
 /**
- * Represents a player dropping items on death
+ * Represents a player spawning a LivingEntity using a spawnegg
  */
-public class PlayerDeathDrop extends BaseAction<ListenerDeath>
+public class SpawnEgg extends ActionEntitySpawn<ListenerEntitySpawn>
 {
-    public Reference<DeathPlayer> death;
-    public ItemStack item;
+    public PlayerSection player;
 
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return action instanceof PlayerDeathDrop && this.death != null && ((PlayerDeathDrop)action).death != null
-            && this.death.equals(((PlayerDeathDrop)action).death);
+        return action instanceof SpawnEgg && this.entity.isSameType(((SpawnEgg)action).entity)
+            && this.player.equals(((SpawnEgg)action).player);
     }
 
     @Override
     public String translateAction(User user)
     {
-        int amount = this.item.getAmount();
-        if (this.hasAttached())
-        {
-            for (BaseAction action : this.getAttached())
-            {
-                amount += ((ItemDrop)action).item.getAmount();
-            }
-        }
-        return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} upon death", this.death.fetch(
-            DeathPlayer.class).killed.name, this.item.getType().name(), amount);
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count, "{user} spawned {name#entity} using a spawnegg",
+                                    "{user} spawned {name#entity} using a spawnegg {amount} times", this.entity.name(),
+                                    count);
+    }
+
+    public void setPlayer(Player player)
+    {
+        this.player = new PlayerSection(player); // TODO dispenser
     }
 
     @Override
     public ActionCategory getCategory()
     {
-        return DEATH;
+        return SPAWN;
     }
 
     @Override
     public String getName()
     {
-        return "drop";
+        return "egg";
     }
 
     @Override
     public boolean isActive(LoggingConfiguration config)
     {
-        return config.item.drop_onPlayerDeath;
+        return config.spawn.monsterEgg;
     }
 }
