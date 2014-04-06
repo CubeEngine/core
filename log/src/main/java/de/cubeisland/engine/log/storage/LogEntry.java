@@ -105,7 +105,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
 
     public User getCauserUser()
     {
-        return this.um.getUser(this.getCauser());
+        return this.um.getUser(UInteger.valueOf(this.getCauser()));
     }
 
     public World getWorld()
@@ -168,7 +168,7 @@ public class LogEntry extends UpdatableRecordImpl<LogEntry>
     {
         if (getData() > 0)
         {
-            return this.um.getUser(getData());
+            return this.um.getUser(UInteger.valueOf(getData()));
         }
         throw new IllegalStateException("No User-Data in the data field: "+getData());
     }

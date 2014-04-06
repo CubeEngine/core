@@ -97,7 +97,7 @@ public class CuboidSelector implements Selector, Listener
                 && event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName()
                 && event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equals(SELECTOR_TOOL_NAME))
             {
-                User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 SelectorAttachment logAttachment = user.attachOrGet(SelectorAttachment.class, this.module);
                 Location clicked = event.getClickedBlock().getLocation();
                 if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))

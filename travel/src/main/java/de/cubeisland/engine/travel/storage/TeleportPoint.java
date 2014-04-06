@@ -24,6 +24,7 @@ import org.bukkit.Location;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
@@ -35,7 +36,7 @@ public abstract class TeleportPoint
     protected final InviteManager inviteManager;
 
     protected Permission permission;
-    protected Set<String> invited;
+    protected Set<UInteger> invited;
 
     protected String ownerName = null;
 
@@ -70,7 +71,7 @@ public abstract class TeleportPoint
 
     public User getOwner()
     {
-        return this.module.getCore().getUserManager().getUser(parent.getOwnerKey().longValue());
+        return this.module.getCore().getUserManager().getUser(parent.getOwnerKey());
     }
 
     public void setOwner(User owner)
@@ -89,7 +90,7 @@ public abstract class TeleportPoint
         {
             this.invited = inviteManager.getInvited(parent);
         }
-        this.invited.add(user.getName());
+        this.invited.add(user.getEntity().getKey());
         inviteManager.invite(this.getModel(), user);
     }
 
@@ -99,13 +100,13 @@ public abstract class TeleportPoint
         {
             this.invited = inviteManager.getInvited(parent);
         }
-        this.invited.remove(user.getName());
+        this.invited.remove(user.getEntity().getKey());
         inviteManager.updateInvited(this.parent, this.invited);
     }
 
     public boolean isInvited(User user)
     {
-        return this.getInvited().contains(user.getName()) || this.isPublic();
+        return this.getInvited().contains(user.getEntity().getKey()) || this.isPublic();
     }
 
     public void setVisibility(short visibility)
@@ -118,7 +119,7 @@ public abstract class TeleportPoint
         return parent.getVisibility();
     }
 
-    public Set<String> getInvited()
+    public Set<UInteger> getInvited()
     {
         if (this.invited == null)
         {
@@ -146,7 +147,7 @@ public abstract class TeleportPoint
     {
         if (this.ownerName == null)
         {
-            this.ownerName = this.module.getCore().getUserManager().getUserName(parent.getOwnerKey().longValue());
+            this.ownerName = this.module.getCore().getUserManager().getUserName(parent.getOwnerKey());
         }
         return this.ownerName;
     }

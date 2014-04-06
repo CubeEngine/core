@@ -116,7 +116,7 @@ public class CommandListener implements Listener
         if (!map.keySet().contains(event.getPlayer().getName())) return;
         if (event.getClickedBlock() != null)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             Location location = event.getClickedBlock().getLocation();
             Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
             Lock lock = this.manager.getLockAtLocation(location, user, triplet.getFirst() != INFO);
@@ -214,7 +214,7 @@ public class CommandListener implements Listener
     {
         if (event.getPlayer().isSneaking()) return;
         if (!map.keySet().contains(event.getPlayer().getName())) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         try
         {
             Location location = event.getRightClicked().getLocation();
@@ -320,6 +320,7 @@ public class CommandListener implements Listener
         case GIVE:
             if (lock.isOwner(user) || module.perms().CMD_GIVE_OTHER.isAuthorized(user))
             {
+                // TODO UUID stuff
                 User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
                 user.sendTranslated(MessageType.NEUTRAL, "{user} is now the owner of this protection.", newOwner.getName());

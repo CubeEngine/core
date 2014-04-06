@@ -119,6 +119,8 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            connection.prepareStatement("CREATE UNIQUE INDEX `uuid` ON " + this.getName() +
+                                       " (`UUIDleast`,`UUIDmost`)").execute();
         }
     }
 }

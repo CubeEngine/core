@@ -43,7 +43,7 @@ class RulebookListener implements Listener
     @EventHandler
     public void onPlayerLanguageReceived(AfterJoinEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if(!user.hasPlayedBefore() && !this.rulebookManager.getLocales().isEmpty())
         {
             Locale locale = user.getLocale();

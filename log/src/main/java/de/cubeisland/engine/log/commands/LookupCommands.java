@@ -460,7 +460,7 @@ public class LookupCommands
             {
                 name = name.substring(1);
             }
-            User user = this.module.getCore().getUserManager().getUser(name, false);
+            User user = this.module.getCore().getUserManager().findExactUser(name);
             if (user == null)
             {
                 sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);

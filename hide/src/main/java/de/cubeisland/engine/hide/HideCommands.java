@@ -18,6 +18,7 @@
 package de.cubeisland.engine.hide;
 
 import java.util.Set;
+import java.util.UUID;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
@@ -145,20 +146,20 @@ public class HideCommands implements CommandHolder
                 context.sendTranslated(MessageType.NEUTRAL, "{user} is currently visible!", target.getDisplayName());
             }
         }
-        this.module.getHiddenUsers().contains(target.getName());
+        this.module.getHiddenUsers().contains(target.getUniqueId());
     }
 
     @Command(desc = "Lists all hidden players.")
     public void listhiddens(CommandContext context)
     {
-        Set<String> hiddens = this.module.getHiddenUsers();
+        Set<UUID> hiddens = this.module.getHiddenUsers();
         if (hiddens.isEmpty())
         {
             context.sendTranslated(MessageType.NEUTRAL, "There are no hidden users!");
             return;
         }
         context.sendTranslated(MessageType.POSITIVE, "The following users are hidden:");
-        for (String name : hiddens)
+        for (UUID name : hiddens)
         {
             context.sendMessage(" - " + ChatFormat.YELLOW + context.getCore().getUserManager().getExactUser(name).getDisplayName());
         }
@@ -236,16 +237,16 @@ public class HideCommands implements CommandHolder
     @Command(desc = "Lists all players who can see hidden players.")
     public void listcanseehiddens(CommandContext context)
     {
-        Set<String> canSeeHiddens = this.module.getCanSeeHiddens();
+        Set<UUID> canSeeHiddens = this.module.getCanSeeHiddens();
         if (canSeeHiddens.isEmpty())
         {
             context.sendTranslated(MessageType.NEUTRAL, "No users can currently see hidden users!");
             return;
         }
         context.sendTranslated(MessageType.POSITIVE, "The following players can see hidden players:");
-        for (String user : canSeeHiddens)
+        for (UUID canSee : canSeeHiddens)
         {
-            context.sendMessage(" - " + ChatFormat.YELLOW + context.getCore().getUserManager().getExactUser(user).getDisplayName());
+            context.sendMessage(" - " + ChatFormat.YELLOW + context.getCore().getUserManager().getExactUser(canSee).getDisplayName());
         }
     }
 

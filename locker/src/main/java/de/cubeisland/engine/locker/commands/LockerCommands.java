@@ -170,7 +170,7 @@ public class LockerCommands extends ContainerCommand
             {
                 name = name.substring(1);
             }
-            User user = this.getModule().getCore().getUserManager().getUser(name, false);
+            User user = this.getModule().getCore().getUserManager().findExactUser(name);
             if (user == null)
             {
                 context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", name);

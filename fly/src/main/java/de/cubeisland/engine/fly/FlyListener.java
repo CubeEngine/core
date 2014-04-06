@@ -64,7 +64,7 @@ public class FlyListener implements Listener
         {
             return;
         }
-        User user = usermanager.getExactUser(player.getName());
+        User user = usermanager.getExactUser(player.getUniqueId());
         if (user == null)//User does not exist
         {
             return;

@@ -64,7 +64,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
     @EventHandler
     public void onChatHandler(AsyncPlayerChatEvent event)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             user.sendMessage(ChatFormat.PURPLE + "[" + ChatFormat.WHITE + "ChatCommand" + ChatFormat.PURPLE + "] " + ChatFormat.WHITE + event.getMessage());
@@ -76,7 +76,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
     @EventHandler
     public void onTabComplete(PlayerChatTabCompleteEvent event)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             event.getTabCompletions().clear();

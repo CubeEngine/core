@@ -681,7 +681,7 @@ public class LockManager implements Listener
                 name = name.substring(1);
                 add = false;
             }
-            User modifyUser = this.um.getUser(name, false);
+            User modifyUser = this.um.findExactUser(name);
             if (modifyUser == null) throw new IllegalArgumentException(); // This is prevented by checking first in the cmd execution
             short accessType = ACCESS_FULL;
             if (add && admin)

@@ -111,7 +111,7 @@ public class MarketSignListener implements Listener
             {
                 return;
             }
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             marketSign.executeAction(user, event.getAction());
             event.setUseInteractedBlock(Event.Result.DENY);
             event.setUseItemInHand(Event.Result.DENY);
@@ -132,7 +132,7 @@ public class MarketSignListener implements Listener
                 {
                     return;
                 }
-                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 marketSign.executeAction(user, Action.RIGHT_CLICK_BLOCK);
                 event.setUseInteractedBlock(Event.Result.DENY);
                 event.setUseItemInHand(Event.Result.DENY);

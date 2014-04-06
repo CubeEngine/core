@@ -85,7 +85,7 @@ public class BorderListener implements Listener
         {
             if (event instanceof PlayerTeleportEvent)
             {
-                this.um.getExactUser(event.getPlayer().getName()).sendTranslated(MessageType.NEGATIVE, "You cannot teleport outside the border!");
+                this.um.getExactUser(event.getPlayer().getUniqueId()).sendTranslated(MessageType.NEGATIVE, "You cannot teleport outside the border!");
                 event.setCancelled(true);
                 return;
             }
@@ -98,20 +98,20 @@ public class BorderListener implements Listener
                 torusLoc.setYaw(event.getFrom().getYaw());
                 torusLoc.setPitch(event.getFrom().getPitch());
                 event.setTo(torusLoc); // move to torus loc
-                this.um.getExactUser(event.getPlayer().getName()).sendTranslated(MessageType.NEUTRAL, "As you reach the border the world turns on itself and you appear on the other side of the world!");
+                this.um.getExactUser(event.getPlayer().getUniqueId()).sendTranslated(MessageType.NEUTRAL, "As you reach the border the world turns on itself and you appear on the other side of the world!");
             }
             else
             {
                 event.setTo(event.getFrom()); // no movement!
                 if (mayNotice(event.getPlayer()))
                 {
-                    this.um.getExactUser(event.getPlayer().getName()).sendTranslated(MessageType.NEGATIVE, "You've reached the border!");
+                    this.um.getExactUser(event.getPlayer().getUniqueId()).sendTranslated(MessageType.NEGATIVE, "You've reached the border!");
                 }
             }
         }
         else if (!(event instanceof PlayerTeleportEvent) && isChunkAlmostOutOfRange(event.getTo().getChunk(), config))
         {
-            this.um.getExactUser(event.getPlayer().getName()).sendTranslated(MessageType.NEUTRAL, "You are near the world border! You might want to turn around.");
+            this.um.getExactUser(event.getPlayer().getUniqueId()).sendTranslated(MessageType.NEUTRAL, "You are near the world border! You might want to turn around.");
         }
     }
 
@@ -158,7 +158,7 @@ public class BorderListener implements Listener
         }
         if (!isChunkInRange(event.getTo().getChunk(),config))
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             user.sendTranslated(MessageType.NEGATIVE, "This portal would teleport you behind the border!");
             event.setCancelled(true);
         }

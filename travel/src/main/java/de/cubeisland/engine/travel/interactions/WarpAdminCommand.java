@@ -76,7 +76,7 @@ public class WarpAdminCommand extends ContainerCommand
         }
         if (context.getArgCount() > 0)
         {
-            if (module.getCore().getUserManager().getUser(context.getString(0), false) == null)
+            if (module.getCore().getUserManager().findExactUser(context.getString(0)) == null)
             {
                 context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
                 return null;

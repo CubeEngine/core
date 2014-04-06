@@ -96,7 +96,7 @@ public class Spawner extends Module implements Listener
             event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH) &&
             event.getBlock().getType() == Material.MOB_SPAWNER)
         {
-            User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
 
             ItemStack clone = spawnerItem.clone();
             ItemMeta itemMeta = clone.getItemMeta();
@@ -117,7 +117,7 @@ public class Spawner extends Module implements Listener
             {
                 CreatureSpawner spawner = (CreatureSpawner)event.getBlock().getState();
                 spawner.setSpawnedType(EntityType.SNOWBALL);
-                User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 user.sendTranslated(MessageType.POSITIVE, "Inactive Monster Spawner placed!");
             }
         }
@@ -131,7 +131,7 @@ public class Spawner extends Module implements Listener
          && event.getPlayer().getItemInHand().getType() == Material.MONSTER_EGG)
         {
             event.setCancelled(true);
-            User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             CreatureSpawner state = (CreatureSpawner)event.getClickedBlock().getState();
             if (state.getSpawnedType() == EntityType.SNOWBALL)
             {

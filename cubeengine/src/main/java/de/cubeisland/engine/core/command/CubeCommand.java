@@ -448,7 +448,7 @@ public abstract class CubeCommand extends Command
         }
         else if (bukkitSender instanceof Player)
         {
-            return core.getUserManager().getExactUser(bukkitSender.getName());
+            return core.getUserManager().getExactUser(((Player)bukkitSender).getUniqueId());
         }
         else if (bukkitSender instanceof org.bukkit.command.ConsoleCommandSender)
         {

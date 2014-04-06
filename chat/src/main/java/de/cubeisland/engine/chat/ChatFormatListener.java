@@ -50,7 +50,7 @@ public class ChatFormatListener implements Listener
         {
             return;
         }
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (module.getConfig().allowColors)
         {
             if (module.perms().COLOR.isAuthorized(user))

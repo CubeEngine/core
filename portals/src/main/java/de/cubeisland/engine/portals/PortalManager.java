@@ -92,7 +92,7 @@ public class PortalManager implements Listener
         {
             if (portal.has(event.getTo()))
             {
-                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 PortalsAttachment attachment = user.attachOrGet(PortalsAttachment.class, module);
                 attachment.setInPortal(true);
                 if (attachment.isDebug())
@@ -179,7 +179,7 @@ public class PortalManager implements Listener
          || event.getFrom().getBlockZ() != event.getTo().getBlockZ())
         {
             List<Portal> portals = this.chunksWithPortals.get(LocationUtil.getChunkKey(event.getTo()));
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             PortalsAttachment attachment = user.attachOrGet(PortalsAttachment.class, module);
             if (portals != null)
             {

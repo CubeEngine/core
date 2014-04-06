@@ -188,7 +188,7 @@ public class RepairBlock
 
     public RepairRequest requestRepair(RepairBlockInventory inventory)
     {
-        User user = this.module.getCore().getUserManager().getUser(inventory.player.getName());
+        User user = this.module.getCore().getUserManager().getExactUser(inventory.player.getUniqueId());
         Map<Integer, ItemStack> items = this.itemProvider.getRepairableItems(inventory.inventory);
         if (items.size() > 0)
         {
@@ -234,7 +234,7 @@ public class RepairBlock
     {
         double price = request.getPrice();
         RepairBlockInventory inventory = request.getInventory();
-        User user = this.module.getCore().getUserManager().getExactUser(inventory.player.getName());
+        User user = this.module.getCore().getUserManager().getExactUser(inventory.player.getUniqueId());
         if (withdrawPlayer(user, price))
         {
             boolean itemsBroken = false;

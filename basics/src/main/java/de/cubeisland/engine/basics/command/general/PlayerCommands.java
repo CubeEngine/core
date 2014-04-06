@@ -454,7 +454,7 @@ public class PlayerCommands
                 }
                 if (entity instanceof Player)
                 {
-                    user = this.um.getExactUser(((Player)entity).getName());
+                    user = this.um.getExactUser(((Player)entity).getUniqueId());
                     break;
                 }
             }
@@ -545,12 +545,12 @@ public class PlayerCommands
     @Command(desc = "Kills yourself", max = 0)
     public void suicide(CommandContext context)
     {
-        User sender = this.um.getExactUser(context.getSender());
-        if (sender == null)
+        if (!(context.getSender() instanceof User))
         {
             context.sendTranslated(MessageType.NEGATIVE, "You want to kill yourself? {text:The command for that is stop!:color=BRIGHT_GREEN}");
             return;
         }
+        User sender = (User)context.getSender();
         sender.setHealth(0);
         sender.setLastDamageCause(new EntityDamageEvent(sender, EntityDamageEvent.DamageCause.CUSTOM, sender.getMaxHealth()));
         context.sendTranslated(MessageType.NEGATIVE, "You ended your life. Why? {text:\\:(:color=DARK_RED}");

@@ -68,7 +68,7 @@ public class FixedCycleTask implements Runnable
                     {
                         if (this.announcement.canAccess(player))
                         {
-                            User user = userManager.getUser(player.getName());
+                            User user = userManager.getExactUser(player.getUniqueId());
                             taskManager.callSync(new SenderTask(announcement.getMessage(user.getLocale()), new SimpleReceiver(user)));
                         }
                     }

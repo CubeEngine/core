@@ -55,9 +55,9 @@ public class Vote extends Module implements Listener
     private void onVote(VotifierEvent event)
     {
         final com.vexsoftware.votifier.model.Vote vote = event.getVote();
-        if (this.getCore().getUserManager().getUser(vote.getUsername(), false) != null)
+        if (this.getCore().getUserManager().findExactUser(vote.getUsername()) != null)
         {
-            User user = this.getCore().getUserManager().getUser(vote.getUsername());
+            User user = this.getCore().getUserManager().findExactUser(vote.getUsername());
             Economy economy = this.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
             VoteModel voteModel = this.dsl.selectFrom(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOne();
             if (voteModel == null)
@@ -93,6 +93,10 @@ public class Vote extends Module implements Listener
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).
                 replace("{VOTEURL}", this.config.voteUrl)));
+        }
+        else if (vote.getUsername() == null || vote.getUsername().trim().isEmpty())
+        {
+            this.getLog().info("{} voted but is not known to the server!", vote.getUsername());
         }
     }
 

@@ -55,7 +55,7 @@ public class KitManager implements Listener
             {
                 if (kit.isGiveKitOnFirstJoin())
                 {
-                    User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                    User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                     kit.give(null, user, true);
                 }
             }

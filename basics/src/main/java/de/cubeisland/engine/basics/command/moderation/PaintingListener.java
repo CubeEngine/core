@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bukkit.Art;
 import org.bukkit.entity.EntityType;
@@ -39,7 +40,7 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 public class PaintingListener implements Listener
 {
     private final Basics module;
-    private final Map<String, Painting> paintingChange;
+    private final Map<UUID, Painting> paintingChange;
 
     public PaintingListener(Basics module)
     {
@@ -52,7 +53,7 @@ public class PaintingListener implements Listener
     {
         if (event.getRightClicked().getType() == EntityType.PAINTING)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
 
             if (!module.perms().CHANGEPAINTING.isAuthorized(user))
             {
@@ -61,19 +62,19 @@ public class PaintingListener implements Listener
             }
             Painting painting = (Painting)event.getRightClicked();
 
-            Painting playerPainting = this.paintingChange.get(user.getName());
+            Painting playerPainting = this.paintingChange.get(user.getUniqueId());
             if(playerPainting == null && this.paintingChange.containsValue(painting))
             {
                 user.sendTranslated(MessageType.NEGATIVE, "This painting is being used by another player.");
             }
             else if (playerPainting == null)
             {
-                this.paintingChange.put(user.getName(), painting);
+                this.paintingChange.put(user.getUniqueId(), painting);
                 user.sendTranslated(MessageType.POSITIVE, "You can now cycle through the paintings using your mousewheel.");
             }
             else
             {
-                this.paintingChange.remove(user.getName());
+                this.paintingChange.remove(user.getUniqueId());
                 user.sendTranslated(MessageType.POSITIVE, "Painting locked");
             }
         }
@@ -97,18 +98,18 @@ public class PaintingListener implements Listener
     {
         if (!this.paintingChange.isEmpty())
         {
-            Painting painting = this.paintingChange.get(event.getPlayer().getName());
+            Painting painting = this.paintingChange.get(event.getPlayer().getUniqueId());
 
             if (painting != null)
             {
-                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 final int maxDistanceSquared = this.module.getConfiguration().maxChangePaintingDistance * this.module
                     .getConfiguration().maxChangePaintingDistance;
 
                 if (painting.getLocation().toVector()
                             .distanceSquared(user.getLocation().toVector()) > maxDistanceSquared)
                 {
-                    this.paintingChange.remove(user.getName());
+                    this.paintingChange.remove(user.getUniqueId());
                     user.sendTranslated(MessageType.POSITIVE, "Painting locked");
                     return;
                 }
@@ -155,10 +156,10 @@ public class PaintingListener implements Listener
 
         Painting painting = (Painting)event.getEntity();
 
-        Iterator<Entry<String, Painting>> paintingIterator = this.paintingChange.entrySet().iterator();
+        Iterator<Entry<UUID, Painting>> paintingIterator = this.paintingChange.entrySet().iterator();
         while(paintingIterator.hasNext())
         {
-            Entry<String, Painting> entry = paintingIterator.next();
+            Entry<UUID, Painting> entry = paintingIterator.next();
             if(entry.getValue().equals(painting))
             {
                 this.module.getCore().getUserManager().getExactUser(entry.getKey()).sendTranslated(MessageType.NEGATIVE, "The painting broke");

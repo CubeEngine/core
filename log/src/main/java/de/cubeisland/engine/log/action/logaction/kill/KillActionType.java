@@ -319,7 +319,7 @@ public class KillActionType extends ActionTypeContainer
             JsonNode owner = json.get("owner");
             if (owner != null)
             {
-                User user = CubeEngine.getUserManager().getUser(owner.asText(), false);
+                User user = CubeEngine.getUserManager().findExactUser(owner.asText());
                 if (user != null)
                 {
                     ((Tameable)entity).setOwner(user);
