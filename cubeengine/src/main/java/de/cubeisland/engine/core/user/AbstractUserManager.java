@@ -213,10 +213,20 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void cacheUser(User user)
     {
+        updateLastName(user);
         this.core.getLog().debug("User {} cached!", user.getName());
         this.cachedUserByUUID.put(user.getUniqueId(), user);
         this.cachedUserByDbId.put(user.getEntity().getKey(), user);
         this.attachDefaults(user);
+    }
+
+    protected void updateLastName(User user)
+    {
+        if (!user.getName().equalsIgnoreCase(user.getEntity().getLastName()))
+        {
+            user.getEntity().setLastName(user.getName());
+            user.getEntity().update();
+        }
     }
 
     protected synchronized void removeCachedUser(User user)

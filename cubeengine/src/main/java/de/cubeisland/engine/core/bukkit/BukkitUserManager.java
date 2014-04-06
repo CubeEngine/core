@@ -237,6 +237,7 @@ public class BukkitUserManager extends AbstractUserManager
             final User user = getExactUser(event.getPlayer().getUniqueId());
             if (user != null)
             {
+                updateLastName(user);
                 user.refreshIP();
                 final int removalTask = scheduledForRemoval.get(user.getName());
                 if (removalTask > -1)
