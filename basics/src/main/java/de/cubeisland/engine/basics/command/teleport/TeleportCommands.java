@@ -199,7 +199,7 @@ public class TeleportCommands
                 noTp.add(player.getName());
                 continue;
             }
-            if (!teleport(user.getCore().getUserManager().getExactUser(player.getName()), user.getLocation(), safe, force, true))
+            if (!teleport(user.getCore().getUserManager().getExactUser(player.getUniqueId()), user.getLocation(), safe, force, true))
             {
                 noTp.add(player.getName());
             }
@@ -288,7 +288,7 @@ public class TeleportCommands
                 continue;
             }
             boolean safe = !context.hasFlag("u");
-            if (!teleport(sender.getCore().getUserManager().getExactUser(player.getName()), sender.getLocation(), safe, force, true))
+            if (!teleport(sender.getCore().getUserManager().getExactUser(player.getUniqueId()), sender.getLocation(), safe, force, true))
             {
                 noTp.add(player.getName());
             }

@@ -458,7 +458,7 @@ public class EcoCommands extends ContainerCommand
                     }
                     else
                     {
-                        user = this.module.getCore().getUserManager().getUser(context.getString(0), true);
+                        user = this.module.getCore().getUserManager().findExactUser(context.getString(0));
                     }
                 }
                 else

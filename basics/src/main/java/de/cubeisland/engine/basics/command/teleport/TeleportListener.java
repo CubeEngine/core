@@ -45,7 +45,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         switch (event.getCause())
         {
             case COMMAND:
@@ -57,7 +57,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getEntity().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getEntity().getUniqueId());
         if (module.perms().COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
             user.get(BasicsAttachment.class).setDeathLocation(user.getLocation());
@@ -80,7 +80,7 @@ public class TeleportListener implements Listener
                 case LEFT_CLICK_BLOCK:
                     if (module.perms().COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                         Location loc;
                         if (event.getClickedBlock() != null && event.getClickedBlock().getType().isSolid())
                         {
@@ -104,7 +104,7 @@ public class TeleportListener implements Listener
                 case RIGHT_CLICK_BLOCK:
                     if (module.perms().COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                         Location loc = LocationUtil.getBlockBehindWall(user, this.module.getConfiguration().navigation.thru.maxRange,
                                 this.module.getConfiguration().navigation.thru.maxWallThickness);
                         if (loc == null)

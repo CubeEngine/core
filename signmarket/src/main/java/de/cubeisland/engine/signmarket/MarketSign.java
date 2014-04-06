@@ -950,7 +950,7 @@ public class MarketSign
         if (this.isAdminSign()) throw new NoOwnerException();
         if (userOwner == null || userOwner.get() == null)
         {
-            userOwner = new WeakReference<>(CubeEngine.getUserManager().getUser(this.blockInfo.getOwner().longValue()));
+            userOwner = new WeakReference<>(CubeEngine.getUserManager().getUser(this.blockInfo.getOwner()));
         }
         return userOwner.get();
     }

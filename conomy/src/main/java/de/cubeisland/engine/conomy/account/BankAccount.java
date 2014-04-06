@@ -249,7 +249,7 @@ public class BankAccount extends Account
         Set<String> invites = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.invites.values())
         {
-            invites.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
+            invites.add(this.manager.um.getUser(bankAccessModel.getUserid()).getName());
         }
         return invites;
     }
@@ -259,7 +259,7 @@ public class BankAccount extends Account
         Set<String> owners = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.owner.values())
         {
-            owners.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
+            owners.add(this.manager.um.getUser(bankAccessModel.getUserid()).getName());
         }
         return owners;
     }
@@ -269,7 +269,7 @@ public class BankAccount extends Account
         Set<String> members = new HashSet<>();
         for (BankAccessModel bankAccessModel : this.member.values())
         {
-            members.add(this.manager.um.getUser(bankAccessModel.getUserid().longValue()).getName());
+            members.add(this.manager.um.getUser(bankAccessModel.getUserid()).getName());
         }
         return members;
     }

@@ -22,7 +22,8 @@ import java.util.Locale;
 import java.util.UUID;
 import javax.persistence.Transient;
 
-import de.cubeisland.engine.core.util.McUUID;
+import org.bukkit.OfflinePlayer;
+
 import org.jooq.Field;
 import org.jooq.Record9;
 import org.jooq.Row9;
@@ -41,15 +42,15 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity> implements Recor
     /**
      * Fills in Information for a new User
      */
-    public UserEntity newUser(String player)
+    public UserEntity newUser(OfflinePlayer player)
     {
         this.setKey(UInteger.valueOf(0));
-        this.setPlayer(player);
+        this.setLastName(player.getName().toLowerCase());
         this.setLastseen(new Timestamp(System.currentTimeMillis()));
         this.setFirstseen(this.getLastseen());
         this.setPasswd(new byte[0]);
         this.setNogc(false);
-        this.setUUID(McUUID.getUUIDForName(player));
+        this.setUUID(player.getUniqueId());
         return this;
     }
 
@@ -81,12 +82,12 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity> implements Recor
         setValue(0, value);
     }
 
-    public String getPlayer()
+    public String getLastName()
     {
         return (String)getValue(1);
     }
 
-    public void setPlayer(String value)
+    public void setLastName(String value)
     {
         setValue(1, value);
     }
@@ -262,7 +263,7 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity> implements Recor
     @Override
     public String value2()
     {
-        return getPlayer();
+        return getLastName();
     }
 
     @Override

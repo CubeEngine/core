@@ -486,7 +486,7 @@ public class HomeCommand extends ContainerCommand
                         for (TeleportInvite invite : invites)
                         {
                             context.sendMessage("    " + ChatFormat.DARK_GREEN + this.module.getCore().getUserManager()
-                                                                      .getUser(invite.getUserkey().longValue())
+                                                                      .getUser(invite.getUserkey())
                                                                       .getName());
                         }
                     }
@@ -566,7 +566,7 @@ public class HomeCommand extends ContainerCommand
                 {
                     sender.sendTranslated(MessageType.NEGATIVE, "You can't invite a person to a public home >:(");
                 }
-                User invited = CubeEngine.getUserManager().getUser(context.getString(1), false);
+                User invited = CubeEngine.getUserManager().findExactUser(context.getString(1));
                 if (invited == null)
                 {
                     sender.sendTranslated(MessageType.NEGATIVE, "That player could not be found!");
@@ -616,7 +616,7 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a person from a public home...");
                     return;
                 }
-                User invited = CubeEngine.getUserManager().getUser(context.getString(0), false);
+                User invited = CubeEngine.getUserManager().findExactUser(context.getString(0));
                 if (invited == null)
                 {
                     sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a player that never have played on this server!!");
@@ -652,7 +652,7 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a person from a public home...");
                     return;
                 }
-                User invited = CubeEngine.getUserManager().getUser(context.getString(1), false);
+                User invited = CubeEngine.getUserManager().findExactUser(context.getString(1));
                 if (invited == null)
                 {
                     sender.sendTranslated(MessageType.NEGATIVE, "You can't uninvite a player that never have played on this server!!");

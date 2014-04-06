@@ -110,6 +110,7 @@ public class KickBanCommands
              @Flag(longName = "force", name = "f")})
     public void ban(ParameterizedContext context)
     {
+        // TODO UUID stuff
         if (this.cannotBanUser(context)) return;
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         User user = null;
@@ -275,6 +276,7 @@ public class KickBanCommands
              flags = @Flag(longName = "force", name = "f"))
     public void tempban(ParameterizedContext context)
     {
+        // TODO UUID stuff
         if (this.cannotBanUser(context)) return;
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         User user = null;

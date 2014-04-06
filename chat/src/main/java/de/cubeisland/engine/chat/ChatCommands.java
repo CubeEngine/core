@@ -75,7 +75,7 @@ public class ChatCommands
         }
         else
         {
-            if (module.getCore().getUserManager().getUser(name, false) != null && !module.perms().COMMAND_NICK_OFOTHER.isAuthorized(context.getSender()))
+            if (module.getCore().getUserManager().findExactUser(name) != null && !module.perms().COMMAND_NICK_OFOTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated(MessageType.NEGATIVE, "This name has been taken by another player!");
                 return;

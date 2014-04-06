@@ -148,7 +148,7 @@ public class TelePointManager
         }
         else if (name.contains(":"))
         {
-            User userOfHome = this.module.getCore().getUserManager().getUser(name.substring(0, name.indexOf(":")));
+            User userOfHome = this.module.getCore().getUserManager().findExactUser(name.substring(0, name.indexOf(":")));
             if (userOfHome == null) return null;
             name = name.replaceFirst(userOfHome.getName(), userOfHome.getId().toString());
             if (homes.containsKey(name))
@@ -224,7 +224,7 @@ public class TelePointManager
     {
         if (name.contains(":"))
         {
-            User userOfWarp = this.module.getCore().getUserManager().getUser(name.substring(0, name.indexOf(":")));
+            User userOfWarp = this.module.getCore().getUserManager().findExactUser(name.substring(0, name.indexOf(":")));
             if (userOfWarp == null) return null;
             name = name.replaceFirst(userOfWarp.getName(), userOfWarp.getId().toString());
         }
@@ -424,7 +424,7 @@ public class TelePointManager
         }
         else if (name.contains(":"))
         {
-            User userOfWarp = this.module.getCore().getUserManager().getUser(name.substring(0, name.indexOf(":")));
+            User userOfWarp = this.module.getCore().getUserManager().findExactUser(name.substring(0, name.indexOf(":")));
             if (userOfWarp == null) return null;
             name = name.replaceFirst(userOfWarp.getName(), userOfWarp.getId().toString());
             if (warps.containsKey(name))

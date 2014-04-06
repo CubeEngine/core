@@ -87,7 +87,7 @@ public class ShoutCommand extends ContainerCommand
 
         for (Player player : players)
         {
-            User u = this.module.getCore().getUserManager().getExactUser(player.getName());
+            User u = this.module.getCore().getUserManager().getExactUser(player.getUniqueId());
             String[] message = announcement.getMessage(u.getLocale());
             if (message != null)
             {

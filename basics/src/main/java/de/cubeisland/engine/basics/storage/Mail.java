@@ -54,7 +54,7 @@ public class Mail extends UpdatableRecordImpl<Mail> implements Record4<UInteger,
         {
             return ChatFormat.RED + "CONSOLE" + ChatFormat.WHITE + ": " + this.getMessage();
         }
-        User user = CubeEngine.getUserManager().getUser(this.getSenderid().longValue());
+        User user = CubeEngine.getUserManager().getUser(this.getSenderid());
         return ChatFormat.DARK_GREEN + user.getName() + ChatFormat.WHITE + ": " + this.getMessage();
     }
 

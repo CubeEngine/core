@@ -281,7 +281,7 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Searches for a user in the database", usage = "<name>", min = 1, max = 1, async = true)
     public CommandResult searchUser(CommandContext context)
     {
-        final boolean exact = core.getUserManager().getUser(context.getString(0)) != null;
+        final boolean exact = core.getUserManager().findExactUser(context.getString(0)) != null;
         final User user = core.getUserManager().findUser(context.getString(0), true);
         return new CommandResult()
         {

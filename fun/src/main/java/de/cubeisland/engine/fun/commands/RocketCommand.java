@@ -20,6 +20,7 @@ package de.cubeisland.engine.fun.commands;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -114,7 +115,7 @@ public class RocketCommand
         {
             if (!this.contains(user))
             {
-                instances.add(new RocketCMDInstance(user.getName(), height));
+                instances.add(new RocketCMDInstance(user.getUniqueId(), height));
 
                 if (taskId == -1)
                 {
@@ -151,7 +152,7 @@ public class RocketCommand
             
             for (RocketCMDInstance instance : instances)
             {
-                if (instance.getName().equals(user.getName()))
+                if (instance.getUuid().equals(user.getName()))
                 {
                     trash = instance;
                     break;
@@ -180,7 +181,7 @@ public class RocketCommand
         {
             if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL)
             {
-                User user = this.userManager.getExactUser(((Player)event.getEntity()).getName());
+                User user = this.userManager.getExactUser(event.getEntity().getUniqueId());
                 if (user == null)
                 {
                     return;
@@ -245,13 +246,13 @@ public class RocketCommand
 
         private class RocketCMDInstance
         {
-            private final String name;
+            private final UUID uuid;
             private final int height;
             private boolean down;
 
-            private RocketCMDInstance(String name, int height)
+            private RocketCMDInstance(UUID uuid, int height)
             {
-                this.name = name;
+                this.uuid = uuid;
                 this.height = height;
                 this.down = false;
             }
@@ -273,12 +274,12 @@ public class RocketCommand
 
             public User getUser()
             {
-                return CubeEngine.getUserManager().getUser(name, false);
+                return CubeEngine.getUserManager().getExactUser(uuid);
             }
 
-            public String getName()
+            public UUID getUuid()
             {
-                return this.name;
+                return this.uuid;
             }
 
             public int getNumberOfAirBlocksOverHead()

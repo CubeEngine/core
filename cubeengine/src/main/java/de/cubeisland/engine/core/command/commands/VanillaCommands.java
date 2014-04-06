@@ -204,7 +204,7 @@ public class VanillaCommands implements CommandHolder
             }
             return;
         }
-        User user = this.core.getUserManager().getUser(context.getString(0), false);
+        User user = this.core.getUserManager().findExactUser(context.getString(0));
         if (user == null && !context.hasFlag("f"))
         {
             context.sendTranslated(MessageType.NEGATIVE, "The given player has never played on this server!");
@@ -223,16 +223,19 @@ public class VanillaCommands implements CommandHolder
             return;
         }
         offlinePlayer.setOp(true);
-        user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
-        if (user != null)
+        if (offlinePlayer.isOnline())
         {
-            user.sendTranslated(MessageType.POSITIVE, "You were opped by {sender}", context.getSender());
+            user = this.core.getUserManager().getExactUser(offlinePlayer.getUniqueId());
+            if (user != null)
+            {
+                user.sendTranslated(MessageType.POSITIVE, "You were opped by {sender}", context.getSender());
+            }
         }
         context.sendTranslated(MessageType.POSITIVE, "{user} is now an operator!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
-            if (onlineUser == user || onlineUser == context.getSender() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSender() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
@@ -274,16 +277,19 @@ public class VanillaCommands implements CommandHolder
             return;
         }
         offlinePlayer.setOp(false);
-        User user = this.core.getUserManager().getUser(offlinePlayer.getName(), false);
-        if (user != null)
+        if (offlinePlayer.isOnline())
         {
-            user.sendTranslated(MessageType.POSITIVE, "You were deopped by {user}.", context.getSender());
+            User user = this.core.getUserManager().getExactUser(offlinePlayer.getUniqueId());
+            if (user != null)
+            {
+                user.sendTranslated(MessageType.POSITIVE, "You were deopped by {user}.", context.getSender());
+            }
         }
         context.sendTranslated(MessageType.POSITIVE, "{user} is no longer an operator!", offlinePlayer);
 
         for (User onlineUser : this.core.getUserManager().getOnlineUsers())
         {
-            if (onlineUser == user || onlineUser == context.getSender() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSender() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }

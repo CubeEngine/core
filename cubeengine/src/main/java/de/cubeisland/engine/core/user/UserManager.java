@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.user;
 
 import java.util.Set;
+import java.util.UUID;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
@@ -26,6 +27,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Cleanable;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import org.jooq.types.UInteger;
 
 public interface UserManager extends Cleanable
 {
@@ -52,20 +54,21 @@ public interface UserManager extends Cleanable
     User getExactUser(String name);
 
     /**
-     * Gets a User by CommandSender (creates new User if not found)
+     * Gets a use by its UUID (creates a new user if not found)
      *
-     * @param sender the sender
-     * @return the User OR null if sender is not a Player
+     * @param uuid the uuid
+     * @return the user
      */
-    User getExactUser(CommandSender sender);
+    User getExactUser(UUID uuid);
 
     /**
      * Gets a user by his database ID
      *
+     *
      * @param id the ID to get the user by
      * @return the user or null if not found
      */
-    User getUser(long id);
+    User getUser(UInteger id);
 
     /**
      * Gets a user by his name
@@ -73,25 +76,17 @@ public interface UserManager extends Cleanable
      * @param name the name to get the user by
      * @return the user or null if not found
      */
-    User getUser(String name);
-
-    /**
-     * Gets a user by his name
-     *
-     * @param name the name to get the user by
-     * @param create whether to create the user if not found
-     * @return the user or null if not found and create is false
-     */
-    User getUser(String name, boolean create);
+    User findExactUser(String name);
 
     /**
      * Queries the database directly if the user is not loaded to get its name.
      * <p>Only use with valid key!
      *
+     *
      * @param key the users key
      * @return
      */
-    String getUserName(long key);
+    String getUserName(UInteger key);
 
     /**
      * Returns all the users that are currently online
@@ -101,14 +96,6 @@ public interface UserManager extends Cleanable
     Set<User> getOnlineUsers();
     Set<User> getLoadedUsers();
     void shutdown();
-
-    /**
-     * Finds an online User
-     *
-     * @param name the name
-     * @return a online User
-     */
-    User findOnlineUser(String name);
 
     /**
      * Finds an User (can create a new User if a found player is online but not

@@ -53,7 +53,7 @@ public class ToolListener implements Listener
         if (!toolPerm.isAuthorized(event.getPlayer())) return;
         if (event.getClickedBlock() != null)
         {
-            User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             ItemStack item = event.getPlayer().getItemInHand();
             if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
             {

@@ -24,6 +24,7 @@ import java.util.Locale;
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 
+// TODO UUID usage
 public class ConomyInterface implements Economy
 {
     private final ConomyManager manager;
@@ -135,7 +136,7 @@ public class ConomyInterface implements Economy
         BankAccount bankAccount = manager.getBankAccount(name, true);
         if (ownerName != null)
         {
-            User user = this.manager.module.getCore().getUserManager().getUser(ownerName, false);
+            User user = this.manager.module.getCore().getUserManager().findExactUser(ownerName);
             if (user == null)
             {
                 throw new IllegalArgumentException("Unknown User: " + ownerName);
@@ -195,7 +196,7 @@ public class ConomyInterface implements Economy
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
-        User user = this.manager.module.getCore().getUserManager().getUser(playerName, false);
+        User user = this.manager.module.getCore().getUserManager().findExactUser(playerName);
         if (user == null)
         {
             throw new IllegalArgumentException("Unknown User: " + playerName);
@@ -209,7 +210,7 @@ public class ConomyInterface implements Economy
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
-        User user = this.manager.module.getCore().getUserManager().getUser(playerName, false);
+        User user = this.manager.module.getCore().getUserManager().findExactUser(playerName);
         if (user == null)
         {
             throw new IllegalArgumentException("Unknown User: " + playerName);

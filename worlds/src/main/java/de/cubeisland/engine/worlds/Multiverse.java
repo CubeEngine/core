@@ -280,7 +280,7 @@ public class Multiverse implements Listener
         if (!universe.checkPlayerAccess(event.getPlayer(), to.getWorld()))
         {
             event.setCancelled(true); // TODO check if player has access to the world he is currently in
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to enter the universe {name#universe}!", universe.getName());
         }
     }

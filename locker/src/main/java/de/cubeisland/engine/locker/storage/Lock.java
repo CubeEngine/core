@@ -244,7 +244,7 @@ public class Lock
                         name = name.substring(1);
                         add = false;
                     }
-                    User modifyUser = this.manager.um.getUser(name, false);
+                    User modifyUser = this.manager.um.findExactUser(name);
                     if (modifyUser == null) throw new IllegalArgumentException(); // This is prevented by checking first in the cmd execution
                     short accessType = ACCESS_FULL;
                     if (add && admin)
@@ -607,7 +607,7 @@ public class Lock
         {
             this.lastKeyNotify = new HashMap<>();
         }
-        User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
+        User owner = this.manager.um.getUser(this.model.getOwnerId());
         Long last = this.lastKeyNotify.get(owner.getName());
         if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
         {
@@ -631,7 +631,7 @@ public class Lock
             {
                 this.lastNotify = new HashMap<>();
             }
-            User owner = this.manager.um.getUser(this.model.getOwnerId().longValue());
+            User owner = this.manager.um.getUser(this.model.getOwnerId());
             Long last = this.lastNotify.get(owner.getName());
             if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
             {
@@ -662,7 +662,7 @@ public class Lock
 
     public User getOwner()
     {
-        return this.manager.module.getCore().getUserManager().getUser(this.model.getOwnerId().longValue());
+        return this.manager.module.getCore().getUserManager().getUser(this.model.getOwnerId());
     }
 
     public boolean isPublic()
@@ -719,7 +719,7 @@ public class Lock
                 user.sendTranslated(MessageType.POSITIVE, "The following users have direct access to this protection");
                 for (AccessListModel listModel : accessors)
                 {
-                    User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId().longValue());
+                    User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId());
                     if ((listModel.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN)
                     {
                         user.sendMessage("  " + ChatFormat.GREY + "- " + ChatFormat.DARK_GREEN + accessor.getName() + ChatFormat.GOLD + " [Admin}");

@@ -149,7 +149,7 @@ public class MoneyCommand extends ContainerCommand
         for (AccountModel account : models)
         {
             context.sendMessage("" + i++ + ChatFormat.WHITE + "- " + ChatFormat.DARK_GREEN +
-                                    this.module.getCore().getUserManager().getUser(account.getUserId().longValue()).getName() +
+                                    this.module.getCore().getUserManager().getUser(account.getUserId()).getName() +
                                     ChatFormat.WHITE + ": " + ChatFormat.GOLD + (manager.format((double)account.getValue() / manager.fractionalDigitsFactor())));
         }
     }

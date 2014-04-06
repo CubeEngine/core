@@ -72,7 +72,7 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerHas(String worldName, String player, String permission)
     {
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return false;
@@ -114,7 +114,7 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerAdd(String worldName, String player, String permission)
     {
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return false;
@@ -141,7 +141,7 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerAddTransient(Player player, String permission)
     {
-        User user = roles.getCore().getUserManager().getUser(player.getName());
+        User user = roles.getCore().getUserManager().getExactUser(player.getUniqueId());
         if (user == null)
         {
             return false;
@@ -155,7 +155,7 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerRemove(String worldName, String player, String permission)
     {
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return false;
@@ -182,7 +182,7 @@ public class CubePermissionService extends Permission
     @Override
     public boolean playerRemoveTransient(Player player, String permission)
     {
-        User user = roles.getCore().getUserManager().getUser(player.getName());
+        User user = roles.getCore().getUserManager().getExactUser(player.getUniqueId());
         if (user == null)
         {
             return false;
@@ -296,7 +296,7 @@ public class CubePermissionService extends Permission
             this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return false;
@@ -326,7 +326,7 @@ public class CubePermissionService extends Permission
             this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return false;
@@ -363,7 +363,7 @@ public class CubePermissionService extends Permission
             this.module.getLog().warn(new IllegalArgumentException(), "The group name should never be null!");
             return false;
         }
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return false;
@@ -395,7 +395,7 @@ public class CubePermissionService extends Permission
     @Override
     public String[] getPlayerGroups(String worldName, String player)
     {
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return null;
@@ -425,7 +425,7 @@ public class CubePermissionService extends Permission
     @Override
     public String getPrimaryGroup(String worldName, String player)
     {
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return null;

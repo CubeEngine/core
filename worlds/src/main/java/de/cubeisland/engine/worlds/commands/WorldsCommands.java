@@ -448,7 +448,7 @@ public class WorldsCommands extends ContainerCommand
         }
         for (Player player : world.getPlayers())
         {
-            User user = this.getModule().getCore().getUserManager().getExactUser(player.getName());
+            User user = this.getModule().getCore().getUserManager().getExactUser(player.getUniqueId());
             user.sendTranslated(MessageType.POSITIVE, "The world you are in got moved into an other universe!");
             oldUniverse.savePlayer(user, world);
             universe.loadPlayer(user);

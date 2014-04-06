@@ -149,7 +149,7 @@ public class EditModeListener extends ConversationCommand
     {
         if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
         {
-            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             if (this.hasUser(user))
             {
                 user.sendTranslated(MessageType.NEUTRAL, "MarketSigns are disabled in the configuration for this world!");
@@ -557,7 +557,7 @@ public class EditModeListener extends ConversationCommand
     {
         if (event.useItemInHand().equals(Event.Result.DENY)) return;
 
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
@@ -651,7 +651,7 @@ public class EditModeListener extends ConversationCommand
     {
         if (event.getBlockPlaced().getState() instanceof Sign)
         {
-            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             if (this.hasUser(user))
             {
                 if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))
@@ -676,7 +676,7 @@ public class EditModeListener extends ConversationCommand
     @EventHandler
     public void onSignChange(SignChangeEvent event)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             if (this.module.getConfig().disableInWorlds.contains(event.getPlayer().getWorld().getName()))

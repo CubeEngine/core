@@ -23,6 +23,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
@@ -52,9 +53,9 @@ public class Home extends TeleportPoint
         telePointManager.removeHomeFromUser(this, this.getOwner());
         if (this.invited != null)
         {
-            for (String name : this.invited)
+            for (UInteger uid : this.invited)
             {
-                User user = CubeEngine.getUserManager().findOnlineUser(name);
+                User user = CubeEngine.getUserManager().getUser(uid);
                 if (user != null)
                 {
                     telePointManager.removeHomeFromUser(this, user);
