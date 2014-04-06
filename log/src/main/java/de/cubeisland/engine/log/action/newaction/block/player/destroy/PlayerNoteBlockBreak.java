@@ -24,12 +24,10 @@ import org.bukkit.Note;
  */
 public class PlayerNoteBlockBreak extends PlayerBlockBreak
 {
-    private Note note;
+    public Note note;
 
     public void setNote(Note note)
     {
         this.note = note;
     }
-
-    // TODO custom rollback/redo
 }

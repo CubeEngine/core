@@ -261,6 +261,11 @@ public abstract class BaseAction<ListenerType> extends ReflectedDBObject impleme
             return result;
         }
 
+        public Location toLocation()
+        {
+            return new Location(this.getWorld(), this.vector.x, this.vector.y, this.vector.z);
+        }
+
         public static class Block3DVector implements Section
         {
             public int x;

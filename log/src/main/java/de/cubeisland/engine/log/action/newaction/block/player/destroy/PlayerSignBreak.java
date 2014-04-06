@@ -30,7 +30,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.SIGN;
  */
 public class PlayerSignBreak extends PlayerBlockBreak
 {
-    private String[] oldLines;
+    public String[] oldLines;
 
     @Override
     public String translateAction(User user)

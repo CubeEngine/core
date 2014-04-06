@@ -200,6 +200,7 @@ public class LogAttachment extends UserAttachment
         {
             this.createNewPreview();
         }
+        // TODO signs
         preview.add(state);
     }
 

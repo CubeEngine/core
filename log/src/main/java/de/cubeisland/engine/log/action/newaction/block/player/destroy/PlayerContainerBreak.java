@@ -28,7 +28,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PlayerContainerBreak extends PlayerBlockBreak
 {
-    private ItemStack[] contents;
+    public ItemStack[] contents;
 
     @Override
     public String translateAction(User user)
