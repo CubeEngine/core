@@ -30,7 +30,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
  */
 public class PlayerCommand extends ActionPlayer<PlayerActionListener>
 {
-    private String command;
+    public String command;
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -42,18 +42,10 @@ public class PlayerCommand extends ActionPlayer<PlayerActionListener>
     @Override
     public String translateAction(User user)
     {
-        if (this.hasAttached())
-        {
-            return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\" x{amount}",
-                                       this.player.name, this.command, this.getAttached().size() + 1);
-        }
-        return user.getTranslation(POSITIVE, "{user} used the command \"{input#command}\"", this.player.name,
-                                   this.command);
-    }
-
-    public String getCommand()
-    {
-        return command;
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count, "{user} used the command \"{input#command}\"",
+                                    "{user} used the command \"{input#command}\" x{amount}",
+                                    this.player.name, this.command, count);
     }
 
     public void setCommand(String command)

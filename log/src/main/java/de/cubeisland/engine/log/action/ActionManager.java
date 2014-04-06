@@ -126,7 +126,7 @@ public class ActionManager
             }
             catch (ReflectiveOperationException e)
             {
-                throw new IllegalArgumentException("Could not instantiate action", e);
+                throw new IllegalArgumentException("Could not instantiate action " + clazz.getName(), e);
             }
         }
         return action.isActive(config);

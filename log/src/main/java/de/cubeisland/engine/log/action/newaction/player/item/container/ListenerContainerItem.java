@@ -145,7 +145,8 @@ public class ListenerContainerItem extends LogListener
     {
         if (event.getPlayer() instanceof Player)
         {
-            if (this.isActive(ActionContainerItem.class, event.getPlayer().getWorld()))
+            if (this.isActive(ItemInsert.class, event.getPlayer().getWorld())
+             || this.isActive(ItemRemove.class, event.getPlayer().getWorld()))
             {
                 /* TODO
                 ContainerType type = new ContainerType(event.getInventory().getHolder());

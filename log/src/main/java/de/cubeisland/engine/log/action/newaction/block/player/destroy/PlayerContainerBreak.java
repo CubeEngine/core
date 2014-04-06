@@ -51,7 +51,7 @@ public class PlayerContainerBreak extends PlayerBlockBreak
                                        this.oldBlock.name());
         }
         return user.getTranslationN(POSITIVE, amount, "{user} broke {name#container} with a single stack of items",
-                                    "{user} broke {name#container} with {amount} stacks of items", this.player.name,
+                                    "{user} broke {name#container} with {amount} stacks of items", this.player.name, this.oldBlock.name(),
                                     amount);
     }
 

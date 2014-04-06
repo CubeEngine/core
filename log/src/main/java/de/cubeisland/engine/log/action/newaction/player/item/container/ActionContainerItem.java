@@ -67,7 +67,7 @@ public abstract class ActionContainerItem extends ActionItem<ListenerContainerIt
         if (amount < 0)
         {
             return user.getTranslation(POSITIVE, "{user} took {amount} {name#item} out of {name#container}",
-                                       this.player.name, amount, this.item.getType().name(), this.type.name);
+                                       this.player.name, -amount, this.item.getType().name(), this.type.name);
         }
         return user.getTranslation(POSITIVE, "{user} did not change the amount of {name#item} in {name#container}",
                                    this.player.name, this.item.getType().name(), this.type.name);

@@ -395,7 +395,7 @@ public class QueryManager
             }
             catch (ClassNotFoundException e)
             {
-                module.getLog().warn(e, "Could not find Action for DBObject! {}", entry);
+                module.getLog().warn(e, "Could not find Action for DBObject! {}", entry.get("action"));
             }
         }
         lookup.setQueryResults(results);
@@ -748,11 +748,11 @@ public class QueryManager
             }
             if (include)
             {
-                query.append("$in", players);
+                query.append("player.uuid", new BasicDBObject("$in", players));
             }
             else
             {
-                query.append("$nin", players);
+                query.append("player.uuid", new BasicDBObject("$nin", players));
             }
         }
         // TODO finish queryParams

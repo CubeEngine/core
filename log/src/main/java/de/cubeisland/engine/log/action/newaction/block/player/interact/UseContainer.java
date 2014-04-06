@@ -30,8 +30,6 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class UseContainer extends ActionPlayerBlock<ListenerPlayerBlockInteract>
 {
-    // TODO no rollback/redo
-
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -64,5 +62,12 @@ public class UseContainer extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     public boolean isActive(LoggingConfiguration config)
     {
         return config.use.container;
+    }
+
+    @Override
+    public boolean isStackable()
+    {
+        // TODO instead do not implement Rollbackable & Redoable
+        return true;
     }
 }
