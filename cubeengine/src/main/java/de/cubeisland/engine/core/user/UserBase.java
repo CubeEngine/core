@@ -91,6 +91,7 @@ import static de.cubeisland.engine.core.contract.Contract.expect;
 public class UserBase implements Player
 {
     private final UUID uuid;
+    private OfflinePlayer cachedOfflinePlayer = null;
     private EntityPlayer dummy = null;
 
     public UserBase(UUID uuid)
@@ -100,7 +101,11 @@ public class UserBase implements Player
 
     public OfflinePlayer getOfflinePlayer()
     {
-        return Bukkit.getOfflinePlayer(uuid);
+        if (this.cachedOfflinePlayer == null)
+        {
+            this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
+        }
+        return cachedOfflinePlayer;
     }
 
     private EntityPlayer getDummy()
