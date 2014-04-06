@@ -157,9 +157,13 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public User getExactUser(UUID uuid)
     {
-        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
-        User user = new User(entity);
-        this.cacheUser(user);
+        User user = this.cachedUserByUUID.get(uuid);
+        if (user == null)
+        {
+            UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
+            user = new User(entity);
+            this.cacheUser(user);
+        }
         return user;
     }
 
