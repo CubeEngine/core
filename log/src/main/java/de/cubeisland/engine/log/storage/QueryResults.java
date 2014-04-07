@@ -31,10 +31,10 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.BaseAction.Coordinate;
-import de.cubeisland.engine.log.action.newaction.Redoable;
-import de.cubeisland.engine.log.action.newaction.Rollbackable;
+import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.BaseAction.Coordinate;
+import de.cubeisland.engine.log.action.Redoable;
+import de.cubeisland.engine.log.action.Rollbackable;
 
 public class QueryResults
 {

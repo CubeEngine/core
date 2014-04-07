@@ -41,7 +41,7 @@ import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionManager;
 import de.cubeisland.engine.log.action.ActionTypeCompleter;
-import de.cubeisland.engine.log.action.newaction.block.ActionBlock.BlockSection;
+import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
 import de.cubeisland.engine.log.storage.Lookup;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.ShowParameter;

@@ -25,7 +25,7 @@ import de.cubeisland.engine.core.command.parameterized.Completer;
 
 public class ActionTypeCompleter implements Completer
 {
-    static ActionManager manager;
+    static ActionManager manager; // TODO cleanup on shutdown
 
     @Override
     public List<String> complete(CommandSender sender, String token)

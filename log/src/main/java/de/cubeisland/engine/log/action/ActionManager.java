@@ -24,25 +24,22 @@ import java.util.Set;
 
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.ListenerItemMove;
-import de.cubeisland.engine.log.action.newaction.LogListener;
-import de.cubeisland.engine.log.action.newaction.block.ListenerBlock;
-import de.cubeisland.engine.log.action.newaction.block.entity.ListenerEntityBlock;
-import de.cubeisland.engine.log.action.newaction.block.entity.explosion.ListenerExplode;
-import de.cubeisland.engine.log.action.newaction.block.flow.ListenerFlow;
-import de.cubeisland.engine.log.action.newaction.block.ignite.ListenerBlockIgnite;
-import de.cubeisland.engine.log.action.newaction.block.player.ListenerPlayerBlock;
-import de.cubeisland.engine.log.action.newaction.block.player.bucket.ListenerBucket;
-import de.cubeisland.engine.log.action.newaction.block.player.interact.ListenerPlayerBlockInteract;
-import de.cubeisland.engine.log.action.newaction.death.ListenerDeath;
-import de.cubeisland.engine.log.action.newaction.entityspawn.ListenerEntitySpawn;
-import de.cubeisland.engine.log.action.newaction.player.PlayerActionListener;
-import de.cubeisland.engine.log.action.newaction.player.entity.ListenerPlayerEntity;
-import de.cubeisland.engine.log.action.newaction.hanging.ListenerHanging;
-import de.cubeisland.engine.log.action.newaction.player.item.ListenerItem;
-import de.cubeisland.engine.log.action.newaction.player.item.container.ListenerContainerItem;
-import de.cubeisland.engine.log.action.newaction.vehicle.ListenerVehicle;
+import de.cubeisland.engine.log.action.block.ListenerBlock;
+import de.cubeisland.engine.log.action.block.entity.ListenerEntityBlock;
+import de.cubeisland.engine.log.action.block.entity.explosion.ListenerExplode;
+import de.cubeisland.engine.log.action.block.flow.ListenerFlow;
+import de.cubeisland.engine.log.action.block.ignite.ListenerBlockIgnite;
+import de.cubeisland.engine.log.action.block.player.ListenerPlayerBlock;
+import de.cubeisland.engine.log.action.block.player.bucket.ListenerBucket;
+import de.cubeisland.engine.log.action.block.player.interact.ListenerPlayerBlockInteract;
+import de.cubeisland.engine.log.action.death.ListenerDeath;
+import de.cubeisland.engine.log.action.entityspawn.ListenerEntitySpawn;
+import de.cubeisland.engine.log.action.player.PlayerActionListener;
+import de.cubeisland.engine.log.action.player.entity.ListenerPlayerEntity;
+import de.cubeisland.engine.log.action.hanging.ListenerHanging;
+import de.cubeisland.engine.log.action.player.item.ListenerItem;
+import de.cubeisland.engine.log.action.player.item.container.ListenerContainerItem;
+import de.cubeisland.engine.log.action.vehicle.ListenerVehicle;
 
 public class ActionManager
 {

@@ -33,8 +33,8 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.newaction.BaseAction;
-import de.cubeisland.engine.log.action.newaction.block.ActionBlock.BlockSection;
+import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
 
 public class QueryParameter implements Cloneable
 {

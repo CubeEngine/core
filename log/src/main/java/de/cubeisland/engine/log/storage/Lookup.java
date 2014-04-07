@@ -25,7 +25,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionCategory;
-import de.cubeisland.engine.log.action.newaction.BaseAction;
+import de.cubeisland.engine.log.action.BaseAction;
 
 public class Lookup implements Cloneable
 {
