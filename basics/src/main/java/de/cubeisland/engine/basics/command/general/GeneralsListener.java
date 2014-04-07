@@ -116,7 +116,13 @@ public class GeneralsListener implements Listener
         int amount = bUser.countMail();
         if (amount > 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "You have {amount} new mail!", amount); // TODO This is still not grammatically correct, can't think of anything better to go here
+            if (amount == 1)
+            {
+                user.sendTranslated(MessageType.POSITIVE, "You have {amount} new mail!", amount);
+            } else
+            {
+                user.sendTranslated(MessageType.POSITIVE, "You have {amount} of mail!", amount);
+            }
             user.sendTranslated(MessageType.NEUTRAL, "Use {text:/mail read} to display them.");
         }
     }
