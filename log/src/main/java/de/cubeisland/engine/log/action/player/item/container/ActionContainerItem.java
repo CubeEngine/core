@@ -18,16 +18,20 @@
 package de.cubeisland.engine.log.action.player.item.container;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.player.item.ActionItem;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 
-public abstract class ActionContainerItem extends ActionItem<ListenerContainerItem>
+public abstract class ActionContainerItem extends ActionItem
 {
     public ContainerType type;
+
+    protected ActionContainerItem(String name)
+    {
+        super(name, ITEM);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -228,10 +232,4 @@ public abstract class ActionContainerItem extends ActionItem<ListenerContainerIt
         return false;
     }
      */
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ITEM;
-    }
 }

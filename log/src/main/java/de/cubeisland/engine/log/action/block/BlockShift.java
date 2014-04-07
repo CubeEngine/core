@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.block;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -30,10 +29,15 @@ import static org.bukkit.Material.PISTON_EXTENSION;
 /**
  * Represents blocks moved by pistons
  */
-public class BlockShift extends ActionBlock<ListenerBlock>
+public class BlockShift extends ActionBlock
 {
     private boolean push;
     // TODO piston main block?
+
+    public BlockShift()
+    {
+        super("shift", BLOCK);
+    }
 
     public boolean canAttach(BaseAction action)
     {
@@ -80,18 +84,6 @@ public class BlockShift extends ActionBlock<ListenerBlock>
     public void setPush()
     {
         this.push = true;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "shift";
     }
 
     @Override

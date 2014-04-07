@@ -28,6 +28,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class ExplodeWither extends ExplosionAction
 {
+    public ExplodeWither()
+    {
+        super("wither");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,12 +55,6 @@ public class ExplodeWither extends ExplosionAction
         return user.getTranslationN(POSITIVE, count, "A Wither hunting down {user} blasted away {name#block}",
                                     "A Wither hunting down {user} blasted away {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "wither";
     }
 
     @Override

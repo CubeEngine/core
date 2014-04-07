@@ -24,12 +24,18 @@ import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player using a button
  */
-public class UseButton extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseButton extends ActionPlayerBlock
 {
+    public UseButton()
+    {
+        super("button", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,18 +50,6 @@ public class UseButton extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         return user.getTranslationN(POSITIVE, count, "{user} pressed a {name#block}",
                                     "{user} pressed a {name#block} {amount} times", this.player.name,
                                     this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "button";
     }
 
     @Override

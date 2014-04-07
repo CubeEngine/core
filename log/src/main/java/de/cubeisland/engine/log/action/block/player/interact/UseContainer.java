@@ -19,17 +19,22 @@ package de.cubeisland.engine.log.action.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player accessing an {@link org.bukkit.inventory.InventoryHolder}
  */
-public class UseContainer extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseContainer extends ActionPlayerBlock
 {
+    public UseContainer()
+    {
+        super("container", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,18 +49,6 @@ public class UseContainer extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         return user.getTranslationN(POSITIVE, count, "{user} looked into a {name#container}",
                                     "{user} looked into {2:amount} {name#container}", this.player.name,
                                     this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "container";
     }
 
     @Override

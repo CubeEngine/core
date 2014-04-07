@@ -20,11 +20,11 @@ package de.cubeisland.engine.log.action.death;
 import org.bukkit.entity.Entity;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock.EntitySection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 
 /**
  * Represents an Entity dying
@@ -39,6 +39,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 public abstract class EntityDeathAction extends ActionDeath
 {
     public EntitySection killed;
+
+    protected EntityDeathAction(String name)
+    {
+        super(name, DEATH);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -88,11 +93,5 @@ public abstract class EntityDeathAction extends ActionDeath
     public void setKilled(Entity entity)
     {
         this.killed = new EntitySection(entity); // TODO rollback info
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.DEATH;
     }
 }

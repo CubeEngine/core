@@ -30,10 +30,15 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a player chatting
  */
-public class PlayerChat extends ActionPlayer<PlayerActionListener>
+public class PlayerChat extends ActionPlayer
 {
-    private String message;
-    private String messageFormat;
+    public String message;
+    public String messageFormat;
+
+    public PlayerChat()
+    {
+        super("chat", PLAYER);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -67,18 +72,6 @@ public class PlayerChat extends ActionPlayer<PlayerActionListener>
     public void setMessageFormat(String format)
     {
         this.messageFormat = format;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return PLAYER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "chat";
     }
 
     @Override

@@ -32,6 +32,11 @@ public class SignBreak extends BlockBreak
 {
     public String[] oldLines;
 
+    public SignBreak()
+    {
+        super("break", SIGN);
+    }
+
     @Override
     public String translateAction(User user)
     {
@@ -48,17 +53,5 @@ public class SignBreak extends BlockBreak
     public void setLines(String[] lines)
     {
         this.oldLines = lines;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return SIGN;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 }

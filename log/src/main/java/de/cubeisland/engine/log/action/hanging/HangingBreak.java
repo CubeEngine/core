@@ -19,10 +19,10 @@ package de.cubeisland.engine.log.action.hanging;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_HANGING;
 
 /**
  * Represents a player breaking an hanging entity
@@ -32,6 +32,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class HangingBreak extends ActionHanging
 {
+    public HangingBreak()
+    {
+        super("break", ENTITY_HANGING);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,18 +55,6 @@ public class HangingBreak extends ActionHanging
     public void setCause(BaseAction action)
     {
         // TODO reference
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.ENTITY_HANGING;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 
     @Override

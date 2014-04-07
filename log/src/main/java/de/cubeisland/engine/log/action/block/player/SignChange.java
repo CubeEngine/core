@@ -25,14 +25,21 @@ import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
+import static de.cubeisland.engine.log.action.ActionCategory.SIGN;
 
 /**
  * Represents a player changing the text on a sign
  */
-public class SignChange extends ActionPlayerBlock<ListenerPlayerBlock>
+public class SignChange extends ActionPlayerBlock
 {
     public String[] oldLines;
     public String[] newLines;
+
+    public SignChange()
+    {
+        super("change", SIGN);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -63,18 +70,6 @@ public class SignChange extends ActionPlayerBlock<ListenerPlayerBlock>
     public void setOldLines(String[] oldLines)
     {
         this.oldLines = oldLines;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.SIGN;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "change";
     }
 
     @Override

@@ -24,10 +24,9 @@ import de.cubeisland.engine.log.LoggingConfiguration;
  */
 public class DeathAnimal extends EntityDeathAction
 {
-    @Override
-    public String getName()
+    public DeathAnimal()
     {
-        return "animal";
+        super("animal");
     }
 
     @Override

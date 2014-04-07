@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
 /**
  * Represents an entity changing a block
  */
-public class EntityChange extends ActionEntityBlock<ListenerEntityBlock>
+public class EntityChange extends ActionEntityBlock
 {
+    public EntityChange()
+    {
+        super("change", ENTITY);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -41,18 +46,6 @@ public class EntityChange extends ActionEntityBlock<ListenerEntityBlock>
     {
         return user.getTranslation(POSITIVE, "{name#entity} changed {name#block} to {name#block}", this.entity.name(),
                                    this.oldBlock.name(), this.newBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "change";
     }
 
     @Override

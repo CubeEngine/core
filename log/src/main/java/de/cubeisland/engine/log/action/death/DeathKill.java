@@ -32,12 +32,17 @@ import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 /**
  * Represents something killing a LivingEntity
  */
-public class DeathKill extends BaseAction<ListenerDeath>
+public class DeathKill extends BaseAction
 {
     public PlayerSection playerKiller = null;
     public EntitySection entityKiller = null;
     public DamageCause otherKiller = null;
     public boolean projectile = false;
+
+    public DeathKill()
+    {
+        super("kill", DEATH);
+    }
 
     // TODO item in hand
 
@@ -97,18 +102,6 @@ public class DeathKill extends BaseAction<ListenerDeath>
                                         "{name#cause} killed {amount} entities", this.otherKiller.name(), count);
         }
         return "INVALID KILLTYPE!";
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return DEATH;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "kill";
     }
 
     @Override

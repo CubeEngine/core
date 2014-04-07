@@ -25,10 +25,9 @@ import de.cubeisland.engine.log.LoggingConfiguration;
  */
 public class ItemRemove extends ActionContainerItem
 {
-    @Override
-    public String getName()
+    public ItemRemove()
     {
-        return "remove";
+        super("remove");
     }
 
     @Override

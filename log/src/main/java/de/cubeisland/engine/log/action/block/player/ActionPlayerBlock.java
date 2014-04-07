@@ -21,15 +21,21 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.block.ActionBlock;
 import de.cubeisland.engine.reflect.Section;
 
 /**
  * Represents a player changing a block
  */
-public abstract class ActionPlayerBlock<ListenerType> extends ActionBlock<ListenerType>
+public abstract class ActionPlayerBlock extends ActionBlock
 {
     public PlayerSection player;
+
+    protected ActionPlayerBlock(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setPlayer(Player player)
     {

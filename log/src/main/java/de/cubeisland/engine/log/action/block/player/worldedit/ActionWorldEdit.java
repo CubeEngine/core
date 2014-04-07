@@ -30,8 +30,13 @@ import static org.bukkit.Material.AIR;
 /**
  * Represents a player changing blocks using the worldedit plugin
  */
-public class ActionWorldEdit extends ActionPlayerBlock<LogEditSession>
+public class ActionWorldEdit extends ActionPlayerBlock
 {
+    public ActionWorldEdit()
+    {
+        super("worldedit", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -63,18 +68,6 @@ public class ActionWorldEdit extends ActionPlayerBlock<LogEditSession>
                                         "{user} used worldedit to replace {name#block} with {name#block} x{amount}",
                                         this.player.name, this.oldBlock.name(), this.newBlock.name(), count);
         }
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "worldedit";
     }
 
     @Override

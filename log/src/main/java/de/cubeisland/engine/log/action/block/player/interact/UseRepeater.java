@@ -33,8 +33,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player changing the delay of a repeater
  */
-public class UseRepeater extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseRepeater extends ActionPlayerBlock
 {
+    public UseRepeater()
+    {
+        super("repeater", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -59,19 +64,6 @@ public class UseRepeater extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         }
         return user.getTranslation(POSITIVE, "{user} set the repeater to {amount} ticks delay", this.player.name,
                                    newTicks);
-    }
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "repeater";
     }
 
     @Override

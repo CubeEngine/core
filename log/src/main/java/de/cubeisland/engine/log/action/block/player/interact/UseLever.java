@@ -21,7 +21,6 @@ import org.bukkit.material.Lever;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
@@ -31,8 +30,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player using a lever
  */
-public class UseLever extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseLever extends ActionPlayerBlock
 {
+    public UseLever()
+    {
+        super("lever", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -49,18 +53,6 @@ public class UseLever extends ActionPlayerBlock<ListenerPlayerBlockInteract>
             return user.getTranslation(POSITIVE, "{user} activated the lever", this.player.name);
         }
         return user.getTranslation(POSITIVE, "{user} deactivated the lever", this.player.name);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "lever";
     }
 
     @Override

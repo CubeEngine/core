@@ -28,9 +28,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a player executing a command
  */
-public class PlayerCommand extends ActionPlayer<PlayerActionListener>
+public class PlayerCommand extends ActionPlayer
 {
     public String command;
+
+    public PlayerCommand()
+    {
+        super("command", PLAYER);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -51,18 +56,6 @@ public class PlayerCommand extends ActionPlayer<PlayerActionListener>
     public void setCommand(String command)
     {
         this.command = command;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return PLAYER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "command";
     }
 
     @Override

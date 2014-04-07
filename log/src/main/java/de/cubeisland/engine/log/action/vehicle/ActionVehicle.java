@@ -27,11 +27,15 @@ import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock.PlayerSect
 
 import static de.cubeisland.engine.log.action.ActionCategory.VEHICLE;
 
-public abstract class ActionVehicle extends BaseAction<ListenerVehicle>
+public abstract class ActionVehicle extends BaseAction
 {
     public EntitySection vehicle;
-
     public PlayerSection player;
+
+    protected ActionVehicle(String name)
+    {
+        super(name, VEHICLE);
+    }
 
     public void setVehicle(Entity entity)
     {
@@ -41,11 +45,5 @@ public abstract class ActionVehicle extends BaseAction<ListenerVehicle>
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return VEHICLE;
     }
 }

@@ -88,7 +88,7 @@ public class LogListener implements Listener
         return blockState;
     }
 
-    public final <T extends BaseAction<?>> T newAction(Class<T> clazz, World world)
+    public final <T extends BaseAction> T newAction(Class<T> clazz, World world)
     {
         if (!this.isActive(clazz, world))
         {
@@ -97,7 +97,7 @@ public class LogListener implements Listener
         return this.newAction(clazz);
     }
 
-    public final <T extends BaseAction<?>> T newAction(Class<T> clazz)
+    public final <T extends BaseAction> T newAction(Class<T> clazz)
     {
         T action = module.getCore().getConfigFactory().create(clazz);
         action.setTarget(new BasicDBObject());
@@ -116,7 +116,7 @@ public class LogListener implements Listener
         return true;
     }
 
-    public <T extends BaseAction> Reference<T> reference(BaseAction<?> action)
+    public <T extends BaseAction> Reference<T> reference(BaseAction action)
     {
         if (action == null)
         {

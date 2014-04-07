@@ -23,6 +23,7 @@ import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
 import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
@@ -30,6 +31,11 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
  */
 public class UseFurnaceMinecart extends ActionPlayerEntity
 {
+    public UseFurnaceMinecart()
+    {
+        super("furnacecart", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -43,18 +49,6 @@ public class UseFurnaceMinecart extends ActionPlayerEntity
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{user} gave fuel to a furnace-minecart",
                                     "{user} gave fuel to a furnace-minecart {amount} times", this.player.name, count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "furnacecart";
     }
 
     @Override

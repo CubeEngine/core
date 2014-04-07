@@ -28,9 +28,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a Player joining the server
  */
-public class PlayerJoin extends ActionPlayer<PlayerActionListener>
+public class PlayerJoin extends ActionPlayer
 {
     public String ip;
+
+    public PlayerJoin()
+    {
+        super("join", PLAYER);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -53,18 +58,6 @@ public class PlayerJoin extends ActionPlayer<PlayerActionListener>
     public void setIp(String ip)
     {
         this.ip = ip;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return PLAYER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "join";
     }
 
     @Override

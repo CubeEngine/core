@@ -32,6 +32,11 @@ public class IgniteLava extends ActionBlockIgnite
 {
     public Coordinate source;
 
+    public IgniteLava()
+    {
+        super("lava");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -48,12 +53,6 @@ public class IgniteLava extends ActionBlockIgnite
     public void setSource(Location source)
     {
         this.source = new Coordinate(source);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "lava";
     }
 
     @Override

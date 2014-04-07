@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 /**
  * Represents a player crafting an item
  */
-public class ItemCraft extends ActionItem<ListenerItem>
+public class ItemCraft extends ActionItem
 {
+    public ItemCraft()
+    {
+        super("craft", ITEM);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -47,18 +52,6 @@ public class ItemCraft extends ActionItem<ListenerItem>
         }
         return user.getTranslation(POSITIVE, "{user} crafted {name#item}", this.player.name,
                                    this.item.getType().name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ITEM;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "craft";
     }
 
     @Override

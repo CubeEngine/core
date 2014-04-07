@@ -30,13 +30,17 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 /**
  * Represents items transferred by hoppers or droppers
  */
-public class ItemMove extends BaseAction<ListenerItemMove>
+public class ItemMove extends BaseAction
 {
     public ItemStack item;
     public BlockFace direction;
-
     public ContainerType fromContainer;
     public ContainerType toContainer;
+
+    public ItemMove()
+    {
+        super("move", ITEM);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -54,18 +58,6 @@ public class ItemMove extends BaseAction<ListenerItemMove>
                                     this.item.getType().name(), count);
         // TODO from invType to invType
         // TODO separate for entity containers with uuid to be able to track position
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ITEM;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "move";
     }
 
     @Override

@@ -20,7 +20,6 @@ package de.cubeisland.engine.log.action.block;
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
@@ -30,9 +29,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents blocks falling
  */
-public class BlockFall extends ActionBlock<ListenerBlock>
+public class BlockFall extends ActionBlock
 {
     public Reference<ActionPlayerBlock> cause;
+
+    public BlockFall()
+    {
+        super("fall", BLOCK);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -50,18 +54,6 @@ public class BlockFall extends ActionBlock<ListenerBlock>
         }
         return user.getTranslation(POSITIVE, "{name#block} did fall to a lower place because of {user}",
                                    this.oldBlock.name(), cause.fetch(ActionPlayerBlock.class).player.name);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "fall";
     }
 
     @Override

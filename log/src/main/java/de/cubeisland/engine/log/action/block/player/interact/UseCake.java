@@ -26,12 +26,18 @@ import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player eating a cake
  */
-public class UseCake extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseCake extends ActionPlayerBlock
 {
+    public UseCake()
+    {
+        super("cake", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,18 +56,6 @@ public class UseCake extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         {
             return user.getTranslation(POSITIVE, "{user} ate a piece of cake", this.player.name);
         }
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "cake";
     }
 
     @Override

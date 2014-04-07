@@ -19,9 +19,7 @@ package de.cubeisland.engine.log.action.player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
-import de.cubeisland.engine.log.action.block.player.bucket.ListenerBucket;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.BUCKET;
@@ -29,8 +27,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.BUCKET;
 /**
  * Represents a player filling a bucket with milk
  */
-public class BucketMilk extends ActionPlayer<ListenerBucket>
+public class BucketMilk extends ActionPlayer
 {
+    public BucketMilk()
+    {
+        super("milk", BUCKET);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -43,18 +46,6 @@ public class BucketMilk extends ActionPlayer<ListenerBucket>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{user} milked a cow", "{user} milked {amount} cows",
                                     this.player.name, count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BUCKET;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "milk";
     }
 
     @Override

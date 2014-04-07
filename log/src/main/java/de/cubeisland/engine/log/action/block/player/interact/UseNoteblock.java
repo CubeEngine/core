@@ -34,9 +34,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player changing the tune of a noteblock
  */
-public class UseNoteblock extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseNoteblock extends ActionPlayerBlock
 {
     public byte note;
+
+    public UseNoteblock()
+    {
+        super("noteblock", USE);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -70,19 +75,6 @@ public class UseNoteblock extends ActionPlayerBlock<ListenerPlayerBlockInteract>
     {
         super.setOldBlock(state);
         this.note = ((NoteBlock)state).getNote().getId();
-    }
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "noteblock";
     }
 
     @Override

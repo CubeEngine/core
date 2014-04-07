@@ -456,7 +456,7 @@ public class QueryManager
             Profiler.startProfiling("logging");
             int logSize = logs.size();
             List<DBObject> toLog = new ArrayList<>();
-            for (BaseAction<?> log : logs)
+            for (BaseAction log : logs)
             {
                 log.save();
                 toLog.add(log.getTarget());

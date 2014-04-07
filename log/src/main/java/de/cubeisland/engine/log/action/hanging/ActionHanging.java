@@ -20,15 +20,20 @@ package de.cubeisland.engine.log.action.hanging;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock.EntitySection;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock.PlayerSection;
 
-public abstract class ActionHanging extends BaseAction<ListenerHanging>
+public abstract class ActionHanging extends BaseAction
 {
     public EntitySection hanging;
-
     public PlayerSection player;
+
+    protected ActionHanging(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setHanging(Entity entity)
     {

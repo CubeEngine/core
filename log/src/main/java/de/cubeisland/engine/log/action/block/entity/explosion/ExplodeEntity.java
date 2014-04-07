@@ -29,8 +29,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.EXPLODE;
 /**
  * Represents an explosion caused by an entity
  */
-public class ExplodeEntity extends ActionEntityBlock<ListenerExplode>
+public class ExplodeEntity extends ActionEntityBlock
 {
+    public ExplodeEntity()
+    {
+        super("entity", EXPLODE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,18 +49,6 @@ public class ExplodeEntity extends ActionEntityBlock<ListenerExplode>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "Something blew up {name#block}",
                                     "Something blew up {1:amount}x {name#block}", this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return EXPLODE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "entity";
     }
 
     @Override

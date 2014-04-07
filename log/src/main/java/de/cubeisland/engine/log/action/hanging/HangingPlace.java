@@ -30,6 +30,11 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_HANGING;
  */
 public class HangingPlace extends ActionHanging
 {
+    public HangingPlace()
+    {
+        super("place", ENTITY_HANGING);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,18 +49,6 @@ public class HangingPlace extends ActionHanging
         return user.getTranslationN(POSITIVE, count, "{name#hanging} got hung up by {user}",
                                     "{name#hanging} got hung up by {user} {amount} times", this.hanging.name(),
                                     this.player.name, count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY_HANGING;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "place";
     }
 
     @Override

@@ -32,10 +32,15 @@ import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 /**
  * Represents a player dropping items on death
  */
-public class PlayerDeathDrop extends BaseAction<ListenerDeath>
+public class PlayerDeathDrop extends BaseAction
 {
     public Reference<DeathPlayer> death;
     public ItemStack item;
+
+    public PlayerDeathDrop()
+    {
+        super("drop", DEATH);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -57,18 +62,6 @@ public class PlayerDeathDrop extends BaseAction<ListenerDeath>
         }
         return user.getTranslation(POSITIVE, "{user} dropped {name#item} x{amount} upon death", this.death.fetch(
             DeathPlayer.class).killed.name, this.item.getType().name(), amount);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return DEATH;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "drop";
     }
 
     @Override

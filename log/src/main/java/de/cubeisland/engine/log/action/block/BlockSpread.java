@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.block;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -28,8 +27,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block spreading
  */
-public class BlockSpread extends ActionBlock<ListenerBlock>
+public class BlockSpread extends ActionBlock
 {
+    public BlockSpread()
+    {
+        super("spread", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,18 +46,6 @@ public class BlockSpread extends ActionBlock<ListenerBlock>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} spreaded", "{1:amount}x {name#block} spreaded",
                                     this.newBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "spread";
     }
 
     @Override

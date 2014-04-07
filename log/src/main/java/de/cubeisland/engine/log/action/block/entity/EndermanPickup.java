@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_ENDERMAN;
 /**
  * Represents an Enderman picking up a block
  */
-public class EndermanPickup extends ActionEntityBlock<ListenerEntityBlock>
+public class EndermanPickup extends ActionEntityBlock
 {
+    public EndermanPickup()
+    {
+        super("pickup", ENTITY_ENDERMAN);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -48,18 +53,6 @@ public class EndermanPickup extends ActionEntityBlock<ListenerEntityBlock>
                                         this.oldBlock.name(), this.getAttached().size() + 1, endermanCount);
         }
         return user.getTranslation(POSITIVE, "An {text:Enderman} picked up {name#block}", this.oldBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY_ENDERMAN;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "pickup";
     }
 
     @Override

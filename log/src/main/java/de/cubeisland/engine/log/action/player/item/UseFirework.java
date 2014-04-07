@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.player.item;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.player.ActionPlayer;
 
@@ -29,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player launching a firework
  */
-public class UseFirework extends ActionPlayer<ListenerItem> // TODO item
+public class UseFirework extends ActionPlayer // TODO item
 {
+    public UseFirework()
+    {
+        super("firework", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -43,18 +47,6 @@ public class UseFirework extends ActionPlayer<ListenerItem> // TODO item
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{user} launched a firework", "{user} launched {amount} fireworks",
                                     this.player.name, count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "firework";
     }
 
     @Override

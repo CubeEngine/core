@@ -32,8 +32,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 /**
  * Represents a player enchanting an item
  */
-public class ItemEnchant extends ActionItem<ListenerItem>
+public class ItemEnchant extends ActionItem
 {
+    public ItemEnchant()
+    {
+        super("enchant", ITEM);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -59,19 +64,6 @@ public class ItemEnchant extends ActionItem<ListenerItem>
     public void setEnchants(Map<Enchantment, Integer> enchantsToAdd)
     {
         // TODO
-    }
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ITEM;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "enchant";
     }
 
     @Override

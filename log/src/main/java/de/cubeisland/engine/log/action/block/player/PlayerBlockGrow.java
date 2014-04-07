@@ -30,8 +30,13 @@ import static org.bukkit.Material.AIR;
 /**
  * Represents a player letting a tree or mushroom grow using bonemeal
  */
-public class PlayerBlockGrow extends ActionPlayerBlock<ListenerBlock>
+public class PlayerBlockGrow extends ActionPlayerBlock
 {
+    public PlayerBlockGrow()
+    {
+        super("grow", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -53,18 +58,6 @@ public class PlayerBlockGrow extends ActionPlayerBlock<ListenerBlock>
         return user.getTranslationN(POSITIVE, count, "{user} let grow {name#block} into {name#block}",
                                     "{user} let grow {3:amount}x {name#block} into {name#block}", this.player.name,
                                     this.newBlock.name(), this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "grow";
     }
 
     @Override

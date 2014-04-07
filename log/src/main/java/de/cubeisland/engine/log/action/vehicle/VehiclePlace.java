@@ -28,6 +28,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class VehiclePlace extends ActionVehicle
 {
+    public VehiclePlace()
+    {
+        super("place");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,12 +47,6 @@ public class VehiclePlace extends ActionVehicle
         return user.getTranslationN(POSITIVE, count, "{user} placed a {name#vehicle}",
                                     "{user} placed {2:amount} {name#vehicle}", this.player.name,
                                     this.vehicle.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "place";
     }
 
     @Override

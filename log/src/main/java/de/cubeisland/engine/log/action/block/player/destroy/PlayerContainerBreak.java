@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action.block.player.destroy;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.log.action.ActionCategory;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 

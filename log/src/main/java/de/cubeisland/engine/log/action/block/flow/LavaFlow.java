@@ -19,16 +19,21 @@ package de.cubeisland.engine.log.action.block.flow;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.LAVA;
 
 /**
  * Represents lava flowing
  */
 public class LavaFlow extends ActionFlow
 {
+    public LavaFlow()
+    {
+        super("flow", LAVA);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -41,18 +46,6 @@ public class LavaFlow extends ActionFlow
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "Lava occupied this block",
                                     "Lava occupied this block {amount} times", count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.LAVA;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "flow";
     }
 
     @Override

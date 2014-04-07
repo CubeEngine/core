@@ -23,12 +23,18 @@ import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.WATER;
 
 /**
  * Represents water flowing
  */
 public class WaterFlow extends ActionFlow
 {
+    public WaterFlow()
+    {
+        super("flow", WATER);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -41,19 +47,6 @@ public class WaterFlow extends ActionFlow
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "Water flooded this block",
                                     "Water flooded this block {amount} times", count);
-    }
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.WATER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "flow";
     }
 
     @Override

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log.action.block.flow;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.block.ActionBlock;
 
 /**
@@ -28,6 +29,10 @@ import de.cubeisland.engine.log.action.block.ActionBlock;
  * {@link WaterFlow}
  * {@link WaterForm}
  */
-public abstract class ActionFlow extends ActionBlock<ListenerFlow>
+public abstract class ActionFlow extends ActionBlock
 {
+    protected ActionFlow(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 }

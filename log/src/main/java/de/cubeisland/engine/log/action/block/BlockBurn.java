@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block burning away
  */
-public class BlockBurn extends ActionBlock<ListenerBlock>
+public class BlockBurn extends ActionBlock
 {
+    public BlockBurn()
+    {
+        super("burn", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,18 +47,6 @@ public class BlockBurn extends ActionBlock<ListenerBlock>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "A {name#block} went up into flames",
                                     "{1:amount}x {name#block} went up into flames", this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "burn";
     }
 
     @Override

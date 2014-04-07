@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.entityspawn;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -28,9 +27,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
 /**
  * Represents a LivingEntity spawning from a monsterspawner
  */
-public class SpawnSpawner extends ActionEntitySpawn<ListenerEntitySpawn>
+public class SpawnSpawner extends ActionEntitySpawn
 {
     // TODO spawner location && when lookup on spawner show spawned count
+
+    public SpawnSpawner()
+    {
+        super("spawner", SPAWN);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -44,18 +48,6 @@ public class SpawnSpawner extends ActionEntitySpawn<ListenerEntitySpawn>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#entity} spawned from a spawner",
                                     "{name#entity} spawned from a spawner {amount} times", this.entity.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return SPAWN;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "spawner";
     }
 
     @Override

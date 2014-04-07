@@ -329,10 +329,10 @@ public class ListenerBlock extends LogListener
                 Location loc = state.getLocation();
 
                 BlockFall action = this.set(BlockFall.class, state, null);
-                ActionBlock<?> cause = this.plannedFall.remove(loc);
+                ActionBlock cause = this.plannedFall.remove(loc);
                 if (cause instanceof ActionPlayerBlock)
                 {
-                    action.cause = this.reference((ActionPlayerBlock<?>)cause);
+                    action.cause = this.reference((ActionPlayerBlock)cause);
                 }
                 action.setNewBlock(AIR);
                 this.logAction(action);

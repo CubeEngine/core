@@ -40,8 +40,12 @@ public class IgniteFireball extends ActionBlockIgnite
 {
     public UUID shooterUUID;
     public EntityType shooterType;
-
     public PlayerSection player;
+
+    public IgniteFireball()
+    {
+        super("fireball");
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -89,12 +93,6 @@ public class IgniteFireball extends ActionBlockIgnite
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "fireball";
     }
 
     @Override

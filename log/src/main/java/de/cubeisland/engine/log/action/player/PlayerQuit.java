@@ -28,9 +28,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a Player leaving the server
  */
-public class PlayerQuit extends ActionPlayer<PlayerActionListener>
+public class PlayerQuit extends ActionPlayer
 {
     public String reason;
+
+    public PlayerQuit()
+    {
+        super("quit", PLAYER);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -53,18 +58,6 @@ public class PlayerQuit extends ActionPlayer<PlayerActionListener>
     public void setReason(String reason)
     {
         this.reason = reason;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return PLAYER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "quit";
     }
 
     @Override

@@ -46,7 +46,7 @@ import de.cubeisland.engine.log.Log;
  * {@link PlayerXp}
  * {@link PlayerTeleport}
  */
-public class PlayerActionListener extends PlayerLogListener
+public class PlayerActionListener extends ListenerPlayerLog
 {
     public PlayerActionListener(Log module)
     {

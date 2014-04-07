@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
 /**
  * Represents a LivingEntity spawning naturally
  */
-public class SpawnNatural extends ActionEntitySpawn<ListenerEntitySpawn>
+public class SpawnNatural extends ActionEntitySpawn
 {
+    public SpawnNatural()
+    {
+        super("natural", SPAWN);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,18 +47,6 @@ public class SpawnNatural extends ActionEntitySpawn<ListenerEntitySpawn>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#entity} spawned naturally",
                                     "{name#entity} spawned naturally {amount} times", this.entity.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return SPAWN;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "natural";
     }
 
     @Override

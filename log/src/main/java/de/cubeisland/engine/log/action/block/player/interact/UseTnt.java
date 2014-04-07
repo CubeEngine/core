@@ -29,8 +29,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player igniting TnT with a lighter
  */
-public class UseTnt extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseTnt extends ActionPlayerBlock
 {
+    public UseTnt()
+    {
+        super("tnt", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -43,19 +48,6 @@ public class UseTnt extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{user} ignited one TNT", "{user} ignited {amount} TNT",
                                     this.player.name, count);
-    }
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "tnt";
     }
 
     @Override

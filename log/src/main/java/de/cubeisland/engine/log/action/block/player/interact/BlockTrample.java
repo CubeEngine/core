@@ -30,8 +30,13 @@ import static org.bukkit.Material.SOIL;
 /**
  * Represents a player trampling crops
  */
-public class BlockTrample extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class BlockTrample extends ActionPlayerBlock
 {
+    public BlockTrample()
+    {
+        super("trample", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -56,18 +61,6 @@ public class BlockTrample extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         }
         return user.getTranslation(POSITIVE, "{user} trampeled down {name#block}", action.player.name,
                                    action.oldBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "trample";
     }
 
     @Override

@@ -23,12 +23,18 @@ import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.LAVA;
 
 /**
  * Represents lava breaking blocks
  */
 public class LavaBreak extends ActionFlow
 {
+    public LavaBreak()
+    {
+        super("break", LAVA);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,18 +48,6 @@ public class LavaBreak extends ActionFlow
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} got destroyed by lava!",
                                     "{1:amount} {name#block} got destroyed by lava", this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.LAVA;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 
     @Override

@@ -19,12 +19,18 @@ package de.cubeisland.engine.log.action.player;
 
 import org.bukkit.entity.Player;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock.PlayerSection;
 
-public abstract class ActionPlayer<ListenerType> extends BaseAction<ListenerType>
+public abstract class ActionPlayer extends BaseAction
 {
     public PlayerSection player;
+
+    protected ActionPlayer(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setPlayer(Player player)
     {

@@ -29,8 +29,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
  * Represents an Entity forming a block
  * <p>This will usually be a SnowGolem making snow
  */
-public class EntityForm extends ActionEntityBlock<ListenerEntityBlock>
+public class EntityForm extends ActionEntityBlock
 {
+    public EntityForm()
+    {
+        super("form", ENTITY);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,18 +55,6 @@ public class EntityForm extends ActionEntityBlock<ListenerEntityBlock>
         }
         return user.getTranslation(POSITIVE, "A {name#entity} formed {name#block}", this.entity.name(),
                                    this.oldBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "form";
     }
 
     @Override

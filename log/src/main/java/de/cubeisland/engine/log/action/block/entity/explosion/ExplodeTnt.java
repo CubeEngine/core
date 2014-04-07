@@ -28,6 +28,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class ExplodeTnt extends ExplosionAction
 {
+    public ExplodeTnt()
+    {
+        super("tnt");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,12 +55,6 @@ public class ExplodeTnt extends ExplosionAction
         return user.getTranslationN(POSITIVE, count, "A TNT-Explosion induced by {user} got rid of {name#block}",
                                     "A TNT-Explosion induced by {user} got rid of {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "tnt";
     }
 
     @Override

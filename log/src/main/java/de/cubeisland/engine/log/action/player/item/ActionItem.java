@@ -19,11 +19,17 @@ package de.cubeisland.engine.log.action.player.item;
 
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.player.ActionPlayer;
 
-public abstract class ActionItem<ListenerType> extends ActionPlayer<ListenerType>
+public abstract class ActionItem extends ActionPlayer
 {
     public ItemStack item; // TODO item format
+
+    protected ActionItem(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setItemstack(ItemStack result)
     {

@@ -19,16 +19,21 @@ package de.cubeisland.engine.log.action.block.flow;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.WATER;
 
 /**
  * Represents water creating a new water source block
  */
 public class WaterForm extends ActionFlow
 {
+    public WaterForm()
+    {
+        super("form", WATER);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -40,18 +45,6 @@ public class WaterForm extends ActionFlow
     {
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "A water source formed", "{amount} water sources formed", count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.WATER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "form";
     }
 
     @Override

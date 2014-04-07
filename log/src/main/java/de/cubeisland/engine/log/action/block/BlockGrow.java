@@ -29,8 +29,13 @@ import static org.bukkit.Material.AIR;
 /**
  * Represents trees or mushrooms growing
  */
-public class BlockGrow extends ActionBlock<ListenerBlock>
+public class BlockGrow extends ActionBlock
 {
+    public BlockGrow()
+    {
+        super("grow", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,18 +55,6 @@ public class BlockGrow extends ActionBlock<ListenerBlock>
         return user.getTranslationN(POSITIVE, count, "{name#block} grew naturally into {name#block}",
                                     "{2:amount}x {name#block} grew naturally into {name#block}", this.newBlock.name(),
                                     this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "grow";
     }
 
     @Override

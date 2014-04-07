@@ -32,6 +32,11 @@ public class IgniteSpread extends ActionBlockIgnite
 {
     public Coordinate source;
 
+    public IgniteSpread()
+    {
+        super("spread");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,12 +55,6 @@ public class IgniteSpread extends ActionBlockIgnite
     public void setSource(Location source)
     {
         this.source = new Coordinate(source);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "spread";
     }
 
     @Override

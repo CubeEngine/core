@@ -28,6 +28,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class IgniteOther extends ActionBlockIgnite
 {
+    public IgniteOther()
+    {
+        super("other");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -40,12 +45,6 @@ public class IgniteOther extends ActionBlockIgnite
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "A fire got set by an explosion or something else",
                                     "{amount} fires got set by explosions or something else", count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "other";
     }
 
     @Override

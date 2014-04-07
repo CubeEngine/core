@@ -255,7 +255,7 @@ public class QueryResults
         Map<Coordinate, Redoable> finalBlock = new HashMap<>();
         Map<Coordinate, LinkedList<Redoable>> blockChanges = new HashMap<>();
         TreeSet<Redoable> filteredLogs = new TreeSet<>();
-        for (BaseAction<?> logEntry : this.logEntries)
+        for (BaseAction logEntry : this.logEntries)
         {
             if (logEntry instanceof Redoable) // can redo
             {

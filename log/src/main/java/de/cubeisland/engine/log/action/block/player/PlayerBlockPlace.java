@@ -32,8 +32,18 @@ import static org.bukkit.Material.AIR;
  * {@link de.cubeisland.engine.log.action.block.player.bucket.BucketLava}
  * {@link de.cubeisland.engine.log.action.block.player.bucket.BucketWater}
  */
-public class PlayerBlockPlace extends ActionPlayerBlock<ListenerPlayerBlock>
+public class PlayerBlockPlace extends ActionPlayerBlock
 {
+    public PlayerBlockPlace()
+    {
+        super("place", BLOCK);
+    }
+
+    public PlayerBlockPlace(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -64,18 +74,6 @@ public class PlayerBlockPlace extends ActionPlayerBlock<ListenerPlayerBlock>
         }
         return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}",
                                    this.player.name, this.oldBlock.name(), this.newBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "place";
     }
 
     @Override

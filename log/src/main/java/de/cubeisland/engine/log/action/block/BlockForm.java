@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.block;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -28,8 +27,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block forming
  */
-public class BlockForm extends ActionBlock<ListenerBlock>
+public class BlockForm extends ActionBlock
 {
+    public BlockForm()
+    {
+        super("form", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,18 +46,6 @@ public class BlockForm extends ActionBlock<ListenerBlock>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} formed naturally",
                                     "{1:amount}x {name#block} formed naturally", this.newBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "form";
     }
 
     @Override

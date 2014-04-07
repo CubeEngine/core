@@ -29,8 +29,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
  * Represents an Entity breaking a block
  * <p>This will usually be a Zombie destroying doors
  */
-public class EntityBreak extends ActionEntityBlock<ListenerEntityBlock>
+public class EntityBreak extends ActionEntityBlock
 {
+    public EntityBreak()
+    {
+        super("break", ENTITY);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -49,18 +54,6 @@ public class EntityBreak extends ActionEntityBlock<ListenerEntityBlock>
         }
         return user.getTranslation(POSITIVE, "A {name#entity} destroyed {name#block}", this.entity.name(),
                                    this.oldBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 
     @Override

@@ -28,7 +28,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.player.PlayerLogListener;
+import de.cubeisland.engine.log.action.player.ListenerPlayerLog;
 
 import static org.bukkit.Material.FIREWORK;
 import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
@@ -46,7 +46,7 @@ import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
  * {@link ItemDrop}
  * {@link ItemPickup}
  */
-public class ListenerItem extends PlayerLogListener
+public class ListenerItem extends ListenerPlayerLog
 {
     public ListenerItem(Log module)
     {

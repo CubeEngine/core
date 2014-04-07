@@ -19,6 +19,7 @@ package de.cubeisland.engine.log.action.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -28,6 +29,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class ExplodeCreeper extends ExplosionAction
 {
+    public ExplodeCreeper()
+    {
+        super("creeper");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,12 +56,6 @@ public class ExplodeCreeper extends ExplosionAction
         return user.getTranslationN(POSITIVE, count, "{user} let a Creeper detonate and destroy {name#block}",
                                     "{user} let a Creeper detonate and destroy {amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "creeper";
     }
 
     @Override

@@ -33,6 +33,7 @@ import org.bukkit.material.MaterialData;
 
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.log.LogAttachment;
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.Redoable;
 import de.cubeisland.engine.log.action.Rollbackable;
@@ -45,10 +46,15 @@ import de.cubeisland.engine.reflect.Section;
 import static org.bukkit.Material.*;
 import static org.bukkit.block.BlockFace.UP;
 
-public abstract class ActionBlock<ListenerType> extends BaseAction<ListenerType> implements Rollbackable, Redoable
+public abstract class ActionBlock extends BaseAction implements Rollbackable, Redoable
 {
     public BlockSection oldBlock;
     public BlockSection newBlock;
+
+    protected ActionBlock(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setOldBlock(BlockState state)
     {

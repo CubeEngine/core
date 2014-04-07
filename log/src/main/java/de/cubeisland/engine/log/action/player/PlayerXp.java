@@ -28,9 +28,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a player picking up an xp-orb
  */
-public class PlayerXp extends ActionPlayer<PlayerActionListener>
+public class PlayerXp extends ActionPlayer
 {
-    private int exp;
+    public int exp;
+
+    public PlayerXp()
+    {
+        super("xp", PLAYER);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -55,18 +60,6 @@ public class PlayerXp extends ActionPlayer<PlayerActionListener>
     public void setExp(int exp)
     {
         this.exp = exp;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return PLAYER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "xp";
     }
 
     @Override

@@ -21,7 +21,6 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock.PlayerSection;
 
@@ -34,6 +33,11 @@ import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 public class DeathPlayer extends ActionDeath
 {
     public PlayerSection killed;
+
+    public DeathPlayer()
+    {
+        super("player", DEATH);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -82,18 +86,6 @@ public class DeathPlayer extends ActionDeath
     public void setPlayer(Player player)
     {
         this.killed = new PlayerSection(player);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return DEATH;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "player";
     }
 
     @Override

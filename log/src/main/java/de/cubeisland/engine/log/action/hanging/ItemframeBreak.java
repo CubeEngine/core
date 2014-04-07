@@ -23,6 +23,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_HANGING;
 
 /**
  * Represents a player breaking an itemframe

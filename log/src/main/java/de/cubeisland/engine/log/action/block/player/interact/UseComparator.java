@@ -24,13 +24,19 @@ import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 import static org.bukkit.Material.REDSTONE_COMPARATOR_ON;
 
 /**
  * Represents a player changing a comparator state
  */
-public class UseComparator extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseComparator extends ActionPlayerBlock
 {
+    public UseComparator()
+    {
+        super("comparator", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -51,18 +57,6 @@ public class UseComparator extends ActionPlayerBlock<ListenerPlayerBlockInteract
             return user.getTranslation(POSITIVE, "{user} activated the comparator", this.player.name);
         }
         return user.getTranslation(POSITIVE, "{user} deactivated the comparator", this.player.name);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "comparator";
     }
 
     @Override

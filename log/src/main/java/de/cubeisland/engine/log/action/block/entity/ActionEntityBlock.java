@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.ActionBlock;
 import de.cubeisland.engine.reflect.Section;
@@ -39,9 +40,14 @@ import de.cubeisland.engine.reflect.Section;
  * {@link EntityBreak}
  * {@link EntityForm}
  */
-public abstract class ActionEntityBlock<ListenerType> extends ActionBlock<ListenerType>
+public abstract class ActionEntityBlock extends ActionBlock
 {
     public EntitySection entity;
+
+    protected ActionEntityBlock(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setEntity(Entity entity)
     {

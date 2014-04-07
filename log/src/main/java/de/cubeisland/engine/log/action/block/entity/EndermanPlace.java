@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.block.entity;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -28,8 +27,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY_ENDERMAN;
 /**
  * Represents an Enderman placing a block
  */
-public class EndermanPlace extends ActionEntityBlock<ListenerEntityBlock>
+public class EndermanPlace extends ActionEntityBlock
 {
+    public EndermanPlace()
+    {
+        super("place", ENTITY_ENDERMAN);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -47,18 +51,6 @@ public class EndermanPlace extends ActionEntityBlock<ListenerEntityBlock>
                                         this.oldBlock.name(), this.getAttached().size() + 1, endermanCount);
         }
         return user.getTranslation(POSITIVE, "An {text:Enderman} placed {name#block}", this.oldBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY_ENDERMAN;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "place";
     }
 
     @Override

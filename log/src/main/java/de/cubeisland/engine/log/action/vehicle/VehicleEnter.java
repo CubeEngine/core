@@ -30,6 +30,11 @@ public class VehicleEnter extends ActionVehicle
 {
     // TODO entity vehicle enter
 
+    public VehicleEnter()
+    {
+        super("enter");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,12 +49,6 @@ public class VehicleEnter extends ActionVehicle
         return user.getTranslationN(POSITIVE, count, "{user} entered a {name#vehicle}",
                                     "{user} entered a {name#vehicle} {amount} times", this.player.name,
                                     this.vehicle.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "enter";
     }
 
     @Override

@@ -28,8 +28,18 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block breaking
  */
-public class BlockBreak extends ActionBlock<ListenerBlock>
+public class BlockBreak extends ActionBlock
 {
+    public BlockBreak()
+    {
+        super("break", BLOCK);
+    }
+
+    public BlockBreak(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -40,18 +50,6 @@ public class BlockBreak extends ActionBlock<ListenerBlock>
     public String translateAction(User user)
     {
         return user.getTranslation(POSITIVE, "{name#block} got destroyed or moved", this.oldBlock.name());
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 
     @Override

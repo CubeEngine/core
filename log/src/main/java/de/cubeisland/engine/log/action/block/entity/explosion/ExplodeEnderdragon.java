@@ -28,6 +28,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class ExplodeEnderdragon extends ExplosionAction
 {
+    public ExplodeEnderdragon()
+    {
+        super("enderdragon");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -51,12 +56,6 @@ public class ExplodeEnderdragon extends ExplosionAction
                                     "An enderdragon attacking {user} changed the integrity of {name#block}",
                                     "An enderdragon attacking {user} changed the integrity of {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "enderdragon";
     }
 
     @Override

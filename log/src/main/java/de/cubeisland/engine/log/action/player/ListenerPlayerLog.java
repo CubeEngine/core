@@ -23,9 +23,9 @@ import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.LogListener;
 
-public abstract class PlayerLogListener extends LogListener
+public abstract class ListenerPlayerLog extends LogListener
 {
-    protected PlayerLogListener(Log module, Class<? extends BaseAction>... actions)
+    protected ListenerPlayerLog(Log module, Class<? extends BaseAction>... actions)
     {
         super(module, actions);
     }

@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.block.entity.explosion;
 
 import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock.PlayerSection;
 
@@ -35,18 +34,17 @@ import static de.cubeisland.engine.log.action.ActionCategory.EXPLODE;
  * {@link ExplodeEnderdragon}
  * {@link ExplodeEntity}
  */
-public abstract class ExplosionAction extends ActionEntityBlock<ListenerExplode>
+public abstract class ExplosionAction extends ActionEntityBlock
 {
     public PlayerSection player;
+
+    protected ExplosionAction(String name)
+    {
+        super(name, EXPLODE);
+    }
 
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return EXPLODE;
     }
 }

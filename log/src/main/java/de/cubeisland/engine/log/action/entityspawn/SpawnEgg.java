@@ -31,9 +31,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.SPAWN;
 /**
  * Represents a player spawning a LivingEntity using a spawnegg
  */
-public class SpawnEgg extends ActionEntitySpawn<ListenerEntitySpawn>
+public class SpawnEgg extends ActionEntitySpawn
 {
     public PlayerSection player;
+
+    public SpawnEgg()
+    {
+        super("egg", SPAWN);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -54,18 +59,6 @@ public class SpawnEgg extends ActionEntitySpawn<ListenerEntitySpawn>
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player); // TODO dispenser
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return SPAWN;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "egg";
     }
 
     @Override

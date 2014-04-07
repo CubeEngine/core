@@ -30,6 +30,11 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
  */
 public class EntityShear extends ActionPlayerEntity
 {
+    public EntityShear()
+    {
+        super("shear", ENTITY);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,18 +49,6 @@ public class EntityShear extends ActionPlayerEntity
         return user.getTranslationN(POSITIVE, count, "{user} sheared {name#entity}",
                                     "{user} sheared {2:amount} {name#entity}", this.player.name, this.entity.name(),
                                     count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "shear";
     }
 
     @Override

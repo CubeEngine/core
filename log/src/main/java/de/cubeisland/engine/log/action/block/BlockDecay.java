@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents leaves decaying
  */
-public class BlockDecay extends ActionBlock<ListenerBlock>
+public class BlockDecay extends ActionBlock
 {
+    public BlockDecay()
+    {
+        super("decay", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,18 +47,6 @@ public class BlockDecay extends ActionBlock<ListenerBlock>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} decayed", "{1:amount}x {name#block} decayed",
                                     this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "decay";
     }
 
     @Override

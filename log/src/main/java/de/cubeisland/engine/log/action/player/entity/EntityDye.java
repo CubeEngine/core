@@ -34,6 +34,11 @@ public class EntityDye extends ActionPlayerEntity
 {
     private DyeColor color; // TODO converter ?
 
+    public EntityDye()
+    {
+        super("dye", ENTITY);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -54,18 +59,6 @@ public class EntityDye extends ActionPlayerEntity
     public void setColor(DyeColor color)
     {
         this.color = color;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "dye";
     }
 
     @Override

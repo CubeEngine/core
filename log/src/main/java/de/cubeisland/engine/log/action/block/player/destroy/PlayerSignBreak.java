@@ -32,6 +32,11 @@ public class PlayerSignBreak extends PlayerBlockBreak
 {
     public String[] oldLines;
 
+    public PlayerSignBreak()
+    {
+        super("break", SIGN);
+    }
+
     @Override
     public String translateAction(User user)
     {
@@ -51,11 +56,4 @@ public class PlayerSignBreak extends PlayerBlockBreak
     }
 
     // TODO custom rollback/redo
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return SIGN;
-    }
 }

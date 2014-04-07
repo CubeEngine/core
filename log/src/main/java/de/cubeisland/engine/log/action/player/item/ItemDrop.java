@@ -21,7 +21,6 @@ import org.bukkit.entity.Item;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock.EntitySection;
 
@@ -31,9 +30,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 /**
  * Represents a player dropping an item
  */
-public class ItemDrop extends ActionItem<ListenerItem>
+public class ItemDrop extends ActionItem
 {
     public EntitySection entity;
+
+    public ItemDrop()
+    {
+        super("drop", ITEM);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -61,18 +65,6 @@ public class ItemDrop extends ActionItem<ListenerItem>
     {
         this.setItemstack(item.getItemStack());
         this.entity = new EntitySection(item);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ITEM;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "drop";
     }
 
     @Override

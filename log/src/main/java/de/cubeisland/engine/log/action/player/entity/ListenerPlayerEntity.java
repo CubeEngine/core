@@ -31,7 +31,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.material.Dye;
 
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.player.PlayerLogListener;
+import de.cubeisland.engine.log.action.player.ListenerPlayerLog;
 
 import static org.bukkit.Material.*;
 
@@ -46,7 +46,7 @@ import static org.bukkit.Material.*;
  * {@link EntityFillSoup}
  * {@link EntityShear}
  */
-public class ListenerPlayerEntity extends PlayerLogListener
+public class ListenerPlayerEntity extends ListenerPlayerLog
 {
     public ListenerPlayerEntity(Log module)
     {

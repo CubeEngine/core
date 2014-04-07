@@ -23,12 +23,18 @@ import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.WATER;
 
 /**
  * Represents water breaking blocks
  */
 public class WaterBreak extends ActionFlow
 {
+    public WaterBreak()
+    {
+        super("break", WATER);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,19 +48,6 @@ public class WaterBreak extends ActionFlow
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} got flushed away by water!",
                                     "{1:amount} {name#block} got flushed away by water", this.oldBlock.name(), count);
-    }
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.WATER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 
     @Override

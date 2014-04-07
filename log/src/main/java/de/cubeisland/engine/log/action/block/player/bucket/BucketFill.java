@@ -19,18 +19,23 @@ package de.cubeisland.engine.log.action.block.player.bucket;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.BUCKET;
 import static org.bukkit.Material.*;
 
 /**
  * Represents a player filling a bucket
  */
-public class BucketFill extends ActionPlayerBlock<ListenerBucket>
+public class BucketFill extends ActionPlayerBlock
 {
+    public BucketFill()
+    {
+        super("fill", BUCKET);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -54,18 +59,6 @@ public class BucketFill extends ActionPlayerBlock<ListenerBucket>
         }
         return user.getTranslationN(POSITIVE, count, "{user} filled a bucket with some random fluids",
                                     "{user} filled {amount} buckets with some random fluids!", this.player.name, count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.BUCKET;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "fill";
     }
 
     @Override

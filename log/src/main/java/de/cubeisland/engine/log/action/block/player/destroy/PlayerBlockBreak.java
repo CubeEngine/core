@@ -23,7 +23,6 @@ import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
-import de.cubeisland.engine.log.action.block.player.ListenerPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
@@ -36,9 +35,19 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
  * {@link PlayerJukeboxBreak}
  * {@link PlayerContainerBreak}
  */
-public class PlayerBlockBreak extends ActionPlayerBlock<ListenerPlayerBlock>
+public class PlayerBlockBreak extends ActionPlayerBlock
 {
     public Reference<ActionPlayerBlock> reference;
+
+    public PlayerBlockBreak()
+    {
+        super("break", BLOCK);
+    }
+
+    public PlayerBlockBreak(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -64,18 +73,6 @@ public class PlayerBlockBreak extends ActionPlayerBlock<ListenerPlayerBlock>
                                     "{user} broke {name#block} indirectly",
                                     "{user} broke {name#block} x{amount} indirectly",
                                     this.player.name, this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 
     @Override

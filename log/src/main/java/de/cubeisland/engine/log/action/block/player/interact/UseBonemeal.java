@@ -19,17 +19,22 @@ package de.cubeisland.engine.log.action.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
  * Represents a player using bonemeal
  */
-public class UseBonemeal extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseBonemeal extends ActionPlayerBlock
 {
+    public UseBonemeal()
+    {
+        super("bonemeal", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,18 +49,6 @@ public class UseBonemeal extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         return user.getTranslationN(POSITIVE, count, "{user} used bonemeal on {name#block}",
                                     "{user} used bonemeal on {name#block} x{amount}", this.player.name,
                                     this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ActionCategory.USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "bonemeal";
     }
 
     @Override

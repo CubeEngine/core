@@ -31,8 +31,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player using a door
  */
-public class UseDoor extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UseDoor extends ActionPlayerBlock
 {
+    public UseDoor()
+    {
+        super("door", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -55,18 +60,6 @@ public class UseDoor extends ActionPlayerBlock<ListenerPlayerBlockInteract>
             return user.getTranslation(POSITIVE, "{user} closed the {name#block}", this.player.name,
                                        this.oldBlock.name());
         }
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "door";
     }
 
     @Override

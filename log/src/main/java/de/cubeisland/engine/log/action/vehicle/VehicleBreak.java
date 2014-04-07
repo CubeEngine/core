@@ -30,6 +30,11 @@ public class VehicleBreak extends ActionVehicle
 {
     // TODO actionType entity / block breakVechicle
 
+    public VehicleBreak()
+    {
+        super("break");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -44,12 +49,6 @@ public class VehicleBreak extends ActionVehicle
         return user.getTranslationN(POSITIVE, count, "{user} broke a {name#vehicle}",
                                     "{user} broke {2:amount} {name#vehicle}", this.player.name, this.vehicle.name(),
                                     count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "break";
     }
 
     @Override

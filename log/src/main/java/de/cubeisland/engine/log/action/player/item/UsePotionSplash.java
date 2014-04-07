@@ -20,7 +20,6 @@ package de.cubeisland.engine.log.action.player.item;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.player.ActionPlayer;
 
@@ -29,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player using SplashPotions
  */
-public class UsePotionSplash extends ActionPlayer<ListenerItem> // TODO potion item
+public class UsePotionSplash extends ActionPlayer // TODO potion item
 {
+    public UsePotionSplash()
+    {
+        super("splashpotion", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -47,18 +51,6 @@ public class UsePotionSplash extends ActionPlayer<ListenerItem> // TODO potion i
         user.sendTranslated(MessageType.POSITIVE, "{}{user} used a {text:splash potion} {input#effects} onto {amount} entities{}", time, logEntry
                 .getCauserUser().getName(), effects, amountAffected, loc);
          */
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "splashpotion";
     }
 
     @Override

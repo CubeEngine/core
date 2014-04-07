@@ -25,10 +25,9 @@ import de.cubeisland.engine.log.LoggingConfiguration;
  */
 public class ItemInsert extends ActionContainerItem
 {
-    @Override
-    public String getName()
+    public ItemInsert()
     {
-        return "insert";
+        super("insert");
     }
 
     @Override

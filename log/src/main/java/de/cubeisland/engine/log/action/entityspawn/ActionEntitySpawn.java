@@ -19,12 +19,18 @@ package de.cubeisland.engine.log.action.entityspawn;
 
 import org.bukkit.entity.Entity;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock.EntitySection;
 
-public abstract class ActionEntitySpawn<ListenerType> extends BaseAction<ListenerType>
+public abstract class ActionEntitySpawn extends BaseAction
 {
     public EntitySection entity;
+
+    protected ActionEntitySpawn(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setEntity(Entity entity)
     {

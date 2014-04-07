@@ -24,10 +24,9 @@ import de.cubeisland.engine.log.LoggingConfiguration;
  */
 public class DeathNpc extends EntityDeathAction
 {
-    @Override
-    public String getName()
+    public DeathNpc()
     {
-        return "npc";
+        super("npc");
     }
 
     @Override

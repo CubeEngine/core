@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.action;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -38,13 +39,31 @@ import org.bson.types.ObjectId;
 
 /**
  * The Base for any Loggable Action
- * <p>The ListenerType will listen for given action
  */
-public abstract class BaseAction<ListenerType> extends ReflectedDBObject implements Comparable<BaseAction<?>>, NamedAction
+public abstract class BaseAction extends ReflectedDBObject implements Comparable<BaseAction>
 {
     public Date date = new Date();
     public Coordinate coord;
     private transient List<BaseAction> attached;
+
+    private transient final String name;
+    private transient final List<ActionCategory> categorySet;
+
+    protected BaseAction(String name, ActionCategory... categories)
+    {
+        this.name = name;
+        this.categorySet = Arrays.asList(categories);
+    }
+
+    public final String getName()
+    {
+        return name;
+    }
+
+    public final List<ActionCategory> getCategories()
+    {
+        return categorySet;
+    }
 
     protected int countAttached()
     {
@@ -325,7 +344,7 @@ public abstract class BaseAction<ListenerType> extends ReflectedDBObject impleme
     }
 
     @Override
-    public int compareTo(BaseAction<?> action)
+    public int compareTo(BaseAction action)
     {
         return ((ObjectId)this.getTarget().get("_id")).compareTo((ObjectId)action.getTarget().get("_id"));
     }

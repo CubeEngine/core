@@ -33,6 +33,11 @@ public class IgniteLighter extends ActionBlockIgnite
 {
     public PlayerSection player;
 
+    public IgniteLighter()
+    {
+        super("lighter");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -56,12 +61,6 @@ public class IgniteLighter extends ActionBlockIgnite
     public void setPlayer(Player player)
     {
         this.player = new PlayerSection(player);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "lighter";
     }
 
     @Override

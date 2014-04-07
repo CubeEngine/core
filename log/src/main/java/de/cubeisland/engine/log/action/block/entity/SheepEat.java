@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.ENTITY;
 /**
  * Represents a Sheep eating grass
  */
-public class SheepEat extends ActionEntityBlock<ListenerEntityBlock>
+public class SheepEat extends ActionEntityBlock
 {
+    public SheepEat()
+    {
+        super("sheep-eat", ENTITY);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -47,18 +52,6 @@ public class SheepEat extends ActionEntityBlock<ListenerEntityBlock>
                                         this.getAttached().size() + 1, count);
         }
         return user.getTranslation(POSITIVE, "A {text#sheep} ate {text:grass}");
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ENTITY;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "sheep-eat";
     }
 
     @Override

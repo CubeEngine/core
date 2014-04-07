@@ -28,7 +28,12 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class VehicleExit extends ActionVehicle
 {
-    // TODO entity vehicle enter
+    // TODO entity vehicle exit
+
+    public VehicleExit()
+    {
+        super("exit");
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -44,12 +49,6 @@ public class VehicleExit extends ActionVehicle
         return user.getTranslationN(POSITIVE, count, "{user} exited a {name#vehicle}",
                                     "{user} exited a {name#vehicle} {amount} times", this.player.name,
                                     this.vehicle.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "exit";
     }
 
     @Override

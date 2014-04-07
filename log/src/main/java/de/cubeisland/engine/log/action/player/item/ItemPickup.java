@@ -31,9 +31,14 @@ import static de.cubeisland.engine.log.action.ActionCategory.ITEM;
 /**
  * Represents a player picking up an item
  */
-public class ItemPickup extends ActionItem<ListenerItem>
+public class ItemPickup extends ActionItem
 {
     public EntitySection entity;
+
+    public ItemPickup()
+    {
+        super("pickup", ITEM);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -85,18 +90,6 @@ public class ItemPickup extends ActionItem<ListenerItem>
     {
         this.setItemstack(item.getItemStack());
         this.entity = new EntitySection(item);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ITEM;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "pickup";
     }
 
     @Override

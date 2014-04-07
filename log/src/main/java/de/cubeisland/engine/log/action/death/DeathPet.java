@@ -36,6 +36,11 @@ public class DeathPet extends EntityDeathAction
 {
     public PlayerSection owner;
 
+    public DeathPet()
+    {
+        super("pet");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -92,12 +97,6 @@ public class DeathPet extends EntityDeathAction
         {
             this.owner = new PlayerSection((Player)owner);
         }
-    }
-
-    @Override
-    public String getName()
-    {
-        return "pet";
     }
 
     @Override

@@ -19,12 +19,18 @@ package de.cubeisland.engine.log.action.player.entity;
 
 import org.bukkit.entity.Entity;
 
+import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock.EntitySection;
 import de.cubeisland.engine.log.action.player.ActionPlayer;
 
-public abstract class ActionPlayerEntity extends ActionPlayer<ListenerPlayerEntity>
+public abstract class ActionPlayerEntity extends ActionPlayer
 {
     public EntitySection entity;
+
+    protected ActionPlayerEntity(String name, ActionCategory... categories)
+    {
+        super(name, categories);
+    }
 
     public void setEntity(Entity entity)
     {

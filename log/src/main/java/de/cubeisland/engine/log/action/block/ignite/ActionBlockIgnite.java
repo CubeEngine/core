@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.log.action.block.ignite;
 
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.block.ActionBlock;
 
 import static de.cubeisland.engine.log.action.ActionCategory.IGNITE;
@@ -25,12 +24,10 @@ import static de.cubeisland.engine.log.action.ActionCategory.IGNITE;
 /**
  * Represents a block getting ignited
  */
-public abstract class ActionBlockIgnite extends ActionBlock<ListenerBlockIgnite>
+public abstract class ActionBlockIgnite extends ActionBlock
 {
-
-    @Override
-    public ActionCategory getCategory()
+    protected ActionBlockIgnite(String name)
     {
-        return IGNITE;
+        super(name, IGNITE);
     }
 }

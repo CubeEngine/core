@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.block.player.interact;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
@@ -29,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.USE;
 /**
  * Represents a player stepping on a plate
  */
-public class UsePlate extends ActionPlayerBlock<ListenerPlayerBlockInteract>
+public class UsePlate extends ActionPlayerBlock
 {
+    public UsePlate()
+    {
+        super("plate", USE);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -45,19 +49,6 @@ public class UsePlate extends ActionPlayerBlock<ListenerPlayerBlockInteract>
         return user.getTranslationN(POSITIVE, count, "{user} stepped on a {name#block}",
                                     "{user} stepped on a {name#block} {amount} times", this.player.name,
                                     this.oldBlock.name(), count);
-    }
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return USE;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "plate";
     }
 
     @Override

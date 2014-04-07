@@ -22,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.player.item.ItemDrop;
 
@@ -32,10 +31,15 @@ import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 /**
  * Represents an entity dropping items on death
  */
-public class DeathDrop extends BaseAction<ListenerDeath>
+public class DeathDrop extends BaseAction
 {
     public Reference<EntityDeathAction> death;
     public ItemStack item;
+
+    public DeathDrop()
+    {
+        super("drop", DEATH);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -57,18 +61,6 @@ public class DeathDrop extends BaseAction<ListenerDeath>
         }
         return user.getTranslation(POSITIVE, "{name#entity} dropped {name#item} x{amount} upon death", this.death.fetch(
             EntityDeathAction.class).killed.name(), this.item.getType().name(), amount); // TODO this wont work as EntityDeathAction is abstract
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return DEATH;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "drop";
     }
 
     @Override

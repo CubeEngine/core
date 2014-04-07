@@ -28,8 +28,13 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents a block fading away
  */
-public class BlockFade extends ActionBlock<ListenerBlock>
+public class BlockFade extends ActionBlock
 {
+    public BlockFade()
+    {
+        super("fade", BLOCK);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -42,18 +47,6 @@ public class BlockFade extends ActionBlock<ListenerBlock>
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "{name#block} faded away", "{1:amount}x {name#block} faded away",
                                     this.oldBlock.name(), count);
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return BLOCK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "fade";
     }
 
     @Override

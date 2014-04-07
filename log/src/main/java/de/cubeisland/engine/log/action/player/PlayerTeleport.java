@@ -21,7 +21,6 @@ import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -30,10 +29,15 @@ import static de.cubeisland.engine.log.action.ActionCategory.PLAYER;
 /**
  * Represents a player teleport from one location to an other
  */
-public class PlayerTeleport extends ActionPlayer<PlayerActionListener>
+public class PlayerTeleport extends ActionPlayer
 {
     public Coordinate toCoord;
     public boolean fromToDirection;
+
+    public PlayerTeleport()
+    {
+        super("teleport", PLAYER);
+    }
 
     @Override
     public boolean canAttach(BaseAction action)
@@ -67,18 +71,6 @@ public class PlayerTeleport extends ActionPlayer<PlayerActionListener>
     {
         this.toCoord = new Coordinate(otherLocation);
         this.fromToDirection = fromTo;
-    }
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return PLAYER;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "teleport";
     }
 
     @Override

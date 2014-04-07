@@ -34,6 +34,11 @@ public class ItemFrameItemRemove extends ActionHanging
 {
     public ItemStack item;
 
+    public ItemFrameItemRemove()
+    {
+        super("remove", ITEM);
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -51,19 +56,6 @@ public class ItemFrameItemRemove extends ActionHanging
     }
 
     // TODO redo/rollback
-
-
-    @Override
-    public ActionCategory getCategory()
-    {
-        return ITEM;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "remove";
-    }
 
     @Override
     public boolean isActive(LoggingConfiguration config)

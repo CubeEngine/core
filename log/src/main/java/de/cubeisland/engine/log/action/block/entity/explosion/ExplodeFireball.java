@@ -28,6 +28,11 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class ExplodeFireball extends ExplosionAction
 {
+    public ExplodeFireball()
+    {
+        super("fireball");
+    }
+
     @Override
     public boolean canAttach(BaseAction action)
     {
@@ -50,12 +55,6 @@ public class ExplodeFireball extends ExplosionAction
         return user.getTranslationN(POSITIVE, count, "A Fireball flying towards {user} blasted away {name#block}",
                                     "A Fireball flying towards {user} blasted away {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "fireball";
     }
 
     @Override
