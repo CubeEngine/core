@@ -35,6 +35,7 @@ import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.BaseAction.Coordinate;
 import de.cubeisland.engine.log.action.Redoable;
 import de.cubeisland.engine.log.action.Rollbackable;
+import de.cubeisland.engine.log.action.death.DeathMonster;
 
 public class QueryResults
 {
@@ -189,12 +190,10 @@ public class QueryResults
                 {
                     continue;
                 }
-                /* TODO
-                if (logEntry.getActionType() instanceof MonsterDeath && !this.lookup.getQueryParameter().containsAction(logEntry.getActionType()))
+                if (logEntry instanceof DeathMonster && !this.lookup.getQueryParameter().containsAction(DeathMonster.class))
                 {
                     continue; // ignoring Monster-respawning when not explicitly wanted
                 }
-                */
                 if (((Rollbackable)logEntry).isBlockBound())
                 {
                     if (((Rollbackable)logEntry).isStackable())

@@ -20,6 +20,7 @@ package de.cubeisland.engine.log.action;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +51,7 @@ public class ActionManager
 {
     // Map Category -> Category
     private final Map<String, ActionCategory> categories = new HashMap<>();
-    private Map<String, List<Class<? extends BaseAction>>> actionNames = new HashMap<>();
+    private Map<String, List<Class<? extends BaseAction>>> actionNames = new LinkedHashMap<>();
     // TODO:
     // Map Category-Name -> List<Class>
 

@@ -298,7 +298,7 @@ public class QueryManager
                 {
                     break;
                 }
-                // TODO if toLog has reference DO NOT log in batch!!!
+                // TODO if toLog has reference DO NOT log in batch!!! or does it work?
                 logs.offer(toLog);
             }
 

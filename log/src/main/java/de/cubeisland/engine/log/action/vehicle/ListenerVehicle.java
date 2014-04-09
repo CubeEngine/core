@@ -186,7 +186,6 @@ public class ListenerVehicle extends LogListener
     @EventHandler
     public void onVehiclePreplan(final VehiclePrePlaceEvent event)
     {
-        // TODO so call me maybe?
         plannedVehiclePlace.put(event.getLocation(), event.getPlayer());
         if (!clearPlanned)
         {

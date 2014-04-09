@@ -82,7 +82,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        // TODO lookup.queryParameter.setActions(ActionTypeCategory.PLAYER.getActionTypes(), true); // include player
+        lookup.queryParameter.setActions(ActionCategory.PLAYER.getActions(), true); // include player
         lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
@@ -94,7 +94,7 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        // TODO lookup.queryParameter.setActions(ActionTypeCategory.BLOCK.getActionTypes(), true); // include block
+        lookup.queryParameter.setActions(ActionCategory.BLOCK.getActions(), true); // include block
         lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }

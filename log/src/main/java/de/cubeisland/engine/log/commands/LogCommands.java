@@ -30,18 +30,18 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static org.bukkit.Material.WOOD_AXE;
 
 public class LogCommands extends ContainerCommand
 {
     public static final String toolName = ChatFormat.INDIGO + "Logging-ToolBlock";
     public static final String selectorToolName = ChatFormat.INDIGO + "Selector-Tool";
-
-    // TODO command to show current params on a lookup-tool
-    // TODO command to change params on a lookup-tool (only further limiting)
 
     private final Log module;
 
@@ -57,9 +57,8 @@ public class LogCommands extends ContainerCommand
         ItemStack found = null;
         for (ItemStack item : user.getInventory().getContents())
         {
-            if (item != null && item.getType().equals(Material.WOOD_AXE) && item.hasItemMeta() && item.getItemMeta()
-                                                                                                      .hasDisplayName() && item
-                .getItemMeta().getDisplayName().equals(selectorToolName))
+            if (item != null && item.getType() == WOOD_AXE
+                && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(selectorToolName))
             {
                 found = item;
                 break;
@@ -67,7 +66,7 @@ public class LogCommands extends ContainerCommand
         }
         if (found == null)
         {
-            found = new ItemStack(Material.WOOD_AXE, 1);
+            found = new ItemStack(WOOD_AXE, 1);
             ItemMeta meta = found.getItemMeta();
             meta.setDisplayName(selectorToolName);
             meta.setLore(Arrays.asList("created by " + user.getName()));
@@ -80,7 +79,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(), item);
             }
             user.updateInventory();
-            user.sendTranslated(MessageType.POSITIVE, "Received a new Region-Selector Tool");
+            user.sendTranslated(POSITIVE, "Received a new Region-Selector Tool");
             return;
         }
         user.getInventory().removeItem(found);
@@ -88,8 +87,12 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated(MessageType.POSITIVE, "Found a Region-Selector Tool in your inventory!");
+        user.sendTranslated(POSITIVE, "Found a Region-Selector Tool in your inventory!");
     }
+
+
+    // TODO command to show current params on a lookup-tool
+    // TODO command to change params on a lookup-tool (only further limiting)
 
     //TODO add rollback tool
     //TODO loghand (cmd hand) -> toggles general lookup with bare hands
@@ -100,11 +103,11 @@ public class LogCommands extends ContainerCommand
         int size = module.getLogManager().getQueueSize();
         if (size == 0)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Logging-queue is currently empty!");
+            context.sendTranslated(POSITIVE, "Logging-queue is currently empty!");
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "{integer} logs are currently queued!", size);
+            context.sendTranslated(POSITIVE, "{integer} logs are currently queued!", size);
             this.module.getLogManager().getQueryManager().logStatus();
         }
     }
@@ -188,7 +191,7 @@ public class LogCommands extends ContainerCommand
                 user.getWorld().dropItemNaturally(user.getLocation(), item);
             }
             user.updateInventory();
-            user.sendTranslated(MessageType.POSITIVE, "Received a new Log-Tool!");
+            user.sendTranslated(POSITIVE, "Received a new Log-Tool!");
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
             logAttachment.createNewLookup(material);
 
@@ -199,7 +202,7 @@ public class LogCommands extends ContainerCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated(MessageType.POSITIVE, "Found a Log-Tool in your inventory!");
+        user.sendTranslated(POSITIVE, "Found a Log-Tool in your inventory!");
     }
 
     @Alias(names = "lb")
@@ -219,7 +222,7 @@ public class LogCommands extends ContainerCommand
             if (blockMaterial == null)
             {
                 context
-                    .sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context
+                    .sendTranslated(NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context
                         .getString(0));
                 return;
             }
@@ -229,12 +232,12 @@ public class LogCommands extends ContainerCommand
         else
         {
             context
-                .sendTranslated(MessageType.NEGATIVE, "Why don't you check in your log-file? You won't need a block there!");
+                .sendTranslated(NEGATIVE, "Why don't you check in your log-file? You won't need a block there!");
         }
     }
 
     @Alias(names = "lt")
-    @Command(desc = "Gives you a item to check logs with.\n" +
+    @Command(desc = "Gives you an item to check logs with.\n" +
         "no log-type: Shows everything\n" +
         "chest: Shows chest-interactions only\n" +
         "player: Shows player-interacions only\n" +
@@ -249,9 +252,7 @@ public class LogCommands extends ContainerCommand
             Material blockMaterial = this.matchType(context.getString(0), false);
             if (blockMaterial == null)
             {
-                context
-                    .sendTranslated(MessageType.NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context
-                        .getString(0));
+                context.sendTranslated(NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context.getString(0));
                 return;
             }
             User user = (User)context.getSender();
@@ -259,8 +260,7 @@ public class LogCommands extends ContainerCommand
         }
         else
         {
-            context
-                .sendTranslated(MessageType.NEGATIVE, "Why don't you check in your log-file? You won't need a block there!");
+            context.sendTranslated(NEGATIVE, "Why don't you check in your log-file? You won't need a block there!");
         }
     }
 
@@ -273,7 +273,7 @@ public class LogCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You cannot hold a selection tool!");
+            context.sendTranslated(NEGATIVE, "You cannot hold a selection tool!");
         }
         // if worldEdit give WE wand else give OUR wand
     }
