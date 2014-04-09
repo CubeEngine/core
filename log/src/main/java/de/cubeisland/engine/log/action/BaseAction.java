@@ -55,7 +55,7 @@ public abstract class BaseAction extends ReflectedDBObject implements Comparable
     private transient final List<ActionCategory> categorySet;
 
     private static final SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
-    private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yy-MM-dd");
 
     protected BaseAction(String name, ActionCategory... categories)
     {

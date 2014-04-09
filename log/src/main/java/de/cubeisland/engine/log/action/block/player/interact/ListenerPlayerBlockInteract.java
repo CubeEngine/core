@@ -104,7 +104,7 @@ public class ListenerPlayerBlockInteract extends LogListener
                 if (action != null)
                 {
                     state = adjustBlockForDoubleBlocks(state);
-                    Openable openable = (Openable)state.getData();
+                    Openable openable = (Openable)state.getBlock().getState().getData();
                     openable.setOpen(!openable.isOpen());
                     newState.setData((MaterialData)openable);
                 }
@@ -114,7 +114,7 @@ public class ListenerPlayerBlockInteract extends LogListener
                 action = this.newAction(UseLever.class, state.getWorld());
                 if (action != null)
                 {
-                    Lever leverData = (Lever)state.getData();
+                    Lever leverData = (Lever)state.getBlock().getState().getData();
                     leverData.setPowered(!leverData.isPowered());
                     newState.setData(leverData);
                 }
@@ -133,7 +133,7 @@ public class ListenerPlayerBlockInteract extends LogListener
                 action = this.newAction(UseButton.class, state.getWorld());
                 if (action != null)
                 {
-                    Button button = (Button)state.getData();
+                    Button button = (Button)state.getBlock().getState().getData();
                     button.setPowered(true);
                     newState.setData(button);
                 }
@@ -166,7 +166,7 @@ public class ListenerPlayerBlockInteract extends LogListener
                     action = this.newAction(UseCake.class, state.getWorld());
                     if (action != null)
                     {
-                        Cake cake = (Cake)state.getData();
+                        Cake cake = (Cake)state.getBlock().getState().getData();
                         cake.setSlicesEaten(cake.getSlicesEaten() + 1);
                         if (cake.getSlicesRemaining() == 0)
                         {
@@ -200,7 +200,7 @@ public class ListenerPlayerBlockInteract extends LogListener
                 action = this.newAction(UseRepeater.class, state.getWorld());
                 if (action != null)
                 {
-                    Diode diode = (Diode)state.getData();
+                    Diode diode = (Diode)state.getBlock().getState().getData();
                     Integer delay = diode.getDelay() + 1;
                     if (delay == 5)
                     {

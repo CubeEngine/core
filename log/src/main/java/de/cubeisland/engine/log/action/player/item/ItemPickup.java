@@ -21,7 +21,6 @@ import org.bukkit.entity.Item;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock.EntitySection;
 
@@ -67,7 +66,6 @@ public class ItemPickup extends ActionItem
         int amount = item.getAmount();
         if (this.hasAttached())
         {
-
             if (this.getAttached().size() == 1 && this.getAttached().get(0) instanceof ItemDrop)
             {
                 ItemDrop dropAction = (ItemDrop)this.getAttached().get(0);
