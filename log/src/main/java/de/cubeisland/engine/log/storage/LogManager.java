@@ -26,6 +26,7 @@ import java.util.Map;
 import org.bukkit.World;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import de.cubeisland.engine.bigdata.Bigdata;
@@ -56,6 +57,10 @@ public class LogManager
         this.bigdata = bigdata;
         this.db = bigdata.getDatabae("cubeengine");
         this.collection = this.db.getCollection("log");
+        this.collection.ensureIndex(new BasicDBObject("coord.vector.y", 1).append("coord.vector.x", 1).append("coord.vector.z", 1));
+        this.collection.ensureIndex(new BasicDBObject("coord.world-uuid", 1));
+        this.collection.ensureIndex(new BasicDBObject("action", 1));
+        // TODO more indices
 
         this.mapper = new ObjectMapper();
         this.worldsFolder = module.getFolder().resolve("worlds");
