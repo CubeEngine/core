@@ -52,6 +52,7 @@ import de.cubeisland.engine.i18n.language.SourceLanguage;
 import de.cubeisland.engine.i18n.loader.GettextLoader;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
+import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import gnu.trove.set.hash.THashSet;
 
 public class I18n
@@ -61,6 +62,11 @@ public class I18n
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
     private ColoredMessageCompositor compositor;
+
+    public MessageCompositor getCompositor()
+    {
+        return compositor;
+    }
 
     public I18n(Core core)
     {

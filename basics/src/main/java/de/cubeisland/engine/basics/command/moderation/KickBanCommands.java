@@ -212,7 +212,7 @@ public class KickBanCommands
 
     @Command(names = {"ipban", "banip"},
              desc = "Bans the IP from this server.",
-             min = 1, max = 2, usage = "<IP address> [reason]")
+             min = 1, max = NO_MAX, usage = "<IP address> [reason]")
     public void ipban(CommandContext context)
     {
         String ipaddress = context.getString(0);

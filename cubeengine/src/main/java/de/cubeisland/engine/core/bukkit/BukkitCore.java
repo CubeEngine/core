@@ -124,7 +124,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitBanManager banManager;
     private LogFactory logFactory;
     private Reflector configFactory;
-    private MessageCompositor messageCompositor;
     //endregion
 
     private List<Runnable> initHooks;
@@ -199,7 +198,6 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: file manager
         this.config = configFactory.load(BukkitCoreConfiguration.class, this.fileManager.getDataPath().resolve("core.yml").toFile());
-        this.messageCompositor = new ColoredMessageCompositor(this);
 
         this.fileManager.clearTempDir();
 
