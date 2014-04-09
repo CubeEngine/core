@@ -148,6 +148,11 @@ public class LookupCommands
             attachment.queueShowParameter(show);
             this.module.getLogManager().fillLookupAndShow(lookup, user);
         }
+        else
+        {
+            // TODO implement me
+            System.out.println("Not implemented yet");
+        }
     }
 
     @Command(
@@ -198,6 +203,11 @@ public class LookupCommands
                 this.module.getLogManager().fillLookupAndRollback(lookup, user);
             }
         }
+        else
+        {
+            // TODO implement me
+            System.out.println("Not implemented yet");
+        }
     }
 
     @Command(
@@ -247,6 +257,11 @@ public class LookupCommands
             {
                 this.module.getLogManager().fillLookupAndRedo(lookup, user);
             }
+        }
+        else
+        {
+            // TODO implement me
+            System.out.println("Not implemented yet");
         }
     }
 

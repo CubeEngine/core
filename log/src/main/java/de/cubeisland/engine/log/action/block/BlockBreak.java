@@ -43,13 +43,16 @@ public class BlockBreak extends ActionBlock
     @Override
     public boolean canAttach(BaseAction action)
     {
-        return false;
+        return action instanceof BlockBreak
+            && ((BlockBreak)action).oldBlock.material == this.oldBlock.material;
     }
 
     @Override
     public String translateAction(User user)
     {
-        return user.getTranslation(POSITIVE, "{name#block} got destroyed or moved", this.oldBlock.name());
+        int count = this.countAttached();
+        return user.getTranslationN(POSITIVE, count,"{name#block} got destroyed or moved",
+                                    "{name#block} got destroyed or moved x{amount}", this.oldBlock.name(), count);
     }
 
     @Override

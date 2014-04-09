@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log.action;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,12 +31,16 @@ import org.bukkit.World;
 import de.cubeisland.engine.bigdata.ReflectedDBObject;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.storage.ShowParameter;
 import de.cubeisland.engine.reflect.Section;
 import org.bson.types.ObjectId;
+
+import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
+import static de.cubeisland.engine.core.util.ChatFormat.GREY;
 
 /**
  * The Base for any Loggable Action
@@ -48,6 +53,9 @@ public abstract class BaseAction extends ReflectedDBObject implements Comparable
 
     private transient final String name;
     private transient final List<ActionCategory> categorySet;
+
+    private static final SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yyyy-MM-dd");
 
     protected BaseAction(String name, ActionCategory... categories)
     {
@@ -104,108 +112,90 @@ public abstract class BaseAction extends ReflectedDBObject implements Comparable
     public final void showAction(User user, ShowParameter show)
     {
         String msg = translateAction(user);
-        user.sendMessage(msg);
-        // TODO loc & time
-    }
-
-    public abstract boolean isActive(LoggingConfiguration config);
-
-    /*
-
-    private static final SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
-    private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yyyy-MM-dd");
-
-    String time = "";
+        String time = "";
         if (show.showDate)
         {
-            if (logEntry.hasAttached())
+            if (this.hasAttached())
             {
-                Timestamp first = logEntry.getTimestamp();
-                Timestamp last = logEntry.getAttached().last().getTimestamp();
+                Date first = this.date;
+                Date last = this.getAttached().get(this.getAttached().size() - 1).date;
                 if (first.getTime() > last.getTime())
                 {
                     first = last;
-                    last = logEntry.getTimestamp();
+                    last = this.date;
                 }
                 String fDate = dateOnly.format(first);
                 if (dateOnly.format(last).equals(fDate)) // Same day
                 {
-                    time = ChatFormat.GREY + fDate + " " + timeOnly.format(first) + " " + ChatFormat.GOLD + "-" +
-                        ChatFormat.WHITE + timeOnly.format(last) + " - ";
+                    time = GREY + fDate + " " + timeOnly.format(first) + " " + GOLD + "- " + GREY + timeOnly.format(last) + "\n";
                 }
                 else
                 {
-                    time = ChatFormat.GREY + fDate + " " + timeOnly.format(first) + " " + ChatFormat.GOLD + "-" +
-                        ChatFormat.GREY + dateOnly.format(last) + " " + timeOnly.format(last) + " - ";
+                    time = GREY + fDate + " " + timeOnly.format(first) + " " + GOLD + "- " + GREY + dateOnly.format(last) + " " + timeOnly.format(last) + "\n";
                 }
             }
             else
             {
-                time = ChatFormat.GREY + dateOnly.format(logEntry.getTimestamp()) + " " +
-                    timeOnly.format(logEntry.getTimestamp()) + " - ";
+                time = GREY + dateOnly.format(this.date) + " " + timeOnly.format(this.date) + " - ";
             }
         }
         String loc = "";
         if (show.showCoords)
         {
             loc =  "\n";
-            if (logEntry.hasAttached())
+            if (this.hasAttached())
             {
-                int xMin = logEntry.getVector().x;
-                int yMin = logEntry.getVector().y;
-                int zMin = logEntry.getVector().z;
-                int xMax = logEntry.getVector().x;
-                int yMax = logEntry.getVector().y;
-                int zMax = logEntry.getVector().z;
-                for (LogEntry entry : logEntry.getAttached())
+                int xMin = this.coord.vector.x;
+                int yMin = this.coord.vector.y;
+                int zMin = this.coord.vector.z;
+                int xMax = this.coord.vector.x;
+                int yMax = this.coord.vector.y;
+                int zMax = this.coord.vector.z;
+                for (BaseAction entry : this.getAttached())
                 {
-                    if (entry.getVector().x < xMin)
+                    if (entry.coord.vector.x < xMin)
                     {
-                        xMin = entry.getVector().x;
+                        xMin = entry.coord.vector.x;
                     }
-                    else if (entry.getVector().x > xMax)
+                    else if (entry.coord.vector.x > xMax)
                     {
-                        xMax = entry.getVector().x;
+                        xMax = entry.coord.vector.x;
                     }
-                    if (entry.getVector().y < yMin)
+                    if (entry.coord.vector.y < yMin)
                     {
-                        yMin = entry.getVector().y;
+                        yMin = entry.coord.vector.y;
                     }
-                    else if (entry.getVector().y > yMax)
+                    else if (entry.coord.vector.y > yMax)
                     {
-                        yMax = entry.getVector().y;
+                        yMax = entry.coord.vector.y;
                     }
-                    if (entry.getVector().z < zMin)
+                    if (entry.coord.vector.z < zMin)
                     {
-                        zMin = entry.getVector().z;
+                        zMin = entry.coord.vector.z;
                     }
-                    else if (entry.getVector().z > zMax)
+                    else if (entry.coord.vector.z > zMax)
                     {
-                        zMax = entry.getVector().z;
+                        zMax = entry.coord.vector.z;
                     }
                 }
                 if (xMax == xMin && yMax == yMin && zMax == zMin)
                 {
-                    loc += user.getTranslation(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(xMax, yMax, zMax), logEntry
-                        .getWorld());
+                    loc += user.getTranslation(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(xMax, yMax, zMax), coord.world.getWorld());
                 }
                 else
                 {
-                    loc += user.getTranslation(MessageType.POSITIVE, "   in between {vector} nd {vector} in {world}", new BlockVector3(xMin, yMin, zMin), new BlockVector3(xMax, yMax, zMax), logEntry
-                        .getWorld());
+                    loc += user.getTranslation(MessageType.POSITIVE, "   in between {vector} and {vector} in {world}", new BlockVector3(xMin, yMin, zMin), new BlockVector3(xMax, yMax, zMax), coord.world.getWorld());
                 }
             }
             else
             {
-                loc += user.getTranslation(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(logEntry
-                                                                                                                   .getVector().x, logEntry
-                                                                                                                   .getVector().y, logEntry
-                                                                                                                   .getVector().z), logEntry
-                                               .getWorld());
+                loc += user.getTranslation(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(coord.vector.x, coord.vector.y, coord.vector.z), coord.world.getWorld());
             }
         }
-        this.showLogEntry(user,logEntry,time,loc);
-     */
+        user.sendMessage(time + msg + loc);
+    }
+
+    public abstract boolean isActive(LoggingConfiguration config);
 
     public abstract String translateAction(User user);
 

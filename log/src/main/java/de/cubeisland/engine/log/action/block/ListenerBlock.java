@@ -92,7 +92,7 @@ public class ListenerBlock extends LogListener
 
     public ListenerBlock(Log module)
     {
-        super(module, de.cubeisland.engine.log.action.block.BlockBreak.class, BlockFade.class,
+        super(module, BlockBreak.class, BlockFade.class,
               BlockForm.class, BlockSpread.class, BlockDecay.class, BlockGrow.class, BlockShift.class,
               PlayerBlockGrow.class, PlayerBlockBreak.class, PlayerSignBreak.class, BlockFall.class);
     }
@@ -401,7 +401,7 @@ public class ListenerBlock extends LogListener
             }
             else
             {
-                de.cubeisland.engine.log.action.block.BlockBreak action;
+                BlockBreak action;
                 if (oldState instanceof Sign)
                 {
                     action = this.set(SignBreak.class, oldState, null);
@@ -412,7 +412,7 @@ public class ListenerBlock extends LogListener
                 }
                 else
                 {
-                    action = this.set(de.cubeisland.engine.log.action.block.BlockBreak.class, oldState, null);
+                    action = this.set(BlockBreak.class, oldState, null);
                 }
                 if (action != null)
                 {
