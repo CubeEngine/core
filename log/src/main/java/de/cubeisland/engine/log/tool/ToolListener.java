@@ -94,4 +94,6 @@ public class ToolListener implements Listener
         }
         event.getItemDrop().remove();
     }
+
+    // TODO InteractEntity show logs of entity
 }

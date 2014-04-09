@@ -17,14 +17,15 @@
  */
 package de.cubeisland.engine.log.storage;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.ActionType;
-import de.cubeisland.engine.log.action.ActionTypeCategory;
+import de.cubeisland.engine.log.action.ActionCategory;
+import de.cubeisland.engine.log.action.BaseAction;
 
 public class Lookup implements Cloneable
 {
@@ -40,16 +41,16 @@ public class Lookup implements Cloneable
 
     /**
      * Lookup excluding nothing
-     * @return
      */
     public static Lookup general(Log module)
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(new HashSet<ActionType>(), false); // exclude none
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.setActions(new HashSet<Class<? extends BaseAction>>(), false); // exclude none
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
+
     /**
      * Lookup only including container-actions
      */
@@ -57,8 +58,8 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.INVENTORY.getActionTypes(), true); // include inv
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.setActions(ActionCategory.ITEM.getActions(), true); // TODO container category instead
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -69,8 +70,8 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.KILL.getActionTypes(), true); // include kills
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.setActions(ActionCategory.DEATH.getActions(), true); // include kills
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -81,8 +82,8 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.PLAYER.getActionTypes(), true); // include player
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.setActions(ActionCategory.PLAYER.getActions(), true); // include player
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -93,8 +94,8 @@ public class Lookup implements Cloneable
     {
         Lookup lookup = new Lookup(module);
         lookup.queryParameter = new QueryParameter(module);
-        lookup.queryParameter.setActions(ActionTypeCategory.BLOCK.getActionTypes(), true); // include block
-        lookup.queryParameter.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30));
+        lookup.queryParameter.setActions(ActionCategory.BLOCK.getActions(), true); // include block
+        lookup.queryParameter.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)));
         return lookup;
     }
 
@@ -102,7 +103,7 @@ public class Lookup implements Cloneable
     {
         LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
         attachment.setLastLookup(this);
-        this.queryResults.show(user,queryParameter,attachment.getShowParameter());
+        this.queryResults.show(user, queryParameter, attachment.getShowParameter());
     }
 
     public void setQueryResults(QueryResults queryResults)

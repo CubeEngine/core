@@ -19,9 +19,12 @@ package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.World;
@@ -41,15 +44,18 @@ public abstract class AbstractWorldManager implements WorldManager
 {
     protected final Map<String, WorldEntity> worlds;
     protected final TLongObjectHashMap<World> worldIds;
+    protected final Set<UUID> worldUUIDs;
     private final Map<String, Map<String, ChunkGenerator>> generatorMap;
 
     protected final Database database;
+
 
     public AbstractWorldManager(Core core)
     {
         this.database = core.getDB();
         this.worlds = new THashMap<>();
         this.worldIds = new TLongObjectHashMap<>();
+        this.worldUUIDs = new HashSet<>();
         this.generatorMap = new THashMap<>();
     }
 
@@ -79,6 +85,7 @@ public abstract class AbstractWorldManager implements WorldManager
             }
             this.worlds.put(world.getName(), worldEntity);
             this.worldIds.put(worldEntity.getKey().longValue(), world);
+            this.worldUUIDs.add(world.getUID());
         }
         return worldEntity;
     }
@@ -98,6 +105,12 @@ public abstract class AbstractWorldManager implements WorldManager
     public synchronized long[] getAllWorldIds()
     {
         return this.worldIds.keySet().toArray();
+    }
+
+    @Override
+    public Set<UUID> getAllWorldUUIDs()
+    {
+        return Collections.unmodifiableSet(this.worldUUIDs);
     }
 
     public synchronized World getWorld(long id)
@@ -167,6 +180,7 @@ public abstract class AbstractWorldManager implements WorldManager
     {
         this.worlds.clear();
         this.worldIds.clear();
+        this.worldUUIDs.clear();
         this.generatorMap.clear();
     }
 
