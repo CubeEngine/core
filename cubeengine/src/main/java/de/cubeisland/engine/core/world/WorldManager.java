@@ -51,4 +51,6 @@ public interface WorldManager extends Cleanable
     WorldEntity getWorldEntity(World world);
 
     List<String> getWorldNames();
+
+    Set<UUID> getAllWorldUUIDs();
 }

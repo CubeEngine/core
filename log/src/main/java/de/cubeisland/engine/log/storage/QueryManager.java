@@ -19,9 +19,9 @@ package de.cubeisland.engine.log.storage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +41,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.formatter.MessageType;
@@ -48,7 +49,6 @@ import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
-import org.jooq.types.UInteger;
 
 public class QueryManager
 {
@@ -70,7 +70,6 @@ public class QueryManager
     private long logsLoggedFullLoad = 1;
     private CountDownLatch shutDownLatch = new CountDownLatch(0);
     private Connection insertConnection = null;
-    private boolean optimizeRunning = false;
     private boolean cleanUpRunning = false;
 
     private final DBCollection collection;
@@ -123,85 +122,20 @@ public class QueryManager
             @Override
             public void run()
             {
-                cleanUpLogs();
+                try
+                {
+                    cleanUpLogs();
+                }
+                catch (Exception e)
+                {
+                    QueryManager.this.module.getLog().error(e, "An error occurred while cleaning up the database");
+                }
             }
         }, delay, delay);
     }
 
-
-    /**
-     * Cannot be executed in the main-thread!
-     */
-    /*private void optimizeTable()
+    private void cleanUpLogs() throws InterruptedException
     {
-        if (CubeEngine.isMainThread())
-        {
-            throw new IllegalStateException("ONLY use Asynchronously!");
-        }
-        try
-        {
-            this.module.getLog().debug("Analyze - Step 1/6: Wait for inserts to finish then pause inserts");
-            this.latch.acquire(); // Wait for batch insert to finish!
-        }
-        catch (InterruptedException ex)
-        {
-            this.module.getLog().error(ex, "Could not start optimizing!");
-        }
-        this.module.getLog().debug("Analyze - Step 2/6: Create temporary table and swap tables");
-        TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
-        this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
-        this.CURRENT_TABLE = temporaryTable;
-        this.module.getLog().debug("Analyze - Step 3/6: Optimize Table and continue logging into temporary table");
-        this.latch.release();
-        this.cleanUpDsl.execute("ANALYZE TABLE " + OPTIMIZE_TABLE.getName());
-        try
-        {
-            this.module.getLog().debug("Analyze - Step 4/6: Wait for inserts to finish then pause inserts");
-            this.latch.acquire();
-        }
-        catch (InterruptedException ex)
-        {
-            this.module.getLog().error(ex, "Could not start copying back to optimized table!");
-        }
-        this.module.getLog()
-                   .debug("Analyze - Step 5/6: Insert data from temporary table into the optimized table and drop temporary table");
-        this.cleanUpDsl
-            .insertInto(OPTIMIZE_TABLE, OPTIMIZE_TABLE.DATE, OPTIMIZE_TABLE.WORLD, OPTIMIZE_TABLE.X, OPTIMIZE_TABLE.Y, OPTIMIZE_TABLE.Z, OPTIMIZE_TABLE.ACTION, OPTIMIZE_TABLE.CAUSER, OPTIMIZE_TABLE.BLOCK, OPTIMIZE_TABLE.DATA, OPTIMIZE_TABLE.NEWBLOCK, OPTIMIZE_TABLE.NEWDATA, OPTIMIZE_TABLE.ADDITIONALDATA)
-            .
-                select(this.cleanUpDsl
-                           .select(CURRENT_TABLE.DATE, CURRENT_TABLE.WORLD, CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z, CURRENT_TABLE.ACTION, CURRENT_TABLE.CAUSER, CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA, CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA)
-                           .from(CURRENT_TABLE)).execute();
-        this.dsl.execute("DROP TABLE " + temporaryTable.getName());
-        this.module.getLog().debug("Analyze - Step 6/6: Return back to normal logging. Table optimized!");
-        this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
-        this.latch.release(); // Start normal logging again
-    }
-    */
-
-    /**
-     * Analyse the indices of the log table
-     */
-    /*public void analyze()
-    {
-        if (optimizeRunning)
-        {
-            return;
-        }
-        this.module.getCore().getTaskManager().getThreadFactory(this.module).newThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                optimizeTable();
-                optimizeRunning = false;
-            }
-        }).start();
-    }
-    */
-
-    private void cleanUpLogs()
-    {
-        /*
         if (CubeEngine.isMainThread())
         {
             throw new IllegalStateException("ONLY use Asynchronously!");
@@ -211,166 +145,81 @@ public class QueryManager
             this.module.getLog().warn("CleanUp - Is currently running cannot start again!");
             return;
         }
-        try
-        {
-            this.module.getLog().debug("!! Started automatic log_entries table cleanup !!");
-            this.module.getLog().debug("(The CleanUp can take a VERY long time)");
-            this.module.getLog().debug("CleanUp - Step 1/7: Wait for inserts to finish then pause inserts");
-            this.latch.acquire(); // Wait for batch insert to finish!
-            this.cleanUpRunning = true;
-        }
-        catch (InterruptedException ex)
-        {
-            this.module.getLog().error(ex, "Could not start optimizing!");
-        }
-        this.module.getLog().debug("CleanUp - Step 2/7: Create temporary table and swap tables");
-        TableLogEntry temporaryTable = TableLogEntry.initTempTable(this.database);
-        this.OPTIMIZE_TABLE = this.CURRENT_TABLE;
-        this.CURRENT_TABLE = temporaryTable;
-
-        latch.release();
+        int steps = this.module.getConfiguration().cleanup.steps;
+        this.module.getLog().debug("!! Started automatic log_entries table cleanup !!");
+        this.module.getLog().debug("(The CleanUp can take a VERY long time)");
+        this.cleanUpRunning = true;
         if (this.module.getConfiguration().cleanup.oldLogs.enable)
         {
-            this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of old logs");
-            this.cleanUpOldLogs(new Timestamp(System.currentTimeMillis() - module
-                .getConfiguration().cleanup.oldLogs.time.getMillis()));
+            BasicDBObject condition = new BasicDBObject("date", new BasicDBObject("$lt", new Date(System.currentTimeMillis() - module.getConfiguration().cleanup.oldLogs.time.getMillis())));
+            BasicDBObject fields = new BasicDBObject("_id", 1);
+            this.latch.acquire();
+
+            DBCursor toRemove = this.collection.find(condition, fields);
+            int count = toRemove.count();
+            if (count != 0)
+            {
+                toRemove.skip(count < steps ? count - 1 : steps - 1).limit(1);
+                this.module.getLog().debug("CleanUp - CleanUp of {} old logs", toRemove.count());
+                int i = 0;
+                while (count > 0)
+                {
+                    i += this.collection.remove(new BasicDBObject("_id", new BasicDBObject("$lte", toRemove.next().get("_id")))).getN();
+                    this.latch.release();
+                    this.module.getLog().debug("CleanUp - {} logs deleted", i);
+                    this.latch.acquire();
+                    toRemove = this.collection.find(condition, fields);
+                    count = toRemove.count();
+                    toRemove.skip(count < steps ? count - 1 : steps - 1).limit(1);
+                }
+            }
+            else
+            {
+                this.module.getLog().debug("CleanUp - CleanUp of old logs; Skipped");
+            }
+            this.latch.release();
         }
         else
         {
-            this.module.getLog().debug("CleanUp - Step 3/7: CleanUp of old logs; Skipped");
+            this.module.getLog().debug("CleanUp - CleanUp of old logs; Skipped");
         }
         if (this.module.getConfiguration().cleanup.deletedWorlds)
         {
-            this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of deleted worlds");
-            long[] loadedworlds = this.module.getCore().getWorldManager().getAllWorldIds();
-            for (UInteger dbWorld : cleanUpDsl.select(TABLE_WORLD.KEY).from(TABLE_WORLD).fetch()
-                                              .getValues(TABLE_WORLD.KEY))
+            this.module.getConfiguration().cleanup.deletedWorlds = false;
+            this.module.getConfiguration().save();
+            List<UUID> uuids = new ArrayList<>(this.module.getCore().getWorldManager().getAllWorldUUIDs());
+            BasicDBObject condition = new BasicDBObject("coord.world-uuid", new BasicDBObject("$uuid", uuids));
+            BasicDBObject fields = new BasicDBObject("_id", 1);
+            this.latch.acquire();
+            DBCursor toRemove = this.collection.find(condition, fields);
+            int count = toRemove.count();
+            if (count != 0)
             {
-                if (Arrays.binarySearch(loadedworlds, dbWorld.longValue()) >= 0)
+                toRemove.skip(count < steps ? count - 1 : steps - 1).limit(1);
+                this.module.getLog().debug("CleanUp - CleanUp of {} logs in deleted worlds", toRemove.count());
+                int i = 0;
+                while (count > 0)
                 {
-                    continue;
-                }
-                int count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
-                                      .where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).fetchCount();
-                if (count == 0)
-                {
-                    continue;
-                }
-                this.module.getLog().debug("        - Step 4/7: Marked {} logs in world #{} for removal", count, dbWorld
-                    .longValue());
-                UInteger lastId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
-                                            .where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).orderBy(TABLE_LOG_ENTRY.ID.desc())
-                                            .limit(1).fetchOne().value1();
-                UInteger firstId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
-                                             .where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)).orderBy(TABLE_LOG_ENTRY.ID.asc())
-                                             .limit(1).fetchOne().value1();
-                while (firstId.longValue() < lastId.longValue())
-                {
-                    UInteger nextId = UInteger
-                        .valueOf(firstId.longValue() + this.module.getConfiguration().cleanup.steps);
-                    int del = cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.WORLD.eq(dbWorld)
-                                                                                            .and(TABLE_LOG_ENTRY.ID
-                                                                                                     .between(firstId, nextId)))
-                                        .execute();
-                    count -= del;
-                    if (del != 0)
-                    {
-                        this.module.getLog()
-                                   .debug("        - Step 4/7: Deleted {} logs in world #{} ; Remaining: {}", del, dbWorld
-                                       .longValue(), count);
-                    }
-                    firstId = nextId;
+                    i += this.collection.remove(new BasicDBObject("_id", new BasicDBObject("$lte", toRemove.next().get("_id")))).getN();
+                    this.latch.release();
+                    this.module.getLog().debug("CleanUp - {} logs deleted", i);
+                    this.latch.acquire();
+                    toRemove = this.collection.find(condition, fields);
+                    count = toRemove.count();
+                    toRemove.skip(count < steps ? count - 1 : steps - 1).limit(1);
                 }
             }
+            else
+            {
+                this.module.getLog().debug("CleanUp - CleanUp of deleted worlds; Skipped");
+            }
+            this.latch.release();
         }
         else
         {
-            this.module.getLog().debug("CleanUp - Step 4/7: CleanUp of deleted worlds; Skipped");
+            this.module.getLog().debug("CleanUp - CleanUp of deleted worlds; Skipped");
         }
-        try
-        {
-            this.module.getLog().debug("CleanUp - Step 5/7: Wait for inserts to finish then pause inserts");
-            this.latch.acquire();
-        }
-        catch (InterruptedException ex)
-        {
-            this.module.getLog().error(ex, "Could not start copying back to clean table!");
-        }
-        this.module.getLog()
-                   .debug("CleanUp - Step 6/7: Insert data from temporary table into the optimized table and drop temporary table");
-        this.cleanUpDsl
-            .insertInto(OPTIMIZE_TABLE, OPTIMIZE_TABLE.DATE, OPTIMIZE_TABLE.WORLD, OPTIMIZE_TABLE.X, OPTIMIZE_TABLE.Y, OPTIMIZE_TABLE.Z, OPTIMIZE_TABLE.ACTION, OPTIMIZE_TABLE.CAUSER, OPTIMIZE_TABLE.BLOCK, OPTIMIZE_TABLE.DATA, OPTIMIZE_TABLE.NEWBLOCK, OPTIMIZE_TABLE.NEWDATA, OPTIMIZE_TABLE.ADDITIONALDATA)
-            .
-                select(this.cleanUpDsl
-                           .select(CURRENT_TABLE.DATE, CURRENT_TABLE.WORLD, CURRENT_TABLE.X, CURRENT_TABLE.Y, CURRENT_TABLE.Z, CURRENT_TABLE.ACTION, CURRENT_TABLE.CAUSER, CURRENT_TABLE.BLOCK, CURRENT_TABLE.DATA, CURRENT_TABLE.NEWBLOCK, CURRENT_TABLE.NEWDATA, CURRENT_TABLE.ADDITIONALDATA)
-                           .from(CURRENT_TABLE)).execute();
-        this.dsl.execute("DROP TABLE " + temporaryTable.getName());
-        this.module.getLog()
-                   .debug("CleanUp - Step 7/7: Re-Analyze Indices and then return back to normal logging. Table cleaned up!");
-        this.CURRENT_TABLE = this.OPTIMIZE_TABLE;
-        this.latch.release(); // Start normal logging again
-        this.analyze();
         this.cleanUpRunning = false;
-        */
-        System.out.println("CLEANUP currently not implemented!"); // TODO
-    }
-
-    private void cleanUpOldLogs(Timestamp until)
-    {
-        /*
-        Integer count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
-                                  .where(TABLE_LOG_ENTRY.DATE.le(until)).fetchCount();
-        if (count == 0)
-        {
-            return;
-        }
-        this.module.getLog().debug("        - Step 3/7: Marked {} old logs for removal", count);
-        UInteger lastId = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
-                                    .where(TABLE_LOG_ENTRY.DATE.le(until)).orderBy(TABLE_LOG_ENTRY.ID.desc()).limit(1)
-                                    .fetchOne().value1();
-        this.cleanUpOldLogsPart(UInteger.valueOf(0), lastId, new MutableInteger(count), 0);
-        /* TODO probably better idea for deleting (same for deleting logs from deleted worlds)
-        // sadly jOOQ does not support limit on delete queries yet https://github.com/jOOQ/jOOQ/issues/714
-        int stepSize = this.module.getConfiguration().cleanup.oldLogs.steps;
-        long startTime = System.currentTimeMillis();
-        while (count > 0)
-        {
-            this.module.getLog().debug("        - Step 3/7: Deleting {} old logs ; {} remaining", stepSize, count);
-            count -= stepSize;
-            cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.ID.le(lastId)).limit(stepSize).execute();
-            this.module.getLog().debug("        - Step 3/7: Runtime: {}", new Duration(startTime, System.currentTimeMillis()).format("%www%ddd%hhh%mmm%sss"));
-        }
-        //*/
-    }
-
-    private int cleanUpOldLogsPart(UInteger from, UInteger to, MutableInteger totalCount, int depth)
-    {
-        /*
-        int count = cleanUpDsl.select(TABLE_LOG_ENTRY.ID).from(TABLE_LOG_ENTRY)
-                              .where(TABLE_LOG_ENTRY.ID.between(from, to)).fetchCount();
-        if (count == 0)
-        {
-            return 0;
-        }
-        if (count <= this.module.getConfiguration().cleanup.steps)
-        {
-            totalCount.value -= count;
-            return cleanUpDsl.delete(TABLE_LOG_ENTRY).where(TABLE_LOG_ENTRY.ID.between(from, to)).execute();
-        }
-        else
-        {
-            long startTime = System.currentTimeMillis();
-            UInteger half = UInteger.valueOf((to.longValue() + from.longValue()) / 2);
-            this.module.getLog().debug("{}- Step 3/7: Deleting old logs {}-{} ; Remaining {}", StringUtils
-                .repeat(" ", depth), from, to, totalCount.value);
-            int del = this.cleanUpOldLogsPart(from, half, totalCount, depth + 1);
-            del += this.cleanUpOldLogsPart(half, to, totalCount, depth + 1);
-            this.module.getLog().debug("{}- Step 3/7: Deleted {} old logs in {}", StringUtils
-                .repeat(" ", depth), del, new Duration(startTime, System.currentTimeMillis()).toString());
-            return del;
-        }
-        */
-        return 0;
     }
 
     private void doQueryLookup()
