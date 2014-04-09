@@ -40,6 +40,8 @@ import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
 import de.cubeisland.engine.log.storage.LogManager;
 import de.cubeisland.engine.log.tool.ToolListener;
+import de.cubeisland.engine.messagecompositor.macro.example.DateFormatter;
+import de.cubeisland.engine.messagecompositor.macro.example.DateFormatter.DateReader;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 
 public class Log extends Module implements Listener
@@ -56,6 +58,8 @@ public class Log extends Module implements Listener
     @Override
     public void onEnable()
     {
+        this.getCore().getI18n().getCompositor().registerMacro(new DateFormatter());
+        this.getCore().getI18n().getCompositor().registerReader(DateFormatter.class, "format", new DateReader());
         this.config = this.loadConfig(LogConfiguration.class);
         ConverterManager cMan = this.getCore().getConfigFactory().getDefaultConverterManager();
         cMan.registerConverter(ContainerType.class, new ContainerTypeConverter());

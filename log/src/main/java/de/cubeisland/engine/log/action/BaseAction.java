@@ -39,8 +39,8 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 import de.cubeisland.engine.reflect.Section;
 import org.bson.types.ObjectId;
 
-import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
-import static de.cubeisland.engine.core.util.ChatFormat.GREY;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static org.bukkit.ChatColor.GRAY;
 
 /**
  * The Base for any Loggable Action
@@ -54,8 +54,7 @@ public abstract class BaseAction extends ReflectedDBObject implements Comparable
     private transient final String name;
     private transient final List<ActionCategory> categorySet;
 
-    private static final SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
-    private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yy-MM-dd");
+    private static final SimpleDateFormat dateOnly = new SimpleDateFormat("yyyy-MM-dd");
 
     protected BaseAction(String name, ActionCategory... categories)
     {
@@ -124,19 +123,30 @@ public abstract class BaseAction extends ReflectedDBObject implements Comparable
                     first = last;
                     last = this.date;
                 }
+                //private static final SimpleDateFormat timeOnly = new SimpleDateFormat("HH:mm:ss");
+
+
                 String fDate = dateOnly.format(first);
                 if (dateOnly.format(last).equals(fDate)) // Same day
                 {
-                    time = GREY + fDate + " " + timeOnly.format(first) + " " + GOLD + "- " + GREY + timeOnly.format(last) + "\n";
+                    time = GRAY + user.getTranslation(NONE, " {date#without time:format=yy-MM-dd} {date#time from:format=HH\\:mm\\:ss} - {date#time to:format=HH\\:mm\\:ss}: ", first, first, last);
                 }
                 else
                 {
-                    time = GREY + fDate + " " + timeOnly.format(first) + " " + GOLD + "- " + GREY + dateOnly.format(last) + " " + timeOnly.format(last) + "\n";
+                    time = GRAY + user.getTranslation(NONE, " {date#without time:format=yy-MM-dd} {date#time from:format=HH\\:mm\\:ss} - {date#without time:format=yy-MM-dd} {date#time to:format=HH\\:mm\\:ss}:", first, first, last, last) + "\n";
                 }
             }
             else
             {
-                time = GREY + dateOnly.format(this.date) + " " + timeOnly.format(this.date) + " - ";
+                if (dateOnly.format(this.date).equals(dateOnly.format(new Date())))
+                {
+                    // Same day
+                    time = GRAY + user.getTranslation(NONE, "{date#time from:format=HH\\:mm\\:ss}: ", this.date);
+                }
+                else
+                {
+                    time = GRAY + user.getTranslation(NONE, " {date#without time:yy-MM-dd} {date#time from:format=HH\\:mm\\:ss}: ", this.date, this.date);
+                }
             }
         }
         String loc = "";
