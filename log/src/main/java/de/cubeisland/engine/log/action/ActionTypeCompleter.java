@@ -31,7 +31,7 @@ public class ActionTypeCompleter implements Completer
     public List<String> complete(CommandSender sender, String token)
     {
         List<String> result = new ArrayList<>();
-        String lastToken = token;
+        String lastToken = token.toLowerCase();
         String firstTokens = "";
         if (lastToken.contains(","))
         {
@@ -45,9 +45,10 @@ public class ActionTypeCompleter implements Completer
         }
         for (String s : manager.getAllActionAndCategoryStrings())
         {
-            if (s.startsWith(lastToken))
+            String compare = s.toLowerCase();
+            if (compare.startsWith(lastToken))
             {
-                if (!token.contains(s+","))
+                if (!token.contains(compare+","))
                 {
                     result.add(firstTokens + s);
                 }

@@ -22,33 +22,22 @@ import java.util.Set;
 
 public class ActionCategory
 {
-    public static final ActionCategory EXPLODE = new ActionCategory("explode");
-    public static final ActionCategory ENTITY_ENDERMAN = new ActionCategory("enderman");
-    public static final ActionCategory ENTITY = new ActionCategory("entity");
-    public static final ActionCategory LAVA = new ActionCategory("lava");
-    public static final ActionCategory WATER = new ActionCategory("water");
-    public static final ActionCategory IGNITE = new ActionCategory("ignite");
-    public static final ActionCategory BUCKET = new ActionCategory("bucket");
-    public static final ActionCategory BLOCK = new ActionCategory("block");
-    public static final ActionCategory USE = new ActionCategory("use");
-    public static final ActionCategory SIGN = new ActionCategory("sign");
-    public static final ActionCategory DEATH = new ActionCategory("death");
-    public static final ActionCategory ITEM = new ActionCategory("item");
-    public static final ActionCategory SPAWN = new ActionCategory("spawn");
-    public static final ActionCategory ENTITY_HANGING = new ActionCategory("hanging");
-    public static final ActionCategory PLAYER = new ActionCategory("player");
-
-// TODO Container Category
-
-    public static final ActionCategory ALL = new ActionCategory("all");
-    public static final ActionCategory INVENTORY = new ActionCategory("inventory");
-    public static final ActionCategory BLOCK_ENTITY = new ActionCategory("block-entity");
-    public static final ActionCategory ENVIRONEMENT = new ActionCategory("environement");
-    public static final ActionCategory KILL = new ActionCategory("kill");
-    public static final ActionCategory FLOW = new ActionCategory("flow");
-    public static final ActionCategory FIRE = new ActionCategory("fire");
-    public static final ActionCategory BUCKET_EMPTY = new ActionCategory("bucket-empty");
-    public static final ActionCategory VEHICLE = new ActionCategory("vehicle");
+    public static final ActionCategory EXPLODE = new ActionCategory("EXPLODE");
+    public static final ActionCategory ENTITY_ENDERMAN = new ActionCategory("ENDERMAN");
+    public static final ActionCategory ENTITY = new ActionCategory("ENTITY");
+    public static final ActionCategory LAVA = new ActionCategory("LAVA");
+    public static final ActionCategory WATER = new ActionCategory("WATER");
+    public static final ActionCategory IGNITE = new ActionCategory("IGNITE");
+    public static final ActionCategory BUCKET = new ActionCategory("BUCKET");
+    public static final ActionCategory BLOCK = new ActionCategory("BLOCK");
+    public static final ActionCategory USE = new ActionCategory("USE");
+    public static final ActionCategory SIGN = new ActionCategory("SIGN");
+    public static final ActionCategory DEATH = new ActionCategory("DEATH");
+    public static final ActionCategory ITEM = new ActionCategory("ITEM");
+    public static final ActionCategory SPAWN = new ActionCategory("SPAWN");
+    public static final ActionCategory ENTITY_HANGING = new ActionCategory("HANGING");
+    public static final ActionCategory PLAYER = new ActionCategory("PLAYER");
+    public static final ActionCategory VEHICLE = new ActionCategory("VEHICLE");
 
     public final String name;
     private ActionCategory(String name)

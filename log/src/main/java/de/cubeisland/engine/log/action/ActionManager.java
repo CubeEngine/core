@@ -17,11 +17,16 @@
  */
 package de.cubeisland.engine.log.action;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
+
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.block.ListenerBlock;
@@ -34,9 +39,9 @@ import de.cubeisland.engine.log.action.block.player.bucket.ListenerBucket;
 import de.cubeisland.engine.log.action.block.player.interact.ListenerPlayerBlockInteract;
 import de.cubeisland.engine.log.action.death.ListenerDeath;
 import de.cubeisland.engine.log.action.entityspawn.ListenerEntitySpawn;
+import de.cubeisland.engine.log.action.hanging.ListenerHanging;
 import de.cubeisland.engine.log.action.player.PlayerActionListener;
 import de.cubeisland.engine.log.action.player.entity.ListenerPlayerEntity;
-import de.cubeisland.engine.log.action.hanging.ListenerHanging;
 import de.cubeisland.engine.log.action.player.item.ListenerItem;
 import de.cubeisland.engine.log.action.player.item.container.ListenerContainerItem;
 import de.cubeisland.engine.log.action.vehicle.ListenerVehicle;
@@ -45,16 +50,14 @@ public class ActionManager
 {
     // Map Category -> Category
     private final Map<String, ActionCategory> categories = new HashMap<>();
+    private Map<String, List<Class<? extends BaseAction>>> actionNames = new HashMap<>();
     // TODO:
     // Map Category-Name -> List<Class>
-    // Map Name -> List<Class>
 
     // e.g searching for "water" yields water-break, water-flow, water-form, bucket-water
 
-
     private final Map<Class<? extends BaseAction>, BaseAction> actions = new HashMap<>();
     private final Log module;
-
 
     public ActionManager(Log module)
     {
@@ -96,6 +99,15 @@ public class ActionManager
                 for (ActionCategory category : action.getCategories())
                 {
                     category.addAction(actionClass);
+                    this.categories.put(category.name, category);
+                    String name = category.name + "-" + action.getName();
+                    List<Class<? extends BaseAction>> list = this.actionNames.get(name);
+                    if (list == null)
+                    {
+                        list = new ArrayList<>();
+                        this.actionNames.put(name, list);
+                    }
+                    list.add(actionClass);
                 }
             }
             catch (ReflectiveOperationException e)
@@ -111,6 +123,7 @@ public class ActionManager
     {
         HashSet<String> strings = new HashSet<>();
         strings.addAll(this.categories.keySet());
+        strings.addAll(this.actionNames.keySet());
         return strings;
     }
 
@@ -130,5 +143,11 @@ public class ActionManager
             }
         }
         return action.isActive(config);
+    }
+
+    public String getActionTypesAsString()
+    {
+        String delim = ChatColor.GRAY + ", " + ChatColor.YELLOW;
+        return ChatColor.YELLOW + StringUtils.implode(delim, this.getAllActionAndCategoryStrings());
     }
 }

@@ -67,7 +67,7 @@ public class LookupCommands
             return;
         }
         context.sendTranslated(MessageType.NEUTRAL, "Registered ActionTypes:"); //TODO colors
-        //context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
+        context.sendMessage(this.module.getActionManager().getActionTypesAsString());
         context.sendMessage("");
         context.sendTranslated(MessageType.NEUTRAL, "Lookup/Rollback/Redo-Parameters:");
         context.sendMessage("");
