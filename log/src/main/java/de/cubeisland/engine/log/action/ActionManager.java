@@ -150,4 +150,9 @@ public class ActionManager
         String delim = ChatColor.GRAY + ", " + ChatColor.YELLOW;
         return ChatColor.YELLOW + StringUtils.implode(delim, this.getAllActionAndCategoryStrings());
     }
+
+    public List<Class<? extends BaseAction>> getAction(String actionName)
+    {
+        return this.actionNames.get(actionName);
+    }
 }

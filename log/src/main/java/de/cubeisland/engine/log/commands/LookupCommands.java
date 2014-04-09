@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log.commands;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Material;
@@ -41,6 +42,7 @@ import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.ActionManager;
 import de.cubeisland.engine.log.action.ActionTypeCompleter;
+import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
 import de.cubeisland.engine.log.storage.Lookup;
 import de.cubeisland.engine.log.storage.QueryParameter;
@@ -49,12 +51,12 @@ import de.cubeisland.engine.log.storage.ShowParameter;
 public class LookupCommands
 {
     private final Log module;
-    private final ActionManager actionTypeManager;
+    private final ActionManager actionManager;
 
     public LookupCommands(Log module)
     {
         this.module = module;
-        this.actionTypeManager = module.getActionManager();
+        this.actionManager = module.getActionManager();
     }
 
     private void params(ParameterizedContext context)
@@ -554,8 +556,6 @@ public class LookupCommands
 
     private boolean readActions(QueryParameter params, String input, User user)
     {
-        // TODO
-        /*
         if (input == null)
         {
             return true;
@@ -568,29 +568,27 @@ public class LookupCommands
             {
                 actionString = actionString.substring(1);
             }
-            Set<ActionType> actionTypes = this.actionTypeManager.getActionType(actionString);
-            if (actionTypes == null)
+            List<Class<? extends BaseAction>> actions = this.actionManager.getAction(actionString);
+            if (actions == null)
             {
                 user.sendTranslated(MessageType.NEGATIVE, "Unknown action-type: {name#action}", actionString);
                 return false;
             }
             if (negate)
             {
-                for (ActionType actionType : actionTypes)
+                for (Class<? extends BaseAction> action : actions)
                 {
-                    params.excludeAction(actionType);
+                    params.excludeAction(action);
                 }
             }
             else
             {
-                for (ActionType actionType : actionTypes)
+                for (Class<? extends BaseAction> action : actions)
                 {
-                    params.includeAction(actionType);
+                    params.includeAction(action);
                 }
             }
         }
-        return true;
-        */
         return true;
     }
 }
