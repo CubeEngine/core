@@ -73,7 +73,7 @@ public class ConomyManager
 
         this.logger = module.getCore().getLogFactory().getLog(Conomy.class, "Conomy-Transactions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(module.getCore(), "Conomy-Transactions"),
-                                                  LoggingUtil.getFileFormat(false, false),
+                                                  LoggingUtil.getFileFormat(true, false),
                                                   true, LoggingUtil.getCycler(),
                                                   module.getCore().getTaskManager().getThreadFactory()));
         if (!this.module.getConfig().enableLogging)
