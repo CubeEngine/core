@@ -292,6 +292,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
             }
             super.calculate(roleStack);
             this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getName());
+            this.apply();
         }
     }
 
