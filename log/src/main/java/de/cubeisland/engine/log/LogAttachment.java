@@ -112,14 +112,19 @@ public class LogAttachment extends UserAttachment
         switch (blockMaterial)
         {
             case BEDROCK:
+            case BOOK:
                 return this.createNewGeneralLookup();
             case CHEST:
+            case CLAY_BRICK:
                 return this.createNewContainerLookup();
             case PUMPKIN:
+            case CLAY_BALL:
                 return this.createNewPlayerLookup();
             case SOUL_SAND:
+            case BONE:
                 return this.createNewKillsLookup();
             case LOG:
+            case NETHER_BRICK_ITEM:
                 return this.createNewBlockLookup();
             default:
                 return null;
