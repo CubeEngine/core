@@ -108,7 +108,7 @@ public class Portal
             user.sendTranslated(MessageType.POSITIVE, "This Portal will teleport non-players too");
         }
         user.sendTranslated(MessageType.POSITIVE, "{user} is the owner of this portal", this.config.owner);
-        user.sendTranslated(MessageType.POSITIVE, "Location: {vector} to {vector} in {world}",
+        user.sendTranslated(MessageType.POSITIVE, "Location: {vector} to {vector} in {name#world}",
                             new BlockVector3(this.config.location.from.x, this.config.location.from.y, this.config.location.from.z),
                             new BlockVector3(this.config.location.to.x, this.config.location.to.y, this.config.location.to.z), this.config.world.getName());
         if (this.config.destination == null)
@@ -123,10 +123,10 @@ public class Portal
                 user.sendTranslated(MessageType.POSITIVE, "This portal teleports to another portal: {name#portal}", config.destination.portal);
                 break;
             case WORLD:
-                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to the spawn of {world}", config.destination.world);
+                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to the spawn of {name#world}", config.destination.world.getName());
                 break;
             case LOCATION:
-                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to {vector} in {world}",
+                user.sendTranslated(MessageType.POSITIVE, "This portal teleports to {vector} in {name#world}",
                     new BlockVector3((int)config.destination.location.x, (int)config.destination.location.y, (int)config.destination.location.z), config.destination.world.getName());
                 break;
             }

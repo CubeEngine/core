@@ -178,7 +178,7 @@ public class BorderCommands extends ContainerCommand
             curLen++;
             dir = -dir;
         }
-        sender.sendTranslated(MessageType.POSITIVE, "Added {amount} chunks to generate in {world}", chunksAdded);
+        sender.sendTranslated(MessageType.POSITIVE, "Added {amount} chunks to generate in {world}", chunksAdded, world);
     }
 
     private boolean addIfInBorder(BorderConfig config, long worldId, int x, int z, int spawnX, int spawnZ, int radius, int radiusSquared)

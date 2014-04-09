@@ -278,7 +278,7 @@ public class WorldControlCommands
         {
             if (radius == -1)
             {
-                context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities in {world}!", entitiesRemoved, world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities in {world}!", entitiesRemoved, world);
                 return;
             }
             context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities nearby!", entitiesRemoved); // TODO a non-plural version if there is only 1 entity

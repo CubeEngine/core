@@ -347,7 +347,7 @@ public class TeleportCommands
             Location loc = new Location(world, x, y, z).add(0.5, 0, 0.5);
             if (TeleportCommands.teleport(sender, loc, context.hasFlag("s") && module.perms().COMMAND_TPPOS_SAFE.isAuthorized(context.getSender()), false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "Teleported to {vector:x\\=:y\\=:z\\=} in {world}!", new BlockVector3(x, y, z), world.getName());
+                context.sendTranslated(MessageType.POSITIVE, "Teleported to {vector:x\\=:y\\=:z\\=} in {world}!", new BlockVector3(x, y, z), world);
             }
             return;
         }
