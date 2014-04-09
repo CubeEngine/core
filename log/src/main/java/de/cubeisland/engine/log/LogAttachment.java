@@ -126,24 +126,29 @@ public class LogAttachment extends UserAttachment
         }
     }
 
-    public Lookup getLookup(Material blockMaterial)
+    public Lookup getLookup(Material material)
     {
         Lookup lookup;
-        switch (blockMaterial)
+        switch (material)
         {
             case BEDROCK:
+            case BOOK:
                 lookup = generalLookup;
                 break;
             case CHEST:
+            case CLAY_BRICK:
                 lookup = containerLookup;
                 break;
             case PUMPKIN:
+            case CLAY_BALL:
                 lookup = playerLookup;
                 break;
             case SOUL_SAND:
+            case BONE:
                 lookup = killLookup;
                 break;
             case LOG:
+            case NETHER_BRICK_ITEM:
                 lookup = blockLookup;
                 break;
             default:
@@ -151,7 +156,7 @@ public class LogAttachment extends UserAttachment
         }
         if (lookup == null)
         {
-            return this.createNewLookup(blockMaterial);
+            return this.createNewLookup(material);
         }
         return lookup;
     }
