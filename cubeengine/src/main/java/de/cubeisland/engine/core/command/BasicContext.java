@@ -94,6 +94,12 @@ public class BasicContext implements CommandContext
     }
 
     @Override
+    public void sendTranslatedN(MessageType type, int count, String sMessage, String pMessage, Object... args)
+    {
+        this.sender.sendTranslatedN(type, count, sMessage, pMessage, args);
+    }
+
+    @Override
     public boolean hasArgs()
     {
         return this.argCount > 0;
