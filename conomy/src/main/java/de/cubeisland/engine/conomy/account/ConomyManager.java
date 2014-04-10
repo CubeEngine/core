@@ -50,18 +50,15 @@ import static de.cubeisland.engine.conomy.account.storage.TableBankAccess.TABLE_
 public class ConomyManager
 {
     protected final Conomy module;
-    private final ThreadFactory threadFactory;
-
-    private final Map<String,BankAccount> bankaccounts = new THashMap<>();
-    private final Map<Long,BankAccount> bankaccountsID = new THashMap<>();
-
     protected final Log logger;
     protected final ConomyConfiguration config;
-    private final Economy conomyInterface;
-
     protected final DSLContext dsl;
-
     protected final UserManager um;
+    private final ThreadFactory threadFactory;
+    private final Map<String, BankAccount> bankaccounts = new THashMap<>();
+    private final Map<Long, BankAccount> bankaccountsID = new THashMap<>();
+    private final Economy conomyInterface;
+    private Thread thread = null;
 
     public ConomyManager(Conomy module)
     {
@@ -73,8 +70,7 @@ public class ConomyManager
 
         this.logger = module.getCore().getLogFactory().getLog(Conomy.class, "Conomy-Transactions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(module.getCore(), "Conomy-Transactions"),
-                                                  LoggingUtil.getFileFormat(true, false),
-                                                  true, LoggingUtil.getCycler(),
+                                                  LoggingUtil.getFileFormat(true, false), true, LoggingUtil.getCycler(),
                                                   module.getCore().getTaskManager().getThreadFactory()));
         if (!this.module.getConfig().enableLogging)
         {
@@ -90,22 +86,27 @@ public class ConomyManager
         BankAccount bankAccount = this.bankaccounts.get(name);
         if (bankAccount == null)
         {
-            AccountModel model = this.dsl.selectFrom(TABLE_ACCOUNT).where(TABLE_ACCOUNT.NAME.eq(name)).fetchOneInto(TABLE_ACCOUNT);
+            AccountModel model = this.dsl.selectFrom(TABLE_ACCOUNT).where(TABLE_ACCOUNT.NAME.eq(name)).fetchOneInto(
+                TABLE_ACCOUNT);
             if (model == null)
             {
-                if (!create) return null;
+                if (!create)
+                {
+                    return null;
+                }
                 model = this.dsl.newRecord(TABLE_ACCOUNT).
-                    newAccount(null,name,(int) (this.config.defaultBankBalance * this.config.fractionalDigitsFactor()),false,this.config.bankNeedInvite);
+                    newAccount(null, name, (int)(this.config.defaultBankBalance * this.config.fractionalDigitsFactor()),
+                               false, this.config.bankNeedInvite);
                 model.insert();
                 bankAccount = new BankAccount(this, model);
-                this.logger.info("NEW Bank:{} :: {}", name,  bankAccount.balance());
+                this.logger.info("NEW Bank:{} :: {}", name, bankAccount.balance());
             }
             else
             {
                 bankAccount = new BankAccount(this, model);
                 this.logger.info("LOAD Bank:{} :: {}", name, bankAccount.balance());
             }
-            this.bankaccounts.put(name,bankAccount);
+            this.bankaccounts.put(name, bankAccount);
             this.bankaccountsID.put(bankAccount.model.getKey().longValue(), bankAccount);
         }
         return bankAccount;
@@ -116,16 +117,13 @@ public class ConomyManager
         AccountAttachment attachment = user.attachOrGet(AccountAttachment.class, module);
         if (attachment.getAccount() == null)
         {
-            if (!create) return null;
+            if (!create)
+            {
+                return null;
+            }
             attachment.createAccount();
         }
         return attachment.getAccount();
-    }
-
-    public UserAccount getUserAccount(String playerName, boolean create)
-    {
-        User user = this.um.getExactUser(playerName);
-        return this.getUserAccount(user, create);
     }
 
     public boolean bankAccountExists(String name)
@@ -134,22 +132,15 @@ public class ConomyManager
         {
             return true;
         }
-        Account acc = this.getBankAccount(name,false);
+        Account acc = this.getBankAccount(name, false);
         return acc != null;
     }
-
-    public boolean userAccountExists(String name)
-    {
-        Account acc = this.getUserAccount(name,false);
-        return acc != null;
-    }
-
-    private Thread thread = null;
 
     /**
      * Returns false if an action is currently running
      *
      * @param r the runnable tu run
+     *
      * @return true if the thread got started
      */
     private boolean startThread(Runnable r)
@@ -217,9 +208,9 @@ public class ConomyManager
     public void setAll(boolean userAcc, boolean bankAcc, double value)
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
-        this.dsl.update(TABLE_ACCOUNT).set(TABLE_ACCOUNT.VALUE,longValue).
-            where(DSL.condition(TABLE_ACCOUNT.NAME.getName() + " IS NULL = ?", userAcc))
-            .or(DSL.condition(TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", bankAcc)).execute();
+        this.dsl.update(TABLE_ACCOUNT).set(TABLE_ACCOUNT.VALUE, longValue).
+            where(DSL.condition(TABLE_ACCOUNT.NAME.getName() + " IS NULL = ?", userAcc)).or(DSL.condition(
+            TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", bankAcc)).execute();
         this.logger.info("SET-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
         // update all loaded accounts...
         if (userAcc)
@@ -244,9 +235,10 @@ public class ConomyManager
 
     public void scaleAll(boolean userAcc, boolean bankAcc, float factor)
     {
-        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? * " + TABLE_ACCOUNT.VALUE.getName() +
-                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
-                       factor, userAcc, bankAcc).execute();
+        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? * "
+                           + TABLE_ACCOUNT.VALUE.getName() +
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR "
+                           + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", factor, userAcc, bankAcc).execute();
         this.logger.info("SCALE-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), factor);
         // update all loaded accounts...
         if (userAcc)
@@ -272,10 +264,12 @@ public class ConomyManager
     public void transactionAll(boolean userAcc, boolean bankAcc, double value)
     {
         final long longValue = (long)(value * this.config.fractionalDigitsFactor());
-        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? + " + TABLE_ACCOUNT.VALUE.getName() +
-                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
-                       value, userAcc, bankAcc).execute();
-        this.logger.info("TRANSACTION-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"), value);
+        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.VALUE.getName() + " = ? + "
+                           + TABLE_ACCOUNT.VALUE.getName() +
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR "
+                           + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", value, userAcc, bankAcc).execute();
+        this.logger.info("TRANSACTION-ALL {} {}", (userAcc && bankAcc ? "User/Bank" : userAcc ? "User" : "Bank"),
+                         value);
         // update all loaded accounts...
         if (userAcc)
         {
@@ -313,7 +307,7 @@ public class ConomyManager
         if (to != null && from != null)
         {
             this.logger.info("TRANSACTION {}{} -> {}{}", (from instanceof UserAccount ? "User:" : "Bank:"),
-                             from.getName(), (to instanceof UserAccount ? "User:" : "Bank:"),  to.getName());
+                             from.getName(), (to instanceof UserAccount ? "User:" : "Bank:"), to.getName());
         }
         if (from != null)
         {
@@ -326,20 +320,22 @@ public class ConomyManager
         return true;
     }
 
-    public Collection<AccountModel> getTopAccounts(boolean user, boolean bank, int fromRank, int toRank, boolean showHidden)
+    public Collection<AccountModel> getTopAccounts(boolean user, boolean bank, int fromRank, int toRank,
+                                                   boolean showHidden)
     {
         return this.dsl.selectFrom(TABLE_ACCOUNT).
             where(DSL.condition("((mask & 1) = 0 OR ((mask & 1) = 1) = " + showHidden + ")")).
-            and(DSL.condition("(name IS NULL) = " + user + " OR " + "(user_id IS NULL) = " + bank)).
-            orderBy(TABLE_ACCOUNT.VALUE.desc()).limit(fromRank -1, toRank - fromRank +1).
-            fetch();
+                           and(DSL.condition("(name IS NULL) = " + user + " OR " + "(user_id IS NULL) = " + bank)).
+                           orderBy(TABLE_ACCOUNT.VALUE.desc()).limit(fromRank - 1, toRank - fromRank + 1).
+                           fetch();
     }
 
     public void hideAll(boolean userAcc, boolean bankAcc)
     {
-        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 | " + TABLE_ACCOUNT.MASK.getName() +
-                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?",
-                       userAcc, bankAcc).execute();
+        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 | "
+                           + TABLE_ACCOUNT.MASK.getName() +
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR "
+                           + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", userAcc, bankAcc).execute();
         if (userAcc)
         {
             for (User user : this.um.getOnlineUsers())
@@ -362,9 +358,10 @@ public class ConomyManager
 
     public void unhideAll(boolean userAcc, boolean bankAcc)
     {
-        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 & ~" + TABLE_ACCOUNT.MASK.getName() +
-                       " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR " + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?"
-                      ,userAcc, bankAcc).execute();
+        this.dsl.query("UPDATE " + TABLE_ACCOUNT.getName() + " SET " + TABLE_ACCOUNT.MASK.getName() + " = 1 & ~"
+                           + TABLE_ACCOUNT.MASK.getName() +
+                           " WHERE " + TABLE_ACCOUNT.NAME.getName() + " IS NULL = ? OR "
+                           + TABLE_ACCOUNT.USER_ID.getName() + " IS NULL = ?", userAcc, bankAcc).execute();
         if (userAcc)
         {
             for (User user : this.um.getOnlineUsers())
@@ -417,8 +414,7 @@ public class ConomyManager
 
     public String format(Locale locale, double balance)
     {
-        return String.format(locale, "%." + this.config.fractionalDigits
-            + "f "+ this.config.symbol, balance);
+        return String.format(locale, "%." + this.config.fractionalDigits + "f " + this.config.symbol, balance);
     }
 
     public Double parse(String amountString, Locale locale)
@@ -434,7 +430,8 @@ public class ConomyManager
             return parsed.doubleValue();
         }
         catch (NumberFormatException | ParseException ex)
-        {}
+        {
+        }
         // TODO filter currency Names / Symbols http://git.cubeisland.de/cubeengine/cubeengine/issues/250
         return null;
     }
@@ -466,13 +463,9 @@ public class ConomyManager
 
     public Set<BankAccount> getBankAccounts(User user)
     {
-        Result<AccountModel> accountModels = this.dsl.selectFrom(TABLE_ACCOUNT)
-                                             .where(TABLE_ACCOUNT.KEY.eq(this.dsl.select(TABLE_BANK_ACCESS.ACCOUNTID)
-                                                                                 .from(TABLE_BANK_ACCESS)
-                                                                                 .where(TABLE_BANK_ACCESS.USERID
-                                                                                                         .eq(user.getEntity()
-                                                                                                                 .getKey()))))
-                                             .fetch();
+        Result<AccountModel> accountModels = this.dsl.selectFrom(TABLE_ACCOUNT).where(TABLE_ACCOUNT.KEY.eq(
+            this.dsl.select(TABLE_BANK_ACCESS.ACCOUNTID).from(TABLE_BANK_ACCESS).where(TABLE_BANK_ACCESS.USERID.eq(
+                user.getEntity().getKey())))).fetch();
         Set<BankAccount> accounts = new HashSet<>();
         for (AccountModel accountModel : accountModels)
         {
@@ -496,7 +489,10 @@ public class ConomyManager
     public boolean renameBank(BankAccount bankAccount, String newName)
     {
         BankAccount acc = this.getBankAccount(newName, false);
-        if (acc != null) return false; // Account name exists!
+        if (acc != null)
+        {
+            return false; // Account name exists!
+        }
         this.bankaccounts.remove(bankAccount.getName());
         bankAccount.model.setName(newName);
         bankAccount.model.update();
@@ -513,14 +509,14 @@ public class ConomyManager
      * Returns the names of all banks
      *
      * @param hidden if true return hidden banks too
-     * @return
      */
     public Set<String> getBankNames(boolean hidden)
     {
         Set<String> banks = new HashSet<>();
         Result<Record1<String>> fetch = this.dsl.select(TABLE_ACCOUNT.NAME).from(TABLE_ACCOUNT).
             where(TABLE_ACCOUNT.NAME.isNotNull()).
-            and(DSL.condition("(mask & 1 = 0) OR (mask & 1 = 1) = " + hidden)).fetch();
+                                                    and(DSL.condition(
+                                                        "(mask & 1 = 0) OR (mask & 1 = 1) = " + hidden)).fetch();
         for (Record1<String> names : fetch)
         {
             banks.add(names.value1());
@@ -530,14 +526,12 @@ public class ConomyManager
 
     protected AccountModel loadUserAccount(User holder)
     {
-        return this.dsl.selectFrom(TABLE_ACCOUNT).where(TABLE_ACCOUNT.USER_ID.eq(holder.getEntity()
-                                                                                          .getKey())).fetchOneInto(TABLE_ACCOUNT);
+        return this.dsl.selectFrom(TABLE_ACCOUNT).where(TABLE_ACCOUNT.USER_ID.eq(
+            holder.getEntity().getKey())).fetchOneInto(TABLE_ACCOUNT);
     }
 
     public List<BankAccessModel> getBankAccess(AccountModel model)
     {
-       return this.dsl.selectFrom(TABLE_BANK_ACCESS)
-           .where(TABLE_BANK_ACCESS.ACCOUNTID.eq(model.getKey()))
-           .fetch();
+        return this.dsl.selectFrom(TABLE_BANK_ACCESS).where(TABLE_BANK_ACCESS.ACCOUNTID.eq(model.getKey())).fetch();
     }
 }

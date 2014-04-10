@@ -161,8 +161,8 @@ public class RepairBlock
 
     public boolean withdrawPlayer(User user, double price)
     {
-        economy.createPlayerAccount(user.getName()); // Make sure account exists
-        if (economy.has(user.getName(), price) && economy.withdraw(user.getName(), price))
+        economy.createAccount(user.getUniqueId()); // Make sure account exists
+        if (economy.has(user.getUniqueId(), price) && economy.withdraw(user.getUniqueId(), price))
         {
             // TODO bankAccounts
             /*
@@ -218,8 +218,8 @@ public class RepairBlock
             {
                 user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount}", format);
             }
-            economy.createPlayerAccount(user.getName());
-            user.sendTranslated(MessageType.NEUTRAL, "You currently have {input#balance}", economy.format(user.getLocale(), economy.getBalance(user.getName())));
+            economy.createAccount(user.getUniqueId());
+            user.sendTranslated(MessageType.NEUTRAL, "You currently have {input#balance}", economy.format(user.getLocale(), economy.getBalance(user.getUniqueId())));
             user.sendTranslated(MessageType.POSITIVE, "{text:Leftclick} again to repair all your damaged items.");
             return new RepairRequest(this, inventory, items, price);
         }

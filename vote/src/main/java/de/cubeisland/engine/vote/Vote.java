@@ -78,10 +78,10 @@ public class Vote extends Module implements Listener
                 voteModel.setLastvote(new Timestamp(System.currentTimeMillis()));
                 voteModel.update();
             }
-            economy.createPlayerAccount(vote.getUsername());
+            economy.createAccount(user.getUniqueId());
             int voteamount = voteModel.getVoteamount().intValue();
             double money = this.config.voteReward * (Math.pow(1+1.5/voteamount, voteamount-1));
-            economy.deposit(vote.getUsername(), money);
+            economy.deposit(user.getUniqueId(), money);
             String moneyFormat = economy.format(money);
             this.getCore().getUserManager().broadcastMessage(MessageType.NONE, this.config.voteBroadcast.
                 replace("{PLAYER}", vote.getUsername()).

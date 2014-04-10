@@ -19,12 +19,14 @@ package de.cubeisland.engine.vaultlink.service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.vaultlink.Vaultlink;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -95,7 +97,17 @@ public class CubeEconomyService implements Economy
     @Override
     public boolean hasAccount(String name)
     {
-        return backingService.get().hasAccount(name);
+        return backingService.get().hasAccount(getUUIDForName(name));
+    }
+
+    private UUID getUUIDForName(String name)
+    {
+        User user = core.getUserManager().findExactUser(name);
+        if (user == null)
+        {
+            return McUUID.getUUIDForName(name);
+        }
+        return user.getUniqueId();
     }
 
     @Override
@@ -107,7 +119,7 @@ public class CubeEconomyService implements Economy
     @Override
     public double getBalance(String name)
     {
-        return backingService.get().getBalance(name);
+        return backingService.get().getBalance(getUUIDForName(name));
     }
 
     @Override
@@ -119,7 +131,7 @@ public class CubeEconomyService implements Economy
     @Override
     public boolean has(String name, double amount)
     {
-        return backingService.get().has(name, amount);
+        return backingService.get().has(getUUIDForName(name), amount);
     }
 
     @Override
@@ -129,12 +141,12 @@ public class CubeEconomyService implements Economy
     }
 
     @Override
-    public EconomyResponse withdrawPlayer(String player, double amount)
+    public EconomyResponse withdrawPlayer(String name, double amount)
     {
-        boolean result = backingService.get().withdraw(player, amount);
-        return new EconomyResponse(amount, getBalance(player), result ? SUCCESS : FAILURE, result ?
-                                       i18n.translate(this.getLocale(player), NONE, "Money successfully withdrawn!") :
-                                       i18n.translate(this.getLocale(player), NONE, "You don't have enough money."));
+        boolean result = backingService.get().withdraw(getUUIDForName(name), amount);
+        return new EconomyResponse(amount, getBalance(name), result ? SUCCESS : FAILURE, result ?
+                                       i18n.translate(this.getLocale(name), NONE, "Money successfully withdrawn!") :
+                                       i18n.translate(this.getLocale(name), NONE, "You don't have enough money."));
     }
 
     private Locale getLocale(String player)
@@ -154,12 +166,12 @@ public class CubeEconomyService implements Economy
     }
 
     @Override
-    public EconomyResponse depositPlayer(String player, double amount)
+    public EconomyResponse depositPlayer(String name, double amount)
     {
-        boolean result = backingService.get().deposit(player, amount);
-        return new EconomyResponse(amount, getBalance(player), result ? SUCCESS : FAILURE, result ?
-                                     i18n.translate(this.getLocale(player), NONE, "Money successfully deposited!") :
-                                     i18n.translate(this.getLocale(player), NONE, "Your account is full."));
+        boolean result = backingService.get().deposit(getUUIDForName(name), amount);
+        return new EconomyResponse(amount, getBalance(name), result ? SUCCESS : FAILURE, result ?
+                                     i18n.translate(this.getLocale(name), NONE, "Money successfully deposited!") :
+                                     i18n.translate(this.getLocale(name), NONE, "Your account is full."));
     }
 
     @Override
@@ -241,15 +253,15 @@ public class CubeEconomyService implements Economy
     }
 
     @Override
-    public EconomyResponse isBankOwner(String name, String player)
+    public EconomyResponse isBankOwner(String bank, String name)
     {
-        if (!getBanks().contains(name))
+        if (!getBanks().contains(bank))
         {
             return new EconomyResponse(0, 0, ResponseType.FAILURE, "That bank does not exist!");
         }
-        else if (backingService.get().isBankOwner(name, player))
+        else if (backingService.get().isBankOwner(bank, getUUIDForName(name)))
         {
-            return new EconomyResponse(0, bankBalance(name).balance, ResponseType.SUCCESS, "");
+            return new EconomyResponse(0, bankBalance(bank).balance, ResponseType.SUCCESS, "");
         }
         else
         {
@@ -258,13 +270,13 @@ public class CubeEconomyService implements Economy
     }
 
     @Override
-    public EconomyResponse isBankMember(String bank, String player)
+    public EconomyResponse isBankMember(String bank, String name)
     {
         if (!getBanks().contains(bank))
         {
             return new EconomyResponse(0, 0, ResponseType.FAILURE, "That bank does not exist!");
         }
-        else if (backingService.get().isBankMember(bank, player))
+        else if (backingService.get().isBankMember(bank, getUUIDForName(name)))
         {
             return new EconomyResponse(0, bankBalance(bank).balance, ResponseType.SUCCESS, "");
         }
@@ -283,7 +295,7 @@ public class CubeEconomyService implements Economy
     @Override
     public boolean createPlayerAccount(String name)
     {
-        return backingService.get().createPlayerAccount(name);
+        return backingService.get().createAccount(getUUIDForName(name));
     }
 
     @Override

@@ -853,7 +853,7 @@ public class MarketSign
                 }
             }
         }
-        this.economy.createPlayerAccount(user.getName());
+        this.economy.createAccount(user.getUniqueId());
         if (this.isValidSign(user))
         {
             if (this.isTypeBuy())
@@ -878,10 +878,10 @@ public class MarketSign
                 if (checkForPlace(user.getInventory(), item.clone()))
                 {
                     String price = this.parsePrice();
-                    this.economy.withdraw(user.getName(), this.getPrice());
+                    this.economy.withdraw(user.getUniqueId(), this.getPrice());
                     if (!this.isAdminSign())
                     {
-                        this.economy.deposit(this.getOwner().getName(), this.getPrice());
+                        this.economy.deposit(this.getOwner().getUniqueId(), this.getPrice());
                     }
                     if (this.hasStock())
                     {
@@ -924,10 +924,10 @@ public class MarketSign
             ItemStack item = this.getItem().clone();
             item.setAmount(this.getAmount());
 
-            this.economy.deposit(user.getName(), this.getPrice());
+            this.economy.deposit(user.getUniqueId(), this.getPrice());
             if (!this.isAdminSign())
             {
-                this.economy.withdraw(this.getOwner().getName(), this.getPrice());
+                this.economy.withdraw(this.getOwner().getUniqueId(), this.getPrice());
             }
             user.getInventory().removeItem(item);
             if (this.hasStock())
@@ -1204,9 +1204,9 @@ public class MarketSign
         {
             return true;
         }
-        if (this.economy.hasAccount(user.getName()))
+        if (this.economy.hasAccount(user.getUniqueId()))
         {
-            return this.economy.has(user.getName(), this.getPrice());
+            return this.economy.has(user.getUniqueId(), this.getPrice());
         }
         return false;
     }
