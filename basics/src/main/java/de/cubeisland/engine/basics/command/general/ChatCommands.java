@@ -131,9 +131,9 @@ public class ChatCommands
         user.sendTranslated(MessageType.NONE, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender().getName(), message);
         if (user.get(BasicsAttachment.class).isAfk())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} is afk!", user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "{user} is afk!", user);
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", user.getName(), message);
+        context.sendTranslated(MessageType.NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", user, message);
         if (context.getSender() instanceof User)
         {
             ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper(user.getName());
@@ -170,7 +170,7 @@ public class ChatCommands
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         if (basicsUserEntity.getMuted() != null && basicsUserEntity.getMuted().getTime() < System.currentTimeMillis())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} was already muted!", user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "{user} was already muted!", user);
         }
         Duration dura = module.getConfiguration().commands.defaultMuteTime;
         if (context.hasArg(1))
@@ -190,7 +190,7 @@ public class ChatCommands
         basicsUserEntity.update();
         String timeString = dura.getMillis() == 0 ? user.getTranslation(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
         user.sendTranslated(MessageType.NEGATIVE, "You are now muted for {input#amount}!", timeString);
-        context.sendTranslated(MessageType.NEUTRAL, "You muted {user} globally for {input#amount}!", user.getName(), timeString);
+        context.sendTranslated(MessageType.NEUTRAL, "You muted {user} globally for {input#amount}!", user, timeString);
     }
 
     @Command(desc = "Unmutes a player", usage = "<player>", min = 1, max = 1)
@@ -205,7 +205,7 @@ public class ChatCommands
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         basicsUserEntity.setMuted(null);
         basicsUserEntity.update();
-        context.sendTranslated(MessageType.POSITIVE, "{user} is no longer muted!", user.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is no longer muted!", user);
     }
 
     @Command(names = {"rand","roll"},desc = "Shows a random number from 0 to 100")

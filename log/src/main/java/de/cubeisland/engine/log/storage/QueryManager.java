@@ -606,7 +606,7 @@ public class QueryManager
         }
         // TODO finish queryParams
 
-        this.module.getLog().debug("{}: Select Query queued!", user.getName());
+        this.module.getLog().debug("{}: Select Query queued!", user.getDisplayName());
         this.queuedLookups.offer(new QueuedSqlParams(lookup, user, query, action));
         if (this.futureLookup == null || this.futureLookup.isDone())
         {

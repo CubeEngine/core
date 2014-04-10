@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command.commands;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +53,7 @@ public class CoreCommands extends ContainerCommand
 
     private final BukkitCore core;
     private final BanManager banManager;
-    private final ConcurrentHashMap<String, Long> fails = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
 
     public CoreCommands(Core core)
     {
@@ -192,9 +193,9 @@ public class CoreCommands extends ContainerCommand
                 user.sendTranslated(MessageType.NEGATIVE, "Wrong password!");
                 if (this.core.getConfiguration().security.fail2ban)
                 {
-                    if (fails.get(user.getName()) != null)
+                    if (fails.get(user.getUniqueId()) != null)
                     {
-                        if (fails.get(user.getName()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
+                        if (fails.get(user.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                         {
                             String msg = user.getTranslation(MessageType.NEGATIVE, "Too many wrong passwords! \nFor your security you were banned 10 seconds.");
                             this.banManager.addBan(new UserBan(user.getName(),user.getName(),msg,
@@ -207,7 +208,7 @@ public class CoreCommands extends ContainerCommand
                             user.kickPlayer(msg);
                         }
                     }
-                    fails.put(user.getName(),System.currentTimeMillis());
+                    fails.put(user.getUniqueId(),System.currentTimeMillis());
                 }
             }
         }

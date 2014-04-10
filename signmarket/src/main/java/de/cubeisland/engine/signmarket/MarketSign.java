@@ -542,7 +542,7 @@ public class MarketSign
             }
             else
             {
-                user.sendTranslated(MessageType.NONE, "{text:Buy:color=DARK_BLUE}: {amount} for {input#price} from {user#owner}", this.getAmount(), this.parsePrice(), this.getOwner().getName());
+                user.sendTranslated(MessageType.NONE, "{text:Buy:color=DARK_BLUE}: {amount} for {input#price} from {user#owner}", this.getAmount(), this.parsePrice(), this.getOwner());
             }
         }
         else
@@ -553,7 +553,7 @@ public class MarketSign
             }
             else
             {
-                user.sendTranslated(MessageType.NONE, "{text:Sell:color=DARK_BLUE}: {amount} for {input#price} to {user#owner}", this.getAmount(), this.parsePrice(), this.getOwner().getName());
+                user.sendTranslated(MessageType.NONE, "{text:Sell:color=DARK_BLUE}: {amount} for {input#price} to {user#owner}", this.getAmount(), this.parsePrice(), this.getOwner());
             }
         }
         if (this.getItem() == null)

@@ -25,11 +25,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.reflect.ReflectedFile;
 
 public class PlayerDataConfig extends ReflectedFile<NBTCodec>
 {
+    public String lastName;
     public int heldItemSlot = 0;
     public double health = 20;
     public double maxHealth = 20;
@@ -49,6 +51,12 @@ public class PlayerDataConfig extends ReflectedFile<NBTCodec>
     public void applyToPlayer(Player player)
     {
         Inventory inv = player.getInventory();
+        if (!player.getName().equals(lastName))
+        {
+            CubeEngine.getLog().debug("[Worlds] Detected NameChange {} -> {}", lastName, player.getName());
+            this.lastName = player.getName();
+            this.save();
+        }
         player.getInventory().setHeldItemSlot(heldItemSlot);
         player.setMaxHealth(maxHealth);
         player.setHealth(health);
@@ -105,6 +113,7 @@ public class PlayerDataConfig extends ReflectedFile<NBTCodec>
 
     public void applyFromPlayer(Player player)
     {
+        this.lastName = player.getName();
         this.heldItemSlot = player.getInventory().getHeldItemSlot();
         this.maxHealth = player.getMaxHealth();
         this.health = player.getHealth();

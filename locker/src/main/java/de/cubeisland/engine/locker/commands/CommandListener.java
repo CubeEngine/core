@@ -19,6 +19,7 @@ package de.cubeisland.engine.locker.commands;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
@@ -47,8 +48,8 @@ import static de.cubeisland.engine.locker.storage.LockType.*;
 
 public class CommandListener implements Listener
 {
-    private final Map<String, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
-    private final Map<String,Long> persist = new HashMap<>();
+    private final Map<UUID, Triplet<CommandType, String, Boolean>> map = new HashMap<>();
+    private final Map<UUID,Long> persist = new HashMap<>();
 
     private final Locker module;
     private final LockManager manager;
@@ -72,16 +73,16 @@ public class CommandListener implements Listener
     private void setCommandType0(CommandSender sender, CommandType commandType, String s, boolean b)
     {
         if (isNotUser(sender)) return;
-        map.put(sender.getName(), new Triplet<>(commandType, s, b));
-        if (this.doesPersist(sender.getName()))
+        map.put(((User)sender).getUniqueId(), new Triplet<>(commandType, s, b));
+        if (this.doesPersist(((User)sender).getUniqueId()))
         {
             sender.sendTranslated(MessageType.NEUTRAL, "Persist mode is active. Your command will be repeated until reusing {text:/cpersist}");
         }
     }
 
-    private boolean doesPersist(String name)
+    private boolean doesPersist(UUID uuid)
     {
-        Long lastUsage = this.persist.get(name);
+        Long lastUsage = this.persist.get(uuid);
         return lastUsage != null && (System.currentTimeMillis() - lastUsage) < TimeUnit.MINUTES.toMillis(5);
     }
 
@@ -93,13 +94,13 @@ public class CommandListener implements Listener
      */
     public boolean persist(User sender)
     {
-        if (doesPersist(sender.getName()))
+        if (doesPersist(sender.getUniqueId()))
         {
-            persist.remove(sender.getName());
-            this.map.remove(sender.getName());
+            persist.remove(sender.getUniqueId());
+            this.map.remove(sender.getUniqueId());
             return false;
         }
-        persist.put(sender.getName(), System.currentTimeMillis());
+        persist.put(sender.getUniqueId(), System.currentTimeMillis());
         return true;
     }
 
@@ -113,12 +114,12 @@ public class CommandListener implements Listener
         {
             return;
         }
-        if (!map.keySet().contains(event.getPlayer().getName())) return;
+        if (!map.keySet().contains(event.getPlayer().getUniqueId())) return;
         if (event.getClickedBlock() != null)
         {
             User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             Location location = event.getClickedBlock().getLocation();
-            Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
+            Triplet<CommandType, String, Boolean> triplet = map.get(user.getUniqueId());
             Lock lock = this.manager.getLockAtLocation(location, user, triplet.getFirst() != INFO);
             if (this.handleInteract1(triplet, lock, user, location.getBlock().getState() instanceof InventoryHolder,
                      this.manager.canProtect(event.getClickedBlock().getType()), event))
@@ -154,13 +155,13 @@ public class CommandListener implements Listener
 
     private void cmdUsed(User user)
     {
-        if (doesPersist(user.getName()))
+        if (doesPersist(user.getUniqueId()))
         {
-            this.persist.put(user.getName(), System.currentTimeMillis());
+            this.persist.put(user.getUniqueId(), System.currentTimeMillis());
         }
         else
         {
-            this.map.remove(user.getName());
+            this.map.remove(user.getUniqueId());
         }
     }
 
@@ -213,12 +214,12 @@ public class CommandListener implements Listener
     public void onRightClickEntity(PlayerInteractEntityEvent event)
     {
         if (event.getPlayer().isSneaking()) return;
-        if (!map.keySet().contains(event.getPlayer().getName())) return;
+        if (!map.keySet().contains(event.getPlayer().getUniqueId())) return;
         User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         try
         {
             Location location = event.getRightClicked().getLocation();
-            Triplet<CommandType, String, Boolean> triplet = map.get(user.getName());
+            Triplet<CommandType, String, Boolean> triplet = map.get(user.getUniqueId());
             Lock lock = this.manager.getLockForEntityUID(event.getRightClicked().getUniqueId(), triplet.getFirst() != INFO);
             if (this.handleInteract1(triplet, lock, user, event.getRightClicked() instanceof InventoryHolder,
                                      this.manager.canProtect(event.getRightClicked().getType()), event))
@@ -323,7 +324,7 @@ public class CommandListener implements Listener
                 // TODO UUID stuff
                 User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
-                user.sendTranslated(MessageType.NEUTRAL, "{user} is now the owner of this protection.", newOwner.getName());
+                user.sendTranslated(MessageType.NEUTRAL, "{user} is now the owner of this protection.", newOwner);
             }
             else
             {

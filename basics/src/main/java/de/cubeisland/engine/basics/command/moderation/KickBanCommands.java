@@ -82,10 +82,9 @@ public class KickBanCommands
                 context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to kick everyone!");
                 return;
             }
-            String sendername = context.getSender().getName();
             for (User toKick : this.um.getOnlineUsers())
             {
-                if (!sendername.equalsIgnoreCase(toKick.getName()))
+                if (!context.getSender().equals(toKick))
                 {
                     toKick.kickPlayer(toKick.getTranslation(MessageType.NEGATIVE, kickMessage) + "\n" + ChatFormat.RESET + reason);
                 }
@@ -116,7 +115,7 @@ public class KickBanCommands
         User user = null;
         if (player.hasPlayedBefore() || player.isOnline())
         {
-            user = um.getExactUser(player.getName());
+            user = um.getExactUser(player.getUniqueId());
         }
         else if (!context.hasFlag("f"))
         {

@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.module.service;
 import java.util.List;
 import java.util.Locale;
 
+// TODO UUID support
 public interface Economy
 {
     boolean isEnabled();

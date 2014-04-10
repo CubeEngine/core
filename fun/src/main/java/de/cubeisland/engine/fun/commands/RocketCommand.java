@@ -134,11 +134,11 @@ public class RocketCommand
             return users;
         }
 
-        public boolean contains(User user)
+        public boolean contains(User aUser)
         {
-            for (User users : this.getUsers())
+            for (User user : this.getUsers())
             {
-                if (users.getName().equals(user.getName()))
+                if (user.equals(aUser))
                 {
                     return true;
                 }
@@ -152,7 +152,7 @@ public class RocketCommand
             
             for (RocketCMDInstance instance : instances)
             {
-                if (instance.getUuid().equals(user.getName()))
+                if (instance.getUuid().equals(user.getUniqueId()))
                 {
                     trash = instance;
                     break;

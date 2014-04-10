@@ -77,7 +77,7 @@ public class PortalModifyCommand extends ContainerCommand
         }
         portal.config.owner = user.getOfflinePlayer();
         portal.config.save();
-        context.sendTranslated(MessageType.POSITIVE, "{user} is now the owner of {name#portal}!", user.getName(), portal.getName());
+        context.sendTranslated(MessageType.POSITIVE, "{user} is now the owner of {name#portal}!", user, portal.getName());
     }
 
     @Alias(names = "mvpd")

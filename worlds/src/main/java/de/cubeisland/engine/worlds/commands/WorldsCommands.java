@@ -388,7 +388,7 @@ public class WorldsCommands extends ContainerCommand
             String s = ChatFormat.YELLOW + "  -" + ChatFormat.GOLD;
             for (Player player : world.getPlayers())
             {
-                context.sendMessage(s + player.getName());
+                context.sendMessage(s + player.getDisplayName());
             }
         }
     }
@@ -531,6 +531,6 @@ public class WorldsCommands extends ContainerCommand
         }
         Universe universe = multiverse.getUniverseFrom(user.getWorld());
         universe.savePlayer(user, user.getWorld());
-        context.sendTranslated(POSITIVE, "Saved {user}'s data to file!", user.getName());
+        context.sendTranslated(POSITIVE, "Saved {user}'s data to file!", user.getDisplayName());
     }
 }

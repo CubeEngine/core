@@ -283,7 +283,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         {
             if (this.getRawRoles().isEmpty() && this.getRawTempRoles().isEmpty())
             {
-                this.module.getLog().debug("{} had no roles applying default roles", this.attachment.getHolder().getName());
+                this.module.getLog().debug("{} had no roles applying default roles", this.attachment.getHolder().getDisplayName());
 
                 for (Role role : ((WorldRoleProvider)this.provider).getDefaultRoles())
                 {
@@ -291,7 +291,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
                 }
             }
             super.calculate(roleStack);
-            this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getName());
+            this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getDisplayName());
             this.apply();
         }
     }

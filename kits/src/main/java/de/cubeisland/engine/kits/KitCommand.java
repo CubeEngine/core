@@ -168,7 +168,7 @@ public class KitCommand extends ContainerCommand
                 {
                     if (kit.give(context.getSender(), receiver, force))
                     {
-                        if (receiver.getName().equals(context.getSender().getName()))
+                        if (receiver.equals(context.getSender()))
                         {
                             context.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit!", kit.getKitName());
                         }
@@ -218,7 +218,7 @@ public class KitCommand extends ContainerCommand
             }
             if (!user.isOnline())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{user} is not online!", user.getName());
+                context.sendTranslated(MessageType.NEGATIVE, "{user} is not online!", user.getDisplayName());
                 return;
             }
             if (kit.give(context.getSender(), user, force))

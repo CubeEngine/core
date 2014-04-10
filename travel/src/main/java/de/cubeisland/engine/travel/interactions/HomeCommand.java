@@ -488,7 +488,7 @@ public class HomeCommand extends ContainerCommand
                         {
                             context.sendMessage("    " + ChatFormat.DARK_GREEN + this.module.getCore().getUserManager()
                                                                       .getUser(invite.getUserkey())
-                                                                      .getName());
+                                                                      .getDisplayName());
                         }
                     }
                 }

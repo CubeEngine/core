@@ -85,7 +85,7 @@ public class MailCommand extends ContainerCommand
             }
             else
             {
-                nameMailOf = mailof.getName();
+                nameMailOf = mailof.getDisplayName();
             }
         }
         else
@@ -271,7 +271,7 @@ public class MailCommand extends ContainerCommand
             return;
         }
         sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMailFrom(from);
-        context.sendTranslated(MessageType.NEUTRAL, "Cleared all mail from {user}!", from == null ? "console" : from.getName());
+        context.sendTranslated(MessageType.NEUTRAL, "Cleared all mail from {user}!", from == null ? "console" : from);
     }
 
     private void mail(String message, CommandSender from, User... users)

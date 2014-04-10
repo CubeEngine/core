@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.bukkit;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +57,7 @@ public class BukkitUserManager extends AbstractUserManager
 {
     private final BukkitCore core;
     protected ScheduledExecutorService nativeScheduler;
-    protected TObjectIntMap<String> scheduledForRemoval;
+    protected TObjectIntMap<UUID> scheduledForRemoval;
 
     public BukkitUserManager(final BukkitCore core)
     {
@@ -95,7 +96,7 @@ public class BukkitUserManager extends AbstractUserManager
             user = it.next();
             if (!user.isOnline())
             {
-                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getName(), user.getUniqueId());
+                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getDisplayName(), user.getUniqueId());
                 this.onlineUsers.remove(user);
                 it.remove();
             }
@@ -108,9 +109,9 @@ public class BukkitUserManager extends AbstractUserManager
     {
         super.shutdown();
 
-        this.scheduledForRemoval.forEachEntry(new TObjectIntProcedure<String>() {
+        this.scheduledForRemoval.forEachEntry(new TObjectIntProcedure<UUID>() {
             @Override
-            public boolean execute(String a, int b)
+            public boolean execute(UUID a, int b)
             {
                 core.getServer().getScheduler().cancelTask(b);
                 return true;
@@ -201,7 +202,7 @@ public class BukkitUserManager extends AbstractUserManager
                 @Override
                 public void run()
                 {
-                    scheduledForRemoval.remove(user.getName());
+                    scheduledForRemoval.remove(user.getUniqueId());
                     user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
                     user.getEntity().update();
                     if (user.isOnline())
@@ -218,7 +219,7 @@ public class BukkitUserManager extends AbstractUserManager
                 return;
             }
 
-            scheduledForRemoval.put(user.getName(), task.getTaskId());
+            scheduledForRemoval.put(user.getUniqueId(), task.getTaskId());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
@@ -239,7 +240,7 @@ public class BukkitUserManager extends AbstractUserManager
             {
                 updateLastName(user);
                 user.refreshIP();
-                final int removalTask = scheduledForRemoval.get(user.getName());
+                final int removalTask = scheduledForRemoval.get(user.getUniqueId());
                 if (removalTask > -1)
                 {
                     user.getServer().getScheduler().cancelTask(removalTask);
@@ -255,7 +256,7 @@ public class BukkitUserManager extends AbstractUserManager
         {
             for (User user : cachedUserByUUID.values())
             {
-                if (!user.isOnline() && scheduledForRemoval.get(user.getName()) > -1) // Do not delete users that will be deleted anyway
+                if (!user.isOnline() && scheduledForRemoval.get(user.getUniqueId()) > -1) // Do not delete users that will be deleted anyway
                 {
                     removeCachedUser(user);
                 }

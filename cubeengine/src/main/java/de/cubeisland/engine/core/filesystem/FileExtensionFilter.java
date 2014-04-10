@@ -37,6 +37,7 @@ public class FileExtensionFilter implements Filter<Path>, FileFilter, FilenameFi
     public static final FileExtensionFilter JAR = new FileExtensionFilter("jar");
     public static final FileExtensionFilter LOG = new FileExtensionFilter("log");
     public static final FileExtensionFilter PO = new FileExtensionFilter("po");
+    public static final FileExtensionFilter DAT = new FileExtensionFilter("dat");
     private final String extention;
 
     public FileExtensionFilter(String extention)

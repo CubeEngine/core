@@ -400,11 +400,11 @@ public class PlayerCommands
                 }
                 for (User user : context.getCore().getUserManager().getOnlineUsers())
                 {
-                    if (!user.getName().equals(context.getSender().getName()))
+                    if (!user.equals(context.getSender()))
                     {
                         if (this.kill(user, lightning, context, false, force, quiet))
                         {
-                            killed.add(user.getName());
+                            killed.add(user.getDisplayName());
                         }
                     }
                 }
@@ -421,7 +421,7 @@ public class PlayerCommands
                     }
                     if (this.kill(user, lightning, context, false, force, quiet))
                     {
-                        killed.add(user.getName());
+                        killed.add(user.getDisplayName());
                     }
                 }
             }
@@ -454,7 +454,7 @@ public class PlayerCommands
                 }
                 if (entity instanceof Player)
                 {
-                    user = this.um.getExactUser(((Player)entity).getUniqueId());
+                    user = this.um.getExactUser(entity.getUniqueId());
                     break;
                 }
             }
@@ -506,7 +506,7 @@ public class PlayerCommands
         }
         if (user.isOnline())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} is currently online!", user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "{user} is currently online!", user);
             return;
         }
         long lastPlayed = user.getLastPlayed();
@@ -514,10 +514,10 @@ public class PlayerCommands
         {
             Date date = new Date(lastPlayed);
             DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
-            context.sendTranslated(MessageType.NEUTRAL, "{user} is offline since {input#time}", user.getName(), format.format(date));
+            context.sendTranslated(MessageType.NEUTRAL, "{user} is offline since {input#time}", user, format.format(date));
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{user} was last seen {input#date}.", user.getName(), TimeUtil.format(context.getSender().getLocale(), new Date(lastPlayed)));
+        context.sendTranslated(MessageType.NEUTRAL, "{user} was last seen {input#date}.", user, TimeUtil.format(context.getSender().getLocale(), new Date(lastPlayed)));
     }
 
     @Command(desc = "Makes a player send a message (including commands)",
@@ -535,11 +535,11 @@ public class PlayerCommands
         if (s.startsWith("/"))
         {
             this.module.getCore().getCommandManager().runCommand(user,s.substring(1));
-            context.sendTranslated(MessageType.POSITIVE, "Command {input#command} executed as {user}", s, user.getName());
+            context.sendTranslated(MessageType.POSITIVE, "Command {input#command} executed as {user}", s, user);
             return;
         }
         user.chat(s);
-        context.sendTranslated(MessageType.POSITIVE, "Forced {user} to chat: {input#message}", user.getName(), s);
+        context.sendTranslated(MessageType.POSITIVE, "Forced {user} to chat: {input#message}", user, s);
     }
 
     @Command(desc = "Kills yourself", max = 0)

@@ -23,10 +23,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +46,9 @@ public class McUUID
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public static Map<String, UUID> getUUIDForNames(List<String> playerNames)
+    public static final Pattern UUID_PATTERN = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$");
+
+    public static Map<String, UUID> getUUIDForNames(Collection<String> playerNames)
     {
         Map<String, UUID> map = new HashMap<>();
         for (Profile profile : getUUIDForNames0(playerNames))
@@ -66,7 +70,7 @@ public class McUUID
         return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" +id.substring(20, 32));
     }
 
-    private static List<Profile> getUUIDForNames0(List<String> playernames)
+    private static List<Profile> getUUIDForNames0(Collection<String> playernames)
     {
         ArrayNode node = mapper.createArrayNode();
         for (String playername : playernames)

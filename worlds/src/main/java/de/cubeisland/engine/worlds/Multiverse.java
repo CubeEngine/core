@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.TravelAgent;
@@ -50,11 +51,14 @@ import org.bukkit.inventory.InventoryHolder;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.McUUID;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
+import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.config.WorldsConfig;
 import de.cubeisland.engine.worlds.player.PlayerConfig;
@@ -89,6 +93,9 @@ public class Multiverse implements Listener
 
         this.dirPlayers = this.module.getFolder().resolve("players"); // config for last world
         Files.createDirectories(this.dirPlayers);
+
+        this.updateToUUID();
+
         this.dirErrors = this.module.getFolder().resolve("errors");
         Files.createDirectories(dirErrors);
         this.dirUniverses = this.module.getFolder().resolve("universes");
@@ -180,6 +187,42 @@ public class Multiverse implements Listener
         this.module.getCore().getEventManager().registerListener(this.module, this);
     }
 
+    private void updateToUUID()
+    {
+        try
+        {
+            Map<String,Path> playerNames = new HashMap<>();
+            for (Path path : Files.newDirectoryStream(this.dirPlayers, YAML))
+            {
+                String name = StringUtils.stripFileExtension(path.getFileName().toString());
+                if (!McUUID.UUID_PATTERN.matcher(name).find())
+                {
+                    playerNames.put(name, path);
+                }
+            }
+            if (playerNames.isEmpty())
+            {
+                return;
+            }
+            this.module.getLog().info("Converting {} PlayerConfigs...", playerNames.size());
+            Map<String,UUID> uuids = McUUID.getUUIDForNames(playerNames.keySet());
+            Reflector reflector = this.module.getCore().getConfigFactory();
+            for (Entry<String, UUID> entry : uuids.entrySet())
+            {
+                Path oldPath = playerNames.get(entry.getKey());
+                PlayerConfig load = reflector.load(PlayerConfig.class, oldPath.toFile(), false);
+                load.setFile(this.dirPlayers.resolve(entry.getValue().toString() + YAML.getExtention()).toFile());
+                load.lastName = entry.getKey();
+                load.save();
+                Files.delete(oldPath);
+            }
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e); // TODO better exception
+        }
+    }
+
     private void searchUniverses(Map<String, Set<World>> found, Collection<World> worldList, CommandSender sender)
     {
         for (World world : worldList)
@@ -257,7 +300,7 @@ public class Multiverse implements Listener
                                           "The overwritten Inventory is saved under /errors/{}", event.getPlayer().getName(), errorFile.getFileName().toString());
             PlayerDataConfig pdc = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
             pdc.setHead(new SimpleDateFormat().format(new Date()) + " " +
-                            event.getPlayer().getName() + " ported to " + event.getPlayer().getWorld().getName() +
+                            event.getPlayer().getDisplayName() + "(" + event.getPlayer().getUniqueId() + ") ported to " + event.getPlayer().getWorld().getName() +
                             " but couldn't create the universe",
                         "This are the items the player had previously. They got overwritten!");
             pdc.setFile(errorFile.toFile());
@@ -428,7 +471,7 @@ public class Multiverse implements Listener
 
     private void checkForExpectedWorld(Player player)
     {
-        Path path = dirPlayers.resolve(player.getName() + YAML.getExtention());
+        Path path = dirPlayers.resolve(player.getUniqueId() + YAML.getExtention());
         PlayerConfig config;
         if (Files.exists(path))
         {
@@ -440,16 +483,16 @@ public class Multiverse implements Listener
                 if (universe != expected)
                 {
                     // expectedworld-actualworld_playername.yml
-                    Path errorFile = dirErrors.resolve(config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName() + ".dat");
+                    Path errorFile = dirErrors.resolve(player.getWorld().getName() + "_" + player.getName() + ".dat");
                     int i = 1;
                     while (Files.exists(errorFile))
                     {
-                        errorFile = dirErrors.resolve(config.lastWorld.getName() + "-" + player.getWorld().getName() + "_" + player.getName() + "_" + i++ + ".dat");
+                        errorFile = dirErrors.resolve(player.getWorld().getName() + "_" + player.getName() + "_" + i++ + ".dat");
                     }
                     this.module.getLog().warn("The Player {} was not in the expected world! Overwritten Inventory is saved under /errors/{}", player.getName(), errorFile.getFileName().toString());
                     PlayerDataConfig pdc = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
                     pdc.setHead(new SimpleDateFormat().format(new Date()) + " " +
-                                    player.getName() + " did not spawn in " + config.lastWorld.getName() +
+                                    player.getDisplayName() + "(" + player.getUniqueId() + ") did not spawn in " + config.lastWorld.getName() +
                                     " but instead in " + player.getWorld().getName(),
                                 "These are the items the player had when spawning. They were overwritten!");
                     pdc.setFile(errorFile.toFile());
@@ -461,7 +504,7 @@ public class Multiverse implements Listener
                     return; // everything is ok
                 }
                 this.module.getLog().debug("{} was not in expected world {} instead of {}",
-                                    player.getName(), player.getWorld().getName(), config.lastWorld.getName());
+                                    player.getDisplayName(), player.getWorld().getName(), config.lastWorld.getName());
                 universe.loadPlayer(player);
                 // else save new world (strange that player changed world but nvm
             }
@@ -469,9 +512,10 @@ public class Multiverse implements Listener
         }
         else
         {
-            this.module.getLog().debug("Created PlayerConfig for {}" , player.getName());
+            this.module.getLog().debug("Created PlayerConfig for {}" , player.getDisplayName());
             config = this.module.getCore().getConfigFactory().create(PlayerConfig.class);
         }
+        config.lastName = player.getName();
         config.lastWorld = new ConfigWorld(this.wm, player.getWorld()); // update last world
         config.setFile(path.toFile());
         config.save();
@@ -479,11 +523,11 @@ public class Multiverse implements Listener
 
     private void savePlayer(Player player)
     {
-        Path path = this.dirPlayers.resolve(player.getName() + YAML.getExtention());
+        Path path = this.dirPlayers.resolve(player.getUniqueId() + YAML.getExtention());
         PlayerConfig config = this.module.getCore().getConfigFactory().load(PlayerConfig.class, path.toFile());
         config.lastWorld = new ConfigWorld(this.wm, player.getWorld());
         config.save();
-        this.module.getLog().debug("{} is now in the world: {} ({})", player.getName(), player.getWorld().getName(), this.getUniverseFrom(player
+        this.module.getLog().debug("{} is now in the world: {} ({})", player.getDisplayName(), player.getWorld().getName(), this.getUniverseFrom(player
                                                                                                                                               .getWorld()).getName());
     }
 

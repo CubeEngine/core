@@ -1022,6 +1022,7 @@ public class UserBase implements Player
     }
 
     @Override
+    @Deprecated // TODO remove when finished updating everwhere
     public String getName()
     {
         return this.getOfflinePlayer().getName();

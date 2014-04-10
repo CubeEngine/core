@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
@@ -52,7 +53,7 @@ import gnu.trove.set.hash.THashSet;
 
 public class ThrowCommands
 {
-    private final Map<String, ThrowTask> thrownItems;
+    private final Map<UUID, ThrowTask> thrownItems;
     // entities that can't be safe due to bukkit flaws
     private final EnumSet<EntityType> BUGGED_ENTITIES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
 
@@ -96,7 +97,7 @@ public class ThrowCommands
         boolean showNotification = true;
         boolean unsafe = context.hasFlag("u");
 
-        ThrowTask task = this.thrownItems.remove(user.getName());
+        ThrowTask task = this.thrownItems.remove(user.getUniqueId());
         if (task != null)
         {
             if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("delay", task.getInterval()) && task.getPreventDamage() != unsafe && !context.hasArg(1))
@@ -164,7 +165,7 @@ public class ThrowCommands
         task = new ThrowTask(user, type, amount, delay, !unsafe);
         if (task.start(showNotification))
         {
-            this.thrownItems.put(user.getName(), task);
+            this.thrownItems.put(user.getUniqueId(), task);
         }
         else
         {
@@ -296,7 +297,7 @@ public class ThrowCommands
             if (amount == 0)
             {
                 this.stop();
-                thrownItems.remove(this.user.getName());
+                thrownItems.remove(this.user.getUniqueId());
             }
         }
     }
@@ -320,7 +321,7 @@ public class ThrowCommands
         @EventHandler
         public void onPlayerQuit(PlayerQuitEvent event)
         {
-            ThrowTask task = thrownItems.remove(event.getPlayer().getName());
+            ThrowTask task = thrownItems.remove(event.getPlayer().getUniqueId());
             if (task != null)
             {
                 task.stop();

@@ -158,7 +158,7 @@ public class TeleportCommands
                 context.sendTranslated(MessageType.NEUTRAL, "You found yourself!");
                 return;
             }
-            context.sendTranslated(MessageType.NEUTRAL, "You just teleported {user} to {user}... Not very useful right?", user.getName(), user.getName());
+            context.sendTranslated(MessageType.NEUTRAL, "You just teleported {user} to {user}... Not very useful right?", user, user);
             return;
         }
         if (TeleportCommands.teleport(user, target.getLocation(), safe, force, true))

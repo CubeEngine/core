@@ -311,7 +311,7 @@ public class InformationCommands
             String result;
             result = StringUtils.implode(ChatFormat.WHITE + ", ", outputlist);
             result += groupedOutput.toString();
-            if (context.getSender().getName().equals(user.getName()))
+            if (context.getSender().equals(user))
             {
                 context.sendTranslated(MessageType.NEUTRAL, "Found those nearby you:\n{}", result);
             }

@@ -69,7 +69,7 @@ public class LogCommands extends ContainerCommand
             found = new ItemStack(WOOD_AXE, 1);
             ItemMeta meta = found.getItemMeta();
             meta.setDisplayName(selectorToolName);
-            meta.setLore(Arrays.asList("created by " + user.getName()));
+            meta.setLore(Arrays.asList("created by " + user.getDisplayName()));
             found.setItemMeta(meta);
             ItemStack oldItemInHand = user.getItemInHand();
             user.setItemInHand(found);
@@ -181,7 +181,7 @@ public class LogCommands extends ContainerCommand
             found = new ItemStack(material, 1);
             ItemMeta meta = found.getItemMeta();
             meta.setDisplayName(toolName);
-            meta.setLore(Arrays.asList("created by " + user.getName()));
+            meta.setLore(Arrays.asList("created by " + user.getDisplayName()));
             found.setItemMeta(meta);
             ItemStack oldItemInHand = user.getItemInHand();
             user.setItemInHand(found);

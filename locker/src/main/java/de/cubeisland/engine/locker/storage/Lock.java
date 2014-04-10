@@ -599,7 +599,7 @@ public class Lock
         return this.model.getPassword().length > 4;
     }
 
-    private Map<String, Long> lastKeyNotify;
+    private Map<UUID, Long> lastKeyNotify;
 
     public void notifyKeyUsage(User user)
     {
@@ -608,15 +608,15 @@ public class Lock
             this.lastKeyNotify = new HashMap<>();
         }
         User owner = this.manager.um.getUser(this.model.getOwnerId());
-        Long last = this.lastKeyNotify.get(owner.getName());
+        Long last = this.lastKeyNotify.get(owner.getUniqueId());
         if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
         {
-            this.lastKeyNotify.put(owner.getName(), System.currentTimeMillis());
-            owner.sendTranslated(MessageType.NEUTRAL, "{user} used a KeyBook to access one of your protections!", user.getName());
+            this.lastKeyNotify.put(owner.getUniqueId(), System.currentTimeMillis());
+            owner.sendTranslated(MessageType.NEUTRAL, "{user} used a KeyBook to access one of your protections!", user);
         }
     }
 
-    private Map<String, Long> lastNotify;
+    private Map<UUID, Long> lastNotify;
 
     public void notifyUsage(User user)
     {
@@ -632,10 +632,10 @@ public class Lock
                 this.lastNotify = new HashMap<>();
             }
             User owner = this.manager.um.getUser(this.model.getOwnerId());
-            Long last = this.lastNotify.get(owner.getName());
+            Long last = this.lastNotify.get(owner.getUniqueId());
             if (last == null || TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - last) > 60) // 60 sec config ?
             {
-                this.lastNotify.put(owner.getName(), System.currentTimeMillis());
+                this.lastNotify.put(owner.getUniqueId(), System.currentTimeMillis());
                 if (this.isBlockLock())
                 {
                     owner.sendTranslated(MessageType.NEUTRAL, "{user} accessed one your protection with the id {integer}!", user, this.getId());
@@ -722,11 +722,11 @@ public class Lock
                     User accessor = this.manager.module.getCore().getUserManager().getUser(listModel.getUserId());
                     if ((listModel.getLevel() & ACCESS_ADMIN) == ACCESS_ADMIN)
                     {
-                        user.sendMessage("  " + ChatFormat.GREY + "- " + ChatFormat.DARK_GREEN + accessor.getName() + ChatFormat.GOLD + " [Admin}");
+                        user.sendMessage("  " + ChatFormat.GREY + "- " + ChatFormat.DARK_GREEN + accessor.getDisplayName() + ChatFormat.GOLD + " [Admin}");
                     }
                     else
                     {
-                        user.sendMessage("  " + ChatFormat.GREY + "- " + ChatFormat.DARK_GREEN + accessor.getName());
+                        user.sendMessage("  " + ChatFormat.GREY + "- " + ChatFormat.DARK_GREEN + accessor.getDisplayName());
                     }
                 }
             }
