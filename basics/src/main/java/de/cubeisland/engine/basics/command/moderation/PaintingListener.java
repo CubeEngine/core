@@ -35,7 +35,9 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 public class PaintingListener implements Listener
 {
@@ -57,7 +59,7 @@ public class PaintingListener implements Listener
 
             if (!module.perms().CHANGEPAINTING.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change this painting.");
+                user.sendTranslated(NEGATIVE, "You are not allowed to change this painting.");
                 return;
             }
             Painting painting = (Painting)event.getRightClicked();
@@ -65,17 +67,17 @@ public class PaintingListener implements Listener
             Painting playerPainting = this.paintingChange.get(user.getUniqueId());
             if(playerPainting == null && this.paintingChange.containsValue(painting))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This painting is being used by another player.");
+                user.sendTranslated(NEGATIVE, "This painting is being used by another player.");
             }
             else if (playerPainting == null)
             {
                 this.paintingChange.put(user.getUniqueId(), painting);
-                user.sendTranslated(MessageType.POSITIVE, "You can now cycle through the paintings using your mousewheel.");
+                user.sendTranslated(POSITIVE, "You can now cycle through the paintings using your mousewheel.");
             }
             else
             {
                 this.paintingChange.remove(user.getUniqueId());
-                user.sendTranslated(MessageType.POSITIVE, "Painting locked");
+                user.sendTranslated(POSITIVE, "Painting locked");
             }
         }
     }
@@ -110,7 +112,7 @@ public class PaintingListener implements Listener
                             .distanceSquared(user.getLocation().toVector()) > maxDistanceSquared)
                 {
                     this.paintingChange.remove(user.getUniqueId());
-                    user.sendTranslated(MessageType.POSITIVE, "Painting locked");
+                    user.sendTranslated(POSITIVE, "Painting locked");
                     return;
                 }
 
@@ -162,7 +164,7 @@ public class PaintingListener implements Listener
             Entry<UUID, Painting> entry = paintingIterator.next();
             if(entry.getValue().equals(painting))
             {
-                this.module.getCore().getUserManager().getExactUser(entry.getKey()).sendTranslated(MessageType.NEGATIVE, "The painting broke");
+                this.module.getCore().getUserManager().getExactUser(entry.getKey()).sendTranslated(NEGATIVE, "The painting broke");
                 paintingIterator.remove();
             }
         }

@@ -35,15 +35,13 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.InviteManager;
 import de.cubeisland.engine.travel.storage.TelePointManager;
 import de.cubeisland.engine.travel.storage.TeleportInvite;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PRIVATE;
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
@@ -120,7 +118,7 @@ public class HomeCommand extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You have been teleported to your home!");
+                    context.sendTranslated(POSITIVE, "You have been teleported to your home!");
                 }
             }
             else if (this.module.getConfig().homes.multipleHomes)
@@ -146,7 +144,7 @@ public class HomeCommand extends ContainerCommand
                             }
                             else
                             {
-                                sender.sendTranslated(MessageType.POSITIVE, "You have been teleported to {user}'s default home", home.getOwnerName());
+                                sender.sendTranslated(POSITIVE, "You have been teleported to {user}'s default home", home.getOwnerName());
                             }
                             return null;
                         }
@@ -174,15 +172,15 @@ public class HomeCommand extends ContainerCommand
                 {
                     if (home.isOwner(sender))
                     {
-                        context.sendTranslated(MessageType.POSITIVE, "You have been teleported to your home: {name}", home.getName());
+                        context.sendTranslated(POSITIVE, "You have been teleported to your home: {name}", home.getName());
                     }
                     else if (home.isPublic())
                     {
-                        context.sendTranslated(MessageType.POSITIVE, "You have been teleported to the public home {name}", home.getName());
+                        context.sendTranslated(POSITIVE, "You have been teleported to the public home {name}", home.getName());
                     }
                     else
                     {
-                        context.sendTranslated(MessageType.POSITIVE, "You have been teleported to {user}'s home: {name}", home.getOwnerName(), home.getName());
+                        context.sendTranslated(POSITIVE, "You have been teleported to {user}'s home: {name}", home.getOwnerName(), home.getName());
                     }
                 }
             }
@@ -223,7 +221,7 @@ public class HomeCommand extends ContainerCommand
                     return;
                 }
                 this.tpManager.createHome(location, "home", sender, VISIBILITY_PRIVATE);
-                sender.sendTranslated(MessageType.POSITIVE, "Your home has been created!");
+                sender.sendTranslated(POSITIVE, "Your home has been created!");
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
@@ -252,7 +250,7 @@ public class HomeCommand extends ContainerCommand
                     return;
                 }
                 this.tpManager.createHome(location, name, sender, visibility);
-                sender.sendTranslated(MessageType.POSITIVE, "Your home {name} has been created!", context.getString(0));
+                sender.sendTranslated(POSITIVE, "Your home {name} has been created!", context.getString(0));
             }
             return;
         }
@@ -298,7 +296,7 @@ public class HomeCommand extends ContainerCommand
                 home.setWelcomeMsg(context.getStrings(0));
             }
             home.update();
-            sender.sendTranslated(MessageType.POSITIVE, "The welcome message for the home is now set to: ");
+            sender.sendTranslated(POSITIVE, "The welcome message for the home is now set to: ");
             sender.sendMessage(home.getWelcomeMsg());
         }
     }
@@ -328,7 +326,7 @@ public class HomeCommand extends ContainerCommand
                 }
                 home.setLocation(sender.getLocation());
                 home.update();
-                sender.sendTranslated(MessageType.POSITIVE, "Your home has been moved to you current location!");
+                sender.sendTranslated(POSITIVE, "Your home has been moved to you current location!");
                 return;
             }
             if (this.module.getConfig().homes.multipleHomes)
@@ -346,7 +344,7 @@ public class HomeCommand extends ContainerCommand
                 }
                 home.setLocation(sender.getLocation());
                 home.update();
-                sender.sendTranslated(MessageType.POSITIVE, "The home {name} has been moved to your current location!", home.getName());
+                sender.sendTranslated(POSITIVE, "The home {name} has been moved to your current location!", home.getName());
                 return;
             }
             return;
@@ -378,7 +376,7 @@ public class HomeCommand extends ContainerCommand
                     return;
                 }
                 this.tpManager.deleteHome(home);
-                sender.sendTranslated(MessageType.POSITIVE, "Your home have been removed");
+                sender.sendTranslated(POSITIVE, "Your home have been removed");
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
@@ -455,7 +453,7 @@ public class HomeCommand extends ContainerCommand
             {
                 if (home.isPublic())
                 {
-                    user.sendTranslated(MessageType.NONE, "  {text:public}:{name#home}", home.getName());
+                    user.sendTranslated(NONE, "  {text:public}:{name#home}", home.getName());
                 }
                 else
                 {
@@ -548,7 +546,7 @@ public class HomeCommand extends ContainerCommand
                 {
                     invited.sendTranslated(NEUTRAL, "{user} invited you to his home. To teleport to it use: /home {user}:{text:home}", sender, sender);
                 }
-                sender.sendTranslated(MessageType.POSITIVE, "{user} Is now invited to your home", context.getString(0));
+                sender.sendTranslated(POSITIVE, "{user} Is now invited to your home", context.getString(0));
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
@@ -560,7 +558,7 @@ public class HomeCommand extends ContainerCommand
                 }
                 if (!home.isOwner(sender))
                 {
-                    sender.sendTranslated(MessageType.CRITICAL, "You can't edit another players home");
+                    sender.sendTranslated(CRITICAL, "You can't edit another players home");
                     return;
                 }
                 if (home.isPublic())
@@ -583,7 +581,7 @@ public class HomeCommand extends ContainerCommand
                 {
                     invited.sendTranslated(NEUTRAL, "{user} has invited you to his home {name}. To access it do: /home {user}:{name#home}", sender, context.getString(0), sender, context.getString(0));
                 }
-                sender.sendTranslated(MessageType.POSITIVE, "{user} is now invited to {name}", context.getString(1), context.getString(0));
+                sender.sendTranslated(POSITIVE, "{user} is now invited to {name}", context.getString(1), context.getString(0));
             }
             return;
         }
@@ -674,7 +672,7 @@ public class HomeCommand extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.CRITICAL, "This command can only be used ingame!");
+            context.sendTranslated(CRITICAL, "This command can only be used ingame!");
         }
     }
 
@@ -717,10 +715,10 @@ public class HomeCommand extends ContainerCommand
                 return;
             }
             home.setVisibility(VISIBILITY_PRIVATE);
-            context.sendTranslated(MessageType.POSITIVE, "Your home is now private");
+            context.sendTranslated(POSITIVE, "Your home is now private");
             return;
         }
-        context.sendTranslated(MessageType.CRITICAL, "This command can only be used by players!");
+        context.sendTranslated(CRITICAL, "This command can only be used by players!");
     }
 
     @Command(names = {"makepublic", "setpublic", "public"},
@@ -763,9 +761,9 @@ public class HomeCommand extends ContainerCommand
                 return;
             }
             home.setVisibility(VISIBILITY_PUBLIC);
-            context.sendTranslated(MessageType.POSITIVE, "Your home is now public");
+            context.sendTranslated(POSITIVE, "Your home is now public");
             return;
         }
-        context.sendTranslated(MessageType.CRITICAL, "This command can only be used by players!");
+        context.sendTranslated(CRITICAL, "This command can only be used by players!");
     }
 }

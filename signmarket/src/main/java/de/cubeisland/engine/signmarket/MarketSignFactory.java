@@ -20,13 +20,14 @@ package de.cubeisland.engine.signmarket;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.signmarket.storage.SignMarketBlockManager;
 import de.cubeisland.engine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.engine.signmarket.storage.SignMarketItemManager;
 import de.cubeisland.engine.signmarket.storage.SignMarketItemModel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TLongHashSet;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class MarketSignFactory
 {
@@ -100,7 +101,7 @@ public class MarketSignFactory
         }
         else
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create Admin or User MarketSigns!");
+            user.sendTranslated(NEGATIVE, "You are not allowed to create Admin or User MarketSigns!");
             return null;
         }
         if (marketSign.isAdminSign())

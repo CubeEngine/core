@@ -49,12 +49,12 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 /**
  * This class is the base for all of our commands
@@ -299,7 +299,7 @@ public abstract class CubeCommand extends Command
     {
         return (sender instanceof User ? "/" : "") + this
             .implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender,
-                                sender.getTranslation(MessageType.NONE, super.getUsage()));
+                                sender.getTranslation(NONE, super.getUsage()));
     }
 
     /**
@@ -314,7 +314,7 @@ public abstract class CubeCommand extends Command
         final CommandSender sender = context.getSender();
         return (sender instanceof User ? "/" : "") + StringUtils
             .implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender
-            .getTranslation(MessageType.NONE, super.getUsage()));
+            .getTranslation(NONE, super.getUsage()));
     }
 
     /**
@@ -327,8 +327,7 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        return sender instanceof User ? "/" : "" + StringUtils.implode(" ", parentLabels) + ' ' + this
-            .getName() + ' ' + sender.getTranslation(MessageType.NONE, super.getUsage());
+        return sender instanceof User ? "/" : "" + StringUtils.implode(" ", parentLabels) + ' ' + this.getName() + ' ' + sender.getTranslation(NONE, super.getUsage());
     }
 
     /**
@@ -564,8 +563,8 @@ public abstract class CubeCommand extends Command
 
     private void permissionDenied(CommandSender sender)
     {
-        sender.sendTranslated(MessageType.NEGATIVE, "You're not allowed to do this!");
-        sender.sendTranslated(MessageType.NEGATIVE, "Contact an administrator if you think this is a mistake!");
+        sender.sendTranslated(NEGATIVE, "You're not allowed to do this!");
+        sender.sendTranslated(NEGATIVE, "Contact an administrator if you think this is a mistake!");
     }
 
     private void handleCommandException(final CommandSender sender, Throwable t)
@@ -590,12 +589,12 @@ public abstract class CubeCommand extends Command
         }
         if (t instanceof MissingParameterException)
         {
-            sender.sendTranslated(MessageType.NEGATIVE, "The parameter {input#parameter} is missing!", t.getMessage());
+            sender.sendTranslated(NEGATIVE, "The parameter {input#parameter} is missing!", t.getMessage());
         }
         else if (t instanceof IncorrectUsageException)
         {
             sender.sendMessage(t.getMessage());
-            sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {input#usage:color=white}", this.getUsage(sender));
+            sender.sendTranslated(NEUTRAL, "Proper usage: {input#usage:color=white}", this.getUsage(sender));
         }
         else if (t instanceof PermissionDeniedException)
         {
@@ -603,8 +602,8 @@ public abstract class CubeCommand extends Command
         }
         else
         {
-            sender.sendTranslated(MessageType.CRITICAL, "An unknown error occurred while executing this command!");
-            sender.sendTranslated(MessageType.CRITICAL, "Please report this error to an administrator.");
+            sender.sendTranslated(CRITICAL, "An unknown error occurred while executing this command!");
+            sender.sendTranslated(CRITICAL, "Please report this error to an administrator.");
             this.module.getLog().debug(t, t.getLocalizedMessage());
         }
     }
@@ -708,13 +707,13 @@ public abstract class CubeCommand extends Command
      */
     public void help(HelpContext context) throws Exception
     {
-        context.sendTranslated(MessageType.NONE, "{text:Description:color=GREY}: {input}", this.getDescription());
-        context.sendTranslated(MessageType.NONE, "{text:Usage:color=GREY}: {input}", this.getUsage(context));
+        context.sendTranslated(NONE, "{text:Description:color=GREY}: {input}", this.getDescription());
+        context.sendTranslated(NONE, "{text:Usage:color=GREY}: {input}", this.getUsage(context));
 
         if (this.hasChildren())
         {
             context.sendMessage(" ");
-            context.sendTranslated(MessageType.NEUTRAL, "The following subcommands are available:");
+            context.sendTranslated(NEUTRAL, "The following subcommands are available:");
             context.sendMessage(" ");
 
             final CommandSender sender = context.getSender();
@@ -722,13 +721,14 @@ public abstract class CubeCommand extends Command
             {
                 if (command.testPermissionSilent(sender))
                 {
-                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.getTranslation(MessageType.NONE, command
+                    context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": " + ChatFormat.GREY + sender.getTranslation(
+                        NONE, command
                         .getDescription()));
                 }
             }
         }
         context.sendMessage(" ");
-        context.sendTranslated(MessageType.NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
     }
 
     public void onRegister()

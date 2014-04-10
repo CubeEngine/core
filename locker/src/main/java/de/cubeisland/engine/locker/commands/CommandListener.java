@@ -35,13 +35,13 @@ import org.bukkit.inventory.InventoryHolder;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 import de.cubeisland.engine.locker.storage.LockType;
 import de.cubeisland.engine.locker.storage.ProtectionFlag;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
 import static de.cubeisland.engine.locker.commands.LockerCommands.isNotUser;
 import static de.cubeisland.engine.locker.storage.LockType.*;
@@ -76,7 +76,7 @@ public class CommandListener implements Listener
         map.put(((User)sender).getUniqueId(), new Triplet<>(commandType, s, b));
         if (this.doesPersist(((User)sender).getUniqueId()))
         {
-            sender.sendTranslated(MessageType.NEUTRAL, "Persist mode is active. Your command will be repeated until reusing {text:/cpersist}");
+            sender.sendTranslated(NEUTRAL, "Persist mode is active. Your command will be repeated until reusing {text:/cpersist}");
         }
     }
 
@@ -171,7 +171,7 @@ public class CommandListener implements Listener
         {
             if (lock != null)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "There is already protection here!");
+                user.sendTranslated(NEUTRAL, "There is already protection here!");
                 this.cmdUsed(user);
                 event.setCancelled(true);
                 return true;
@@ -185,7 +185,7 @@ public class CommandListener implements Listener
                     case C_DONATION:
                     case C_FREE:
                     case C_GUARDED:
-                        user.sendTranslated(MessageType.NEUTRAL, "You can only apply guarded, donation and free protections to inventory holders!");
+                        user.sendTranslated(NEUTRAL, "You can only apply guarded, donation and free protections to inventory holders!");
                         event.setCancelled(true);
                         this.cmdUsed(user);
                         return true;
@@ -194,7 +194,7 @@ public class CommandListener implements Listener
                 if (!canProtect)
                 {
                     this.cmdUsed(user);
-                    user.sendTranslated(MessageType.NEGATIVE, "You cannot protect this!");
+                    user.sendTranslated(NEGATIVE, "You cannot protect this!");
                     event.setCancelled(true);
                     return true; // do nothing entity is not protectable
                 }
@@ -202,7 +202,7 @@ public class CommandListener implements Listener
         }
         else if (lock == null)
         {
-            user.sendTranslated(MessageType.NEUTRAL, "No protection detected here!");
+            user.sendTranslated(NEUTRAL, "No protection detected here!");
             event.setCancelled(true);
             this.cmdUsed(user);
             return true;
@@ -258,8 +258,8 @@ public class CommandListener implements Listener
         catch (Exception ex)
         {
             this.module.getLog().error(ex, "Error with CommandInteract!");
-            user.sendTranslated(MessageType.CRITICAL, "An unknown error occurred!");
-            user.sendTranslated(MessageType.CRITICAL, "Please report this error to an administrator.");
+            user.sendTranslated(CRITICAL, "An unknown error occurred!");
+            user.sendTranslated(CRITICAL, "Please report this error to an administrator.");
         }
     }
 
@@ -282,12 +282,12 @@ public class CommandListener implements Listener
         case INVALIDATE_KEYS:
             if (!lock.isOwner(user))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This is not your protection!");
+                user.sendTranslated(NEGATIVE, "This is not your protection!");
             }
             else if (lock.hasPass())
             {
-                user.sendTranslated(MessageType.NEUTRAL, "You cannot invalidate KeyBooks for password protected locks.");
-                user.sendTranslated(MessageType.POSITIVE, "Change the password to invalidate them!");
+                user.sendTranslated(NEUTRAL, "You cannot invalidate KeyBooks for password protected locks.");
+                user.sendTranslated(POSITIVE, "Change the password to invalidate them!");
             }
             else
             {
@@ -306,7 +306,7 @@ public class CommandListener implements Listener
             {
                 if (lock.isPublic())
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "This protection is public!");
+                    user.sendTranslated(NEUTRAL, "This protection is public!");
                 }
                 else
                 {
@@ -315,7 +315,7 @@ public class CommandListener implements Listener
             }
             else
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This is not your protection!");
+                user.sendTranslated(NEGATIVE, "This is not your protection!");
             }
             break;
         case GIVE:
@@ -324,11 +324,11 @@ public class CommandListener implements Listener
                 // TODO UUID stuff
                 User newOwner = this.module.getCore().getUserManager().getExactUser(second);
                 lock.setOwner(newOwner);
-                user.sendTranslated(MessageType.NEUTRAL, "{user} is now the owner of this protection.", newOwner);
+                user.sendTranslated(NEUTRAL, "{user} is now the owner of this protection.", newOwner);
             }
             else
             {
-                user.sendTranslated(MessageType.NEGATIVE, "This is not your protection!");
+                user.sendTranslated(NEGATIVE, "This is not your protection!");
             }
         case FLAGS_SET:
             if (lock.isOwner(user) || lock.hasAdmin(user) || module.perms().CMD_MODIFY_OTHER.isAuthorized(user))
@@ -339,11 +339,11 @@ public class CommandListener implements Listener
                     flags |= protectionFlag.flagValue;
                 }
                 lock.setFlags((short)(flags | lock.getFlags()));
-                user.sendTranslated(MessageType.NEUTRAL, "Flags set!");
+                user.sendTranslated(NEUTRAL, "Flags set!");
             }
             else
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to modify the flags for this protection!");
+                user.sendTranslated(NEGATIVE, "You are not allowed to modify the flags for this protection!");
             }
             break;
         case FLAGS_UNSET:
@@ -352,7 +352,7 @@ public class CommandListener implements Listener
                 if ("all".equalsIgnoreCase(second))
                 {
                     lock.setFlags(ProtectionFlag.NONE);
-                    user.sendTranslated(MessageType.POSITIVE, "All flags are now unset!");
+                    user.sendTranslated(POSITIVE, "All flags are now unset!");
                 }
                 else
                 {
@@ -362,12 +362,12 @@ public class CommandListener implements Listener
                         flags |= protectionFlag.flagValue;
                     }
                     lock.setFlags((short)(lock.getFlags() & ~flags));
-                    user.sendTranslated(MessageType.NEUTRAL, "Flags unset!");
+                    user.sendTranslated(NEUTRAL, "Flags unset!");
                 }
             }
             else
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to modify the flags for this protection!");
+                user.sendTranslated(NEGATIVE, "You are not allowed to modify the flags for this protection!");
             }
             break;
         default: throw new IllegalArgumentException();

@@ -20,7 +20,6 @@ package de.cubeisland.engine.basics.command.teleport;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.basics.Basics;
@@ -32,7 +31,11 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.LocationUtil;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Material.AIR;
+import static org.bukkit.block.BlockFace.DOWN;
+import static org.bukkit.block.BlockFace.UP;
 
 /**
  * Contains commands for fast movement. /up /ascend /descend /jumpto /through
@@ -56,7 +59,7 @@ public class MovementCommands
             int height = context.getArg(0, Integer.class, -1);
             if ((height < 0))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Invalid height. The height has to be a whole number greater than 0!");
+                context.sendTranslated(NEGATIVE, "Invalid height. The height has to be a whole number greater than 0!");
                 return;
             }
             Location loc = sender.getLocation();
@@ -66,24 +69,25 @@ public class MovementCommands
                 loc.setY(loc.getWorld().getMaxHeight());
             }
             Block block = loc.getWorld().getBlockAt(loc);
-            if (!(block.getRelative(BlockFace.UP, 1).getType().equals(Material.AIR) && block.getRelative(BlockFace.UP, 2).getType().equals(Material.AIR)))
+            if (!(block.getRelative(UP, 1).getType().equals(AIR) && block.getRelative(UP, 2).getType().equals(
+                AIR)))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Your destination seems to be obstructed!");
+                context.sendTranslated(NEGATIVE, "Your destination seems to be obstructed!");
                 return;
             }
             loc = loc.getBlock().getLocation();
             loc.add(0.5, 1, 0.5);
-            if (block.getType().equals(Material.AIR))
+            if (block.getType().equals(AIR))
             {
                 block.setType(Material.GLASS);
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
             {
-                context.sendTranslated(MessageType.POSITIVE, "You have just been lifted!");
+                context.sendTranslated(POSITIVE, "You have just been lifted!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
+        context.sendTranslated(NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports to the highest point at your position.")
@@ -97,11 +101,11 @@ public class MovementCommands
             loc.add(.5, 0, .5);
             if (TeleportCommands.teleport(sender, loc, true, false, true)) // is save anyway so we do not need to check again
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are now on top!");
+                context.sendTranslated(POSITIVE, "You are now on top!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
+        context.sendTranslated(NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports you to the next safe spot upwards.", max = 0)
@@ -113,23 +117,23 @@ public class MovementCommands
             Location userLocation = sender.getLocation();
             Block curBlock = userLocation.add(0,2,0).getBlock();
             //go upwards until hitting solid blocks
-            while (curBlock.getType() == Material.AIR)
+            while (curBlock.getType() == AIR)
             {
-                Block rel = curBlock.getRelative(BlockFace.UP);
+                Block rel = curBlock.getRelative(UP);
                 if (rel.getY() < userLocation.getBlockY())
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You cannot ascend here");
+                    context.sendTranslated(NEGATIVE, "You cannot ascend here");
                     return;
                 }
                 curBlock = rel;
             }
             Block standOn = curBlock;
-            curBlock = curBlock.getRelative(BlockFace.UP);
+            curBlock = curBlock.getRelative(UP);
             // go upwards until hitting 2 airblocks again
-            while (!(curBlock.getType() == Material.AIR
-                && curBlock.getRelative(BlockFace.DOWN).getType() == Material.AIR))
+            while (!(curBlock.getType() == AIR
+                && curBlock.getRelative(DOWN).getType() == AIR))
             {
-                Block rel = curBlock.getRelative(BlockFace.UP);
+                Block rel = curBlock.getRelative(UP);
                 if (rel.getY() == 0)
                 {
                     break;
@@ -138,17 +142,17 @@ public class MovementCommands
             }
             if (userLocation.getY() + 0.5 > curBlock.getY())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You cannot ascend here");
+                context.sendTranslated(NEGATIVE, "You cannot ascend here");
                 return;
             }
             userLocation.setY(standOn.getY() + 1);
             if (TeleportCommands.teleport(sender, userLocation, true, false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "Ascended a level!");
+                context.sendTranslated(POSITIVE, "Ascended a level!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
+        context.sendTranslated(NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
@@ -160,31 +164,31 @@ public class MovementCommands
             final Location userLocation = sender.getLocation();
             final Location currentLocation = userLocation.clone();
             //go downwards until hitting solid blocks
-            while (currentLocation.getBlock().getType().equals(Material.AIR) && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight())
+            while (currentLocation.getBlock().getType() == AIR && currentLocation.getBlockY() < currentLocation.getWorld().getMaxHeight())
             {
                 currentLocation.add(0, -1, 0);
             }
             // go downwards until hitting 2 airblocks & a solid block again
-            while (!((currentLocation.getBlock().getType().equals(Material.AIR))
-                    && (currentLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR))
-                    && (!currentLocation.getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.AIR)))
+            while (!((currentLocation.getBlock().getType() == AIR)
+                    && (currentLocation.getBlock().getRelative(UP).getType() == AIR)
+                    && (!(currentLocation.getBlock().getRelative(DOWN).getType() == AIR)))
                     && currentLocation.getBlockY() + 1 < currentLocation.getWorld().getMaxHeight())
             {
                 currentLocation.add(0, -1, 0);
             }
             if ((currentLocation.getY() <= 0) || (currentLocation.getY() >= userLocation.getY()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You cannot descend here");
+                context.sendTranslated(NEGATIVE, "You cannot descend here");
                 return;
             }
             //reached new location
             if (TeleportCommands.teleport(sender, currentLocation, true, false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "Descended a level!");
+                context.sendTranslated(POSITIVE, "Descended a level!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Pro Tip: Teleport does not work IRL!");
+        context.sendTranslated(NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
     @Command(names = {
@@ -196,19 +200,19 @@ public class MovementCommands
         {
             User sender = (User)context.getSender();
             Location loc = sender.getTargetBlock(this.module.getConfiguration().navigation.jumpToMaxRange).getLocation();
-            if (loc.getBlock().getType().equals(Material.AIR))
+            if (loc.getBlock().getType() == AIR)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "No block in sight!");
+                context.sendTranslated(NEGATIVE, "No block in sight!");
                 return;
             }
             loc.add(0.5, 1, 0.5);
             if (TeleportCommands.teleport(sender, loc, true, false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "You just jumped!");
+                context.sendTranslated(POSITIVE, "You just jumped!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Jumping in the console is not allowed! Go play outside!");
+        context.sendTranslated(NEUTRAL, "Jumping in the console is not allowed! Go play outside!");
     }
 
     @Command(names = {
@@ -224,16 +228,16 @@ public class MovementCommands
                     this.module.getConfiguration().navigation.thru.maxWallThickness);
             if (loc == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "Nothing to pass through!");
+                sender.sendTranslated(NEGATIVE, "Nothing to pass through!");
                 return;
             }
             if (TeleportCommands.teleport(sender, loc, true, false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "You just passed the wall!");
+                context.sendTranslated(POSITIVE, "You just passed the wall!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Passing through firewalls in the console is not allowed! Go play outside!");
+        context.sendTranslated(NEUTRAL, "Passing through firewalls in the console is not allowed! Go play outside!");
     }
 
     @Command(desc = "Teleports you to your last location", max = 0, flags =
@@ -251,14 +255,14 @@ public class MovementCommands
                 Location loc = sender.get(BasicsAttachment.class).getDeathLocation();
                 if (!backPerm && loc == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "No death point found!");
+                    context.sendTranslated(NEGATIVE, "No death point found!");
                     return;
                 }
                 if (loc != null)
                 {
                     if (TeleportCommands.teleport(sender, loc, safe, true, true))
                     {
-                        sender.sendTranslated(MessageType.POSITIVE, "Teleported to your death point!");
+                        sender.sendTranslated(POSITIVE, "Teleported to your death point!");
                     }
                     else
                     {
@@ -272,19 +276,19 @@ public class MovementCommands
                 Location loc = sender.get(BasicsAttachment.class).getLastLocation();
                 if (loc == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You never teleported!");
+                    context.sendTranslated(NEGATIVE, "You never teleported!");
                     return;
                 }
                 if (TeleportCommands.teleport(sender, loc, safe, true, true))
                 {
-                    sender.sendTranslated(MessageType.POSITIVE, "Teleported to your last location!");
+                    sender.sendTranslated(POSITIVE, "Teleported to your last location!");
                 }
                 return;
             }
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to teleport back!");
+            context.sendTranslated(NEGATIVE, "You are not allowed to teleport back!");
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "Unfortunately teleporting is still not implemented in the game {text:'Life'}!");
+        context.sendTranslated(NEGATIVE, "Unfortunately teleporting is still not implemented in the game {text:'Life'}!");
     }
 
     @Command(names = {
@@ -298,29 +302,29 @@ public class MovementCommands
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             if (!user.isOnline())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You cannot move an offline player!");
+                context.sendTranslated(NEGATIVE, "You cannot move an offline player!");
                 return;
             }
             Location loc = sender.getTargetBlock(null, 350).getLocation();
-            if (loc.getBlock().getType().equals(Material.AIR))
+            if (loc.getBlock().getType() == AIR)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "No block in sight!");
+                context.sendTranslated(NEGATIVE, "No block in sight!");
                 return;
             }
             loc.add(0.5, 1, 0.5);
             if (TeleportCommands.teleport(user, loc, true, false, true))
             {
-                context.sendTranslated(MessageType.POSITIVE, "You just placed {user} where you were looking!", user);
-                user.sendTranslated(MessageType.POSITIVE, "You were placed somewhere!");
+                context.sendTranslated(POSITIVE, "You just placed {user} where you were looking!", user);
+                user.sendTranslated(POSITIVE, "You were placed somewhere!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Jumping in the console is not allowed! Go play outside!");
+        context.sendTranslated(NEUTRAL, "Jumping in the console is not allowed! Go play outside!");
 
     }
 
@@ -333,7 +337,7 @@ public class MovementCommands
             sender = context.getUser(1);
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
         }
@@ -346,30 +350,30 @@ public class MovementCommands
             }
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Succesfully swapped your socks!");
-                context.sendTranslated(MessageType.NEUTRAL, "As console you have to provide both players!");
+                context.sendTranslated(NEGATIVE, "Succesfully swapped your socks!");
+                context.sendTranslated(NEUTRAL, "As console you have to provide both players!");
                 return;
             }
         }
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         if (!user.isOnline() || !sender.isOnline())
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You cannot move an offline player!");
+            context.sendTranslated(NEGATIVE, "You cannot move an offline player!");
             return;
         }
         if (user == sender)
         {
             if (context.getSender() instanceof Player)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Swapping positions with yourself!? Are you kidding me?");
+                context.sendTranslated(NEGATIVE, "Swapping positions with yourself!? Are you kidding me?");
                 return;
             }
-            context.sendTranslated(MessageType.NEUTRAL, "Truly a hero! Trying to swap a users position with himself...");
+            context.sendTranslated(NEUTRAL, "Truly a hero! Trying to swap a users position with himself...");
             return;
         }
         Location userLoc = user.getLocation();
@@ -379,16 +383,16 @@ public class MovementCommands
             {
                 if (context.hasArg(1))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "Swapped position of {user} and {user}!", user, sender);
+                    context.sendTranslated(POSITIVE, "Swapped position of {user} and {user}!", user, sender);
                     return;
                 }
-                context.sendTranslated(MessageType.POSITIVE, "Swapped position with {user}!", user);
+                context.sendTranslated(POSITIVE, "Swapped position with {user}!", user);
             }
             else
             {
                 TeleportCommands.teleport(user, userLoc, false, true, false);
             }
         }
-        context.sendTranslated(MessageType.NEGATIVE, "Could not teleport both players!");
+        context.sendTranslated(NEGATIVE, "Could not teleport both players!");
     }
 }

@@ -30,11 +30,12 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 public class QueryParameter implements Cloneable
 {
@@ -231,30 +232,30 @@ public class QueryParameter implements Cloneable
         {
             if (this.location2 != null)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found in between {vector} and {vector} in {world}!",
+                user.sendTranslated(NEUTRAL, "No logs found in between {vector} and {vector} in {world}!",
                                     new BlockVector3(this.location1.x, this.location1.y, this.location1.z),
                                     new BlockVector3(this.location2.x, this.location2.y, this.location2.z), world);
             }
             else if (this.radius == null)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found at {vector} in {world}!", new BlockVector3(
+                user.sendTranslated(NEUTRAL, "No logs found at {vector} in {world}!", new BlockVector3(
                     this.location1.x, this.location1.y, this.location1.z), world);
             }
             else if (user.getLocation().getBlockX() == location1.x && user.getLocation().getBlockY() == location1.y
                 && user.getLocation().getBlockZ() == location1.z)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around you!", radius);
+                user.sendTranslated(NEUTRAL, "No logs found in a radius of {amount} around you!", radius);
             }
             else
             {
-                user.sendTranslated(MessageType.NEUTRAL,
+                user.sendTranslated(NEUTRAL,
                                     "No logs found in a radius of {amount} around {vector} in {world}!", this.radius,
                                     new BlockVector3(this.location1.x, this.location1.y, this.location1.z), world);
             }
         }
         else
         {
-            user.sendTranslated(MessageType.NEUTRAL, "No logs found for your given parameters");
+            user.sendTranslated(NEUTRAL, "No logs found for your given parameters");
         }
     }
 

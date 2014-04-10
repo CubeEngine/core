@@ -26,7 +26,6 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -37,9 +36,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.hide.event.UserHideEvent;
 import de.cubeisland.engine.hide.event.UserShowEvent;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static org.bukkit.event.block.Action.PHYSICAL;
 
 public class HideListener implements Listener
 {
@@ -79,7 +80,7 @@ public class HideListener implements Listener
         {
             if (!uuid.equals(canSeeHidden))
             {
-                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player {user} is now visible", event.getUser());
+                um.getExactUser(canSeeHidden).sendTranslated(POSITIVE, "Player {user} is now visible", event.getUser());
             }
         }
     }
@@ -93,7 +94,7 @@ public class HideListener implements Listener
             event.setJoinMessage(null);
             this.module.hidePlayer(user);
 
-            user.sendTranslated(MessageType.POSITIVE, "You were automatically hidden!");
+            user.sendTranslated(POSITIVE, "You were automatically hidden!");
         }
     }
 
@@ -105,7 +106,7 @@ public class HideListener implements Listener
         if (module.perms().AUTO_SEEHIDDENS.isAuthorized(user) && !module.getCanSeeHiddens().contains(uuid))
         {
             canSeeHiddens.add(uuid);
-            user.sendTranslated(MessageType.POSITIVE, "You can automatically see hidden players!");
+            user.sendTranslated(POSITIVE, "You can automatically see hidden players!");
         }
     }
 
@@ -136,7 +137,7 @@ public class HideListener implements Listener
         {
             if (!uuid.equals(canSeeHidden))
             {
-                um.getExactUser(canSeeHidden).sendTranslated(MessageType.POSITIVE, "Player {user}is now hidden!", event.getUser());
+                um.getExactUser(canSeeHidden).sendTranslated(POSITIVE, "Player {user}is now hidden!", event.getUser());
             }
         }
     }
@@ -144,7 +145,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event)
     {
-        if (event.getAction() != Action.PHYSICAL && hiddens.contains(event.getPlayer().getUniqueId()) && !module.perms().INTERACT.isAuthorized(event.getPlayer()))
+        if (event.getAction() != PHYSICAL && hiddens.contains(event.getPlayer().getUniqueId()) && !module.perms().INTERACT.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
             event.setUseInteractedBlock(Result.DENY);
@@ -195,7 +196,7 @@ public class HideListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPressurePlate(PlayerInteractEvent event)
     {
-        if (event.getAction() == Action.PHYSICAL && hiddens.contains(event.getPlayer().getUniqueId()))
+        if (event.getAction() == PHYSICAL && hiddens.contains(event.getPlayer().getUniqueId()))
         {
             event.setCancelled(true);
         }

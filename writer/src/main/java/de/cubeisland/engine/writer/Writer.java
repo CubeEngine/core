@@ -33,7 +33,9 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 /**
  * A module to edit signs and/or unsign written books
@@ -57,7 +59,7 @@ public class Writer extends Module
     {
         if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Edit what?");
+            context.sendTranslated(NEGATIVE, "Edit what?");
             return;
         }
         User user = (User)context.getSender();
@@ -66,13 +68,13 @@ public class Writer extends Module
             Map<String, Object> params = context.getParams();
             if (params.size() < 1)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You need to specify at least one parameter to edit a sign!");
-                context.sendTranslated(MessageType.NEGATIVE, "Or hold a signed book in your hand to edit it.");
+                context.sendTranslated(NEGATIVE, "You need to specify at least one parameter to edit a sign!");
+                context.sendTranslated(NEGATIVE, "Or hold a signed book in your hand to edit it.");
                 return;
             }
             if (!this.editSignInSight(user, params))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You need to have a signed book in hand or be looking at a sign less than 10 blocks away!");
+                user.sendTranslated(NEGATIVE, "You need to have a signed book in hand or be looking at a sign less than 10 blocks away!");
             }
         }
     }
@@ -102,7 +104,7 @@ public class Writer extends Module
             user.getCore().getEventManager().fireEvent(event);
             if (event.isCancelled())
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Could not change the sign!");
+                user.sendTranslated(NEGATIVE, "Could not change the sign!");
                 return true;
             }
             for (int i = 0; i < 4; ++i)
@@ -110,7 +112,7 @@ public class Writer extends Module
                 sign.setLine(i, lines[i]);
             }
             sign.update();
-            user.sendTranslated(MessageType.POSITIVE, "The sign has been changed!");
+            user.sendTranslated(POSITIVE, "The sign has been changed!");
             return true;
         }
         // No Sign in sight
@@ -133,7 +135,7 @@ public class Writer extends Module
             meta.setTitle("");
             item.setItemMeta(meta);
             item.setType(Material.BOOK_AND_QUILL);
-            user.sendTranslated(MessageType.POSITIVE, "Your book is now unsigned and ready to be edited.");
+            user.sendTranslated(POSITIVE, "Your book is now unsigned and ready to be edited.");
             return true;
         }
         return false;

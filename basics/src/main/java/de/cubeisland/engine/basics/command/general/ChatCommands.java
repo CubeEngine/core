@@ -24,8 +24,6 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.StringNode;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -34,10 +32,13 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.TimeUtil;
 import de.cubeisland.engine.core.util.converter.DurationConverter;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.StringNode;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class ChatCommands
 {
@@ -63,7 +64,7 @@ public class ChatCommands
     {
         if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to send the message to. Is the player offline?", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Could not find the player {user} to send the message to. Is the player offline?", context.getString(0));
         }
     }
 
@@ -83,12 +84,12 @@ public class ChatCommands
         }
         if (lastWhisper == null)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "No one has sent you a message that you could reply to!");
+            context.sendTranslated(NEUTRAL, "No one has sent you a message that you could reply to!");
             return;
         }
         if (!this.sendWhisperTo(lastWhisper, context.getStrings(0), context))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not find the player {user} to reply to. Is the player offline?", lastWhisper);
+            context.sendTranslated(NEGATIVE, "Could not find the player {user} to reply to. Is the player offline?", lastWhisper);
         }
     }
 
@@ -101,22 +102,22 @@ public class ChatCommands
             {
                 if (context.getSender() instanceof ConsoleCommandSender)
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Talking to yourself?");
+                    context.sendTranslated(NEUTRAL, "Talking to yourself?");
                     return true;
                 }
                 if (context.getSender() instanceof User)
                 {
                     ConsoleCommandSender console = context.getCore().getCommandManager().getConsoleSender();
-                    console.sendTranslated(MessageType.NEUTRAL, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender(), message);
-                    context.sendTranslated(MessageType.NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", console.getName(), message);
+                    console.sendTranslated(NEUTRAL, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender(), message);
+                    context.sendTranslated(NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", console.getName(), message);
                     this.lastWhisperOfConsole = context.getSender().getName();
                     ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper("#console");
                     return true;
                 }
-                context.sendTranslated(MessageType.NONE, "Who are you!?");
+                context.sendTranslated(NONE, "Who are you!?");
                 return true;
             }
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", whisperTarget);
+            context.sendTranslated(NEGATIVE, "User {user} not found!", whisperTarget);
             return true;
         }
         if (!user.isOnline())
@@ -125,15 +126,15 @@ public class ChatCommands
         }
         if (context.getSender().equals(user))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Talking to yourself?");
+            context.sendTranslated(NEUTRAL, "Talking to yourself?");
             return true;
         }
-        user.sendTranslated(MessageType.NONE, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender().getName(), message);
+        user.sendTranslated(NONE, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender().getName(), message);
         if (user.get(BasicsAttachment.class).isAfk())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} is afk!", user);
+            context.sendTranslated(NEUTRAL, "{user} is afk!", user);
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", user, message);
+        context.sendTranslated(NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", user, message);
         if (context.getSender() instanceof User)
         {
             ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper(user.getName());
@@ -155,7 +156,7 @@ public class ChatCommands
         {
             sb.append(context.getString(i++)).append(" ");
         }
-        this.um.broadcastMessage(MessageType.NEUTRAL, "[{text:Broadcast}] {}", sb.toString());
+        this.um.broadcastMessage(NEUTRAL, "[{text:Broadcast}] {}", sb.toString());
     }
 
     @Command(desc = "Mutes a player", usage = "<player> [duration]", min = 1, max = 2)
@@ -164,13 +165,13 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         if (basicsUserEntity.getMuted() != null && basicsUserEntity.getMuted().getTime() < System.currentTimeMillis())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} was already muted!", user);
+            context.sendTranslated(NEUTRAL, "{user} was already muted!", user);
         }
         Duration dura = module.getConfiguration().commands.defaultMuteTime;
         if (context.hasArg(1))
@@ -181,16 +182,16 @@ public class ChatCommands
             }
             catch (ConversionException e)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Invalid duration format!");
+                context.sendTranslated(NEGATIVE, "Invalid duration format!");
                 return;
             }
         }
         basicsUserEntity.setMuted(new Timestamp(System.currentTimeMillis() +
             (dura.getMillis() == 0 ? TimeUnit.DAYS.toMillis(9001) : dura.getMillis())));
         basicsUserEntity.update();
-        String timeString = dura.getMillis() == 0 ? user.getTranslation(MessageType.NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
-        user.sendTranslated(MessageType.NEGATIVE, "You are now muted for {input#amount}!", timeString);
-        context.sendTranslated(MessageType.NEUTRAL, "You muted {user} globally for {input#amount}!", user, timeString);
+        String timeString = dura.getMillis() == 0 ? user.getTranslation(NONE, "ever") : TimeUtil.format(user.getLocale(), dura.getMillis());
+        user.sendTranslated(NEGATIVE, "You are now muted for {input#amount}!", timeString);
+        context.sendTranslated(NEUTRAL, "You muted {user} globally for {input#amount}!", user, timeString);
     }
 
     @Command(desc = "Unmutes a player", usage = "<player>", min = 1, max = 1)
@@ -199,25 +200,25 @@ public class ChatCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         basicsUserEntity.setMuted(null);
         basicsUserEntity.update();
-        context.sendTranslated(MessageType.POSITIVE, "{user} is no longer muted!", user);
+        context.sendTranslated(POSITIVE, "{user} is no longer muted!", user);
     }
 
     @Command(names = {"rand","roll"},desc = "Shows a random number from 0 to 100")
     public void rand(CommandContext context)
     {
-        this.um.broadcastStatus(ChatFormat.YELLOW,"rolled a {integer}!", context.getSender(), new Random().nextInt(100));
+        this.um.broadcastStatus(YELLOW, "rolled a {integer}!", context.getSender(), new Random().nextInt(100));
     }
 
     @Command(desc = "Displays the colors")
     public void chatcolors(CommandContext context)
     {
-        context.sendTranslated(MessageType.POSITIVE, "The following chat codes are available:");
+        context.sendTranslated(POSITIVE, "The following chat codes are available:");
         StringBuilder builder = new StringBuilder();
         int i = 0;
         for (ChatFormat chatFormat : ChatFormat.values())
@@ -229,6 +230,6 @@ public class ChatCommands
             builder.append(" ").append(chatFormat.getChar()).append(" ").append(chatFormat.toString()).append(chatFormat.name()).append(ChatFormat.RESET);
         }
         context.sendMessage(builder.toString());
-        context.sendTranslated(MessageType.POSITIVE, "To use these type {text:&} followed by the code above");
+        context.sendTranslated(POSITIVE, "To use these type {text:&} followed by the code above");
     }
 }

@@ -25,11 +25,12 @@ import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesManager;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class UserCommandHelper extends ContainerCommand
 {
@@ -63,13 +64,13 @@ public class UserCommandHelper extends ContainerCommand
             }
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You have to specify a player.");
+                context.sendTranslated(NEGATIVE, "You have to specify a player.");
                 return null;
             }
         }
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(pos));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(pos));
             return null;
         }
         return user;
@@ -94,7 +95,7 @@ public class UserCommandHelper extends ContainerCommand
             world = context.getParam("in");
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World {world} not found!", context.getString("in"));
+                context.sendTranslated(NEGATIVE, "World {world} not found!", context.getString("in"));
             }
             return world;
         }
@@ -109,18 +110,18 @@ public class UserCommandHelper extends ContainerCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
+                context.sendTranslated(NEUTRAL, "You are using {world} as current world.", world);
             }
             return world;
         }
         if (ManagementCommands.curWorldOfConsole == null)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Please provide a world.");
-            context.sendTranslated(MessageType.POSITIVE, "You can define a world with {text:/roles admin defaultworld <world>}");
+            context.sendTranslated(NEUTRAL, "Please provide a world.");
+            context.sendTranslated(POSITIVE, "You can define a world with {text:/roles admin defaultworld <world>}");
             return null;
         }
         world = ManagementCommands.curWorldOfConsole;
-        context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
+        context.sendTranslated(NEUTRAL, "You are using {world} as current world.", world);
         return world;
     }
 }

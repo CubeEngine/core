@@ -33,12 +33,13 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.util.math.shape.Cuboid;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.portals.config.Destination;
 import de.cubeisland.engine.portals.config.PortalConfig;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class PortalCommands extends ContainerCommand
 {
@@ -81,7 +82,7 @@ public class PortalCommands extends ContainerCommand
                         World world = context.getParam("worlddest", null);
                         if (world == null)
                         {
-                            context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString("worlddest"));
+                            context.sendTranslated(NEGATIVE, "World {input} not found!", context.getString("worlddest"));
                             return;
                         }
                         config.destination = new Destination(world);
@@ -91,7 +92,7 @@ public class PortalCommands extends ContainerCommand
                         Portal portal = this.manager.getPortal(context.getString("portaldest"));
                         if (portal == null)
                         {
-                            context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString("portaldest"));
+                            context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString("portaldest"));
                             return;
                         }
                         config.destination = new Destination(portal);
@@ -101,18 +102,18 @@ public class PortalCommands extends ContainerCommand
                     Portal portal = new Portal(module, manager, context.getString(0), config);
                     this.manager.addPortal(portal);
                     sender.attachOrGet(PortalsAttachment.class, module).setPortal(portal);
-                    context.sendTranslated(MessageType.POSITIVE, "Portal {name} created! Select a destination using portal modify destination command", portal.getName());
+                    context.sendTranslated(POSITIVE, "Portal {name} created! Select a destination using portal modify destination command", portal.getName());
                     return;
                 }
-                context.sendTranslated(MessageType.NEGATIVE, "A portal named {input} already exists!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "A portal named {input} already exists!", context.getString(0));
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Please select a cuboid first!");
+                context.sendTranslated(NEGATIVE, "Please select a cuboid first!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "You must be ingame to do this!");
+        context.sendTranslated(NEGATIVE, "You must be ingame to do this!");
     }
 
     @Alias(names = "mvps")
@@ -122,16 +123,16 @@ public class PortalCommands extends ContainerCommand
         Portal portal = this.manager.getPortal(context.getString(0));
         if (portal == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
             return;
         }
         if (context.getSender() instanceof User)
         {
             ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module).setPortal(portal);
-            context.sendTranslated(MessageType.POSITIVE, "Portal selected: {name}", context.getString(0));
+            context.sendTranslated(POSITIVE, "Portal selected: {name}", context.getString(0));
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "You must be ingame to do this!");
+        context.sendTranslated(NEGATIVE, "You must be ingame to do this!");
     }
 
     @Alias(names ="mvpi")
@@ -144,7 +145,7 @@ public class PortalCommands extends ContainerCommand
             portal = manager.getPortal(context.getString(0));
             if (portal == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
                 return;
             }
         }
@@ -154,7 +155,7 @@ public class PortalCommands extends ContainerCommand
         }
         if (portal == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You need to define a portal to use!");
+            context.sendTranslated(NEGATIVE, "You need to define a portal to use!");
             context.sendMessage(context.getCommand().getUsage(context));
             return;
         }
@@ -168,11 +169,11 @@ public class PortalCommands extends ContainerCommand
         Portal portal = this.manager.getPortal(context.getString(0));
         if (portal == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Portal {input} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
             return;
         }
         portal.delete();
-        context.sendTranslated(MessageType.POSITIVE, "Portal {name} deleted", portal.getName());
+        context.sendTranslated(POSITIVE, "Portal {name} deleted", portal.getName());
     }
 
     @Command(desc = "Shows debug portal information instead of teleporting", usage = "[on|off]", max = 1)
@@ -196,7 +197,7 @@ public class PortalCommands extends ContainerCommand
                     {
                         attachment.toggleDebug();
                     }
-                    context.sendTranslated(MessageType.NEUTRAL, "[Portals] Debug {text:OFF}");
+                    context.sendTranslated(NEUTRAL, "[Portals] Debug {text:OFF}");
                 }
             }
             else
@@ -205,14 +206,14 @@ public class PortalCommands extends ContainerCommand
             }
             if (attachment.isDebug())
             {
-                context.sendTranslated(MessageType.NEUTRAL, "[Portals] Debug {text:ON}");
+                context.sendTranslated(NEUTRAL, "[Portals] Debug {text:ON}");
             }
             else
             {
-                context.sendTranslated(MessageType.POSITIVE, "Toggled debug mode!");
+                context.sendTranslated(POSITIVE, "Toggled debug mode!");
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "You must be ingame to do this!");
+        context.sendTranslated(NEGATIVE, "You must be ingame to do this!");
     }
 }

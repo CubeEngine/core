@@ -25,9 +25,10 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class InvasionCommand
 {
@@ -44,7 +45,7 @@ public class InvasionCommand
         EntityType entityType = Match.entity().mob(context.getString(0, null));
         if (entityType == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "EntityType {input} not found", context.getString(0));
+            context.sendTranslated(NEGATIVE, "EntityType {input} not found", context.getString(0));
             return;
         }
         final Location helperLocation = new Location(null, 0, 0, 0);

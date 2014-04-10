@@ -40,9 +40,11 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.util.ChatFormat.DARK_GREEN;
+import static de.cubeisland.engine.core.util.ChatFormat.RED;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 /**
  * Contains commands to manage kicks/bans.
@@ -79,14 +81,14 @@ public class KickBanCommands
         {
             if (!module.perms().COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to kick everyone!");
+                context.sendTranslated(NEGATIVE, "You are not allowed to kick everyone!");
                 return;
             }
             for (User toKick : this.um.getOnlineUsers())
             {
                 if (!context.getSender().equals(toKick))
                 {
-                    toKick.kickPlayer(toKick.getTranslation(MessageType.NEGATIVE, kickMessage) + "\n" + ChatFormat.RESET + reason);
+                    toKick.kickPlayer(toKick.getTranslation(NEGATIVE, kickMessage) + "\n" + ChatFormat.RESET + reason);
                 }
             }
             return;
@@ -94,11 +96,11 @@ public class KickBanCommands
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
-        user.kickPlayer(user.getTranslation(MessageType.NEGATIVE, kickMessage) + "\n" + ChatFormat.RESET + reason);
-        this.um.broadcastMessageWithPerm(MessageType.NEGATIVE, "{user} was kicked from the server by {user}!\n{}", module.perms().KICK_RECEIVEMESSAGE, user, context.getSender(), reason);
+        user.kickPlayer(user.getTranslation(NEGATIVE, kickMessage) + "\n" + ChatFormat.RESET + reason);
+        this.um.broadcastMessageWithPerm(NEGATIVE, "{user} was kicked from the server by {user}!\n{}", module.perms().KICK_RECEIVEMESSAGE, user, context.getSender(), reason);
     }
 
     @Command(names = {"ban", "kickban"},
@@ -119,7 +121,7 @@ public class KickBanCommands
         }
         else if (!context.hasFlag("f"))
         {
-            context.sendTranslated(MessageType.NEGATIVE,"{user} has never played on this server before! Use the -force flag to ban him anyway.", player);
+            context.sendTranslated(NEGATIVE,"{user} has never played on this server before! Use the -force flag to ban him anyway.", player);
             return;
         }
         String reason = this.getReasonFrom(context, 1, module.perms().COMMAND_BAN_NOREASON);
@@ -128,7 +130,7 @@ public class KickBanCommands
         {
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You cannot IP ban a player that has never played on the server before!");
+                context.sendTranslated(NEGATIVE, "You cannot IP ban a player that has never played on the server before!");
                 return;
             }
             if (user.getAddress() != null)
@@ -136,7 +138,7 @@ public class KickBanCommands
                 InetAddress ipAdress = user.getAddress().getAddress();
                 if (this.banManager.isIpBanned(ipAdress))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} is already IP banned!", player);
+                    context.sendTranslated(NEGATIVE, "{user} is already IP banned!", player);
                     return;
                 }
                 this.banManager.addBan(new IpBan(ipAdress,context.getSender().getName(), reason));
@@ -145,19 +147,19 @@ public class KickBanCommands
                 {
                     if (ipPlayer.getAddress() != null && ipPlayer.getAddress().getAddress().equals(ipAdress))
                     {
-                        ipPlayer.kickPlayer(ipPlayer.getTranslation(MessageType.NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
+                        ipPlayer.kickPlayer(ipPlayer.getTranslation(NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
                         bannedUsers.add(ipPlayer.getName());
                     }
                 }
-                context.sendTranslated(MessageType.NEGATIVE, "You banned the IP: {input#ip}!", ipAdress.getHostAddress());
-                um.broadcastMessageWithPerm(MessageType.NEGATIVE, "{user} was banned from the server by {sender}!", module.perms().BAN_RECEIVEMESSAGE, user, context.getSender());
-                um.broadcastMessageWithPerm(MessageType.NONE, reason, module.perms().BAN_RECEIVEMESSAGE);
-                um.broadcastMessageWithPerm(MessageType.NEGATIVE, "And with it kicked: {user#list}!", module.perms().BAN_RECEIVEMESSAGE,
-                                            StringUtils.implode(ChatFormat.RED + "," + ChatFormat.DARK_GREEN, bannedUsers));
+                context.sendTranslated(NEGATIVE, "You banned the IP: {input#ip}!", ipAdress.getHostAddress());
+                um.broadcastMessageWithPerm(NEGATIVE, "{user} was banned from the server by {sender}!", module.perms().BAN_RECEIVEMESSAGE, user, context.getSender());
+                um.broadcastMessageWithPerm(NONE, reason, module.perms().BAN_RECEIVEMESSAGE);
+                um.broadcastMessageWithPerm(NEGATIVE, "And with it kicked: {user#list}!", module.perms().BAN_RECEIVEMESSAGE,
+                                            StringUtils.implode(RED + "," + DARK_GREEN, bannedUsers));
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "You cannot IP ban this player because he was offline for too long!");
+                context.sendTranslated(NEUTRAL, "You cannot IP ban this player because he was offline for too long!");
             }
             return;
         }
@@ -165,18 +167,18 @@ public class KickBanCommands
         {
             if (this.banManager.isUserBanned(player.getName()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{user} is already banned!", player);
+                context.sendTranslated(NEGATIVE, "{user} is already banned!", player);
                 return;
             }
             this.banManager.addBan(new UserBan(player.getName(),context.getSender().getName(), reason));
             if (user != null)
             {
-                user.kickPlayer(user.getTranslation(MessageType.NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
+                user.kickPlayer(user.getTranslation(NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
             }
         }
-        context.sendTranslated(MessageType.NEGATIVE, "You banned {user}!", player);
-        um.broadcastMessageWithPerm(MessageType.NEGATIVE, "{user} was banned from the server by {sender}!", module.perms().BAN_RECEIVEMESSAGE, player, context.getSender());
-        um.broadcastMessageWithPerm(MessageType.NONE, reason, module.perms().BAN_RECEIVEMESSAGE);
+        context.sendTranslated(NEGATIVE, "You banned {user}!", player);
+        um.broadcastMessageWithPerm(NEGATIVE, "{user} was banned from the server by {sender}!", module.perms().BAN_RECEIVEMESSAGE, player, context.getSender());
+        um.broadcastMessageWithPerm(NONE, reason, module.perms().BAN_RECEIVEMESSAGE);
     }
 
     private String getReasonFrom(CommandContext context, int at, Permission permNeeded)
@@ -188,7 +190,7 @@ public class KickBanCommands
         }
         else if (!permNeeded.isAuthorized(context.getSender()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You need to specify a reason!");
+            context.sendTranslated(NEGATIVE, "You need to specify a reason!");
             return null;
         }
         return reason;
@@ -202,11 +204,11 @@ public class KickBanCommands
         String userName = context.getString(0);
         if (!this.banManager.isUserBanned(userName))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{user} is not banned, maybe you misspelled his name?", userName);
+            context.sendTranslated(NEGATIVE, "{user} is not banned, maybe you misspelled his name?", userName);
             return;
         }
         this.banManager.removeUserBan(userName);
-        context.sendTranslated(MessageType.POSITIVE, "You unbanned {user}!", userName);
+        context.sendTranslated(POSITIVE, "You unbanned {user}!", userName);
     }
 
     @Command(names = {"ipban", "banip"},
@@ -220,33 +222,33 @@ public class KickBanCommands
             InetAddress address = InetAddress.getByName(ipaddress);
             if (this.banManager.isIpBanned(address))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "The IP {input#ip} is already banned!", address.getHostAddress());
+                context.sendTranslated(NEUTRAL, "The IP {input#ip} is already banned!", address.getHostAddress());
                 return;
             }
             String reason = this.getReasonFrom(context,1, module.perms().COMMAND_IPBAN_NOREASON);
             if (reason == null) return;
             this.banManager.addBan(new IpBan(address,context.getSender().getName(), reason));
-            context.sendTranslated(MessageType.NEGATIVE, "You banned the IP {input#ip} from your server!", address.getHostAddress());
+            context.sendTranslated(NEGATIVE, "You banned the IP {input#ip} from your server!", address.getHostAddress());
             Set<String> bannedUsers = new HashSet<>();
             for (User user : um.getOnlineUsers())
             {
                 if (user.getAddress() != null && user.getAddress().getAddress().getHostAddress().equals(ipaddress))
                 {
-                    user.kickPlayer(user.getTranslation(MessageType.NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
+                    user.kickPlayer(user.getTranslation(NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
                     bannedUsers.add(user.getName());
                 }
             }
-            um.broadcastMessageWithPerm(MessageType.NEGATIVE, "The IP {input#ip} was banned from the server by {sender}!", module.perms().BAN_RECEIVEMESSAGE, ipaddress, context.getSender());
-            um.broadcastMessageWithPerm(MessageType.NONE, reason, module.perms().BAN_RECEIVEMESSAGE);
+            um.broadcastMessageWithPerm(NEGATIVE, "The IP {input#ip} was banned from the server by {sender}!", module.perms().BAN_RECEIVEMESSAGE, ipaddress, context.getSender());
+            um.broadcastMessageWithPerm(NONE, reason, module.perms().BAN_RECEIVEMESSAGE);
             if (!bannedUsers.isEmpty())
             {
-                um.broadcastMessageWithPerm(MessageType.NEGATIVE,"And with it kicked: {user#list}!", module.perms().BAN_RECEIVEMESSAGE,
-                                            StringUtils.implode(ChatFormat.RED + "," + ChatFormat.DARK_GREEN, bannedUsers));
+                um.broadcastMessageWithPerm(NEGATIVE,"And with it kicked: {user#list}!", module.perms().BAN_RECEIVEMESSAGE,
+                                            StringUtils.implode(RED + "," + DARK_GREEN, bannedUsers));
             }
         }
         catch (UnknownHostException e)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{input#ip} is not a valid IP address!", ipaddress);
+            context.sendTranslated(NEGATIVE, "{input#ip} is not a valid IP address!", ipaddress);
         }
     }
 
@@ -260,11 +262,11 @@ public class KickBanCommands
         {
             InetAddress address = InetAddress.getByName(ipadress);
             this.banManager.removeIpBan(address);
-            context.sendTranslated(MessageType.POSITIVE, "You unbanned the IP {input#ip}!", address.getHostAddress());
+            context.sendTranslated(POSITIVE, "You unbanned the IP {input#ip}!", address.getHostAddress());
         }
         catch (UnknownHostException e)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{input#ip} is not a valid IP address!", ipadress);
+            context.sendTranslated(NEGATIVE, "{input#ip} is not a valid IP address!", ipadress);
         }
     }
 
@@ -285,14 +287,14 @@ public class KickBanCommands
         }
         else if (!context.hasFlag("f"))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} has never played on this server before! Use the -force flag to ban him anyways.", player);
+            context.sendTranslated(NEUTRAL, "{user} has never played on this server before! Use the -force flag to ban him anyways.", player);
             return;
         }
         String reason = this.getReasonFrom(context, 2, module.perms().COMMAND_TEMPBAN_NOREASON);
         if (reason == null) return;
         if (this.banManager.isUserBanned(player.getName()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{user} is already banned!", player);
+            context.sendTranslated(NEGATIVE, "{user} is already banned!", player);
             return;
         }
         try
@@ -303,14 +305,14 @@ public class KickBanCommands
             if (player.isOnline())
             {
                 if (user == null) throw new IllegalStateException();
-                user.kickPlayer(user.getTranslation(MessageType.NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
+                user.kickPlayer(user.getTranslation(NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
             }
-            context.sendTranslated(MessageType.POSITIVE, "You banned {user} temporarily!", player);
-            um.broadcastMessageWithPerm(MessageType.NEGATIVE, "{user} was banned temporarily from the server by {sender}!\n{}", module.perms().BAN_RECEIVEMESSAGE, player, context.getSender(), reason);
+            context.sendTranslated(POSITIVE, "You banned {user} temporarily!", player);
+            um.broadcastMessageWithPerm(NEGATIVE, "{user} was banned temporarily from the server by {sender}!\n{}", module.perms().BAN_RECEIVEMESSAGE, player, context.getSender(), reason);
         }
         catch (TimeConversionException ex)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Invalid time value! Examples: 1d 12h 5m");
+            context.sendTranslated(NEGATIVE, "Invalid time value! Examples: 1d 12h 5m");
         }
     }
 
@@ -320,13 +322,13 @@ public class KickBanCommands
         {
             if (this.module.getConfiguration().commands.disallowBanIfOfflineMode)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Banning players by name is not allowed in offline-mode!");
-                context.sendTranslated(MessageType.NEUTRAL, "You can change this in your Basics-Configuration.");
+                context.sendTranslated(NEGATIVE, "Banning players by name is not allowed in offline-mode!");
+                context.sendTranslated(NEUTRAL, "You can change this in your Basics-Configuration.");
                 return true;
             }
-            context.sendTranslated(MessageType.NEUTRAL, "The server is running in {text:OFFLINE-mode:color=DARK_RED}.");
-            context.sendTranslated(MessageType.NEUTRAL, "Players could change their username with a cracked client!");
-            context.sendTranslated(MessageType.POSITIVE, "You can IP-ban to prevent banning a real player in that case.");
+            context.sendTranslated(NEUTRAL, "The server is running in {text:OFFLINE-mode:color=DARK_RED}.");
+            context.sendTranslated(NEUTRAL, "Players could change their username with a cracked client!");
+            context.sendTranslated(POSITIVE, "You can IP-ban to prevent banning a real player in that case.");
         }
         return false;
     }
@@ -335,6 +337,6 @@ public class KickBanCommands
     public void reloadbans(CommandContext context)
     {
         this.banManager.reloadBans();
-        context.sendTranslated(MessageType.POSITIVE, "Reloaded the ban lists successfully!");
+        context.sendTranslated(POSITIVE, "Reloaded the ban lists successfully!");
     }
 }

@@ -18,11 +18,11 @@
 package de.cubeisland.engine.log.action.player.item;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.player.ActionPlayer;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
@@ -44,7 +44,7 @@ public class UsePotionSplash extends ActionPlayer // TODO potion item
     @Override
     public String translateAction(User user)
     {
-        return user.getTranslation(MessageType.POSITIVE, "{user} splashed a potion", this.player.name);
+        return user.getTranslation(POSITIVE, "{user} splashed a potion", this.player.name);
         /*
         user.sendTranslated(MessageType.POSITIVE, "{}{user} used {amount} splash potions {input#effects} onto {amount} entities in total{}", time, logEntry
                 .getCauserUser().getName(), logEntry.getAttached().size() + 1, effects, amountAffected, loc);

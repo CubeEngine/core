@@ -28,12 +28,13 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.storage.Lookup;
 import de.cubeisland.engine.log.storage.ShowParameter;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class ToolListener implements Listener
 {
@@ -63,7 +64,7 @@ public class ToolListener implements Listener
                     Lookup lookup = attachment.getLookup(item.getType());
                     if (lookup == null)
                     {
-                        user.sendTranslated(MessageType.NEGATIVE, "Invalid LoggingTool-Block!");
+                        user.sendTranslated(NEGATIVE, "Invalid LoggingTool-Block!");
                         return;
                     }
                     Location loc = event.getAction().equals(Action.LEFT_CLICK_BLOCK)

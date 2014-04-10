@@ -41,10 +41,10 @@ import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.roles.RoleAppliedEvent;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 public class GeneralsListener implements Listener
@@ -119,7 +119,7 @@ public class GeneralsListener implements Listener
         if (amount > 0)
         {
             user.sendTranslatedN(POSITIVE, amount, "You have a new mail!", "You have {amount} of mail!", amount);
-            user.sendTranslated(MessageType.NEUTRAL, "Use {text:/mail read} to display them.");
+            user.sendTranslated(NEUTRAL, "Use {text:/mail read} to display them.");
         }
     }
 

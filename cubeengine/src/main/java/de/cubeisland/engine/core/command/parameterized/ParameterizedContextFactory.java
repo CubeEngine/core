@@ -35,9 +35,11 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 public class ParameterizedContextFactory implements ContextFactory
 {
@@ -238,9 +240,8 @@ public class ParameterizedContextFactory implements ContextFactory
                         }
                         catch (InvalidArgumentException ex)
                         {
-                            throw new IncorrectUsageException(sender.getTranslation(MessageType.NEGATIVE, "Invalid argument for {input}: {}", param
-                                .getName(), sender.getTranslation(MessageType.NONE, ex.getMessage(), ex
-                                .getMessageArgs())));
+                            throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument for {input}: {}", param.getName(), sender.getTranslation(
+                                NONE, ex.getMessage(), ex.getMessageArgs())));
                         }
                     }
                     else // else is indexed param

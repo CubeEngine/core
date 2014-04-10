@@ -31,7 +31,6 @@ import org.bukkit.World;
 import de.cubeisland.engine.bigdata.ReflectedDBObject;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.log.LoggingConfiguration;
@@ -40,6 +39,7 @@ import de.cubeisland.engine.reflect.Section;
 import org.bson.types.ObjectId;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static org.bukkit.ChatColor.GRAY;
 
 /**
@@ -190,16 +190,16 @@ public abstract class BaseAction extends ReflectedDBObject implements Comparable
                 }
                 if (xMax == xMin && yMax == yMin && zMax == zMin)
                 {
-                    loc += user.getTranslation(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(xMax, yMax, zMax), coord.world.getWorld());
+                    loc += user.getTranslation(POSITIVE, "   at {vector} in {world}", new BlockVector3(xMax, yMax, zMax), coord.world.getWorld());
                 }
                 else
                 {
-                    loc += user.getTranslation(MessageType.POSITIVE, "   in between {vector} and {vector} in {world}", new BlockVector3(xMin, yMin, zMin), new BlockVector3(xMax, yMax, zMax), coord.world.getWorld());
+                    loc += user.getTranslation(POSITIVE, "   in between {vector} and {vector} in {world}", new BlockVector3(xMin, yMin, zMin), new BlockVector3(xMax, yMax, zMax), coord.world.getWorld());
                 }
             }
             else
             {
-                loc += user.getTranslation(MessageType.POSITIVE, "   at {vector} in {world}", new BlockVector3(coord.vector.x, coord.vector.y, coord.vector.z), coord.world.getWorld());
+                loc += user.getTranslation(POSITIVE, "   at {vector} in {world}", new BlockVector3(coord.vector.x, coord.vector.y, coord.vector.z), coord.world.getWorld());
             }
         }
         user.sendMessage(time + msg + loc);

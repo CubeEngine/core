@@ -29,10 +29,10 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.jooq.DSLContext;
 
 import static de.cubeisland.engine.basics.storage.TableIgnorelist.TABLE_IGNORE_LIST;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class IgnoreCommands
 {
@@ -93,29 +93,29 @@ public class IgnoreCommands
                 User user = this.um.findUser(name);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                    context.sendTranslated(NEGATIVE, "User {user} not found!", name);
                 }
                 else if (!this.addIgnore(sender, user))
                 {
                     if (module.perms().COMMAND_IGNORE_PREVENT.isAuthorized(user))
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to ignore {user}!", user);
+                        context.sendTranslated(NEGATIVE, "You are not allowed to ignore {user}!", user);
                         continue;
                     }
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} is already on your ignore list!", user);
+                    context.sendTranslated(NEGATIVE, "{user} is already on your ignore list!", user);
                 }
                 else
                 {
                     added.add(name);
                 }
             }
-            context.sendTranslated(MessageType.POSITIVE, "You added {user#list} to your ignore list!",
+            context.sendTranslated(POSITIVE, "You added {user#list} to your ignore list!",
                                    StringUtils.implode(ChatFormat.WHITE + ", " + ChatFormat.DARK_GREEN, added));
             return;
         }
         int rand1 = new Random().nextInt(6)+1;
         int rand2 = new Random().nextInt(6-rand1+1)+1;
-        context.sendTranslated(MessageType.NEUTRAL, "Ignore ({text:8+:color=WHITE}): {integer#random} + {integer#random} = {integer#sum} -> {text:failed:color=RED}",
+        context.sendTranslated(NEUTRAL, "Ignore ({text:8+:color=WHITE}): {integer#random} + {integer#random} = {integer#sum} -> {text:failed:color=RED}",
                                rand1, rand2, rand1 + rand2);
     }
 
@@ -133,21 +133,21 @@ public class IgnoreCommands
                 User user = this.um.findUser(name);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                    context.sendTranslated(NEGATIVE, "User {user} not found!", name);
                 }
                 else if (!this.removeIgnore(sender, user))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You haven't ignored {user}!", user);
+                    context.sendTranslated(NEGATIVE, "You haven't ignored {user}!", user);
                 }
                 else
                 {
                     added.add(name);
                 }
             }
-            context.sendTranslated(MessageType.POSITIVE, "You removed {user#list} from your ignore list!",
+            context.sendTranslated(POSITIVE, "You removed {user#list} from your ignore list!",
                                    StringUtils.implode(ChatFormat.WHITE + ", " + ChatFormat.DARK_GREEN, added));
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "Congratulations! You are now looking at this text!");
+        context.sendTranslated(NEGATIVE, "Congratulations! You are now looking at this text!");
     }
 }

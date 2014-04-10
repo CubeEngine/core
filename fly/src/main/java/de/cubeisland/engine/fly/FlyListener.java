@@ -33,7 +33,8 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.task.Task;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class FlyListener implements Listener
 {
@@ -72,7 +73,7 @@ public class FlyListener implements Listener
 
         if (!FLY_FEATHER.isAuthorized(player))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You dont have permission to use this!");
+            user.sendTranslated(NEGATIVE, "You dont have permission to use this!");
             player.setAllowFlight(false); //Disable when player is flying
             return;
         }
@@ -80,7 +81,7 @@ public class FlyListener implements Listener
         FlyStartEvent flyStartEvent = new FlyStartEvent(fly.getCore(), user);
         if (flyStartEvent.isCancelled())
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to fly now!");
+            user.sendTranslated(NEGATIVE, "You are not allowed to fly now!");
             player.setAllowFlight(false); //Disable when player is flying
             return;
         }
@@ -93,7 +94,7 @@ public class FlyListener implements Listener
             player.setVelocity(player.getVelocity().setY(player.getVelocity().getY() + 1));
             player.teleport(player.getLocation(this.helperLocation).add(new Vector(0, 0.05, 0))); //make sure the player stays flying
             player.setFlying(true);
-            user.sendTranslated(MessageType.POSITIVE, "You can now fly!");
+            user.sendTranslated(POSITIVE, "You can now fly!");
             Task flymore = new Task(fly)
             {
                 public void run()//2 feather/min
@@ -128,7 +129,7 @@ public class FlyListener implements Listener
         else
         {//or not
             player.setFallDistance(0);
-            user.sendTranslated(MessageType.NEUTRAL, "You cannot fly anymore!");
+            user.sendTranslated(NEUTRAL, "You cannot fly anymore!");
         }
     }
 }

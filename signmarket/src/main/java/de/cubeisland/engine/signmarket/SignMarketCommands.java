@@ -24,7 +24,8 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class SignMarketCommands extends ContainerCommand
 {
@@ -51,18 +52,18 @@ public class SignMarketCommands extends ContainerCommand
             {
                 if (this.module.getConfig().disableInWorlds.contains(((User)context.getSender()).getWorld().getName()))
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "MarketSigns are disabled in the configuration for this world!");
+                    context.sendTranslated(NEUTRAL, "MarketSigns are disabled in the configuration for this world!");
                     return;
                 }
                 this.module.getEditModeListener().addUser((User)context.getSender());
-                context.sendTranslated(MessageType.POSITIVE, "You are now in edit mode!");
-                context.sendTranslated(MessageType.POSITIVE, "Chat will now work as commands.");
-                context.sendTranslated(MessageType.NEUTRAL, "Type exit or use this command again to leave the edit mode.");
+                context.sendTranslated(POSITIVE, "You are now in edit mode!");
+                context.sendTranslated(POSITIVE, "Chat will now work as commands.");
+                context.sendTranslated(NEUTRAL, "Type exit or use this command again to leave the edit mode.");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Only players can edit market signs!");
+            context.sendTranslated(NEGATIVE, "Only players can edit market signs!");
         }
     }
 }

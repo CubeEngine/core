@@ -44,11 +44,13 @@ import com.mongodb.DBObject;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 public class QueryManager
 {
@@ -458,14 +460,14 @@ public class QueryManager
             switch (action)
             {
             case SHOW:
-                user.sendTranslated(MessageType.NEUTRAL, "Lookups cannot return all data while cleaning up the database!");
+                user.sendTranslated(NEUTRAL, "Lookups cannot return all data while cleaning up the database!");
                 break;
             case ROLLBACK:
             case REDO:
             case ROLLBACK_PREVIEW:
             case REDO_PREVIEW:
-                user.sendTranslated(MessageType.NEGATIVE, "This action is not possible while cleaning up the database!");
-                user.sendTranslated(MessageType.NEUTRAL, "Please wait");
+                user.sendTranslated(NEGATIVE, "This action is not possible while cleaning up the database!");
+                user.sendTranslated(NEUTRAL, "Please wait");
                 return;
             }
         }

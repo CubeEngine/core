@@ -20,7 +20,6 @@ package de.cubeisland.engine.selector;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -29,9 +28,11 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.selector.CuboidSelector.SELECTOR_TOOL_NAME;
+import static org.bukkit.Material.WOOD_AXE;
 
 public class SelectorCommand extends CubeCommand
 {
@@ -53,7 +54,7 @@ public class SelectorCommand extends CubeCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You cannot hold a selection tool!");
+            context.sendTranslated(NEGATIVE, "You cannot hold a selection tool!");
         }
         return null;
     }
@@ -64,7 +65,7 @@ public class SelectorCommand extends CubeCommand
         ItemStack found = null;
         for (ItemStack item : user.getInventory().getContents())
         {
-            if (item != null && item.getType().equals(Material.WOOD_AXE)
+            if (item != null && item.getType() == WOOD_AXE
                 && item.hasItemMeta() && item.getItemMeta().hasDisplayName()
                 && item.getItemMeta().getDisplayName().equals(SELECTOR_TOOL_NAME))
             {
@@ -74,7 +75,7 @@ public class SelectorCommand extends CubeCommand
         }
         if (found == null)
         {
-            found = new ItemStack(Material.WOOD_AXE,1);
+            found = new ItemStack(WOOD_AXE,1);
             ItemMeta meta = found.getItemMeta();
             meta.setDisplayName(SELECTOR_TOOL_NAME);
             meta.setLore(Arrays.asList("created by " + user.getDisplayName()));
@@ -87,7 +88,7 @@ public class SelectorCommand extends CubeCommand
                 user.getWorld().dropItemNaturally(user.getLocation(),item);
             }
             user.updateInventory();
-            user.sendTranslated(MessageType.POSITIVE, "Received a new region selector tool");
+            user.sendTranslated(POSITIVE, "Received a new region selector tool");
             return;
         }
         user.getInventory().removeItem(found);
@@ -95,6 +96,6 @@ public class SelectorCommand extends CubeCommand
         user.setItemInHand(found);
         user.getInventory().addItem(oldItemInHand);
         user.updateInventory();
-        user.sendTranslated(MessageType.POSITIVE, "Found a region selector tool in your inventory!");
+        user.sendTranslated(POSITIVE, "Found a region selector tool in your inventory!");
     }
 }

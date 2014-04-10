@@ -39,11 +39,12 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.shout.Shout;
 import de.cubeisland.engine.shout.announce.Announcement;
 import de.cubeisland.engine.shout.announce.MessageOfTheDay;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class ShoutCommand extends ContainerCommand
 {
@@ -63,7 +64,7 @@ public class ShoutCommand extends ContainerCommand
         Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
         if (announcement == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{input#announcement} was not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "{input#announcement} was not found!", context.getString(0));
             return null;
         }
         List<Player> players;
@@ -99,7 +100,7 @@ public class ShoutCommand extends ContainerCommand
                 u.sendMessage("");
             }
         }
-        context.sendTranslated(MessageType.POSITIVE, "The announcement {name} has been announced!", announcement.getName());
+        context.sendTranslated(POSITIVE, "The announcement {name} has been announced!", announcement.getName());
         return null;
     }
 
@@ -110,7 +111,7 @@ public class ShoutCommand extends ContainerCommand
         Iterator<Announcement> iter = this.module.getAnnouncementManager().getAllAnnouncements().iterator();
         if (iter.hasNext())
         {
-            context.sendTranslated(MessageType.POSITIVE, "Here is the list of announcements:");
+            context.sendTranslated(POSITIVE, "Here is the list of announcements:");
             while (iter.hasNext())
             {
                 context.sendMessage(" - " + iter.next().getName());
@@ -118,7 +119,7 @@ public class ShoutCommand extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There are no announcements loaded!");
+            context.sendTranslated(NEGATIVE, "There are no announcements loaded!");
         }
     }
 
@@ -136,7 +137,7 @@ public class ShoutCommand extends ContainerCommand
     {
         if (!context.hasParam("message"))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You have to include a message!");
+            context.sendTranslated(NEUTRAL, "You have to include a message!");
             return;
         }
 
@@ -148,7 +149,7 @@ public class ShoutCommand extends ContainerCommand
         }
         if (locale == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{input#locale} isn't a valid locale!", context.getString("locale"));
+            context.sendTranslated(NEGATIVE, "{input#locale} isn't a valid locale!", context.getString("locale"));
         }
 
         try
@@ -165,25 +166,25 @@ public class ShoutCommand extends ContainerCommand
         }
         catch (IllegalArgumentException ex)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Some of your arguments are not valid.");
-            context.sendTranslated(MessageType.NEGATIVE, "The error message was: {}", ex.getLocalizedMessage());
+            context.sendTranslated(NEGATIVE, "Some of your arguments are not valid.");
+            context.sendTranslated(NEGATIVE, "The error message was: {}", ex.getLocalizedMessage());
         }
         catch (IOException ex)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There was an error creating some of the files.");
-            context.sendTranslated(MessageType.NEGATIVE, "The error message was: {}", ex.getLocalizedMessage());
+            context.sendTranslated(NEGATIVE, "There was an error creating some of the files.");
+            context.sendTranslated(NEGATIVE, "The error message was: {}", ex.getLocalizedMessage());
         }
 
         module.getAnnouncementManager().reload();
 
-        context.sendTranslated(MessageType.POSITIVE, "Your announcement have been created and loaded into the plugin");
+        context.sendTranslated(POSITIVE, "Your announcement have been created and loaded into the plugin");
     }
 
     @Command(desc = "clean all loaded announcements form memory and load from disk")
     public void reload(CommandContext context)
     {
         module.getAnnouncementManager().reload();
-        context.sendTranslated(MessageType.POSITIVE, "All the announcements have now been reloaded, and the players have been re-added");
+        context.sendTranslated(POSITIVE, "All the announcements have now been reloaded, and the players have been re-added");
     }
 
     @Alias(names = "motd")
@@ -201,7 +202,7 @@ public class ShoutCommand extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "There is no message of the day.");
+            context.sendTranslated(NEUTRAL, "There is no message of the day.");
         }
     }
 }

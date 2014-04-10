@@ -23,17 +23,19 @@ import java.util.Map;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.ReflectedYaml;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+
 @SuppressWarnings("all")
 public class ColorConfiguration extends ReflectedYaml
 {
     public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
     {
         {
-            this.put(MessageType.POSITIVE, ChatFormat.BRIGHT_GREEN);
-            this.put(MessageType.NEUTRAL, ChatFormat.YELLOW);
-            this.put(MessageType.NEGATIVE, ChatFormat.RED);
-            this.put(MessageType.CRITICAL, ChatFormat.DARK_RED);
-            this.put(MessageType.NONE, null);
+            this.put(POSITIVE, ChatFormat.BRIGHT_GREEN);
+            this.put(NEUTRAL, ChatFormat.YELLOW);
+            this.put(NEGATIVE, ChatFormat.RED);
+            this.put(CRITICAL, ChatFormat.DARK_RED);
+            this.put(NONE, null);
         }
     };
 

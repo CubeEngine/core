@@ -28,12 +28,12 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.vote.storage.TableVote;
 import de.cubeisland.engine.vote.storage.VoteModel;
 import org.jooq.DSLContext;
 import org.jooq.types.UShort;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
 
 public class Vote extends Module implements Listener
@@ -83,7 +83,7 @@ public class Vote extends Module implements Listener
             double money = this.config.voteReward * (Math.pow(1+1.5/voteamount, voteamount-1));
             economy.deposit(user.getUniqueId(), money);
             String moneyFormat = economy.format(money);
-            this.getCore().getUserManager().broadcastMessage(MessageType.NONE, this.config.voteBroadcast.
+            this.getCore().getUserManager().broadcastMessage(NONE, this.config.voteBroadcast.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).

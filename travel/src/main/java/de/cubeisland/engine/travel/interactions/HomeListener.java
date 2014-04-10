@@ -21,15 +21,18 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.TelePointManager;
 import de.cubeisland.engine.travel.storage.TeleportPointModel;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Material.BED;
+import static org.bukkit.Material.BED_BLOCK;
+import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 
 public class HomeListener implements Listener
 {
@@ -44,10 +47,10 @@ public class HomeListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void rightClickBed(PlayerInteractEvent event)
     {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        if (event.getAction() == RIGHT_CLICK_BLOCK)
         {
             Material block = event.getClickedBlock().getType();
-            if (block == Material.BED_BLOCK || block == Material.BED)
+            if (block == BED_BLOCK || block == BED)
             {
                 User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 if (user.isSneaking())
@@ -57,18 +60,18 @@ public class HomeListener implements Listener
                         Home home = tpManager.getHome(user, "home");
                         home.setLocation(user.getLocation());
                         home.update();
-                        user.sendTranslated(MessageType.POSITIVE, "Your home has been set!");
+                        user.sendTranslated(POSITIVE, "Your home has been set!");
                     }
                     else
                     {
                         if (this.tpManager.getNumberOfHomes(user) == this.module.getConfig().homes.max)
                         {
-                            user.sendTranslated(MessageType.CRITICAL, "You have reached your maximum number of homes!");
-                            user.sendTranslated(MessageType.NEGATIVE, "You have to delete a home to make a new one");
+                            user.sendTranslated(CRITICAL, "You have reached your maximum number of homes!");
+                            user.sendTranslated(NEGATIVE, "You have to delete a home to make a new one");
                             return;
                         }
                         Home home = tpManager.createHome(user.getLocation(), "home", user, TeleportPointModel.VISIBILITY_PRIVATE);
-                        user.sendTranslated(MessageType.POSITIVE, "Your home has been created!");
+                        user.sendTranslated(POSITIVE, "Your home has been created!");
                         event.setCancelled(true);
                     }
                 }

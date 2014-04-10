@@ -29,13 +29,14 @@ import java.util.TreeSet;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LogAttachment;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.BaseAction.Coordinate;
 import de.cubeisland.engine.log.action.Redoable;
 import de.cubeisland.engine.log.action.Rollbackable;
 import de.cubeisland.engine.log.action.death.DeathMonster;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class QueryResults
 {
@@ -68,7 +69,7 @@ public class QueryResults
         }
 
         int totalPages = (this.logEntries.size() + show.pagelimit - 1) / show.pagelimit; // rounded up
-        user.sendTranslated(MessageType.POSITIVE, "{amount} distinct logs ({amount} pages)", this.logEntries.size(),
+        user.sendTranslated(POSITIVE, "{amount} distinct logs ({amount} pages)", this.logEntries.size(),
                             totalPages);
         Iterator<BaseAction> entries = this.logEntries.iterator();
         BaseAction entry = entries.next();
@@ -97,12 +98,12 @@ public class QueryResults
                 totalPages = (compressedEntries.size() + show.pagelimit - 1) / show.pagelimit; // rounded up
                 if (totalPages > 1)
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs! ({amount} pages)",
+                    user.sendTranslated(POSITIVE, "Compressed into {amount} logs! ({amount} pages)",
                                         compressedEntries.size(), totalPages);
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Compressed into {amount} logs!",
+                    user.sendTranslated(POSITIVE, "Compressed into {amount} logs!",
                                         compressedEntries.size());
                 }
             }
@@ -126,11 +127,11 @@ public class QueryResults
         }
         if (show.page == 1)
         {
-            user.sendTranslated(MessageType.POSITIVE, "Showing {integer} most recent logs:", showing);
+            user.sendTranslated(POSITIVE, "Showing {integer} most recent logs:", showing);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "Showing {integer} logs (Page {integer}):", showing, show.page);
+            user.sendTranslated(POSITIVE, "Showing {integer} logs (Page {integer}):", showing, show.page);
         }
         int i = 0;
         int cpage = 1;
@@ -156,7 +157,7 @@ public class QueryResults
                 catch (Exception e)
                 {
                     module.getLog().error(e, "An error occurred while showing LogEntries!");
-                    user.sendTranslated(MessageType.CRITICAL, "Internal Error! Could not show LogEntry");
+                    user.sendTranslated(CRITICAL, "Internal Error! Could not show LogEntry");
                 }
             }
             i++;
@@ -241,7 +242,7 @@ public class QueryResults
         {
             if (!logEntry.rollback(attachment, true, preview))
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not Rollback:");
+                attachment.getHolder().sendTranslated(NEGATIVE, "Could not Rollback:");
                 ((BaseAction)logEntry).showAction(attachment.getHolder(), show);
                 CubeEngine.getLog().warn("Could not rollback!");
             }
@@ -308,7 +309,7 @@ public class QueryResults
         {
             if (!logEntry.redo(attachment, true, preview))
             {
-                attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Could not Redo:");
+                attachment.getHolder().sendTranslated(NEGATIVE, "Could not Redo:");
                 ((BaseAction)logEntry).showAction(attachment.getHolder(), show);
                 CubeEngine.getLog().warn("Could not redo!");
             }

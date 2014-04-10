@@ -26,11 +26,13 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.powersigns.PowerSign;
 import de.cubeisland.engine.powersigns.Powersigns;
 import de.cubeisland.engine.powersigns.signtype.LiftSign.LiftSignInfo;
 import de.cubeisland.engine.powersigns.storage.PowerSignModel;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 public class LiftSign extends SignType<LiftSign,LiftSignInfo>
 {
@@ -57,13 +59,13 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         LiftSignInfo signTypeInfo = sign.getSignTypeInfo();
         if (signTypeInfo.up == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You can only arrive from this sign!");
+            user.sendTranslated(NEGATIVE, "You can only arrive from this sign!");
             return true;
         }
         Location targetLocation = signTypeInfo.findLiftSign(signTypeInfo.destFloor);
         if (targetLocation == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "Could not find any other sign to lift to! Has it been destroyed?");
+            user.sendTranslated(NEGATIVE, "Could not find any other sign to lift to! Has it been destroyed?");
             return true;
         }
         int y = targetLocation.getBlockY();
@@ -87,30 +89,30 @@ public class LiftSign extends SignType<LiftSign,LiftSignInfo>
         LiftSignInfo signTypeInfo = sign.getSignTypeInfo();
         if (signTypeInfo.up == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You can not depart from this sign but only arrive!");
+            user.sendTranslated(NEGATIVE, "You can not depart from this sign but only arrive!");
             return true;
         }
         if (signTypeInfo.findNextLiftSign() == null)
         {
             if (signTypeInfo.destFloor == 1)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "There are no more LiftSigns here!");
+                user.sendTranslated(NEGATIVE, "There are no more LiftSigns here!");
                 return true;
             }
             if (signTypeInfo.findFirstLiftSign() == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Could not find any other LiftSign!");
+                user.sendTranslated(NEGATIVE, "Could not find any other LiftSign!");
                 return true;
             }
         }
         LiftSignInfo attached = signTypeInfo.getAttachedLiftSign();
         if (signTypeInfo.up)
         {
-            user.sendTranslated(MessageType.POSITIVE, "Changed destination to {input} floors up! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
+            user.sendTranslated(POSITIVE, "Changed destination to {input} floors up! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
         }
         else
         {
-            user.sendTranslated(MessageType.POSITIVE, "Changed destination to {amount} floors down! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
+            user.sendTranslated(POSITIVE, "Changed destination to {amount} floors down! Floorname: {input}", signTypeInfo.destFloor, attached.floorName);
         }
         return true;
     }

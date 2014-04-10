@@ -18,11 +18,11 @@
 package de.cubeisland.engine.log.action.block.player;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 import static org.bukkit.Material.AIR;
 
@@ -60,19 +60,19 @@ public class PlayerBlockPlace extends ActionPlayerBlock
             int amount = this.getAttached().size() + 1;
             if (this.oldBlock.is(AIR))
             {
-                return user.getTranslation(MessageType.POSITIVE, "{user} placed {amount}x {name#block}",
+                return user.getTranslation(POSITIVE, "{user} placed {amount}x {name#block}",
                                            this.player.name, amount, this.newBlock.name());
             }
-            return user.getTranslation(MessageType.POSITIVE, "{user} replaced {amount}x {name#block} with {name#block}",
+            return user.getTranslation(POSITIVE, "{user} replaced {amount}x {name#block} with {name#block}",
                                        this.player.name, amount, this.oldBlock.name(), this.newBlock.name());
         }
         // else single
         if (this.oldBlock.is(AIR))
         {
-            return user.getTranslation(MessageType.POSITIVE, "{user} placed {name#block}", this.player.name,
+            return user.getTranslation(POSITIVE, "{user} placed {name#block}", this.player.name,
                                        this.newBlock.name());
         }
-        return user.getTranslation(MessageType.POSITIVE, "{user} replaced {name#block} with {name#block}",
+        return user.getTranslation(POSITIVE, "{user} replaced {name#block} with {name#block}",
                                    this.player.name, this.oldBlock.name(), this.newBlock.name());
     }
 

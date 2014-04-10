@@ -23,12 +23,11 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.NoteBlock;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.log.action.ActionCategory.USE;
 
 /**
@@ -61,11 +60,11 @@ public class UseNoteblock extends ActionPlayerBlock
         newNote %= 25;
         if (this.note == newNote)
         {
-            return user.getTranslation(MessageType.POSITIVE,
+            return user.getTranslation(POSITIVE,
                                        "{user} fiddled around with the noteblock but did not change anything",
                                        this.player.name);
         }
-        return user.getTranslation(MessageType.POSITIVE, "{user} set the noteblock to {amount} clicks",
+        return user.getTranslation(POSITIVE, "{user} set the noteblock to {amount} clicks",
                                    this.player.name, newNote);
     }
 

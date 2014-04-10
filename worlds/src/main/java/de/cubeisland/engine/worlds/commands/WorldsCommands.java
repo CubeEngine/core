@@ -44,7 +44,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Pair;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.worlds.Multiverse;
@@ -53,9 +52,7 @@ import de.cubeisland.engine.worlds.Worlds;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class WorldsCommands extends ContainerCommand
 {
@@ -117,7 +114,7 @@ public class WorldsCommands extends ContainerCommand
                 }
                 catch (IOException e)
                 {
-                    context.sendTranslated(MessageType.CRITICAL, "Could not backup old world folder! Aborting Worldcreation");
+                    context.sendTranslated(CRITICAL, "Could not backup old world folder! Aborting Worldcreation");
                     return;
                 }
             }
@@ -181,7 +178,7 @@ public class WorldsCommands extends ContainerCommand
             }
             catch (IOException e)
             {
-                context.sendTranslated(MessageType.CRITICAL, "A critical Error occured while creating the world!");
+                context.sendTranslated(CRITICAL, "A critical Error occured while creating the world!");
                 this.getModule().getLog().error(e, e.getLocalizedMessage());
             }
         }
@@ -446,7 +443,7 @@ public class WorldsCommands extends ContainerCommand
         }
         catch (IOException e)
         {
-            context.sendTranslated(MessageType.CRITICAL, "Could not reload the universes");
+            context.sendTranslated(CRITICAL, "Could not reload the universes");
             this.getModule().getLog().error(e, "Error while reloading after moving world to universe");
             return;
         }

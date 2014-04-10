@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.command.conversation;
 
 import java.util.LinkedList;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -32,11 +31,13 @@ import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static java.util.Locale.ENGLISH;
 
 public class ConversationContextFactory extends ParameterizedContextFactory
 {
@@ -62,7 +63,7 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                     offset++;
                     continue;
                 }
-                String flag = commandLine[offset].toLowerCase(Locale.ENGLISH); // lowercase flag
+                String flag = commandLine[offset].toLowerCase(ENGLISH); // lowercase flag
                 CommandFlag cmdFlag = this.getFlag(flag);
                 if (cmdFlag != null) // has flag ?
                 {
@@ -70,7 +71,7 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                     offset++;
                     continue;
                 } //else named param
-                String paramName = commandLine[offset].toLowerCase(Locale.ENGLISH);
+                String paramName = commandLine[offset].toLowerCase(ENGLISH);
                 CommandParameter param = this.getParameter(paramName);
                 if (param != null && offset + 1 < commandLine.length)
                 {
@@ -83,8 +84,7 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                     }
                     catch (InvalidArgumentException ex)
                     {
-                        sender.sendTranslated(MessageType.NEGATIVE, "Invalid argument for {input}: {}", param.getName(), sender.getTranslation(MessageType.NONE, ex
-                            .getMessage(), ex.getMessageArgs()));
+                        sender.sendTranslated(NEGATIVE, "Invalid argument for {input}: {}", param.getName(), sender.getTranslation(NONE, ex.getMessage(), ex.getMessageArgs()));
                     }
                     continue;
                 }

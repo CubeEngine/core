@@ -36,8 +36,9 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.fun.Fun;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class RocketCommand
 {
@@ -70,7 +71,7 @@ public class RocketCommand
             user = context.getParam("player");
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString("player"));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString("player"));
                 return;
             }
         }
@@ -78,7 +79,7 @@ public class RocketCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You have to specify a player!");
+                context.sendTranslated(NEGATIVE, "You have to specify a player!");
                 return;
             }
             user = (User)context.getSender();
@@ -86,12 +87,12 @@ public class RocketCommand
 
         if (height > this.module.getConfig().command.rocket.maxHeight)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Do you never wanna see {user} again?", user);
+            context.sendTranslated(NEGATIVE, "Do you never wanna see {user} again?", user);
             return;
         }
         else if (height < 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The height has to be greater than 0");
+            context.sendTranslated(NEGATIVE, "The height has to be greater than 0");
             return;
         }
 

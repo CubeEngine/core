@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -35,7 +34,6 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.i18n.language.Language;
 import de.cubeisland.engine.rulebook.Rulebook;
 import gnu.trove.iterator.TIntIterator;
@@ -43,6 +41,9 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Material.BOOK_AND_QUILL;
+import static org.bukkit.Material.WRITTEN_BOOK;
 
 public class RulebookCommands extends ContainerCommand
 {
@@ -72,7 +73,7 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User) && !context.hasParam("player"))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The post office will give you your book!");
+            context.sendTranslated(NEGATIVE, "The post office will give you your book!");
             return;
         }
         
@@ -82,13 +83,13 @@ public class RulebookCommands extends ContainerCommand
         {
             if(!getPermission.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You do not have the permissions to add the rulebook to the inventory of an other player");
+                context.sendTranslated(NEGATIVE, "You do not have the permissions to add the rulebook to the inventory of an other player");
                 return;
             }
             user = context.getParam("player");
             if(user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The given user was not found!");
+                context.sendTranslated(NEGATIVE, "The given user was not found!");
                 return;
             }
         }
@@ -99,7 +100,7 @@ public class RulebookCommands extends ContainerCommand
 
         if(this.rulebookManager.getLocales().isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "It does not exist a rulebook yet");
+            context.sendTranslated(NEUTRAL, "It does not exist a rulebook yet");
             return;
         }
 
@@ -109,7 +110,7 @@ public class RulebookCommands extends ContainerCommand
 
             if(language == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Can't match the language");
+                context.sendTranslated(NEGATIVE, "Can't match the language");
                 return;
             }
             
@@ -117,7 +118,7 @@ public class RulebookCommands extends ContainerCommand
             
             if(!this.rulebookManager.contains(locale))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "The language {name} is not supported yet.", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+                context.sendTranslated(NEUTRAL, "The language {name} is not supported yet.", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
                 return;
             }
         }
@@ -143,10 +144,10 @@ public class RulebookCommands extends ContainerCommand
         }
 
         user.getInventory().addItem(this.rulebookManager.getBook(locale));
-        user.sendTranslated(MessageType.POSITIVE, "Lots of fun with your rulebook.");
+        user.sendTranslated(POSITIVE, "Lots of fun with your rulebook.");
         if(!books.isEmpty())
         {
-            user.sendTranslated(MessageType.POSITIVE, "Your old rulebook was removed");
+            user.sendTranslated(POSITIVE, "Your old rulebook was removed");
         }
     }
 
@@ -164,11 +165,11 @@ public class RulebookCommands extends ContainerCommand
         {
             if(this.rulebookManager.getLocales().isEmpty())
             {
-                context.sendTranslated(MessageType.NEUTRAL, "No rulebook available at the moment");
+                context.sendTranslated(NEUTRAL, "No rulebook available at the moment");
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "available languages:");
+                context.sendTranslated(NEUTRAL, "available languages:");
                 for(Locale locale : this.rulebookManager.getLocales())
                 {
                     context.sendMessage(ChatFormat.YELLOW + "* " + locale.getDisplayLanguage(context.getSender().getLocale()));
@@ -177,7 +178,7 @@ public class RulebookCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "supported languages:");
+            context.sendTranslated(NEUTRAL, "supported languages:");
             for(Language language : this.getModule().getCore().getI18n().getLanguages())
             {
                 context.sendMessage(ChatFormat.YELLOW +  "* " + language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
@@ -198,23 +199,23 @@ public class RulebookCommands extends ContainerCommand
 
         if(language == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
+            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
             return;
         }
         if(!this.rulebookManager.contains(language.getLocale()))
         {
-            context.sendTranslated(MessageType.POSITIVE, "The languagefile of {input} doesn't exist at the moment", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(POSITIVE, "The languagefile of {input} doesn't exist at the moment", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             return;
         }
         
         try
         {
             this.rulebookManager.removeBook(language.getLocale());
-            context.sendTranslated(MessageType.POSITIVE, "The languagefiles of {input} was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(POSITIVE, "The languagefiles of {input} was deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         catch(IOException ex)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The language file of {input} couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(NEGATIVE, "The language file of {input} couldn't be deleted", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
             this.getModule().getLog().error(ex, "Error when deleting the files!");
         }
 
@@ -231,22 +232,22 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You're able to write, right?");
+            context.sendTranslated(NEUTRAL, "You're able to write, right?");
         }
         User user = (User) context.getSender();
 
         ItemStack item = user.getItemInHand();
 
-        if(!item.getType().equals(Material.WRITTEN_BOOK) && !item.getType().equals(Material.BOOK_AND_QUILL))
+        if(!(item.getType() == WRITTEN_BOOK) && !(item.getType() == BOOK_AND_QUILL))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "I would try it with a book as item in hand");
+            context.sendTranslated(NEGATIVE, "I would try it with a book as item in hand");
             return;
         }
 
         Language language = this.rulebookManager.getLanguage(context.getString(0));
         if(language == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
+            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
             return;
         }
         Locale locale = language.getLocale();
@@ -257,18 +258,18 @@ public class RulebookCommands extends ContainerCommand
             {
                 this.rulebookManager.removeBook(locale);
                 this.rulebookManager.addBook(item, locale);
-                context.sendTranslated(MessageType.POSITIVE, "The rulebook {name} was succesful modified.", locale
+                context.sendTranslated(POSITIVE, "The rulebook {name} was succesful modified.", locale
                     .getDisplayLanguage(context.getSender().getLocale()));
             }
             catch(IOException ex)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "An error ocurred while deleting the old rulebook");
+                context.sendTranslated(NEUTRAL, "An error ocurred while deleting the old rulebook");
                 this.getModule().getLog().error(ex, "Error when deleting the files!");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You can't modify a non-existent book.");
+            context.sendTranslated(NEGATIVE, "You can't modify a non-existent book.");
         }
     }
 
@@ -283,22 +284,22 @@ public class RulebookCommands extends ContainerCommand
     {
         if(!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Are you illiterate?");
+            context.sendTranslated(NEUTRAL, "Are you illiterate?");
         }
         User user = (User) context.getSender();
 
         ItemStack item = user.getItemInHand();
 
-        if(!item.getType().equals(Material.WRITTEN_BOOK) && !item.getType().equals(Material.BOOK_AND_QUILL))
+        if(!(item.getType() == WRITTEN_BOOK) && !(item.getType() == BOOK_AND_QUILL))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "I would try it with a book as item in hand");
+            context.sendTranslated(NEGATIVE, "I would try it with a book as item in hand");
             return;
         }
 
         Language language = this.rulebookManager.getLanguage(context.getString(0));
         if(language == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
+            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
             return;
         }
         Locale locale = language.getLocale();
@@ -306,11 +307,11 @@ public class RulebookCommands extends ContainerCommand
         if(!this.rulebookManager.contains(locale))
         {
             this.rulebookManager.addBook(item, locale);
-            context.sendTranslated(MessageType.POSITIVE, "Rulebook for the language {input} was added succesfully", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
+            context.sendTranslated(POSITIVE, "Rulebook for the language {input} was added succesfully", language.getLocale().getDisplayLanguage(context.getSender().getLocale()));
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "There is already a book in that language.");
+            context.sendTranslated(NEUTRAL, "There is already a book in that language.");
         }
     }
 
@@ -322,7 +323,7 @@ public class RulebookCommands extends ContainerCommand
         {
             ItemStack item = inventory.getItem(i);
 
-            if(item != null && item.getType().equals(Material.WRITTEN_BOOK))
+            if(item != null && item.getType() == WRITTEN_BOOK)
             {
                 List<String> lore = item.getItemMeta().getLore();
                 if(lore != null)

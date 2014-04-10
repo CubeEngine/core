@@ -24,8 +24,10 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.ChatFormat.*;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 
 /**
@@ -116,22 +118,21 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     public void help(HelpContext context) throws Exception
     {
         CommandSender sender = context.getSender();
-        context.sendTranslated(MessageType.NONE, "{text:Usage:color=INDIGO}: {input#usage}", this.getUsage(context));
+        context.sendTranslated(NONE, "{text:Usage:color=INDIGO}: {input#usage}", this.getUsage(context));
         context.sendMessage(" ");
-        context.sendTranslated(MessageType.NEUTRAL, "The following actions are available:");
+        context.sendTranslated(NEUTRAL, "The following actions are available:");
         context.sendMessage(" ");
 
         for (CubeCommand command : context.getCommand().getChildren())
         {
             if (command.testPermissionSilent(sender))
             {
-                context.sendMessage(ChatFormat.YELLOW + command.getName() + ChatFormat.WHITE + ": "  + ChatFormat.GREY + sender.getTranslation(MessageType.NONE, command
-                    .getDescription()));
+                context.sendMessage(YELLOW + command.getName() + WHITE + ": "  + GREY + sender.getTranslation(NONE, command.getDescription()));
             }
         }
 
         context.sendMessage(" ");
-        context.sendTranslated(MessageType.NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 
     private class ChildDelegation
