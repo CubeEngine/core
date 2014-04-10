@@ -45,6 +45,8 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.roles.RoleAppliedEvent;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+
 public class GeneralsListener implements Listener
 {
     private final Basics module;
@@ -116,7 +118,7 @@ public class GeneralsListener implements Listener
         int amount = bUser.countMail();
         if (amount > 0)
         {
-            user.sendTranslated(MessageType.POSITIVE, "You have {amount} new mail!", amount); // TODO This is still not grammatically correct, can't think of anything better to go here
+            user.sendTranslatedN(POSITIVE, amount, "You have a new mail!", "You have {amount} of mail!", amount);
             user.sendTranslated(MessageType.NEUTRAL, "Use {text:/mail read} to display them.");
         }
     }
@@ -141,7 +143,7 @@ public class GeneralsListener implements Listener
             if (tamed.getOwner() != null && !event.getPlayer().equals(tamed.getOwner()))
             {
                 User clicker = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
-                clicker.sendTranslated(MessageType.POSITIVE, "This {name#entity} belongs to {tamer}!", Match.entity().getNameFor(event.getRightClicked().getType()), tamed.getOwner());
+                clicker.sendTranslated(POSITIVE, "This {name#entity} belongs to {tamer}!", Match.entity().getNameFor(event.getRightClicked().getType()), tamed.getOwner());
             }
         }
     }
