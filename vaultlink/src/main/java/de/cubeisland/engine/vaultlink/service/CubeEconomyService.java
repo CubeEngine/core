@@ -18,16 +18,19 @@
 package de.cubeisland.engine.vaultlink.service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.vaultlink.Vaultlink;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static net.milkbowl.vault.economy.EconomyResponse.ResponseType.FAILURE;
 import static net.milkbowl.vault.economy.EconomyResponse.ResponseType.SUCCESS;
 
@@ -35,11 +38,16 @@ public class CubeEconomyService implements Economy
 {
     private final Vaultlink module;
     private final AtomicReference<de.cubeisland.engine.core.module.service.Economy> backingService;
+    private final Core core;
+    private final I18n i18n;
 
-    public CubeEconomyService(Vaultlink module, AtomicReference<de.cubeisland.engine.core.module.service.Economy> backingService)
+    public CubeEconomyService(Vaultlink module,
+                              AtomicReference<de.cubeisland.engine.core.module.service.Economy> backingService)
     {
         this.module = module;
         this.backingService = backingService;
+        this.core = module.getCore();
+        this.i18n = core.getI18n();
     }
 
     @Override
@@ -124,13 +132,19 @@ public class CubeEconomyService implements Economy
     public EconomyResponse withdrawPlayer(String player, double amount)
     {
         boolean result = backingService.get().withdraw(player, amount);
-        String message = (result ? "Money successfully withdrawn!" : "You don't have enough money.");
-        User user = module.getCore().getUserManager().findExactUser(player);
+        return new EconomyResponse(amount, getBalance(player), result ? SUCCESS : FAILURE, result ?
+                                       i18n.translate(this.getLocale(player), NONE, "Money successfully withdrawn!") :
+                                       i18n.translate(this.getLocale(player), NONE, "You don't have enough money."));
+    }
+
+    private Locale getLocale(String player)
+    {
+        User user = core.getUserManager().findExactUser(player);
         if (user != null)
         {
-            message = user.getTranslation(MessageType.NONE, message); // TODO
+            return user.getLocale();
         }
-        return new EconomyResponse(amount, getBalance(player), result ? SUCCESS : FAILURE, message);
+        return core.getConfiguration().defaultLocale;
     }
 
     @Override
@@ -140,10 +154,12 @@ public class CubeEconomyService implements Economy
     }
 
     @Override
-    public EconomyResponse depositPlayer(String name, double amount)
+    public EconomyResponse depositPlayer(String player, double amount)
     {
-        boolean result = backingService.get().deposit(name, amount);
-        return new EconomyResponse(amount, getBalance(name), result ? SUCCESS : FAILURE, result ? "Money successfully deposited!" : "Your account is full.");
+        boolean result = backingService.get().deposit(player, amount);
+        return new EconomyResponse(amount, getBalance(player), result ? SUCCESS : FAILURE, result ?
+                                     i18n.translate(this.getLocale(player), NONE, "Money successfully deposited!") :
+                                     i18n.translate(this.getLocale(player), NONE, "Your account is full."));
     }
 
     @Override
@@ -192,7 +208,8 @@ public class CubeEconomyService implements Economy
         }
         if (backingService.get().bankHas(name, amount))
         {
-            return new EconomyResponse(0, getBalance(name), ResponseType.FAILURE, "The bank does not have enough money!");
+            return new EconomyResponse(0, getBalance(name), ResponseType.FAILURE,
+                                       "The bank does not have enough money!");
         }
         else
         {
