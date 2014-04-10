@@ -17,13 +17,18 @@
  */
 package de.cubeisland.engine.backpack;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.UserAttachment;
+import de.cubeisland.engine.core.util.StringUtils;
+
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.DAT;
 
 public class BackpackAttachment extends UserAttachment
 {
@@ -50,8 +55,8 @@ public class BackpackAttachment extends UserAttachment
             return;
         }
         Backpack module = (Backpack)this.getModule();
-        File dir = new File(module.singleDir, world.getName());
-        if (dir.exists() && dir.isDirectory())
+        Path dir = module.singleDir.resolve(world.getName());
+        if (Files.isDirectory(dir))
         {
             Map<String, BackpackInventories> map = this.backpacks.get(world);
             if (map == null)
@@ -62,8 +67,8 @@ public class BackpackAttachment extends UserAttachment
             this.loadBackpacks(dir, map);
         }
         World mainWorld = ((Backpack)this.getModule()).getMainWorld(world);
-        dir = new File(module.groupedDir, mainWorld.getName());
-        if (dir.exists())
+        dir = module.groupedDir.resolve(mainWorld.getName());
+        if (Files.isDirectory(dir))
         {
             Map<String, BackpackInventories> map = this.groupedBackpacks.get(mainWorld);
             if (map == null)
@@ -75,45 +80,62 @@ public class BackpackAttachment extends UserAttachment
         }
     }
 
-    private File getGlobalBackpack(String name)
+    private Path getGlobalBackpack(String name)
     {
         Backpack module = (Backpack)this.getModule();
-        File dir = new File(module.globalDir, this.getHolder().getName());
-        dir.mkdir();
-        return new File(dir, name + ".dat");
-    }
-
-    private File getSingleBackpack(String name, String worldName)
-    {
-        Backpack module = (Backpack)this.getModule();
-        File dir = new File(module.singleDir, worldName);
-        dir.mkdir();
-        dir = new File(dir, this.getHolder().getName());
-        dir.mkdir();
-        return new File(dir, name + ".dat");
-    }
-
-    private File getGroupedBackpack(String name, String worldName)
-    {
-        Backpack module = (Backpack)this.getModule();
-        File dir = new File(module.groupedDir, worldName);
-        dir.mkdir();
-        dir = new File(dir, this.getHolder().getName());
-        dir.mkdir();
-        return new File(dir, name + ".dat");
-    }
-
-    protected void loadBackpacks(File dir, Map<String, BackpackInventories> map)
-    {
-        File playerDir = new File(dir, this.getHolder().getName());
-        if (playerDir.exists() && playerDir.isDirectory())
+        Path path = module.globalDir.resolve(this.getHolder().getUniqueId().toString());
+        try
         {
-            for (File file : playerDir.listFiles())
+            Files.createDirectories(path);
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e); // TODO better exeption
+        }
+        return path.resolve(name + DAT.getExtention());
+    }
+
+    private Path getSingleBackpack(String name, String worldName)
+    {
+        Backpack module = (Backpack)this.getModule();
+        Path path = module.singleDir.resolve(worldName).resolve(this.getHolder().getUniqueId().toString());
+        try
+        {
+            Files.createDirectories(path);
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e); // TODO better exeption
+        }
+        return path.resolve(name + DAT.getExtention());
+    }
+
+    private Path getGroupedBackpack(String name, String worldName)
+    {
+        Backpack module = (Backpack)this.getModule();
+        Path path = module.groupedDir.resolve(worldName).resolve(this.getHolder().getUniqueId().toString());
+        try
+        {
+            Files.createDirectories(path);
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e); // TODO better exeption
+        }
+        return path.resolve(name + DAT.getExtention());
+    }
+
+    protected void loadBackpacks(Path dir, Map<String, BackpackInventories> map)
+    {
+        Path playerDir = dir.resolve(this.getHolder().getUniqueId().toString());
+        if (Files.isDirectory(playerDir))
+        {
+            try
             {
-                if (!file.isDirectory() && file.getName().endsWith(".dat"))
+                for (Path path : Files.newDirectoryStream(playerDir, DAT.getExtention()))
                 {
-                    String name = file.getName().substring(0, file.getName().lastIndexOf(".dat"));
-                    BackpackData load = this.getModule().getCore().getConfigFactory().load(BackpackData.class, file);
+                    String name = StringUtils.stripFileExtension(path.getFileName().toString());
+                    BackpackData load = this.getModule().getCore().getConfigFactory().load(BackpackData.class, path.toFile());
                     BackpackInventories bpInv = map.get(name);
                     if (bpInv == null)
                     {
@@ -124,6 +146,10 @@ public class BackpackAttachment extends UserAttachment
                         bpInv.data = load;
                     }
                 }
+            }
+            catch (IOException e)
+            {
+                throw new IllegalStateException(e); // TODO better exception
             }
         }
     }
@@ -156,12 +182,12 @@ public class BackpackAttachment extends UserAttachment
 
     public void createBackpack(String name, World forWorld, boolean blockIn, Integer pages, Integer size)
     {
-        File file = this.getSingleBackpack(name, forWorld.getName());
+        Path file = this.getSingleBackpack(name, forWorld.getName());
         BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
         data.allowItemsIn = !blockIn;
         data.pages = pages;
         data.size = size;
-        data.setFile(file);
+        data.setFile(file.toFile());
         data.save();
         Map<String, BackpackInventories> backpacks = this.backpacks.get(forWorld);
         if (backpacks == null)
@@ -174,12 +200,12 @@ public class BackpackAttachment extends UserAttachment
 
     public void createGroupedBackpack(String name, World forWorld, boolean blockIn, Integer pages, Integer size)
     {
-        File file = this.getGroupedBackpack(name, forWorld.getName());
+        Path path = this.getGroupedBackpack(name, forWorld.getName());
         BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
         data.allowItemsIn = !blockIn;
         data.pages = pages;
         data.size = size;
-        data.setFile(file);
+        data.setFile(path.toFile());
         data.save();
         Map<String, BackpackInventories> backpacks = this.backpacks.get(forWorld);
         if (backpacks == null)
@@ -192,12 +218,12 @@ public class BackpackAttachment extends UserAttachment
 
     public void createGlobalBackpack(String name, boolean blockIn, Integer pages, Integer size)
     {
-        File file = this.getGlobalBackpack(name);
+        Path file = this.getGlobalBackpack(name);
         BackpackData data = this.getModule().getCore().getConfigFactory().create(BackpackData.class);
         data.allowItemsIn = !blockIn;
         data.pages = pages;
         data.size = size;
-        data.setFile(file);
+        data.setFile(file.toFile());
         data.save();
         globalBackpacks.put(name, new BackpackInventories((Backpack)getModule(), data));
     }
