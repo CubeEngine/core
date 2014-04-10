@@ -223,7 +223,7 @@ public class I18n
 
     public Set<Language> searchLanguages(String name, int maxDistance)
     {
-        Locale locale = I18nUtil.stringToLocale(name);
+        Locale locale = I18nUtil.stringToLocale(name.toLowerCase());
         Language language = this.getLanguage(locale);
         if (language != null)
         {
