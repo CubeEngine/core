@@ -116,6 +116,7 @@ public class SpawnCommands
                 return;
             }
             setRoleSpawn(world, x, y, z, yaw, pitch, role);
+            context.sendTranslated(POSITIVE, "The spawn in {world} for the role {name#role} is now set to {vector}", world, role.getName(), new BlockVector3(x.intValue(),y.intValue(),z.intValue()));
             return;
         }
         // else global world spawn

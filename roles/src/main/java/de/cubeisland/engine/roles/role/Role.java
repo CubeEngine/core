@@ -68,7 +68,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
             }
             for (ResolvedDataHolder role : this.dependentRoles)
             {
-                role.calculate(roleStack);
+                role.calculate(new Stack<String>());
             }
         }
     }
