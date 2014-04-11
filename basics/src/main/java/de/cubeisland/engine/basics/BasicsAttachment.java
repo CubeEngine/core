@@ -35,7 +35,7 @@ public class BasicsAttachment extends UserAttachment
     private UUID pendingTpFromRequest;
     private ItemStack[] stashedArmor;
     private ItemStack[] stashedInventory;
-    private String lastWhisper;
+    private UUID lastWhisper;
     private Location deathLocation;
 
     public long getLastAction()
@@ -137,11 +137,11 @@ public class BasicsAttachment extends UserAttachment
         return stashedInventory;
     }
 
-    public void setLastWhisper(String lastWhisper) {
+    public void setLastWhisper(UUID lastWhisper) {
         this.lastWhisper = lastWhisper;
     }
 
-    public String getLastWhisper() {
+    public UUID getLastWhisper() {
         return lastWhisper;
     }
 

@@ -19,8 +19,10 @@ package de.cubeisland.engine.core.command.sender;
 
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Server;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
@@ -32,6 +34,7 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class WrappedCommandSender implements CommandSender
 {
+    public static final UUID NON_PLAYER_UUID = new UUID(0, 0);
     private final Core core;
     private final org.bukkit.command.CommandSender wrapped;
 
@@ -39,6 +42,16 @@ public class WrappedCommandSender implements CommandSender
     {
         this.core = core;
         this.wrapped = sender;
+    }
+
+    @Override
+    public UUID getUniqueId()
+    {
+        if (wrapped instanceof Player)
+        {
+            return ((Player)wrapped).getUniqueId();
+        }
+        return NON_PLAYER_UUID;
     }
 
     public Core getCore()

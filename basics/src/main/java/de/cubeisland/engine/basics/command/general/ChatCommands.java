@@ -19,6 +19,7 @@ package de.cubeisland.engine.basics.command.general;
 
 import java.sql.Timestamp;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import de.cubeisland.engine.basics.Basics;
@@ -37,6 +38,7 @@ import de.cubeisland.engine.reflect.node.StringNode;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.command.sender.WrappedCommandSender.NON_PLAYER_UUID;
 import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
@@ -46,7 +48,7 @@ public class ChatCommands
     private final UserManager um;
     private final Basics module;
 
-    private String lastWhisperOfConsole = null;
+    private UUID lastWhisperOfConsole = null;
 
     public ChatCommands(Basics basics)
     {
@@ -62,9 +64,20 @@ public class ChatCommands
              min = 2, max = NO_MAX)
     public void msg(CommandContext context)
     {
-        if (!this.sendWhisperTo(context.getString(0), context.getStrings(1), context))
+        User user = this.module.getCore().getUserManager().findUser(context.getString(0));
+        if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "Could not find the player {user} to send the message to. Is the player offline?", context.getString(0));
+            if (context.getString(0).equals("console") || context.getString(0).equals("#console"))
+            {
+                sendWhisperTo(NON_PLAYER_UUID, context.getStrings(1), context);
+                return;
+            }
+            context.sendTranslated(NEGATIVE, "User {name#user} not found!", context.getString(0));
+            return;
+        }
+        if (!this.sendWhisperTo(user.getUniqueId(), context.getStrings(1), context))
+        {
+            context.sendTranslated(NEGATIVE, "Could not find the player {user} to send the message to. Is the player offline?", user);
         }
     }
 
@@ -73,7 +86,7 @@ public class ChatCommands
              min = 1, max = NO_MAX)
     public void reply(CommandContext context)
     {
-        String lastWhisper;
+        UUID lastWhisper;
         if (context.getSender() instanceof User)
         {
             lastWhisper = ((User)context.getSender()).get(BasicsAttachment.class).getLastWhisper();
@@ -93,33 +106,28 @@ public class ChatCommands
         }
     }
 
-    private boolean sendWhisperTo(String whisperTarget, String message, CommandContext context)
+    private boolean sendWhisperTo(UUID whisperTarget, String message, CommandContext context)
     {
-        User user = um.findUser(whisperTarget);
-        if (user == null)
+        if (NON_PLAYER_UUID.equals(whisperTarget))
         {
-            if (":console".equalsIgnoreCase(whisperTarget)||"#console".equalsIgnoreCase(whisperTarget)||"console".equalsIgnoreCase(whisperTarget))
+            if (context.getSender() instanceof ConsoleCommandSender)
             {
-                if (context.getSender() instanceof ConsoleCommandSender)
-                {
-                    context.sendTranslated(NEUTRAL, "Talking to yourself?");
-                    return true;
-                }
-                if (context.getSender() instanceof User)
-                {
-                    ConsoleCommandSender console = context.getCore().getCommandManager().getConsoleSender();
-                    console.sendTranslated(NEUTRAL, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender(), message);
-                    context.sendTranslated(NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", console.getName(), message);
-                    this.lastWhisperOfConsole = context.getSender().getName();
-                    ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper("#console");
-                    return true;
-                }
-                context.sendTranslated(NONE, "Who are you!?");
+                context.sendTranslated(NEUTRAL, "Talking to yourself?");
                 return true;
             }
-            context.sendTranslated(NEGATIVE, "User {user} not found!", whisperTarget);
+            if (context.getSender() instanceof User)
+            {
+                ConsoleCommandSender console = context.getCore().getCommandManager().getConsoleSender();
+                console.sendTranslated(NEUTRAL, "{sender} -> {text:You}: {message:color=WHITE}", context.getSender(), message);
+                context.sendTranslated(NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", console.getDisplayName(), message);
+                this.lastWhisperOfConsole = context.getSender().getUniqueId();
+                ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper(NON_PLAYER_UUID);
+                return true;
+            }
+            context.sendTranslated(NONE, "Who are you!?");
             return true;
         }
+        User user = um.getExactUser(whisperTarget);
         if (!user.isOnline())
         {
             return false;
@@ -137,13 +145,13 @@ public class ChatCommands
         context.sendTranslated(NEUTRAL, "{text:You} -> {user}: {message:color=WHITE}", user, message);
         if (context.getSender() instanceof User)
         {
-            ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper(user.getName());
+            ((User)context.getSender()).get(BasicsAttachment.class).setLastWhisper(user.getUniqueId());
         }
         else
         {
-            this.lastWhisperOfConsole = user.getName();
+            this.lastWhisperOfConsole = user.getUniqueId();
         }
-        user.get(BasicsAttachment.class).setLastWhisper(context.getSender().getName());
+        user.get(BasicsAttachment.class).setLastWhisper(context.getSender().getUniqueId());
         return true;
     }
 

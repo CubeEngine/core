@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command;
 
 import java.util.Locale;
+import java.util.UUID;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.permission.Permission;
@@ -44,4 +45,6 @@ public interface CommandSender extends org.bukkit.command.CommandSender
     void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params);
 
     String getTranslationN(MessageType type, int n, String singular, String plural, Object... params);
+
+    UUID getUniqueId();
 }
