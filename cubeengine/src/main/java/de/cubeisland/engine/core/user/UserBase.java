@@ -2828,4 +2828,14 @@ public class UserBase implements Player
             player.playSound(location, s, v, v2);
         }
     }
+
+    @Override
+    public void sendSignChange(Location location, String[] strings) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.sendSignChange(location, strings);
+        }
+    }
 }

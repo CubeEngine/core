@@ -20,6 +20,7 @@ package de.cubeisland.engine.log;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
@@ -210,7 +211,6 @@ public class LogAttachment extends UserAttachment
         {
             this.createNewPreview();
         }
-        // TODO signs
         preview.add(state);
     }
 
@@ -251,6 +251,11 @@ public class LogAttachment extends UserAttachment
     public Lookup getLastLookup()
     {
         return this.lastLookup;
+    }
+
+    public void addToPreview(Location loc, String[] lines)
+    {
+        this.preview.add(loc, lines);
     }
 }
 

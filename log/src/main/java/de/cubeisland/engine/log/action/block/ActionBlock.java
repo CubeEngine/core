@@ -212,7 +212,7 @@ public abstract class ActionBlock extends BaseAction implements Rollbackable, Re
                 String[] lines = this instanceof SignBreak ? ((SignBreak)this).oldLines : ((PlayerSignBreak)this).oldLines;
                 if (preview)
                 {
-                    // TODO signpreview
+                    attachment.addToPreview(state.getLocation(), lines);
                 }
                 else
                 {
