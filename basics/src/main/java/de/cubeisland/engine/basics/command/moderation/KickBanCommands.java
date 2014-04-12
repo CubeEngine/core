@@ -38,6 +38,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
 
@@ -165,12 +166,12 @@ public class KickBanCommands
         }
         else
         {
-            if (this.banManager.isUserBanned(player.getName()))
+            if (this.banManager.isUserBanned(player.getUniqueId()))
             {
                 context.sendTranslated(NEGATIVE, "{user} is already banned!", player);
                 return;
             }
-            this.banManager.addBan(new UserBan(player.getName(),context.getSender().getName(), reason));
+            this.banManager.addBan(new UserBan(player.getUniqueId(),context.getSender().getName(), reason));
             if (user != null)
             {
                 user.kickPlayer(user.getTranslation(NEGATIVE, banMessage) + "\n" + ChatFormat.RESET + reason);
@@ -202,13 +203,18 @@ public class KickBanCommands
     public void unban(CommandContext context)
     {
         String userName = context.getString(0);
-        if (!this.banManager.isUserBanned(userName))
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(userName);
+        if (offlinePlayer.getUniqueId().version() == 3)
+        {
+            offlinePlayer = Bukkit.getOfflinePlayer(McUUID.getUUIDForName(userName));
+        }
+        if (!this.banManager.isUserBanned(offlinePlayer.getUniqueId()))
         {
             context.sendTranslated(NEGATIVE, "{user} is not banned, maybe you misspelled his name?", userName);
             return;
         }
-        this.banManager.removeUserBan(userName);
-        context.sendTranslated(POSITIVE, "You unbanned {user}!", userName);
+        this.banManager.removeUserBan(offlinePlayer.getUniqueId());
+        context.sendTranslated(POSITIVE, "You unbanned {user}({name#uuid})!", userName, offlinePlayer.getUniqueId().toString());
     }
 
     @Command(names = {"ipban", "banip"},
@@ -292,7 +298,7 @@ public class KickBanCommands
         }
         String reason = this.getReasonFrom(context, 2, module.perms().COMMAND_TEMPBAN_NOREASON);
         if (reason == null) return;
-        if (this.banManager.isUserBanned(player.getName()))
+        if (this.banManager.isUserBanned(player.getUniqueId()))
         {
             context.sendTranslated(NEGATIVE, "{user} is already banned!", player);
             return;
@@ -301,7 +307,7 @@ public class KickBanCommands
         {
             long millis = StringUtils.convertTimeToMillis(context.getString(1));
             Date toDate = new Date(System.currentTimeMillis() + millis);
-            this.banManager.addBan(new UserBan(player.getName(),context.getSender().getName(), reason, toDate));
+            this.banManager.addBan(new UserBan(player.getUniqueId(),context.getSender().getName(), reason, toDate));
             if (player.isOnline())
             {
                 if (user == null) throw new IllegalStateException();

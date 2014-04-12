@@ -664,9 +664,9 @@ public class PlayerCommands
             DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(SHORT, SHORT, Locale.ENGLISH);
             context.sendTranslated(NEUTRAL, "First played: {input#date}", dateFormat.format(new Date(user.getFirstPlayed())));
         }
-        if (this.module.getCore().getBanManager().isUserBanned(user.getName()))
+        if (this.module.getCore().getBanManager().isUserBanned(user.getUniqueId()))
         {
-            UserBan ban = this.module.getCore().getBanManager().getUserBan(user.getName());
+            UserBan ban = this.module.getCore().getBanManager().getUserBan(user.getUniqueId());
             String expires;
             DateFormat format = DateFormat.getDateTimeInstance(SHORT, SHORT, context.getSender().getLocale());
             if (ban.getExpires() != null)

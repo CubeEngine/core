@@ -14,7 +14,7 @@
 
   <properties>
     <projectBase>${project.basedir}</projectBase>
-    <minecraftVersion>1.7.5</minecraftVersion>
+    <minecraftVersion>1.7.8</minecraftVersion>
     <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
   </properties>
 
@@ -150,6 +150,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Is this even needed? Did not compile with it because it could not find the artifact
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>minecraft-server</artifactId>
@@ -157,6 +158,7 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.jooq</groupId>
       <artifactId>jooq</artifactId>

@@ -25,10 +25,10 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.minecraft.server.v1_7_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_7_R2.EntityPlayer;
-import net.minecraft.server.v1_7_R2.PacketPlayOutKeepAlive;
-import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
+import net.minecraft.server.v1_7_R3.DedicatedPlayerList;
+import net.minecraft.server.v1_7_R3.EntityPlayer;
+import net.minecraft.server.v1_7_R3.PacketPlayOutKeepAlive;
+import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.module.Module;

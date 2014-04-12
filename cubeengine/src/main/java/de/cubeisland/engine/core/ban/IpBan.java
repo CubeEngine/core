@@ -22,7 +22,7 @@ import java.util.Date;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
-public class IpBan extends Ban
+public class IpBan extends Ban<InetAddress>
 {
     private InetAddress address;
 
@@ -49,8 +49,8 @@ public class IpBan extends Ban
     }
 
     @Override
-    public String getTarget()
+    public InetAddress getTarget()
     {
-        return this.address.getHostAddress();
+        return this.address;
     }
 }

@@ -208,7 +208,7 @@ public class VanillaCommands implements CommandHolder
         User user = this.core.getUserManager().findExactUser(context.getString(0));
         if (user == null && !context.hasFlag("f"))
         {
-            context.sendTranslated(NEGATIVE, "The given player has never played on this server!");
+            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.getString(0));
             context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
             return;
         }
@@ -220,7 +220,7 @@ public class VanillaCommands implements CommandHolder
         }
         if (offlinePlayer.isOp())
         {
-            context.sendTranslated(NEUTRAL, "The given player is already an operator.");
+            context.sendTranslated(NEUTRAL, "{user} is already an operator.", offlinePlayer);
             return;
         }
         offlinePlayer.setOp(true);
@@ -436,7 +436,7 @@ public class VanillaCommands implements CommandHolder
             final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
             if (player.isWhitelisted())
             {
-                context.sendTranslated(NEUTRAL, "The given player is already whitelisted.");
+                context.sendTranslated(NEUTRAL, "{user} is already whitelisted.", player);
                 return;
             }
 
@@ -457,7 +457,7 @@ public class VanillaCommands implements CommandHolder
             final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
             if (!player.isWhitelisted())
             {
-                context.sendTranslated(NEUTRAL, "The given player is not whitelisted.");
+                context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);
                 return;
             }
 

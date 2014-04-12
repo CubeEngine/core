@@ -19,9 +19,9 @@ package de.cubeisland.engine.mystcube.blockpopulator;
 
 import java.util.Random;
 
-import net.minecraft.server.v1_7_R2.StructureBoundingBox;
-import net.minecraft.server.v1_7_R2.WorldGenVillageStart;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
+import net.minecraft.server.v1_7_R3.StructureBoundingBox;
+import net.minecraft.server.v1_7_R3.WorldGenVillageStart;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 
 import org.bukkit.Chunk;
 

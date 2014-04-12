@@ -21,7 +21,7 @@ import java.util.Date;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
-public abstract class Ban
+public abstract class Ban<T>
 {
     private String source;
     private String reason;
@@ -71,7 +71,7 @@ public abstract class Ban
      *
      * @return the target, never null
      */
-    public abstract String getTarget();
+    public abstract T getTarget();
 
     /**
      * This method returns the ban reason
@@ -156,6 +156,6 @@ public abstract class Ban
     @Override
     public String toString()
     {
-        return this.getTarget();
+        return this.getTarget().toString();
     }
 }

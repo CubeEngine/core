@@ -42,8 +42,9 @@ public class CommandSenderFormatter extends ReflectedFormatter
     }
 
     @Format
-    public String format(AnimalTamer tamer, MacroContext context)
+    public String format(AnimalTamer tamer, MacroContext context) // includes OfflinePlayer as it implements AnimalTamer
     {
         return this.format(tamer.getName(), context);
     }
+
 }

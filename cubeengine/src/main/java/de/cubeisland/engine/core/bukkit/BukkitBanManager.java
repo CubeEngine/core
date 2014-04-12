@@ -18,37 +18,43 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
-import net.minecraft.server.v1_7_R2.BanEntry;
-import net.minecraft.server.v1_7_R2.BanList;
-import net.minecraft.server.v1_7_R2.DedicatedPlayerList;
-import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
+import net.minecraft.server.v1_7_R3.DedicatedPlayerList;
+import net.minecraft.server.v1_7_R3.GameProfileBanEntry;
+import net.minecraft.server.v1_7_R3.GameProfileBanList;
+import net.minecraft.server.v1_7_R3.IpBanEntry;
+import net.minecraft.server.v1_7_R3.IpBanList;
+import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+
+import org.bukkit.Bukkit;
 
 import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.user.User;
-
 import gnu.trove.set.hash.THashSet;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import static de.cubeisland.engine.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static org.bukkit.BanList.Type.IP;
+import static org.bukkit.BanList.Type.UUID;
 
 public class BukkitBanManager implements BanManager
 {
-    private final BanList nameBans;
-    private final BanList ipBans;
+    private final GameProfileBanList profileBan;
+    private final IpBanList ipBans;
 
     public BukkitBanManager(BukkitCore core)
     {
         final DedicatedPlayerList playerList = ((CraftServer)core.getServer()).getHandle();
-        this.nameBans = playerList.getNameBans();
+        this.profileBan = playerList.getProfileBans();
         this.ipBans = playerList.getIPBans();
     }
 
@@ -63,18 +69,15 @@ public class BukkitBanManager implements BanManager
             throw new IllegalArgumentException("The ban reason my not contain line breaks (LF or CR)!");
         }
 
-        BanEntry entry = new BanEntry(ban.toString());
-        entry.setCreated(ban.getCreated());
-        entry.setExpires(ban.getExpires());
-        entry.setReason(ban.getReason());
-        entry.setSource(ban.getSource());
         if (ban instanceof UserBan)
         {
-            this.nameBans.add(entry);
+            Bukkit.getBanList(UUID).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
+                                                ban.getSource());
         }
-        else
+        else if (ban instanceof IpBan)
         {
-            this.ipBans.add(entry);
+            Bukkit.getBanList(IP).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
+                                              ban.getSource());
         }
     }
 
@@ -84,18 +87,17 @@ public class BukkitBanManager implements BanManager
         expectNotNull(user, "The user must not be null!");
         expect(isMainThread());
 
-        return this.getUserBan(user.getName());
+        return this.getUserBan(user.getUniqueId());
     }
 
     @Override
-    public UserBan getUserBan(String name)
+    public UserBan getUserBan(UUID uuid)
     {
         expect(isMainThread());
-
-        BanEntry entry = (BanEntry)this.nameBans.getEntries().get(name);
+        GameProfileBanEntry entry = (GameProfileBanEntry)this.profileBan.get(new GameProfile(uuid, null));
         if (entry != null)
         {
-            return new UserBan(name, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
+            return new UserBan(uuid, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
         }
         return null;
     }
@@ -106,7 +108,7 @@ public class BukkitBanManager implements BanManager
         expectNotNull(address, "The address must not be null!");
         expect(isMainThread());
 
-        BanEntry entry = (BanEntry)this.ipBans.getEntries().get(address.toString());
+        IpBanEntry entry = (IpBanEntry)this.ipBans.get(address.toString());
         if (entry != null)
         {
             return new IpBan(address, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
@@ -120,15 +122,15 @@ public class BukkitBanManager implements BanManager
         expectNotNull(user, "The user must not be null!");
         expect(isMainThread());
 
-        return this.removeUserBan(user.getName());
+        return this.removeUserBan(user.getUniqueId());
     }
 
     @Override
-    public boolean removeUserBan(String name)
+    public boolean removeUserBan(UUID uuid)
     {
         expect(isMainThread());
 
-        this.nameBans.remove(name);
+        this.profileBan.remove(uuid);
         return true;
     }
 
@@ -148,15 +150,15 @@ public class BukkitBanManager implements BanManager
         expectNotNull(user, "The user must not be null!");
         expect(isMainThread());
         
-        return this.isUserBanned(user.getName());
+        return this.isUserBanned(user.getUniqueId());
     }
 
     @Override
-    public boolean isUserBanned(String name)
+    public boolean isUserBanned(UUID uuid)
     {
         expect(isMainThread());
 
-        return this.nameBans.isBanned(name);
+        return this.profileBan.isBanned(new GameProfile(uuid, null));
     }
 
     @Override
@@ -164,7 +166,7 @@ public class BukkitBanManager implements BanManager
     {
         expect(isMainThread());
 
-        return this.ipBans.isBanned(address.toString());
+        return this.ipBans.isBanned(new InetSocketAddress(address, 0));
     }
 
     @Override
@@ -173,18 +175,19 @@ public class BukkitBanManager implements BanManager
     {
         expect(isMainThread());
 
-        Map ipBans = this.ipBans.getEntries();
-        Set<IpBan> bans = new THashSet<>(ipBans.size());
+        String[] bannedIps = this.ipBans.getEntries();
+        Set<IpBan> bans = new THashSet<>(bannedIps.length);
 
-        for (BanEntry entry : (Collection<BanEntry>)ipBans.values())
+        for (String bannedIp : bannedIps)
         {
             try
             {
-                bans.add(new IpBan(InetAddress.getByName(entry.getName()), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
+                IpBanEntry entry = (IpBanEntry)this.ipBans.get(bannedIp);
+                bans.add(new IpBan(InetAddress.getByName(bannedIp), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
             }
             catch (UnknownHostException e)
             {
-                this.ipBans.remove(entry.getName());
+                this.ipBans.remove(bannedIp);
             }
         }
 
@@ -197,12 +200,13 @@ public class BukkitBanManager implements BanManager
     {
         expect(isMainThread());
 
-        Map nameBans = this.nameBans.getEntries();
-        Set<UserBan> bans = new THashSet<>(nameBans.size());
+        String[] bannedUUIDs = this.profileBan.getEntries();
+        Set<UserBan> bans = new THashSet<>(bannedUUIDs.length);
 
-        for (BanEntry entry : (Collection<BanEntry>)nameBans.values())
+        for (String bannedUUID : bannedUUIDs)
         {
-            bans.add(new UserBan(entry.getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
+            GameProfileBanEntry entry = (GameProfileBanEntry)this.profileBan.get(bannedUUID);
+            bans.add(new UserBan(java.util.UUID.fromString(bannedUUID), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
         }
         return bans;
     }
@@ -222,11 +226,7 @@ public class BukkitBanManager implements BanManager
     public synchronized void reloadBans()
     {
         expect(isMainThread());
-        
-        this.nameBans.getEntries().clear();
-        this.nameBans.load();
-
-        this.ipBans.getEntries().clear();
+        this.profileBan.load();
         this.ipBans.load();
     }
 }
