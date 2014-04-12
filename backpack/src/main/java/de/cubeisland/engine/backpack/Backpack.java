@@ -87,7 +87,10 @@ public class Backpack extends Module
                 {
                     for (Path path : toRename.get(entry.getKey()))
                     {
-                        Files.move(path, path.getParent().resolve(entry.getValue().toString()));
+                        if (entry.getValue() != null)
+                        {
+                            Files.move(path, path.getParent().resolve(entry.getValue().toString()));
+                        }
                     }
                 }
             }

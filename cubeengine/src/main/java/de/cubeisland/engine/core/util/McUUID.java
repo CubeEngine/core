@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.util;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -56,7 +58,7 @@ public class McUUID
         {
             try
             {
-                map.put(profile.name, getUUIDFromString(profile.id));
+                map.put(profile.name, profile.id == null ? null : getUUIDFromString(profile.id));
             }
             catch (Exception e)
             {
@@ -94,6 +96,7 @@ public class McUUID
         int amount = players.size();
         CubeEngine.getLog().debug("Query UUID for: " + StringUtils.implode(",", players));
         ArrayNode node = mapper.createArrayNode();
+        LinkedList<String> playersCopy = new LinkedList<>(players);
         while (!players.isEmpty())
         {
             ObjectNode criteria = mapper.createObjectNode();
@@ -101,35 +104,81 @@ public class McUUID
             criteria.put("agent", AGENT);
             node.add(criteria);
         }
-        int i = 1;
+        int page = 1;
         try
         {
             CubeEngine.getLog().info("Query Mojang for {} UUIDs", amount);
             while (amount > 0)
             {
-                HttpURLConnection con = (HttpURLConnection)new URL(MOJANG_API_URL + i++).openConnection();
-                con.setRequestMethod("POST");
-                con.setRequestProperty("Content-Type", "application/json");
-                con.setUseCaches(false);
-                con.setDoInput(true);
-                con.setDoOutput(true);
-                DataOutputStream writer = new DataOutputStream(con.getOutputStream());
-                writer.write(node.toString().getBytes());
-                writer.close();
-
-                ProfileSearchResult results = mapper.readValue(con.getInputStream(), ProfileSearchResult.class);
-                profiles.addAll(Arrays.asList(results.profiles));
-                if (results.size == amount)
+                HttpURLConnection con = postQuery(node, page++);
+                con.setReadTimeout((int)TimeUnit.SECONDS.toMillis(20));
+                InputStream is;
+                try
+                {
+                    is = con.getInputStream();
+                }
+                catch (IOException e)
+                {
+                    while (!playersCopy.isEmpty())
+                    {
+                        String player = players.poll();
+                        ArrayNode arrayNode = mapper.createArrayNode();
+                        ObjectNode onePlayer = mapper.createObjectNode();
+                        onePlayer.put("name", player);
+                        onePlayer.put("agent", AGENT);
+                        node.add(onePlayer);
+                        arrayNode.add(onePlayer);
+                        HttpURLConnection sCon = postQuery(arrayNode, 1);
+                        sCon.setReadTimeout((int)TimeUnit.SECONDS.toMillis(20));
+                        try
+                        {
+                            is = con.getInputStream();
+                        }
+                        catch (IOException e1)
+                        {
+                            CubeEngine.getLog().warn("Could not get UUID for " + player + " in sane time!");
+                            Profile profile = new Profile();
+                            profile.name = player;
+                            profiles.add(profile);
+                            continue;
+                        }
+                        readProfilesFromInputStream(is, profiles);
+                    }
+                    return;
+                }
+                int read = readProfilesFromInputStream(is, profiles);
+                if (read == amount)
                 {
                     return;
                 }
-                amount -= results.size;
+                amount -= read;
             }
         }
         catch (IOException e)
         {
             CubeEngine.getLog().error(e, "Could not retrieve UUID for given names!");
         }
+    }
+
+    private static HttpURLConnection postQuery(ArrayNode node, int page) throws IOException
+    {
+        HttpURLConnection con = (HttpURLConnection)new URL(MOJANG_API_URL + page).openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setUseCaches(false);
+        con.setDoInput(true);
+        con.setDoOutput(true);
+        DataOutputStream writer = new DataOutputStream(con.getOutputStream());
+        writer.write(node.toString().getBytes());
+        writer.close();
+        return con;
+    }
+
+    private static int readProfilesFromInputStream(InputStream is, List<Profile> profiles) throws IOException
+    {
+        ProfileSearchResult results = mapper.readValue(is, ProfileSearchResult.class);
+        profiles.addAll(Arrays.asList(results.profiles));
+        return results.size;
     }
 
     public static UUID getUUIDForName(String player)

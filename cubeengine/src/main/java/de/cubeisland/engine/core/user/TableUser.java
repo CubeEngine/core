@@ -111,6 +111,13 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
             CubeEngine.getLog().info("Update UUIDs in database");
             for (Entry<String, UUID> entry : uuids.entrySet())
             {
+                if (entry.getValue() == null)
+                {
+                    PreparedStatement deleteStmt = connection.prepareStatement("DELETE FROM " + this.getName() + " WHERE `player` = ?");
+                    deleteStmt.setString(1, entry.getKey());
+                    deleteStmt.execute();
+                    continue;
+                }
                 stmt.setLong(1, entry.getValue().getLeastSignificantBits());
                 stmt.setLong(2, entry.getValue().getMostSignificantBits());
                 stmt.setString(3, entry.getKey());
