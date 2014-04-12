@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -72,19 +73,38 @@ public class McUUID
 
     private static List<Profile> getUUIDForNames0(Collection<String> playernames)
     {
-        ArrayNode node = mapper.createArrayNode();
+        CubeEngine.getLog().info("Getting {} UUIDs for playernames", playernames.size());
+        LinkedList<String> players = new LinkedList<>();
+        List<Profile> profiles = new ArrayList<>();
         for (String playername : playernames)
         {
+            players.add(playername);
+            if (players.size() >= 100)
+            {
+                getProfiles(profiles, players);
+                CubeEngine.getLog().info(profiles.size() + "/" + playernames.size());
+            }
+        }
+        getProfiles(profiles, players);
+        CubeEngine.getLog().info("Getting UUIDs done!", playernames.size());
+        return profiles;
+    }
+
+    private static void getProfiles(List<Profile> profiles, LinkedList<String> players)
+    {
+        int amount = players.size();
+        ArrayNode node = mapper.createArrayNode();
+        while (!players.isEmpty())
+        {
             ObjectNode criteria = mapper.createObjectNode();
-            criteria.put("name", playername);
+            criteria.put("name", players.poll());
             criteria.put("agent", AGENT);
             node.add(criteria);
         }
         int i = 1;
-        int amount = playernames.size();
-        List<Profile> list = new ArrayList<>();
         try
         {
+            CubeEngine.getLog().info("Query Mojang for {} UUIDs", amount);
             while (amount > 0)
             {
                 HttpURLConnection con = (HttpURLConnection)new URL(MOJANG_API_URL + i++).openConnection();
@@ -98,10 +118,10 @@ public class McUUID
                 writer.close();
 
                 ProfileSearchResult results = mapper.readValue(con.getInputStream(), ProfileSearchResult.class);
-                list.addAll(Arrays.asList(results.profiles));
+                profiles.addAll(Arrays.asList(results.profiles));
                 if (results.size == amount)
                 {
-                    return list;
+                    return;
                 }
                 amount -= results.size;
             }
@@ -109,9 +129,7 @@ public class McUUID
         catch (IOException e)
         {
             CubeEngine.getLog().error(e, "Could not retrieve UUID for given names!");
-            return list;
         }
-        return list;
     }
 
     public static UUID getUUIDForName(String player)
