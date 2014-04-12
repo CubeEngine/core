@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.log.storage;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -71,7 +69,6 @@ public class QueryManager
     private long timeSpendFullLoad = 0;
     private long logsLoggedFullLoad = 1;
     private CountDownLatch shutDownLatch = new CountDownLatch(0);
-    private Connection insertConnection = null;
     private boolean cleanUpRunning = false;
 
     private final DBCollection collection;
@@ -341,18 +338,6 @@ public class QueryManager
                 this.latch.release();
             }
             Profiler.endProfiling("logging"); // end profiling so we can start again later
-            try
-            {
-                insertConnection.close();
-            }
-            catch (SQLException e)
-            {
-                module.getLog().error(e, "Error when closing connection!");
-            }
-            finally
-            {
-                insertConnection = null;
-            }
         }
         finally
         {
@@ -366,19 +351,6 @@ public class QueryManager
             }
             else
             {
-                if (insertConnection != null)
-                {
-                    try
-                    {
-                        this.insertConnection.setAutoCommit(true);
-                        this.insertConnection.close();
-                    }
-                    catch (SQLException e)
-                    {
-                        module.getLog().error(e, "Error when closing connection!");
-                    }
-                    this.insertConnection = null;
-                }
                 if (shutDownLatch != null)
                 {
                     this.shutDownLatch.countDown();

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log;
 
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,9 +34,9 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.log.action.ActionManager;
+import de.cubeisland.engine.log.action.block.player.worldedit.LogEditSessionFactory;
 import de.cubeisland.engine.log.action.player.item.container.ContainerType;
 import de.cubeisland.engine.log.action.player.item.container.ContainerTypeConverter;
-import de.cubeisland.engine.log.action.block.player.worldedit.LogEditSessionFactory;
 import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
 import de.cubeisland.engine.log.storage.LogManager;
@@ -65,6 +66,7 @@ public class Log extends Module implements Listener
         cMan.registerConverter(ContainerType.class, new ContainerTypeConverter());
         cMan.registerConverter(EntityType.class, new EntityTypeConverter());
         cMan.registerConverter(DamageCause.class, new DamageCauseConverter());
+        cMan.registerConverter(BlockFace.class, new BlockFaceConverter());
         this.getCore().getConfigFactory().getCodecManager().getCodec(MongoDBCodec.class).
             getConverterManager().registerConverter(ItemStack.class, new ItemStackConverter());
         this.logManager = new LogManager(this, bigdata);
