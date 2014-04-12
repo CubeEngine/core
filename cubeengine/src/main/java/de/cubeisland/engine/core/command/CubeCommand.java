@@ -297,9 +297,12 @@ public abstract class CubeCommand extends Command
      */
     public String getUsage(CommandSender sender)
     {
-        return (sender instanceof User ? "/" : "") + this
-            .implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender,
-                                sender.getTranslation(NONE, super.getUsage()));
+        String usage = super.getUsage();
+        if (!usage.isEmpty())
+        {
+            usage = sender.getTranslation(NONE, usage);
+        }
+        return (sender instanceof User ? "/" : "") + this.implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
     /**

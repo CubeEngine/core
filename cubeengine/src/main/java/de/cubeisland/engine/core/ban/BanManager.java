@@ -21,26 +21,19 @@ import java.net.InetAddress;
 import java.util.Set;
 import java.util.UUID;
 
-import de.cubeisland.engine.core.user.User;
-
 public interface BanManager
 {
     void addBan(Ban ban);
 
     UserBan getUserBan(UUID uuid);
 
-    UserBan getUserBan(User user);
     IpBan getIpBan(InetAddress address);
 
     boolean removeUserBan(UUID uuid);
 
-    boolean removeUserBan(User user);
-
     boolean removeIpBan(InetAddress address);
 
     boolean isUserBanned(UUID uuid);
-
-    boolean isUserBanned(User user);
 
     boolean isIpBanned(InetAddress address);
 
@@ -48,7 +41,7 @@ public interface BanManager
 
     Set<IpBan> getIpBans();
 
-    Set<Ban> getBans();
+    Set<Ban<?>> getBans();
 
     void reloadBans();
 }

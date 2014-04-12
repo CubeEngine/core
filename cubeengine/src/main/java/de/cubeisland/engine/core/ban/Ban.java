@@ -154,8 +154,5 @@ public abstract class Ban<T>
      * @return the ban target as a string
      */
     @Override
-    public String toString()
-    {
-        return this.getTarget().toString();
-    }
+    public abstract String toString();
 }

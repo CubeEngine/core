@@ -108,34 +108,34 @@ public final class StringUtils
     }
 
     /**
-     * This method merges an array of strings to a single string
+     * This method merges an array of objects to a single string
      *
      * @param delim   the delimiter
-     * @param strings the strings to implode
+     * @param objects the objects to implode
      * @return the imploded string
      */
-    public static String implode(String delim, String[] strings)
+    public static String implode(String delim, Object[] objects)
     {
-        return implode(delim, Arrays.asList(strings));
+        return implode(delim, Arrays.asList(objects));
     }
 
     /**
-     * This method merges an array of strings to a single string
+     * This method merges an array of objects to a single string
      *
      * @param delimiter   the delimiter
-     * @param strings the strings to implode
+     * @param objects the objects to implode
      * @return the imploded string
      */
-    public static String implode(String delimiter, Iterable<String> strings)
+    public static String implode(String delimiter, Iterable objects)
     {
-        Iterator<String> iterator = strings.iterator();
+        Iterator<?> iterator = objects.iterator();
         if (!iterator.hasNext())
         {
             return "";
         }
         else
         {
-            StringBuilder sb = new StringBuilder(iterator.next());
+            StringBuilder sb = new StringBuilder(iterator.next().toString());
 
             while (iterator.hasNext())
             {

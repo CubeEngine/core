@@ -23,6 +23,9 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.util.ChatFormat.DARK_GREEN;
+import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
+import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
 
 public class UserBan extends Ban<UUID>
 {
@@ -54,6 +57,6 @@ public class UserBan extends Ban<UUID>
     @Override
     public String toString()
     {
-        return Bukkit.getOfflinePlayer(target).getName() + "(" + super.toString() + ")";
+        return DARK_GREEN + Bukkit.getOfflinePlayer(target).getName() + YELLOW + "(" + GOLD +  this.getTarget().toString() + YELLOW + ")";
     }
 }

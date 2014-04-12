@@ -20,7 +20,9 @@ package de.cubeisland.engine.core.bukkit;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import net.minecraft.server.v1_7_R3.DedicatedPlayerList;
@@ -36,8 +38,6 @@ import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
-import de.cubeisland.engine.core.user.User;
-import gnu.trove.set.hash.THashSet;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import static de.cubeisland.engine.core.CubeEngine.isMainThread;
@@ -76,18 +76,9 @@ public class BukkitBanManager implements BanManager
         }
         else if (ban instanceof IpBan)
         {
-            Bukkit.getBanList(IP).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
+            Bukkit.getBanList(IP).addBan(((IpBan)ban).getTarget().getHostAddress(), ban.getReason(), ban.getExpires(),
                                               ban.getSource());
         }
-    }
-
-    @Override
-    public UserBan getUserBan(User user)
-    {
-        expectNotNull(user, "The user must not be null!");
-        expect(isMainThread());
-
-        return this.getUserBan(user.getUniqueId());
     }
 
     @Override
@@ -117,20 +108,14 @@ public class BukkitBanManager implements BanManager
     }
 
     @Override
-    public boolean removeUserBan(User user)
-    {
-        expectNotNull(user, "The user must not be null!");
-        expect(isMainThread());
-
-        return this.removeUserBan(user.getUniqueId());
-    }
-
-    @Override
     public boolean removeUserBan(UUID uuid)
     {
         expect(isMainThread());
-
-        this.profileBan.remove(uuid);
+        if (!this.isUserBanned(uuid))
+        {
+            return false;
+        }
+        this.profileBan.remove(new GameProfile(uuid, null));
         return true;
     }
 
@@ -139,18 +124,12 @@ public class BukkitBanManager implements BanManager
     {
         expectNotNull(address, "The address must not be null!");
         expect(isMainThread());
-
+        if (!this.isIpBanned(address))
+        {
+            return false;
+        }
         this.ipBans.remove(address.getHostAddress());
         return true;
-    }
-
-    @Override
-    public boolean isUserBanned(User user)
-    {
-        expectNotNull(user, "The user must not be null!");
-        expect(isMainThread());
-        
-        return this.isUserBanned(user.getUniqueId());
     }
 
     @Override
@@ -176,7 +155,7 @@ public class BukkitBanManager implements BanManager
         expect(isMainThread());
 
         String[] bannedIps = this.ipBans.getEntries();
-        Set<IpBan> bans = new THashSet<>(bannedIps.length);
+        Set<IpBan> bans = new TreeSet<>(new BanComparator());
 
         for (String bannedIp : bannedIps)
         {
@@ -201,7 +180,7 @@ public class BukkitBanManager implements BanManager
         expect(isMainThread());
 
         String[] bannedUUIDs = this.profileBan.getEntries();
-        Set<UserBan> bans = new THashSet<>(bannedUUIDs.length);
+        Set<UserBan> bans = new TreeSet<>(new BanComparator());
 
         for (String bannedUUID : bannedUUIDs)
         {
@@ -211,12 +190,21 @@ public class BukkitBanManager implements BanManager
         return bans;
     }
 
+    private static final class BanComparator implements Comparator<Ban<?>>
+    {
+        @Override
+        public int compare(Ban<?> o1, Ban<?> o2)
+        {
+            return o1.getCreated().compareTo(o2.getCreated());
+        }
+    }
+
     @Override
-    public Set<Ban> getBans()
+    public Set<Ban<?>> getBans()
     {
         expect(isMainThread());
         
-        Set<Ban> bans = new THashSet<>();
+        Set<Ban<?>> bans = new TreeSet<>(new BanComparator());
         bans.addAll(this.getIpBans());
         bans.addAll(this.getUserBans());
         return bans;

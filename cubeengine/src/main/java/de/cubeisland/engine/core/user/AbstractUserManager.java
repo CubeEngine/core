@@ -245,7 +245,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public synchronized Set<User> getOnlineUsers()
     {
-        return new THashSet<>(this.onlineUsers);
+        return new THashSet<>(this.onlineUsers); // TODO this is not working as it should
     }
 
     public synchronized Set<User> getLoadedUsers()
@@ -255,6 +255,10 @@ public abstract class AbstractUserManager implements UserManager
 
     public void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params)
     {
+        if (message.isEmpty())
+        {
+            return;
+        }
         for (User user : this.onlineUsers)
         {
             if (perm == null || perm.isAuthorized(user))
