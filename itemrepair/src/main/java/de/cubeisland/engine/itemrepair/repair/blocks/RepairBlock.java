@@ -23,9 +23,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -35,7 +33,6 @@ import org.bukkit.inventory.PlayerInventory;
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.itemrepair.Itemrepair;
 import de.cubeisland.engine.itemrepair.material.BaseMaterial;
 import de.cubeisland.engine.itemrepair.material.BaseMaterialContainer;
@@ -43,6 +40,11 @@ import de.cubeisland.engine.itemrepair.material.RepairItem;
 import de.cubeisland.engine.itemrepair.material.RepairItemContainer;
 import de.cubeisland.engine.itemrepair.repair.RepairBlockManager;
 import de.cubeisland.engine.itemrepair.repair.RepairRequest;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Effect.GHAST_SHRIEK;
+import static org.bukkit.Sound.ANVIL_BREAK;
+import static org.bukkit.Sound.BURP;
 
 public class RepairBlock
 {
@@ -161,8 +163,8 @@ public class RepairBlock
 
     public boolean withdrawPlayer(User user, double price)
     {
-        economy.createPlayerAccount(user.getName()); // Make sure account exists
-        if (economy.has(user.getName(), price) && economy.withdraw(user.getName(), price))
+        economy.createAccount(user.getUniqueId()); // Make sure account exists
+        if (economy.has(user.getUniqueId(), price) && economy.withdraw(user.getUniqueId(), price))
         {
             // TODO bankAccounts
             /*
@@ -188,7 +190,7 @@ public class RepairBlock
 
     public RepairRequest requestRepair(RepairBlockInventory inventory)
     {
-        User user = this.module.getCore().getUserManager().getUser(inventory.player.getName());
+        User user = this.module.getCore().getUserManager().getExactUser(inventory.player.getUniqueId());
         Map<Integer, ItemStack> items = this.itemProvider.getRepairableItems(inventory.inventory);
         if (items.size() > 0)
         {
@@ -196,36 +198,36 @@ public class RepairBlock
             String format = economy.format(price);
             if (this.config.breakPercentage > 0)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Items will break with a chance of {decimal:2}%", this.config.breakPercentage);
+                user.sendTranslated(NEGATIVE, "Items will break with a chance of {decimal:2}%", this.config.breakPercentage);
             }
             if (this.config.failPercentage > 0)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Items will not repair with a chance of {decimal:2}%", this.config.failPercentage);
+                user.sendTranslated(NEGATIVE, "Items will not repair with a chance of {decimal:2}%", this.config.failPercentage);
             }
             if (this.config.looseEnchantmentsPercentage > 0)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Items will loose all enchantments with a chance of {decimal:2}%", this.config.looseEnchantmentsPercentage);
+                user.sendTranslated(NEGATIVE, "Items will loose all enchantments with a chance of {decimal:2}%", this.config.looseEnchantmentsPercentage);
             }
             if (this.config.costPercentage > 100)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount} (+{decimal:2}%)", format, this.config.costPercentage - 100);
+                user.sendTranslated(NEUTRAL, "The repair would cost {input#amount} (+{decimal:2}%)", format, this.config.costPercentage - 100);
             }
             else if (this.config.costPercentage < 100)
             {
-               user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount} (-{decimal:2}%)", format, 100 - this.config.costPercentage);
+               user.sendTranslated(NEUTRAL, "The repair would cost {input#amount} (-{decimal:2}%)", format, 100 - this.config.costPercentage);
             }
             else
             {
-                user.sendTranslated(MessageType.NEUTRAL, "The repair would cost {input#amount}", format);
+                user.sendTranslated(NEUTRAL, "The repair would cost {input#amount}", format);
             }
-            economy.createPlayerAccount(user.getName());
-            user.sendTranslated(MessageType.NEUTRAL, "You currently have {input#balance}", economy.format(user.getLocale(), economy.getBalance(user.getName())));
-            user.sendTranslated(MessageType.POSITIVE, "{text:Leftclick} again to repair all your damaged items.");
+            economy.createAccount(user.getUniqueId());
+            user.sendTranslated(NEUTRAL, "You currently have {input#balance}", economy.format(user.getLocale(), economy.getBalance(user.getUniqueId())));
+            user.sendTranslated(POSITIVE, "{text:Leftclick} again to repair all your damaged items.");
             return new RepairRequest(this, inventory, items, price);
         }
         else
         {
-            user.sendTranslated(MessageType.NEGATIVE, "There are no items to repair!");
+            user.sendTranslated(NEGATIVE, "There are no items to repair!");
         }
         return null;
     }
@@ -234,7 +236,7 @@ public class RepairBlock
     {
         double price = request.getPrice();
         RepairBlockInventory inventory = request.getInventory();
-        User user = this.module.getCore().getUserManager().getExactUser(inventory.player.getName());
+        User user = this.module.getCore().getUserManager().getExactUser(inventory.player.getUniqueId());
         if (withdrawPlayer(user, price))
         {
             boolean itemsBroken = false;
@@ -284,32 +286,32 @@ public class RepairBlock
             }
             if (itemsBroken)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You broke some of your items when repairing!");
-                user.playSound(user.getLocation(),Sound.ANVIL_BREAK,1,0);
+                user.sendTranslated(NEGATIVE, "You broke some of your items when repairing!");
+                user.playSound(user.getLocation(), ANVIL_BREAK,1,0);
             }
             if (repairFail)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You failed to repair some of your items!");
-                user.playSound(user.getLocation(),Sound.BURP,1,0);
+                user.sendTranslated(NEGATIVE, "You failed to repair some of your items!");
+                user.playSound(user.getLocation(), BURP,1,0);
             }
             if (looseEnch)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Oh no! Some of your items lost their magical power.");
-                user.playEffect(user.getLocation(), Effect.GHAST_SHRIEK, 0);
+                user.sendTranslated(NEGATIVE, "Oh no! Some of your items lost their magical power.");
+                user.playEffect(user.getLocation(), GHAST_SHRIEK, 0);
             }
-            user.sendTranslated(MessageType.POSITIVE, "You paid {input#amount} to repair your items!", economy.format(price));
+            user.sendTranslated(POSITIVE, "You paid {input#amount} to repair your items!", economy.format(price));
             if (this.config.costPercentage > 100)
             {
-                user.sendTranslated(MessageType.POSITIVE, "Thats {decimal#percent:2}% of the normal price!", this.config.costPercentage);
+                user.sendTranslated(POSITIVE, "Thats {decimal#percent:2}% of the normal price!", this.config.costPercentage);
             }
             else if (this.config.costPercentage < 100)
             {
-                user.sendTranslated(MessageType.POSITIVE, "Thats {decimal#percent:2}% less then the normal price!", 100 - this.config.costPercentage);
+                user.sendTranslated(POSITIVE, "Thats {decimal#percent:2}% less then the normal price!", 100 - this.config.costPercentage);
             }
         }
         else
         {
-           user.sendTranslated(MessageType.NEGATIVE, "You don't have enough money to repair these items!");
+           user.sendTranslated(NEGATIVE, "You don't have enough money to repair these items!");
         }
     }
 

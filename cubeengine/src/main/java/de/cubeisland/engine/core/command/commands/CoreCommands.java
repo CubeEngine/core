@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.command.commands;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -43,9 +44,9 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.logging.LogLevel;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static java.util.Arrays.asList;
 
 public class CoreCommands extends ContainerCommand
@@ -53,7 +54,7 @@ public class CoreCommands extends ContainerCommand
 
     private final BukkitCore core;
     private final BanManager banManager;
-    private final ConcurrentHashMap<String, Long> fails = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
 
     public CoreCommands(Core core)
     {
@@ -67,23 +68,23 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Reloads the whole CubeEngine")
     public void reload(CommandContext context)
     {
-        context.sendTranslated(MessageType.POSITIVE, "Reloading CubeEngine! This may take some time...");
+        context.sendTranslated(POSITIVE, "Reloading CubeEngine! This may take some time...");
         Profiler.startProfiling("ceReload");
         PluginManager pm = this.core.getServer().getPluginManager();
         pm.disablePlugin(this.core);
         pm.enablePlugin(this.core);
         long time = Profiler.endProfiling("ceReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(MessageType.POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", time);
+        context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", time);
     }
 
     @Command(desc = "Reloads all of the modules!", usage = "[-f]", flags = @Flag(name = "f", longName = "file"))
     public void reloadmodules(ParameterizedContext context)
     {
-        context.sendTranslated(MessageType.POSITIVE, "Reloading all modules! This may take some time...");
+        context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
         context.getCore().getModuleManager().reloadModules(context.hasFlag("f"));
         long time = Profiler.endProfiling("modulesReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(MessageType.POSITIVE, "Modules Reload completed in {integer#time}ms!", time);
+        context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}ms!", time);
     }
 
     @Command(names = {
@@ -98,7 +99,7 @@ public class CoreCommands extends ContainerCommand
             target = context.getUser(1);
             if (target == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!");
+                sender.sendTranslated(NEGATIVE, "Player {user} not found!");
                 return;
             }
         }
@@ -108,23 +109,23 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            sender.sendTranslated(MessageType.NEGATIVE, "No player given!");
+            sender.sendTranslated(NEGATIVE, "No player given!");
             return;
         }
 
         if (target == sender && !sender.isAuthorized(core.perms().COMMAND_SETPASSWORD_OTHER))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the password of an other player!");
+            context.sendTranslated(NEGATIVE, "You are not allowed to change the password of an other player!");
             return;
         }
         core.getUserManager().setPassword(target, context.getString(0));
         if (sender == target)
         {
-            sender.sendTranslated(MessageType.POSITIVE, "The player's password has been set!");
+            sender.sendTranslated(POSITIVE, "The player's password has been set!");
         }
         else
         {
-            sender.sendTranslated(MessageType.POSITIVE, "Your password has been set!");
+            sender.sendTranslated(POSITIVE, "Your password has been set!");
         }
     }
 
@@ -140,35 +141,35 @@ public class CoreCommands extends ContainerCommand
             {
                 final UserManager um = this.getModule().getCore().getUserManager();
                 um.resetAllPasswords();
-                sender.sendTranslated(MessageType.POSITIVE, "All passwords reset!");
+                sender.sendTranslated(POSITIVE, "All passwords reset!");
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear all passwords!");
+                context.sendTranslated(NEGATIVE, "You are not allowed to clear all passwords!");
             }
         }
         else if (context.hasArg(0))
         {
             if (!core.perms().COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to clear the password of other players!");
+                context.sendTranslated(NEGATIVE, "You are not allowed to clear the password of other players!");
                 return;
             }
             User target = context.getUser(0);
             if (target != null)
             {
                 this.core.getUserManager().resetPassword(target);
-                sender.sendTranslated(MessageType.POSITIVE, "The player's password has been reset!");
+                sender.sendTranslated(POSITIVE, "The player's password has been reset!");
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
             }
         }
         else if (sender instanceof User)
         {
             this.core.getUserManager().resetPassword((User)sender);
-            sender.sendTranslated(MessageType.POSITIVE, "Your password has been reset!");
+            sender.sendTranslated(POSITIVE, "Your password has been reset!");
         }
     }
 
@@ -181,25 +182,25 @@ public class CoreCommands extends ContainerCommand
             User user = (User)sender;
             if (user.isLoggedIn())
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are already logged in!");
+                context.sendTranslated(POSITIVE, "You are already logged in!");
                 return;
             }
             boolean isLoggedIn = core.getUserManager().login(user, context.getString(0));
             if (isLoggedIn)
             {
-                user.sendTranslated(MessageType.POSITIVE, "You logged in successfully!");
+                user.sendTranslated(POSITIVE, "You logged in successfully!");
             }
             else
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Wrong password!");
+                user.sendTranslated(NEGATIVE, "Wrong password!");
                 if (this.core.getConfiguration().security.fail2ban)
                 {
-                    if (fails.get(user.getName()) != null)
+                    if (fails.get(user.getUniqueId()) != null)
                     {
-                        if (fails.get(user.getName()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
+                        if (fails.get(user.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                         {
-                            String msg = user.getTranslation(MessageType.NEGATIVE, "Too many wrong passwords! \nFor your security you were banned 10 seconds.");
-                            this.banManager.addBan(new UserBan(user.getName(),user.getName(),msg,
+                            String msg = user.getTranslation(NEGATIVE, "Too many wrong passwords! \nFor your security you were banned 10 seconds.");
+                            this.banManager.addBan(new UserBan(user.getUniqueId(),user.getName(),msg,
                                  new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                             if (!Bukkit.getServer().getOnlineMode())
                             {
@@ -209,13 +210,13 @@ public class CoreCommands extends ContainerCommand
                             user.kickPlayer(msg);
                         }
                     }
-                    fails.put(user.getName(),System.currentTimeMillis());
+                    fails.put(user.getUniqueId(),System.currentTimeMillis());
                 }
             }
         }
         else
         {
-            sender.sendTranslated(MessageType.NEGATIVE, "Only players can log in!");
+            sender.sendTranslated(NEGATIVE, "Only players can log in!");
         }
     }
 
@@ -228,17 +229,17 @@ public class CoreCommands extends ContainerCommand
             User user = (User)sender;
             if (!user.isLoggedIn())
             {
-                sender.sendTranslated(MessageType.NEUTRAL, "You're not logged in!");
+                sender.sendTranslated(NEUTRAL, "You're not logged in!");
             }
             else
             {
                 user.logout();
-                sender.sendTranslated(MessageType.POSITIVE, "You're now logged out.");
+                sender.sendTranslated(POSITIVE, "You're now logged out.");
             }
         }
         else if (sender instanceof ConsoleCommandSender)
         {
-            sender.sendTranslated(MessageType.NEUTRAL, "You might use /stop for this.");
+            sender.sendTranslated(NEUTRAL, "You might use /stop for this.");
         }
     }
 
@@ -250,11 +251,11 @@ public class CoreCommands extends ContainerCommand
 
         if (newState)
         {
-            context.sendTranslated(MessageType.POSITIVE, "The server is now in online-mode.");
+            context.sendTranslated(POSITIVE, "The server is now in online-mode.");
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "The server is not in offline-mode.");
+            context.sendTranslated(POSITIVE, "The server is not in offline-mode.");
         }
     }
 
@@ -267,23 +268,23 @@ public class CoreCommands extends ContainerCommand
             if (level != null)
             {
                 context.getCore().getLog().setLevel(level);
-                context.sendTranslated(MessageType.POSITIVE, "New log level successfully set!");
+                context.sendTranslated(POSITIVE, "New log level successfully set!");
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The given log level is unknown.");
+                context.sendTranslated(NEGATIVE, "The given log level is unknown.");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The current log level: {input#loglevel}", context.getCore().getLog().getLevel());
+            context.sendTranslated(NEUTRAL, "The current log level: {input#loglevel}", context.getCore().getLog().getLevel());
         }
     }
 
     @Command(desc = "Searches for a user in the database", usage = "<name>", min = 1, max = 1, async = true)
     public CommandResult searchUser(CommandContext context)
     {
-        final boolean exact = core.getUserManager().getUser(context.getString(0)) != null;
+        final boolean exact = core.getUserManager().findExactUser(context.getString(0)) != null;
         final User user = core.getUserManager().findUser(context.getString(0), true);
         return new CommandResult()
         {
@@ -292,15 +293,15 @@ public class CoreCommands extends ContainerCommand
             {
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "No match found for {input}!", context.getString(0));
+                    context.sendTranslated(NEUTRAL, "No match found for {input}!", context.getString(0));
                 }
                 else if (exact)
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "Matched exactly! User: {user}", user);
+                    context.sendTranslated(POSITIVE, "Matched exactly! User: {user}", user);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "Matched not exactly! User: {user}", user);
+                    context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", user);
                 }
             }
         };

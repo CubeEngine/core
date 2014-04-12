@@ -20,6 +20,7 @@ package de.cubeisland.engine.fun.commands;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -35,8 +36,9 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.fun.Fun;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class RocketCommand
 {
@@ -69,7 +71,7 @@ public class RocketCommand
             user = context.getParam("player");
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString("player"));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString("player"));
                 return;
             }
         }
@@ -77,7 +79,7 @@ public class RocketCommand
         {
             if (!(context.getSender() instanceof User))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You have to specify a player!");
+                context.sendTranslated(NEGATIVE, "You have to specify a player!");
                 return;
             }
             user = (User)context.getSender();
@@ -85,12 +87,12 @@ public class RocketCommand
 
         if (height > this.module.getConfig().command.rocket.maxHeight)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Do you never wanna see {user} again?", user);
+            context.sendTranslated(NEGATIVE, "Do you never wanna see {user} again?", user);
             return;
         }
         else if (height < 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The height has to be greater than 0");
+            context.sendTranslated(NEGATIVE, "The height has to be greater than 0");
             return;
         }
 
@@ -114,7 +116,7 @@ public class RocketCommand
         {
             if (!this.contains(user))
             {
-                instances.add(new RocketCMDInstance(user.getName(), height));
+                instances.add(new RocketCMDInstance(user.getUniqueId(), height));
 
                 if (taskId == -1)
                 {
@@ -133,11 +135,11 @@ public class RocketCommand
             return users;
         }
 
-        public boolean contains(User user)
+        public boolean contains(User aUser)
         {
-            for (User users : this.getUsers())
+            for (User user : this.getUsers())
             {
-                if (users.getName().equals(user.getName()))
+                if (user.equals(aUser))
                 {
                     return true;
                 }
@@ -151,7 +153,7 @@ public class RocketCommand
             
             for (RocketCMDInstance instance : instances)
             {
-                if (instance.getName().equals(user.getName()))
+                if (instance.getUuid().equals(user.getUniqueId()))
                 {
                     trash = instance;
                     break;
@@ -180,7 +182,7 @@ public class RocketCommand
         {
             if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL)
             {
-                User user = this.userManager.getExactUser(((Player)event.getEntity()).getName());
+                User user = this.userManager.getExactUser(event.getEntity().getUniqueId());
                 if (user == null)
                 {
                     return;
@@ -245,13 +247,13 @@ public class RocketCommand
 
         private class RocketCMDInstance
         {
-            private final String name;
+            private final UUID uuid;
             private final int height;
             private boolean down;
 
-            private RocketCMDInstance(String name, int height)
+            private RocketCMDInstance(UUID uuid, int height)
             {
-                this.name = name;
+                this.uuid = uuid;
                 this.height = height;
                 this.down = false;
             }
@@ -273,12 +275,12 @@ public class RocketCommand
 
             public User getUser()
             {
-                return CubeEngine.getUserManager().getUser(name, false);
+                return CubeEngine.getUserManager().getExactUser(uuid);
             }
 
-            public String getName()
+            public UUID getUuid()
             {
-                return this.name;
+                return this.uuid;
             }
 
             public int getNumberOfAirBlocksOverHead()

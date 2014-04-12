@@ -24,4 +24,5 @@ import de.cubeisland.engine.core.world.ConfigWorld;
 public class PlayerConfig extends ReflectedYaml
 {
     public ConfigWorld lastWorld;
+    public String lastName;
 }

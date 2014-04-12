@@ -50,7 +50,6 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Direction;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.math.BlockVector2;
 import de.cubeisland.engine.core.util.math.BlockVector3;
@@ -58,6 +57,8 @@ import de.cubeisland.engine.core.util.math.MathHelper;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class InformationCommands
 {
@@ -86,14 +87,14 @@ public class InformationCommands
             world = context.getArg(0,World.class,null);
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Unknown world {input#world}!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Unknown world {input#world}!", context.getString(0));
                 return;
             }
             x = context.getArg(1,Integer.class,null);
             z = context.getArg(2,Integer.class,null);
             if (x == null || z == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Please provide valid whole number x and/or z coordinates!");
+                context.sendTranslated(NEGATIVE, "Please provide valid whole number x and/or z coordinates!");
                 return;
             }
         }
@@ -107,11 +108,11 @@ public class InformationCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Please provide a world and x and z coordinates!");
+            context.sendTranslated(NEGATIVE, "Please provide a world and x and z coordinates!");
             return;
         }
         Biome biome = world.getBiome(x, z);
-        context.sendTranslated(MessageType.NEUTRAL, "Biome at {vector:x\\=:z\\=}: {biome}", new BlockVector2(x, z), biome);
+        context.sendTranslated(NEUTRAL, "Biome at {vector:x\\=:z\\=}: {biome}", new BlockVector2(x, z), biome);
     }
 
     @Command(desc = "Displays the seed of a world.", usage = "(world)", max = 1)
@@ -123,7 +124,7 @@ public class InformationCommands
             world = context.getArg(0, World.class, null);
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World {input#world} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getString(0));
                 return;
             }
         }
@@ -135,11 +136,11 @@ public class InformationCommands
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "No world specified!");
+                context.sendTranslated(NEGATIVE, "No world specified!");
                 return;
             }
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Seed of {world} is {long#seed}", world, world.getSeed());
+        context.sendTranslated(NEUTRAL, "Seed of {world} is {long#seed}", world, world.getSeed());
     }
 
     @Command(desc = "Displays the direction in which you are looking.")
@@ -151,11 +152,11 @@ public class InformationCommands
             int direction = Math.round(((User)sender).getLocation().getYaw() + 180f + 360f) % 360;
             String dir;
             dir = Direction.matchDirection(direction).name();
-            sender.sendTranslated(MessageType.NEUTRAL, "You are looking to {input#direction}!", dir); // TODO translate direction
+            sender.sendTranslated(NEUTRAL, "You are looking to {input#direction}!", dir); // TODO translate direction
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{text:ProTip}: I assume you are looking right at your screen, right?");
+            context.sendTranslated(NEUTRAL, "{text:ProTip}: I assume you are looking right at your screen, right?");
         }
     }
 
@@ -167,16 +168,16 @@ public class InformationCommands
             final int height = ((User)context.getSender()).getLocation().getBlockY();
             if (height > 62)
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are on heightlevel {integer#blocks} ({amount#blocks} above sealevel)", height, height - 62);
+                context.sendTranslated(POSITIVE, "You are on heightlevel {integer#blocks} ({amount#blocks} above sealevel)", height, height - 62);
             }
             else
             {
-                context.sendTranslated(MessageType.POSITIVE, "You are on heightlevel {integer#blocks} ({amount#blocks} below sealevel)", height, 62 - height);
+                context.sendTranslated(POSITIVE, "You are on heightlevel {integer#blocks} ({amount#blocks} below sealevel)", height, 62 - height);
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You dug too deep!");
+            context.sendTranslated(NEGATIVE, "You dug too deep!");
         }
     }
 
@@ -186,11 +187,11 @@ public class InformationCommands
         if (context.getSender() instanceof User)
         {
             final Location loc = ((User)context.getSender()).getLocation();
-            context.sendTranslated(MessageType.NEUTRAL, "Your position is {vector:x\\=:y\\=:z\\=}", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+            context.sendTranslated(NEUTRAL, "Your position is {vector:x\\=:y\\=:z\\=}", new BlockVector3(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Your position: {text:Right in front of your screen!:color=RED}");
+            context.sendTranslated(NEUTRAL, "Your position: {text:Right in front of your screen!:color=RED}");
         }
     }
 
@@ -206,7 +207,7 @@ public class InformationCommands
             user = context.getUser(1);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(1));
                 return;
             }
         }
@@ -216,7 +217,7 @@ public class InformationCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "I am right {text:behind:color=RED} you!");
+            context.sendTranslated(NEUTRAL, "I am right {text:behind:color=RED} you!");
             return;
         }
         int radius = this.module.getConfiguration().commands.nearDefaultRadius;
@@ -304,20 +305,20 @@ public class InformationCommands
         }
         if (outputlist.isEmpty())
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Nothing detected nearby!");
+            context.sendTranslated(NEGATIVE, "Nothing detected nearby!");
         }
         else
         {
             String result;
             result = StringUtils.implode(ChatFormat.WHITE + ", ", outputlist);
             result += groupedOutput.toString();
-            if (context.getSender().getName().equals(user.getName()))
+            if (context.getSender().equals(user))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby you:\n{}", result);
+                context.sendTranslated(NEUTRAL, "Found those nearby you:\n{}", result);
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Found those nearby {user}:\n{}", user, result);
+                context.sendTranslated(NEUTRAL, "Found those nearby {user}:\n{}", user, result);
             }
         }
     }
@@ -354,11 +355,11 @@ public class InformationCommands
         final String label = context.getLabel().toLowerCase(Locale.ENGLISH);
         if (context.getSender() instanceof ConsoleCommandSender)
         {
-            context.sendTranslated(MessageType.NEUTRAL, label + " in the console?");
+            context.sendTranslated(NEUTRAL, label + " in the console?");
         }
         else
         {
-            context.sendTranslated(MessageType.NONE, ("ping".equals(label) ? "pong" : "ping") + "! Your latency: {integer#ping}", ((User)context.getSender()).getPing());
+            context.sendTranslated(NONE, ("ping".equals(label) ? "pong" : "ping") + "! Your latency: {integer#ping}", ((User)context.getSender()).getPing());
         }
     }
 
@@ -371,36 +372,36 @@ public class InformationCommands
             if (module.perms().COMMAND_LAG_RESET.isAuthorized(context.getSender()))
             {
                 this.module.getLagTimer().resetLowestTPS();
-                context.sendTranslated(MessageType.POSITIVE, "Reset lowest TPS!");
+                context.sendTranslated(POSITIVE, "Reset lowest TPS!");
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to do this!");
+                context.sendTranslated(NEGATIVE, "You are not allowed to do this!");
             }
             return;
         }
         //Uptime:
-        context.sendTranslated(MessageType.POSITIVE, "[{text:CubeEngine-Basics:color=RED}]");
+        context.sendTranslated(POSITIVE, "[{text:CubeEngine-Basics:color=RED}]");
         DateFormat df = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT,
                      context.getSender().getLocale());
         Date start = new Date(ManagementFactory.getRuntimeMXBean().getStartTime());
         Duration dura = new Duration(start.getTime(), System.currentTimeMillis());
-        context.sendTranslated(MessageType.POSITIVE, "Server has been running since {input#uptime}", df.format(start));
-        context.sendTranslated(MessageType.POSITIVE, "Uptime: {input#uptime}", formatter.print(dura.toPeriod()));
+        context.sendTranslated(POSITIVE, "Server has been running since {input#uptime}", df.format(start));
+        context.sendTranslated(POSITIVE, "Uptime: {input#uptime}", formatter.print(dura.toPeriod()));
         //TPS:
         float tps = this.module.getLagTimer().getAverageTPS();
         String color = tps == 20 ? ChatFormat.DARK_GREEN.toString() : tps > 17 ? ChatFormat.YELLOW.toString() : tps > 10 ? ChatFormat.RED.toString() : tps == 0 ? (ChatFormat.YELLOW.toString() + "NaN") : ChatFormat.DARK_RED.toString();
-        context.sendTranslated(MessageType.POSITIVE, "Current TPS: {input#color}{decimal#tps:1}", color, tps);
+        context.sendTranslated(POSITIVE, "Current TPS: {input#color}{decimal#tps:1}", color, tps);
         Pair<Long, Float> lowestTPS = this.module.getLagTimer().getLowestTPS();
         if (lowestTPS.getRight() != 20)
         {
             color = ChatFormat.parseFormats(tps > 17 ? ChatFormat.YELLOW.toString() : tps > 10 ? ChatFormat.RED.toString() : ChatFormat.DARK_RED.toString());
             Date date = new Date(lowestTPS.getLeft());
-            context.sendTranslated(MessageType.POSITIVE, "Lowest TPS was {}{decimal#tps:1} ({input#date})", color, lowestTPS.getRight(), df.format(date));
+            context.sendTranslated(POSITIVE, "Lowest TPS was {}{decimal#tps:1} ({input#date})", color, lowestTPS.getRight(), df.format(date));
             long timeSinceLastLowTPS = System.currentTimeMillis() - this.module.getLagTimer().getLastLowTPS();
             if (tps == 20 && TimeUnit.MINUTES.convert(timeSinceLastLowTPS,TimeUnit.MILLISECONDS) < 1)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "TPS was low in the last minute!");
+                context.sendTranslated(NEGATIVE, "TPS was low in the last minute!");
             }
         }
         //Memory
@@ -429,14 +430,14 @@ public class InformationCommands
             memused = ChatFormat.DARK_GREEN.toString();
         }
         memused += memUse;
-        context.sendTranslated(MessageType.POSITIVE, "Memory Usage: {input#memused}/{integer#memcom}/{integer#memMax} MB", memused, memCom, memMax);
+        context.sendTranslated(POSITIVE, "Memory Usage: {input#memused}/{integer#memcom}/{integer#memMax} MB", memused, memCom, memMax);
         //Worlds with loaded Chunks / Entities
         for (World world : Bukkit.getServer().getWorlds())
         {
             String type = world.getEnvironment().name();
             int loadedChunks = world.getLoadedChunks().length;
             int entities = world.getEntities().size();
-            context.sendTranslated(MessageType.POSITIVE, "{world} ({input#environment}): {amount} chunks {amount} entities", world, type, loadedChunks, entities);
+            context.sendTranslated(POSITIVE, "{world} ({input#environment}): {amount} chunks {amount} entities", world, type, loadedChunks, entities);
         }
     }
 
@@ -444,7 +445,7 @@ public class InformationCommands
     @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist","worlds"})
     public void listWorlds(CommandContext context)
     {
-        context.sendTranslated(MessageType.POSITIVE, "Loaded worlds:");
+        context.sendTranslated(POSITIVE, "Loaded worlds:");
         String format = " " + ChatFormat.WHITE + "- " + ChatFormat.GOLD + "%s" + ChatFormat.WHITE + ":" + ChatFormat.INDIGO + "%s";
         for (World world : Bukkit.getServer().getWorlds())
         {

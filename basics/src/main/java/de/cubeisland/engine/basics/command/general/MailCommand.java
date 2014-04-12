@@ -33,7 +33,6 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import org.jooq.DSLContext;
@@ -42,6 +41,7 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.basics.storage.TableMail.TABLE_MAIL;
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class MailCommand extends ContainerCommand
 {
@@ -69,8 +69,8 @@ public class MailCommand extends ContainerCommand
             }
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "If you wanted to look into other players mail use: {text:/mail spy} {input#player}.", context.getString(0));
-                context.sendTranslated(MessageType.NEGATIVE, "Otherwise be quiet!");
+                context.sendTranslated(NEUTRAL, "If you wanted to look into other players mail use: {text:/mail spy} {input#player}.", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Otherwise be quiet!");
                 return;
             }
             mailof = context.getUser(0);
@@ -78,14 +78,14 @@ public class MailCommand extends ContainerCommand
             {
                 if (!context.getString(0).equalsIgnoreCase("CONSOLE"))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
                     return;
                 }
                 nameMailOf = "CONSOLE";
             }
             else
             {
-                nameMailOf = mailof.getName();
+                nameMailOf = mailof.getDisplayName();
             }
         }
         else
@@ -97,14 +97,14 @@ public class MailCommand extends ContainerCommand
             }
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Log into the game to check your mailbox!");
+                context.sendTranslated(NEUTRAL, "Log into the game to check your mailbox!");
                 return;
             }
         }
         BasicsUser bUser = sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser();
         if (bUser.countMail() == 0)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You do not have any mail!");
+            context.sendTranslated(NEUTRAL, "You do not have any mail!");
             return;
         }
         List<Mail> mails;
@@ -118,7 +118,7 @@ public class MailCommand extends ContainerCommand
         }
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You do not have any mail from {user}.", nameMailOf);
+            context.sendTranslated(NEUTRAL, "You do not have any mail from {user}.", nameMailOf);
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -128,7 +128,7 @@ public class MailCommand extends ContainerCommand
             i++;
             sb.append("\n").append(ChatFormat.WHITE).append(i).append(": ").append(mail.readMail());
         }
-        context.sendTranslated(MessageType.POSITIVE, "Your mail: {input#mails}", ChatFormat.parseFormats(sb.toString()));
+        context.sendTranslated(POSITIVE, "Your mail: {input#mails}", ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "spymail")
@@ -138,13 +138,13 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         List<Mail> mails = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().getMails();
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} does not have any mail!", user);
+            context.sendTranslated(NEUTRAL, "{user} does not have any mail!", user);
             return;
         }
         StringBuilder sb = new StringBuilder();
@@ -154,7 +154,7 @@ public class MailCommand extends ContainerCommand
             i++;
             sb.append("\n").append(ChatFormat.WHITE).append(i).append(": ").append(mail.getMessage());
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{user}'s mail: {input#mails}", user, ChatFormat.parseFormats(sb.toString()));
+        context.sendTranslated(NEUTRAL, "{user}'s mail: {input#mails}", user, ChatFormat.parseFormats(sb.toString()));
     }
 
     @Alias(names = "sendmail")
@@ -164,12 +164,12 @@ public class MailCommand extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         String message = context.getStrings(1);
         this.mail(message, context.getSender(), user);
-        context.sendTranslated(MessageType.POSITIVE, "Mail send to {user}!", user);
+        context.sendTranslated(POSITIVE, "Mail send to {user}!", user);
     }
 
     @Alias(names = "sendallmail")
@@ -206,7 +206,7 @@ public class MailCommand extends ContainerCommand
                 dsl.batch(queries).execute();
             }
         },0);
-        context.sendTranslated(MessageType.POSITIVE, "Sent mail to everyone!");
+        context.sendTranslated(POSITIVE, "Sent mail to everyone!");
     }
 
     @Command(desc = "Removes a single mail", usage = "<mailId>", min = 1, max = 1)
@@ -218,29 +218,29 @@ public class MailCommand extends ContainerCommand
             Integer mailId = context.getArg(0, Integer.class, null);
             if (mailId == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{input} is not a number!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "{input} is not a number!", context.getString(0));
                 return;
             }
             BasicsUser bUser = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser();
             if (bUser.countMail() == 0)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "You do not have any mail!");
+                context.sendTranslated(NEUTRAL, "You do not have any mail!");
                 return;
             }
             try
             {
                 Mail mail = bUser.getMails().get(mailId);
                 module.getCore().getDB().getDSL().delete(TABLE_MAIL).where(TABLE_MAIL.KEY.eq(mail.getKey())).execute();
-                context.sendTranslated(MessageType.POSITIVE, "Deleted Mail #{integer#mailid}", mailId);
+                context.sendTranslated(POSITIVE, "Deleted Mail #{integer#mailid}", mailId);
             }
             catch (IndexOutOfBoundsException e)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Invalid Mail Id!");
+                context.sendTranslated(NEGATIVE, "Invalid Mail Id!");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The console has no mails!");
+            context.sendTranslated(NEGATIVE, "The console has no mails!");
         }
     }
 
@@ -255,23 +255,23 @@ public class MailCommand extends ContainerCommand
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You will never have mail here!");
+            context.sendTranslated(NEGATIVE, "You will never have mail here!");
             return;
         }
         if (!context.hasArg(0))
         {
             sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMail();
-            context.sendTranslated(MessageType.NEUTRAL, "Cleared all mails!");
+            context.sendTranslated(NEUTRAL, "Cleared all mails!");
             return;
         }
         User from = context.getUser(0);
         if (from == null && !context.getString(0).equalsIgnoreCase("Console"))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
             return;
         }
         sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMailFrom(from);
-        context.sendTranslated(MessageType.NEUTRAL, "Cleared all mail from {user}!", from == null ? "console" : from.getName());
+        context.sendTranslated(NEUTRAL, "Cleared all mail from {user}!", from == null ? "console" : from);
     }
 
     private void mail(String message, CommandSender from, User... users)
@@ -281,7 +281,7 @@ public class MailCommand extends ContainerCommand
             user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().addMail(from, message);
             if (user.isOnline())
             {
-                user.sendTranslated(MessageType.NEUTRAL, "You just got a mail from {user}!", from.getName());
+                user.sendTranslated(NEUTRAL, "You just got a mail from {user}!", from.getName());
             }
         }
     }

@@ -18,9 +18,11 @@
 package de.cubeisland.engine.log.storage;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
@@ -28,32 +30,34 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
-import de.cubeisland.engine.log.action.ActionType;
+import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 public class QueryParameter implements Cloneable
 {
     private final Log module;
 
     // When (since/before/from-to)
-    volatile Long from_since;
-    volatile Long to_before;
+    volatile Date from_since;
+    volatile Date to_before;
     // Where (in world / at location1 / in between location1 and location2)
-    volatile Long worldID;
+    volatile World world;
     volatile BlockVector3 location1;
     volatile BlockVector3 location2;
     Integer radius;
     Set<Location> singleBlockLocations;
     // The actions to look for
-    Map<ActionType, Boolean> actions = new ConcurrentHashMap<>();
+    Map<Class<? extends BaseAction>, Boolean> actions = new ConcurrentHashMap<>();
     // Users
-    Map<Long, Boolean> users = new ConcurrentHashMap<>();
+    Map<UUID, Boolean> users = new ConcurrentHashMap<>();
     // Entity
     Map<Integer, Boolean> entities = new ConcurrentHashMap<>();
     // Blocks
-    Map<ImmutableBlockData, Boolean> blocks = new ConcurrentHashMap<>();
+    Map<BlockSection, Boolean> blocks = new ConcurrentHashMap<>();
 
     public QueryParameter(Log module)
     {
@@ -62,7 +66,7 @@ public class QueryParameter implements Cloneable
 
     private void resetLocations()
     {
-        this.worldID = null;
+        this.world = null;
         this.location1 = null;
         this.location2 = null;
         this.singleBlockLocations = null;
@@ -72,7 +76,7 @@ public class QueryParameter implements Cloneable
     public void setWorld(World world)
     {
         this.resetLocations();
-        this.worldID = module.getCore().getWorldManager().getWorldId(world);
+        this.world = world;
     }
 
     public void setSingleLocations(Location... locations)
@@ -84,8 +88,9 @@ public class QueryParameter implements Cloneable
         }
         if (locations.length == 1)
         {
-            this.worldID = this.module.getCore().getWorldManager().getWorldId(locations[0].getWorld());
-            this.location1 = new BlockVector3(locations[0].getBlockX(),locations[0].getBlockY(),locations[0].getBlockZ());
+            this.world = locations[0].getWorld();
+            this.location1 = new BlockVector3(locations[0].getBlockX(), locations[0].getBlockY(),
+                                              locations[0].getBlockZ());
         }
         else
         {
@@ -96,9 +101,9 @@ public class QueryParameter implements Cloneable
     public void setLocationRange(Location loc1, Location loc2)
     {
         this.resetLocations();
-        this.worldID = this.module.getCore().getWorldManager().getWorldId(loc1.getWorld());
-        this.location1 = new BlockVector3(loc1.getBlockX(),loc1.getBlockY(),loc1.getBlockZ());
-        this.location2 = new BlockVector3(loc2.getBlockX(),loc2.getBlockY(),loc2.getBlockZ());
+        this.world = loc1.getWorld();
+        this.location1 = new BlockVector3(loc1.getBlockX(), loc1.getBlockY(), loc1.getBlockZ());
+        this.location2 = new BlockVector3(loc2.getBlockX(), loc2.getBlockY(), loc2.getBlockZ());
     }
 
     public void setLocationRadius(Location loc, int radius)
@@ -107,39 +112,39 @@ public class QueryParameter implements Cloneable
         this.radius = radius;
     }
 
-    public void since(long date)
+    public void since(Date date)
     {
         this.from_since = date;
         this.to_before = null;
     }
 
-    public void before(long date)
+    public void before(Date date)
     {
         this.from_since = null;
         this.to_before = date;
     }
 
-    public void range(long from, long to)
+    public void range(Date from, Date to)
     {
         this.from_since = from;
         this.to_before = to;
     }
 
-    public void setActions(Set<ActionType> actions, boolean include)
+    public void setActions(Set<Class<? extends BaseAction>> actions, boolean include)
     {
         this.actions.clear();
-        for (ActionType action : actions)
+        for (Class<? extends BaseAction> action : actions)
         {
             this.actions.put(action, include);
         }
     }
 
-    public void includeAction(ActionType action)
+    public void includeAction(Class<? extends BaseAction> action)
     {
         this.actions.put(action, true);
     }
 
-    public void excludeAction(ActionType action)
+    public void excludeAction(Class<? extends BaseAction> action)
     {
         this.actions.put(action, false);
     }
@@ -149,21 +154,21 @@ public class QueryParameter implements Cloneable
         this.actions.clear();
     }
 
-    public void setUsers(Set<Long> users, boolean include)
+    public void setUsers(Set<UUID> users, boolean include)
     {
         this.users.clear();
-        for (Long user : users)
+        for (UUID user : users)
         {
             this.users.put(user, include);
         }
     }
 
-    public void includeUser(Long userId)
+    public void includeUser(UUID userId)
     {
         this.users.put(userId, true);
     }
 
-    public void excludeUser(Long userId)
+    public void excludeUser(UUID userId)
     {
         this.users.put(userId, false);
     }
@@ -197,21 +202,21 @@ public class QueryParameter implements Cloneable
         this.entities.clear();
     }
 
-    public void setBlocks(Set<ImmutableBlockData> blockDatas, boolean include)
+    public void setBlocks(Set<BlockSection> blockDatas, boolean include)
     {
         this.blocks.clear();
-        for (ImmutableBlockData blockData : blockDatas)
+        for (BlockSection blockData : blockDatas)
         {
             this.blocks.put(blockData, include);
         }
     }
 
-    public void includeBlock(ImmutableBlockData data)
+    public void includeBlock(BlockSection data)
     {
         this.blocks.put(data, true);
     }
 
-    public void excludeBlock(ImmutableBlockData data)
+    public void excludeBlock(BlockSection data)
     {
         this.blocks.put(data, false);
     }
@@ -227,32 +232,30 @@ public class QueryParameter implements Cloneable
         {
             if (this.location2 != null)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found in between {vector} and {vector} in {world}!",
+                user.sendTranslated(NEUTRAL, "No logs found in between {vector} and {vector} in {world}!",
                                     new BlockVector3(this.location1.x, this.location1.y, this.location1.z),
-                                    new BlockVector3(this.location2.x, this.location2.y, this.location2.z),
-                                    this.module.getCore().getWorldManager().getWorld(worldID));
+                                    new BlockVector3(this.location2.x, this.location2.y, this.location2.z), world);
             }
             else if (this.radius == null)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found at {vector} in {world}!",
-                                    new BlockVector3(this.location1.x, this.location1.y, this.location1.z),
-                                    this.module.getCore().getWorldManager().getWorld(worldID));
+                user.sendTranslated(NEUTRAL, "No logs found at {vector} in {world}!", new BlockVector3(
+                    this.location1.x, this.location1.y, this.location1.z), world);
             }
-            else if (user.getLocation().getBlockX() == location1.x
-                  && user.getLocation().getBlockY() == location1.y
-                  && user.getLocation().getBlockZ() == location1.z)
+            else if (user.getLocation().getBlockX() == location1.x && user.getLocation().getBlockY() == location1.y
+                && user.getLocation().getBlockZ() == location1.z)
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around you!", radius);
+                user.sendTranslated(NEUTRAL, "No logs found in a radius of {amount} around you!", radius);
             }
             else
             {
-                user.sendTranslated(MessageType.NEUTRAL, "No logs found in a radius of {amount} around {vector} in {world}!",
-                    this.radius, new BlockVector3(this.location1.x, this.location1.y, this.location1.z), this.module.getCore().getWorldManager().getWorld(worldID));
+                user.sendTranslated(NEUTRAL,
+                                    "No logs found in a radius of {amount} around {vector} in {world}!", this.radius,
+                                    new BlockVector3(this.location1.x, this.location1.y, this.location1.z), world);
             }
         }
         else
         {
-            user.sendTranslated(MessageType.NEUTRAL, "No logs found for your given parameters");
+            user.sendTranslated(NEUTRAL, "No logs found for your given parameters");
         }
     }
 
@@ -262,7 +265,7 @@ public class QueryParameter implements Cloneable
 
         params.from_since = this.from_since;
         params.to_before = this.to_before;
-        params.worldID = this.worldID;
+        params.world = this.world;
         params.location1 = this.location1;
         params.location2 = this.location2;
         params.radius = this.radius;
@@ -283,7 +286,10 @@ public class QueryParameter implements Cloneable
     {
         for (Boolean include : this.actions.values())
         {
-            if (include) return true; // if one is included exclusion do not matter
+            if (include)
+            {
+                return true; // if one is included exclusion do not matter
+            }
         }
         return false; // all excluded
     }
@@ -292,7 +298,10 @@ public class QueryParameter implements Cloneable
     {
         for (Boolean include : this.blocks.values())
         {
-            if (include) return true; // if one is included exclusion do not matter
+            if (include)
+            {
+                return true; // if one is included exclusion do not matter
+            }
         }
         return false; // all excluded
     }
@@ -301,15 +310,21 @@ public class QueryParameter implements Cloneable
     {
         for (Boolean include : this.users.values())
         {
-            if (include) return true; // if one is included exclusion do not matter
+            if (include)
+            {
+                return true; // if one is included exclusion do not matter
+            }
         }
         return false; // all excluded
     }
 
-    public boolean containsAction(ActionType actionType)
+    public boolean containsAction(Class<? extends BaseAction> actionType)
     {
         Boolean set = this.actions.get(actionType);
-        if (set == null) return false;
+        if (set == null)
+        {
+            return false;
+        }
         return set;
     }
 }

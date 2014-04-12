@@ -40,9 +40,9 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.set.hash.TLongHashSet;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 public abstract class ConversationCommand extends ParameterizedCommand implements Listener
 {
@@ -68,7 +68,7 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
     @EventHandler
     public void onChatHandler(AsyncPlayerChatEvent event)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             user.sendMessage(ChatFormat.PURPLE + "[" + ChatFormat.WHITE + "ChatCommand" + ChatFormat.PURPLE + "] " + ChatFormat.WHITE + event.getMessage());
@@ -83,7 +83,7 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
     @EventHandler
     public void onTabComplete(PlayerChatTabCompleteEvent event)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             event.getTabCompletions().clear();
@@ -191,14 +191,14 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
     @Override
     public void help(HelpContext context)
     {
-        context.sendTranslated(MessageType.NEUTRAL, "Flags:");
+        context.sendTranslated(NEUTRAL, "Flags:");
         Set<String> flags = new HashSet<>();
         for (CommandFlag flag : this.getContextFactory().getFlags())
         {
             flags.add(flag.getLongName().toLowerCase());
         }
         context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, flags));
-        context.sendTranslated(MessageType.NEUTRAL, "Parameters:");
+        context.sendTranslated(NEUTRAL, "Parameters:");
         Set<String> params  = new HashSet<>();
         for (CommandParameter param : this.getContextFactory().getParameters())
         {

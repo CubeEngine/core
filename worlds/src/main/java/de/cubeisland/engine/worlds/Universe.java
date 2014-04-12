@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -40,17 +41,20 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.reflect.codec.YamlCodec;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.WorldLocation;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.WorldManager;
+import de.cubeisland.engine.reflect.Reflector;
+import de.cubeisland.engine.reflect.codec.YamlCodec;
 import de.cubeisland.engine.worlds.config.UniverseConfig;
 import de.cubeisland.engine.worlds.config.WorldConfig;
 import de.cubeisland.engine.worlds.player.PlayerDataConfig;
 
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.DAT;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.YAML;
 
 /**
@@ -85,8 +89,47 @@ public class Universe
         this.dirUniverse = dirUniverse;
         this.dirPlayers = dirUniverse.resolve("players");
         Files.createDirectories(dirPlayers);
+
+        this.updateToUUID();
+
         this.fileDefaults = dirUniverse.resolve("default.yml");
         this.fileUniverse =  dirUniverse.resolve("config.yml");
+    }
+
+    private void updateToUUID()
+    {
+        try
+        {
+            Map<String,Path> playerNames = new HashMap<>();
+            for (Path path : Files.newDirectoryStream(this.dirPlayers, DAT))
+            {
+                String name = StringUtils.stripFileExtension(path.getFileName().toString());
+                if (!McUUID.UUID_PATTERN.matcher(name).find())
+                {
+                    playerNames.put(name, path);
+                }
+            }
+            if (playerNames.isEmpty())
+            {
+                return;
+            }
+            this.module.getLog().info("Converting {} PlayerDataConfig for {}", playerNames.size(), this.getName());
+            Map<String,UUID> uuids = McUUID.getUUIDForNames(playerNames.keySet());
+            Reflector reflector = this.module.getCore().getConfigFactory();
+            for (Entry<String, UUID> entry : uuids.entrySet())
+            {
+                Path oldPath = playerNames.get(entry.getKey());
+                PlayerDataConfig load = reflector.load(PlayerDataConfig.class, oldPath.toFile(), false);
+                load.setFile(this.dirPlayers.resolve(entry.getValue().toString() + DAT.getExtention()).toFile());
+                load.lastName = entry.getKey();
+                load.save();
+                Files.delete(oldPath);
+            }
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e); // TODO better exception
+        }
     }
 
     public static Universe load(Worlds module, Multiverse multiverse, Path dirUniverse) throws IOException
@@ -334,24 +377,25 @@ public class Universe
         PlayerDataConfig config = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
         config.applyFromPlayer(player);
 
-        config.setFile(dirPlayers.resolve(player.getName() + ".dat").toFile());
+        config.setFile(dirPlayers.resolve(player.getUniqueId() + DAT.getExtention()).toFile());
         config.save();
 
+        // TODO remove yaml saving
         YamlCodec codec = this.module.getCore().getConfigFactory().getCodecManager().getCodec(YamlCodec.class);
         try
         {
-            codec.saveReflected(config, new FileOutputStream(dirPlayers.resolve(player.getName() + YAML.getExtention()).toFile()));
+            codec.saveReflected(config, new FileOutputStream(dirPlayers.resolve(player.getUniqueId() + YAML.getExtention()).toFile()));
         }
         catch (FileNotFoundException e)
         {
             e.printStackTrace();
         }
-        this.module.getLog().debug("PlayerData for {} in {} ({}) saved", player.getName(), world.getName(), this.getName());
+        this.module.getLog().debug("PlayerData for {} in {} ({}) saved", player.getDisplayName(), world.getName(), this.getName());
     }
 
     public void loadPlayer(Player player)
     {
-        Path path = dirPlayers.resolve(player.getName() + ".dat");
+        Path path = dirPlayers.resolve(player.getUniqueId() + DAT.getExtention());
         if (Files.exists(path))
         {
             PlayerDataConfig load = this.module.getCore().getConfigFactory().load(PlayerDataConfig.class, path.toFile());
@@ -359,7 +403,7 @@ public class Universe
         }
         else
         {
-            this.module.getLog().debug("Created PlayerDataConfig for {} in the {} universe" , player.getName(), this.getName());
+            this.module.getLog().debug("Created PlayerDataConfig for {} in the {} universe" , player.getDisplayName(), this.getName());
             PlayerDataConfig save = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
             save.applyToPlayer(player);
             this.savePlayer(player, player.getWorld());
@@ -379,7 +423,7 @@ public class Universe
                 player.setGameMode(this.worldConfigs.get(player.getWorld().getName()).gameMode);
             }
         }
-        this.module.getLog().debug("PlayerData for {} in {} ({}) applied", player.getName(), player.getWorld().getName(), this.getName());
+        this.module.getLog().debug("PlayerData for {} in {} ({}) applied", player.getDisplayName(), player.getWorld().getName(), this.getName());
     }
 
     public World getMainWorld()

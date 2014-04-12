@@ -21,15 +21,18 @@ import java.util.Arrays;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.locker.Locker;
+
+import static de.cubeisland.engine.core.util.ChatFormat.DARK_RED;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Material.PAPER;
+import static org.bukkit.Sound.*;
 
 public class KeyBook
 {
@@ -72,18 +75,18 @@ public class KeyBook
             // Validate book
             if (this.isValidFor(lock))
             {
-                if (effectLocation != null) currentHolder.sendTranslated(MessageType.POSITIVE, "As you approach with your KeyBook the magic lock disappears!");
-                currentHolder.playSound(effectLocation, Sound.PISTON_EXTEND, 1, 2);
-                currentHolder.playSound(effectLocation, Sound.PISTON_EXTEND, 1, (float)1.5);
+                if (effectLocation != null) currentHolder.sendTranslated(POSITIVE, "As you approach with your KeyBook the magic lock disappears!");
+                currentHolder.playSound(effectLocation, PISTON_EXTEND, 1, 2);
+                currentHolder.playSound(effectLocation, PISTON_EXTEND, 1, (float)1.5);
                 if (effectLocation != null) lock.notifyKeyUsage(currentHolder);
                 return true;
             }
             else
             {
-                currentHolder.sendTranslated(MessageType.NEGATIVE, "You try to open the container with your KeyBook\n" +
+                currentHolder.sendTranslated(NEGATIVE, "You try to open the container with your KeyBook\n" +
                                         "but you get forcefully pushed away!");
                 this.invalidate();
-                currentHolder.playSound(effectLocation, Sound.GHAST_SCREAM, 1, 1);
+                currentHolder.playSound(effectLocation, GHAST_SCREAM, 1, 1);
                 final Vector userDirection = currentHolder.getLocation().getDirection();
                 currentHolder.damage(1);
                 currentHolder.setVelocity(userDirection.multiply(-3));
@@ -92,9 +95,9 @@ public class KeyBook
         }
         else
         {
-            currentHolder.sendTranslated(MessageType.NEUTRAL, "You try to open the container with your KeyBook but nothing happens!");
-            currentHolder.playSound(effectLocation, Sound.BLAZE_HIT, 1, 1);
-            currentHolder.playSound(effectLocation, Sound.BLAZE_HIT, 1, (float)0.8);
+            currentHolder.sendTranslated(NEUTRAL, "You try to open the container with your KeyBook but nothing happens!");
+            currentHolder.playSound(effectLocation, BLAZE_HIT, 1, 1);
+            currentHolder.playSound(effectLocation, BLAZE_HIT, 1, (float)0.8);
             return false;
         }
     }
@@ -102,15 +105,15 @@ public class KeyBook
     public void invalidate()
     {
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(ChatFormat.parseFormats(ChatFormat.DARK_RED + "Broken KeyBook"));
+        itemMeta.setDisplayName(ChatFormat.parseFormats(DARK_RED + "Broken KeyBook"));
         itemMeta.setLore(Arrays.asList(ChatFormat // TODO translate as one object
-               .parseFormats(currentHolder.getTranslation(MessageType.NEUTRAL, "This KeyBook")), ChatFormat
-               .parseFormats(currentHolder.getTranslation(MessageType.NEUTRAL, "looks old and")), ChatFormat
-               .parseFormats(currentHolder.getTranslation(MessageType.NEUTRAL, "used up. It")), ChatFormat
-               .parseFormats(currentHolder.getTranslation(MessageType.NEUTRAL, "wont let you")), ChatFormat
-               .parseFormats(currentHolder.getTranslation(MessageType.NEUTRAL, "open any containers!"))));
+               .parseFormats(currentHolder.getTranslation(NEUTRAL, "This KeyBook")), ChatFormat
+               .parseFormats(currentHolder.getTranslation(NEUTRAL, "looks old and")), ChatFormat
+               .parseFormats(currentHolder.getTranslation(NEUTRAL, "used up. It")), ChatFormat
+               .parseFormats(currentHolder.getTranslation(NEUTRAL, "wont let you")), ChatFormat
+               .parseFormats(currentHolder.getTranslation(NEUTRAL, "open any containers!"))));
         item.setItemMeta(itemMeta);
-        item.setType(Material.PAPER);
+        item.setType(PAPER);
         currentHolder.updateInventory();
     }
 

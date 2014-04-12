@@ -77,13 +77,24 @@ public interface CommandContext
     void sendMessage(String message);
 
     /**
-     * This method is a proxy to CommandSender.sendTranslated(String, Object...)
+     * This method is a proxy to {@link CommandSender#sendTranslated}
      *
      * @param type
      * @param message the mesage to send
      * @param args the args
      */
     void sendTranslated(MessageType type, String message, Object... args);
+
+    /**
+     * This method is a proxy to {@link CommandSender#sendTranslatedN}
+     *
+     * @param type
+     * @param count
+     * @param sMessage
+     * @param pMessage
+     * @param args
+     */
+    void sendTranslatedN(MessageType type, int count, String sMessage, String pMessage, Object... args);
 
     /**
      * Returns the number og arguments given to the command

@@ -23,11 +23,11 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
 import de.cubeisland.engine.locker.storage.LockManager;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
 import static de.cubeisland.engine.locker.commands.LockerCommands.isNotUser;
 
@@ -46,11 +46,11 @@ public class LockerCreateCommands extends ContainerCommand
         this.manager.commandListener.setCommandType(sender, type, password, createKeyBook);
         if (createKeyBook)
         {
-            sender.sendTranslated(MessageType.POSITIVE, "Right click the item you want to protect with a book in your hand!");
+            sender.sendTranslated(POSITIVE, "Right click the item you want to protect with a book in your hand!");
         }
         else
         {
-            sender.sendTranslated(MessageType.POSITIVE, "Right click the item you want to protect!");
+            sender.sendTranslated(POSITIVE, "Right click the item you want to protect!");
         }
     }
 

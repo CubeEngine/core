@@ -18,9 +18,11 @@
 package de.cubeisland.engine.bigdata;
 
 import java.net.UnknownHostException;
+import java.util.Date;
 
+import com.mongodb.DB;
 import com.mongodb.MongoClient;
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.Module;import de.cubeisland.engine.core.module.exception.ModuleLoadError;
 
 public class Bigdata extends Module
 {
@@ -37,13 +39,22 @@ public class Bigdata extends Module
         }
         catch (UnknownHostException e)
         {
-            throw new IllegalArgumentException("Invalid host" + e);
+            throw new ModuleLoadError("Invalid host", e);
         }
+        MongoDBCodec mongoDBCodec = new MongoDBCodec();
+        this.getCore().getConfigFactory().getCodecManager().registerCodec(mongoDBCodec);
+        mongoDBCodec.getConverterManager().registerConverter(Date.class, new DateConverter());
+        mongoDBCodec.getConverterManager().registerConverter(Reference.class, new ReferenceConverter(this.getCore().getConfigFactory()));
     }
 
     @Override
     public void onEnable()
     {
 
+    }
+
+    public DB getDatabae(String name)
+    {
+        return this.pool.getDB(name);
     }
 }

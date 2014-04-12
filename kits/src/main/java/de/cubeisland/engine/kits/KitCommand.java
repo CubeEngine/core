@@ -30,9 +30,12 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.FileUtil;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
+import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Material.AIR;
 
 public class KitCommand extends ContainerCommand
 {
@@ -74,7 +77,7 @@ public class KitCommand extends ContainerCommand
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Just log in or use the config!");
+            context.sendTranslated(NEGATIVE, "Just log in or use the config!");
             return;
         }
         List<KitItem> itemList = new ArrayList<>();
@@ -83,7 +86,7 @@ public class KitCommand extends ContainerCommand
             ItemStack[] items = sender.getInventory().getContents();
             for (int i = 0; i <= 8; ++i)
             {
-                if (items[i] == null || items[i].getTypeId() == 0)
+                if (items[i] == null || items[i].getType() == AIR)
                 {
                     break;
                 }
@@ -114,7 +117,7 @@ public class KitCommand extends ContainerCommand
         Kit kit = new Kit(module, context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{name#kit} is is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
+            context.sendTranslated(NEGATIVE, "{name#kit} is is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
             return;
         }
         manager.saveKit(kit);
@@ -122,7 +125,7 @@ public class KitCommand extends ContainerCommand
         {
             getModule().getCore().getPermissionManager().registerPermission(getModule(), kit.getPermission());
         }
-        context.sendTranslated(MessageType.POSITIVE, "Created the {name#kit} kit!", kit.getKitName());
+        context.sendTranslated(POSITIVE, "Created the {name#kit} kit!", kit.getKitName());
     }
 
 
@@ -130,8 +133,8 @@ public class KitCommand extends ContainerCommand
     @Command(desc = "Lists all currently available kits.")
     public void list(ParameterizedContext context)
     {
-        context.sendTranslated(MessageType.POSITIVE, "The following kits are available:");
-        String format = "  " + ChatFormat.WHITE + "-" + ChatFormat.YELLOW;
+        context.sendTranslated(POSITIVE, "The following kits are available:");
+        String format = "  " + WHITE + "-" + YELLOW;
         for (String kitName : manager.getKitsNames())
         {
             context.sendMessage(format + kitName);
@@ -155,7 +158,7 @@ public class KitCommand extends ContainerCommand
         }
         if (kit == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Kit {input} not found!", kitname);
+            context.sendTranslated(NEGATIVE, "Kit {input} not found!", kitname);
             return;
         }
         if (context.hasFlag("a"))
@@ -168,14 +171,14 @@ public class KitCommand extends ContainerCommand
                 {
                     if (kit.give(context.getSender(), receiver, force))
                     {
-                        if (receiver.getName().equals(context.getSender().getName()))
+                        if (receiver.equals(context.getSender()))
                         {
-                            context.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit!", kit.getKitName());
+                            context.sendTranslated(POSITIVE, "Received the {name#kit} kit!", kit.getKitName());
                         }
                         else
                         {
-                            context.sendTranslated(MessageType.POSITIVE, "You gave {user} the {name#kit} kit!", receiver, kit.getKitName());
-                            receiver.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
+                            context.sendTranslated(POSITIVE, "You gave {user} the {name#kit} kit!", receiver, kit.getKitName());
+                            receiver.sendTranslated(POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
                         }
                         gaveKit = true;
                     }
@@ -187,11 +190,11 @@ public class KitCommand extends ContainerCommand
             }
             if (!gaveKit)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "No one received the kit!");
+                context.sendTranslated(NEGATIVE, "No one received the kit!");
             }
             else if (kitNotreceived > 0)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{amount} players did not receive a kit!", kitNotreceived); // TODO Have a string for if there is only one player, so non-plural
+                context.sendTranslated(NEGATIVE, "{amount} players did not receive a kit!", kitNotreceived); // TODO Have a string for if there is only one player, so non-plural
             }
         }
         else
@@ -208,17 +211,17 @@ public class KitCommand extends ContainerCommand
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You need to specify a player!");
+                context.sendTranslated(NEGATIVE, "You need to specify a player!");
                 return;
             }
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
                 return;
             }
             if (!user.isOnline())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{user} is not online!", user.getName());
+                context.sendTranslated(NEGATIVE, "{user} is not online!", user.getDisplayName());
                 return;
             }
             if (kit.give(context.getSender(), user, force))
@@ -227,7 +230,7 @@ public class KitCommand extends ContainerCommand
                 {
                     if (kit.getCustomMessage().equals(""))
                     {
-                        context.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
+                        context.sendTranslated(POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
                     }
                     else
                     {
@@ -236,10 +239,10 @@ public class KitCommand extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You gave {user} the {name#kit} kit!", user, kit.getKitName());
+                    context.sendTranslated(POSITIVE, "You gave {user} the {name#kit} kit!", user, kit.getKitName());
                     if (kit.getCustomMessage().equals(""))
                     {
-                        user.sendTranslated(MessageType.POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
+                        user.sendTranslated(POSITIVE, "Received the {name#kit} kit. Enjoy.", kit.getKitName());
                     }
                     else
                     {
@@ -251,11 +254,11 @@ public class KitCommand extends ContainerCommand
             {
                 if (other)
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "{user} has not enough space in your inventory for this kit!", user);
+                    context.sendTranslated(NEUTRAL, "{user} has not enough space in your inventory for this kit!", user);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "You don't have enough space in your inventory for this kit!");
+                    context.sendTranslated(NEUTRAL, "You don't have enough space in your inventory for this kit!");
                 }
             }
         }

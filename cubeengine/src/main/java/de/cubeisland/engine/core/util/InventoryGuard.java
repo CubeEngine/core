@@ -128,7 +128,7 @@ public class InventoryGuard implements Listener
                 && event.getInventory().getHolder().getInventory().equals(this.inventory)))
                 && event.getPlayer() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);
@@ -153,7 +153,7 @@ public class InventoryGuard implements Listener
             && event.getInventory().getHolder().getInventory().equals(this.inventory)))
             && event.getWhoClicked() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getWhoClicked().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getWhoClicked().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 boolean affectsTop = false;
@@ -219,7 +219,7 @@ public class InventoryGuard implements Listener
                     && event.getInventory().getHolder().getInventory().equals(this.inventory)))
             && event.getWhoClicked() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getWhoClicked().getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getWhoClicked().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 if (event.getAction().equals(InventoryAction.NOTHING))

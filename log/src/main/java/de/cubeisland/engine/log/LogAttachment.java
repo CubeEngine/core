@@ -20,6 +20,7 @@ package de.cubeisland.engine.log;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 
@@ -112,38 +113,48 @@ public class LogAttachment extends UserAttachment
         switch (blockMaterial)
         {
             case BEDROCK:
+            case BOOK:
                 return this.createNewGeneralLookup();
             case CHEST:
+            case CLAY_BRICK:
                 return this.createNewContainerLookup();
             case PUMPKIN:
+            case CLAY_BALL:
                 return this.createNewPlayerLookup();
             case SOUL_SAND:
+            case BONE:
                 return this.createNewKillsLookup();
             case LOG:
+            case NETHER_BRICK_ITEM:
                 return this.createNewBlockLookup();
             default:
                 return null;
         }
     }
 
-    public Lookup getLookup(Material blockMaterial)
+    public Lookup getLookup(Material material)
     {
         Lookup lookup;
-        switch (blockMaterial)
+        switch (material)
         {
             case BEDROCK:
+            case BOOK:
                 lookup = generalLookup;
                 break;
             case CHEST:
+            case CLAY_BRICK:
                 lookup = containerLookup;
                 break;
             case PUMPKIN:
+            case CLAY_BALL:
                 lookup = playerLookup;
                 break;
             case SOUL_SAND:
+            case BONE:
                 lookup = killLookup;
                 break;
             case LOG:
+            case NETHER_BRICK_ITEM:
                 lookup = blockLookup;
                 break;
             default:
@@ -151,7 +162,7 @@ public class LogAttachment extends UserAttachment
         }
         if (lookup == null)
         {
-            return this.createNewLookup(blockMaterial);
+            return this.createNewLookup(material);
         }
         return lookup;
     }
@@ -240,6 +251,11 @@ public class LogAttachment extends UserAttachment
     public Lookup getLastLookup()
     {
         return this.lastLookup;
+    }
+
+    public void addToPreview(Location loc, String[] lines)
+    {
+        this.preview.add(loc, lines);
     }
 }
 

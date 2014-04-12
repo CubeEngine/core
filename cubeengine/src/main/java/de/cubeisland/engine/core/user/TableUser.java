@@ -18,27 +18,39 @@
 package de.cubeisland.engine.core.user;
 
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.Database;
+import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfiguration;
+import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
 import org.jooq.util.mysql.MySQLDataType;
 
-public class TableUser extends AutoIncrementTable<UserEntity, UInteger>
+public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implements TableUpdateCreator<UserEntity>
 {
     public static TableUser TABLE_USER;
 
     public TableUser(String prefix)
     {
-        super(prefix + "user", new Version(1));
+        super(prefix + "user", new Version(2));
         this.setAIKey(this.KEY);
-        this.addUniqueKey(this.PLAYER);
-        this.addFields(KEY, PLAYER, NOGC, LASTSEEN, PASSWD, FIRSTSEEN, LANGUAGE);
+        this.addUniqueKey(LEAST, MOST);
+        this.addFields(KEY, LASTNAME, NOGC, LASTSEEN, PASSWD, FIRSTSEEN, LANGUAGE, LEAST, MOST);
         TABLE_USER = this;
     }
 
@@ -53,16 +65,62 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger>
     }
 
     public final TableField<UserEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
-    public final TableField<UserEntity, String> PLAYER = createField("player", SQLDataType.VARCHAR.length(16).nullable(false), this);
+    public final TableField<UserEntity, String> LASTNAME = createField("lastname", SQLDataType.VARCHAR.length(16).nullable(false), this);
     public final TableField<UserEntity, Boolean> NOGC = createField("nogc", BOOLEAN.nullable(false), this);
     public final TableField<UserEntity, Timestamp> LASTSEEN = createField("lastseen", MySQLDataType.DATETIME.nullable(false), this);
     public final TableField<UserEntity, byte[]> PASSWD = createField("passwd", SQLDataType.VARBINARY.length(128), this);
     public final TableField<UserEntity, Timestamp> FIRSTSEEN = createField("firstseen", MySQLDataType.DATETIME.nullable(false), this);
     public final TableField<UserEntity, String> LANGUAGE = createField("language", SQLDataType.VARCHAR.length(5), this);
+    public final TableField<UserEntity, Long> LEAST = createField("UUIDleast", SQLDataType.BIGINT.nullable(false), this);
+    public final TableField<UserEntity, Long> MOST = createField("UUIDmost", SQLDataType.BIGINT.nullable(false), this);
 
     @Override
     public Class<UserEntity> getRecordType()
     {
         return UserEntity.class;
+    }
+
+    @Override
+    public void update(Connection connection, Version dbVersion) throws SQLException
+    {
+        if (dbVersion.getMajor() == 1)
+        {
+            CubeEngine.getLog().info("Updating {} to Version 2" , this.getName());
+            CubeEngine.getLog().info("Adding UUID columns");
+            connection.prepareStatement("ALTER TABLE " + this.getName() +
+                                            "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
+                                            "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
+            CubeEngine.getLog().info("Drop unique index on player and rename to lastname");
+            connection.prepareStatement("DROP INDEX `player` ON " + this.getName()).execute();
+            connection.prepareStatement("ALTER TABLE " + this.getName() +
+                                            " CHANGE `player` `lastname` VARCHAR(16) " +
+                                            "CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL").execute();
+            CubeEngine.getLog().info("Get all names with missing UUID values");
+            ResultSet resultSet = connection.prepareStatement("SELECT `lastname` FROM " + this.getName() +
+                                                                  " WHERE `UUIDleast` = 0 AND `UUIDmost` = 0")
+                                            .executeQuery();
+            List<String> list = new ArrayList<>();
+            while (resultSet.next())
+            {
+                String lastname = resultSet.getString("lastname");
+                list.add(lastname);
+            }
+            CubeEngine.getLog().info("Query MojangAPI to get UUIDs");
+            Map<String, UUID> uuids = McUUID.getUUIDForNames(list);
+            PreparedStatement stmt = connection.prepareStatement("UPDATE " + this.getName() +
+                                                                     " SET `UUIDleast`=? , `UUIDmost`=?" +
+                                                                     " WHERE `lastname` = ?");
+            CubeEngine.getLog().info("Update UUIDs in database");
+            for (Entry<String, UUID> entry : uuids.entrySet())
+            {
+                stmt.setLong(1, entry.getValue().getLeastSignificantBits());
+                stmt.setLong(2, entry.getValue().getMostSignificantBits());
+                stmt.setString(3, entry.getKey());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            connection.prepareStatement("CREATE UNIQUE INDEX `uuid` ON " + this.getName() +
+                                       " (`UUIDleast`,`UUIDmost`)").execute();
+        }
     }
 }

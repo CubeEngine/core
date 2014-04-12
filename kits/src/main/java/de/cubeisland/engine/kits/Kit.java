@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import org.bukkit.Server;
@@ -41,6 +42,9 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.joda.time.Duration;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 /**
  * A Kit of Items a User can receive
@@ -108,7 +112,7 @@ public class Kit
                 Long lastUsage = user.get(KitsAttachment.class).getKitUsage(this.name);
                 if (lastUsage != null && System.currentTimeMillis() - lastUsage < limitUsageDelay)
                 {
-                    throw new IncorrectUsageException("This kit not available at the moment. Try again later!", false);
+                    throw new IncorrectUsageException("This kit isn't available at the moment. Try again later!", false);
                 }
             }
         }
@@ -336,5 +340,11 @@ public class Kit
         @Override
         public void setOp(boolean bln)
         {}
+
+        @Override
+        public UUID getUniqueId()
+        {
+            return user.getUniqueId();
+        }
     }
 }

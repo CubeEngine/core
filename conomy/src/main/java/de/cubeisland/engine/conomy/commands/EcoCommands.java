@@ -27,7 +27,8 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class EcoCommands extends ContainerCommand
 {
@@ -52,7 +53,7 @@ public class EcoCommands extends ContainerCommand
         Double amount = this.manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{input#amount} is not a valid number!", amountString);
+            context.sendTranslated(NEGATIVE, "{input#amount} is not a valid number!", amountString);
             return;
         }
         String format = manager.format(amount);
@@ -62,17 +63,17 @@ public class EcoCommands extends ContainerCommand
             {
                 if (this.manager.transactionAllOnline(amount))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You gave {input#amount} to every online player!", format);
+                    context.sendTranslated(POSITIVE, "You gave {input#amount} to every online player!", format);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Please try again!");
+                    context.sendTranslated(NEGATIVE, "Please try again!");
                 }
             }
             else
             {
                 this.manager.transactionAll(true, false, amount);
-                context.sendTranslated(MessageType.POSITIVE, "You gave {input#amount} to every player!", format);
+                context.sendTranslated(POSITIVE, "You gave {input#amount} to every player!", format);
             }
         }
         else
@@ -83,26 +84,26 @@ public class EcoCommands extends ContainerCommand
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                     continue;
                 }
                 Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
+                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                     continue;
                 }
                 if (this.manager.transaction(null, target, amount, true))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You gave {input#amount} to {user}!", format, user.getName());
+                    context.sendTranslated(POSITIVE, "You gave {input#amount} to {user}!", format, user.getName());
                     if (!context.getSender().getName().equals(user.getName()))
                     {
-                        user.sendTranslated(MessageType.POSITIVE, "You were granted {input#amount}.", format);
+                        user.sendTranslated(POSITIVE, "You were granted {input#amount}.", format);
                     }
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Could not give the money to {user}!", user);
+                    context.sendTranslated(NEGATIVE, "Could not give the money to {user}!", user);
                 }
             }
         }
@@ -119,7 +120,7 @@ public class EcoCommands extends ContainerCommand
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Could not parse amount!");
+            context.sendTranslated(NEGATIVE, "Could not parse amount!");
             return;
         }
         String format = manager.format(amount);
@@ -129,17 +130,17 @@ public class EcoCommands extends ContainerCommand
             {
                 if (this.manager.transactionAllOnline(-amount))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You took {input#amount} from every online player!", format);
+                    context.sendTranslated(POSITIVE, "You took {input#amount} from every online player!", format);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Please try again!");
+                    context.sendTranslated(NEGATIVE, "Please try again!");
                 }
             }
             else
             {
                 this.manager.transactionAll(true, false, -amount);
-                context.sendTranslated(MessageType.POSITIVE, "You took {input#amount} from every player!", format);
+                context.sendTranslated(POSITIVE, "You took {input#amount} from every player!", format);
             }
         }
         else
@@ -150,20 +151,20 @@ public class EcoCommands extends ContainerCommand
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                     return;
                 }
                 Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
+                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                     return;
                 }
                 this.manager.transaction(target, null, amount, true);
-                context.sendTranslated(MessageType.POSITIVE, "You took {input#amount} from {user}!", format, user);
+                context.sendTranslated(POSITIVE, "You took {input#amount} from {user}!", format, user);
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "Withdrew {input#amount} from your account.", format);
+                    user.sendTranslated(NEUTRAL, "Withdrew {input#amount} from your account.", format);
                 }
             }
         }
@@ -181,17 +182,17 @@ public class EcoCommands extends ContainerCommand
             {
                 if (this.manager.setAllOnline(this.manager.getDefaultBalance()))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You reset every online players' account!");
+                    context.sendTranslated(POSITIVE, "You reset every online players' account!");
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Please try again!");
+                    context.sendTranslated(NEGATIVE, "Please try again!");
                 }
             }
             else
             {
                 this.manager.setAll(true, false, this.manager.getDefaultBalance());
-                context.sendTranslated(MessageType.POSITIVE, "You reset every players' account!");
+                context.sendTranslated(POSITIVE, "You reset every players' account!");
             }
         }
         else
@@ -202,21 +203,21 @@ public class EcoCommands extends ContainerCommand
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                     return;
                 }
                 Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
+                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                     return;
                 }
                 target.reset();
                 String format = this.manager.format(this.manager.getDefaultBalance());
-                context.sendTranslated(MessageType.POSITIVE, "{user} account reset to {input#balance}!", user, format);
+                context.sendTranslated(POSITIVE, "{user} account reset to {input#balance}!", user, format);
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "Your balance got reset to {input#balance}.", format);
+                    user.sendTranslated(NEUTRAL, "Your balance got reset to {input#balance}.", format);
                 }
             }
         }
@@ -232,7 +233,7 @@ public class EcoCommands extends ContainerCommand
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "That isn't a valid amount!");
+            context.sendTranslated(NEGATIVE, "That isn't a valid amount!");
             return;
         }
         String format = this.manager.format(amount);
@@ -242,17 +243,17 @@ public class EcoCommands extends ContainerCommand
             {
                 if (this.manager.setAllOnline(amount))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You have set every online player account to {input#balance}!", format);
+                    context.sendTranslated(POSITIVE, "You have set every online player account to {input#balance}!", format);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Please try again!");
+                    context.sendTranslated(NEGATIVE, "Please try again!");
                 }
             }
             else
             {
                 this.manager.setAll(true, false, amount);
-                context.sendTranslated(MessageType.POSITIVE, "You have set every player account to {input#balance}!", format);
+                context.sendTranslated(POSITIVE, "You have set every player account to {input#balance}!", format);
             }
         }
         else
@@ -263,20 +264,20 @@ public class EcoCommands extends ContainerCommand
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                     return;
                 }
                 Account target = this.manager.getUserAccount(user, false);
                 if (target == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
+                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                     return;
                 }
                 target.set(amount);
-                context.sendTranslated(MessageType.POSITIVE, "{user} account set to {input#balance}!", user, format);
+                context.sendTranslated(POSITIVE, "{user} account set to {input#balance}!", user, format);
                 if (!context.getSender().getName().equals(user.getName()))
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "Your balance has been set to {input#balance}.", format);
+                    user.sendTranslated(NEUTRAL, "Your balance has been set to {input#balance}.", format);
                 }
             }
         }
@@ -291,7 +292,7 @@ public class EcoCommands extends ContainerCommand
         Float factor = context.getArg(1, Float.class, null);
         if (factor == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
+            context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
             return;
         }
         if (context.getString(0).equals("*"))
@@ -300,17 +301,17 @@ public class EcoCommands extends ContainerCommand
             {
                 if (this.manager.scaleAllOnline(factor))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "Scaled the balance of every online player by {decimal#factor}!", factor);
+                    context.sendTranslated(POSITIVE, "Scaled the balance of every online player by {decimal#factor}!", factor);
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Please try again!");
+                    context.sendTranslated(NEGATIVE, "Please try again!");
                 }
             }
             else
             {
                 this.manager.scaleAll(true, false, factor);
-                context.sendTranslated(MessageType.POSITIVE, "Scaled the balance of every player by {decimal#factor}!", factor);
+                context.sendTranslated(POSITIVE, "Scaled the balance of every player by {decimal#factor}!", factor);
             }
             return;
         }
@@ -320,17 +321,17 @@ public class EcoCommands extends ContainerCommand
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             Account account = this.manager.getUserAccount(user, false);
             if (account == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
+                context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                 return;
             }
             account.scale(factor);
-            context.sendTranslated(MessageType.POSITIVE, "Scaled the balance of {user} by {decimal#factor}!", user, factor);
+            context.sendTranslated(POSITIVE, "Scaled the balance of {user} by {decimal#factor}!", user, factor);
         }
     }
 
@@ -350,24 +351,24 @@ public class EcoCommands extends ContainerCommand
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
+                context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                 return;
             }
             boolean isHidden = target.isHidden();
             if (isHidden)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "{user}'s account is already hidden!", user);
+                context.sendTranslated(NEUTRAL, "{user}'s account is already hidden!", user);
             }
             else
             {
                 target.setHidden(true);
-                context.sendTranslated(MessageType.POSITIVE, "{user}'s account is now hidden!", user);
+                context.sendTranslated(POSITIVE, "{user}'s account is now hidden!", user);
             }
         }
     }
@@ -388,13 +389,13 @@ public class EcoCommands extends ContainerCommand
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "{user} does not have an account!", user);
+                context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                 return;
             }
             boolean isHidden = target.isHidden();
@@ -402,11 +403,11 @@ public class EcoCommands extends ContainerCommand
             if (isHidden)
             {
                 target.setHidden(false);
-                context.sendTranslated(MessageType.POSITIVE, "{user}'s account is no longer hidden!", user);
+                context.sendTranslated(POSITIVE, "{user}'s account is no longer hidden!", user);
             }
             else
             {
-                context.sendTranslated(MessageType.NEUTRAL, "{user}'s account was not hidden!", user);
+                context.sendTranslated(NEUTRAL, "{user}'s account was not hidden!", user);
             }
         }
     }
@@ -419,16 +420,16 @@ public class EcoCommands extends ContainerCommand
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         if (this.manager.deleteUserAccount(user))
         {
-            context.sendTranslated(MessageType.POSITIVE, "Deleted the account of {user}", user);
+            context.sendTranslated(POSITIVE, "Deleted the account of {user}", user);
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} did not have an account to delete!", user);
+            context.sendTranslated(NEUTRAL, "{user} did not have an account to delete!", user);
         }
     }
 
@@ -442,7 +443,7 @@ public class EcoCommands extends ContainerCommand
         {
             if (!module.perms().ECO_CREATE_OTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create account for other users!");
+                context.sendTranslated(NEGATIVE, "You are not allowed to create account for other users!");
                 return;
             }
             User user = context.getUser(0);
@@ -452,39 +453,39 @@ public class EcoCommands extends ContainerCommand
                 {
                     if (!context.hasFlag("f"))
                     {
-                        context.sendTranslated(MessageType.NEUTRAL, "{user} has never played on this server!", context.getString(0));
-                        context.sendTranslated(MessageType.POSITIVE, "Use the -force flag to create the account anyway.");
+                        context.sendTranslated(NEUTRAL, "{user} has never played on this server!", context.getString(0));
+                        context.sendTranslated(POSITIVE, "Use the -force flag to create the account anyway.");
                         return;
                     }
                     else
                     {
-                        user = this.module.getCore().getUserManager().getUser(context.getString(0), true);
+                        user = this.module.getCore().getUserManager().findExactUser(context.getString(0));
                     }
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                     return;
                 }
             }
             if (this.manager.getUserAccount(user, false) != null)
             {
-                context.sendTranslated(MessageType.POSITIVE, "{user} already has an account!", user);
+                context.sendTranslated(POSITIVE, "{user} already has an account!", user);
                 return;
             }
             this.manager.getUserAccount(user, true);
-            context.sendTranslated(MessageType.POSITIVE, "Created account for {user}!", user);
+            context.sendTranslated(POSITIVE, "Created account for {user}!", user);
         }
         else if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
             if (this.manager.getUserAccount(sender, false) != null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You already have an account!");
+                context.sendTranslated(NEGATIVE, "You already have an account!");
                 return;
             }
             this.manager.getUserAccount(sender, true);
-            context.sendTranslated(MessageType.POSITIVE, "Your account has now been created!");
+            context.sendTranslated(POSITIVE, "Your account has now been created!");
         }
     }
 }

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
@@ -44,15 +45,16 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+
 public class ThrowCommands
 {
-    private final Map<String, ThrowTask> thrownItems;
+    private final Map<UUID, ThrowTask> thrownItems;
     // entities that can't be safe due to bukkit flaws
     private final EnumSet<EntityType> BUGGED_ENTITIES = EnumSet.of(EntityType.SMALL_FIREBALL, EntityType.FIREBALL);
 
@@ -87,7 +89,7 @@ public class ThrowCommands
     {
         if (!(context.getSender() instanceof User))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "This command can only be used by a player!");
+            context.sendTranslated(NEGATIVE, "This command can only be used by a player!");
             return;
         }
         
@@ -96,7 +98,7 @@ public class ThrowCommands
         boolean showNotification = true;
         boolean unsafe = context.hasFlag("u");
 
-        ThrowTask task = this.thrownItems.remove(user.getName());
+        ThrowTask task = this.thrownItems.remove(user.getUniqueId());
         if (task != null)
         {
             if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("delay", task.getInterval()) && task.getPreventDamage() != unsafe && !context.hasArg(1))
@@ -109,27 +111,27 @@ public class ThrowCommands
 
         if (context.getArgCount() == 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You have to specify the material you want to throw.");
+            context.sendTranslated(NEGATIVE, "You have to specify the material you want to throw.");
             return;
         }
 
         int amount = context.getArg(1, Integer.class, -1);
         if ((amount > this.module.getConfig().command.throwSection.maxAmount || amount < 1) && amount != -1)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The amount must be a number from 1 to {integer}", this.module.getConfig().command.throwSection.maxAmount);
+            context.sendTranslated(NEGATIVE, "The amount must be a number from 1 to {integer}", this.module.getConfig().command.throwSection.maxAmount);
             return;
         }
 
         int delay = context.getParam("delay", 3);
         if (delay > this.module.getConfig().command.throwSection.maxDelay || delay < 0)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The delay must be a number from 0 to {integer}", this.module.getConfig().command.throwSection.maxDelay);
+            context.sendTranslated(NEGATIVE, "The delay must be a number from 0 to {integer}", this.module.getConfig().command.throwSection.maxDelay);
             return;
         }
         
         if(unsafe && !module.perms().COMMAND_THROW_UNSAFE.isAuthorized( context.getSender() ) )
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to execute this command in unsafe mode.");
+            context.sendTranslated(NEGATIVE, "You are not allowed to execute this command in unsafe mode.");
             return;
         }
 
@@ -140,35 +142,35 @@ public class ThrowCommands
         }
         if (type == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The given object was not found!");
+            context.sendTranslated(NEGATIVE, "The given object was not found!");
             return;
         }
         if (!type.isSpawnable())
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The Item {name#item} is not supported!", object);
+            context.sendTranslated(NEGATIVE, "The Item {name#item} is not supported!", object);
             return;
         }
 
         if (!perms.get(type).isAuthorized(user))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to throw this.");
+            context.sendTranslated(NEGATIVE, "You are not allowed to throw this.");
             return;
         }
 
         if ((BUGGED_ENTITIES.contains(type) || Match.entity().isMonster(type)) && !unsafe)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "This object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
+            context.sendTranslated(NEUTRAL, "This object can only be thrown in unsafe mode. Add -u to enable the unsafe mode.");
             return;
         }
 
         task = new ThrowTask(user, type, amount, delay, !unsafe);
         if (task.start(showNotification))
         {
-            this.thrownItems.put(user.getName(), task);
+            this.thrownItems.put(user.getUniqueId(), task);
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Failed to throw this!");
+            context.sendTranslated(NEGATIVE, "Failed to throw this!");
         }
     }
 
@@ -226,8 +228,8 @@ public class ThrowCommands
         {
             if (this.amount == -1 && notify)
             {
-                this.user.sendTranslated(MessageType.POSITIVE, "Started throwing!");
-                this.user.sendTranslated(MessageType.POSITIVE, "You will keep throwing until you run this command again.");
+                this.user.sendTranslated(POSITIVE, "Started throwing!");
+                this.user.sendTranslated(POSITIVE, "You will keep throwing until you run this command again.");
             }
             this.taskId = module.getCore().getTaskManager().runTimer(module, this, 0, this.interval);
             return this.taskId != -1;
@@ -246,11 +248,11 @@ public class ThrowCommands
                 {
                     if (this.amount == -1)
                     {
-                        this.user.sendTranslated(MessageType.POSITIVE, "You are no longer throwing.");
+                        this.user.sendTranslated(POSITIVE, "You are no longer throwing.");
                     }
                     else
                     {
-                        this.user.sendTranslated(MessageType.POSITIVE, "All objects thrown.");
+                        this.user.sendTranslated(POSITIVE, "All objects thrown.");
                     }
                 }
                 module.getCore().getTaskManager().cancelTask(module, this.taskId);
@@ -296,7 +298,7 @@ public class ThrowCommands
             if (amount == 0)
             {
                 this.stop();
-                thrownItems.remove(this.user.getName());
+                thrownItems.remove(this.user.getUniqueId());
             }
         }
     }
@@ -320,7 +322,7 @@ public class ThrowCommands
         @EventHandler
         public void onPlayerQuit(PlayerQuitEvent event)
         {
-            ThrowTask task = thrownItems.remove(event.getPlayer().getName());
+            ThrowTask task = thrownItems.remove(event.getPlayer().getUniqueId());
             if (task != null)
             {
                 task.stop();

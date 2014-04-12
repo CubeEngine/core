@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.module.service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 public interface Economy
 {
@@ -40,21 +41,27 @@ public interface Economy
     String format(Locale locale, double amount);
     String currencyNamePlural();
     String currencyName();
-    boolean hasAccount(String player);
-    double getBalance(String playerName);
-    boolean has(String playerName, double amount);
-    boolean withdraw(String playerName, double amount);
-    boolean deposit(String playerName, double amount);
+
+    boolean hasAccount(UUID player);
+    boolean createAccount(UUID player);
+    boolean deleteAccount(UUID player);
+    double getBalance(UUID player);
+    boolean has(UUID player, double amount);
+    boolean withdraw(UUID player, double amount);
+    boolean deposit(UUID player, double amount);
+
+    boolean bankExists(String name);
     boolean createBank(String name, String ownerName);
     boolean deleteBank(String name);
     double getBankBalance(String name);
     boolean bankHas(String name, double amount);
-    boolean bankWithdraw(String playerName, double amount);
-    boolean bankDeposit(String playerName, double amount);
-    boolean isBankOwner(String name, String playerName);
-    boolean isBankMember(String name, String playerName);
+    boolean bankWithdraw(String name, double amount);
+    boolean bankDeposit(String name, double amount);
+
+    boolean isBankOwner(String name, UUID player);
+    boolean isBankMember(String name, UUID player);
     List<String> getBanks();
-    boolean createPlayerAccount(String playerName);
+
     Double parse(String price);
     Double parseFor(String price, Locale locale);
 }

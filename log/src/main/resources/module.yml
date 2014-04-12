@@ -3,5 +3,7 @@ description: ${project.description}
 version: ${project.version}
 source-version: ${githead.branch}-${githead.commit}
 build-timestamp: "${timestamp}"
+dependecy:
+- bigdata
 services:
 - de.cubeisland.engine.core.module.service.Selector

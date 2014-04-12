@@ -28,7 +28,6 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RolesAttachment;
@@ -36,6 +35,8 @@ import de.cubeisland.engine.roles.role.TempDataStore;
 import de.cubeisland.engine.roles.role.UserDatabaseStore;
 import de.cubeisland.engine.roles.role.resolved.ResolvedMetadata;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class UserInformationCommands extends UserCommandHelper
 {
@@ -57,7 +58,7 @@ public class UserInformationCommands extends UserCommandHelper
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // List all assigned roles
-        context.sendTranslated(MessageType.NEUTRAL, "Roles of {user} in {world}:", user, world);
+        context.sendTranslated(NEUTRAL, "Roles of {user} in {world}:", user, world);
         for (Role pRole : rolesAttachment.getDataHolder(world).getRoles())
             {
             if (pRole.isGlobal())
@@ -80,7 +81,7 @@ public class UserInformationCommands extends UserCommandHelper
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         World world = this.getWorld(context);
@@ -91,12 +92,12 @@ public class UserInformationCommands extends UserCommandHelper
         ResolvedPermission resolvedPermission = rolesAttachment.getDataHolder(world).getPermissions().get(permission);
         if (user.isOp())
         {
-            context.sendTranslated(MessageType.POSITIVE, "{user} is op!", user);
+            context.sendTranslated(POSITIVE, "{user} is op!", user);
         }
         if (user.isOnline()) // Can have superperm
         {
             boolean superPerm = user.hasPermission(permission);
-            context.sendTranslated(MessageType.NEUTRAL, "SuperPerm Node: {bool}", superPerm);
+            context.sendTranslated(NEUTRAL, "SuperPerm Node: {bool}", superPerm);
         }
         if (resolvedPermission == null)
         {
@@ -104,21 +105,21 @@ public class UserInformationCommands extends UserCommandHelper
             PermDefault defaultFor = this.module.getCore().getPermissionManager().getDefaultFor(permission);
             if (defaultFor == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Permission {input} neither set nor registered!", permission);
+                context.sendTranslated(NEGATIVE, "Permission {input} neither set nor registered!", permission);
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Permission {input} not set but default is: {name#default}!", permission, defaultFor.name());
+                context.sendTranslated(NEGATIVE, "Permission {input} not set but default is: {name#default}!", permission, defaultFor.name());
             }
             return;
         }
         if (resolvedPermission.isSet())
         {
-            context.sendTranslated(MessageType.POSITIVE, "The player {user} does have access to {input#permission} in {world}", user, permission, world);
+            context.sendTranslated(POSITIVE, "The player {user} does have access to {input#permission} in {world}", user, permission, world);
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The player {user} does not have access to {input#permission} in {world}", user, permission, world);
+            context.sendTranslated(NEGATIVE, "The player {user} does not have access to {input#permission} in {world}", user, permission, world);
         }
         // Display origin
         TempDataStore store = resolvedPermission.getOrigin();
@@ -126,13 +127,13 @@ public class UserInformationCommands extends UserCommandHelper
         {
             permission = resolvedPermission.getOriginPermission();
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Permission inherited from:");
+        context.sendTranslated(NEUTRAL, "Permission inherited from:");
         if (user.getName().equals(store.getName()))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{input#permission} directly assigned to the user!", permission);
+            context.sendTranslated(NEUTRAL, "{input#permission} directly assigned to the user!", permission);
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{input#permission} in the role {name}!", permission, store.getName());
+        context.sendTranslated(NEUTRAL, "{input#permission} in the role {name}!", permission, store.getName());
     }
 
     @Alias(names = "listuperm")
@@ -153,10 +154,10 @@ public class UserInformationCommands extends UserCommandHelper
         Map<String,Boolean> perms = context.hasFlag("a") ? rawData.getAllRawPermissions() : rawData.getRawPermissions();
         if (perms.isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{user} has no permissions set in {world}.", user, world);
+            context.sendTranslated(NEUTRAL, "{user} has no permissions set in {world}.", user, world);
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Permissions of {user} in {world}.", user, world);
+        context.sendTranslated(NEUTRAL, "Permissions of {user} in {world}.", user, world);
         for (Map.Entry<String, Boolean> entry : perms.entrySet())
         {
             context.sendMessage(String.format(this.LISTELEM_VALUE,entry.getKey(), entry.getValue()));
@@ -174,7 +175,7 @@ public class UserInformationCommands extends UserCommandHelper
         User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
         World world = this.getWorld(context);
@@ -186,17 +187,17 @@ public class UserInformationCommands extends UserCommandHelper
         Map<String,ResolvedMetadata> metadata = dataHolder.getMetadata();
         if (!metadata.containsKey(metaKey))
         {
-            context.sendTranslated(MessageType.NEUTRAL, "{input#key} is not set for {user} in {world}.", metaKey, user, world);
+            context.sendTranslated(NEUTRAL, "{input#key} is not set for {user} in {world}.", metaKey, user, world);
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "{input#key}: {input#value} is set for {user} in {world}.", metaKey, metadata.get(metaKey).getValue(), user, world);
+        context.sendTranslated(NEUTRAL, "{input#key}: {input#value} is set for {user} in {world}.", metaKey, metadata.get(metaKey).getValue(), user, world);
         if (metadata.get(metaKey).getOrigin() != dataHolder)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Origin: {name#role}", metadata.get(metaKey).getOrigin().getName());
+            context.sendTranslated(NEUTRAL, "Origin: {name#role}", metadata.get(metaKey).getOrigin().getName());
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Origin: {text:directly assigned}");
+            context.sendTranslated(NEUTRAL, "Origin: {text:directly assigned}");
         }
     }
 
@@ -217,7 +218,7 @@ public class UserInformationCommands extends UserCommandHelper
         UserDatabaseStore rawData = rolesAttachment.getDataHolder(world);
         Map<String, String> metadata = context.hasFlag("a") ? rawData.getAllRawMetadata() : rawData.getRawMetadata();
         // List all metadata
-        context.sendTranslated(MessageType.NEUTRAL, "Metadata of {user} in {world}:", user, world);
+        context.sendTranslated(NEUTRAL, "Metadata of {user} in {world}:", user, world);
         for (Map.Entry<String, String> entry : metadata.entrySet())
         {
             context.sendMessage(String.format(this.LISTELEM_VALUE,entry.getKey(), entry.getValue()));

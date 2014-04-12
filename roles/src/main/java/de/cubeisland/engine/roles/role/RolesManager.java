@@ -241,7 +241,7 @@ public class RolesManager
         }
         else
         {
-            user = this.module.getCore().getUserManager().getExactUser(player.getName());
+            user = this.module.getCore().getUserManager().getExactUser(player.getUniqueId());
         }
         return user.attachOrGet(RolesAttachment.class, this.module);
     }

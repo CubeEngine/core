@@ -72,6 +72,7 @@ import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
 
 /**
  * A CubeEngine User (can exist offline too).
+ * <p>Do not instantiate outside of {@link UserManager} implementations
  */
 public class User extends UserBase implements CommandSender, AttachmentHolder<UserAttachment>
 {
@@ -81,22 +82,28 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
     private final Core core;
 
-    User(Core core, String playerName)
+    /**
+     * Do not instantiate outside of {@link UserManager} implementations
+     *
+     * @param core
+     * @param player
+     */
+    public User(Core core, OfflinePlayer player)
     {
-        super(playerName);
-        this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(playerName);
+        super(player.getUniqueId());
+        this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(player);
         this.attachments = new THashMap<>();
         this.core = core;
     }
 
-    User(Core core, OfflinePlayer player)
-    {
-        this(core, player.getName());
-    }
-
+    /**
+     * Do not instantiate outside of {@link UserManager} implementations
+     *
+     * @param entity
+     */
     public User(UserEntity entity)
     {
-        super(entity.getPlayer());
+        super(entity.getUUID());
         this.core = CubeEngine.getCore();
         this.entity = entity;
         this.attachments = new THashMap<>();
@@ -655,7 +662,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void ban(CommandSender source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new UserBan(this.getName(), source.getName(), reason, created, expire));
+        this.getCore().getBanManager().addBan(new UserBan(this.getUniqueId(), source.getName(), reason, created, expire));
     }
 
     public UserEntity getEntity()

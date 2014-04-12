@@ -26,10 +26,10 @@ import de.cubeisland.engine.basics.BasicsConfiguration;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.basics.command.moderation.spawnmob.SpawnMob.spawnMobs;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 /**
  * The /spawnmob command.
@@ -53,7 +53,7 @@ public class SpawnMobCommand
         }
         if (!context.hasArg(0))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You need to define what mob to spawn!");
+            context.sendTranslated(NEGATIVE, "You need to define what mob to spawn!");
             return;
         }
         Location loc;
@@ -62,14 +62,14 @@ public class SpawnMobCommand
             User user = context.getUser(2);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(2));
+                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(2));
                 return;
             }
             loc = user.getLocation();
         }
         else if (sender == null)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Succesfully spawned some {text:bugs:color=RED} inside your server!");
+            context.sendTranslated(NEUTRAL, "Succesfully spawned some {text:bugs:color=RED} inside your server!");
             return;
         }
         else
@@ -82,18 +82,18 @@ public class SpawnMobCommand
             amount = context.getArg(1, Integer.class, null);
             if (amount == null)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "{input} is not a number! Really!", context.getString(1));
+                context.sendTranslated(NEUTRAL, "{input} is not a number! Really!", context.getString(1));
                 return;
             }
             if (amount <= 0)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "And how am i supposed to know which mobs to despawn?");
+                context.sendTranslated(NEUTRAL, "And how am i supposed to know which mobs to despawn?");
                 return;
             }
         }
         if (amount > config.commands.spawnmobLimit)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The serverlimit is set to {number}, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
+            context.sendTranslated(NEGATIVE, "The serverlimit is set to {number}, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
             return;
         }
         loc.add(0.5, 0, 0.5);
@@ -105,7 +105,7 @@ public class SpawnMobCommand
         Entity entitySpawned = entitiesSpawned[0];
         if (entitySpawned.getPassenger() == null)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Spawned {amount} {input#entity}!", amount, Match.entity().getNameFor(entitySpawned.getType()));
+            context.sendTranslated(POSITIVE, "Spawned {amount} {input#entity}!", amount, Match.entity().getNameFor(entitySpawned.getType()));
         }
         else
         {
@@ -113,10 +113,9 @@ public class SpawnMobCommand
             while (entitySpawned.getPassenger() != null)
             {
                 entitySpawned = entitySpawned.getPassenger();
-                message = context.getSender().getTranslation(MessageType.NONE, "{input#entity} riding {input}", Match
-                    .entity().getNameFor(entitySpawned.getType()), message);
+                message = context.getSender().getTranslation(NONE, "{input#entity} riding {input}", Match.entity().getNameFor(entitySpawned.getType()), message);
             }
-            message = context.getSender().getTranslation(MessageType.POSITIVE, "Spawned {amount} {input#message}!", amount, message);
+            message = context.getSender().getTranslation(POSITIVE, "Spawned {amount} {input#message}!", amount, message);
             context.sendMessage(message);
         }
     }

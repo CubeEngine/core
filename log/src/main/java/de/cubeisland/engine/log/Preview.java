@@ -27,11 +27,28 @@ import de.cubeisland.engine.core.user.User;
 
 public class Preview
 {
-    private final Queue<BlockState> states = new LinkedList<>();
+    private final Queue<Object> states = new LinkedList<>();
 
     public void add(BlockState state)
     {
         states.add(state);
+    }
+
+    public void add(Location loc, String[] lines)
+    {
+        states.add(new SignChange(loc, lines));
+    }
+
+    private static class SignChange
+    {
+        private Location loc;
+        private String[] lines;
+
+        private SignChange(Location loc, String[] lines)
+        {
+            this.loc = loc;
+            this.lines = lines;
+        }
     }
 
     public void send(User user)
@@ -41,9 +58,16 @@ public class Preview
         for (int i = 0 ; i < 1000; i++)
         {
             if (states.isEmpty()) return;
-            BlockState poll = states.poll();
-            poll.getLocation(location);
-            user.sendBlockChange(location, poll.getType(), poll.getRawData());
+            Object poll = states.poll();
+            if (poll instanceof BlockState)
+            {
+                ((BlockState)poll).getLocation(location);
+                user.sendBlockChange(location, ((BlockState)poll).getType(), ((BlockState)poll).getRawData());
+            }
+            else if (poll instanceof SignChange)
+            {
+                user.sendSignChange(((SignChange)poll).loc, ((SignChange)poll).lines);
+            }
         }
     }
 }

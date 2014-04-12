@@ -17,12 +17,15 @@
  */
 package de.cubeisland.engine.basics.command.teleport;
 
+import java.util.UUID;
+
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 /**
  * Contains Teleport-Request commands.
@@ -50,21 +53,21 @@ public class TeleportRequestCommands
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
+            context.sendTranslated(NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
             return;
         }
         sender.get(BasicsAttachment.class).removeTpRequestCancelTask();
         final User user = context.getUser(0);
         if (user == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
             return;
         }
-        user.sendTranslated(MessageType.POSITIVE, "{sender} wants to teleport to you!", sender);
-        user.sendTranslated(MessageType.NEUTRAL, "Use {text:/tpaccept} to accept or {text:/tpdeny} to deny the request!");
-        user.get(BasicsAttachment.class).setPendingTpToRequest(sender.getName());
+        user.sendTranslated(POSITIVE, "{sender} wants to teleport to you!", sender);
+        user.sendTranslated(NEUTRAL, "Use {text:/tpaccept} to accept or {text:/tpdeny} to deny the request!");
+        user.get(BasicsAttachment.class).setPendingTpToRequest(sender.getUniqueId());
         user.get(BasicsAttachment.class).removePendingTpFromRequest();
-        context.sendTranslated(MessageType.POSITIVE, "Teleport request sent to {user}!", user);
+        context.sendTranslated(POSITIVE, "Teleport request sent to {user}!", user);
         int waitTime = this.basics.getConfiguration().commands.teleportRequestWait * 20;
         if (waitTime > 0)
         {
@@ -75,8 +78,8 @@ public class TeleportRequestCommands
                 {
                     user.get(BasicsAttachment.class).removeTpRequestCancelTask();
                     user.get(BasicsAttachment.class).removePendingTpToRequest();
-                    sendingUser.sendTranslated(MessageType.NEGATIVE, "{user} did not accept your teleport request.", user);
-                    user.sendTranslated(MessageType.NEGATIVE, "Teleport request of {sender} timed out.", sendingUser);
+                    sendingUser.sendTranslated(NEGATIVE, "{user} did not accept your teleport request.", user);
+                    user.sendTranslated(NEGATIVE, "Teleport request of {sender} timed out.", sendingUser);
                 }
             }, waitTime); // wait x - seconds
             Integer oldtaskID = user.get(BasicsAttachment.class).getTpRequestCancelTask();
@@ -98,14 +101,14 @@ public class TeleportRequestCommands
             final User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
                 return;
             }
-            user.sendTranslated(MessageType.POSITIVE, "{sender} wants to teleport you to them!", sender);
-            user.sendTranslated(MessageType.NEUTRAL, "Use {text:/tpaccept} to accept or {text:/tpdeny} to deny the request!");
-            user.get(BasicsAttachment.class).setPendingTpFromRequest(sender.getName());
+            user.sendTranslated(POSITIVE, "{sender} wants to teleport you to them!", sender);
+            user.sendTranslated(NEUTRAL, "Use {text:/tpaccept} to accept or {text:/tpdeny} to deny the request!");
+            user.get(BasicsAttachment.class).setPendingTpFromRequest(sender.getUniqueId());
             user.get(BasicsAttachment.class).removePendingTpToRequest();
-            context.sendTranslated(MessageType.POSITIVE, "Teleport request send to {user}!", user);
+            context.sendTranslated(POSITIVE, "Teleport request send to {user}!", user);
             int waitTime = this.basics.getConfiguration().commands.teleportRequestWait * 20;
             if (waitTime > 0)
             {
@@ -116,8 +119,8 @@ public class TeleportRequestCommands
                     {
                         user.get(BasicsAttachment.class).removeTpRequestCancelTask();
                         user.get(BasicsAttachment.class).removePendingTpFromRequest();
-                        sendingUser.sendTranslated(MessageType.NEGATIVE, "{user} did not accept your teleport request.", user);
-                        user.sendTranslated(MessageType.NEGATIVE, "Teleport request of {sender} timed out.", sendingUser);
+                        sendingUser.sendTranslated(NEGATIVE, "{user} did not accept your teleport request.", user);
+                        user.sendTranslated(NEGATIVE, "Teleport request of {sender} timed out.", sendingUser);
                     }
                 }, waitTime); // wait x - seconds
                 Integer oldtaskID = user.get(BasicsAttachment.class).getTpRequestCancelTask();
@@ -129,7 +132,7 @@ public class TeleportRequestCommands
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
+        context.sendTranslated(NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
     }
 
     @Command(names = {"tpac", "tpaccept"}, desc = "Accepts any pending teleport request.", max = 0)
@@ -138,40 +141,40 @@ public class TeleportRequestCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            String name = sender.get(BasicsAttachment.class).getPendingTpToRequest();
-            if (name == null)
+            UUID uuid = sender.get(BasicsAttachment.class).getPendingTpToRequest();
+            if (uuid == null)
             {
-                name = sender.get(BasicsAttachment.class).getPendingTpFromRequest();
-                if (name == null)
+                uuid = sender.get(BasicsAttachment.class).getPendingTpFromRequest();
+                if (uuid == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You don't have any pending requests!");
+                    context.sendTranslated(NEGATIVE, "You don't have any pending requests!");
                     return;
                 }
                 sender.get(BasicsAttachment.class).removePendingTpFromRequest();
-                User user = this.basics.getCore().getUserManager().getUser(name, false);
+                User user = this.basics.getCore().getUserManager().getExactUser(uuid);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} seems to have disappeared.", name);
+                    context.sendTranslated(NEGATIVE, "{user} seems to have disappeared.", uuid);
                     return;
                 }
                 if (!TeleportCommands.teleport(sender, user.getLocation(), true, false, true))
                     return;
-                user.sendTranslated(MessageType.POSITIVE, "{user} accepted your teleport request!", sender);
-                context.sendTranslated(MessageType.POSITIVE, "You accepted a teleport to {user}!", user);
+                user.sendTranslated(POSITIVE, "{user} accepted your teleport request!", sender);
+                context.sendTranslated(POSITIVE, "You accepted a teleport to {user}!", user);
             }
             else
             {
                 sender.get(BasicsAttachment.class).removePendingTpToRequest();
-                User user = this.basics.getCore().getUserManager().getUser(name, false);
+                User user = this.basics.getCore().getUserManager().getExactUser(uuid);
                 if (user == null || !user.isOnline())
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{user} seems to have disappeared.", name);
+                    context.sendTranslated(NEGATIVE, "{user} seems to have disappeared.", uuid);
                     return;
                 }
                 if (!TeleportCommands.teleport(user, sender.getLocation(), true, false, true))
                     return;
-                user.sendTranslated(MessageType.POSITIVE, "{user} accepted your teleport request!", sender);
-                context.sendTranslated(MessageType.POSITIVE, "You accepted a teleport to {user}!", user);
+                user.sendTranslated(POSITIVE, "{user} accepted your teleport request!", sender);
+                context.sendTranslated(POSITIVE, "You accepted a teleport to {user}!", user);
             }
             Integer taskID = sender.get(BasicsAttachment.class).getTpRequestCancelTask();
             if (taskID != null)
@@ -181,7 +184,7 @@ public class TeleportRequestCommands
             }
             return;
         }
-        context.sendTranslated(MessageType.NEGATIVE, "No one wants to teleport to you!");
+        context.sendTranslated(NEGATIVE, "No one wants to teleport to you!");
     }
 
     @Command(desc = "Denies any pending teleport request.", max = 0)
@@ -194,36 +197,36 @@ public class TeleportRequestCommands
         }
         if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "No one wants to teleport to you!");
+            context.sendTranslated(NEGATIVE, "No one wants to teleport to you!");
             return;
         }
-        String tpa =  sender.get(BasicsAttachment.class).getPendingTpToRequest();
-        String tpahere = sender.get(BasicsAttachment.class).getPendingTpFromRequest();
+        UUID tpa =  sender.get(BasicsAttachment.class).getPendingTpToRequest();
+        UUID tpahere = sender.get(BasicsAttachment.class).getPendingTpFromRequest();
         if (tpa != null)
         {
             sender.get(BasicsAttachment.class).removePendingTpToRequest();
-            User user = this.basics.getCore().getUserManager().getUser(tpa, false);
+            User user = this.basics.getCore().getUserManager().getExactUser(tpa);
             if (user == null)
             {
                 throw new IllegalStateException("Player saved in \"pendingTpToRequest\" was not found!");
             }
-            user.sendTranslated(MessageType.NEGATIVE, "{user} denied your teleport request!", sender);
-            context.sendTranslated(MessageType.NEGATIVE, "You denied {user}'s teleport request!", user);
+            user.sendTranslated(NEGATIVE, "{user} denied your teleport request!", sender);
+            context.sendTranslated(NEGATIVE, "You denied {user}'s teleport request!", user);
         }
         else if (tpahere != null)
         {
             sender.get(BasicsAttachment.class).removePendingTpFromRequest();
-            User user = this.basics.getCore().getUserManager().getUser(tpahere, false);
+            User user = this.basics.getCore().getUserManager().getExactUser(tpahere);
             if (user == null)
             {
                 throw new IllegalStateException("User saved in \"pendingTpFromRequest\" was not found!");
             }
-            user.sendTranslated(MessageType.NEGATIVE, "{user} denied your request!", sender);
-            context.sendTranslated(MessageType.NEGATIVE, "You denied {user}'s teleport request", user);
+            user.sendTranslated(NEGATIVE, "{user} denied your request!", sender);
+            context.sendTranslated(NEGATIVE, "You denied {user}'s teleport request", user);
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You don't have any pending requests!");
+            context.sendTranslated(NEGATIVE, "You don't have any pending requests!");
             return;
         }
         Integer taskID = sender.get(BasicsAttachment.class).getTpRequestCancelTask();

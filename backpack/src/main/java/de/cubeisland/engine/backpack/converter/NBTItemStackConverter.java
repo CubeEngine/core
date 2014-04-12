@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.backpack.converter;
 
-import net.minecraft.server.v1_7_R2.NBTTagCompound;
+import net.minecraft.server.v1_7_R3.NBTTagCompound;
 
-import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -66,7 +66,7 @@ public class NBTItemStackConverter implements Converter<ItemStack>
                     ItemStack itemStack = new ItemStack(Material.valueOf(item.asText()));
                     itemStack.setDurability(((ShortNode)damage).getValue());
                     itemStack.setAmount(((IntNode)count).getValue());
-                    net.minecraft.server.v1_7_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_7_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                     nms.tag = ((MapNode)tag).isEmpty() ? null : (NBTTagCompound)NBTUtils.convertNodeToNBT(tag);
                     return CraftItemStack.asBukkitCopy(nms);
                 }

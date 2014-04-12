@@ -52,7 +52,6 @@
         </XML>
         <codeStyleSettings language="JAVA">
           <option name="KEEP_LINE_BREAKS" value="false" />
-          <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
           <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
           <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="0" />
           <option name="BRACE_STYLE" value="2" />
@@ -72,7 +71,11 @@
           <option name="ALIGN_MULTILINE_METHOD_BRACKETS" value="true" />
           <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
           <option name="SPACE_AFTER_TYPE_CAST" value="false" />
-          <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
+          <option name="CALL_PARAMETERS_WRAP" value="1" />
+          <option name="PREFER_PARAMETERS_WRAP" value="true" />
+          <option name="METHOD_PARAMETERS_WRAP" value="1" />
+          <option name="BINARY_OPERATION_WRAP" value="1" />
+          <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
           <option name="FOR_STATEMENT_RPAREN_ON_NEXT_LINE" value="true" />
           <option name="ARRAY_INITIALIZER_LBRACE_ON_NEXT_LINE" value="true" />
           <option name="ARRAY_INITIALIZER_RBRACE_ON_NEXT_LINE" value="true" />

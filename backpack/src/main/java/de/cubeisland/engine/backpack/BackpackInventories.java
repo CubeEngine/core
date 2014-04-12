@@ -105,7 +105,7 @@ public class BackpackInventories
         else
         {
             InventoryGuardFactory.prepareInventory(this.getInventory(index),
-               module.getCore().getUserManager().getExactUser(player.getName())).
+               module.getCore().getUserManager().getExactUser(player.getUniqueId())).
                 blockPutInAll().submitInventory(module, true);
         }
     }

@@ -29,12 +29,13 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.WorldRoleProvider;
 import de.cubeisland.engine.roles.role.resolved.ResolvedPermission;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class RoleInformationCommands extends RoleCommandHelper
 {
@@ -58,19 +59,19 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "There are no global roles!");
+                context.sendTranslated(NEGATIVE, "There are no global roles!");
                 return;
             }
-            context.sendTranslated(MessageType.NEGATIVE, "There are no roles in {world}!", world);
+            context.sendTranslated(NEGATIVE, "There are no roles in {world}!", world);
             return;
         }
         if (global)
         {
-            context.sendTranslated(MessageType.POSITIVE, "The following global roles are available:");
+            context.sendTranslated(POSITIVE, "The following global roles are available:");
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "The following roles are available in {world}:", world);
+            context.sendTranslated(POSITIVE, "The following roles are available in {world}:", world);
         }
         for (Role role : provider.getRoles())
         {
@@ -101,44 +102,44 @@ public class RoleInformationCommands extends RoleCommandHelper
             {
                 if (global)
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "{name#permission} is set to {text:true:color=DARK_GREEN} for the global role {name}.", permission, role.getName());
+                    context.sendTranslated(POSITIVE, "{name#permission} is set to {text:true:color=DARK_GREEN} for the global role {name}.", permission, role.getName());
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "{name#permission} is set to {text:true:color=DARK_GREEN} for the role {name} in {world}.", permission, role.getName(), world);
+                    context.sendTranslated(POSITIVE, "{name#permission} is set to {text:true:color=DARK_GREEN} for the role {name} in {world}.", permission, role.getName(), world);
                 }
             }
             else
             {
                 if (global)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{name#permission} is set to {text:false:color=DARK_RED} for the global role {name}.", permission, role.getName());
+                    context.sendTranslated(NEGATIVE, "{name#permission} is set to {text:false:color=DARK_RED} for the global role {name}.", permission, role.getName());
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "{name#permission} is set to {text:false:color=DARK_RED} for the role {name} in {world}.", permission, role.getName(), world);
+                    context.sendTranslated(NEGATIVE, "{name#permission} is set to {text:false:color=DARK_RED} for the role {name} in {world}.", permission, role.getName(), world);
                 }
             }
             if (!(myPerm.getOriginPermission() == null && myPerm.getOrigin() == role))
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Permission inherited from:");
+                context.sendTranslated(NEUTRAL, "Permission inherited from:");
                 if (myPerm.getOriginPermission() == null)
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "{name#permission} in the role {name}!", myPerm.getKey(), myPerm.getOrigin().getName());
+                    context.sendTranslated(NEUTRAL, "{name#permission} in the role {name}!", myPerm.getKey(), myPerm.getOrigin().getName());
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "{name#permission} in the role {name}!", myPerm.getOriginPermission(), myPerm.getOrigin().getName());
+                    context.sendTranslated(NEUTRAL, "{name#permission} in the role {name}!", myPerm.getOriginPermission(), myPerm.getOrigin().getName());
                 }
             }
             return;
         }
         if (global)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The permission {name} is not assigned to the global role {name}.", permission, role.getName());
+            context.sendTranslated(NEUTRAL, "The permission {name} is not assigned to the global role {name}.", permission, role.getName());
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "The permission {name} is not assigned to the role {name} in {world}.", permission, role.getName(), world);
+        context.sendTranslated(NEUTRAL, "The permission {name} is not assigned to the role {name} in {world}.", permission, role.getName(), world);
     }
 
     @Alias(names = "listrperm")
@@ -162,23 +163,23 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "No permissions set for the global role {name}.", role.getName());
+                context.sendTranslated(NEUTRAL, "No permissions set for the global role {name}.", role.getName());
                 return;
             }
-            context.sendTranslated(MessageType.NEUTRAL, "No permissions set for the role {name} in {world}.", role.getName(), world);
+            context.sendTranslated(NEUTRAL, "No permissions set for the role {name} in {world}.", role.getName(), world);
             return;
         }
         if (global)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Permissions of the global role {name}.", role.getName());
+            context.sendTranslated(POSITIVE, "Permissions of the global role {name}.", role.getName());
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "Permissions of the role {name} in {world}:", role.getName(), world);
+            context.sendTranslated(POSITIVE, "Permissions of the role {name} in {world}:", role.getName(), world);
         }
         if (context.hasFlag("a"))
         {
-            context.sendTranslated(MessageType.POSITIVE, "(Including inherited permissions)");
+            context.sendTranslated(POSITIVE, "(Including inherited permissions)");
         }
         for (String perm : rawPerms.keySet())
         {
@@ -214,23 +215,23 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "No metadata set for the global role {name}.", role.getName());
+                context.sendTranslated(NEUTRAL, "No metadata set for the global role {name}.", role.getName());
                 return;
             }
-            context.sendTranslated(MessageType.NEUTRAL, "No metadata set for the role {name} in {world}.", role.getName(), world);
+            context.sendTranslated(NEUTRAL, "No metadata set for the role {name} in {world}.", role.getName(), world);
             return;
         }
         if (global)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Metadata of the global role {name}:", role.getName());
+            context.sendTranslated(POSITIVE, "Metadata of the global role {name}:", role.getName());
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "Metadata of the role {name} in {world}:", role.getName(), world);
+            context.sendTranslated(POSITIVE, "Metadata of the role {name} in {world}:", role.getName(), world);
         }
         if (context.hasFlag("a"))
         {
-            context.sendTranslated(MessageType.POSITIVE, "(Including inherited metadata)");
+            context.sendTranslated(POSITIVE, "(Including inherited metadata)");
         }
         for (Entry<String, String> data : rawMetadata.entrySet())
         {
@@ -256,19 +257,19 @@ public class RoleInformationCommands extends RoleCommandHelper
         {
             if (global)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "The global role {name} has no parent roles.", role.getName());
+                context.sendTranslated(NEUTRAL, "The global role {name} has no parent roles.", role.getName());
                 return;
             }
-            context.sendTranslated(MessageType.NEUTRAL, "The role {name} in {world} has no parent roles.", role.getName(), world);
+            context.sendTranslated(NEUTRAL, "The role {name} in {world} has no parent roles.", role.getName(), world);
             return;
         }
         if (global)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The global role {name} has following parent roles:", role.getName());
+            context.sendTranslated(NEUTRAL, "The global role {name} has following parent roles:", role.getName());
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The role {name} in {world} has following parent roles:", role.getName(), world);
+            context.sendTranslated(NEUTRAL, "The role {name} in {world} has following parent roles:", role.getName(), world);
         }
         for (Role parent : role.getRoles())
         {
@@ -292,10 +293,10 @@ public class RoleInformationCommands extends RoleCommandHelper
         if (role == null) return;
         if (global)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "The priority of the global role {name} is: {integer#priority}", role.getName(), role.getPriorityValue());
+            context.sendTranslated(NEUTRAL, "The priority of the global role {name} is: {integer#priority}", role.getName(), role.getPriorityValue());
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "The priority of the role {name} in {world} is: {integer#priority}", role.getName(), world, role.getPriorityValue());
+        context.sendTranslated(NEUTRAL, "The priority of the role {name} in {world} is: {integer#priority}", role.getName(), world, role.getPriorityValue());
     }
 
     @Command(names = {"default","defaultroles","listdefroles", "listdefaultroles"},
@@ -310,10 +311,10 @@ public class RoleInformationCommands extends RoleCommandHelper
         Set<Role> defaultRoles = provider.getDefaultRoles();
         if (defaultRoles.isEmpty())
         {
-            context.sendTranslated(MessageType.NEGATIVE, "There are no default roles set for {world}!", world);
+            context.sendTranslated(NEGATIVE, "There are no default roles set for {world}!", world);
             return;
         }
-        context.sendTranslated(MessageType.POSITIVE, "The following roles are default roles in {world}!", world);
+        context.sendTranslated(POSITIVE, "The following roles are default roles in {world}!", world);
         for (Role role : defaultRoles)
         {
             context.sendMessage(String.format(this.LISTELEM,role.getName()));

@@ -34,8 +34,9 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
-
+import de.cubeisland.engine.core.util.StringUtils;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.ChatFormat.GREY;
@@ -43,8 +44,7 @@ import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
 import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 /**
  * This class is the base for all of our commands
@@ -326,7 +326,12 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender)
     {
-        return (sender instanceof User ? "/" : "") + implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, sender.getTranslation(NONE, this.usage));
+        String usage = this.usage;
+        if (!usage.isEmpty())
+        {
+            usage = sender.getTranslation(NONE, usage);
+        }
+        return (sender instanceof User ? "/" : "") + this.implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
         /**
@@ -340,7 +345,12 @@ public abstract class CubeCommand
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, sender.getTranslation(NONE, this.usage));
+        String usage = this.usage;
+        if (!usage.isEmpty())
+        {
+            usage = sender.getTranslation(NONE, usage);
+        }
+        return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, usage));
     }
 
     /**
@@ -353,7 +363,12 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + sender.getTranslation(NONE, this.usage);
+    	String usage = this.usage;
+        if (!usage.isEmpty())
+        {
+            usage = sender.getTranslation(NONE, usage);
+        }
+        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + usage;
     }
 
     /**
@@ -492,13 +507,13 @@ public abstract class CubeCommand
      */
     public void help(HelpContext context)
     {
-        context.sendTranslated(NEUTRAL, "Description: {message}", this.getDescription());
-        context.sendTranslated(NEUTRAL, "Usage: {message}", this.getUsage(context));
+        context.sendTranslated(NONE, "{text:Description:color=GREY}: {input}", this.getDescription());
+        context.sendTranslated(NONE, "{text:Usage:color=GREY}: {input}", this.getUsage(context));
 
         if (this.hasChildren())
         {
             context.sendMessage(" ");
-            context.sendTranslated(MessageType.NEUTRAL, "The following subcommands are available:");
+            context.sendTranslated(NEUTRAL, "The following subcommands are available:");
             context.sendMessage(" ");
 
             final CommandSender sender = context.getSender();
@@ -511,6 +526,6 @@ public abstract class CubeCommand
             }
         }
         context.sendMessage(" ");
-        context.sendTranslated(NEUTRAL, "Detailed help: {message#link}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
+        context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
     }
 }

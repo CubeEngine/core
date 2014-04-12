@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: CubeEngine\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 19:47:19+0200\n"
-"PO-Revision-Date: 2014-03-30 11:59+0000\n"
+"POT-Creation-Date: 2014-03-31 20:53:15+0200\n"
+"PO-Revision-Date: 2014-03-31 18:53+0000\n"
 "Last-Translator: CubeIsland <development@cubeisland.de>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/cubeengine/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -32,12 +32,6 @@ msgstr ""
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:71
 msgid "<name>"
 msgstr "<Name>"
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:80
-msgid ""
-"<name> {universe} [env <environement>] [seed <seed>] [type <type>] [struct "
-"<true|false>] [gen <generator>] [-recreate] [-noload]"
-msgstr "<Name> {universe} [env <Umgebung>] [seed <Seed>] [type <Typ>] [struct <true|false>] [gen <Generator>] [-recreate] [-noload]"
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:461
 msgid "<u:<universe>|<world>"
@@ -62,10 +56,6 @@ msgstr "<Welt> <Universum>"
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:297
 msgid "<world> [-f]"
 msgstr "<Welt> [-f]"
-
-#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:188
-msgid "<world> {universe}"
-msgstr "<Welt> {universe}"
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:71
 msgid "Creates a new universe"
@@ -340,4 +330,14 @@ msgstr ""
 
 #: de/cubeisland/engine/worlds/commands/WorldsCommands.java:519
 msgid "Save a player's state for their current world"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:80
+msgid ""
+"<name> (universe) [env <environement>] [seed <seed>] [type <type>] [struct "
+"<true|false>] [gen <generator>] [-recreate] [-noload]"
+msgstr ""
+
+#: de/cubeisland/engine/worlds/commands/WorldsCommands.java:188
+msgid "<world> (universe)"
 msgstr ""

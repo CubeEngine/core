@@ -18,18 +18,20 @@
 package de.cubeisland.engine.selector;
 
 import org.bukkit.Location;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.math.shape.Shape;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static org.bukkit.event.Event.Result.DENY;
+import static org.bukkit.event.block.Action.LEFT_CLICK_BLOCK;
+import static org.bukkit.event.block.Action.PHYSICAL;
 
 public class CuboidSelector implements Selector, Listener
 {
@@ -89,7 +91,7 @@ public class CuboidSelector implements Selector, Listener
     public void onInteract(PlayerInteractEvent event)
     {
         if (module.hasWorldEdit()) return;
-        if (event.getAction().equals(Action.PHYSICAL)) return;
+        if (event.getAction() == PHYSICAL) return;
         if (!selectPerm.isAuthorized(event.getPlayer())) return;
         if (event.getClickedBlock() != null)
         {
@@ -97,21 +99,21 @@ public class CuboidSelector implements Selector, Listener
                 && event.getPlayer().getInventory().getItemInHand().getItemMeta().hasDisplayName()
                 && event.getPlayer().getInventory().getItemInHand().getItemMeta().getDisplayName().equals(SELECTOR_TOOL_NAME))
             {
-                User user = this.module.getCore().getUserManager().getUser(event.getPlayer().getName());
+                User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 SelectorAttachment logAttachment = user.attachOrGet(SelectorAttachment.class, this.module);
                 Location clicked = event.getClickedBlock().getLocation();
-                if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+                if (event.getAction() == LEFT_CLICK_BLOCK)
                 {
                     logAttachment.setPoint(0, clicked);
-                    user.sendTranslated(MessageType.POSITIVE, "First position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
+                    user.sendTranslated(POSITIVE, "First position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 else
                 {
                     logAttachment.setPoint(1, clicked);
-                    user.sendTranslated(MessageType.POSITIVE, "Second position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
+                    user.sendTranslated(POSITIVE, "Second position set to ({integer}, {integer}, {integer}).", clicked.getBlockX(), clicked.getBlockY(), clicked.getBlockZ());
                 }
                 event.setCancelled(true);
-                event.setUseItemInHand(Result.DENY);
+                event.setUseItemInHand(DENY);
             }
         }
     }

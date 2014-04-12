@@ -18,257 +18,158 @@
 package de.cubeisland.engine.log;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.reflect.Section;
+import de.cubeisland.engine.log.action.player.item.container.ContainerType;
 import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.annotations.Comment;
-import de.cubeisland.engine.reflect.annotations.Name;
-import de.cubeisland.engine.log.action.logaction.container.ContainerType;
 
 @SuppressWarnings("all")
 public class LoggingConfiguration extends ReflectedYaml
 {
     @Comment("Completely enables or disabled logging")
-    @Name("logging.enable")
-    public boolean enable = true;
+    public boolean enableLogging = true;
 
-    @Name("logging.block")
     public Block block = new Block();
 
     public class Block implements Section
     {
         @Comment("Blocks destroyed by a player")
-        @Name("break.player")
-        public boolean BLOCK_BREAK_enable = true;
+        public boolean destroyByPlayer = true;
+        @Comment("Blocks getting destroyed or moved by unknown means")
+        public boolean destroyByOther = true;
+        @Comment("Blocks destroyed by an entity. Usually doors fom zombies.")
+        public boolean destroyByEntity = true;
+        public boolean destroyByEnderman = true;
         @Comment("Blocks destroyed by fire")
-        @Name("break.fire")
-        public boolean BLOCK_BURN_enable = true;
+        public boolean destroyByFire = true;
 
-        @Name("break.fade")
+        @Comment("Leaves decaying after breaking the wood nearby")
+        public boolean decay = false;
         @Comment("Ice and snow fading away")
-        public Fade fade = new Fade();
-
-        public class Fade implements Section
+        public LogFadeSection fade = new LogFadeSection();
+        public class LogFadeSection implements Section
         {
             public boolean enable = false;
             @Comment("The blocks not to log when fading away (ICE, SNOW, GRASS)")
             public Set<Material> ignore = new LinkedHashSet<>();
         }
 
-        @Comment("Leaves decaying after breaking the wood nearby")
-        @Name("break.decay")
-        public boolean LEAF_DECAY_enable = false;
+        public boolean placeByEnderman = true;
 
-        @Name("break.flow")
-        @Comment("Lava or water destroying blocks")
-        public BreakFlow breakFlow = new BreakFlow();
-
-        public class BreakFlow implements Section
-        {
-            @Name("water")
-            public boolean WATER_BREAK_enable = true;
-            @Name("lava")
-            public boolean LAVA_BREAK_enable = true;
-        }
-
-        @Comment("Blocks destroyed by an entity. Usually doors fom zombies.")
-        @Name("break.by-entity")
-        public boolean ENTITY_BREAK_enable = true;
-
-        @Comment("Enderman breaking or placing blocks")
-        public EnderMan enderman = new EnderMan();
-
-        public class EnderMan implements Section
-        {
-            @Name("pickup")
-            public boolean ENDERMAN_PICKUP_enable = true;
-            @Name("place")
-            public boolean ENDERMAN_PLACE_enable = true;
-        }
-
-        @Comment("Blocks placed or removed by using a bucket")
-        public Bucket bucket = new Bucket();
-
-        public class Bucket implements Section
-        {
-            @Name("fill")
-            public boolean BUCKET_FILL_enable = true;
-            @Name("lava")
-            public boolean LAVA_BUCKET_enable = true;
-            @Name("water")
-            public boolean WATER_BUCKET_enable = true;
-        }
-
+        @Comment("Sheep converting Grass into Dirt")
+        public boolean sheepEat = false;
         @Comment("Destroying soil & crops by walking or jumping on it")
-        @Name("break.trample")
-        public boolean CROP_TRAMPLE_enable = false;
-        @Comment("Igniting TNT directly with a lighter")
-        @Name("break.tnt-prime")
-        public boolean TNT_PRIME_enable = true;
-
-        @Comment("A List of all materials that will not be logged when destroyed.")
-        @Name("break.no-logging")
-        public Set<Material> breakNoLogging = new LinkedHashSet<>();
+        public boolean trample = false;
 
         @Comment("Blocks destroyed by various explosions")
         public Explode explode = new Explode();
 
         public class Explode implements Section
         {
-            @Name("creeper")
-            public boolean CREEPER_EXPLODE_enable = true;
-            @Name("tnt")
-            public boolean TNT_EXPLODE_enable = true;
-            @Name("ghast-fireball")
-            public boolean FIREBALL_EXPLODE_enable = true;
-            @Name("enderdragon")
-            public boolean ENDERDRAGON_EXPLODE_enable = true;
-            @Name("wither")
-            public boolean WITHER_EXPLODE_enable = true;
+            public boolean creeper = true;
+            public boolean tnt = true;
+            public boolean fireball = true;
+            public boolean enderdragon = true;
+            public boolean wither = true;
             @Comment("Explosions that are not caused by any of above reasons")
-            @Name("other")
-            public boolean ENTITY_EXPLODE_enable = false;
+            public boolean other = false;
         }
 
-        @Name("place.player")
-        public boolean BLOCK_PLACE_enable = true;
+        @Comment("Blocks placed by players")
+        public boolean placeByPlayer = true;
 
-        @Comment("Trees or mushrooms growing")
-        public Grow grow = new Grow();
-        public class Grow implements Section
-        {
-            @Name("natural")
-            public boolean NATURAL_GROW_enable = false;
-            @Name("player")
-            public boolean PLAYER_GROW_enable = true;
-        }
+        @Comment("Trees or mushrooms growing naturally")
+        public boolean growByNature = false;
 
-        @Comment("Ice or Snow forming OR blocks formed by water and lava")
-        public Form form = new Form();
-        public class Form implements Section
-        {
-            @Name("enable")
-            public boolean BLOCK_FORM_enable = true;
-            @Comment("The blocks not to log when forming away (ICE, SNOW, COBBLESTONE, STONE, OBSIDIAN, GRASS?)")
-            @Name("ignore")
-            public Set<Material> BLOCK_FORM_ignore = new LinkedHashSet<>();
-            @Comment("Blocks created by entities (snowgolem)")
-            @Name("by-entity")
-            public boolean ENTITY_FORM_enable = false;
-        }
+        @Comment("Trees or mushrooms growing because of a player")
+        public boolean growByPlayer = true;
 
-        @Comment("A List of all materials that will not be logged when placed.")
-        @Name("place.no-logging")
-        public Collection<Material> placeNoLogging = new LinkedList<>();
+        @Comment("Blocks forming")
+        public boolean formByNature = true;
+        @Comment("Blocks formed by an entity")
+        public boolean formByEntity;
+        @Comment("Blocks formed by water and lava")
+        public boolean formByWaterLava;
 
-        @Comment("Fire ,Mushrooms or other Blocks spreading")
-        public Spread spread = new Spread();
-        public class Spread implements Section
-        {
-            @Name("fire")
-            public boolean FIRE_SPREAD_enable = true;
-            @Name("other")
-            public boolean BLOCK_SPREAD_enable = false;
-        }
+        @Comment("Blocks spreading e.g. mushrooms")
+        public boolean spreadByNature = false;
 
-        @Comment("Fire-Ignition by fireballs, lighter, lava or lightning")
-        public Ignite ignite = new Ignite();
-        public class Ignite implements Section
-        {
-            @Name("fireball")
-            public boolean FIREBALL_IGNITE_enable = false;
-            @Name("lighter")
-            public boolean LIGHTER_IGNITE_enable = true;
-            @Name("lava")
-            public boolean LAVA_IGNITE_enable = false;
-            @Name("lightning")
-            public boolean LIGHTNING_IGNITE_enable = false;
-            @Name("other")
-            public boolean OTHER_IGNITE_enable = false;
-        }
-
-        @Comment("Unhindered Lava or Water-flow. These can produce a lot of logs!")
         public Flow flow = new Flow();
         public class Flow implements Section
         {
-            @Name("lava")
-            public boolean LAVA_FLOW_enable = false;
-            @Name("water")
-            public boolean WATER_FLOW_enable = false;
+            @Comment("Unhindered Water-flow. These can produce a lot of logs!")
+            public boolean water = false;
+            @Comment("Water breaking blocks")
+            public boolean waterBreak = true;
+            @Comment("A WaterSource forming")
+            public boolean waterForm = true;
+            @Comment("Unhindered Lava-flow. These can produce a lot of logs!")
+            public boolean lava = false;
+            @Comment("Lava breaking blocks")
+            public boolean lavaBreak = true;
         }
 
         @Comment("Blocks moved by pistons")
-        @Name("change.piston")
-        public boolean BLOCK_SHIFT_enable = false;
+        public boolean shift = false;
         @Comment("Blocks falling because of gravity (Sand, Gravel, Anvil)")
-        @Name("change.fall")
-        public boolean BLOCK_FALL_enable = false;
+        public boolean fall = false;
         @Comment("Changing the lines of a sign")
-        @Name("change.sign")
-        public boolean SIGN_CHANGE_enable = true;
-        @Comment("Sheep converting Grass into Dirt")
-        @Name("change.sheep-eat")
-        public boolean SHEEP_EAT_enable = false;
-        @Name("logging.use.bonemeal")
-        @Comment("Using bonemeal on a valid target")
-        public boolean BONEMEAL_USE_enable = false;
-        @Comment("Flipping levers")
-        @Name("change.lever")
-        public boolean LEVER_USE_enable = false;
-        @Comment("Changing Repeater settings")
-        @Name("change.repeater")
-        public boolean REPEATER_CHANGE_enable = true;
-        @Comment("Changing Comparator state")
-        @Name("change.comparator")
-        public boolean COMPARATPR_CHANGE_enable = true;
-        @Comment("Changing Noteblock settings")
-        @Name("change.note-block")
-        public boolean NOTEBLOCK_CHANGE_enable = true;
-        @Comment("Opening or closing doors")
-        @Name("change.door")
-        public boolean DOOR_USE_enable = false;
-        @Comment("Eating cake")
-        @Name("change.cake")
-        public boolean CAKE_EAT_enable = true;
+        public boolean signChange = true;
+
         @Comment("Log every worldedit change. WARNING! Big Worldedit-actions could crash your server!")
-        @Name("worldedit")
-        public boolean WORLDEDIT_enable = false;
+        public boolean worldedit = false;
     }
 
-    @Comment("Filling a bucket with milk.")
-    @Name("logging.use.fill-milk")
-    public boolean BUCKET_FILL_milk = false;
-    @Comment("Filling a bucket with milk.")
-    @Name("logging.use.fill-soup")
-    public boolean BOWL_FILL_SOUP = false;
+    @Comment("Fire-Ignition by fireballs, lighter, lava or lightning")
+    public Ignite ignite = new Ignite();
+
+    public class Ignite implements Section
+    {
+        public boolean spread = true;
+        public boolean fireball = false;
+        public boolean lighter = true;
+        public boolean lava = false;
+        public boolean lightning = false;
+        public boolean other = false;
+    }
+
+
+    @Comment("Blocks placed or removed by using a bucket")
+    public Bucket bucket = new Bucket();
+
+    public class Bucket implements Section
+    {
+        public boolean fill = true;
+        public boolean lava = true;
+        public boolean water = true;
+        @Comment("Filling a bucket with milk.")
+        public boolean milk = false;
+    }
+
 
     @Comment("Container-types to log")
-    @Name("logging.container")
     public Container container = new Container();
+
     public class Container implements Section
     {
-        @Comment("Player looking into a container")
-        @Name("access")
-        public boolean CONTAINER_ACCESS_enable = true;
         @Comment("Putting items into a container")
-        @Name("insert")
-        public boolean ITEM_INSERT_enable = true;
+        public boolean insert = true;
         @Comment("Taking items out of a container")
-        @Name("remove")
-        public boolean ITEM_REMOVE_enable = true;
-        @Comment("Items moved by a hopper or dropper")
-        @Name("transfer.enable")
-        public boolean ITEM_TRANSFER_enable = true;
+        public boolean remove = true;
+
+        @Comment({"Items moved by a hopper or dropper",
+                  "WARNING this can potentially create MILLIONS of logs in a very short time"})
+        public boolean move = false;
+
+        // TODO
         @Comment("Items to ignore when moved by a hopper or dropper")
-        @Name("transfer.ignore")
-        public Set<Material> ITEM_TRANSFER_ignore = new LinkedHashSet<Material>()
+        public Set<Material> moveIgnore = new LinkedHashSet<Material>()
         {
             {
                 this.add(Material.EGG);
@@ -281,153 +182,183 @@ public class LoggingConfiguration extends ReflectedYaml
         };
 
         @Comment("InventoryTypes to ignore (chest,furnace,dispenser,dropper,hopper,brewing-stand,storage-minecart)")
-        @Name("ignored-types")
+        // TODO
         public Set<ContainerType> CONTAINER_ignore = new LinkedHashSet<>();
     }
 
-    @Comment("Pushing a button")
-    @Name("logging.use.button")
-    public boolean BUTTON_USE_enable = false;
-    @Comment("Using firework-rockets")
-    @Name("logging.use.firework")
-    public boolean FIREWORK_USE_enable = false;
 
-    @Comment("Enter a boat or minecart")
-    @Name("logging.vehicle.enter")
-    public boolean VEHICLE_ENTER_enable = false;
-    @Comment("Exit a boat or minecart")
-    @Name("logging.vehicle.exit")
-    public boolean VEHICLE_EXIT_enable = false;
-    @Comment("Thrown splash-potions")
-    @Name("logging.use.splash-potion")
-    public boolean POTION_SPLASH_enable = false;
-    @Comment("Walking on pressure-plates")
-    @Name("logging.use.pressure-plate")
-    public boolean PLATE_STEP_enable = false;
+    public LogHangingSection hanging;
 
-    @Comment("Placing a boat or minecart")
-    @Name("logging.vehicle.place")
-    public boolean VEHICLE_PLACE_enable = false;
-    @Comment("Placing a painting or itemframe")
-    @Name("logging.hanging.place")
-    public boolean HANGING_PLACE_enable = true;
-    @Name("logging.hanging.remove-item-from-frame")
-    public boolean ITEM_REMOVE_FROM_FRAME = true;
-    @Comment("Breaking a boat or minecart")
-    @Name("logging.vehicle.break")
-    public boolean VEHICLE_BREAK_enable = false;
-    @Comment("Breaking a painting or itemframe")
-    @Name("logging.hanging.break")
-    public boolean HANGING_BREAK_enable = true;
+    public static class LogHangingSection implements Section
+    {
+        @Comment("Placing a painting or itemframe")
+        public boolean place = true;
+        @Comment("Breaking a painting or itemframe")
+        public boolean destroy = true;
+        @Comment("Removing items from itemframes")
+        public boolean item_remove = true;
+    }
 
-    @Name("logging.death")
     public Death death = new Death();
+
     public class Death implements Section
     {
         @Comment("Only log when the killer is")
         public Killer killer = new Killer();
+
         public class Killer implements Section
         {
-            @Name("player")
+            public boolean enable;
+
+            // TODO kill config
             public boolean PLAYER_KILL_enable = true;
-            @Name("entity")
             public boolean ENTITY_KILL_enable = false;
-            @Name("environment")
             public boolean ENVIRONMENT_KILL_enable = false;
-            @Name("boss")
-            public boolean BOSS_KILL_enable = true;
-            //TODO other kill options ? lightning, fall-damage, drowning, suffocation, cacti, starvation , lava
         }
 
-        @Name("player")
-        public boolean PLAYER_DEATH_enable = true;
-        @Name("monster")
-        public boolean MONSTER_DEATH_enable = false;
+        public boolean player = true;
+        public boolean monster = false;
         @Comment("Animal-Death: Chicken,Pig,Cow,Sheep,Wolf,Ocelot")
-        @Name("animal")
-        public boolean ANIMAL_DEATH_enable = true;
+        public boolean animal = true;
         @Comment("Pet-Death: Tamed Wolf,Ocelot")
-        @Name("pet")
-        public boolean PET_DEATH_enable = true;
+        public boolean pet = true;
         @Comment("Villager-Death")
-        @Name("npc")
-        public boolean NPC_DEATH_enable = true;
-        @Name("boss")
-        public boolean BOSS_DEATH_enable = true;
+        public boolean npc = true;
+        public boolean boss = true;
         @Comment("Other-Death: Golems,Squids,Bats")
-        @Name("other")
-        public boolean OTHER_DEATH_enable = false;
+        public boolean other = false;
     }
 
-    @Comment("Entity spawned using a monster-egg")
-    @Name("logging.spawn.monster-egg")
-    public boolean MONSTER_EGG_USE_enable = true;
-    @Comment("Entity naturally spawning. This will cause A LOT of logs!")
-    @Name("logging.spawn.natural")
-    public boolean NATURAL_SPAWN_enable = false;
-    @Comment("Entity spawned by a spawner")
-    @Name("logging.spawn.spawner")
-    public boolean SPAWNER_SPAWN_enable = false;
-    @Comment("Entity spawned indirectly by a player")
-    @Name("logging.spawn.other")
-    public boolean OTHER_SPAWN_enable = false;
+    public LogSpawnSection spawn;
 
-    @Comment("Items dropped by a player OR on death")
-    @Name("logging.item.drop")
-    public boolean ITEM_DROP_enable = false;
-    @Comment("Items picked up by a player")
-    //TODO CE-343 Log Zombies picking up items (waiting for bukkit)
-    @Name("logging.item.pickup")
-    public boolean ITEM_PICKUP_enable = false;
-    @Comment("Exp gained")
-    @Name("logging.exp-pickup")
-    public boolean XP_PICKUP_enable = false;
-    @Comment("Shearing Sheeps or Mooshrooms")
-    @Name("logging.use.shear")
-    public boolean ENTITY_SHEAR_enable = false;
-    @Comment("Dyeing Sheeps or Wolf-collars")
-    @Name("logging.use.dye")
-    public boolean ENTITY_DYE_enable = false;
-
-    @Comment("Commands used by a player")
-    @Name("logging.command.player")
-    public boolean PLAYER_COMMAND_enable = false;
-
-    @Comment("Commands to ignore when logging")
-    @Name("logging.command.ignore-commands")
-    public List<String> PLAYER_COMMAND_ignoreRegex = new ArrayList<>();{
+    public static class LogSpawnSection implements Section
     {
-        PLAYER_COMMAND_ignoreRegex.add("(ce|cubeengine) (login|setpassword|setpw) .+");
-    }}
+        @Comment("Entity spawned using a monster-egg")
+        public boolean monsterEgg = true;
+        @Comment("Entity naturally spawning. This will cause A LOT of logs!")
+        public boolean natural = false;
+        @Comment("Entity spawned by a spawner")
+        public boolean spawner = false;
+        @Comment("Entity spawned indirectly by a player")
+        public boolean other = false;
+    }
 
-    @Comment("The normal player chat")
-    @Name("logging.player.chat")
-    public boolean PLAYER_CHAT_enable = false;
-    @Comment("Players joining")
-    @Name("logging.player.join")
-    public boolean PLAYER_JOIN_enable = true;
-    @Comment("Log the players ip when joining")
-    @Name("logging.player.join-log-ip")
-    public boolean PLAYER_JOIN_ip = false;
-    @Comment("Players quiting")
-    @Name("logging.player.quit")
-    public boolean PLAYER_QUIT_enable = true;
-    @Comment("Players teleporting")
-    @Name("logging.player.teleport")
-    public boolean PLAYER_TELEPORT_enable = false;
-    @Comment("Players enchanting an item")
-    @Name("logging.player.enchant")
-    public boolean ENCHANT_ITEM_enable = true;
-    @Comment("Players crafting an item")
-    @Name("logging.player.craft")
-    public boolean CRAFT_ITEM_enable = true;
+
+    public LogItemSection item;
+
+    public static class LogItemSection implements Section
+    {
+        @Comment("Items dropped by a player")
+        public boolean drop_manual = false;
+        @Comment("Items dropped by a player on death")
+        public boolean drop_onPlayerDeath = true;
+        @Comment("Items dropped by an enttiy on death")
+        public boolean drop_onEntityDeath = false;
+        @Comment("Items picked up by a player")
+        public boolean pickup = false;
+        //TODO CE-343 Log Zombies picking up items (waiting for bukkit)
+        @Comment("Players enchanting an item")
+        public boolean enchant = true;
+        @Comment("Players crafting an item")
+        public boolean craft = true;
+
+    }
+
+    public LogEntitySection entity;
+
+    public static class LogEntitySection implements Section
+    {
+        @Comment("Filling a bucket with milk.")
+        public boolean fillSoup = false;
+        @Comment("Shearing Sheeps or Mooshrooms")
+        public boolean shear = false;
+        @Comment("Dyeing Sheeps or Wolf-collars")
+        public boolean dye = false;
+    }
+
+    public LogVehicleSection vehicle;
+
+    public static class LogVehicleSection implements Section
+    {
+        @Comment("Enter a boat or minecart")
+        public boolean enter = false;
+        @Comment("Exit a boat or minecart")
+        public boolean exit = false;
+        @Comment("Placing a boat or minecart")
+        public boolean place = false;
+        @Comment("Breaking a boat or minecart")
+        public boolean destroy = false;
+    }
+
+    public LogUseSection use;
+
+    public static class LogUseSection implements Section
+    {
+        @Comment("Fueling a Furnace Minecart")
+        public boolean furnaceMinecart = true;
+        @Comment("Using firework-rockets")
+        public boolean firework = false;
+        @Comment("Thrown splash-potions")
+        public boolean splashpotion = false;
+        @Comment("Igniting TNT directly with a lighter")
+        public boolean tnt = true;
+        @Comment("Changing Repeater settings")
+        public boolean repeater = true;
+        @Comment("Pushing a button")
+        public boolean button = false;
+        @Comment("Walking on pressure-plates")
+        public boolean plate = false;
+        public boolean bonemeal = false;
+        @Comment("Flipping levers")
+        public boolean lever = false;
+        @Comment("Changing Comparator state")
+        public boolean comparator = true;
+        @Comment("Changing Noteblock settings")
+        public boolean noteblock = true;
+        @Comment("Opening or closing doors")
+        public boolean door = false;
+        @Comment("Eating cake")
+        public boolean cake = true;
+        @Comment("Player looking into a container")
+        public boolean container = true;
+    }
+
+    public LogPlayerSection player;
+
+    public static class LogPlayerSection implements Section
+    {
+        @Comment("Commands used by a player")
+        public boolean command_enable = false;
+
+        @Comment("Commands to ignore when logging")
+        public List<String> PLAYER_COMMAND_ignoreRegex = new ArrayList<>();
+
+        {
+            {
+                PLAYER_COMMAND_ignoreRegex.add("(ce|cubeengine) (login|setpassword|setpw) .+");
+            }
+        }
+
+        @Comment("The normal player chat")
+        public boolean chat = false;
+        @Comment("Players joining")
+        public boolean join_enable = true;
+        @Comment("Log the players ip when joining")
+        public boolean PLAYER_JOIN_ip = false;
+        @Comment("Players quiting")
+        public boolean quit = true;
+        @Comment("Players teleporting")
+        public boolean teleport = false;
+        @Comment("Exp gained")
+        public boolean xp = false;
+    }
 
     @Override
     public String[] head()
     {
         if (this.getDefault() == this)
         {
-            return new String[]{"This is the global configuration for logging.","Any settings here can be overwritten for each world in their configuration"};
+            return new String[]{"This is the global configuration for logging.", "Any settings here can be overwritten for each world in their configuration"};
         }
         return null;
     }

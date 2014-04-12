@@ -17,45 +17,58 @@
  */
 package de.cubeisland.engine.log;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import de.cubeisland.engine.bigdata.Bigdata;
+import de.cubeisland.engine.bigdata.MongoDBCodec;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.engine.core.module.Inject;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.log.action.ActionTypeManager;
-import de.cubeisland.engine.log.action.logaction.container.ContainerType;
-import de.cubeisland.engine.log.action.logaction.container.ContainerTypeConverter;
-import de.cubeisland.engine.log.action.logaction.worldedit.LogEditSessionFactory;
+import de.cubeisland.engine.log.action.ActionManager;
+import de.cubeisland.engine.log.action.player.item.container.ContainerType;
+import de.cubeisland.engine.log.action.player.item.container.ContainerTypeConverter;
+import de.cubeisland.engine.log.action.block.player.worldedit.LogEditSessionFactory;
 import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
 import de.cubeisland.engine.log.storage.LogManager;
-import de.cubeisland.engine.log.storage.TableActionTypes;
-import de.cubeisland.engine.log.storage.TableLogEntry;
 import de.cubeisland.engine.log.tool.ToolListener;
+import de.cubeisland.engine.messagecompositor.macro.example.DateFormatter;
+import de.cubeisland.engine.messagecompositor.macro.example.DateFormatter.DateReader;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
 
 public class Log extends Module implements Listener
 {
     private LogManager logManager;
     private LogConfiguration config;
     private ObjectMapper objectMapper = null;
-    private ActionTypeManager actionTypeManager;
+    private ActionManager actionManager;
     private boolean worldEditFound = false;
+
+    @Inject
+    private Bigdata bigdata;
 
     @Override
     public void onEnable()
     {
-        this.getCore().getDB().registerTable(TableActionTypes.class);
-        this.getCore().getDB().registerTable(TableLogEntry.initTable(this.getCore().getDB()));
-
+        this.getCore().getI18n().getCompositor().registerMacro(new DateFormatter());
+        this.getCore().getI18n().getCompositor().registerReader(DateFormatter.class, "format", new DateReader());
         this.config = this.loadConfig(LogConfiguration.class);
-        this.getCore().getConfigFactory().getDefaultConverterManager().
-            registerConverter(ContainerType.class, new ContainerTypeConverter());
-        this.logManager = new LogManager(this);
-        this.actionTypeManager = new ActionTypeManager(this);
+        ConverterManager cMan = this.getCore().getConfigFactory().getDefaultConverterManager();
+        cMan.registerConverter(ContainerType.class, new ContainerTypeConverter());
+        cMan.registerConverter(EntityType.class, new EntityTypeConverter());
+        cMan.registerConverter(DamageCause.class, new DamageCauseConverter());
+        this.getCore().getConfigFactory().getCodecManager().getCodec(MongoDBCodec.class).
+            getConverterManager().registerConverter(ItemStack.class, new ItemStackConverter());
+        this.logManager = new LogManager(this, bigdata);
+        this.actionManager = new ActionManager(this);
 
         final CommandManager cm = this.getCore().getCommandManager();
         cm.registerCommands(this, new LookupCommands(this), ReflectedCommand.class);
@@ -112,9 +125,9 @@ public class Log extends Module implements Listener
         return objectMapper;
     }
 
-    public ActionTypeManager getActionTypeManager()
+    public ActionManager getActionManager()
     {
-        return actionTypeManager;
+        return actionManager;
     }
 
     public boolean hasWorldEdit()

@@ -28,7 +28,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.roles.RoleAppliedEvent;
 import de.cubeisland.engine.roles.storage.UserMetaData;
 import de.cubeisland.engine.roles.storage.UserPermission;
@@ -37,6 +36,8 @@ import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.types.UInteger;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.CRITICAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.roles.storage.TableData.TABLE_META;
 import static de.cubeisland.engine.roles.storage.TablePerm.TABLE_PERM;
 import static de.cubeisland.engine.roles.storage.TableRole.TABLE_ROLE;
@@ -260,7 +261,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
             {
                 if (!attachment.isOfflineMsgReceived())
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "The server is currently running in offline mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
+                    user.sendTranslated(NEGATIVE, "The server is currently running in offline mode. Permissions will not be applied until logging in! Contact an Administrator if you think this is an error.");
                     attachment.setOfflineMsgReceived(true);
                 }
                 this.module.getLog().warn("Role permissions not applied! Server is running in unsecured offline mode!");
@@ -283,7 +284,7 @@ public class UserDatabaseStore extends ResolvedDataHolder
         {
             if (this.getRawRoles().isEmpty() && this.getRawTempRoles().isEmpty())
             {
-                this.module.getLog().debug("{} had no roles applying default roles", this.attachment.getHolder().getName());
+                this.module.getLog().debug("{} had no roles applying default roles", this.attachment.getHolder().getDisplayName());
 
                 for (Role role : ((WorldRoleProvider)this.provider).getDefaultRoles())
                 {
@@ -291,7 +292,8 @@ public class UserDatabaseStore extends ResolvedDataHolder
                 }
             }
             super.calculate(roleStack);
-            this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getName());
+            this.module.getLog().debug("Role for {} calculated", this.attachment.getHolder().getDisplayName());
+            this.apply();
         }
     }
 
@@ -301,13 +303,13 @@ public class UserDatabaseStore extends ResolvedDataHolder
         super.roleMissing(roleName, temp);
         if (temp)
         {
-            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your temporary role {name} is not available in {world}", roleName, provider.getMainWorld());
-            this.attachment.getHolder().sendTranslated(MessageType.CRITICAL, "You should report this to an administrator!");
+            this.attachment.getHolder().sendTranslated(NEGATIVE, "Your temporary role {name} is not available in {world}", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated(CRITICAL, "You should report this to an administrator!");
         }
         else
         {
-            this.attachment.getHolder().sendTranslated(MessageType.NEGATIVE, "Your role {name} is not available in {world}", roleName, provider.getMainWorld());
-            this.attachment.getHolder().sendTranslated(MessageType.CRITICAL, "You should report this to an administrator!");
+            this.attachment.getHolder().sendTranslated(NEGATIVE, "Your role {name} is not available in {world}", roleName, provider.getMainWorld());
+            this.attachment.getHolder().sendTranslated(CRITICAL, "You should report this to an administrator!");
         }
     }
 

@@ -19,6 +19,7 @@ package de.cubeisland.engine.stats.stat;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -26,7 +27,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayTimeStat extends Stat
 {
-    private Map<String, Long> joined;
+    private Map<UUID, Long> joined;
 
     public void onActivate()
     {
@@ -36,13 +37,13 @@ public class PlayTimeStat extends Stat
     @EventHandler()
     public void playerJoin(PlayerJoinEvent event)
     {
-        joined.put(event.getPlayer().getName(), System.currentTimeMillis());
+        joined.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
     }
 
     @EventHandler
     public void playerLeave(PlayerQuitEvent event)
     {
-        long playtime = System.currentTimeMillis() - joined.get(event.getPlayer().getName());
+        long playtime = System.currentTimeMillis() - joined.get(event.getPlayer().getUniqueId());
         this.save(playtime);
     }
 }

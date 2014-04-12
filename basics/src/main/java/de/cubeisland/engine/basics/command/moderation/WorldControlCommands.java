@@ -40,10 +40,10 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 /**
  * Commands controlling / affecting worlds. /weather /remove /butcher
@@ -77,8 +77,8 @@ public class WorldControlCommands
         String weather = Match.string().matchString(context.getString(0), "sun", "rain", "storm");
         if (weather == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Invalid weather! {input}", context.getString(0));
-            context.sendTranslated(MessageType.NEUTRAL, "Use {name#sun}, {name#rain} or {name#storm}!", "sun", "rain", "storm");
+            context.sendTranslated(NEGATIVE, "Invalid weather! {input}", context.getString(0));
+            context.sendTranslated(NEUTRAL, "Use {name#sun}, {name#rain} or {name#storm}!", "sun", "rain", "storm");
             return;
         }
         if (weather.equalsIgnoreCase("sun"))
@@ -101,7 +101,7 @@ public class WorldControlCommands
             duration = context.getArg(1, Integer.class, 0);
             if (duration == 0)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The given duration is invalid!");
+                context.sendTranslated(NEGATIVE, "The given duration is invalid!");
                 return;
             }
             duration *= 20;
@@ -112,7 +112,7 @@ public class WorldControlCommands
             world = context.getParam("in", null);
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World {input#world} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getString(1));
                 return;
             }
         }
@@ -120,17 +120,17 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                throw new IncorrectUsageException(context.getSender().getTranslation(MessageType.NEGATIVE, "If not used ingame you have to specify a world!"));
+                throw new IncorrectUsageException(context.getSender().getTranslation(NEGATIVE, "If not used ingame you have to specify a world!"));
             }
             world = sender.getWorld();
         }
         if (world.isThundering() != noThunder && world.hasStorm() != sunny) // weather is not changing
         {
-            context.sendTranslated(MessageType.POSITIVE, "Weather in {world} is already set to {input#weather}!", world, weather);
+            context.sendTranslated(POSITIVE, "Weather in {world} is already set to {input#weather}!", world, weather);
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "Changed weather in {world} to {input#weather}!", world, weather);
+            context.sendTranslated(POSITIVE, "Changed weather in {world} to {input#weather}!", world, weather);
         }
         world.setStorm(!sunny);
         world.setThundering(!noThunder);
@@ -156,7 +156,7 @@ public class WorldControlCommands
         {
             if (sender == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The butcher will come for YOU tonight!");
+                context.sendTranslated(NEGATIVE, "The butcher will come for YOU tonight!");
                 return;
             }
             world = sender.getWorld();
@@ -168,7 +168,7 @@ public class WorldControlCommands
         }
         else if (sender == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "If not used ingame you can only remove all!");
+            context.sendTranslated(NEGATIVE, "If not used ingame you can only remove all!");
             return;
         }
         if (context.hasArg(1))
@@ -176,7 +176,7 @@ public class WorldControlCommands
             radius = context.getArg(1, Integer.class, 0);
             if (radius <= 0)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The radius has to be a whole number greater than 0!");
+                context.sendTranslated(NEGATIVE, "The radius has to be a whole number greater than 0!");
                 return;
             }
         }
@@ -210,7 +210,7 @@ public class WorldControlCommands
                     EntityType type = Match.entity().any(s_entityType.substring(0, s_entityType.indexOf(":")));
                     if (!EntityType.DROPPED_ITEM.equals(type))
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "You can only specify data for removing items!");
+                        context.sendTranslated(NEGATIVE, "You can only specify data for removing items!");
                         return;
                     }
                     Material itemtype = Match.material().material(s_entityType.substring(s_entityType.indexOf(":") + 1));
@@ -229,8 +229,8 @@ public class WorldControlCommands
                     EntityType type = Match.entity().any(s_entityType);
                     if (type == null)
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "Invalid entity-type!");
-                        context.sendTranslated(MessageType.NEUTRAL, "Use one of those instead:");
+                        context.sendTranslated(NEGATIVE, "Invalid entity-type!");
+                        context.sendTranslated(NEUTRAL, "Use one of those instead:");
                         context.sendMessage(EntityType.DROPPED_ITEM.toString() + ChatFormat.YELLOW + ", " +
                                                 ChatFormat.GOLD + EntityType.ARROW + ChatFormat.YELLOW + ", " +
                                                 ChatFormat.GOLD + EntityType.BOAT + ChatFormat.YELLOW + ", " +
@@ -242,7 +242,7 @@ public class WorldControlCommands
                     }
                     if (type.isAlive())
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "To kill living entities use the {text:/butcher} command!");
+                        context.sendTranslated(NEGATIVE, "To kill living entities use the {text:/butcher} command!");
                         return;
                     }
                     types.add(type);
@@ -263,25 +263,25 @@ public class WorldControlCommands
         }
         if (entitiesRemoved == 0)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "No entities to remove!");
+            context.sendTranslated(NEUTRAL, "No entities to remove!");
         }
         else if (context.getString(0).equalsIgnoreCase("*"))
         {
             if (radius == -1)
             {
-                context.sendTranslated(MessageType.POSITIVE, "Removed all entities in {world}! ({amount})", world, entitiesRemoved);
+                context.sendTranslated(POSITIVE, "Removed all entities in {world}! ({amount})", world, entitiesRemoved);
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "Removed all entities around you! ({amount})", entitiesRemoved);
+            context.sendTranslated(POSITIVE, "Removed all entities around you! ({amount})", entitiesRemoved);
         }
         else
         {
             if (radius == -1)
             {
-                context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities in {world}!", entitiesRemoved, world.getName());
+                context.sendTranslated(POSITIVE, "Removed {amount} entities in {world}!", entitiesRemoved, world);
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "Removed {amount} entities nearby!", entitiesRemoved); // TODO a non-plural version if there is only 1 entity
+            context.sendTranslated(POSITIVE, "Removed {amount} entities nearby!", entitiesRemoved); // TODO a non-plural version if there is only 1 entity
         }
     }
 
@@ -316,7 +316,7 @@ public class WorldControlCommands
             if (radius < 0 && !(radius == -1 && module.perms().COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context
                                                                                                          .getSender())))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "The radius has to be a number greater than 0!");
+                context.sendTranslated(NEGATIVE, "The radius has to be a number greater than 0!");
                 return;
             }
         }
@@ -347,7 +347,7 @@ public class WorldControlCommands
                 allTypes = true;
                 if (!module.perms().COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender()))
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to butcher all types of living entities at once!");
+                    context.sendTranslated(NEGATIVE, "You are not allowed to butcher all types of living entities at once!");
                     return;
                 }
             }
@@ -368,7 +368,7 @@ public class WorldControlCommands
                     directEntityMatch = Match.entity().living(s_type);
                     if (directEntityMatch == null)
                     {
-                        context.sendTranslated(MessageType.NEGATIVE, "Unknown entity {input#entity}", s_type);
+                        context.sendTranslated(NEGATIVE, "Unknown entity {input#entity}", s_type);
                         return;
                     }
                     if (this.entityRemovals.DIRECT_ENTITY_REMOVAL.get(directEntityMatch) == null) throw new IllegalStateException("Missing Entity? " + directEntityMatch);
@@ -406,11 +406,11 @@ public class WorldControlCommands
         removed = this.removeEntities(list, loc, radius, lightning);
         if (removed == 0)
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Nothing to butcher!");
+            context.sendTranslated(NEUTRAL, "Nothing to butcher!");
         }
         else
         {
-            context.sendTranslated(MessageType.POSITIVE, "You just slaughtered {amount} living entities!", removed);
+            context.sendTranslated(POSITIVE, "You just slaughtered {amount} living entities!", removed);
         }
 
     }

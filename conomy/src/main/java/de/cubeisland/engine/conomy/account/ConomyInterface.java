@@ -20,17 +20,21 @@ package de.cubeisland.engine.conomy.account;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserManager;
 
 public class ConomyInterface implements Economy
 {
     private final ConomyManager manager;
+    private final UserManager um;
 
     public ConomyInterface(ConomyManager manager)
     {
         this.manager = manager;
+        this.um = manager.module.getCore().getUserManager();
     }
 
     @Override
@@ -82,47 +86,46 @@ public class ConomyInterface implements Economy
     }
 
     @Override
-    public boolean hasAccount(String player)
+    public boolean hasAccount(UUID player)
     {
-        return manager.userAccountExists(player);
+        return manager.getUserAccount(um.getExactUser(player), false) != null;
     }
 
     @Override
-    public double getBalance(String playerName)
+    public double getBalance(UUID player)
     {
-        UserAccount userAccount = manager.getUserAccount(playerName, false);
-        if (userAccount == null)
-            throw new IllegalArgumentException(playerName+ " has no Account!");
-        return userAccount.balance();
+        return this.getUserAccount(player).balance();
     }
 
     @Override
-    public boolean has(String playerName, double amount)
+    public boolean has(UUID player, double amount)
     {
-        UserAccount userAccount = manager.getUserAccount(playerName, false);
-        if (userAccount == null)
-            throw new IllegalArgumentException(playerName+ " has no Account!");
-        return userAccount.has(amount);
+        return this.getUserAccount(player).has(amount);
     }
 
     @Override
-    public boolean withdraw(String playerName, double amount)
+    public boolean withdraw(UUID player, double amount)
     {
-        UserAccount userAccount = manager.getUserAccount(playerName, false);
-        if (userAccount == null)
-            throw new IllegalArgumentException(playerName+ " has no Account!");
-        userAccount.withdraw(amount);
+        this.getUserAccount(player).withdraw(amount);
         return true;
     }
 
     @Override
-    public boolean deposit(String playerName, double amount)
+    public boolean deposit(UUID player, double amount)
     {
-        UserAccount userAccount = manager.getUserAccount(playerName, false);
-        if (userAccount == null)
-            throw new IllegalArgumentException(playerName+ " has no Account!");
-        userAccount.deposit(amount);
+        this.getUserAccount(player).deposit(amount);
         return true;
+    }
+
+    private UserAccount getUserAccount(UUID player)
+    {
+        User user = um.getExactUser(player);
+        UserAccount userAccount = manager.getUserAccount(user, false);
+        if (userAccount == null)
+        {
+            throw new IllegalArgumentException(user.getDisplayName() + " has no Account!");
+        }
+        return userAccount;
     }
 
     @Override
@@ -135,7 +138,7 @@ public class ConomyInterface implements Economy
         BankAccount bankAccount = manager.getBankAccount(name, true);
         if (ownerName != null)
         {
-            User user = this.manager.module.getCore().getUserManager().getUser(ownerName, false);
+            User user = this.manager.module.getCore().getUserManager().findExactUser(ownerName);
             if (user == null)
             {
                 throw new IllegalArgumentException("Unknown User: " + ownerName);
@@ -156,7 +159,9 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
+        {
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
+        }
         return bankAccount.balance();
     }
 
@@ -165,7 +170,9 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
+        {
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
+        }
         return bankAccount.has(amount);
     }
 
@@ -174,7 +181,9 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
+        {
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
+        }
         bankAccount.withdraw(amount);
         return true;
     }
@@ -184,35 +193,41 @@ public class ConomyInterface implements Economy
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
+        {
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
+        }
         bankAccount.deposit(amount);
         return true;
     }
 
     @Override
-    public boolean isBankOwner(String name, String playerName)
+    public boolean isBankOwner(String name, UUID player)
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
+        {
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
-        User user = this.manager.module.getCore().getUserManager().getUser(playerName, false);
+        }
+        User user = this.manager.module.getCore().getUserManager().getExactUser(player);
         if (user == null)
         {
-            throw new IllegalArgumentException("Unknown User: " + playerName);
+            throw new IllegalArgumentException("Unknown User: " + player);
         }
         return bankAccount.isOwner(user);
     }
 
     @Override
-    public boolean isBankMember(String name, String playerName)
+    public boolean isBankMember(String name, UUID player)
     {
         BankAccount bankAccount = manager.getBankAccount(name, false);
         if (bankAccount == null)
+        {
             throw new IllegalArgumentException("There is no bankaccount named: " + name);
-        User user = this.manager.module.getCore().getUserManager().getUser(playerName, false);
+        }
+        User user = this.manager.module.getCore().getUserManager().getExactUser(player);
         if (user == null)
         {
-            throw new IllegalArgumentException("Unknown User: " + playerName);
+            throw new IllegalArgumentException("Unknown User: " + player);
         }
         return bankAccount.isMember(user);
     }
@@ -224,13 +239,13 @@ public class ConomyInterface implements Economy
     }
 
     @Override
-    public boolean createPlayerAccount(String playerName)
+    public boolean createAccount(UUID player)
     {
-        if (manager.userAccountExists(playerName))
+        if (this.hasAccount(player))
         {
             return false;
         }
-        manager.getUserAccount(playerName, true);
+        manager.getUserAccount(um.getExactUser(player), true);
         return true;
     }
 
@@ -256,5 +271,17 @@ public class ConomyInterface implements Economy
     public double convertLongToDouble(long value)
     {
         return (double)value / this.fractionalDigitsFactor();
+    }
+
+    @Override
+    public boolean deleteAccount(UUID player)
+    {
+        return this.manager.deleteUserAccount(um.getExactUser(player));
+    }
+
+    @Override
+    public boolean bankExists(String name)
+    {
+        return this.manager.bankAccountExists(name);
     }
 }

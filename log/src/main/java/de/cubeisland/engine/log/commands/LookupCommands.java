@@ -17,7 +17,8 @@
  */
 package de.cubeisland.engine.log.commands;
 
-import java.util.Set;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Material;
@@ -35,27 +36,28 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.LogAttachment;
-import de.cubeisland.engine.log.action.ActionType;
+import de.cubeisland.engine.log.action.ActionManager;
 import de.cubeisland.engine.log.action.ActionTypeCompleter;
-import de.cubeisland.engine.log.action.ActionTypeManager;
-import de.cubeisland.engine.log.storage.ImmutableBlockData;
+import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
 import de.cubeisland.engine.log.storage.Lookup;
 import de.cubeisland.engine.log.storage.QueryParameter;
 import de.cubeisland.engine.log.storage.ShowParameter;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+
 public class LookupCommands
 {
     private final Log module;
-    private final ActionTypeManager actionTypeManager;
+    private final ActionManager actionManager;
 
     public LookupCommands(Log module)
     {
         this.module = module;
-        this.actionTypeManager = module.getActionTypeManager();
+        this.actionManager = module.getActionManager();
     }
 
     private void params(ParameterizedContext context)
@@ -67,54 +69,44 @@ public class LookupCommands
             // TODO show description
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Registered ActionTypes:"); //TODO colors
-        context.sendMessage(this.module.getActionTypeManager().getActionTypesAsString());
+        context.sendTranslated(NEUTRAL, "Registered ActionTypes:"); //TODO colors
+        context.sendMessage(this.module.getActionManager().getActionTypesAsString());
         context.sendMessage("");
-        context.sendTranslated(MessageType.NEUTRAL, "Lookup/Rollback/Redo-Parameters:");
+        context.sendTranslated(NEUTRAL, "Lookup/Rollback/Redo-Parameters:");
         context.sendMessage("");
-        context.sendTranslated(MessageType.NEUTRAL, " - action <actionType> like a block-break (See full list above)");
-        context.sendTranslated(MessageType.NEUTRAL, " - radius <radius> or sel, global, player:<radius>");
-        context.sendTranslated(MessageType.NEUTRAL, " - player <users> like p Faithcaio ");
-        context.sendTranslated(MessageType.NEUTRAL, " - entity <entities> like e sheep");
-        context.sendTranslated(MessageType.NEUTRAL, " - block <blocks> like b stone");
-        context.sendTranslated(MessageType.NEUTRAL, " - since <time> default is 3 days");
-        context.sendTranslated(MessageType.NEUTRAL, " - before <time>");
-        context.sendTranslated(MessageType.NEUTRAL, " - world <world> default is your current world");
+        context.sendTranslated(NEUTRAL, " - action <actionType> like a block-break (See full list above)");
+        context.sendTranslated(NEUTRAL, " - radius <radius> or sel, global, player:<radius>");
+        context.sendTranslated(NEUTRAL, " - player <users> like p Faithcaio ");
+        context.sendTranslated(NEUTRAL, " - entity <entities> like e sheep");
+        context.sendTranslated(NEUTRAL, " - block <blocks> like b stone");
+        context.sendTranslated(NEUTRAL, " - since <time> default is 3 days");
+        context.sendTranslated(NEUTRAL, " - before <time>");
+        context.sendTranslated(NEUTRAL, " - world <world> default is your current world");
 
         context.sendMessage("");
-        context.sendTranslated(MessageType.NEUTRAL, "Use {text:!} to exclude the parameters instead of including them.");
+        context
+            .sendTranslated(NEUTRAL, "Use {text:!} to exclude the parameters instead of including them.");
     }
 
     @Command(
-        desc = "Queries a lookup in the database\n    " +
-            "Show availiable parameters with /lookup params",
+        desc = "Queries a lookup in the database\n    " + "Show availiable parameters with /lookup params",
         usage = "[page <page>] [parameters]",
-    flags = {
-        @Flag(longName = "coordinates", name = "coords"),
-        @Flag(longName = "detailed", name = "det"),
-        @Flag(longName = "nodate", name = "nd"),
-        @Flag(longName = "descending", name = "desc")
-    },
-    params = {
-        @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
-        @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
-        @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-        @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
-        @Param(names = {"entity","e"}),
-        @Param(names = {"since","time","t"}), // if not given default since 3d
-        @Param(names = {"before"}),
-        @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
+        flags = {
+            @Flag(longName = "coordinates", name = "coords"), @Flag(longName = "detailed", name = "det"), @Flag(longName = "nodate", name = "nd"), @Flag(longName = "descending", name = "desc")
+        },
+        params = {
+            @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
+            @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class), @Param(names = {"block", "b"}, completer = MaterialListCompleter.class), @Param(names = {"entity", "e"}), @Param(names = {"since", "time", "t"}), // if not given default since 3d
+            @Param(names = {"before"}), @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class),
 
-        @Param(names = {"limit","pagelimit"},type = Integer.class),
-        @Param(names = {"page"},type = Integer.class),
+            @Param(names = {"limit", "pagelimit"}, type = Integer.class), @Param(names = {"page"}, type = Integer.class),
 
-        @Param(names = "params", completer = ActionTypeCompleter.class)
-    }, min = 0, max = 1)
+            @Param(names = "params", completer = ActionTypeCompleter.class)
+        }, min = 0, max = 1)
     // TODO param for filter / chat / command / signtexts
     public void lookup(ParameterizedContext context)
     {
-        if ((context.hasArg(0) && context.getString(0).equalsIgnoreCase("params"))
-            || context.hasParam("params"))
+        if ((context.hasArg(0) && context.getString(0).equalsIgnoreCase("params")) || context.hasParam("params"))
         {
             this.params(context);
         }
@@ -134,7 +126,7 @@ public class LookupCommands
                 return;
             }
             User user = (User)context.getSender();
-            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
             ShowParameter show = attachment.getLastShowParameter(); // gets last OR new Showparameter
             Lookup lookup = attachment.getLastLookup();
             if (!this.fillShowOptions(attachment, lookup, show, context)) // /lookup show / page <page>
@@ -143,19 +135,24 @@ public class LookupCommands
             }
             lookup = attachment.createNewCommandLookup();
             QueryParameter params = lookup.getQueryParameter();
-            if (! (this.readActions(params, context.getString("action"), user)
-            && this.readRadius(params, context.getString("radius"), user)
-            && this.readUser(params, context.getString("user"), user)
-            && this.readBlocks(params, context.getString("block"), user)
-            && this.readEntities(params, context.getString("entity"), user)
-            && this.readWorld(params, context.getString("world"), context.hasParam("radius"), user)
-            && this.readTimeSince(params, context.getString("since"), user)
-            && this.readTimeBefore(params, context.getString("before"), user)))
+            if (!(this.readActions(params, context.getString("action"), user) && this
+                .readRadius(params, context.getString("radius"), user) && this
+                .readUser(params, context.getString("user"), user) && this
+                .readBlocks(params, context.getString("block"), user) && this
+                .readEntities(params, context.getString("entity"), user) && this
+                .readWorld(params, context.getString("world"), context.hasParam("radius"), user) && this
+                .readTimeSince(params, context.getString("since"), user) && this
+                .readTimeBefore(params, context.getString("before"), user)))
             {
                 return;
             }
             attachment.queueShowParameter(show);
             this.module.getLogManager().fillLookupAndShow(lookup, user);
+        }
+        else
+        {
+            // TODO implement me
+            System.out.println("Not implemented yet");
         }
     }
 
@@ -163,14 +160,9 @@ public class LookupCommands
         desc = "Performs a rollback", usage = "",
         flags = @Flag(longName = "preview", name = "pre"),
         params = {
-            @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
-            @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
-            @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-            @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
-            @Param(names = {"entity","e"}),
-            @Param(names = {"since","time","t"}), // if not given default since 3d
-            @Param(names = {"before"}),
-            @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
+            @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
+            @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class), @Param(names = {"block", "b"}, completer = MaterialListCompleter.class), @Param(names = {"entity", "e"}), @Param(names = {"since", "time", "t"}), // if not given default since 3d
+            @Param(names = {"before"}), @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class),
         }, min = 0, max = 1)
     public void rollback(ParameterizedContext context)
     {
@@ -185,21 +177,21 @@ public class LookupCommands
         {
             if (!context.hasParams())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You need to define parameters to rollback!");
+                context.sendTranslated(NEGATIVE, "You need to define parameters to rollback!");
                 return;
             }
             User user = (User)context.getSender();
-            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
             Lookup lookup = attachment.createNewCommandLookup();
             QueryParameter params = lookup.getQueryParameter();
-            if (! (this.readActions(params, context.getString("action"), user)
-                && this.readRadius(params, context.getString("radius"), user)
-                && this.readUser(params, context.getString("user"), user)
-                && this.readBlocks(params, context.getString("block"), user)
-                && this.readEntities(params, context.getString("entity"), user)
-                && this.readWorld(params, context.getString("world"), context.hasParam("radius"), user)
-                && this.readTimeSince(params, context.getString("since"), user)
-                && this.readTimeBefore(params, context.getString("before"), user)))
+            if (!(this.readActions(params, context.getString("action"), user) && this
+                .readRadius(params, context.getString("radius"), user) && this
+                .readUser(params, context.getString("user"), user) && this
+                .readBlocks(params, context.getString("block"), user) && this
+                .readEntities(params, context.getString("entity"), user) && this
+                .readWorld(params, context.getString("world"), context.hasParam("radius"), user) && this
+                .readTimeSince(params, context.getString("since"), user) && this
+                .readTimeBefore(params, context.getString("before"), user)))
             {
                 return;
             }
@@ -212,20 +204,20 @@ public class LookupCommands
                 this.module.getLogManager().fillLookupAndRollback(lookup, user);
             }
         }
+        else
+        {
+            // TODO implement me
+            System.out.println("Not implemented yet");
+        }
     }
 
     @Command(
         desc = "Performs a rollback", usage = "",
         flags = @Flag(longName = "preview", name = "pre"),
         params = {
-            @Param(names = {"action","a"}, completer = ActionTypeCompleter.class),
-            @Param(names = {"radius","r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
-            @Param(names = {"user","player","p"}, completer = PlayerListCompleter.class),
-            @Param(names = {"block","b"}, completer = MaterialListCompleter.class),
-            @Param(names = {"entity","e"}),
-            @Param(names = {"since","time","t"}), // if not given default since 3d
-            @Param(names = {"before"}),
-            @Param(names = {"world","w","in"}, type = World.class, completer = WorldCompleter.class),
+            @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
+            @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class), @Param(names = {"block", "b"}, completer = MaterialListCompleter.class), @Param(names = {"entity", "e"}), @Param(names = {"since", "time", "t"}), // if not given default since 3d
+            @Param(names = {"before"}), @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class),
         }, min = 0, max = 1)
     public void redo(ParameterizedContext context)
     {
@@ -240,21 +232,21 @@ public class LookupCommands
         {
             if (!context.hasParams())
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You need to define parameters to redo!");
+                context.sendTranslated(NEGATIVE, "You need to define parameters to redo!");
                 return;
             }
             User user = (User)context.getSender();
-            LogAttachment attachment = user.attachOrGet(LogAttachment.class,this.module);
+            LogAttachment attachment = user.attachOrGet(LogAttachment.class, this.module);
             Lookup lookup = attachment.createNewCommandLookup();
             QueryParameter params = lookup.getQueryParameter();
-            if (! (this.readActions(params, context.getString("action"), user)
-                && this.readRadius(params, context.getString("radius"), user)
-                && this.readUser(params, context.getString("user"), user)
-                && this.readBlocks(params, context.getString("block"), user)
-                && this.readEntities(params, context.getString("entity"), user)
-                && this.readWorld(params, context.getString("world"), context.hasParam("radius"), user)
-                && this.readTimeSince(params, context.getString("since"), user)
-                && this.readTimeBefore(params, context.getString("before"), user)))
+            if (!(this.readActions(params, context.getString("action"), user) && this
+                .readRadius(params, context.getString("radius"), user) && this
+                .readUser(params, context.getString("user"), user) && this
+                .readBlocks(params, context.getString("block"), user) && this
+                .readEntities(params, context.getString("entity"), user) && this
+                .readWorld(params, context.getString("world"), context.hasParam("radius"), user) && this
+                .readTimeSince(params, context.getString("since"), user) && this
+                .readTimeBefore(params, context.getString("before"), user)))
             {
                 return;
             }
@@ -267,20 +259,28 @@ public class LookupCommands
                 this.module.getLogManager().fillLookupAndRedo(lookup, user);
             }
         }
+        else
+        {
+            // TODO implement me
+            System.out.println("Not implemented yet");
+        }
     }
 
     private boolean readTimeBefore(QueryParameter params, String beforeString, User user)
     {
         try
         { // TODO date too
-            if (beforeString == null) return true;
+            if (beforeString == null)
+            {
+                return true;
+            }
             long before = StringUtils.convertTimeToMillis(beforeString);
-            params.before(System.currentTimeMillis() - before);
+            params.before(new Date(System.currentTimeMillis() - before));
             return true;
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "{input#time} is not a valid time value!", beforeString);
+            user.sendTranslated(NEGATIVE, "{input#time} is not a valid time value!", beforeString);
             return false;
         }
     }
@@ -292,33 +292,36 @@ public class LookupCommands
             if (sinceString != null)
             { // TODO date too
                 long since = StringUtils.convertTimeToMillis(sinceString);
-                params.since(System.currentTimeMillis() - since);
+                params.since(new Date(System.currentTimeMillis() - since));
             }
             else
             {
-                params.since(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)); // defaulted to last 30 days
+                params.since(new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30))); // defaulted to last 30 days
             }
             return true;
         }
         catch (TimeConversionException e)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "{input#time} is not a valid time value!", sinceString);
+            user.sendTranslated(NEGATIVE, "{input#time} is not a valid time value!", sinceString);
             return false;
         }
     }
 
     private boolean readWorld(QueryParameter params, String worldString, boolean hasRadius, User user)
     {
-        if (worldString == null) return true;
+        if (worldString == null)
+        {
+            return true;
+        }
         if (hasRadius)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You cannot define a radius or selection and a world.");
+            user.sendTranslated(NEGATIVE, "You cannot define a radius or selection and a world.");
             return false;
         }
         World world = user.getServer().getWorld(worldString);
         if (world == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "Unknown world: {input#world}", worldString);
+            user.sendTranslated(NEGATIVE, "Unknown world: {input#world}", worldString);
             return false;
         }
         params.setWorld(world);
@@ -327,20 +330,23 @@ public class LookupCommands
 
     private boolean readRadius(QueryParameter params, String radiusString, User user)
     {
-        if (radiusString == null) return true;
-        if (radiusString.equalsIgnoreCase("selection")|| radiusString.equalsIgnoreCase("sel"))
+        if (radiusString == null)
+        {
+            return true;
+        }
+        if (radiusString.equalsIgnoreCase("selection") || radiusString.equalsIgnoreCase("sel"))
         {
             LogAttachment logAttachment = user.attachOrGet(LogAttachment.class, this.module);
             if (!logAttachment.applySelection(params))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "You have to select a region first!");
+                user.sendTranslated(NEGATIVE, "You have to select a region first!");
                 if (module.hasWorldEdit())
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "Use worldedit to select a cuboid region!");
+                    user.sendTranslated(NEUTRAL, "Use worldedit to select a cuboid region!");
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "Use this selection wand.");
+                    user.sendTranslated(NEUTRAL, "Use this selection wand.");
                     LogCommands.giveSelectionTool(user);
                 }
                 return false;
@@ -356,14 +362,15 @@ public class LookupCommands
             Integer radius;
             if (radiusString.contains(":"))
             {
-                radiusUser = this.module.getCore().getUserManager().findUser(radiusString.substring(0,radiusString.indexOf(":")));
+                radiusUser = this.module.getCore().getUserManager()
+                                        .findUser(radiusString.substring(0, radiusString.indexOf(":")));
                 if (radiusUser == null)
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "Invalid radius/location selection");
-                    user.sendTranslated(MessageType.POSITIVE, "The radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    user.sendTranslated(NEGATIVE, "Invalid radius/location selection");
+                    user.sendTranslated(POSITIVE, "The radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
                     return false;
                 }
-                radiusString = radiusString.substring(radiusString.indexOf(":")+1);
+                radiusString = radiusString.substring(radiusString.indexOf(":") + 1);
             }
             try
             {
@@ -379,8 +386,8 @@ public class LookupCommands
                 radiusUser = this.module.getCore().getUserManager().findUser(radiusString);
                 if (radiusUser == null)
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "Invalid radius/location selection");
-                    user.sendTranslated(MessageType.POSITIVE, "The radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
+                    user.sendTranslated(NEGATIVE, "Invalid radius/location selection");
+                    user.sendTranslated(POSITIVE, "The radius parameter can be: <radius> | selection | global | <player>[:<radius>]");
                     return false;
                 }
                 params.setWorld(radiusUser.getWorld());
@@ -404,7 +411,7 @@ public class LookupCommands
             }
             if (limit > 100)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Your page-limit is to high! Showing 100 logs per page.");
+                context.sendTranslated(NEUTRAL, "Your page-limit is to high! Showing 100 logs per page.");
                 limit = 100;
             }
             show.pagelimit = limit;
@@ -420,7 +427,7 @@ public class LookupCommands
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You have to do a query first!");
+                    context.sendTranslated(NEGATIVE, "You have to do a query first!");
                 }
                 return false;
             }
@@ -430,10 +437,10 @@ public class LookupCommands
         {
             if (lookup != null && lookup.queried())
             {
-                Integer page = context.getParam("page",null);
+                Integer page = context.getParam("page", null);
                 if (page == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "Invalid page!");
+                    context.sendTranslated(NEGATIVE, "Invalid page!");
                     return false;
                 }
                 show.page = page;
@@ -442,7 +449,7 @@ public class LookupCommands
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You have to do a query first!");
+                context.sendTranslated(NEGATIVE, "You have to do a query first!");
             }
             return false;
         }
@@ -451,7 +458,10 @@ public class LookupCommands
 
     private boolean readUser(QueryParameter params, String userString, User sender)
     {
-        if (userString == null) return true;
+        if (userString == null)
+        {
+            return true;
+        }
         String[] users = StringUtils.explode(",", userString);
         for (String name : users)
         {
@@ -460,19 +470,19 @@ public class LookupCommands
             {
                 name = name.substring(1);
             }
-            User user = this.module.getCore().getUserManager().getUser(name, false);
+            User user = this.module.getCore().getUserManager().findExactUser(name);
             if (user == null)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "User {user} not found!", name);
+                sender.sendTranslated(NEGATIVE, "User {user} not found!", name);
                 return false;
             }
             if (negate)
             {
-                params.excludeUser(user.getId());
+                params.excludeUser(user.getUniqueId());
             }
             else
             {
-                params.includeUser(user.getId());
+                params.includeUser(user.getUniqueId());
             }
         }
         return true;
@@ -480,7 +490,10 @@ public class LookupCommands
 
     private boolean readBlocks(QueryParameter params, String block, User user)
     {
-        if (block == null) return true;
+        if (block == null)
+        {
+            return true;
+        }
         String[] names = StringUtils.explode(",", block);
         for (String name : names)
         {
@@ -492,25 +505,26 @@ public class LookupCommands
             Byte data = null;
             if (name.contains(":"))
             {
-                String sub = name.substring(name.indexOf(":")+1);
+                String sub = name.substring(name.indexOf(":") + 1);
                 try
                 {
                     data = Byte.parseByte(sub);
                 }
                 catch (NumberFormatException ex)
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "Invalid BlockData: {name#block}", sub);
+                    user.sendTranslated(NEGATIVE, "Invalid BlockData: {name#block}", sub);
                     return false;
                 }
-                name = name.substring(0,name.indexOf(":"));
+                name = name.substring(0, name.indexOf(":"));
             }
             Material material = Match.material().material(name);
             if (material == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Unknown Material: {name#material}", name);
+                user.sendTranslated(NEGATIVE, "Unknown Material: {name#material}", name);
                 return false;
             }
-            ImmutableBlockData blockData = new ImmutableBlockData(material, data);
+            BlockSection blockData = new BlockSection(material);
+            blockData.data = data == null ? 0 : data;
             if (negate)
             {
                 params.excludeBlock(blockData);
@@ -525,7 +539,10 @@ public class LookupCommands
 
     private boolean readEntities(QueryParameter params, String entity, User user)
     {
-        if (entity == null) return true;
+        if (entity == null)
+        {
+            return true;
+        }
         String[] names = StringUtils.explode(",", entity);
         for (String name : names)
         {
@@ -537,7 +554,7 @@ public class LookupCommands
             EntityType entityType = Match.entity().living(name);
             if (entityType == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Unknown EntityType: {name#entity}", name);
+                user.sendTranslated(NEGATIVE, "Unknown EntityType: {name#entity}", name);
                 return false;
             }
             if (negate)
@@ -555,7 +572,10 @@ public class LookupCommands
 
     private boolean readActions(QueryParameter params, String input, User user)
     {
-        if (input == null) return true;
+        if (input == null)
+        {
+            return true;
+        }
         String[] inputs = StringUtils.explode(",", input);
         for (String actionString : inputs)
         {
@@ -564,24 +584,24 @@ public class LookupCommands
             {
                 actionString = actionString.substring(1);
             }
-            Set<ActionType> actionTypes = this.actionTypeManager.getActionType(actionString);
-            if (actionTypes == null)
+            List<Class<? extends BaseAction>> actions = this.actionManager.getAction(actionString);
+            if (actions == null)
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Unknown action-type: {name#action}", actionString);
+                user.sendTranslated(NEGATIVE, "Unknown action-type: {name#action}", actionString);
                 return false;
             }
             if (negate)
             {
-                for (ActionType actionType : actionTypes)
+                for (Class<? extends BaseAction> action : actions)
                 {
-                    params.excludeAction(actionType);
+                    params.excludeAction(action);
                 }
             }
             else
             {
-                for (ActionType actionType : actionTypes)
+                for (Class<? extends BaseAction> action : actions)
                 {
-                    params.includeAction(actionType);
+                    params.includeAction(action);
                 }
             }
         }

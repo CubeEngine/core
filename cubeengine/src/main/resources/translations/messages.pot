@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:cubeengine:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:40+0200\n"
+"POT-Creation-Date: 2014-04-01 03:00:08+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -192,10 +192,6 @@ msgstr ""
 msgid "[<player>|-a]"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:122
-msgid "[difficulty] {world <world>}"
-msgstr ""
-
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:259
 msgid "[log level]"
 msgstr ""
@@ -216,10 +212,6 @@ msgstr ""
 msgid "[world]"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:247
-msgid "{player}"
-msgstr ""
-
 #: de/cubeisland/engine/core/command/commands/CoreCommands.java:141
 msgid "All passwords reset!"
 msgstr ""
@@ -232,7 +224,7 @@ msgstr ""
 msgid "An error occurred while enabling the module!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:609
+#: de/cubeisland/engine/core/command/CubeCommand.java:606
 msgid "An unknown error occurred while executing this command!"
 msgstr ""
 
@@ -248,7 +240,7 @@ msgstr ""
 msgid "Check the server log for info."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:571
+#: de/cubeisland/engine/core/command/CubeCommand.java:568
 msgid "Contact an administrator if you think this is a mistake!"
 msgstr ""
 
@@ -345,7 +337,7 @@ msgstr ""
 msgid "Player {user} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:610
+#: de/cubeisland/engine/core/command/CubeCommand.java:607
 msgid "Please report this error to an administrator."
 msgstr ""
 
@@ -353,7 +345,7 @@ msgstr ""
 msgid "Plugin dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:601
+#: de/cubeisland/engine/core/command/CubeCommand.java:598
 msgid "Proper usage: {input#usage:color=white}"
 msgstr ""
 
@@ -414,7 +406,7 @@ msgstr ""
 msgid "The following players are whitelisted:"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:720
+#: de/cubeisland/engine/core/command/CubeCommand.java:717
 msgid "The following subcommands are available:"
 msgstr ""
 
@@ -503,7 +495,7 @@ msgstr ""
 msgid "The module {name#module} was successfully unloaded!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:596
+#: de/cubeisland/engine/core/command/CubeCommand.java:593
 msgid "The parameter {input#parameter} is missing!"
 msgstr ""
 
@@ -679,7 +671,7 @@ msgstr ""
 msgid "You were opped by {sender}"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:570
+#: de/cubeisland/engine/core/command/CubeCommand.java:567
 msgid "You're not allowed to do this!"
 msgstr ""
 
@@ -716,12 +708,12 @@ msgid ""
 "{name#plugin} is currently running in version {input#version:color=INDIGO}."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:714
+#: de/cubeisland/engine/core/command/CubeCommand.java:711
 msgid "{text:Description:color=GREY}: {input}"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/ContainerCommand.java:134
-#: de/cubeisland/engine/core/command/CubeCommand.java:734
+#: de/cubeisland/engine/core/command/CubeCommand.java:731
 msgid "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}"
 msgstr ""
 
@@ -731,7 +723,7 @@ msgid ""
 "RED} for disabled."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:715
+#: de/cubeisland/engine/core/command/CubeCommand.java:712
 msgid "{text:Usage:color=GREY}: {input}"
 msgstr ""
 
@@ -753,4 +745,12 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/commands/VanillaCommands.java:437
 msgid "{user} is now whitelisted."
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:247
+msgid "(player)"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/commands/VanillaCommands.java:122
+msgid "[difficulty] (world <world>)"
 msgstr ""

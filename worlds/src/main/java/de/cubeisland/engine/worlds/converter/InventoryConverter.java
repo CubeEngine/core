@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.worlds.converter;
 
-import net.minecraft.server.v1_7_R2.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
+import net.minecraft.server.v1_7_R3.NBTTagCompound;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -118,7 +118,7 @@ public class InventoryConverter implements Converter<Inventory>
                                     ItemStack itemStack = new ItemStack(Material.valueOf(item.asText()));
                                     itemStack.setDurability(((ShortNode)damage).getValue());
                                     itemStack.setAmount(((IntNode)count).getValue());
-                                    net.minecraft.server.v1_7_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+                                    net.minecraft.server.v1_7_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                                     nms.tag = ((MapNode)tag).isEmpty() ? null : (NBTTagCompound)NBTUtils.convertNodeToNBT(tag);
                                     inventory.setItem(((IntNode)slot).getValue(), CraftItemStack.asBukkitCopy(nms));
                                 }

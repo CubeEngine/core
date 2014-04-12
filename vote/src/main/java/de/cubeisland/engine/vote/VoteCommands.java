@@ -24,11 +24,12 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.TimeUtil;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.vote.storage.VoteModel;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
 
 public class VoteCommands
@@ -57,34 +58,34 @@ public class VoteCommands
                         .fetchOne();
             if (voteModel == null)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Sorry but you do not have any registered votes on this server!");
+                context.sendTranslated(NEUTRAL, "Sorry but you do not have any registered votes on this server!");
             }
             else
             {
-                context.sendTranslated(MessageType.POSITIVE, "You current vote-count is {amount}", voteModel.getVoteamount().intValue());
+                context.sendTranslated(POSITIVE, "You current vote-count is {amount}", voteModel.getVoteamount().intValue());
                 if (System.currentTimeMillis() - voteModel.getLastvote().getTime() >= module.getConfig().voteBonusTime.getMillis())
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Sadly you did not vote in the last {input#time} so your vote-count will be reset to 1", this.formatter.print(module.getConfig().voteBonusTime.toPeriod()));
+                    context.sendTranslated(NEUTRAL, "Sadly you did not vote in the last {input#time} so your vote-count will be reset to 1", this.formatter.print(module.getConfig().voteBonusTime.toPeriod()));
                 }
                 else if (System.currentTimeMillis() - voteModel.getLastvote().getTime() < TimeUnit.DAYS.toMillis(1))
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You voted {input#time} so you will probably not be able to vote again already!", TimeUtil.format(context.getSender().getLocale(), new Date(voteModel.getLastvote().getTime())));
+                    context.sendTranslated(POSITIVE, "You voted {input#time} so you will probably not be able to vote again already!", TimeUtil.format(context.getSender().getLocale(), new Date(voteModel.getLastvote().getTime())));
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "Voting now will increase your consecutive votes and result in higher reward!");
+                    context.sendTranslated(NEUTRAL, "Voting now will increase your consecutive votes and result in higher reward!");
                 }
                 if (!module.getConfig().voteUrl.isEmpty())
                 {
-                    context.sendTranslated(MessageType.POSITIVE, "You can vote here now: {name#voteurl}", module.getConfig().voteUrl);
+                    context.sendTranslated(POSITIVE, "You can vote here now: {name#voteurl}", module.getConfig().voteUrl);
                 }
             }
             return;
         }
-        context.sendTranslated(MessageType.NEUTRAL, "Well you wont get any rewards.");
+        context.sendTranslated(NEUTRAL, "Well you wont get any rewards.");
         if (!module.getConfig().voteUrl.isEmpty())
         {
-            context.sendTranslated(MessageType.NEUTRAL, "But here go vote anyways: {name#voteurl}", module.getConfig().voteUrl);
+            context.sendTranslated(NEUTRAL, "But here go vote anyways: {name#voteurl}", module.getConfig().voteUrl);
         }
     }
 }

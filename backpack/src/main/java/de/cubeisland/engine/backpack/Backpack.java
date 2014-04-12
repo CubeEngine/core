@@ -17,7 +17,15 @@
  */
 package de.cubeisland.engine.backpack;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -25,14 +33,16 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.backpack.converter.NBTItemStackConverter;
 import de.cubeisland.engine.core.config.codec.NBTCodec;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.exception.ModuleLoadError;
+import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.worlds.Multiverse;
 import de.cubeisland.engine.worlds.Worlds;
 
 public class Backpack extends Module
 {
-    protected File singleDir;
-    protected File groupedDir;
-    protected File globalDir;
+    protected Path singleDir;
+    protected Path groupedDir;
+    protected Path globalDir;
     private BackpackManager manager;
 
     public BackpackPermissions perms()
@@ -48,14 +58,71 @@ public class Backpack extends Module
         perms = new BackpackPermissions(this);
         this.getCore().getConfigFactory().getCodecManager().getCodec(NBTCodec.class).getConverterManager().
             registerConverter(ItemStack.class, new NBTItemStackConverter());
-        this.singleDir = this.getFolder().resolve("single").toFile();
-        this.groupedDir = this.getFolder().resolve("grouped").toFile();
-        this.globalDir = this.getFolder().resolve("global").toFile();
-        this.singleDir.mkdir();
-        this.groupedDir.mkdir();
-        this.globalDir.mkdir();
+        this.singleDir = this.getFolder().resolve("single");
+        this.groupedDir = this.getFolder().resolve("grouped");
+        this.globalDir = this.getFolder().resolve("global");
+
+        this.updateToUUID();
         manager = new BackpackManager(this);
     }
+
+    private void updateToUUID()
+    {
+        try
+        {
+            Map<String, List<Path>> toRename = new HashMap<>();
+            for (Path dir : Files.newDirectoryStream(singleDir))
+            {
+                addPaths(toRename, dir);
+            }
+            for (Path dir : Files.newDirectoryStream(groupedDir))
+            {
+                addPaths(toRename, dir);
+            }
+            addPaths(toRename, globalDir);
+            if (!toRename.isEmpty())
+            {
+                getLog().info("Updating Backpacks for {} to UUID", toRename.size());
+                for (Entry<String, UUID> entry : McUUID.getUUIDForNames(toRename.keySet()).entrySet())
+                {
+                    for (Path path : toRename.get(entry.getKey()))
+                    {
+                        Files.move(path, path.getParent().resolve(entry.getValue().toString()));
+                    }
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            throw new ModuleLoadError(e);
+        }
+    }
+
+    private void addPaths(Map<String, List<Path>> toRename, Path dir) throws IOException
+    {
+        if (!Files.isDirectory(dir))
+        {
+            return;
+        }
+        for (Path path : Files.newDirectoryStream(dir))
+        {
+            if (Files.isDirectory(path))
+            {
+                String name = path.getFileName().toString();
+                if (!McUUID.UUID_PATTERN.matcher(name).find())
+                {
+                    List<Path> paths = toRename.get(name);
+                    if (paths == null)
+                    {
+                        paths = new ArrayList<>();
+                        toRename.put(name, paths);
+                    }
+                    paths.add(path);
+                }
+            }
+        }
+    }
+
 
     public World getMainWorld(World world)
     {

@@ -28,10 +28,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -45,6 +48,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 import org.jooq.Record1;
@@ -52,6 +56,8 @@ import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
+import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -61,7 +67,8 @@ public abstract class AbstractUserManager implements UserManager
 {
     private final Core core;
     protected List<User> onlineUsers;
-    protected ConcurrentHashMap<Object, User> cachedUsers;
+    protected ConcurrentHashMap<UUID, User> cachedUserByUUID = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<UInteger, User> cachedUserByDbId = new ConcurrentHashMap<>();
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
     protected final MessageDigest messageDigest;
@@ -74,7 +81,6 @@ public abstract class AbstractUserManager implements UserManager
 
         this.core = core;
 
-        this.cachedUsers = new ConcurrentHashMap<>();
         this.onlineUsers = new CopyOnWriteArrayList<>();
 
         this.defaultAttachments = new THashSet<>();
@@ -132,9 +138,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public void resetAllPasswords()
     {
-        this.database.getDSL().update(TABLE_USER)
-            .set(DSL.row(TABLE_USER.PASSWD), DSL.row(new byte[0]))
-            .execute();
+        this.database.getDSL().update(TABLE_USER).set(DSL.row(TABLE_USER.PASSWD), DSL.row(new byte[0])).execute();
         for (User user : this.getLoadedUsers())
         {
             user.getEntity().refresh();
@@ -152,27 +156,27 @@ public abstract class AbstractUserManager implements UserManager
         return this.getUser(name, true);
     }
 
-    public User getExactUser(CommandSender sender)
+    @Override
+    public User getExactUser(UUID uuid)
     {
-        if (sender == null)
+        User user = this.cachedUserByUUID.get(uuid);
+        if (user == null)
         {
-            return null;
+            UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
+            user = new User(entity);
+            this.cacheUser(user);
         }
-        if (sender instanceof User)
-        {
-            return this.getExactUser(sender.getName());
-        }
-        return null;
+        return user;
     }
 
-    public synchronized User getUser(long id)
+    public synchronized User getUser(UInteger id)
     {
-        User user = this.cachedUsers.get(id);
+        User user = this.cachedUserByDbId.get(id);
         if (user != null)
         {
             return user;
         }
-        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(UInteger.valueOf(id))).fetchOne();
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(id)).fetchOne();
         if (entity == null)
         {
             return null;
@@ -182,67 +186,27 @@ public abstract class AbstractUserManager implements UserManager
         return user;
     }
 
-    public User getUser(String name)
+    public User findExactUser(String name)
     {
         return this.getUser(name, false);
     }
 
-    @Override
-    public String getUserName(long key)
-    {
-        Record1<String> record1 = this.database.getDSL().select(TABLE_USER.PLAYER).from(TABLE_USER)
-                                 .where(TABLE_USER.KEY.eq(UInteger.valueOf(key))).fetchOne();
-        return record1 == null ? null : record1.value1();
-    }
-
-    public synchronized User getUser(String name, boolean create)
-    {
-        if (name == null)
-        {
-            throw new NullPointerException();
-        }
-        User user = this.cachedUsers.get(name.toLowerCase());
-        if (user == null)
-        {
-            user = this.loadUser(name);
-        }
-        if (user == null && create)
-        {
-            user = this.createUser(name);
-        }
-        return user;
-    }
-
-    protected synchronized User loadUser(String name)
-    {
-        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.PLAYER.eq(name)).fetchOne();
-        if (entity != null)
-        {
-            User user = new User(entity);
-            this.cacheUser(user);
-            return user;
-        }
-        return null;
-    }
-
     /**
-     * Adds a new User
+     * Gets a user by his name
      *
-     * @return the created User
+     * @param name   the name to get the user by
+     * @param create whether to create the user if not found
+     *
+     * @return the user or null if not found and create is false
      */
-    protected synchronized User createUser(String name)
-    {
-        User user = this.cachedUsers.get(name.toLowerCase());
-        if (user != null)
-        {
-            //User was already added
-            return user;
-        }
-        user = new User(this.core, name);
-        user.getEntity().insert();
-        this.cacheUser(user);
+    protected abstract User getUser(String name, boolean create);
 
-        return user;
+    @Override
+    public String getUserName(UInteger key)
+    {
+        Record1<String> record1 = this.database.getDSL().select(TABLE_USER.LASTNAME).from(TABLE_USER)
+                                               .where(TABLE_USER.KEY.eq(key)).fetchOne();
+        return record1 == null ? null : record1.value1();
     }
 
     protected synchronized void attachDefaults(User user)
@@ -255,42 +219,46 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void cacheUser(User user)
     {
+        updateLastName(user);
+        this.cachedUserByUUID.put(user.getUniqueId(), user);
+        this.cachedUserByDbId.put(user.getEntity().getKey(), user);
         this.core.getLog().debug("User {} cached!", user.getName());
-        this.cachedUsers.put(user.getName().toLowerCase(), user);
-        this.cachedUsers.put(user.getId(), user);
         this.attachDefaults(user);
+    }
+
+    protected void updateLastName(User user)
+    {
+        if (!user.getName().equalsIgnoreCase(user.getEntity().getLastName()))
+        {
+            user.getEntity().setLastName(user.getName());
+            user.getEntity().update();
+        }
     }
 
     protected synchronized void removeCachedUser(User user)
     {
+        this.cachedUserByUUID.remove(user.getUniqueId());
+        this.cachedUserByDbId.remove(user.getEntity().getKey());
         this.core.getLog().debug("Removed cached user {}!", user.getName());
-        this.cachedUsers.remove(user.getName().toLowerCase());
-        this.cachedUsers.remove(user.getId());
         user.detachAll();
     }
 
     public synchronized Set<User> getOnlineUsers()
     {
-        return new THashSet<>(this.onlineUsers);
+        return new THashSet<>(this.onlineUsers); // TODO this is not working as it should
     }
 
     public synchronized Set<User> getLoadedUsers()
     {
-        return new THashSet<>(this.cachedUsers.values());
-    }
-
-    public User findOnlineUser(String name)
-    {
-        User user = this.findUser(name);
-        if (user != null && user.isOnline())
-        {
-            return user;
-        }
-        return null;
+        return new THashSet<>(this.cachedUserByUUID.values());
     }
 
     public void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params)
     {
+        if (message.isEmpty())
+        {
+            return;
+        }
         for (User user : this.onlineUsers)
         {
             if (perm == null || perm.isAuthorized(user))
@@ -311,18 +279,19 @@ public abstract class AbstractUserManager implements UserManager
         message = ChatFormat.parseFormats(message);
         if (args != null && args.length != 0)
         {
-            message = String.format(message,args);
+            message = String.format(message, args);
         }
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(MessageType.NONE, starColor.toString() + "* {user} {input#message:color=WHITE}", name, message);
+            user.sendTranslated(NONE, starColor
+                .toString() + "* {user} {input#message:color=WHITE}", name, message);
         }
     }
 
     public void broadcastStatus(String message, CommandSender sender, Object... args)
     {
-        this.broadcastStatus(ChatFormat.WHITE, message, sender, args);
+        this.broadcastStatus(WHITE, message, sender, args);
     }
 
     private void loadSalt()
@@ -385,7 +354,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public synchronized void kickAll(String message)
     {
-        for (User user : this.cachedUsers.values())
+        for (User user : this.cachedUserByUUID.values())
         {
             user.kickPlayer(message);
         }
@@ -393,9 +362,9 @@ public abstract class AbstractUserManager implements UserManager
 
     public synchronized void kickAll(String message, Object... params)
     {
-        for (User user : this.cachedUsers.values())
+        for (User user : this.cachedUserByUUID.values())
         {
-            user.kickPlayer(user.getTranslation(MessageType.NONE, message, params));
+            user.kickPlayer(user.getTranslation(NONE, message, params));
         }
     }
 
@@ -479,6 +448,54 @@ public abstract class AbstractUserManager implements UserManager
         this.detachAllOf(module);
     }
 
+    public User findUser(String name)
+    {
+        return this.findUser(name, false);
+    }
+
+    public User findUser(String name, boolean searchDatabase)
+    {
+        if (name == null)
+        {
+            return null;
+        }
+        // Direct Match Online Players:
+        for (User onlineUser : this.getOnlineUsers())
+        {
+            if (name.equals(onlineUser.getName()))
+            {
+                return this.getExactUser(onlineUser.getUniqueId());
+            }
+        }
+        // Find Online Players with similar name
+        Map<String, User> onlinePlayerMap = new HashMap<>();
+        for (User onlineUser : this.getOnlineUsers())
+        {
+            onlinePlayerMap.put(onlineUser.getName(), onlineUser);
+        }
+        String foundUser = Match.string().matchString(name, onlinePlayerMap.keySet());
+        if (foundUser != null)
+        {
+            return this.getExactUser(onlinePlayerMap.get(foundUser).getUniqueId());
+        }
+        // Lookup in saved users
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name))
+                                         .fetchOne();
+        if (entity == null && searchDatabase)
+        {
+            // Match in saved users
+            entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.like("%" + name + "%"))
+                                  .limit(1).fetchOne();
+        }
+        if (entity != null)
+        {
+            User user = new User(entity);
+            this.cacheUser(user);
+            return user;
+        }
+        return null;
+    }
+
     @Override
     public void shutdown()
     {
@@ -487,8 +504,11 @@ public abstract class AbstractUserManager implements UserManager
         this.onlineUsers.clear();
         this.onlineUsers = null;
 
-        this.cachedUsers.clear();
-        this.cachedUsers = null;
+        this.cachedUserByUUID.clear();
+        this.cachedUserByUUID = null;
+
+        this.cachedUserByDbId.clear();
+        this.cachedUserByDbId = null;
 
         this.removeDefaultAttachments();
         this.defaultAttachments.clear();
@@ -500,8 +520,10 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public void clean()
     {
-        Timestamp time = new Timestamp(System.currentTimeMillis() - core.getConfiguration().usermanager.garbageCollection.getMillis());
-        this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC.isFalse()).execute();
+        Timestamp time = new Timestamp(System.currentTimeMillis() - core
+            .getConfiguration().usermanager.garbageCollection.getMillis());
+        this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC.isFalse())
+                     .execute();
     }
 
     protected final class DefaultAttachment

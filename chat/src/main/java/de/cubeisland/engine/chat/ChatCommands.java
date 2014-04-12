@@ -20,9 +20,10 @@ package de.cubeisland.engine.chat;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 public class ChatCommands
 {
@@ -49,12 +50,12 @@ public class ChatCommands
             forUser = context.getUser(1);
             if (forUser == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
                 return;
            }
            if (forUser != context.getSender() && !module.perms().COMMAND_NICK_OTHER.isAuthorized(context.getSender()))
            {
-               context.sendTranslated(MessageType.NEGATIVE, "You are not allowed to change the nickname of another player!");
+               context.sendTranslated(NEGATIVE, "You are not allowed to change the nickname of another player!");
                return;
            }
         }
@@ -64,23 +65,23 @@ public class ChatCommands
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You cannot change the consoles display name");
+            context.sendTranslated(NEGATIVE, "You cannot change the consoles display name");
             return;
         }
         String name = context.getString(0);
         if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
         {
             forUser.setDisplayName(context.getSender().getName());
-            context.sendTranslated(MessageType.POSITIVE, "Display name reset to {user}", context.getSender());
+            context.sendTranslated(POSITIVE, "Display name reset to {user}", context.getSender());
         }
         else
         {
-            if (module.getCore().getUserManager().getUser(name, false) != null && !module.perms().COMMAND_NICK_OFOTHER.isAuthorized(context.getSender()))
+            if (module.getCore().getUserManager().findExactUser(name) != null && !module.perms().COMMAND_NICK_OFOTHER.isAuthorized(context.getSender()))
             {
-                context.sendTranslated(MessageType.NEGATIVE, "This name has been taken by another player!");
+                context.sendTranslated(NEGATIVE, "This name has been taken by another player!");
                 return;
             }
-            context.sendTranslated(MessageType.POSITIVE, "Display name changed from {user} to {user}", context.getSender(), name);
+            context.sendTranslated(POSITIVE, "Display name changed from {user} to {user}", context.getSender(), name);
             ((User)context.getSender()).setDisplayName(name);
         }
     }

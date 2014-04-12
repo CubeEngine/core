@@ -37,7 +37,9 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 public class ListCommand extends CubeCommand
 {
@@ -75,12 +77,12 @@ public class ListCommand extends CubeCommand
 
         if (users.isEmpty())
         {
-            sender.sendTranslated(MessageType.NEGATIVE, "There are no players online at the moment!");
+            sender.sendTranslated(NEGATIVE, "There are no players online at the moment!");
             return null;
         }
 
         SortedMap<String, Set<User>> grouped = this.groupUsers(users);
-        sender.sendTranslated(MessageType.POSITIVE, "Players online: {amount#online}/{amount#max}", users.size(), Bukkit.getMaxPlayers());
+        sender.sendTranslated(POSITIVE, "Players online: {amount#online}/{amount#max}", users.size(), Bukkit.getMaxPlayers());
 
         for (Entry<String, Set<User>> entry : grouped.entrySet())
         {

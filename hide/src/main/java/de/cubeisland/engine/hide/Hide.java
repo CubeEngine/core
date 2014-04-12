@@ -19,6 +19,7 @@ package de.cubeisland.engine.hide;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -33,8 +34,8 @@ import org.dynmap.DynmapAPI;
 public class Hide extends Module implements Reloadable
 {
     private HideConfig config;
-    private Set<String> hiddenUsers;
-    private Set<String> canSeeHiddens;
+    private Set<UUID> hiddenUsers;
+    private Set<UUID> canSeeHiddens;
 
     public HidePerm perms()
     {
@@ -65,9 +66,9 @@ public class Hide extends Module implements Reloadable
     {
         this.canSeeHiddens.clear();
         Set<User> onlineUsers = getCore().getUserManager().getOnlineUsers();
-        for (String hiddenName : hiddenUsers)
+        for (UUID hiddenId : hiddenUsers)
         {
-            User hidden = getCore().getUserManager().getExactUser(hiddenName);
+            User hidden = getCore().getUserManager().getExactUser(hiddenId);
             for (User user : onlineUsers)
             {
                 user.showPlayer(hidden);
@@ -84,22 +85,22 @@ public class Hide extends Module implements Reloadable
 
     public void hidePlayer(final User user)
     {
-        this.hiddenUsers.add(user.getName());
+        this.hiddenUsers.add(user.getUniqueId());
 
         getCore().getEventManager().fireEvent(new UserHideEvent(user.getCore(), user));
 
         for (User onlineUser : getCore().getUserManager().getOnlineUsers())
         {
-            if (!this.canSeeHiddens.contains(onlineUser.getName()))
+            if (!this.canSeeHiddens.contains(onlineUser.getUniqueId()))
             {
                 onlineUser.hidePlayer(user);
             }
         }
 
-        for (String hiddenUserName : this.hiddenUsers)
+        for (UUID hiddenId : this.hiddenUsers)
         {
-            User hiddenUser = getCore().getUserManager().getExactUser(hiddenUserName);
-            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenUserName))
+            User hiddenUser = getCore().getUserManager().getExactUser(hiddenId);
+            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenId))
             {
                 hiddenUser.hidePlayer(user);
             }
@@ -108,22 +109,22 @@ public class Hide extends Module implements Reloadable
 
     public void showPlayer(final User user)
     {
-        this.hiddenUsers.remove(user.getName());
+        this.hiddenUsers.remove(user.getUniqueId());
 
         getCore().getEventManager().fireEvent(new UserShowEvent(user.getCore(), user));
 
         for (User onlineUser : getCore().getUserManager().getOnlineUsers())
         {
-            if (!this.canSeeHiddens.contains(onlineUser.getName()))
+            if (!this.canSeeHiddens.contains(onlineUser.getUniqueId()))
             {
                 onlineUser.showPlayer(user);
             }
         }
 
-        for (String hiddenUserName : this.hiddenUsers)
+        for (UUID hiddenId : this.hiddenUsers)
         {
-            User hiddenUser = getCore().getUserManager().getExactUser(hiddenUserName);
-            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenUserName))
+            User hiddenUser = getCore().getUserManager().getExactUser(hiddenId);
+            if (hiddenUser != user && !this.canSeeHiddens.contains(hiddenId))
             {
                 hiddenUser.showPlayer(user);
             }
@@ -135,44 +136,44 @@ public class Hide extends Module implements Reloadable
         return config;
     }
 
-    public Set<String> getHiddenUsers()
+    public Set<UUID> getHiddenUsers()
     {
         return hiddenUsers;
     }
 
-    public Set<String> getCanSeeHiddens()
+    public Set<UUID> getCanSeeHiddens()
     {
         return canSeeHiddens;
     }
 
     public boolean isHidden(User user)
     {
-        return this.hiddenUsers.contains(user.getName());
+        return this.hiddenUsers.contains(user.getUniqueId());
     }
 
     public boolean canSeeHiddens(User user)
     {
-        return this.canSeeHiddens.contains(user.getName());
+        return this.canSeeHiddens.contains(user.getUniqueId());
     }
 
     public boolean toggleCanSeeHiddens(User user)
     {
         if (canSeeHiddens(user))
         {
-            for (String hiddenName : hiddenUsers)
+            for (UUID hiddenName : hiddenUsers)
             {
                 user.hidePlayer(getCore().getUserManager().getExactUser(hiddenName));
             }
-            canSeeHiddens.remove(user.getName());
+            canSeeHiddens.remove(user.getUniqueId());
             return false;
         }
         else
         {
-            for (String hiddenName : hiddenUsers)
+            for (UUID hiddenName : hiddenUsers)
             {
                 user.showPlayer(getCore().getUserManager().getExactUser(hiddenName));
             }
-            canSeeHiddens.add(user.getName());
+            canSeeHiddens.add(user.getUniqueId());
             return true;
         }
     }

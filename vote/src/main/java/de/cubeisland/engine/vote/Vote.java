@@ -28,12 +28,12 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.service.Economy;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.vote.storage.TableVote;
 import de.cubeisland.engine.vote.storage.VoteModel;
 import org.jooq.DSLContext;
 import org.jooq.types.UShort;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static de.cubeisland.engine.vote.storage.TableVote.TABLE_VOTE;
 
 public class Vote extends Module implements Listener
@@ -55,9 +55,9 @@ public class Vote extends Module implements Listener
     private void onVote(VotifierEvent event)
     {
         final com.vexsoftware.votifier.model.Vote vote = event.getVote();
-        if (this.getCore().getUserManager().getUser(vote.getUsername(), false) != null)
+        if (this.getCore().getUserManager().findExactUser(vote.getUsername()) != null)
         {
-            User user = this.getCore().getUserManager().getUser(vote.getUsername());
+            User user = this.getCore().getUserManager().findExactUser(vote.getUsername());
             Economy economy = this.getCore().getModuleManager().getServiceManager().getServiceImplementation(Economy.class);
             VoteModel voteModel = this.dsl.selectFrom(TABLE_VOTE).where(TABLE_VOTE.USERID.eq(user.getEntity().getKey())).fetchOne();
             if (voteModel == null)
@@ -78,12 +78,12 @@ public class Vote extends Module implements Listener
                 voteModel.setLastvote(new Timestamp(System.currentTimeMillis()));
                 voteModel.update();
             }
-            economy.createPlayerAccount(vote.getUsername());
+            economy.createAccount(user.getUniqueId());
             int voteamount = voteModel.getVoteamount().intValue();
             double money = this.config.voteReward * (Math.pow(1+1.5/voteamount, voteamount-1));
-            economy.deposit(vote.getUsername(), money);
+            economy.deposit(user.getUniqueId(), money);
             String moneyFormat = economy.format(money);
-            this.getCore().getUserManager().broadcastMessage(MessageType.NONE, this.config.voteBroadcast.
+            this.getCore().getUserManager().broadcastMessage(NONE, this.config.voteBroadcast.
                 replace("{PLAYER}", vote.getUsername()).
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).
@@ -93,6 +93,10 @@ public class Vote extends Module implements Listener
                 replace("{MONEY}", moneyFormat).
                 replace("{AMOUNT}", String.valueOf(voteamount)).
                 replace("{VOTEURL}", this.config.voteUrl)));
+        }
+        else if (vote.getUsername() == null || vote.getUsername().trim().isEmpty())
+        {
+            this.getLog().info("{} voted but is not known to the server!", vote.getUsername());
         }
     }
 

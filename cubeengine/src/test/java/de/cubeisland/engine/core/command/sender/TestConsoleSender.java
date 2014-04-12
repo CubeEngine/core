@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.command.sender;
 
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Server;
 import org.bukkit.permissions.PermissionAttachment;
@@ -190,5 +191,11 @@ public class TestConsoleSender implements CommandSender
     public void setOp(boolean value)
     {
     //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public UUID getUniqueId()
+    {
+        return null;
     }
 }

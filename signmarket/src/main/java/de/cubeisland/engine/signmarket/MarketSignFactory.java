@@ -20,13 +20,14 @@ package de.cubeisland.engine.signmarket;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.signmarket.storage.SignMarketBlockManager;
 import de.cubeisland.engine.signmarket.storage.SignMarketBlockModel;
 import de.cubeisland.engine.signmarket.storage.SignMarketItemManager;
 import de.cubeisland.engine.signmarket.storage.SignMarketItemModel;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.TLongHashSet;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class MarketSignFactory
 {
@@ -100,7 +101,7 @@ public class MarketSignFactory
         }
         else
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to create Admin or User MarketSigns!");
+            user.sendTranslated(NEGATIVE, "You are not allowed to create Admin or User MarketSigns!");
             return null;
         }
         if (marketSign.isAdminSign())
@@ -135,13 +136,13 @@ public class MarketSignFactory
     {
         this.marketSigns.remove(marketSign.getLocation());
         this.signMarketBlockManager.delete(marketSign.getBlockInfo());
-        this.module.getLog().debug("{} deleted block-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getName(), marketSign.getBlockInfo().getKey());
+        this.module.getLog().debug("{} deleted block-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getDisplayName(), marketSign.getBlockInfo().getKey());
         SignMarketItemModel itemInfo = marketSign.getItemInfo();
         itemInfo.removeSign(marketSign);
         if (itemInfo.isNotReferenced())
         {
             this.signMarketItemManager.delete(itemInfo);
-            this.module.getLog().debug("{} deleted item-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getName(), itemInfo.getKey());
+            this.module.getLog().debug("{} deleted item-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getDisplayName(), itemInfo.getKey());
         }
     }
 
@@ -172,7 +173,7 @@ public class MarketSignFactory
                     if (itemModel.getKey().longValue() != 0 && itemModel.isNotReferenced())
                     {
                         this.signMarketItemManager.delete(itemModel); // delete if no more referenced
-                        this.module.getLog().debug("{] deleted item-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getName(), marketSign.getItemInfo().getKey());
+                        this.module.getLog().debug("{] deleted item-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getDisplayName(), marketSign.getItemInfo().getKey());
                     }
                     marketSign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
                     return;
@@ -191,7 +192,7 @@ public class MarketSignFactory
             if (marketSign.getItemInfo().getKey().longValue() == 0) // itemInfo not saved in database
             {
                 this.signMarketItemManager.store(marketSign.getItemInfo());
-                this.module.getLog().debug("{} stored item-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getName(), marketSign.getItemInfo().getKey());
+                this.module.getLog().debug("{} stored item-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getDisplayName(), marketSign.getItemInfo().getKey());
                 // set freshly assigned itemData reference in BlockInfo
                 marketSign.getBlockInfo().setItemkey(marketSign.getItemInfo().getKey());
             }
@@ -202,7 +203,7 @@ public class MarketSignFactory
             if (marketSign.getBlockInfo().getKey().longValue() == 0) // blockInfo not saved in database
             {
                 this.signMarketBlockManager.store(marketSign.getBlockInfo());
-                this.module.getLog().debug("{} stored block-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getName(), marketSign.getBlockInfo().getKey());
+                this.module.getLog().debug("{} stored block-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getDisplayName(), marketSign.getBlockInfo().getKey());
             }
             else // update
             {

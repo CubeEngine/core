@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_7_R2.EntityPlayer;
-import net.minecraft.server.v1_7_R2.NBTTagCompound;
-import net.minecraft.server.v1_7_R2.NBTTagDouble;
-import net.minecraft.server.v1_7_R2.NBTTagFloat;
-import net.minecraft.server.v1_7_R2.NBTTagList;
-import net.minecraft.server.v1_7_R2.PlayerInteractManager;
-import net.minecraft.server.v1_7_R2.WorldNBTStorage;
-import net.minecraft.server.v1_7_R2.WorldServer;
-import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
+import net.minecraft.server.v1_7_R3.EntityPlayer;
+import net.minecraft.server.v1_7_R3.NBTTagCompound;
+import net.minecraft.server.v1_7_R3.NBTTagDouble;
+import net.minecraft.server.v1_7_R3.NBTTagFloat;
+import net.minecraft.server.v1_7_R3.NBTTagList;
+import net.minecraft.server.v1_7_R3.PlayerInteractManager;
+import net.minecraft.server.v1_7_R3.WorldNBTStorage;
+import net.minecraft.server.v1_7_R3.WorldServer;
+import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -90,17 +90,22 @@ import static de.cubeisland.engine.core.contract.Contract.expect;
  */
 public class UserBase implements Player
 {
-    private final String playerName;
+    private final UUID uuid;
+    private OfflinePlayer cachedOfflinePlayer = null;
     private EntityPlayer dummy = null;
 
-    public UserBase(String name)
+    public UserBase(UUID uuid)
     {
-        this.playerName = name;
+        this.uuid = uuid;
     }
 
     public OfflinePlayer getOfflinePlayer()
     {
-        return Bukkit.getOfflinePlayer(playerName);
+        if (this.cachedOfflinePlayer == null)
+        {
+            this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
+        }
+        return cachedOfflinePlayer;
     }
 
     private EntityPlayer getDummy()
@@ -113,7 +118,7 @@ public class UserBase implements Player
             // UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
             // this.i = new GameProfile(uuid.toString().replaceAll("-", ""), this.i.getName());
             // TODO verify me
-            this.dummy = new EntityPlayer(srv.getServer(), world, new GameProfile("", this.getName()), new PlayerInteractManager(world));
+            this.dummy = new EntityPlayer(srv.getServer(), world, new GameProfile(this.getOfflinePlayer().getUniqueId(), this.getName()), new PlayerInteractManager(world));
         }
         return this.dummy;
     }
@@ -1017,6 +1022,7 @@ public class UserBase implements Player
     }
 
     @Override
+    @Deprecated // TODO remove when finished updating everwhere
     public String getName()
     {
         return this.getOfflinePlayer().getName();
@@ -2086,20 +2092,7 @@ public class UserBase implements Player
     @Override
     public UUID getUniqueId()
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            return player.getUniqueId();
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                return new UUID(data.getLong("UUIDMost"), data.getLong("UUIDLeast"));
-            }
-        }
-        return null;
+        return this.getOfflinePlayer().getUniqueId();
     }
 
     @Override
@@ -2313,18 +2306,13 @@ public class UserBase implements Player
     @Override
     public boolean isOp()
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        return player != null && player.isOp();
+        return this.getOfflinePlayer().isOp();
     }
 
     @Override
     public void setOp(boolean bln)
     {
-        final Player player = this.getOfflinePlayer().getPlayer();
-        if (player != null)
-        {
-            player.setOp(bln);
-        }
+        this.getOfflinePlayer().setOp(bln);
     }
 
     @Override
@@ -2820,6 +2808,16 @@ public class UserBase implements Player
         if (player != null)
         {
             player.playSound(location, s, v, v2);
+        }
+    }
+
+    @Override
+    public void sendSignChange(Location location, String[] strings) throws IllegalArgumentException
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.sendSignChange(location, strings);
         }
     }
 }

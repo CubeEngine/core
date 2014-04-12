@@ -19,17 +19,20 @@ package de.cubeisland.engine.core.user;
 
 import java.sql.Timestamp;
 import java.util.Locale;
+import java.util.UUID;
 import javax.persistence.Transient;
 
-import org.jooq.Record7;
-import org.jooq.Row7;
+import org.bukkit.OfflinePlayer;
+
+import org.jooq.Field;
+import org.jooq.Record9;
+import org.jooq.Row9;
 import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class UserEntity extends UpdatableRecordImpl<UserEntity>
-    implements Record7<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String>
+public class UserEntity extends UpdatableRecordImpl<UserEntity> implements Record9<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String, Long, Long>
 {
     public UserEntity()
     {
@@ -38,19 +41,35 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
 
     /**
      * Fills in Information for a new User
-     *
-     * @param player
-     * @return
      */
-    public UserEntity newUser(String player)
+    public UserEntity newUser(OfflinePlayer player)
     {
         this.setKey(UInteger.valueOf(0));
-        this.setPlayer(player);
+        this.setLastName(player.getName().toLowerCase());
         this.setLastseen(new Timestamp(System.currentTimeMillis()));
         this.setFirstseen(this.getLastseen());
         this.setPasswd(new byte[0]);
         this.setNogc(false);
+        this.setUUID(player.getUniqueId());
         return this;
+    }
+
+    private UUID uid = null;
+
+    public UUID getUUID()
+    {
+        if (uid == null)
+        {
+            uid = new UUID(this.getUUIDMost(), this.getUUIDLeast());
+        }
+        return uid;
+    }
+
+    public void setUUID(UUID uid)
+    {
+        this.uid = uid;
+        this.setUUIDLeast(uid.getLeastSignificantBits());
+        this.setUUIDMost(uid.getMostSignificantBits());
     }
 
     public UInteger getKey()
@@ -63,12 +82,12 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
         setValue(0, value);
     }
 
-    public String getPlayer()
+    public String getLastName()
     {
         return (String)getValue(1);
     }
 
-    public void setPlayer(String value)
+    public void setLastName(String value)
     {
         setValue(1, value);
     }
@@ -85,7 +104,7 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
 
     public Timestamp getLastseen()
     {
-        return (Timestamp) getValue(3);
+        return (Timestamp)getValue(3);
     }
 
     public void setLastseen(Timestamp value)
@@ -95,7 +114,7 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
 
     public byte[] getPasswd()
     {
-        return (byte[]) getValue(4);
+        return (byte[])getValue(4);
     }
 
     public void setPasswd(byte[] value)
@@ -105,7 +124,7 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
 
     public Timestamp getFirstseen()
     {
-        return (Timestamp) getValue(5);
+        return (Timestamp)getValue(5);
     }
 
     public void setFirstseen(Timestamp value)
@@ -135,13 +154,34 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
         setValue(6, locale.toString());
     }
 
+    public void setUUIDLeast(Long value)
+    {
+        setValue(7, value);
+    }
+
+    public Long getUUIDLeast()
+    {
+        return (Long)getValue(7);
+    }
+
+    public void setUUIDMost(Long value)
+    {
+        setValue(8, value);
+    }
+
+    public Long getUUIDMost()
+    {
+        return (Long)getValue(8);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
 
     @Override
-    public org.jooq.Record1<org.jooq.types.UInteger> key() {
-        return (org.jooq.Record1) super.key();
+    public org.jooq.Record1<UInteger> key()
+    {
+        return (org.jooq.Record1)super.key();
     }
 
     // -------------------------------------------------------------------------
@@ -149,82 +189,122 @@ public class UserEntity extends UpdatableRecordImpl<UserEntity>
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row9<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String, Long, Long> fieldsRow()
+    {
+        return (Row9)super.fieldsRow();
     }
 
     @Override
-    public Row7<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String> valuesRow() {
-        return (Row7) super.valuesRow();
+    public Row9<UInteger, String, Boolean, Timestamp, byte[], Timestamp, String, Long, Long> valuesRow()
+    {
+        return (Row9)super.valuesRow();
     }
 
     @Override
-    public org.jooq.Field<org.jooq.types.UInteger> field1() {
+    public Field<UInteger> field1()
+    {
         return TABLE_USER.KEY;
     }
 
     @Override
-    public org.jooq.Field<java.lang.String> field2() {
-        return TABLE_USER.PLAYER;
+    public Field<String> field2()
+    {
+        return TABLE_USER.LASTNAME;
     }
 
     @Override
-    public org.jooq.Field<java.lang.Boolean> field3() {
+    public Field<Boolean> field3()
+    {
         return TABLE_USER.NOGC;
     }
 
     @Override
-    public org.jooq.Field<java.sql.Timestamp> field4() {
+    public Field<Timestamp> field4()
+    {
         return TABLE_USER.LASTSEEN;
     }
 
     @Override
-    public org.jooq.Field<byte[]> field5() {
+    public Field<byte[]> field5()
+    {
         return TABLE_USER.PASSWD;
     }
 
     @Override
-    public org.jooq.Field<java.sql.Timestamp> field6() {
+    public Field<Timestamp> field6()
+    {
         return TABLE_USER.FIRSTSEEN;
     }
 
     @Override
-    public org.jooq.Field<java.lang.String> field7() {
+    public Field<String> field7()
+    {
         return TABLE_USER.LANGUAGE;
     }
 
     @Override
-    public org.jooq.types.UInteger value1() {
+    public Field<Long> field8()
+    {
+        return TABLE_USER.LEAST;
+    }
+
+    @Override
+    public Field<Long> field9()
+    {
+        return TABLE_USER.MOST;
+    }
+
+    @Override
+    public UInteger value1()
+    {
         return getKey();
     }
 
     @Override
-    public java.lang.String value2() {
-        return getPlayer();
+    public String value2()
+    {
+        return getLastName();
     }
 
     @Override
-    public java.lang.Boolean value3() {
+    public Boolean value3()
+    {
         return (Boolean)getValue(3);
     }
 
     @Override
-    public java.sql.Timestamp value4() {
+    public Timestamp value4()
+    {
         return getLastseen();
     }
 
     @Override
-    public byte[] value5() {
+    public byte[] value5()
+    {
         return getPasswd();
     }
 
     @Override
-    public java.sql.Timestamp value6() {
+    public Timestamp value6()
+    {
         return getFirstseen();
     }
 
     @Override
-    public java.lang.String value7() {
+    public String value7()
+    {
         return (String)getValue(6);
+    }
+
+    @Override
+    public Long value8()
+    {
+        return getUUIDLeast();
+    }
+
+    @Override
+    public Long value9()
+    {
+        return getUUIDMost();
     }
 }

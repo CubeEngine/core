@@ -19,6 +19,7 @@ package de.cubeisland.engine.itemrepair;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -31,13 +32,15 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.itemrepair.repair.RepairBlockManager;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 
 public class ItemRepairCommands extends ContainerCommand implements Listener
 {
-    private final Set<String> removeRequests;
-    private final Set<String> addRequests;
+    private final Set<UUID> removeRequests;
+    private final Set<UUID> addRequests;
     private final RepairBlockManager rbm;
     private final Itemrepair module;
 
@@ -58,26 +61,27 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
     {
         if (context.getSender() instanceof User)
         {
-            if (!this.addRequests.contains(context.getSender().getName()))
+            User user = (User)context.getSender();
+            if (!this.addRequests.contains(user.getUniqueId()))
             {
-                if (!this.removeRequests.contains(context.getSender().getName()))
+                if (!this.removeRequests.contains(user.getUniqueId()))
                 {
-                    this.addRequests.add(context.getSender().getName());
-                    context.sendTranslated(MessageType.NEUTRAL, "Rightclick the block.");
+                    this.addRequests.add(user.getUniqueId());
+                    context.sendTranslated(NEUTRAL, "Rightclick the block.");
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You are already removing a repair block!");
+                    context.sendTranslated(NEGATIVE, "You are already removing a repair block!");
                 }
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are already adding a repair block!");
+                context.sendTranslated(NEGATIVE, "You are already adding a repair block!");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "You only need to right-click... {text:NOW!:color=DARK_RED}\nToo slow.");
+            context.sendTranslated(NEUTRAL, "You only need to right-click... {text:NOW!:color=DARK_RED}\nToo slow.");
         }
     }
 
@@ -86,57 +90,58 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
     {
         if (context.getSender() instanceof User)
         {
-            if (!this.removeRequests.contains(context.getSender().getName()))
+            User user = (User)context.getSender();
+            if (!this.removeRequests.contains(user.getUniqueId()))
             {
-                if (!this.addRequests.contains(context.getSender().getName()))
+                if (!this.addRequests.contains(user.getUniqueId()))
                 {
-                    this.removeRequests.add(context.getSender().getName());
-                    context.sendTranslated(MessageType.NEUTRAL, "Rightclick the block.");
+                    this.removeRequests.add(user.getUniqueId());
+                    context.sendTranslated(NEUTRAL, "Rightclick the block.");
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You are already adding a repair block!");
+                    context.sendTranslated(NEGATIVE, "You are already adding a repair block!");
                 }
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You are already removing a repair block!");
+                context.sendTranslated(NEGATIVE, "You are already removing a repair block!");
             }
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Only players can remove repair blocks!");
+            context.sendTranslated(NEGATIVE, "Only players can remove repair blocks!");
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAdd(PlayerInteractEvent event)
     {
-        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        if (this.addRequests.contains(user.getName()))
+        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
+        if (this.addRequests.contains(user.getUniqueId()))
         {
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+            if (event.getAction() == RIGHT_CLICK_BLOCK)
             {
                 final Block block = event.getClickedBlock();
                 if (!this.rbm.isRepairBlock(block))
                 {
                     if (this.rbm.attachRepairBlock(block))
                     {
-                        user.sendTranslated(MessageType.POSITIVE, "Repair block successfully added!");
+                        user.sendTranslated(POSITIVE, "Repair block successfully added!");
                     }
                     else
                     {
-                        user.sendTranslated(MessageType.NEGATIVE, "This block can't be used as a repair block!");
+                        user.sendTranslated(NEGATIVE, "This block can't be used as a repair block!");
                     }
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "This block is already a repair block!");
+                    user.sendTranslated(NEGATIVE, "This block is already a repair block!");
                 }
             }
             if (event.getAction() != Action.PHYSICAL)
             {
-                this.addRequests.remove(user.getName());
+                this.addRequests.remove(user.getUniqueId());
                 event.setCancelled(true);
             }
         }
@@ -145,23 +150,23 @@ public class ItemRepairCommands extends ContainerCommand implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRemove(PlayerInteractEvent event)
     {
-        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-        if (this.removeRequests.contains(user.getName()))
+        final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
+        if (this.removeRequests.contains(user.getUniqueId()))
         {
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+            if (event.getAction() == RIGHT_CLICK_BLOCK)
             {
                 if (this.rbm.detachRepairBlock(event.getClickedBlock()))
                 {
-                    user.sendTranslated(MessageType.POSITIVE, "Repair block successfully removed!");
+                    user.sendTranslated(POSITIVE, "Repair block successfully removed!");
                 }
                 else
                 {
-                    user.sendTranslated(MessageType.NEGATIVE, "This block is not a repair block!");
+                    user.sendTranslated(NEGATIVE, "This block is not a repair block!");
                 }
             }
             if (event.getAction() != Action.PHYSICAL)
             {
-                this.removeRequests.remove(user.getName());
+                this.removeRequests.remove(user.getUniqueId());
                 event.setCancelled(true);
             }
         }

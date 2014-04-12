@@ -52,9 +52,7 @@ import de.cubeisland.engine.core.task.FutureCallback;
 import de.cubeisland.engine.core.task.ListenableFuture;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
-import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.locker.BlockLockerConfiguration;
 import de.cubeisland.engine.locker.EntityLockerConfiguration;
@@ -66,14 +64,18 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.util.BlockUtil.CARDINAL_DIRECTIONS;
 import static de.cubeisland.engine.core.util.LocationUtil.getChunkKey;
 import static de.cubeisland.engine.core.util.LocationUtil.getLocationKey;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_ALL;
 import static de.cubeisland.engine.locker.storage.AccessListModel.ACCESS_FULL;
 import static de.cubeisland.engine.locker.storage.ProtectedType.getProtectedType;
 import static de.cubeisland.engine.locker.storage.TableAccessList.TABLE_ACCESS_LIST;
 import static de.cubeisland.engine.locker.storage.TableLockLocations.TABLE_LOCK_LOCATION;
 import static de.cubeisland.engine.locker.storage.TableLocks.TABLE_LOCK;
+import static org.bukkit.Material.CHEST;
+import static org.bukkit.Material.TRAPPED_CHEST;
 
 public class LockManager implements Listener
 {
@@ -281,9 +283,9 @@ public class LockManager implements Listener
         if (repairExpand && lock != null && lock.isSingleBlockLock())
         {
             Block block = lock.getFirstLocation().getBlock();
-            if (block.getType() == Material.CHEST || block.getType() == Material.TRAPPED_CHEST)
+            if (block.getType() == CHEST || block.getType() == TRAPPED_CHEST)
             {
-                for (BlockFace cardinalDirection : BlockUtil.CARDINAL_DIRECTIONS)
+                for (BlockFace cardinalDirection : CARDINAL_DIRECTIONS)
                 {
                     Block relative = block.getRelative(cardinalDirection);
                     if (relative.getType() == block.getType())
@@ -293,13 +295,18 @@ public class LockManager implements Listener
                             this.extendLock(lock, relative.getLocation());
                             if (user != null)
                             {
-                                user.sendTranslated(MessageType.POSITIVE, "Protection repaired & expanded!");
+                                user.sendTranslated(POSITIVE, "Protection repaired & expanded!");
                             }
                         }
-                        else if (user != null)
+                        else
                         {
-                            user.sendTranslated(MessageType.CRITICAL, "Broken protection detected! Try /cremove on nearby blocks!");
-                            user.sendTranslated(MessageType.NEUTRAL, "If this message keeps coming please contact an administrator!");
+                            if (user != null)
+                            {
+                                user.sendTranslated(CRITICAL,
+                                                    "Broken protection detected! Try /cremove on nearby blocks!");
+                                user.sendTranslated(NEUTRAL,
+                                                    "If this message keeps coming please contact an administrator!");
+                            }
                         }
                         break;
                     }
@@ -313,7 +320,7 @@ public class LockManager implements Listener
                 lock.delete(user);
                 if (user != null)
                 {
-                    user.sendTranslated(MessageType.NEUTRAL, "Deleted invalid BlockProtection!");
+                    user.sendTranslated(NEUTRAL, "Deleted invalid BlockProtection!");
                 }
             }
             return this.handleLockAccess(lock, access);
@@ -425,11 +432,11 @@ public class LockManager implements Listener
             }
             if (user != null)
             {
-                user.sendTranslated(MessageType.POSITIVE, "Removed Lock!");
+                user.sendTranslated(POSITIVE, "Removed Lock!");
             }
             return;
         }
-        user.sendTranslated(MessageType.NEGATIVE, "This protection is not yours!");
+        user.sendTranslated(NEGATIVE, "This protection is not yours!");
     }
 
     /**
@@ -450,7 +457,7 @@ public class LockManager implements Listener
         List<Location> locations = new ArrayList<>();
         Block block = location.getBlock();
         // Handle MultiBlock Protections
-        if (material == Material.CHEST)
+        if (material == CHEST)
         {
             if (block.getState() instanceof Chest && ((Chest)block.getState()).getInventory().getHolder() instanceof DoubleChest)
             {
@@ -475,7 +482,7 @@ public class LockManager implements Listener
                     botBlock = location.getBlock();
                     locations.add(location.clone().add(0, 1, 0));
                 }
-                for (BlockFace blockFace : BlockUtil.CARDINAL_DIRECTIONS)
+                for (BlockFace blockFace : CARDINAL_DIRECTIONS)
                 {
                     if (botBlock.getRelative(blockFace).getType() == block.getType()) // same door type
                     {
@@ -681,7 +688,7 @@ public class LockManager implements Listener
                 name = name.substring(1);
                 add = false;
             }
-            User modifyUser = this.um.getUser(name, false);
+            User modifyUser = this.um.findExactUser(name);
             if (modifyUser == null) throw new IllegalArgumentException(); // This is prevented by checking first in the cmd execution
             short accessType = ACCESS_FULL;
             if (add && admin)
@@ -697,25 +704,25 @@ public class LockManager implements Listener
                 {
                     accessListModel = this.dsl.newRecord(TABLE_ACCESS_LIST).newGlobalAccess(sender, modifyUser, accessType);
                     accessListModel.insert();
-                    sender.sendTranslated(MessageType.POSITIVE, "Global access for {user} set!", modifyUser);
+                    sender.sendTranslated(POSITIVE, "Global access for {user} set!", modifyUser);
                 }
                 else
                 {
                     accessListModel.setLevel(accessType);
                     accessListModel.update();
-                    sender.sendTranslated(MessageType.POSITIVE, "Updated global access level for {user}!", modifyUser);
+                    sender.sendTranslated(POSITIVE, "Updated global access level for {user}!", modifyUser);
                 }
             }
             else
             {
                 if (accessListModel == null)
                 {
-                    sender.sendTranslated(MessageType.NEUTRAL, "{user} had no global access!", modifyUser);
+                    sender.sendTranslated(NEUTRAL, "{user} had no global access!", modifyUser);
                 }
                 else
                 {
                     accessListModel.delete();
-                    sender.sendTranslated(MessageType.POSITIVE, "Removed global access from {user}", modifyUser);
+                    sender.sendTranslated(POSITIVE, "Removed global access from {user}", modifyUser);
                 }
             }
         }

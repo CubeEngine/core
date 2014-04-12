@@ -35,11 +35,11 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.result.AsyncResult;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.TelePointManager;
 import de.cubeisland.engine.travel.storage.Warp;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PRIVATE;
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
@@ -66,18 +66,18 @@ public class WarpCommand extends ContainerCommand
             Warp warp = telePointManager.getWarp(sender, context.getString(0).toLowerCase());
             if (warp == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "You don't have access to any warp with that name");
+                context.sendTranslated(NEGATIVE, "You don't have access to any warp with that name");
                 return null;
             }
 
             Location location = warp.getLocation();
             if (location == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "This warp is in a world that no longer exists!");
+                context.sendTranslated(NEGATIVE, "This warp is in a world that no longer exists!");
                 return null;
             }
             sender.teleport(location, PlayerTeleportEvent.TeleportCause.COMMAND);
-            context.sendTranslated(MessageType.POSITIVE, "You have been teleported to the warp {name}", context.getString(0));
+            context.sendTranslated(POSITIVE, "You have been teleported to the warp {name}", context.getString(0));
         }
         else
         {
@@ -99,8 +99,8 @@ public class WarpCommand extends ContainerCommand
     {
         if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().warps.max)
         {
-            context.sendTranslated(MessageType.CRITICAL, "The server have reached its maximum number of warps!");
-            context.sendTranslated(MessageType.NEGATIVE, "Some warps must be deleted for new ones to be made");
+            context.sendTranslated(CRITICAL, "The server have reached its maximum number of warps!");
+            context.sendTranslated(NEGATIVE, "Some warps must be deleted for new ones to be made");
             return;
         }
         if (context.getSender() instanceof User)
@@ -110,21 +110,21 @@ public class WarpCommand extends ContainerCommand
             if (telePointManager.hasWarp(name) && !context.hasFlag("priv"))
             {
                 context
-                    .sendTranslated(MessageType.NEGATIVE, "A public warp by that name already exist! maybe you want to include the -private flag?");
+                    .sendTranslated(NEGATIVE, "A public warp by that name already exist! maybe you want to include the -private flag?");
                 return;
             }
             if (name.contains(":") || name.length() >= 32)
             {
                 context
-                    .sendTranslated(MessageType.NEGATIVE, "Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+                    .sendTranslated(NEGATIVE, "Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
                 return;
             }
             Location loc = sender.getLocation();
             Warp warp = telePointManager.createWarp(loc, name, sender, (context.hasFlag("priv") ? VISIBILITY_PRIVATE : VISIBILITY_PUBLIC));
-            context.sendTranslated(MessageType.POSITIVE, "Your warp {name} has been created!", warp.getName());
+            context.sendTranslated(POSITIVE, "Your warp {name} has been created!", warp.getName());
             return;
         }
-        context.sendTranslated(MessageType.CRITICAL, "This command can only be used by users!");
+        context.sendTranslated(CRITICAL, "This command can only be used by users!");
     }
 
     @Alias(names = {
@@ -146,11 +146,11 @@ public class WarpCommand extends ContainerCommand
         }
         if (warp == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The warp could not be found");
+            context.sendTranslated(NEGATIVE, "The warp could not be found");
             return;
         }
         telePointManager.deleteWarp(warp);
-        context.sendTranslated(MessageType.POSITIVE, "The warp is now deleted");
+        context.sendTranslated(POSITIVE, "The warp is now deleted");
     }
 
     @Command(permDefault = PermDefault.OP, desc = "Rename a warp", min = 2, max = 2)
@@ -168,19 +168,19 @@ public class WarpCommand extends ContainerCommand
         }
         if (warp == null)
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The warp could not be found");
+            context.sendTranslated(NEGATIVE, "The warp could not be found");
             return;
         }
 
         if (name.contains(":") || name.length() >= 32)
         {
-            context
-                .sendTranslated(MessageType.NEGATIVE, "Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
+            context.sendTranslated(NEGATIVE,
+                                   "Warps may not have names that are longer then 32 characters, and they may not contain colon(:)'s!");
             return;
         }
 
         telePointManager.renameWarp(warp, name);
-        context.sendTranslated(MessageType.POSITIVE, "The warps name is now changed");
+        context.sendTranslated(POSITIVE, "The warps name is now changed");
     }
 
     @Command(permDefault = PermDefault.OP, desc = "Move a warp", min = 1, max = 2)
@@ -196,17 +196,17 @@ public class WarpCommand extends ContainerCommand
         Warp warp = telePointManager.getWarp(user, context.getString(0));
         if (warp == null)
         {
-            user.sendTranslated(MessageType.NEGATIVE, "That warp could not be found!");
+            user.sendTranslated(NEGATIVE, "That warp could not be found!");
             return;
         }
         if (!warp.isOwner(user))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to edit that warp!");
+            user.sendTranslated(NEGATIVE, "You are not allowed to edit that warp!");
             return;
         }
         warp.setLocation(user.getLocation());
         warp.update();
-        user.sendTranslated(MessageType.POSITIVE, "The warp is now moved to your current location");
+        user.sendTranslated(POSITIVE, "The warp is now moved to your current location");
     }
 
     @Command(permDefault = PermDefault.TRUE, desc = "Search for a warp", min = 1, max = 2)
@@ -224,7 +224,7 @@ public class WarpCommand extends ContainerCommand
         }
         if (first != null)
         {
-            context.sendTranslated(MessageType.POSITIVE, "Found a direct match: {name#home} owned by {user}", first.getName(), first.getOwner());
+            context.sendTranslated(POSITIVE, "Found a direct match: {name#home} owned by {user}", first.getName(), first.getOwner());
             return null;
         }
 
@@ -241,7 +241,7 @@ public class WarpCommand extends ContainerCommand
             @Override
             public void onFinish(CommandContext context)
             {
-                context.sendTranslated(MessageType.NEUTRAL, "Here is the top {integer} results:", context.getArg(1, Integer.class, 5));
+                context.sendTranslated(NEUTRAL, "Here is the top {integer} results:", context.getArg(1, Integer.class, 5));
                 int position = 1;
                 for (String warp : results.keySet())
                 {
@@ -287,7 +287,7 @@ public class WarpCommand extends ContainerCommand
             User user = context.getUser(0);
             if (user == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
             warps = telePointManager.listWarps(context.getUser(0), mask);
@@ -304,12 +304,12 @@ public class WarpCommand extends ContainerCommand
 
         if (warps.isEmpty())
         {
-            context.sendTranslated(MessageType.NEGATIVE, "The query returned no warps!");
+            context.sendTranslated(NEGATIVE, "The query returned no warps!");
 
         }
         else
         {
-            context.sendTranslated(MessageType.NEUTRAL, "Here are the warps:");
+            context.sendTranslated(NEUTRAL, "Here are the warps:");
             for (Warp warp : warps)
             {
                 context.sendMessage(warp.getOwner().getDisplayName() + ":" + warp.getName());

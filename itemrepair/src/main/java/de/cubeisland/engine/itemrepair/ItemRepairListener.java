@@ -19,9 +19,9 @@ package de.cubeisland.engine.itemrepair;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.block.Block;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,17 +30,22 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.itemrepair.repair.RepairBlockManager;
 import de.cubeisland.engine.itemrepair.repair.RepairRequest;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock;
 import de.cubeisland.engine.itemrepair.repair.blocks.RepairBlock.RepairBlockInventory;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static org.bukkit.event.Event.Result.DENY;
+import static org.bukkit.event.block.Action.LEFT_CLICK_BLOCK;
+import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
+
 public class ItemRepairListener implements Listener
 {
     private final Itemrepair module;
     private final RepairBlockManager rbm;
-    private final Map<String, RepairRequest> repairRequests;
+    private final Map<UUID, RepairRequest> repairRequests;
 
     public ItemRepairListener(Itemrepair module)
     {
@@ -52,14 +57,14 @@ public class ItemRepairListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        this.repairRequests.remove(event.getPlayer().getName());
+        this.repairRequests.remove(event.getPlayer().getUniqueId());
         this.rbm.removePlayer(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         final Block block = event.getClickedBlock();
         if (block == null)
         {
@@ -71,42 +76,42 @@ public class ItemRepairListener implements Listener
             return;
         }
         event.setCancelled(true);
-        event.setUseInteractedBlock(Event.Result.DENY);
-        event.setUseItemInHand(Event.Result.DENY);
+        event.setUseInteractedBlock(DENY);
+        event.setUseItemInHand(DENY);
 
         if (!repairBlock.getPermission().isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "You are not allowed to use this repair block!");
+            user.sendTranslated(NEGATIVE, "You are not allowed to use this repair block!");
             return;
         }
 
         RepairBlockInventory inventory = repairBlock.getInventory(user);
         
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        if (event.getAction() == RIGHT_CLICK_BLOCK)
         {
             this.cancelRequest(event);
             user.openInventory(inventory.inventory);
         }
-        else if (event.getAction() == Action.LEFT_CLICK_BLOCK)
+        else if (event.getAction() == LEFT_CLICK_BLOCK)
         {
             event.setCancelled(true);
-            if (this.repairRequests.containsKey(user.getName()))
+            if (this.repairRequests.containsKey(user.getUniqueId()))
             {
-                RepairRequest request = this.repairRequests.get(user.getName());
+                RepairRequest request = this.repairRequests.get(user.getUniqueId());
                 if (request.getRepairBlock() == repairBlock)
                 {
                     repairBlock.repair(request);
-                    this.repairRequests.remove(user.getName());
+                    this.repairRequests.remove(user.getUniqueId());
                 }
             }
             else
             {
-                if (!this.repairRequests.containsKey(user.getName()))
+                if (!this.repairRequests.containsKey(user.getUniqueId()))
                 {
                     RepairRequest request = repairBlock.requestRepair(inventory);
                     if (request != null)
                     {
-                        this.repairRequests.put(user.getName(), request);
+                        this.repairRequests.put(user.getUniqueId(), request);
                     }
                 }
             }
@@ -127,11 +132,11 @@ public class ItemRepairListener implements Listener
     {
         if (event.getAction() != Action.PHYSICAL)
         {
-            final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
-            if (this.repairRequests.containsKey(user.getName()))
+            final User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
+            if (this.repairRequests.containsKey(user.getUniqueId()))
             {
-                user.sendTranslated(MessageType.NEUTRAL, "The repair has been cancelled!");
-                this.repairRequests.remove(user.getName());
+                user.sendTranslated(NEUTRAL, "The repair has been cancelled!");
+                this.repairRequests.remove(user.getUniqueId());
                 event.setCancelled(true);
             }
         }

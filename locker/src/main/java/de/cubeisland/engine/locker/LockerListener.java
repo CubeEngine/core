@@ -35,11 +35,9 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFromToEvent;
@@ -68,11 +66,13 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.locker.storage.Lock;
 import de.cubeisland.engine.locker.storage.LockManager;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.locker.storage.ProtectionFlag.*;
+import static org.bukkit.event.Event.Result.DENY;
+import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 
 public class LockerListener implements Listener
 {
@@ -90,16 +90,16 @@ public class LockerListener implements Listener
     public void onPlayerInteract(PlayerInteractEvent event)
     {
         if (!this.module.getConfig().protectBlockFromRClick) return;
-        if (event.useInteractedBlock().equals(Result.DENY)) return;
-        if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        if (event.useInteractedBlock() == DENY) return;
+        if (event.getAction() != RIGHT_CLICK_BLOCK) return;
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         Location location = event.getClickedBlock().getLocation();
         Lock lock = this.manager.getLockAtLocation(location, user);
         if (event.getClickedBlock() != null && event.getClickedBlock().getState() instanceof InventoryHolder)
         {
             if (module.perms().DENY_CONTAINER.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from accessing any inventory!");
+                user.sendTranslated(NEGATIVE, "Strong magic prevents you from accessing any inventory!");
                 event.setCancelled(true);
                 return;
             }
@@ -110,7 +110,7 @@ public class LockerListener implements Listener
         {
             if (module.perms().DENY_DOOR.isAuthorized(user))
             {
-                user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from accessing any door!");
+                user.sendTranslated(NEGATIVE, "Strong magic prevents you from accessing any door!");
                 event.setCancelled(true);
                 return;
             }
@@ -121,7 +121,7 @@ public class LockerListener implements Listener
         {
             lock.handleBlockInteract(event, user);
         }
-        if (event.isCancelled()) event.setUseInteractedBlock(Result.DENY);
+        if (event.isCancelled()) event.setUseInteractedBlock(DENY);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -129,10 +129,10 @@ public class LockerListener implements Listener
     {
         if (!this.module.getConfig().protectEntityFromRClick) return;
         Entity entity = event.getRightClicked();
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (module.perms().DENY_ENTITY.isAuthorized(user))
         {
-            user.sendTranslated(MessageType.NEGATIVE, "Strong magic prevents you from reaching this entity!");
+            user.sendTranslated(NEGATIVE, "Strong magic prevents you from reaching this entity!");
             event.setCancelled(true);
             return;
         }
@@ -157,7 +157,7 @@ public class LockerListener implements Listener
         Location holderLoc = new Location(null, 0,0,0);
         Lock lock = this.manager.getLockOfInventory(event.getInventory(), holderLoc);
         if (lock == null) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         lock.handleInventoryOpen(event, event.getInventory(), holderLoc, user);
     }
 
@@ -168,7 +168,7 @@ public class LockerListener implements Listener
         if (lock == null) return;
         if (event.getDamager() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getDamager()).getName());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getDamager().getUniqueId());
             lock.handleEntityDamage(event, user);
             return;
         }
@@ -177,7 +177,7 @@ public class LockerListener implements Listener
             Entity source = ((TNTPrimed)event.getDamager()).getSource();
             if (source != null && source instanceof Player)
             {
-                User user = this.module.getCore().getUserManager().getExactUser(((Player)source).getPlayer().getName());
+                User user = this.module.getCore().getUserManager().getExactUser(source.getUniqueId());
                 lock.handleEntityDamage(event, user);
                 return;
             }
@@ -187,7 +187,7 @@ public class LockerListener implements Listener
             ProjectileSource shooter = ((Projectile)event.getDamager()).getShooter();
             if (shooter != null && shooter instanceof Player)
             {
-                User user = this.module.getCore().getUserManager().getExactUser(((Player)shooter).getName());
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)shooter).getUniqueId());
                 lock.handleEntityDamage(event, user);
                 return;
             }
@@ -226,7 +226,7 @@ public class LockerListener implements Listener
         User user = null;
         if (lastDamage != null && lastDamage instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent)lastDamage).getDamager() instanceof Player)
         {
-            user = this.module.getCore().getUserManager().getExactUser(((Player)((EntityDamageByEntityEvent)lastDamage).getDamager()).getName());
+            user = this.module.getCore().getUserManager().getExactUser(((EntityDamageByEntityEvent)lastDamage).getDamager().getUniqueId());
         }
         lock.handleEntityDeletion(user);
     }
@@ -245,7 +245,7 @@ public class LockerListener implements Listener
             }
             return;
         }
-        User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getAttacker()).getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getAttacker().getUniqueId());
         if (lock.isOwner(user))
         {
             lock.handleEntityDeletion(user);
@@ -259,7 +259,7 @@ public class LockerListener implements Listener
     {
         if (!event.canBuild()) return;
         Block placed = event.getBlockPlaced();
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (placed.getType() == Material.CHEST || placed.getType() == Material.TRAPPED_CHEST)
         {
             Location relativeLoc = new Location(null,0,0,0);
@@ -273,18 +273,18 @@ public class LockerListener implements Listener
                     {
                         if (!lock.validateTypeAt(relativeLoc))
                         {
-                            user.sendTranslated(MessageType.NEUTRAL, "Nearby BlockProtection is not valid!");
+                            user.sendTranslated(NEUTRAL, "Nearby BlockProtection is not valid!");
                             lock.delete(user);
                         }
                         else if (lock.isOwner(user) || lock.hasAdmin(user) || module.perms().EXPAND_OTHER.isAuthorized(user))
                         {
                             this.manager.extendLock(lock, event.getBlockPlaced().getLocation());
-                            user.sendTranslated(MessageType.POSITIVE, "Protection expanded!");
+                            user.sendTranslated(POSITIVE, "Protection expanded!");
                         }
                         else
                         {
                             event.setCancelled(true);
-                            user.sendTranslated(MessageType.NEGATIVE, "The nearby chest is protected by someone else!");
+                            user.sendTranslated(NEGATIVE, "The nearby chest is protected by someone else!");
                         }
                         return;
                     }
@@ -305,7 +305,7 @@ public class LockerListener implements Listener
                     {
                         if (!lock.validateTypeAt(relativeLoc))
                         {
-                            user.sendTranslated(MessageType.NEUTRAL, "Nearby BlockProtection is not valid!");
+                            user.sendTranslated(NEUTRAL, "Nearby BlockProtection is not valid!");
                             lock.delete(user);
                         }
                         else
@@ -324,12 +324,12 @@ public class LockerListener implements Listener
                                     {
                                         this.manager.extendLock(lock, loc); // bot half
                                         this.manager.extendLock(lock, loc.clone().add(0, 1, 0)); // top half
-                                        user.sendTranslated(MessageType.POSITIVE, "Protection expanded!");
+                                        user.sendTranslated(POSITIVE, "Protection expanded!");
                                     }
                                     else
                                     {
                                         event.setCancelled(true);
-                                        user.sendTranslated(MessageType.NEGATIVE, "The nearby door is protected by someone else!");
+                                        user.sendTranslated(NEGATIVE, "The nearby door is protected by someone else!");
                                     }
                                 }
                             }
@@ -402,7 +402,7 @@ public class LockerListener implements Listener
     public void onBlockBreak(BlockBreakEvent event)
     {
         if (!this.module.getConfig().protectFromBlockBreak) return;
-        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         Lock lock = this.manager.getLockAtLocation(event.getBlock().getLocation(), user);
         if (lock != null)
         {
@@ -544,7 +544,7 @@ public class LockerListener implements Listener
             if (((HangingBreakByEntityEvent)event).getRemover() instanceof Player)
             {
                 Lock lock = this.manager.getLockForEntityUID(event.getEntity().getUniqueId());
-                User user = this.module.getCore().getUserManager().getExactUser(((Player)((HangingBreakByEntityEvent)event).getRemover()).getName());
+                User user = this.module.getCore().getUserManager().getExactUser(((Player)((HangingBreakByEntityEvent)event).getRemover()).getUniqueId());
                 if (module.perms().DENY_HANGING.isAuthorized(user))
                 {
                     event.setCancelled(true);
@@ -562,14 +562,17 @@ public class LockerListener implements Listener
     @EventHandler(ignoreCancelled = true)
     public void onTame(EntityTameEvent event)
     {
-        for (EntityLockerConfiguration entityProtection : this.module.getConfig().entityProtections)
+        if (event.getOwner() instanceof Player)
         {
-            if (entityProtection.isType(event.getEntityType()) && entityProtection.autoProtect)
+            for (EntityLockerConfiguration entityProtection : this.module.getConfig().entityProtections)
             {
-                User user = this.module.getCore().getUserManager().getExactUser(event.getOwner().getName());
-                if (this.manager.getLockForEntityUID(event.getEntity().getUniqueId()) == null)
+                if (entityProtection.isType(event.getEntityType()) && entityProtection.autoProtect)
                 {
-                    this.manager.createLock(event.getEntity(), user, entityProtection.autoProtectType, null, false);
+                    User user = this.module.getCore().getUserManager().getExactUser(((Player)event.getOwner()).getUniqueId());
+                    if (this.manager.getLockForEntityUID(event.getEntity().getUniqueId()) == null)
+                    {
+                        this.manager.createLock(event.getEntity(), user, entityProtection.autoProtectType, null, false);
+                    }
                 }
             }
         }

@@ -28,10 +28,8 @@ import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 import org.jooq.DSLContext;
-import org.jooq.Record1;
 import org.jooq.types.UInteger;
 
-import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.travel.storage.TableInvite.TABLE_INVITE;
 
 public class InviteManager
@@ -39,7 +37,7 @@ public class InviteManager
     private final Travel module;
     private final DSLContext dsl;
     private final Collection<TeleportInvite> invites;
-    private final Map<TeleportPointModel, Set<String>> cachedInvites;
+    private final Map<TeleportPointModel, Set<UInteger>> cachedInvites;
 
     public InviteManager(Database database, Travel module)
     {
@@ -64,13 +62,9 @@ public class InviteManager
     public Set<User> getInvitedUsers(TeleportPointModel tPP)
     {
         Set<User> invitedUsers = new HashSet<>();
-        for (String name : getInvited(tPP))
+        for (UInteger uid : getInvited(tPP))
         {
-            User user = CubeEngine.getUserManager().findOnlineUser(name);
-            if (user != null)
-            {
-                invitedUsers.add(user);
-            }
+            invitedUsers.add(CubeEngine.getUserManager().getUser(uid));
         }
         return invitedUsers;
     }
@@ -80,29 +74,19 @@ public class InviteManager
      *
      * @return A set of User names invited to the home
      */
-    public Set<String> getInvited(TeleportPointModel tPP)
+    public Set<UInteger> getInvited(TeleportPointModel tPP)
     {
         if (this.cachedInvites.containsKey(tPP))
         {
             return this.cachedInvites.get(tPP);
         }
-        Set<String> invitedUsers = new HashSet<>();
         Set<UInteger> keys = new HashSet<>();
         for (TeleportInvite tpI : getInvites(tPP))
         {
             keys.add(tpI.getUserkey());
         }
-        if (keys.isEmpty())
-        {
-            return invitedUsers;
-        }
-        for (Record1<String> record1 : this.dsl.select(TABLE_USER.PLAYER).from(TABLE_USER)
-                                               .where(TABLE_USER.KEY.in(keys)).fetch())
-        {
-            invitedUsers.add(record1.value1());
-        }
-        this.cachedInvites.put(tPP, invitedUsers);
-        return invitedUsers;
+        this.cachedInvites.put(tPP, keys);
+        return keys;
     }
 
     /**
@@ -149,13 +133,13 @@ public class InviteManager
      * @param tPP        The local teleport point
      * @param newInvited The users that is currently invited to the teleportpoint locally
      */
-    public void updateInvited(TeleportPointModel tPP, Set<String> newInvited)
+    public void updateInvited(TeleportPointModel tPP, Set<UInteger> newInvited)
     {
         Set<TeleportInvite> invites = getInvites(tPP);
         Set<UInteger> invitedUsers = new HashSet<>();
-        for (String userName : newInvited)
+        for (UInteger uid : newInvited)
         {
-            invitedUsers.add(this.module.getCore().getUserManager().getUser(userName, false).getEntity().getKey());
+            invitedUsers.add(this.module.getCore().getUserManager().getUser(uid).getEntity().getKey());
         }
         for (TeleportInvite invite : invites)
         {
@@ -176,6 +160,6 @@ public class InviteManager
 
     public void removeInvites(TeleportPoint tPP)
     {
-        this.updateInvited(tPP.getModel(), new HashSet<String>());
+        this.updateInvited(tPP.getModel(), new HashSet<UInteger>());
     }
 }

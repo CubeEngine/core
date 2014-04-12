@@ -148,6 +148,6 @@ public class Basics extends Module
 
     public BasicsUser getBasicsUser(Player player)
     {
-        return this.getCore().getUserManager().getExactUser(player.getName()).attachOrGet(BasicsAttachment.class, this).getBasicsUser();
+        return this.getCore().getUserManager().getExactUser(player.getUniqueId()).attachOrGet(BasicsAttachment.class, this).getBasicsUser();
     }
 }

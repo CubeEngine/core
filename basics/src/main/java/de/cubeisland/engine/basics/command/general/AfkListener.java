@@ -97,7 +97,7 @@ public class AfkListener implements Listener, Runnable
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLeave(PlayerQuitEvent event)
     {
-        BasicsAttachment basicsAttachment = this.um.getExactUser(event.getPlayer().getName()).get(BasicsAttachment.class);
+        BasicsAttachment basicsAttachment = this.um.getExactUser(event.getPlayer().getUniqueId()).get(BasicsAttachment.class);
         if (basicsAttachment != null)
         {
             basicsAttachment.setAfk(false);
@@ -116,7 +116,7 @@ public class AfkListener implements Listener, Runnable
 
     private void updateLastAction(Player player)
     {
-        BasicsAttachment basicsAttachment = this.um.getExactUser(player.getName()).get(BasicsAttachment.class);
+        BasicsAttachment basicsAttachment = this.um.getExactUser(player.getUniqueId()).get(BasicsAttachment.class);
         if (basicsAttachment != null)
         {
             if (basicsAttachment.isAfk() && module.perms().PREVENT_AUTOUNAFK.isAuthorized(player))

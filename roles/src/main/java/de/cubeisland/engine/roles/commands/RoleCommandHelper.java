@@ -24,14 +24,16 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.world.WorldManager;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.Role;
 import de.cubeisland.engine.roles.role.RoleProvider;
 import de.cubeisland.engine.roles.role.RolesAttachment;
 import de.cubeisland.engine.roles.role.RolesManager;
+
+import static de.cubeisland.engine.core.util.ChatFormat.*;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 public abstract class RoleCommandHelper extends ContainerCommand
 {
@@ -40,8 +42,8 @@ public abstract class RoleCommandHelper extends ContainerCommand
     protected final Roles module;
     protected final WorldManager worldManager;
 
-    protected final String LISTELEM = "- " + ChatFormat.YELLOW + "%s";
-    protected final String LISTELEM_VALUE = "- " + ChatFormat.YELLOW + "%s" + ChatFormat.WHITE + ": " + ChatFormat.GOLD + "%s";
+    protected final String LISTELEM = "- " + YELLOW + "%s";
+    protected final String LISTELEM_VALUE = "- " + YELLOW + "%s" + WHITE + ": " + GOLD + "%s";
 
     public RoleCommandHelper(Roles module)
     {
@@ -67,19 +69,19 @@ public abstract class RoleCommandHelper extends ContainerCommand
                 }
                 else
                 {
-                    context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
+                    context.sendTranslated(NEUTRAL, "You are using {world} as current world.", world);
                 }
             }
             else
             {
                 if (ManagementCommands.curWorldOfConsole == null)
                 {
-                    context.sendTranslated(MessageType.NEGATIVE, "You have to provide a world with {text:in world}!");
-                    context.sendTranslated(MessageType.NEUTRAL, "Or you can define a default world with {text:/roles admin defaultworld <world>}");
+                    context.sendTranslated(NEGATIVE, "You have to provide a world with {text:in world}!");
+                    context.sendTranslated(NEUTRAL, "Or you can define a default world with {text:/roles admin defaultworld <world>}");
                     return null;
                 }
                 world = ManagementCommands.curWorldOfConsole;
-                context.sendTranslated(MessageType.NEUTRAL, "You are using {world} as current world.", world);
+                context.sendTranslated(NEUTRAL, "You are using {world} as current world.", world);
             }
         }
         else
@@ -87,7 +89,7 @@ public abstract class RoleCommandHelper extends ContainerCommand
             world = context.getParam("in");
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "World {input} not found!", context.getString("in"));
+                context.sendTranslated(NEGATIVE, "World {input} not found!", context.getString("in"));
                 return null;
             }
         }
@@ -101,12 +103,12 @@ public abstract class RoleCommandHelper extends ContainerCommand
         {
             if (world == null)
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Could not find the global role {name}.", name);
+                context.sendTranslated(NEGATIVE, "Could not find the global role {name}.", name);
                 return null;
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Could not find the role {name} in {world}", name, world);
+                context.sendTranslated(NEGATIVE, "Could not find the role {name} in {world}", name, world);
                 return null;
             }
         }

@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.basics;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,11 +31,11 @@ public class BasicsAttachment extends UserAttachment
     private boolean afk;
     private Location lastLocation = null;
     private Integer tpRequestCancelTask;
-    private String pendingTpToRequest;
-    private String pendingTpFromRequest;
+    private UUID pendingTpToRequest;
+    private UUID pendingTpFromRequest;
     private ItemStack[] stashedArmor;
     private ItemStack[] stashedInventory;
-    private String lastWhisper;
+    private UUID lastWhisper;
     private Location deathLocation;
 
     public long getLastAction()
@@ -95,11 +97,11 @@ public class BasicsAttachment extends UserAttachment
         this.tpRequestCancelTask = null;
     }
 
-    public void setPendingTpToRequest(String pendingTpToRequest) {
+    public void setPendingTpToRequest(UUID pendingTpToRequest) {
         this.pendingTpToRequest = pendingTpToRequest;
     }
 
-    public String getPendingTpToRequest() {
+    public UUID getPendingTpToRequest() {
         return pendingTpToRequest;
     }
 
@@ -107,11 +109,11 @@ public class BasicsAttachment extends UserAttachment
         pendingTpToRequest = null;
     }
 
-    public void setPendingTpFromRequest(String pendingTpFromRequest) {
+    public void setPendingTpFromRequest(UUID pendingTpFromRequest) {
         this.pendingTpFromRequest = pendingTpFromRequest;
     }
 
-    public String getPendingTpFromRequest() {
+    public UUID getPendingTpFromRequest() {
         return pendingTpFromRequest;
     }
 
@@ -135,11 +137,11 @@ public class BasicsAttachment extends UserAttachment
         return stashedInventory;
     }
 
-    public void setLastWhisper(String lastWhisper) {
+    public void setLastWhisper(UUID lastWhisper) {
         this.lastWhisper = lastWhisper;
     }
 
-    public String getLastWhisper() {
+    public UUID getLastWhisper() {
         return lastWhisper;
     }
 

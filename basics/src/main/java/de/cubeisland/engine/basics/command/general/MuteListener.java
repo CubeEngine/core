@@ -27,7 +27,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class MuteListener implements Listener
 {
@@ -46,21 +47,21 @@ public class MuteListener implements Listener
         if (!event.getMessage().startsWith("/"))
         {
             // muted?
-            User sender = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+            User sender = this.basics.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
             if (sender != null)
             {
                 BasicsUserEntity bUser = basics.getBasicsUser(sender).getbUEntity();
                 if (bUser.getMuted() != null && System.currentTimeMillis() < bUser.getMuted().getTime())
                 {
                     event.setCancelled(true);
-                    sender.sendTranslated(MessageType.NEGATIVE, "You try to speak but nothing happens!");
+                    sender.sendTranslated(NEGATIVE, "You try to speak but nothing happens!");
                 }
             }
             // ignored?
             ArrayList<Player> ignore = new ArrayList<>();
             for (Player player : event.getRecipients())
             {
-                User user = this.basics.getCore().getUserManager().getExactUser(player.getName());
+                User user = this.basics.getCore().getUserManager().getExactUser(player.getUniqueId());
                 if (this.ignore.checkIgnored(user, sender))
                 {
                     ignore.add(player);

@@ -20,20 +20,21 @@ package de.cubeisland.engine.core.bukkit;
 import java.lang.reflect.Field;
 import java.util.Locale;
 
-import net.minecraft.server.v1_7_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_7_R2.DedicatedServer;
-import net.minecraft.server.v1_7_R2.EntityLiving;
-import net.minecraft.server.v1_7_R2.EntityPlayer;
-import net.minecraft.server.v1_7_R2.GenericAttributes;
-import net.minecraft.server.v1_7_R2.Item;
-import net.minecraft.server.v1_7_R2.MinecraftServer;
-import net.minecraft.server.v1_7_R2.PlayerInteractManager;
-import net.minecraft.server.v1_7_R2.RecipesFurnace;
-import net.minecraft.server.v1_7_R2.TileEntityFurnace;
-import org.bukkit.craftbukkit.v1_7_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_7_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_7_R2.inventory.CraftItemStack;
+import net.minecraft.server.v1_7_R3.JsonList;
+import net.minecraft.server.v1_7_R3.DedicatedServer;
+import net.minecraft.server.v1_7_R3.EntityLiving;
+import net.minecraft.server.v1_7_R3.EntityPlayer;
+import net.minecraft.server.v1_7_R3.GenericAttributes;
+import net.minecraft.server.v1_7_R3.Item;
+import net.minecraft.server.v1_7_R3.MinecraftServer;
+import net.minecraft.server.v1_7_R3.PlayerInteractManager;
+import net.minecraft.server.v1_7_R3.RecipesFurnace;
+import net.minecraft.server.v1_7_R3.TileEntityFurnace;
+import net.minecraft.server.v1_7_R3.WhiteList;
+import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -194,22 +195,37 @@ public class BukkitUtils
 
     public static void setOnlineMode(boolean mode)
     {
-        ((CraftServer)Bukkit.getServer()).getServer().setOnlineMode(mode);
+        getCraftServer().getServer().setOnlineMode(mode);
         saveServerProperties();
+    }
+
+    private static CraftServer getCraftServer()
+    {
+        return ((CraftServer)Bukkit.getServer());
     }
 
     public static void saveServerProperties()
     {
-        ((CraftServer)Bukkit.getServer()).getServer().getPropertyManager().savePropertiesFile();
+        getCraftServer().getServer().getPropertyManager().savePropertiesFile();
     }
 
     public static void wipeWhiteliste()
     {
-        DedicatedPlayerList playerList = ((CraftServer)Bukkit.getServer()).getHandle();
-        playerList.getWhitelisted().clear();
-        // The method to write the whitelist (DedicatedPlayerList.w()) is private,
-        // however removing an entry triggers the write :)
-        playerList.removeWhitelist("");
+        WhiteList whitelist = getCraftServer().getHandle().getWhitelist();
+        new ClearJsonList(whitelist);
+    }
+
+    /**
+     * Clears given JsonList
+     */
+    public static class ClearJsonList extends JsonList
+    {
+        private ClearJsonList(JsonList toClear)
+        {
+            super(toClear.c());
+            this.save();
+            toClear.load();
+        }
     }
 
     private static Item getItem(Material m)
@@ -232,14 +248,14 @@ public class BukkitUtils
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_7_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_7_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_7_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_7_R3.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // TileEntityFurnace private canBurn() checks this first for null
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss) != null;
@@ -326,7 +342,7 @@ public class BukkitUtils
         MinecraftServer minecraftServer = DedicatedServer.getServer();
 
         //Create and load the target EntityPlayer
-        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), new GameProfile("", player.getName()),
+        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), new GameProfile(player.getUniqueId(), player.getName()),
                              new PlayerInteractManager(minecraftServer.getWorldServer(0)));
         entityPlayer.getBukkitEntity().loadData();
         return entityPlayer.getBukkitEntity();

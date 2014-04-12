@@ -59,7 +59,7 @@ public class CubeChatService extends Chat
 
     private ResolvedMetadata getUserMetadata(String worldName, String player, String key)
     {
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return null;
@@ -299,7 +299,7 @@ public class CubeChatService extends Chat
     @Override
     public void setPlayerInfoString(String worldName, String player, String node, String value)
     {
-        User user = roles.getCore().getUserManager().getUser(player);
+        User user = roles.getCore().getUserManager().findExactUser(player);
         if (user == null)
         {
             return;

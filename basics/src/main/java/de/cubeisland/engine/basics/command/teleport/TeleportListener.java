@@ -18,9 +18,7 @@
 package de.cubeisland.engine.basics.command.teleport;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -31,7 +29,13 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.LocationUtil;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static org.bukkit.Material.AIR;
+import static org.bukkit.Material.COMPASS;
+import static org.bukkit.event.Event.Result.DENY;
+import static org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN;
 
 public class TeleportListener implements Listener
 {
@@ -45,7 +49,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event)
     {
-        User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+        User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         switch (event.getCause())
         {
             case COMMAND:
@@ -57,7 +61,7 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onDeath(PlayerDeathEvent event)
     {
-        User user = this.module.getCore().getUserManager().getExactUser(event.getEntity().getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getEntity().getUniqueId());
         if (module.perms().COMMAND_BACK_ONDEATH.isAuthorized(user))
         {
             user.get(BasicsAttachment.class).setDeathLocation(user.getLocation());
@@ -67,20 +71,20 @@ public class TeleportListener implements Listener
     @EventHandler
     public void onClick(PlayerInteractEvent event)
     {
-        if (event.getPlayer().getItemInHand().getType().equals(Material.COMPASS))
+        if (event.getPlayer().getItemInHand().getType() == COMPASS)
         {
-            if (event.useItemInHand().equals(Event.Result.DENY))
+            if (event.useItemInHand().equals(DENY))
             {
                 return;
             }
-            event.setUseItemInHand(Event.Result.DENY);
+            event.setUseItemInHand(DENY);
             switch (event.getAction())
             {
                 case LEFT_CLICK_AIR:
                 case LEFT_CLICK_BLOCK:
                     if (module.perms().COMPASS_JUMPTO_LEFT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                         Location loc;
                         if (event.getClickedBlock() != null && event.getClickedBlock().getType().isSolid())
                         {
@@ -89,14 +93,14 @@ public class TeleportListener implements Listener
                         else
                         {
                             Block block = user.getTargetBlock(this.module.getConfiguration().navigation.jumpToMaxRange);
-                            if (block == null || block.getType() == Material.AIR)
+                            if (block == null || block.getType() == AIR)
                             {
                                 return;
                             }
                             loc = block.getLocation().add(0.5, 1, 0.5);
                         }
-                        user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                        user.sendTranslated(MessageType.NEUTRAL, "Poof!");
+                        user.safeTeleport(loc, PLUGIN, true);
+                        user.sendTranslated(NEUTRAL, "Poof!");
                         event.setCancelled(true);
                     }
                     return;
@@ -104,17 +108,17 @@ public class TeleportListener implements Listener
                 case RIGHT_CLICK_BLOCK:
                     if (module.perms().COMPASS_JUMPTO_RIGHT.isAuthorized(event.getPlayer()))
                     {
-                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getName());
+                        User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                         Location loc = LocationUtil.getBlockBehindWall(user, this.module.getConfiguration().navigation.thru.maxRange,
                                 this.module.getConfiguration().navigation.thru.maxWallThickness);
                         if (loc == null)
                         {
-                            user.sendTranslated(MessageType.NEGATIVE, "Nothing to pass through!");
+                            user.sendTranslated(NEGATIVE, "Nothing to pass through!");
                             return;
                         }
                         loc.setY(loc.getY() + 1);
-                        user.safeTeleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN, true);
-                        user.sendTranslated(MessageType.NEUTRAL, "You passed through a wall");
+                        user.safeTeleport(loc, PLUGIN, true);
+                        user.sendTranslated(NEUTRAL, "You passed through a wall");
                         event.setCancelled(true);
                     }
             }
