@@ -22,6 +22,9 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.i18n.I18n;
@@ -105,7 +108,12 @@ public class CubeEconomyService implements Economy
         User user = core.getUserManager().findExactUser(name);
         if (user == null)
         {
-            return McUUID.getUUIDForName(name);
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            if (offlinePlayer.getUniqueId().version() == 3)
+            {
+                return McUUID.getUUIDForName(name);
+            }
+            return offlinePlayer.getUniqueId();
         }
         return user.getUniqueId();
     }
