@@ -65,9 +65,10 @@ public class McUUID
                 CubeEngine.getLog().error("Could not convert UUID of: {} ({})", profile.name, profile.id);
             }
         }
-        playerNames.removeAll(map.entrySet());
+        playerNames.removeAll(map.keySet());
         for (String playerName : playerNames)
         {
+            CubeEngine.getLog().error("Missing UUID for {}", playerName);
             map.put(playerName, null);
         }
         return map;
@@ -117,7 +118,7 @@ public class McUUID
                 int read = readProfilesFromInputStream(postQuery(node, page++).getInputStream(), profiles);
                 if (read == 0)
                 {
-                    CubeEngine.getLog().info("No Answer for {} players");
+                    CubeEngine.getLog().info("No Answer for {} players", amount);
                 }
                 else if (read != amount)
                 {
