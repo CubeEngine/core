@@ -86,41 +86,54 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
         if (dbVersion.getMajor() == 1)
         {
             CubeEngine.getLog().info("Updating {} to Version 2" , this.getName());
-            CubeEngine.getLog().info("Adding UUID columns");
-            connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                            "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
-                                            "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
-            CubeEngine.getLog().info("Drop unique index on player and rename to lastname");
-            connection.prepareStatement("DROP INDEX `player` ON " + this.getName()).execute();
-            connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                            " CHANGE `player` `lastname` VARCHAR(16) " +
-                                            "CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL").execute();
+
             CubeEngine.getLog().info("Get all names with missing UUID values");
-            ResultSet resultSet = connection.prepareStatement("SELECT `lastname` FROM " + this.getName() +
-                                                                  " WHERE `UUIDleast` = 0 AND `UUIDmost` = 0")
+            ResultSet resultSet = connection.prepareStatement("SELECT `player` FROM " + this.getName())
                                             .executeQuery();
             List<String> list = new ArrayList<>();
             while (resultSet.next())
             {
-                String lastname = resultSet.getString("lastname");
+                String lastname = resultSet.getString("player");
                 list.add(lastname);
             }
             CubeEngine.getLog().info("Query MojangAPI to get UUIDs");
             Map<String, UUID> uuids = McUUID.getUUIDForNames(list);
+
+            CubeEngine.getLog().info("Adding UUID columns");
+            connection.prepareStatement("ALTER TABLE " + this.getName() +
+                                            "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
+                                            "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
+
+
             PreparedStatement stmt = connection.prepareStatement("UPDATE " + this.getName() +
                                                                      " SET `UUIDleast`=? , `UUIDmost`=?" +
-                                                                     " WHERE `lastname` = ?");
+                                                                     " WHERE `player` = ?");
             CubeEngine.getLog().info("Update UUIDs in database");
             for (Entry<String, UUID> entry : uuids.entrySet())
             {
+                if (entry.getValue() == null)
+                {
+                    PreparedStatement deleteStmt = connection.prepareStatement("DELETE FROM " + this.getName() + " WHERE `player` = ?");
+                    deleteStmt.setString(1, entry.getKey());
+                    deleteStmt.execute();
+                    continue;
+                }
                 stmt.setLong(1, entry.getValue().getLeastSignificantBits());
                 stmt.setLong(2, entry.getValue().getMostSignificantBits());
                 stmt.setString(3, entry.getKey());
                 stmt.addBatch();
             }
             stmt.executeBatch();
+
+            CubeEngine.getLog().info("Create unique index on uuids and rename to lastname");
             connection.prepareStatement("CREATE UNIQUE INDEX `uuid` ON " + this.getName() +
                                        " (`UUIDleast`,`UUIDmost`)").execute();
+
+            CubeEngine.getLog().info("Drop unique index on player and rename to lastname");
+            connection.prepareStatement("DROP INDEX `player` ON " + this.getName()).execute();
+            connection.prepareStatement("ALTER TABLE " + this.getName() +
+                                            " CHANGE `player` `lastname` VARCHAR(16) " +
+                                            "CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL").execute();
         }
     }
 }

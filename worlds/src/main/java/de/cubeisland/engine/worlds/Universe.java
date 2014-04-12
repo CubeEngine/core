@@ -118,12 +118,15 @@ public class Universe
             Reflector reflector = this.module.getCore().getConfigFactory();
             for (Entry<String, UUID> entry : uuids.entrySet())
             {
-                Path oldPath = playerNames.get(entry.getKey());
-                PlayerDataConfig load = reflector.load(PlayerDataConfig.class, oldPath.toFile(), false);
-                load.setFile(this.dirPlayers.resolve(entry.getValue().toString() + DAT.getExtention()).toFile());
-                load.lastName = entry.getKey();
-                load.save();
-                Files.delete(oldPath);
+                if (entry.getValue() != null)
+                {
+                    Path oldPath = playerNames.get(entry.getKey());
+                    PlayerDataConfig load = reflector.load(PlayerDataConfig.class, oldPath.toFile(), false);
+                    load.setFile(this.dirPlayers.resolve(entry.getValue().toString() + DAT.getExtention()).toFile());
+                    load.lastName = entry.getKey();
+                    load.save();
+                    Files.delete(oldPath);
+                }
             }
         }
         catch (IOException e)

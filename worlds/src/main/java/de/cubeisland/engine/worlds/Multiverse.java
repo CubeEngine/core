@@ -210,12 +210,15 @@ public class Multiverse implements Listener
             Reflector reflector = this.module.getCore().getConfigFactory();
             for (Entry<String, UUID> entry : uuids.entrySet())
             {
-                Path oldPath = playerNames.get(entry.getKey());
-                PlayerConfig load = reflector.load(PlayerConfig.class, oldPath.toFile(), false);
-                load.setFile(this.dirPlayers.resolve(entry.getValue().toString() + YAML.getExtention()).toFile());
-                load.lastName = entry.getKey();
-                load.save();
-                Files.delete(oldPath);
+                if (entry.getValue() != null)
+                {
+                    Path oldPath = playerNames.get(entry.getKey());
+                    PlayerConfig load = reflector.load(PlayerConfig.class, oldPath.toFile(), false);
+                    load.setFile(this.dirPlayers.resolve(entry.getValue().toString() + YAML.getExtention()).toFile());
+                    load.lastName = entry.getKey();
+                    load.save();
+                    Files.delete(oldPath);
+                }
             }
         }
         catch (IOException e)

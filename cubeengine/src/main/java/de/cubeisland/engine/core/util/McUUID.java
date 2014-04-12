@@ -19,12 +19,15 @@ package de.cubeisland.engine.core.util;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -62,6 +65,12 @@ public class McUUID
                 CubeEngine.getLog().error("Could not convert UUID of: {} ({})", profile.name, profile.id);
             }
         }
+        playerNames.removeAll(map.keySet());
+        for (String playerName : playerNames)
+        {
+            CubeEngine.getLog().error("Missing UUID for {}", playerName);
+            map.put(playerName, null);
+        }
         return map;
     }
 
@@ -72,46 +81,78 @@ public class McUUID
 
     private static List<Profile> getUUIDForNames0(Collection<String> playernames)
     {
+        LinkedList<String> players = new LinkedList<>();
+        List<Profile> profiles = new ArrayList<>();
+        for (String playername : new HashSet<>(playernames))
+        {
+            players.add(playername);
+            if (players.size() >= 20)
+            {
+                getProfiles(profiles, players);
+                CubeEngine.getLog().info(profiles.size() + "/" + playernames.size());
+            }
+        }
+        getProfiles(profiles, players);
+        CubeEngine.getLog().info("Getting UUIDs done!", playernames.size());
+        return profiles;
+    }
+
+    private static void getProfiles(List<Profile> profiles, LinkedList<String> players)
+    {
+        int amount = players.size();
+        CubeEngine.getLog().debug("Query UUID for: " + StringUtils.implode(",", players));
         ArrayNode node = mapper.createArrayNode();
-        for (String playername : playernames)
+        while (!players.isEmpty())
         {
             ObjectNode criteria = mapper.createObjectNode();
-            criteria.put("name", playername);
+            criteria.put("name", players.poll());
             criteria.put("agent", AGENT);
             node.add(criteria);
         }
-        int i = 1;
-        int amount = playernames.size();
-        List<Profile> list = new ArrayList<>();
+        int page = 1;
         try
         {
+            CubeEngine.getLog().info("Query Mojang for {} UUIDs", amount);
             while (amount > 0)
             {
-                HttpURLConnection con = (HttpURLConnection)new URL(MOJANG_API_URL + i++).openConnection();
-                con.setRequestMethod("POST");
-                con.setRequestProperty("Content-Type", "application/json");
-                con.setUseCaches(false);
-                con.setDoInput(true);
-                con.setDoOutput(true);
-                DataOutputStream writer = new DataOutputStream(con.getOutputStream());
-                writer.write(node.toString().getBytes());
-                writer.close();
-
-                ProfileSearchResult results = mapper.readValue(con.getInputStream(), ProfileSearchResult.class);
-                list.addAll(Arrays.asList(results.profiles));
-                if (results.size == amount)
+                int read = readProfilesFromInputStream(postQuery(node, page++).getInputStream(), profiles);
+                if (read == 0)
                 {
-                    return list;
+                    CubeEngine.getLog().info("No Answer for {} players", amount);
                 }
-                amount -= results.size;
+                else if (read != amount)
+                {
+                    amount -= read;
+                    continue;
+                }
+                return;
             }
         }
         catch (IOException e)
         {
             CubeEngine.getLog().error(e, "Could not retrieve UUID for given names!");
-            return list;
         }
-        return list;
+    }
+
+    private static HttpURLConnection postQuery(ArrayNode node, int page) throws IOException
+    {
+        HttpURLConnection con = (HttpURLConnection)new URL(MOJANG_API_URL + page).openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setUseCaches(false);
+        con.setDoInput(true);
+        con.setDoOutput(true);
+        DataOutputStream writer = new DataOutputStream(con.getOutputStream());
+        writer.write(node.toString().getBytes());
+        writer.close();
+        return con;
+    }
+
+    private static int readProfilesFromInputStream(InputStream is, List<Profile> profiles) throws IOException
+    {
+        ProfileSearchResult results = mapper.readValue(is, ProfileSearchResult.class);
+        profiles.addAll(Arrays.asList(results.profiles));
+        return results.size;
     }
 
     public static UUID getUUIDForName(String player)
