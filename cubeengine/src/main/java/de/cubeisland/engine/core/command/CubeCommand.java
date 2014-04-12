@@ -33,18 +33,12 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.StringUtils;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
-import static de.cubeisland.engine.core.util.ChatFormat.GREY;
-import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
-import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
-import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
+import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
-import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 /**
  * This class is the base for all of our commands
@@ -350,7 +344,7 @@ public abstract class CubeCommand
         {
             usage = sender.getTranslation(NONE, usage);
         }
-        return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, usage));
+        return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
     /**
