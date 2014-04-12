@@ -73,13 +73,12 @@ public class McUUID
 
     private static List<Profile> getUUIDForNames0(Collection<String> playernames)
     {
-        CubeEngine.getLog().info("Getting {} UUIDs for playernames", playernames.size());
         LinkedList<String> players = new LinkedList<>();
         List<Profile> profiles = new ArrayList<>();
         for (String playername : playernames)
         {
             players.add(playername);
-            if (players.size() >= 100)
+            if (players.size() >= 20)
             {
                 getProfiles(profiles, players);
                 CubeEngine.getLog().info(profiles.size() + "/" + playernames.size());
@@ -93,6 +92,7 @@ public class McUUID
     private static void getProfiles(List<Profile> profiles, LinkedList<String> players)
     {
         int amount = players.size();
+        CubeEngine.getLog().debug("Query UUID for: " + StringUtils.implode(",", players));
         ArrayNode node = mapper.createArrayNode();
         while (!players.isEmpty())
         {
