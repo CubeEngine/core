@@ -706,4 +706,15 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         return null;
     }
+
+    @Override
+    public String getName()
+    {
+        String name = super.getName();
+        if (name == null)
+        {
+            return this.entity.getLastName();
+        }
+        return name;
+    }
 }

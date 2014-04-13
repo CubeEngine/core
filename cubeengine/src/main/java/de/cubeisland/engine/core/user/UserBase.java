@@ -127,7 +127,7 @@ public class UserBase implements Player
     {
         EntityPlayer dummy = this.getDummy();
         WorldNBTStorage storage = (WorldNBTStorage)dummy.playerInteractManager.world.getDataManager();
-        return storage.getPlayerData(this.getName());
+        return storage.getPlayerData(this.getUniqueId().toString());
     }
 
     private void saveData0()
@@ -1022,7 +1022,6 @@ public class UserBase implements Player
     }
 
     @Override
-    @Deprecated // TODO remove when finished updating everwhere
     public String getName()
     {
         return this.getOfflinePlayer().getName();

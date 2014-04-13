@@ -126,8 +126,7 @@ public class ItemData
         }
         if (enchantments != null)
         {
-            meta.getEnchants().clear();
-            meta.getEnchants().putAll(enchantments);
+            itemStack.addEnchantments(enchantments);
         }
         itemStack.setItemMeta(meta);
         return itemStack;

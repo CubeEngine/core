@@ -513,7 +513,7 @@ public class PlayerCommands
         if (System.currentTimeMillis() - lastPlayed > 7 * 24 * 60 * 60 * 1000) // If greater than 7 days show distance not date
         {
             Date date = new Date(lastPlayed);
-            DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+            DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, context.getSender().getLocale());
             context.sendTranslated(NEUTRAL, "{user} is offline since {input#time}", user, format.format(date));
             return;
         }

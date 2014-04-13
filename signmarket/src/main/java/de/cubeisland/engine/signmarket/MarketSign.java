@@ -1472,8 +1472,8 @@ public class MarketSign
      *
      * @return the owner or null
      */
-    public User getRawOwner()
+    public UInteger getRawOwner()
     {
-        return this.isAdminSign() ? null : this.getOwner();
+        return this.isAdminSign() ? null : this.getBlockInfo().getOwner();
     }
 }
