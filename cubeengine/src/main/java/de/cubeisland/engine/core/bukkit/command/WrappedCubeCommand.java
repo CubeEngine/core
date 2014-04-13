@@ -17,14 +17,14 @@
  */
 package de.cubeisland.engine.core.bukkit.command;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import de.cubeisland.engine.core.command.CubeCommand;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 public class WrappedCubeCommand extends Command
 {
@@ -118,8 +118,6 @@ public class WrappedCubeCommand extends Command
 
         return target.hasPermission(permission);
     }
-    
-    
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args)

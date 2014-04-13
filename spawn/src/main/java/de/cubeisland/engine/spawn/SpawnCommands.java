@@ -30,6 +30,7 @@ import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -360,7 +361,7 @@ public class SpawnCommands
     public static class RoleCompleter implements Completer
     {
         @Override
-        public List<String> complete(ParameterizedContext context, String token)
+        public List<String> complete(ParameterizedTabContext context, String token)
         {
             final CommandSender sender = context.getSender();
             List<String> roles = new ArrayList<>();

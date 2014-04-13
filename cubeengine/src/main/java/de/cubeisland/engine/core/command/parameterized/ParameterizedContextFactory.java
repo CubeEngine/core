@@ -20,9 +20,11 @@ package de.cubeisland.engine.core.command.parameterized;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -35,38 +37,39 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.LastType;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.Type;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
+import static de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.Type.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static java.util.Locale.ENGLISH;
 
 public class ParameterizedContextFactory implements ContextFactory
 {
     private ArgBounds bounds;
     private final Map<String, CommandFlag> flagMap;
     private final Map<String, CommandParameter> paramMap;
+    private final Map<Integer, CommandParameterIndexed> indexedMap;
+
+    private int indexedCount = 0;
 
     public ParameterizedContextFactory(ArgBounds bounds)
     {
         this.bounds = bounds;
         this.flagMap = new THashMap<>();
         this.paramMap = new THashMap<>();
+        this.indexedMap = new THashMap<>();
     }
 
-    public ParameterizedContextFactory(ArgBounds bounds, Collection<CommandFlag> flags, Collection<CommandParameter> params)
+    public ParameterizedContextFactory(ArgBounds bounds, List<CommandParameterIndexed> indexedParams, Collection<CommandFlag> flags, Collection<CommandParameter> params)
     {
         this(bounds);
-
-        if (flags != null)
-        {
-            this.addFlags(flags);
-        }
-
-        if (params != null)
-        {
-            this.addParameters(params);
-        }
+        this.addFlags(flags);
+        this.addParameters(params);
+        this.addIndexed(indexedParams);
     }
 
     @Override
@@ -78,6 +81,35 @@ public class ParameterizedContextFactory implements ContextFactory
     public void setArgBounds(ArgBounds newBounds)
     {
         this.bounds = newBounds;
+    }
+
+    private ParameterizedContextFactory addIndexed(List<CommandParameterIndexed> indexedParams)
+    {
+        if (indexedParams != null)
+        {
+            for (CommandParameterIndexed param : indexedParams)
+            {
+                this.addIndexed(param);
+            }
+        }
+        return this;
+    }
+
+    public ParameterizedContextFactory addIndexed(CommandParameterIndexed param)
+    {
+        this.indexedMap.put(indexedCount++, param);
+        return this;
+    }
+
+    public ParameterizedContextFactory removeLastIndexed()
+    {
+        this.indexedMap.remove(--indexedCount);
+        return this;
+    }
+
+    public CommandParameterIndexed getIndexed(int index)
+    {
+        return this.indexedMap.get(index);
     }
 
     public ParameterizedContextFactory addParameters(Collection<CommandParameter> params)
@@ -94,10 +126,10 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public ParameterizedContextFactory addParameter(CommandParameter param)
     {
-        this.paramMap.put(param.getName().toLowerCase(Locale.ENGLISH), param);
+        this.paramMap.put(param.getName().toLowerCase(ENGLISH), param);
         for (String alias : param.getAliases())
         {
-            alias = alias.toLowerCase(Locale.ENGLISH);
+            alias = alias.toLowerCase(ENGLISH);
             if (!this.paramMap.containsKey(alias))
             {
                 this.paramMap.put(alias, param);
@@ -108,7 +140,7 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public ParameterizedContextFactory removeParameter(String name)
     {
-        CommandParameter param = this.paramMap.remove(name.toLowerCase(Locale.ENGLISH));
+        CommandParameter param = this.paramMap.remove(name.toLowerCase(ENGLISH));
         if (param != null)
         {
             Iterator<Map.Entry<String, CommandParameter>> it = this.paramMap.entrySet().iterator();
@@ -125,7 +157,7 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public CommandParameter getParameter(String name)
     {
-        return this.paramMap.get(name.toLowerCase(Locale.ENGLISH));
+        return this.paramMap.get(name.toLowerCase(ENGLISH));
     }
 
     public Set<CommandParameter> getParameters()
@@ -135,16 +167,19 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public void addFlags(Collection<CommandFlag> flags)
     {
-        for (CommandFlag flag : flags)
+        if (flags != null)
         {
-            this.addFlag(flag);
+            for (CommandFlag flag : flags)
+            {
+                this.addFlag(flag);
+            }
         }
     }
 
     public ParameterizedContextFactory addFlag(CommandFlag flag)
     {
-        this.flagMap.put(flag.getName().toLowerCase(Locale.ENGLISH), flag);
-        final String longName = flag.getLongName().toLowerCase(Locale.ENGLISH);
+        this.flagMap.put(flag.getName().toLowerCase(ENGLISH), flag);
+        final String longName = flag.getLongName().toLowerCase(ENGLISH);
         if (!this.flagMap.containsKey(longName))
         {
             this.flagMap.put(longName, flag);
@@ -154,7 +189,7 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public ParameterizedContextFactory removeFlag(String name)
     {
-        CommandFlag flag = this.flagMap.remove(name.toLowerCase(Locale.ENGLISH));
+        CommandFlag flag = this.flagMap.remove(name.toLowerCase(ENGLISH));
         if (flag != null)
         {
             Iterator<Map.Entry<String, CommandFlag>> it = this.flagMap.entrySet().iterator();
@@ -171,7 +206,7 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public CommandFlag getFlag(String name)
     {
-        return this.flagMap.get(name.toLowerCase(Locale.ENGLISH));
+        return this.flagMap.get(name.toLowerCase(ENGLISH));
     }
 
     public Set<CommandFlag> getFlags()
@@ -182,78 +217,140 @@ public class ParameterizedContextFactory implements ContextFactory
     @Override
     public ParameterizedContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
-        final LinkedList<String> args = new LinkedList<>();
+        return parse(command, sender, labels, rawArgs, ParameterizedContext.class);
+    }
+
+    @Override
+    public ParameterizedTabContext tabCompleteParse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
+    {
+        return parse(command, sender, labels, rawArgs, ParameterizedTabContext.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends AbstractParameterizedContext<?>> T parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs,Class<T> clazz)
+    {
+        final List<String> args = new LinkedList<>();
         final Set<String> flags = new THashSet<>();
-        final Map<String, Object> params = new THashMap<>();
+        final Map<String, String> rawParams = new LinkedHashMap<>();
 
-        if (rawArgs.length > 0)
+        Type last = readCommand(rawArgs, clazz == ParameterizedTabContext.class, flags, args, rawParams);
+
+        if (clazz == ParameterizedTabContext.class)
         {
-            for (int offset = 0; offset < rawArgs.length;)
+            return (T)new ParameterizedTabContext(command, sender, labels, args, flags, rawParams, last);
+        }
+        return (T)new ParameterizedContext(command, sender, labels, args, flags, readParams(sender, args, rawParams));
+    }
+
+    private Type readCommand(String[] rawArgs, boolean tabComplete, Set<String> flags, List<String> args, Map<String, String> rawParams)
+    {
+        if (rawArgs.length < 1)
+        {
+            return Type.NOTHING;
+        }
+        LastType type = new LastType();
+        for (int offset = 0; offset < rawArgs.length;)
+        {
+            String rawArg = rawArgs[offset];
+            if (rawArg.isEmpty())
             {
-                if (rawArgs[offset].isEmpty())
+                // ignore empty args except last when tabcomplete
+                if (tabComplete && offset == rawArgs.length -1)
                 {
-                    offset++;
-                    continue; // ignore empty args
+                    args.add(rawArg);
                 }
-                if (rawArgs[offset].length() >= 2 && rawArgs[offset].charAt(0) == '-') // is flag?
-                {
-                    String flag = rawArgs[offset].substring(1);
-                    if (flag.charAt(0) == '-')
-                    {
-                        flag = flag.substring(1);
-                    }
-                    if (flag.isEmpty()) // is there still a name?
-                    {
-                        offset++;
-                        args.add(rawArgs[offset]);
-                        continue;
-                    }
-
-                    flag = flag.toLowerCase(Locale.ENGLISH); // lowercase flag
-
-                    CommandFlag cmdFlag = this.flagMap.get(flag);
-                    if (cmdFlag != null) // has flag ?
-                    {
-                        flags.add(cmdFlag.getName()); // added flag
-                    }
-                    else
-                    {
-                        args.add(rawArgs[offset]); // flag not found, adding it as an indexed param
-                    }
-                    offset++;
-                }
-                else //else named param or indexed param
-                {
-                    String paramName = rawArgs[offset].toLowerCase(Locale.ENGLISH);
-                    // has alias named Param ?
-                    CommandParameter param = paramMap.get(paramName);
-                    // is named Param?
-                    if (param != null && offset + 1 < rawArgs.length)
-                    {
-                        StringBuilder paramValue = new StringBuilder();
-                        try
-                        {
-                            offset++;
-                            offset += readString(paramValue, rawArgs, offset);
-                            //added named param
-                            params.put(param.getName(), ArgumentReader.read(param.getType(), paramValue.toString(), sender));
-                        }
-                        catch (InvalidArgumentException ex)
-                        {
-                            throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument for {input}: {}", param.getName(), sender.getTranslation(
-                                NONE, ex.getMessage(), ex.getMessageArgs())));
-                        }
-                    }
-                    else // else is indexed param
-                    {
-                        StringBuilder arg = new StringBuilder();
-                        offset += readString(arg, rawArgs, offset);
-                        args.add(arg.toString());// added indexed param
-                    }
-                }
+                offset++;
+                type.last = ANY;
+            }
+            else if (rawArg.length() >= 1 && rawArg.charAt(0) == '-')
+            {
+                // reads a flag or indexed param
+                offset = readFlag(rawArg, args, flags, offset, type);
+            }
+            else
+            {
+                // reads a named param or indexed param
+                offset = readRawParam(rawArgs, args, rawParams, offset, type);
             }
         }
 
+        return type.last;
+    }
+
+    private int readFlag(String rawArg, List<String> args, Set<String> flags, int offset, LastType type)
+    {
+        String flag = rawArg;
+        if (flag.charAt(0) == '-')
+        {
+            flag = flag.substring(1);
+        }
+        if (flag.isEmpty()) // is there still a name?
+        {
+            offset++;
+            args.add(rawArg);
+            type.last = FLAG_OR_INDEXED;
+            return offset;
+        }
+
+        flag = flag.toLowerCase(ENGLISH); // lowercase flag
+
+        CommandFlag cmdFlag = this.flagMap.get(flag);
+        if (cmdFlag != null) // has flag ?
+        {
+            flags.add(cmdFlag.getName()); // added flag
+            type.last = NOTHING;
+        }
+        else
+        {
+            type.last = FLAG_OR_INDEXED;
+            args.add(rawArg); // flag not found, adding it as an indexed param
+        }
+        offset++;
+        return offset;
+    }
+
+    private int readRawParam(String[] rawArgs, List<String> args, Map<String, String> rawParams, int offset, LastType type)
+    {
+        String paramName = rawArgs[offset].toLowerCase(ENGLISH);
+        // has alias named Param ?
+        CommandParameter param = paramMap.get(paramName);
+        // is named Param?
+        if (param != null && offset + 1 < rawArgs.length)
+        {
+            StringBuilder paramValue = new StringBuilder();
+            offset++;
+            offset += readString(paramValue, rawArgs, offset);
+            //added named param
+            rawParams.put(param.getName(), paramValue.toString());
+            type.last = PARAM_VALUE;
+        }
+        else // else is indexed param
+        {
+            StringBuilder arg = new StringBuilder();
+            offset += readString(arg, rawArgs, offset);
+            args.add(arg.toString());// added indexed param
+            type.last = INDEXED_OR_PARAM;
+        }
+        return offset;
+    }
+
+    private Map<String, Object> readParams(CommandSender sender, List<String> args, Map<String, String> rawParams)
+    {
+        Map<String, Object> readParams = new LinkedHashMap<>();
+
+        for (Entry<String, String> entry : rawParams.entrySet())
+        {
+            CommandParameter param = paramMap.get(entry.getKey());
+            try
+            {
+                readParams.put(entry.getKey(), ArgumentReader.read(param.getType(), entry.getValue(), sender));
+            }
+            catch (InvalidArgumentException ex)
+            {
+                throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument for {input}: {}", param.getName(),
+                                                                        sender.getTranslation(NONE, ex.getMessage(), ex.getMessageArgs())));
+            }
+        }
         if (args.size() < this.getArgBounds().getMin())
         {
             throw new IncorrectUsageException("You've given too few arguments.");
@@ -262,16 +359,14 @@ public class ParameterizedContextFactory implements ContextFactory
         {
             throw new IncorrectUsageException("You've given too many arguments.");
         }
-
         for (CommandParameter param : this.paramMap.values())
         {
-            if (param.isRequired() && !params.containsKey(param.getName()))
+            if (param.isRequired() && !rawParams.containsKey(param.getName()))
             {
                 throw new MissingParameterException(param.getName());
             }
         }
-
-        return new ParameterizedContext(command, sender, labels, args, flags, params);
+        return readParams;
     }
 
     protected static int readString(StringBuilder sb, String[] args, int offset)
@@ -336,5 +431,10 @@ public class ParameterizedContextFactory implements ContextFactory
         }
 
         return new ParameterizedContext(command, context.getSender(), context.getLabels(), context.getArgs(), flags, params);
+    }
+
+    public Map<Integer, CommandParameterIndexed> getIndexedParameters()
+    {
+        return this.indexedMap;
     }
 }

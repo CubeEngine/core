@@ -15,36 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.parameterized.completer;
-
-import java.util.ArrayList;
-import java.util.List;
+package de.cubeisland.engine.core.command.reflected;
 
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 
-import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
-
-public abstract class SimpleCompleter implements Completer
+public @interface Indexed
 {
-    private final String[] strings;
-
-    protected SimpleCompleter(String... strings)
-    {
-        this.strings = strings;
-    }
-
-    @Override
-    public List<String> complete(ParameterizedTabContext context, String token)
-    {
-        List<String> offers = new ArrayList<>();
-        for (String string : this.strings)
-        {
-            if (startsWithIgnoreCase(string, token))
-            {
-                offers.add(string);
-            }
-        }
-        return offers;
-    }
+    String label() default "";
+    Class type() default String.class;
+    Class<? extends Completer> completer() default Completer.class;
 }

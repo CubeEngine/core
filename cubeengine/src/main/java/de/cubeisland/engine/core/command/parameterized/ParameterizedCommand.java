@@ -18,15 +18,15 @@
 package de.cubeisland.engine.core.command.parameterized;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
 
+import static de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.Type.*;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 public abstract class ParameterizedCommand extends CubeCommand
@@ -52,86 +52,116 @@ public abstract class ParameterizedCommand extends CubeCommand
         this.getContextFactory().addFlag(flag);
     }
     
-    public List<String> tabComplete(ParameterizedContext context)
+    public List<String> tabComplete(ParameterizedTabContext context)
     {
-        List<String> result = null;
-        List<String> args = context.getArgs();
-        if (args.isEmpty())
+        if (context.last == ParameterizedTabContext.Type.NOTHING)
         {
             return null;
         }
-        
-        final int argc = args.size();
-        String token = args.get(argc - 1);
-        final ParameterizedContextFactory contextFactory = this.getContextFactory();
-        if (argc >= 2)
+        final ParameterizedContextFactory cFactory = this.getContextFactory();
+        if (context.last == PARAM_VALUE)
         {
-            CommandParameter param = contextFactory.getParameter(args.get(argc - 2));
-            if (param != null)
-            {
-                Completer completer = param.getCompleter();
-                if (completer != null)
-                {
-                    result = completer.complete(context, token);
-                }
-            }
+            return tabCompleteParamValue(context, cFactory);
         }
+        List<String> result = new ArrayList<>();
+        List<String> args = context.getArgs();
+        String last = args.get(args.size() - 1);
+        if (context.last == FLAG_OR_INDEXED)
+        {
+            tabCompleteFlags(context, cFactory, result, last);
+            tabCompleteIndexed(context, cFactory, result, args.size() - 1, last);
+        }
+        else if (context.last == INDEXED_OR_PARAM)
+        {
+            tabCompleteIndexed(context, cFactory, result, args.size() - 1, last);
+            tabCompleteParam(context, cFactory, result, last);
+        }
+        else if (context.last == ANY)
+        {
+            tabCompleteIndexed(context, cFactory, result, args.size() - 1, last);
+            tabCompleteParam(context, cFactory, result, last);
+            tabCompleteFlags(context, cFactory, result, last);
+        }
+        return result;
+    }
 
-        final boolean mayBeFlag = (token.length() > 0 && token.charAt(0) == '-');
-        if (result == null && !mayBeFlag)
+    private List<String> tabCompleteParamValue(ParameterizedTabContext context, ParameterizedContextFactory cFactory)
+    {
+        Iterator<Entry<String, String>> iterator = context.getParams().entrySet().iterator();
+        Entry<String, String> lastParameter;
+        do
         {
-            List<String> params = new ArrayList<>(0);
-            for (CommandParameter entry : contextFactory.getParameters())
-            {
-                if (startsWithIgnoreCase(entry.getName(), token))
-                {
-                    params.add(entry.getName());
-                }
-            }
-            if (!params.isEmpty())
-            {
-                result = params;
-            }
+            lastParameter = iterator.next();
         }
-        if (result == null && mayBeFlag)
+        while (iterator.hasNext());
+        Completer completer = cFactory.getParameter(lastParameter.getKey()).getCompleter();
+        if (completer != null)
         {
-            List<String> flags = new ArrayList<>();
-            if (!token.isEmpty() && token.charAt(0) == '-')
+            return completer.complete(context, lastParameter.getValue());
+        }
+        return null; // TODO check if bukkit wont do player tab completion
+    }
+
+    private void tabCompleteParam(ParameterizedTabContext context, ParameterizedContextFactory cFactory, List<String> result, String last)
+    {
+        for (CommandParameter parameter : cFactory.getParameters())
+        {
+            if (!context.hasParam(parameter.getName()))
             {
-                token = token.substring(1).toLowerCase(Locale.ENGLISH);
-                for (CommandFlag flag : contextFactory.getFlags())
+                if (startsWithIgnoreCase(parameter.getName(), last))
                 {
-                    final String name = flag.getLongName().toLowerCase(Locale.ENGLISH);
-                    if (startsWithIgnoreCase(name, token))
+                    result.add(parameter.getName());
+                }
+                if (!last.isEmpty())
+                {
+                    for (String alias : parameter.getAliases())
                     {
-                        flags.add("-" + name);
+                        if (alias.length() > 2 && startsWithIgnoreCase(alias, last))
+                        {
+                            result.add(alias);
+                        }
                     }
                 }
-                if (!flags.isEmpty())
-                {
-                    result = flags;
-                }
             }
         }
+    }
 
-        if (result != null)
+    private void tabCompleteIndexed(ParameterizedTabContext context, ParameterizedContextFactory cFactory,
+                                    List<String> result, int index, String last)
+    {
+        CommandParameterIndexed indexed = cFactory.getIndexed(index);
+        if (indexed != null)
         {
-            Collections.sort(result, String.CASE_INSENSITIVE_ORDER);
+            Completer indexedCompleter = indexed.getCompleter();
+            if (indexedCompleter != null)
+            {
+                result.addAll(indexedCompleter.complete(context, last));
+            }
         }
+    }
 
-        return result;
+    private void tabCompleteFlags(ParameterizedTabContext context, ParameterizedContextFactory cFactory, List<String> result, String last)
+    {
+        if (!last.isEmpty())
+        {
+            last = last.substring(1);
+        }
+        for (CommandFlag commandFlag : cFactory.getFlags())
+        {
+            if (!context.hasFlag(commandFlag.getName()) && startsWithIgnoreCase(commandFlag.getLongName(), last))
+            {
+                result.add("-" + commandFlag.getLongName());
+            }
+        }
     }
 
     @Override
     public final List<String> tabComplete(CommandContext context)
     {
-        if (context instanceof ParameterizedContext)
+        if (context instanceof ParameterizedTabContext)
         {
-            return this.tabComplete((ParameterizedContext)context);
+            return this.tabComplete((ParameterizedTabContext)context);
         }
-        else
-        {
-            return super.tabComplete(context);
-        }
+        return super.tabComplete(context);
     }
 }

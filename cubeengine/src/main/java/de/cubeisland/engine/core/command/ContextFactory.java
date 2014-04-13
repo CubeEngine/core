@@ -23,6 +23,8 @@ public interface ContextFactory
 {
     ArgBounds getArgBounds();
     void setArgBounds(ArgBounds newBounds);
+    CommandContext tabCompleteParse(CubeCommand command, CommandSender sender, Stack<String> labels,
+                                                     String[] rawArgs);
     CommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs);
     CommandContext parse(CubeCommand command, CommandContext context);
 }

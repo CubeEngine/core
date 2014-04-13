@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command.parameterized;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
@@ -78,6 +79,7 @@ public class ParameterizedContextFactoryTest extends TestCase
     {
         final ParameterizedContextFactory factory = new ParameterizedContextFactory(
             new ArgBounds(0),
+            Collections.<CommandParameterIndexed>emptyList(),
             Arrays.asList(new CommandFlag("a", "all")),
             Arrays.asList(new CommandParameter("test", String.class))
         );

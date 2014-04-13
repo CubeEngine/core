@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.locker.commands;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,6 +29,7 @@ import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.user.User;
@@ -289,7 +289,7 @@ public class LockerCommands extends ContainerCommand
     public static class FlagCompleter implements Completer
     {
         @Override
-        public List<String> complete(ParameterizedContext context, String token)
+        public List<String> complete(ParameterizedTabContext context, String token)
         {
             String subToken = token;
             if (subToken.contains(","))

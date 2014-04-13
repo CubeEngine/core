@@ -63,6 +63,13 @@ public class BasicContextFactory implements ContextFactory
     }
 
     @Override
+    public BasicContext tabCompleteParse(CubeCommand command, CommandSender sender,
+                                                            Stack<String> labels, String[] rawArgs)
+    {
+        return new BasicContext(command, sender, labels, new LinkedList<>(Arrays.asList(rawArgs)));
+    }
+
+    @Override
     public CommandContext parse(CubeCommand command, CommandContext context)
     {
         return new BasicContext(command, context.getSender(), context.getLabels(), context.getArgs());

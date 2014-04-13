@@ -20,12 +20,12 @@ package de.cubeisland.engine.core.command.parameterized.completer;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -34,7 +34,7 @@ public class WorldCompleter implements Completer
     private final Server server = Bukkit.getServer();
 
     @Override
-    public List<String> complete(ParameterizedContext context, String token)
+    public List<String> complete(ParameterizedTabContext context, String token)
     {
         List<String> offers = new ArrayList<>();
         for (World world : this.server.getWorlds())

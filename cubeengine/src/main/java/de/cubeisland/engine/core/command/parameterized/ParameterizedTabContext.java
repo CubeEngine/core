@@ -24,51 +24,35 @@ import java.util.Stack;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.user.User;
 
 import static java.util.Locale.ENGLISH;
 
-public class ParameterizedContext extends AbstractParameterizedContext<Object>
+public class ParameterizedTabContext extends AbstractParameterizedContext<String>
 {
-
-    public ParameterizedContext(CubeCommand command, CommandSender sender, Stack<String> labels, List<String> args, Set<String> flags, Map<String, Object> params)
+    public ParameterizedTabContext(CubeCommand command, CommandSender sender, Stack<String> labels, List<String> args, Set<String> flags, Map<String, String> rawParams, Type last)
     {
-        super(command, sender, labels, args, flags, params);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getParam(String name)
-    {
-        return (T)this.params.get(name.toLowerCase(ENGLISH));
-    }
-
-    public <T> T getParam(String name, T def)
-    {
-        try
-        {
-            T value = this.getParam(name);
-            if (value != null)
-            {
-                return value;
-            }
-        }
-        catch (Exception ignored)
-        {}
-        return def;
+        super(command, sender, labels, args, flags, rawParams);
+        this.last = last;
     }
 
     public String getString(String name)
     {
-        return this.getParam(name);
+        return this.params.get(name.toLowerCase(ENGLISH));
     }
 
-    public String getString(String name, String def)
+    public final Type last;
+
+    public enum Type
     {
-        return this.getParam(name, def);
+        ANY,
+        NOTHING,
+        FLAG_OR_INDEXED,
+        INDEXED_OR_PARAM,
+        PARAM_VALUE;
     }
 
-    public User getUser(String name)
+    public static class LastType
     {
-        return this.getParam(name, null);
+        public Type last;
     }
 }

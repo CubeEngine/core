@@ -58,6 +58,8 @@ public @interface Command
 
     Param[] params() default {};
 
+    Indexed[] indexed() default {};
+
     boolean loggable() default true;
 
     /**

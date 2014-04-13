@@ -21,13 +21,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class ItemCompleter implements Completer
 {
     @Override
-    public List<String> complete(ParameterizedContext context, String token)
+    public List<String> complete(ParameterizedTabContext context, String token)
     {
         return Arrays.asList(String.valueOf(Match.material().material(token).getId()));
     }

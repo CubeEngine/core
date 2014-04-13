@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
@@ -37,7 +37,7 @@ public abstract class SimpleListCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(ParameterizedContext context, String token)
+    public List<String> complete(ParameterizedTabContext context, String token)
     {
         List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
         String lastToken = token.substring(token.lastIndexOf(",")+1,token.length()).toUpperCase();

@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.command.CommandFactory;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -130,19 +131,45 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             params.add(commandParameter);
         }
 
+        List<CommandParameterIndexed> indexedParams = new ArrayList<>(annotation.indexed().length);
+        int count = 1;
+        for (Indexed indexed : annotation.indexed())
+        {
+            String label = indexed.label();
+            if ("".equals(label))
+            {
+                label = String.valueOf(count - 1);
+            }
+            final CommandParameterIndexed indexedParam = new CommandParameterIndexed(label, indexed.type());
+
+            Class<? extends Completer> completerClass = indexed.completer();
+            if (completerClass != Completer.class)
+            {
+                try
+                {
+                    indexedParam.setCompleter(completerClass.newInstance());
+                }
+                catch (Exception ex)
+                {
+                    module.getLog().error(ex, "Failed to create the completer '{}'", completerClass.getName());
+                }
+            }
+            else
+            {
+                // TODO labeled OR completer e.g. label = "true|false"
+            }
+            indexedParams.add(indexedParam);
+            count++;
+        }
+
         if (annotation.max() > NO_MAX && annotation.max() < annotation.min())
         {
             module.getLog().error("{}.{}: The the maximum args must not be less than the minimum",
                                   holder.getClass().getSimpleName(), method.getName());
             return null;
         }
-        ReflectedCommand cmd = new ReflectedCommand(
-            module,
-            holder,
-            method,
-            name,
-            annotation.desc(),
-            this.createContextFactory(new ArgBounds(annotation.min(), annotation.max()), flags, params)
+        ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, annotation.desc(),
+                                                    this.createContextFactory(new ArgBounds(annotation.min(), annotation.max()), indexedParams, flags, params)
         );
         cmd.setUsage(annotation.usage());
         cmd.setAliases(aliases);
@@ -165,9 +192,9 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         return (T)cmd;
     }
 
-    protected ParameterizedContextFactory createContextFactory(ArgBounds bounds, Set<CommandFlag> flags, Set<CommandParameter> params)
+    protected ParameterizedContextFactory createContextFactory(ArgBounds bounds, List<CommandParameterIndexed> indexed, Set<CommandFlag> flags, Set<CommandParameter> params)
     {
-        return new ParameterizedContextFactory(bounds, flags, params);
+        return new ParameterizedContextFactory(bounds, indexed, flags, params);
     }
 
     @Override

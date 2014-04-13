@@ -40,6 +40,7 @@ import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.parameterized.completer.ItemCompleter;
 import de.cubeisland.engine.core.command.parameterized.completer.PlayerCompleter;
 import de.cubeisland.engine.core.user.User;
@@ -79,7 +80,7 @@ public class EditModeListener extends ConversationCommand
                 .addParameter(new CommandParameter("size",Integer.class).setCompleter(new Completer()
                 {
                     @Override
-                    public List<String> complete(ParameterizedContext context, String token)
+                    public List<String> complete(ParameterizedTabContext context, String token)
                     {
                         if (module.perms().SIGN_SIZE_INFINITE.isAuthorized(context.getSender()))
                         {

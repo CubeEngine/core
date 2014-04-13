@@ -28,14 +28,6 @@ import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-import de.cubeisland.engine.core.command.AliasCommand;
-import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.exception.CommandException;
-import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.exception.MissingParameterException;
-import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.core.command.sender.BlockCommandSender;
-import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
@@ -43,10 +35,18 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
+import de.cubeisland.engine.core.command.exception.CommandException;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.sender.BlockCommandSender;
+import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
@@ -72,7 +72,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         return command;
     }
     
-    private static CommandContext toCommandContext(CubeCommand command, CommandSender sender, String label, String[] args)
+    private static CommandContext toCommandContext(CubeCommand command, CommandSender sender, String label, String[] args, boolean tabComplete)
     {
         Stack<String> labels = new Stack<>();
         labels.push(label);
@@ -113,7 +113,10 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
 
             args = newArgs;
         }
-        
+        if (tabComplete)
+        {
+            return command.getContextFactory().tabCompleteParse(command, sender, labels, args);
+        }
         return command.getContextFactory().parse(command, sender, labels, args);
     }
 
@@ -125,7 +128,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         final CommandContext context;
         try
         {
-            context = toCommandContext(this.command, sender, label, args);
+            context = toCommandContext(this.command, sender, label, args, false);
         }
         catch (CommandException e)
         {
@@ -173,7 +176,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         final CommandContext context;
         try
         {
-            context = toCommandContext(this.command, sender, label, args);
+            context = toCommandContext(this.command, sender, label, args, true);
         }
         catch (CommandException e)
         {
@@ -185,13 +188,13 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             List<String> result = this.completeChild(context);
             if (result == null)
             {
-                result = context.getCommand().tabComplete(context);
+                result = this.command.tabComplete(context);
             }
 
             if (result != null)
             {
                 final int max = core.getConfiguration().commands.maxTabCompleteOffers;
-                if (result.size() > max)
+                if (result.size() > max && false) // TODO remove false
                 {
                     if (StringUtils.implode(", ", result).length() < TAB_LIMIT_THRESHOLD)
                     {

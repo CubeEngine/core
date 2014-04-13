@@ -97,7 +97,7 @@ public class CommandParameter
         return this;
     }
 
-    public Class getType()
+    public Class<?> getType()
     {
         return this.type;
     }

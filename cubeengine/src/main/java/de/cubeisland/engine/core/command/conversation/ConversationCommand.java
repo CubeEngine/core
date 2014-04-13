@@ -23,19 +23,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
-import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
+import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -90,13 +88,13 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
 
             Stack<String> labels = new Stack<>();
             labels.push(this.getLabel());
-            CommandContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getChatMessage()));
+            CommandContext context = this.getContextFactory().tabCompleteParse(this, user, labels, StringUtils.explode(" ", event.getChatMessage()));
             event.getTabCompletions().addAll(this.tabComplete(context));
         }
     }
 
     @Override
-    public List<String> tabComplete(ParameterizedContext context)
+    public List<String> tabComplete(ParameterizedTabContext context)
     {
         List<String> list = new ArrayList<>();
         Set<String> flags = new HashSet<>();
