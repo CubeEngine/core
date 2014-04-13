@@ -21,7 +21,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 import de.cubeisland.engine.log.action.block.entity.ActionEntityBlock.EntitySection;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock.PlayerSection;
@@ -48,12 +47,12 @@ public class DeathKill extends BaseAction
 
     public boolean isPlayerKiller()
     {
-        return playerKiller != null;
+        return playerKiller != null && playerKiller.uuid != null;
     }
 
     public boolean isEntityKiller()
     {
-        return entityKiller != null;
+        return entityKiller != null && entityKiller.uuid != null;
     }
 
     public boolean isOtherKiller()
