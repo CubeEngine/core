@@ -56,7 +56,6 @@ public class BukkitModuleManager extends BaseModuleManager
                     {
                         try
                         {
-                            core.setStartupFinished();
                             module.onStartupFinished();
                         }
                         catch (Exception ex)

@@ -131,17 +131,6 @@ public final class BukkitCore extends JavaPlugin implements Core
     private boolean isStartupFinished = false;
 
     @Override
-    public boolean isStartupFinished()
-    {
-        return this.isStartupFinished;
-    }
-
-    void setStartupFinished()
-    {
-        this.isStartupFinished = true;
-    }
-
-    @Override
     public void onLoad()
     {
         final Server server = this.getServer();

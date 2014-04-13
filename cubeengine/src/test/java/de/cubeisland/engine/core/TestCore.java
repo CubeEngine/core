@@ -230,10 +230,4 @@ public class TestCore implements Core
     {
         return this.configFactory;
     }
-
-    @Override
-    public boolean isStartupFinished()
-    {
-        return false;
-    }
 }
