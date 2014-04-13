@@ -243,6 +243,7 @@ public class ListenerBlock extends LogListener
 
                 Block firstBlock = event.getBlock().getRelative(event.getDirection());
                 BlockState newState = firstBlock.getState();
+                newState.setType(pistonHead.getItemType());
                 newState.setData(pistonHead);
 
                 BlockShift action = this.set(BlockShift.class, firstBlock.getState(), newState);
@@ -293,6 +294,7 @@ public class ListenerBlock extends LogListener
             BlockState newPistonHead = pistonHead.getBlock().getState();
             if (retractedBlock.getType().isSolid())
             {
+                newPistonHead.setType(retractedBlock.getType());
                 newPistonHead.setData(retractedBlock.getData());
             }
             else
