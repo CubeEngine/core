@@ -57,7 +57,7 @@ public class EcoCommands extends ContainerCommand
             return;
         }
         String format = manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equalsIgnoreCase(context.getString(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -96,7 +96,7 @@ public class EcoCommands extends ContainerCommand
                 if (this.manager.transaction(null, target, amount, true))
                 {
                     context.sendTranslated(POSITIVE, "You gave {input#amount} to {user}!", format, user.getName());
-                    if (!context.getSender().getName().equals(user.getName()))
+                    if (!context.getSender().equals(user) && user.isOnline())
                     {
                         user.sendTranslated(POSITIVE, "You were granted {input#amount}.", format);
                     }
@@ -124,7 +124,7 @@ public class EcoCommands extends ContainerCommand
             return;
         }
         String format = manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equalsIgnoreCase(context.getString(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -162,7 +162,7 @@ public class EcoCommands extends ContainerCommand
                 }
                 this.manager.transaction(target, null, amount, true);
                 context.sendTranslated(POSITIVE, "You took {input#amount} from {user}!", format, user);
-                if (!context.getSender().getName().equals(user.getName()))
+                if (!context.getSender().equals(user) && user.isOnline())
                 {
                     user.sendTranslated(NEUTRAL, "Withdrew {input#amount} from your account.", format);
                 }
@@ -176,7 +176,7 @@ public class EcoCommands extends ContainerCommand
              min = 1, max = 1)
     public void reset(ParameterizedContext context)
     {
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equalsIgnoreCase(context.getString(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -215,7 +215,7 @@ public class EcoCommands extends ContainerCommand
                 target.reset();
                 String format = this.manager.format(this.manager.getDefaultBalance());
                 context.sendTranslated(POSITIVE, "{user} account reset to {input#balance}!", user, format);
-                if (!context.getSender().getName().equals(user.getName()))
+                if (!context.getSender().equals(user) && user.isOnline())
                 {
                     user.sendTranslated(NEUTRAL, "Your balance got reset to {input#balance}.", format);
                 }
@@ -237,7 +237,7 @@ public class EcoCommands extends ContainerCommand
             return;
         }
         String format = this.manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equalsIgnoreCase(context.getString(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -275,7 +275,7 @@ public class EcoCommands extends ContainerCommand
                 }
                 target.set(amount);
                 context.sendTranslated(POSITIVE, "{user} account set to {input#balance}!", user, format);
-                if (!context.getSender().getName().equals(user.getName()))
+                if (!context.getSender().equals(user) && user.isOnline())
                 {
                     user.sendTranslated(NEUTRAL, "Your balance has been set to {input#balance}.", format);
                 }
@@ -295,7 +295,7 @@ public class EcoCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
             return;
         }
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getString(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -340,7 +340,7 @@ public class EcoCommands extends ContainerCommand
              min = 1, max = 1)
     public void hide(ParameterizedContext context)
     {
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getString(0)))
         {
             this.manager.hideAll(true, false);
             return;
@@ -378,7 +378,7 @@ public class EcoCommands extends ContainerCommand
              min = 1, max = 1)
     public void unhide(ParameterizedContext context)
     {
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getString(0)))
         {
             this.manager.unhideAll(true, false);
             return;
