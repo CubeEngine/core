@@ -19,13 +19,11 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.SimplePluginManager;
 
@@ -42,9 +40,11 @@ import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.Permission.BASE;
+import static java.util.Locale.ENGLISH;
+import static org.bukkit.permissions.PermissionDefault.*;
 
 public class BukkitPermissionManager implements PermissionManager
 {
@@ -97,11 +97,11 @@ public class BukkitPermissionManager implements PermissionManager
             if (this.startup)
             {
                 this.permissions.put(permission.getName().toLowerCase(), permission);
-                if ((permission.getDefault() == PermissionDefault.OP) || (permission.getDefault() == PermissionDefault.TRUE))
+                if ((permission.getDefault() == OP) || (permission.getDefault() == TRUE))
                 {
                     this.defaultPermTrue.add(permission);
                 }
-                if ((permission.getDefault() == PermissionDefault.NOT_OP) || (permission.getDefault() == PermissionDefault.TRUE))
+                if ((permission.getDefault() == NOT_OP) || (permission.getDefault() == TRUE))
                 {
                     this.defaultPermFalse.add(permission);
                 }
@@ -114,11 +114,11 @@ public class BukkitPermissionManager implements PermissionManager
             {
                 this.wildcards.put(permission.getName(), permission);
             }
-            this.logger.debug("successful {} ({})", permission.getName(), permission.getDefault().name());
+            this.logger.debug("{} ({})", permission.getName(), permission.getDefault().name());
         }
         catch (IllegalArgumentException ignored)
         {
-            this.logger.debug("duplicated {} ({})", permission.getName(), permission.getDefault().name());
+            this.logger.debug("{} ({}) duplicated", permission.getName(), permission.getDefault().name());
         }
     }
 
@@ -126,14 +126,18 @@ public class BukkitPermissionManager implements PermissionManager
     {
         perm += ".*";
 
-        org.bukkit.permissions.Permission wildcard = this.wildcards.get(perm);
-        if (wildcard == null)
+        org.bukkit.permissions.Permission bWildcard = this.wildcards.get(perm);
+        if (bWildcard == null || bWildcard.getDefault() != def.getValue())
         {
-            this.registerBukkitPermission(wildcard = new org.bukkit.permissions.Permission(perm, def.getValue()));
+            if (bWildcard != null)
+            {
+                this.pm.removePermission(bWildcard);
+            }
+            this.registerBukkitPermission(bWildcard = new org.bukkit.permissions.Permission(perm, def.getValue()));
             this.getPermissions(module).add(perm);
         }
 
-        return wildcard;
+        return bWildcard;
     }
 
     private Set<String> getPermissions(Module module)
@@ -153,22 +157,28 @@ public class BukkitPermissionManager implements PermissionManager
         expectNotNull(perm, "The permission must not be null!");
         expectNotNull(permDefault, "The permission default must not be null!");
 
-        perm = perm.toLowerCase(Locale.ENGLISH);
-        String[] parts = StringUtils.explode(".", perm);
-        if (parts.length < 3 || !BASE.getName().equals(parts[0]) || !module.getId().equals(parts[1]))
-        {
-            throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
-        }
+        perm = perm.toLowerCase(ENGLISH);
 
-        this.getPermissions(module).add(perm);
-
-        org.bukkit.permissions.Permission permission = this.pm.getPermission(perm);
-        if (permission == null)
+        org.bukkit.permissions.Permission bPermission = this.permissions.get(perm);
+        if (bPermission == null || bPermission.getDefault() != permDefault.getValue())
         {
-            permission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
-            this.registerBukkitPermission(permission);
+            if (bPermission != null)
+            {
+                this.pm.removePermission(bPermission);
+            }
+            // Not yet registered:
+            String[] parts = StringUtils.explode(".", perm);
+            if (parts.length < 3 || !BASE.getName().equals(parts[0]) || !module.getId().equals(parts[1]))
+            {
+                throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
+            }
+
+            bPermission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
+            this.registerBukkitPermission(bPermission);
+
+            this.getPermissions(module).add(perm);
         }
-        return permission;
+        return bPermission;
     }
 
     @Override
@@ -187,28 +197,25 @@ public class BukkitPermissionManager implements PermissionManager
             if (permission.hasChildren()) // create wildcard perm-name.* (will contain perm-name)
             {
                 mainBWCPerm = this.registerWildcard(module, permission.getName(), permission.getDefault());
-                mainBPerm.addParent(mainBWCPerm, true);
+                addParentIfNotExists(mainBPerm, mainBWCPerm);
             }
         }
         // search/register direct parents and add parent to bukkitperm
         for (Permission parentPerm : permission.getParents())
         {
-            org.bukkit.permissions.Permission bPerm;
+            org.bukkit.permissions.Permission bParent;
             if (parentPerm.isWildcard())
             {
-                bPerm = this.registerWildcard(module, parentPerm.getName(), parentPerm.getDefault());
+                bParent = this.registerWildcard(module, parentPerm.getName(), parentPerm.getDefault());
             }
             else
             {
-                bPerm = this.registerPermission(module, parentPerm.getName(), parentPerm.getDefault());
+                bParent = this.registerPermission(module, parentPerm.getName(), parentPerm.getDefault());
             }
-            if (mainBWCPerm == null)
+            addParentIfNotExists(mainBPerm, bParent);
+            if (mainBWCPerm != null)
             {
-                mainBPerm.addParent(bPerm, true);
-            }
-            else
-            {
-                mainBWCPerm.addParent(bPerm, true);
+                addParentIfNotExists(mainBWCPerm, bParent);
             }
             if (!module.getBasePermission().equals(parentPerm))
             {
@@ -217,12 +224,21 @@ public class BukkitPermissionManager implements PermissionManager
         }
         for (Permission attached : permission.getAttached()) // make sure attached permissions are attached
         {
-            org.bukkit.permissions.Permission bukkitPerm = pm.getPermission(attached.getName() + (attached.isWildcard() ? ":*" : ""));
-            if (bukkitPerm != null)
+            org.bukkit.permissions.Permission bChild = pm.getPermission(attached.getName() + (attached.isWildcard() ? ".*" : ""));
+            if (bChild != null)
             {
-                bukkitPerm.addParent(mainBPerm, true);
+                addParentIfNotExists(bChild, mainBPerm);
             }
             // else Permission not registered yet -> will register itself
+        }
+    }
+
+    private static void addParentIfNotExists(org.bukkit.permissions.Permission child, org.bukkit.permissions.Permission parent)
+    {
+        Boolean set = parent.getChildren().get(child.getName());
+        if (set == null || !set)
+        {
+            child.addParent(parent, true);
         }
     }
 

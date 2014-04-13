@@ -128,18 +128,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
     private boolean loaded = false;
-    private boolean isStartupFinished = false;
-
-    @Override
-    public boolean isStartupFinished()
-    {
-        return this.isStartupFinished;
-    }
-
-    void setStartupFinished()
-    {
-        this.isStartupFinished = true;
-    }
+    private boolean started = false;
 
     @Override
     public void onLoad()
@@ -308,7 +297,10 @@ public final class BukkitCore extends JavaPlugin implements Core
     {
         if (!this.loaded)
         {
-            this.onLoad();
+            if (this.started)
+            {
+                this.onLoad();
+            }
             if (!this.loaded)
             {
                 this.getServer().getPluginManager().disablePlugin(this);
@@ -351,6 +343,8 @@ public final class BukkitCore extends JavaPlugin implements Core
             }
         });
         this.freezeDetection.start();
+
+        this.started = true;
     }
 
     @Override

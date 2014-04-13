@@ -17,12 +17,9 @@
  */
 package de.cubeisland.engine.signmarket;
 
-import java.util.concurrent.TimeUnit;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.Reloadable;
 import de.cubeisland.engine.core.storage.database.Database;
-import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.signmarket.storage.TableSignBlock;
 import de.cubeisland.engine.signmarket.storage.TableSignItem;
 
@@ -37,56 +34,30 @@ public class Signmarket extends Module implements Reloadable
     @Override
     public void onEnable()
     {
-        Profiler.startProfiling("marketSignEnable");
         Database db = this.getCore().getDB();
         db.registerTable(TableSignItem.class); // Init Item-table first!!!
         db.registerTable(TableSignBlock.class);
-        this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);
-        this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.marketSignFactory.loadInAllSigns();
-        this.getLog().trace("{} ms - EditModeListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.editModeListener = new EditModeListener(this);
-        this.getLog().trace("{} ms - MarketSignListener", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
-        this.getLog().trace("{} ms - Command", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         smCmds = new SignMarketCommands(this);
         this.getCore().getCommandManager().registerCommand(smCmds);
-        this.getLog().trace("{} ms - Perms", Profiler.getCurrentDelta("marketSignEnable", TimeUnit.MILLISECONDS));
         this.perms = new MarketSignPerm(this, smCmds);
-        this.getLog().trace("{} ms - done", Profiler.endProfiling("marketSignEnable", TimeUnit.MILLISECONDS));
-        if (this.getCore().isStartupFinished())
-        {
-            this.config = this.loadConfig(SignMarketConfig.class);
-        }
-        // else do it down there \/
-    }
-
-    @Override
-    public void onStartupFinished()
-    {
         this.config = this.loadConfig(SignMarketConfig.class);
     }
 
     @Override
     public void reload()
     {
-        Profiler.startProfiling("msreload");
         Database db = this.getCore().getDB();
         db.registerTable(TableSignItem.class); // Init Item-table first!!!
         db.registerTable(TableSignBlock.class);
         this.config = this.loadConfig(SignMarketConfig.class);
-        this.getLog().trace("{} ms - MarketSignFactory", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.marketSignFactory = new MarketSignFactory(this);
-        this.getLog().trace("{} ms - MarketSignFactory-loadAllSigns", Profiler
-            .getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.marketSignFactory.loadInAllSigns();
-        this.getLog().trace("{} ms - EditModeListener", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.editModeListener = new EditModeListener(this);
-        this.getLog().trace("{} ms - MarketSignListener", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
         this.getCore().getEventManager().registerListener(this, new MarketSignListener(this));
-        this.getLog().trace("{} ms - Command", Profiler.getCurrentDelta("msreload", TimeUnit.MILLISECONDS));
-        this.getLog().trace("{} ms - done", Profiler.endProfiling("msreload", TimeUnit.MILLISECONDS));
         this.perms = new MarketSignPerm(this, smCmds);
     }
 
