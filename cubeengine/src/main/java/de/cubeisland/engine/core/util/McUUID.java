@@ -65,6 +65,7 @@ public class McUUID
                 CubeEngine.getLog().error("Could not convert UUID of: {} ({})", profile.name, profile.id);
             }
         }
+        playerNames = new HashSet<>(playerNames);
         playerNames.removeAll(map.keySet());
         for (String playerName : playerNames)
         {
