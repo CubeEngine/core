@@ -156,7 +156,7 @@ public class MarketSignFactory
                 {
                     continue;
                 }
-                if ((marketSign.getRawOwner() == sign.getRawOwner() && marketSign != sign)  // same owner (but not same sign)
+                if ((marketSign.getRawOwner().equals(sign.getRawOwner()) && marketSign != sign)  // same owner (but not same sign)
                     && marketSign.canSync(sign)) // both have stock AND same item -> doSync
                 {
                     // apply the found item-info to the marketsign

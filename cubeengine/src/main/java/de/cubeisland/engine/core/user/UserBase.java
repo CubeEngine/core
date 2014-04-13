@@ -1024,11 +1024,7 @@ public class UserBase implements Player
     @Override
     public String getName()
     {
-        if (this.hasPlayedBefore())
-        {
-            return this.getOfflinePlayer().getName();
-        }
-        return null;
+        return this.getOfflinePlayer().getName();
     }
 
     @Override
