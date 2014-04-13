@@ -15,22 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.death;
-
-import de.cubeisland.engine.bigdata.Reference;
-import de.cubeisland.engine.log.action.ActionCategory;
-import de.cubeisland.engine.log.action.BaseAction;
-import de.cubeisland.engine.log.action.ReferenceHolder;
+package de.cubeisland.engine.log.action;
 
 /**
- * Represents a LivingEntity dying
+ * Holds a reference and therefor must be logged separate
  */
-public abstract class ActionDeath extends BaseAction implements ReferenceHolder
+public interface ReferenceHolder
 {
-    public Reference<DeathKill> killer;
-
-    protected ActionDeath(String name, ActionCategory... categories)
-    {
-        super(name, categories);
-    }
 }

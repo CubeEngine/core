@@ -118,7 +118,6 @@ public class ListenerDeath extends LogListener
             this.logAction(killAction);
         }
 
-        // TODO do not forget ref to killAction
         Reference<DeathKill> reference = this.reference(killAction);
         LivingEntity killed = event.getEntity();
         if (killed instanceof Player)

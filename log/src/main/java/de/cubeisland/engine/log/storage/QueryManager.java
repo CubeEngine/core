@@ -45,6 +45,7 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.log.Log;
 import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.ReferenceHolder;
 import de.cubeisland.engine.log.action.block.ActionBlock.BlockSection;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -290,15 +291,27 @@ public class QueryManager
             {
                 return;
             }
+            boolean onlyRefHolders = true;
             for (int i = 0; i < amount; i++) // log <amount> next logs...
             {
-                BaseAction toLog = this.queuedLogs.poll();
-                if (toLog == null)
+                if (this.queuedLogs.peek() instanceof ReferenceHolder)
                 {
+                    if (onlyRefHolders)
+                    {
+                        logs.offer(this.queuedLogs.poll());
+                    }
                     break;
                 }
-                // TODO if toLog has reference DO NOT log in batch!!! or does it work?
-                logs.offer(toLog);
+                else
+                {
+                    onlyRefHolders = false;
+                    BaseAction toLog = this.queuedLogs.poll();
+                    if (toLog == null)
+                    {
+                        break;
+                    }
+                    logs.offer(toLog);
+                }
             }
 
             Profiler.startProfiling("logging");

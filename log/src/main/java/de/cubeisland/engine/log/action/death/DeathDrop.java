@@ -23,6 +23,7 @@ import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.ReferenceHolder;
 import de.cubeisland.engine.log.action.player.item.ItemDrop;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -31,7 +32,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.DEATH;
 /**
  * Represents an entity dropping items on death
  */
-public class DeathDrop extends BaseAction
+public class DeathDrop extends BaseAction implements ReferenceHolder
 {
     public Reference<EntityDeathAction> death;
     public ItemStack item;

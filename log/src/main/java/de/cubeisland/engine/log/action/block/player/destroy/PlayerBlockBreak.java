@@ -22,6 +22,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.ReferenceHolder;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -35,7 +36,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
  * {@link PlayerJukeboxBreak}
  * {@link PlayerContainerBreak}
  */
-public class PlayerBlockBreak extends ActionPlayerBlock
+public class PlayerBlockBreak extends ActionPlayerBlock implements ReferenceHolder
 {
     public Reference<ActionPlayerBlock> reference;
 
