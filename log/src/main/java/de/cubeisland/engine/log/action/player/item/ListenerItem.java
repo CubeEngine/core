@@ -45,12 +45,13 @@ import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
  * {@link ItemEnchant}
  * {@link ItemDrop}
  * {@link ItemPickup}
+ * {@link UsePotionSplash}
  */
 public class ListenerItem extends ListenerPlayerLog
 {
     public ListenerItem(Log module)
     {
-        super(module, ItemCraft.class, ItemEnchant.class, ItemDrop.class, ItemPickup.class);
+        super(module, ItemCraft.class, ItemEnchant.class, ItemDrop.class, ItemPickup.class, UsePotionSplash.class);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

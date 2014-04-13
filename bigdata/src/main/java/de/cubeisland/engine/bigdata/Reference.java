@@ -20,6 +20,7 @@ package de.cubeisland.engine.bigdata;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.DBRefBase;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.reflect.Reflector;
 
 public class Reference<T extends ReflectedDBObject>
@@ -50,6 +51,12 @@ public class Reference<T extends ReflectedDBObject>
     {
         if (fetched == null)
         {
+            DBObject fetch = this.dbRef.fetch();
+            if (fetch == null)
+            {
+                CubeEngine.getLog().warn("The DB Reference points to nothing: {}" + this.dbRef);
+                return null;
+            }
             this.fetched = this.reflector.load(clazz, this.getDBRef().fetch());
         }
         return fetched;

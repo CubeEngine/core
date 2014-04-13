@@ -38,6 +38,7 @@ import de.cubeisland.engine.log.action.block.ignite.ListenerBlockIgnite;
 import de.cubeisland.engine.log.action.block.player.ListenerPlayerBlock;
 import de.cubeisland.engine.log.action.block.player.bucket.ListenerBucket;
 import de.cubeisland.engine.log.action.block.player.interact.ListenerPlayerBlockInteract;
+import de.cubeisland.engine.log.action.block.player.worldedit.ActionWorldEdit;
 import de.cubeisland.engine.log.action.death.ListenerDeath;
 import de.cubeisland.engine.log.action.entityspawn.ListenerEntitySpawn;
 import de.cubeisland.engine.log.action.hanging.ListenerHanging;
@@ -86,6 +87,10 @@ public class ActionManager
                 registerListener(new ListenerHanging(module)).
                 registerListener(new ListenerItem(module)).
                 registerListener(new ListenerVehicle(module));
+        if (module.hasWorldEdit())
+        {
+            this.registerAction(ActionWorldEdit.class);
+        }
     }
 
     public ActionManager registerListener(LogListener listener)
@@ -93,30 +98,35 @@ public class ActionManager
         module.getCore().getEventManager().registerListener(module, listener);
         for (Class<? extends BaseAction> actionClass : listener.getActions())
         {
-            try
-            {
-                BaseAction action = actionClass.newInstance();
-                this.actions.put(actionClass, action);
-                for (ActionCategory category : action.getCategories())
-                {
-                    category.addAction(actionClass);
-                    this.categories.put(category.name, category);
-                    String name = category.name + "-" + action.getName();
-                    List<Class<? extends BaseAction>> list = this.actionNames.get(name);
-                    if (list == null)
-                    {
-                        list = new ArrayList<>();
-                        this.actionNames.put(name, list);
-                    }
-                    list.add(actionClass);
-                }
-            }
-            catch (ReflectiveOperationException e)
-            {
-                throw new IllegalArgumentException("Could not instantiate action", e);
-            }
+            registerAction(actionClass);
         }
         return this;
+    }
+
+    public void registerAction(Class<? extends BaseAction> actionClass)
+    {
+        try
+        {
+            BaseAction action = actionClass.newInstance();
+            this.actions.put(actionClass, action);
+            for (ActionCategory category : action.getCategories())
+            {
+                category.addAction(actionClass);
+                this.categories.put(category.name, category);
+                String name = category.name + "-" + action.getName();
+                List<Class<? extends BaseAction>> list = this.actionNames.get(name);
+                if (list == null)
+                {
+                    list = new ArrayList<>();
+                    this.actionNames.put(name, list);
+                }
+                list.add(actionClass);
+            }
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalArgumentException("Could not instantiate action", e);
+        }
     }
 
 

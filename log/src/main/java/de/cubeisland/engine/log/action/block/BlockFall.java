@@ -21,6 +21,7 @@ import de.cubeisland.engine.bigdata.Reference;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
 import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.log.action.ReferenceHolder;
 import de.cubeisland.engine.log.action.block.player.ActionPlayerBlock;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -29,7 +30,7 @@ import static de.cubeisland.engine.log.action.ActionCategory.BLOCK;
 /**
  * Represents blocks falling
  */
-public class BlockFall extends ActionBlock
+public class BlockFall extends ActionBlock implements ReferenceHolder
 {
     public Reference<ActionPlayerBlock> cause;
 

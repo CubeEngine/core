@@ -38,6 +38,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.bukkit.Bukkit;
+
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.filesystem.FileUtil;
@@ -163,7 +165,15 @@ public abstract class AbstractUserManager implements UserManager
         if (user == null)
         {
             UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
-            user = new User(entity);
+            if (entity == null)
+            {
+                user = new User(core, Bukkit.getOfflinePlayer(uuid));
+                user.getEntity().insert();
+            }
+            else
+            {
+                user = new User(entity);
+            }
             this.cacheUser(user);
         }
         return user;
