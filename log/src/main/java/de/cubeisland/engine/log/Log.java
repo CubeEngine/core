@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.log;
 
+import org.bukkit.Art;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -67,6 +68,7 @@ public class Log extends Module implements Listener
         cMan.registerConverter(EntityType.class, new EntityTypeConverter());
         cMan.registerConverter(DamageCause.class, new DamageCauseConverter());
         cMan.registerConverter(BlockFace.class, new BlockFaceConverter());
+        cMan.registerConverter(Art.class, new ArtConverter());
         this.getCore().getConfigFactory().getCodecManager().getCodec(MongoDBCodec.class).
             getConverterManager().registerConverter(ItemStack.class, new ItemStackConverter());
         this.logManager = new LogManager(this, bigdata);

@@ -29,7 +29,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
  */
 public class PaintingBreak extends HangingBreak
 {
-    public Art art; // TODO converter
+    public Art art;
 
     @Override
     public boolean canAttach(BaseAction action)
