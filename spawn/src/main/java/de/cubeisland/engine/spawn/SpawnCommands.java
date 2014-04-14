@@ -31,6 +31,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
+import de.cubeisland.engine.core.command.reflected.Arg;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
@@ -61,9 +62,14 @@ public class SpawnCommands
     }
 
     @Command(desc = "Changes the respawnpoint", max = 5,
-             indexed = {@Indexed(label = "role|!global"),
-                        @Indexed(label = "x&y&z", count = 3),
-                        @Indexed(label = "world")})
+             args = {@Arg(req = false,
+                  value = @Indexed({"role","!global"})),
+                     @Arg(req = false,
+                  value = {@Indexed("x"),
+                           @Indexed("y"),
+                           @Indexed("z"),}),
+                     @Arg(req = false,
+                  value = @Indexed("world"))})
     public void setSpawn(CommandContext context)
     {
         if (!(context.getSender() instanceof User) && context.hasArg(4))
@@ -144,7 +150,7 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.", max = 1,
-             indexed = @Indexed(label = "players|!*"),
+             args = @Arg(value = @Indexed({"players","!*"}), req = false),
              params = {@Param(names = {"world", "w", "in"}, type = World.class),
                        @Param(names = {"role", "r"}, completer = RoleCompleter.class)} ,
              flags = @Flag(longName = "force", name = "f"))

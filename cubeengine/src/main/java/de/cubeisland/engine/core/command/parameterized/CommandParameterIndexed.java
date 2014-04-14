@@ -26,17 +26,21 @@ public class CommandParameterIndexed
     /**
      * The display label for the indexed parameter
      */
-    private final String label;
+    private final String[] labels;
     private final Class<?> type;
     private final int count;
+    private final boolean groupRequired;
+    private final boolean required;
 
     private Completer completer;
 
-    public CommandParameterIndexed(String label, Class<?> type, int count)
+    public CommandParameterIndexed(String[] labels, Class<?> type, boolean groupRequiered, boolean required, int count)
     {
-        expect(ArgumentReader.hasReader(type), "The indexed parameter '" + label + "' has an unreadable type: " + type.getName());
-        this.label = label;
+        expect(ArgumentReader.hasReader(type), "The indexed parameter '" + labels[0] + "' has an unreadable type: " + type.getName());
+        this.labels = labels;
         this.type = type;
+        this.groupRequired = groupRequiered;
+        this.required = required;
         this.count = count;
     }
 
@@ -45,9 +49,9 @@ public class CommandParameterIndexed
         return count;
     }
 
-    public String getLabel()
+    public String[] getLabels()
     {
-        return label;
+        return labels;
     }
 
     public Class<?> getType()
@@ -65,11 +69,13 @@ public class CommandParameterIndexed
         this.completer = completer;
     }
 
-
-    public CommandParameterIndexed getDummy()
+    public boolean isGroupRequired()
     {
-        CommandParameterIndexed dummy = new CommandParameterIndexed(this.label, type, 0);
-        dummy.setCompleter(this.completer);
-        return dummy;
+        return groupRequired;
+    }
+
+    public boolean isRequired()
+    {
+        return required;
     }
 }

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandFactory;
@@ -42,6 +41,7 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -118,37 +118,30 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             {
                 paramAliases = new String[0];
             }
-            final CommandParameter commandParameter = new CommandParameter(names[0], param.label(), param.type());
-            commandParameter.addAliases(paramAliases);
-            commandParameter.setRequired(param.required());
-
-            Class<? extends Completer> completerClass = param.completer();
-            if (completerClass != Completer.class)
-            {
-                try
-                {
-                    commandParameter.setCompleter(completerClass.newInstance());
-                }
-                catch (Exception ex)
-                {
-                    module.getLog().error(ex, "Failed to create the completer '{}'", completerClass.getName());
-                }
-            }
-
-            params.add(commandParameter);
+            final CommandParameter cParam = new CommandParameter(names[0], param.label(), param.type());
+            cParam.addAliases(paramAliases);
+            cParam.setRequired(param.required());
+            cParam.setCompleter(getCompleter(module, param.completer()));
+            params.add(cParam);
         }
 
-        List<CommandParameterIndexed> indexedParams = new ArrayList<>(annotation.indexed().length);
+        List<CommandParameterIndexed> indexedParams = new ArrayList<>(annotation.args().length);
         int count = 1;
-        for (Indexed indexed : annotation.indexed())
+        for (Arg arg : annotation.args())
         {
-            String label = indexed.label();
-            if ("".equals(label))
+            Indexed[] indexed = arg.value();
+            if (indexed.length == 0)
             {
-                label = String.valueOf(count - 1);
+                throw new IllegalArgumentException("You have to define at least one Indexed!");
+            }
+            Indexed aIndexed = indexed[0];
+            String[] labels = aIndexed.value();
+            if (labels.length == 0)
+            {
+                labels = new String[]{String.valueOf(count - 1)};
             }
 
-            // TODO greedy index (count = -1)
+            // TODO greedy index (count = -1) can ONLY be last index
             // e.g. "players..." or "message" at the end (<players...>)
 
             // TODO or tabcompleter
@@ -157,32 +150,25 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             // TODO or autotabcompleter
             // true|false (no completer given) (<true|false>)
 
-            indexed.count();
-
-            final CommandParameterIndexed indexedParam = new CommandParameterIndexed(label, indexed.type(), indexed.count());
-
-            Class<? extends Completer> completerClass = indexed.completer();
-            if (completerClass != Completer.class)
-            {
-                try
-                {
-                    indexedParam.setCompleter(completerClass.newInstance());
-                }
-                catch (Exception ex)
-                {
-                    module.getLog().error(ex, "Failed to create the completer '{}'", completerClass.getName());
-                }
-            }
-            else
-            {
-                // TODO labeled OR completer e.g. label = "true|false"
-            }
+            CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(), indexed.length);
+            indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
             indexedParams.add(indexedParam);
-            if (indexedParam.getCount() > 1)
+            // TODO labeled OR completer e.g. label = "true|false"
+
+            if (indexed.length > 1)
             {
-                for (int i = 1; i < indexedParam.getCount(); i++)
+                for (int i = 1; i < indexed.length; i++)
                 {
-                    indexedParams.add(indexedParam.getDummy());
+                    count++;
+                    aIndexed = indexed[i];
+                    labels = aIndexed.value();
+                    if (labels.length == 0)
+                    {
+                        labels = new String[]{String.valueOf(count - 1)};
+                    }
+                    indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(),0);
+                    indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
+                    indexedParams.add(indexedParam);
                 }
             }
             count++;
@@ -200,45 +186,73 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         String usage = annotation.usage();
         if (usage.isEmpty())
         {
-            int i = 0;
+            StringBuilder sb = new StringBuilder();
+            int inGroup = 0;
             for (CommandParameterIndexed indexedParam : indexedParams)
             {
-                if (indexedParam.getCount() == 0)
+                if (indexedParam.getCount() == 1)
                 {
-                    // Dummy Indexed
-                    continue;
+                    sb.append(convertLabel(indexedParam.isGroupRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
+                    sb.append(' ');
+                    inGroup = 0;
                 }
-                i++;
-                if (i <= annotation.min())
+                else if (indexedParam.getCount() > 1)
                 {
-
-                    usage += "<" + parseLabel(indexedParam) + "> ";
+                    sb.append(indexedParam.isGroupRequired() ? '<' : '[');
+                    sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
+                    sb.append(' ');
+                    inGroup = indexedParam.getCount() - 1;
+                }
+                else if (indexedParam.getCount() == 0)
+                {
+                    sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
+                    inGroup--;
+                    if (inGroup == 0)
+                    {
+                        sb.append(indexedParam.isGroupRequired() ? '>' : ']');
+                    }
+                    sb.append(' ');
                 }
                 else
                 {
-                    usage += "[" + parseLabel(indexedParam) + "] ";
-                }
-                if (i > annotation.max())
-                {
-                    CubeEngine.getLog().error("There are more IndexedParam than allowed for {}", name);
+                    // TODO handle neg count greedy arg
                 }
             }
             for (CommandParameter param : params)
             {
                 if (param.isRequired())
                 {
-                    usage += "<" + param.getName() + " <" + param.getLabel() + ">> ";
+                    sb.append('<').append(param.getName()).append('<').append(param.getLabel()).append(">> ");
                 }
                 else
                 {
-                    usage += "[" + param.getName() + " <" + param.getLabel() + ">] ";
+                    sb.append('[').append(param.getName()).append('<').append(param.getLabel()).append(">] ");
                 }
             }
             for (CommandFlag flag : flags)
             {
-                usage += "[-" + flag.getLongName() + "] ";
+                sb.append("[-").append(flag.getLongName()).append("] ");
             }
-            usage = usage.trim();
+            usage = sb.toString().trim();
+            if (!usage.isEmpty())
+            {
+                // TODO actually use calculated argbounds
+                int min = 0;
+                int max = 0;
+                for (CommandParameterIndexed indexedParam : indexedParams)
+                {
+                    if (indexedParam.isGroupRequired())
+                    {
+                        min += indexedParam.getCount();
+                        if (!indexedParam.isRequired())
+                        {
+                            min -= 1;
+                        }
+                    }
+                    max += indexedParam.getCount();
+                }
+                System.out.println(usage + " (" + min + "-" + max + ")");
+            }
         }
         cmd.setUsage(usage);
         cmd.setAliases(aliases);
@@ -261,59 +275,55 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         return (T)cmd;
     }
 
-    private String parseLabel(CommandParameterIndexed indexedParam)
+    private String[] convertLabels(CommandParameterIndexed indexedParam)
     {
-        String label = indexedParam.getLabel();
-        StringBuilder sb = new StringBuilder();
-        String tokenBuffer = "";
-        for (char token : label.toCharArray())
+        String[] labels = indexedParam.getLabels().clone();
+        String[] rawLabels = indexedParam.getLabels();
+        for (int i = 0; i < rawLabels.length; i++)
         {
-            switch (token)
+            if (rawLabels.length == 1)
             {
-            case '|':
-                if (!tokenBuffer.isEmpty())
-                {
-                    tokenBuffer = endToken(sb, tokenBuffer);
-                }
-                sb.append(token);
-                break;
-            case '&':
-                if (!tokenBuffer.isEmpty())
-                {
-                    tokenBuffer = endToken(sb, tokenBuffer);
-                }
-                sb.append(' ');
-                break;
-            case '[':
-            case ']':
-            case '<':
-            case '>':
-                if (!tokenBuffer.isEmpty())
-                {
-                    tokenBuffer = endToken(sb, tokenBuffer);
-                }
-                sb.append(token);
-                break;
-            default:
-                tokenBuffer += token;
+                labels[i] = convertLabel(true, "!" + rawLabels[i]);
+            }
+            else
+            {
+                labels[i] = convertLabel(true, rawLabels[i]);
             }
         }
-        if (!tokenBuffer.isEmpty())
-        {
-            endToken(sb, tokenBuffer);
-        }
-        return sb.toString();
+        return labels;
     }
 
-    private String endToken(StringBuilder sb, String tokenBuffer)
+    private String convertLabel(boolean req, String label)
     {
-        if (tokenBuffer.startsWith("!"))
+        if (label.startsWith("!"))
         {
-            sb.append(tokenBuffer.substring(1));
+            return label.substring(1);
         }
-        else sb.append('<').append(tokenBuffer).append(">");
-        tokenBuffer = "";
-        return tokenBuffer;
+        else if (req)
+        {
+            return "<" + label + ">";
+        }
+        else
+        {
+            return "[" + label + "]";
+        }
+    }
+
+    private Completer getCompleter(Module module, Class<? extends Completer> completerClass)
+    {
+        if (completerClass == Completer.class)
+        {
+            return null;
+        }
+        try
+        {
+            return completerClass.newInstance();
+        }
+        catch (Exception ex)
+        {
+            module.getLog().error(ex, "Failed to create the completer '{}'", completerClass.getName());
+            return null;
+        }
     }
 
     protected ParameterizedContextFactory createContextFactory(ArgBounds bounds, List<CommandParameterIndexed> indexed, Set<CommandFlag> flags, Set<CommandParameter> params)

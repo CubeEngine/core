@@ -19,7 +19,6 @@ package de.cubeisland.engine.shout.interactions;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +36,9 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
+import de.cubeisland.engine.core.command.reflected.Arg;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.i18n.I18nUtil;
@@ -127,15 +128,15 @@ public class ShoutCommand extends ContainerCommand
     }
 
     @Command(desc = "Creates a new announcement", min = 1, max = 1,
-             params = {@Param(names ={"delay", "d"}),
+             args = @Arg(@Indexed(value = "name")),
+             params = {
+                     @Param(names ={"message", "m"}),
+                     @Param(names ={"delay", "d"}, label = "<x> minutes|hours|days"),
                        @Param(names ={"world", "w"}),
-                       @Param(names = {"permission", "p"}),
+                       @Param(names = {"permission", "p"}, label = "permission node"),
                        @Param(names ={"group", "g"}),
-                       @Param(names ={"message", "m"}),
                        @Param(names ={"locale", "l"})},
-             flags = {@Flag(name = "fc", longName = "fixed-cycle")},
-             usage = "<name> message \"<message>\" [delay \"<x minutes|hours|days>\"] [world <world>] " +
-                     "[permission <permission node>] [locale <locale>] [-fixed-cycle]")
+             flags = {@Flag(name = "fc", longName = "fixed-cycle")})
     public void create(ParameterizedContext context)
     {
         if (!context.hasParam("message"))

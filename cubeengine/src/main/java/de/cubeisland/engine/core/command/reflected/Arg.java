@@ -17,12 +17,9 @@
  */
 package de.cubeisland.engine.core.command.reflected;
 
-import de.cubeisland.engine.core.command.parameterized.Completer;
 
-public @interface Indexed
+public @interface Arg
 {
-    String[] value();
-    Class type() default String.class;
-    Class<? extends Completer> completer() default Completer.class;
+    Indexed[] value();
     boolean req() default true;
 }
