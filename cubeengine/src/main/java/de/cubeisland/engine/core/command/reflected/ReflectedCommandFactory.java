@@ -148,9 +148,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 label = String.valueOf(count - 1);
             }
 
-            // TODO grouped index
-            // e.g. x&y&z (displays at e.g. [<x> <y> <z>])
-
             // TODO greedy index (count = -1)
             // e.g. "players..." or "message" at the end (<players...>)
 
@@ -162,7 +159,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
 
             indexed.count();
 
-            final CommandParameterIndexed indexedParam = new CommandParameterIndexed(label, indexed.type());
+            final CommandParameterIndexed indexedParam = new CommandParameterIndexed(label, indexed.type(), indexed.count());
 
             Class<? extends Completer> completerClass = indexed.completer();
             if (completerClass != Completer.class)
@@ -181,6 +178,13 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 // TODO labeled OR completer e.g. label = "true|false"
             }
             indexedParams.add(indexedParam);
+            if (indexedParam.getCount() > 1)
+            {
+                for (int i = 1; i < indexedParam.getCount(); i++)
+                {
+                    indexedParams.add(indexedParam.getDummy());
+                }
+            }
             count++;
         }
 
@@ -199,14 +203,20 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             int i = 0;
             for (CommandParameterIndexed indexedParam : indexedParams)
             {
+                if (indexedParam.getCount() == 0)
+                {
+                    // Dummy Indexed
+                    continue;
+                }
                 i++;
                 if (i <= annotation.min())
                 {
-                    usage += "<" + indexedParam.getLabel() + "> ";
+
+                    usage += "<" + parseLabel(indexedParam) + "> ";
                 }
                 else
                 {
-                    usage += "[" + indexedParam.getLabel() + "] ";
+                    usage += "[" + parseLabel(indexedParam) + "] ";
                 }
                 if (i > annotation.max())
                 {
@@ -249,6 +259,61 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         }
         cmd.setAsynchronous(annotation.async());
         return (T)cmd;
+    }
+
+    private String parseLabel(CommandParameterIndexed indexedParam)
+    {
+        String label = indexedParam.getLabel();
+        StringBuilder sb = new StringBuilder();
+        String tokenBuffer = "";
+        for (char token : label.toCharArray())
+        {
+            switch (token)
+            {
+            case '|':
+                if (!tokenBuffer.isEmpty())
+                {
+                    tokenBuffer = endToken(sb, tokenBuffer);
+                }
+                sb.append(token);
+                break;
+            case '&':
+                if (!tokenBuffer.isEmpty())
+                {
+                    tokenBuffer = endToken(sb, tokenBuffer);
+                }
+                sb.append(' ');
+                break;
+            case '[':
+            case ']':
+            case '<':
+            case '>':
+                if (!tokenBuffer.isEmpty())
+                {
+                    tokenBuffer = endToken(sb, tokenBuffer);
+                }
+                sb.append(token);
+                break;
+            default:
+                tokenBuffer += token;
+            }
+        }
+        if (!tokenBuffer.isEmpty())
+        {
+            endToken(sb, tokenBuffer);
+        }
+        return sb.toString();
+    }
+
+    private String endToken(StringBuilder sb, String tokenBuffer)
+    {
+        if (tokenBuffer.startsWith("!"))
+        {
+            sb.append(tokenBuffer.substring(1));
+        }
+        else sb.append('<').append(tokenBuffer).append(">");
+        tokenBuffer = "";
+        return tokenBuffer;
     }
 
     protected ParameterizedContextFactory createContextFactory(ArgBounds bounds, List<CommandParameterIndexed> indexed, Set<CommandFlag> flags, Set<CommandParameter> params)

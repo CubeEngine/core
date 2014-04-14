@@ -25,18 +25,24 @@ public class CommandParameterIndexed
 {
     /**
      * The display label for the indexed parameter
-     * <p>Labels like <code>true|false</code> will register a TabCompleter if not given
      */
     private final String label;
     private final Class<?> type;
+    private final int count;
 
     private Completer completer;
 
-    public CommandParameterIndexed(String label, Class<?> type)
+    public CommandParameterIndexed(String label, Class<?> type, int count)
     {
         expect(ArgumentReader.hasReader(type), "The indexed parameter '" + label + "' has an unreadable type: " + type.getName());
         this.label = label;
         this.type = type;
+        this.count = count;
+    }
+
+    public int getCount()
+    {
+        return count;
     }
 
     public String getLabel()
@@ -57,5 +63,13 @@ public class CommandParameterIndexed
     public void setCompleter(Completer completer)
     {
         this.completer = completer;
+    }
+
+
+    public CommandParameterIndexed getDummy()
+    {
+        CommandParameterIndexed dummy = new CommandParameterIndexed(this.label, type, 0);
+        dummy.setCompleter(this.completer);
+        return dummy;
     }
 }

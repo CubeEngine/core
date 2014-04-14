@@ -61,9 +61,7 @@ public class SpawnCommands
     }
 
     @Command(desc = "Changes the respawnpoint", max = 5,
-             usage = "",
-             indexed = {@Indexed(label = "role|global"),
-                        // TODO indexed for 3
+             indexed = {@Indexed(label = "role|!global"),
                         @Indexed(label = "x&y&z", count = 3),
                         @Indexed(label = "world")})
     public void setSpawn(CommandContext context)
@@ -146,9 +144,9 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.", max = 1,
-             indexed = @Indexed(label = "player|*"),
+             indexed = @Indexed(label = "players|!*"),
              params = {@Param(names = {"world", "w", "in"}, type = World.class),
-                       @Param(names = {"role", "r"}, type = String.class, completer = RoleCompleter.class)} ,
+                       @Param(names = {"role", "r"}, completer = RoleCompleter.class)} ,
              flags = @Flag(longName = "force", name = "f"))
     public void spawn(ParameterizedContext context)
     {
