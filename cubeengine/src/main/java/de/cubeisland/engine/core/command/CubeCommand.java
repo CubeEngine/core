@@ -309,18 +309,20 @@ public abstract class CubeCommand
         return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(this.module.getCore().getI18n().getDefaultLanguage().getLocale());
     }
 
-    public String getUsage(Locale locale)
-    {
-        return this.getUsage0(locale);
-    }
-
-    protected String getUsage0(Locale locale)
+    public final String getUsage(Locale locale)
     {
         String usage = this.usages.get(locale);
         if (usage != null)
         {
             return usage;
         }
+        usage = this.getUsage0(locale);
+        this.usages.put(locale, usage);
+        return usage;
+    }
+
+    protected String getUsage0(Locale locale)
+    {
         StringBuilder sb = new StringBuilder();
         int inGroup = 0;
         for (CommandParameterIndexed indexedParam : this.contextFactory.getIndexedParameters())
@@ -349,9 +351,7 @@ public abstract class CubeCommand
                 sb.append(' ');
             }
         }
-        usage = sb.toString().trim();
-        this.usages.put(locale, usage);
-        return usage;
+        return sb.toString().trim();
     }
 
     private String[] convertLabels(CommandParameterIndexed indexedParam)
@@ -397,7 +397,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender)
     {
-        String usage = this.getUsage0(sender.getLocale());
+        String usage = this.getUsage(sender.getLocale());
         return (sender instanceof User ? "/" : "") + this.implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
@@ -412,7 +412,7 @@ public abstract class CubeCommand
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        String usage = this.getUsage0(sender.getLocale());
+        String usage = this.getUsage(sender.getLocale());
         return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
@@ -426,7 +426,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        String usage = this.getUsage0(sender.getLocale());
+        String usage = this.getUsage(sender.getLocale());
         return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + usage;
     }
 

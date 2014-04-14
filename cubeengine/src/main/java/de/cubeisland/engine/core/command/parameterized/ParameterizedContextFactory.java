@@ -59,7 +59,6 @@ public class ParameterizedContextFactory extends BasicContextFactory
         super(indexed);
         this.addFlags(flags);
         this.addParameters(params);
-        this.addIndexed(indexed);
     }
 
     public ParameterizedContextFactory(List<CommandParameterIndexed> indexed)
