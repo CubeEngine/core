@@ -45,13 +45,14 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -75,9 +76,7 @@ public class VanillaCommands implements CommandHolder
     @Command(
         names = {"stop", "shutdown", "killserver", "quit"},
         desc = "Shuts down the server",
-        usage = "[message]",
-        max = NO_MAX
-    )
+        indexed = @Grouped(req = false, value = @Indexed("message"), greedy = true))
     public void stop(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -91,7 +90,7 @@ public class VanillaCommands implements CommandHolder
         this.core.getServer().shutdown();
     }
 
-    @Command(desc = "Reloads the server.", usage = "[-m]", max = NO_MAX, flags = @Flag(name = "m", longName = "modules"))
+    @Command(desc = "Reloads the server.", flags = @Flag(name = "m", longName = "modules"))
     public void reload(ParameterizedContext context)
     {
         final String message = context.getStrings(0);
@@ -119,8 +118,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Changes the difficulty level of the server",
-        usage = "[difficulty] (world <world>)",
-        max = 1,
+        indexed = @Grouped(req = false, value = @Indexed("difficulty")),
         params = @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)
     )
     public void difficulty(ParameterizedContext context)
@@ -176,8 +174,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Makes a player an operator",
-        min = 0, max = 1,
-        usage = "[player] [-f]",
+        indexed = @Grouped(req = false, value = @Indexed("player")),
         flags = @Flag(name = "f", longName = "force"),
         permDefault = FALSE
     )
@@ -246,12 +243,8 @@ public class VanillaCommands implements CommandHolder
         this.core.getLog().info("Player {} has been opped by {}", offlinePlayer.getName(), context.getSender().getName());
     }
 
-    @Command(
-        desc = "Revokes the operator status of a player",
-        usage = "(player)",
-        min = 0, max = 1,
-        permDefault = FALSE
-    )
+    @Command(desc = "Revokes the operator status of a player", permDefault = FALSE,
+             indexed = @Grouped(req = false, value = @Indexed("player")))
     public void deop(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -325,7 +318,9 @@ public class VanillaCommands implements CommandHolder
     }
 
     // integrate /saveoff and /saveon and provide aliases
-    @Command(names = {"save-all", "saveall"}, max = 1, desc = "Saves all or a specific world to disk.", usage = "[world]")
+    @Command(names = {"save-all", "saveall"},
+             indexed = @Grouped(req = false, value = @Indexed("world")),
+             desc = "Saves all or a specific world to disk.")
     public void saveall(CommandContext context)
     {
         if (context.hasArg(0))
@@ -359,7 +354,9 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Displays the version of the server or a given plugin", usage = "[plugin]", flags = @Flag(name = "s", longName = "source"), max = 1)
+    @Command(desc = "Displays the version of the server or a given plugin",
+             indexed = @Grouped(req = false, value = @Indexed("plugin")),
+             flags = @Flag(name = "s", longName = "source"))
     public void version(ParameterizedContext context)
     {
         Server server = this.core.getServer();
@@ -425,7 +422,8 @@ public class VanillaCommands implements CommandHolder
             this.delegateChild("list");
         }
 
-        @Command(desc = "Adds a player to the whitelist.", usage = "<player>", max = 1)
+        @Command(desc = "Adds a player to the whitelist.",
+                 indexed = @Grouped(@Indexed("player")))
         public void add(CommandContext context)
         {
             if (!context.hasArgs())
@@ -446,7 +444,8 @@ public class VanillaCommands implements CommandHolder
 
         @Command(names = {
         "remove", "rm"
-        }, desc = "Removes a player from the whitelist.", usage = "<player>", max = 1)
+        }, desc = "Removes a player from the whitelist.",
+                 indexed = @Grouped(@Indexed("player")))
         public void remove(CommandContext context)
         {
             if (!context.hasArgs())

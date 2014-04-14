@@ -22,4 +22,5 @@ public @interface Grouped
 {
     Indexed[] value();
     boolean req() default true;
+    boolean greedy() default false;
 }

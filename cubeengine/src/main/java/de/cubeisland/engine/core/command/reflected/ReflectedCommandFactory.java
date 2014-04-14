@@ -124,7 +124,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         }
 
         List<CommandParameterIndexed> indexedParams = new ArrayList<>(annotation.indexed().length);
-        int count = 1;
+        int index = 0;
         for (Grouped arg : annotation.indexed())
         {
             Indexed[] indexed = arg.value();
@@ -136,7 +136,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             String[] labels = aIndexed.value();
             if (labels.length == 0)
             {
-                labels = new String[]{String.valueOf(count - 1)};
+                labels = new String[]{String.valueOf(index)};
             }
 
             // TODO greedy index (count = -1) can ONLY be last index
@@ -147,8 +147,12 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
 
             // TODO or autotabcompleter
             // true|false (no completer given) (<true|false>)
-
-            CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(), indexed.length);
+            int greed = indexed.length;
+            if (arg.greedy())
+            {
+                greed = -1;
+            }
+            CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(), greed);
             indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
             indexedParams.add(indexedParam);
             // TODO labeled OR completer e.g. label = "true|false"
@@ -157,26 +161,19 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             {
                 for (int i = 1; i < indexed.length; i++)
                 {
-                    count++;
+                    index++;
                     aIndexed = indexed[i];
                     labels = aIndexed.value();
                     if (labels.length == 0)
                     {
-                        labels = new String[]{String.valueOf(count - 1)};
+                        labels = new String[]{String.valueOf(index)};
                     }
                     indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(),0);
                     indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
                     indexedParams.add(indexedParam);
                 }
             }
-            count++;
-        }
-
-        if (annotation.max() > NO_MAX && annotation.max() < annotation.min())
-        {
-            module.getLog().error("{}.{}: The the maximum args must not be less than the minimum",
-                                  holder.getClass().getSimpleName(), method.getName());
-            return null;
+            index++;
         }
         ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, annotation.desc(),
                 this.createContextFactory(indexedParams, flags, params));

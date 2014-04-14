@@ -79,7 +79,7 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", time);
     }
 
-    @Command(desc = "Reloads all of the modules!", usage = "[-f]", flags = @Flag(name = "f", longName = "file"))
+    @Command(desc = "Reloads all of the modules!", flags = @Flag(name = "f", longName = "file"))
     public void reloadmodules(ParameterizedContext context)
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
@@ -89,9 +89,9 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}ms!", time);
     }
 
-    @Command(names = {
-        "setpassword", "setpw"
-    }, desc = "Sets your password.", min = 1, max = 2, usage = "<password> [player]", loggable = false)
+    @Command(names = {"setpassword", "setpw"}, desc = "Sets your password.",
+             indexed = {@Grouped(@Indexed("password")),
+                 @Grouped(value = @Indexed("player"), req = false)}, loggable = false)
     public void setPassword(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -223,7 +223,7 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Logs you out!", max = 0)
+    @Command(desc = "Logs you out!")
     public void logout(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -262,7 +262,8 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Changes or displays the log level of the server.", usage = "[log level]")
+    @Command(desc = "Changes or displays the log level of the server.",
+             indexed = @Grouped(value = @Indexed("loglevel"), req = false))
     public void loglevel(CommandContext context)
     {
         if (context.hasArgs())
@@ -284,7 +285,9 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Searches for a user in the database", usage = "<name>", min = 1, max = 1, async = true)
+    @Command(desc = "Searches for a user in the database",
+             indexed = @Grouped(@Indexed("name")),
+             async = true)
     public CommandResult searchUser(CommandContext context)
     {
         final boolean exact = core.getUserManager().findExactUser(context.getString(0)) != null;

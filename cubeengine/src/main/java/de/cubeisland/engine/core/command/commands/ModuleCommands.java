@@ -33,6 +33,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.ModuleManager;
@@ -58,7 +60,7 @@ public class ModuleCommands extends ContainerCommand
     })
     @Command(names = {
         "list", "show"
-    }, desc = "Lists all the loaded modules", max = 0)
+    }, desc = "Lists all the loaded modules")
     public void list(CommandContext context)
     {
         Collection<Module> modules = this.mm.getModules();
@@ -87,7 +89,7 @@ public class ModuleCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Enables a module", usage = "<module>", min = 1, max = 1)
+    @Command(desc = "Enables a module", indexed = @Grouped(@Indexed("module")))
     public void enable(CommandContext context)
     {
         Module module = this.mm.getModule(context.getString(0));
@@ -105,7 +107,7 @@ public class ModuleCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Disables a module", usage = "<module>", min = 1, max = 1)
+    @Command(desc = "Disables a module", indexed = @Grouped(@Indexed("module")))
     public void disable(CommandContext context)
     {
         Module module = this.mm.getModule(context.getString(0));
@@ -120,7 +122,7 @@ public class ModuleCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Unloaded a module and all the modules that depend on it", usage = "<module>", min = 1, max = 1)
+    @Command(desc = "Unloaded a module and all the modules that depend on it", indexed = @Grouped(@Indexed("module")))
     public void unload(CommandContext context)
     {
         Module module = this.mm.getModule(context.getString(0));
@@ -135,7 +137,7 @@ public class ModuleCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Reloads a module", usage = "<module> [-f]", min = 1, max = 1, flags = @Flag(name = "f", longName = "file"))
+    @Command(desc = "Reloads a module", indexed = @Grouped(@Indexed("module")), flags = @Flag(name = "f", longName = "file"))
     public void reload(ParameterizedContext context)
     {
         Module module = this.mm.getModule(context.getString(0));
@@ -166,7 +168,7 @@ public class ModuleCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Loads a module from the modules directory.", usage = "<file name>", min = 1, max = 1)
+    @Command(desc = "Loads a module from the modules directory.", indexed = @Grouped(@Indexed("file name")))
     public void load(CommandContext context)
     {
         String moduleFileName = context.getString(0);
@@ -212,7 +214,7 @@ public class ModuleCommands extends ContainerCommand
 
     @Command(desc = "Get info about a module", flags = {
         @Flag(name = "s", longName = "source")
-    }, usage = "<module> [-s]", min = 1, max = 1)
+    }, indexed = @Grouped(@Indexed("module")))
     public void info(ParameterizedContext context)
     {
         Module module = this.mm.getModule(context.getString(0));
