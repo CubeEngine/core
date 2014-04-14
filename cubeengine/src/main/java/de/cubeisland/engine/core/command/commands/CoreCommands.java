@@ -275,7 +275,7 @@ public class CoreCommands extends ContainerCommand
         }
         else
         {
-            context.sendTranslated(NEUTRAL, "The current log level: {input#loglevel}", context.getCore().getLog().getLevel());
+            context.sendTranslated(NEUTRAL, "The current log level: {input#loglevel}", context.getCore().getLog().getLevel().getName());
         }
     }
 
