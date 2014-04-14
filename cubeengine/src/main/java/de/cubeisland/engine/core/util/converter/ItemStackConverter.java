@@ -24,6 +24,7 @@ import de.cubeisland.engine.reflect.codec.ConverterManager;
 import de.cubeisland.engine.reflect.codec.converter.Converter;
 import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
 import de.cubeisland.engine.reflect.node.StringNode;
 
 public class ItemStackConverter implements Converter<ItemStack>
@@ -31,6 +32,10 @@ public class ItemStackConverter implements Converter<ItemStack>
     @Override
     public Node toNode(ItemStack object, ConverterManager manager) throws ConversionException
     {
+        if (object == null)
+        {
+            return NullNode.emptyNode();
+        }
         return StringNode.of(object.getType().name() + ":" + object.getDurability());
     }
 
@@ -40,6 +45,10 @@ public class ItemStackConverter implements Converter<ItemStack>
         if (node instanceof StringNode)
         {
             return Match.material().itemStack(((StringNode)node).getValue());
+        }
+        if (node instanceof NullNode)
+        {
+            return null;
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }
