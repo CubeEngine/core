@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.core.logging;
 
+import java.util.Arrays;
+
 import de.cubeisland.engine.logging.Log;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -31,6 +33,9 @@ public class ExceptionAppender extends AbstractAppender
 {
     private Log exLog;
 
+    private StackTraceElement[] lastException = null;
+    private int count = 0;
+
     public ExceptionAppender(Log exLog)
     {
         super("ExceptionAppender", new ExceptionFilter(), PatternLayout.createLayout(null, null, null, null, null));
@@ -40,7 +45,17 @@ public class ExceptionAppender extends AbstractAppender
     @Override
     public void append(LogEvent logEvent)
     {
-        exLog.error(logEvent.getThrown(), logEvent.getMessage().getFormat(), logEvent.getMessage().getParameters());
+        Throwable thrown = logEvent.getThrown();
+        if (Arrays.equals(thrown.getStackTrace(), lastException))
+        {
+            exLog.error(logEvent.getMessage().getFormat() + " x" + ++count, logEvent.getMessage().getParameters());
+        }
+        else
+        {
+            count = 1;
+            this.lastException = thrown.getStackTrace();
+            exLog.error(thrown, logEvent.getMessage().getFormat(),  logEvent.getMessage().getParameters());
+        }
     }
 
     private static class ExceptionFilter implements Filter
