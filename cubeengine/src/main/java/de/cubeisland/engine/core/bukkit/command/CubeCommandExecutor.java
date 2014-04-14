@@ -188,7 +188,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             List<String> result = this.completeChild(context);
             if (result == null)
             {
-                result = this.command.tabComplete(context);
+                result = context.getCommand().tabComplete(context);
             }
 
             if (result != null)

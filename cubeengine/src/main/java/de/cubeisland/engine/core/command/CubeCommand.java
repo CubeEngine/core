@@ -530,6 +530,7 @@ public abstract class CubeCommand
     public List<String> tabComplete(CommandContext context)
     {
         return null;
+        // TODO indexed Completers
     }
 
     /**
