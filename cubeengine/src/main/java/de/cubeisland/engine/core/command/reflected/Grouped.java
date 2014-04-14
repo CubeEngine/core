@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.command.reflected;
 
 
-public @interface Arg
+public @interface Grouped
 {
     Indexed[] value();
     boolean req() default true;

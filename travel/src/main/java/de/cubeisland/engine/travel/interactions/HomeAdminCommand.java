@@ -22,7 +22,6 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -52,8 +51,8 @@ public class HomeAdminCommand extends ContainerCommand
         this.module = module;
         this.tpManager = module.getTelepointManager();
 
-        this.setUsage("[User] [Home]");
-        this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
+        // TODO this.setUsage("[User] [Home]");
+        // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
     }
 
     @Override

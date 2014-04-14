@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.travel.interactions;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -49,8 +48,8 @@ public class WarpAdminCommand extends ContainerCommand
         this.module = module;
         this.tpManager = module.getTelepointManager();
 
-        this.setUsage("[User] [warp]");
-        this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
+        // TODO this.setUsage("[User] [warp]");
+        // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
     }
 
     @Override

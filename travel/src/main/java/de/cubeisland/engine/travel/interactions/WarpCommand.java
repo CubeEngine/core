@@ -23,7 +23,6 @@ import java.util.TreeMap;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -54,7 +53,7 @@ public class WarpCommand extends ContainerCommand
         this.module = module;
         this.telePointManager = module.getTelepointManager();
 
-        this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
+        // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
     }
 
     @Override

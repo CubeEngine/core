@@ -29,10 +29,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
@@ -51,7 +53,6 @@ public abstract class CubeCommand
     private final String name;
     private String label;
     private final Set<String> aliases;
-    private String usage;
     private String description;
     private String permission;
     
@@ -63,6 +64,8 @@ public abstract class CubeCommand
     private boolean asynchronous = false;
     private boolean generatePermission;
     private PermDefault generatedPermissionDefault;
+
+    private final Map<Locale, String> usages = new HashMap<>();
 
     public CubeCommand(Module module, String name, String description, ContextFactory contextFactory)
     {
@@ -301,16 +304,90 @@ public abstract class CubeCommand
         }
     }
 
-    public CubeCommand setUsage(String usage)
-    {
-        this.usage = usage;
-        return this;
-    }
-
     public String getUsage()
     {
-        return "/" + this.implodeCommandParentNames(" ") + " " + this.getModule().getCore().getI18n().translate(this.usage);
+        return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(this.module.getCore().getI18n().getDefaultLanguage().getLocale());
     }
+
+    public String getUsage(Locale locale)
+    {
+        return this.getUsage0(locale);
+    }
+
+    protected String getUsage0(Locale locale)
+    {
+        String usage = this.usages.get(locale);
+        if (usage != null)
+        {
+            return usage;
+        }
+        StringBuilder sb = new StringBuilder();
+        int inGroup = 0;
+        for (CommandParameterIndexed indexedParam : this.contextFactory.getIndexedParameters())
+        {
+            if (indexedParam.getCount() == 1 || indexedParam.getCount() < 0)
+            {
+                sb.append(convertLabel(indexedParam.isGroupRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
+                sb.append(' ');
+                inGroup = 0;
+            }
+            else if (indexedParam.getCount() > 1)
+            {
+                sb.append(indexedParam.isGroupRequired() ? '<' : '[');
+                sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
+                sb.append(' ');
+                inGroup = indexedParam.getCount() - 1;
+            }
+            else if (indexedParam.getCount() == 0)
+            {
+                sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
+                inGroup--;
+                if (inGroup == 0)
+                {
+                    sb.append(indexedParam.isGroupRequired() ? '>' : ']');
+                }
+                sb.append(' ');
+            }
+        }
+        usage = sb.toString().trim();
+        this.usages.put(locale, usage);
+        return usage;
+    }
+
+    private String[] convertLabels(CommandParameterIndexed indexedParam)
+    {
+        String[] labels = indexedParam.getLabels().clone();
+        String[] rawLabels = indexedParam.getLabels();
+        for (int i = 0; i < rawLabels.length; i++)
+        {
+            if (rawLabels.length == 1)
+            {
+                labels[i] = convertLabel(true, "!" + rawLabels[i]);
+            }
+            else
+            {
+                labels[i] = convertLabel(true, rawLabels[i]);
+            }
+        }
+        return labels;
+    }
+
+    private String convertLabel(boolean req, String label)
+    {
+        if (label.startsWith("!"))
+        {
+            return label.substring(1);
+        }
+        else if (req)
+        {
+            return "<" + label + ">";
+        }
+        else
+        {
+            return "[" + label + "]";
+        }
+    }
+
 
     /**
      * This overload returns the usage translated for the given CommandSender
@@ -320,11 +397,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender)
     {
-        String usage = this.usage;
-        if (!usage.isEmpty())
-        {
-            usage = sender.getTranslation(NONE, usage);
-        }
+        String usage = this.getUsage0(sender.getLocale());
         return (sender instanceof User ? "/" : "") + this.implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
@@ -339,11 +412,7 @@ public abstract class CubeCommand
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        String usage = this.usage;
-        if (!usage.isEmpty())
-        {
-            usage = sender.getTranslation(NONE, usage);
-        }
+        String usage = this.getUsage0(sender.getLocale());
         return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
@@ -357,11 +426,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-    	String usage = this.usage;
-        if (!usage.isEmpty())
-        {
-            usage = sender.getTranslation(NONE, usage);
-        }
+        String usage = this.getUsage0(sender.getLocale());
         return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + usage;
     }
 

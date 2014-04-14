@@ -17,36 +17,33 @@
  */
 package de.cubeisland.engine.core.command.conversation;
 
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static java.util.Locale.ENGLISH;
 
 public class ConversationContextFactory extends ParameterizedContextFactory
 {
-    private final LinkedList<String> args;
-
     public ConversationContextFactory()
     {
-        super(new ArgBounds(0, NO_MAX));
-        this.args = new LinkedList<>();
+        super(Arrays.asList(CommandParameterIndexed.greedyIndex()));
     }
 
     @Override
@@ -91,6 +88,6 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                 offset++;
             }
         }
-        return new ParameterizedContext(command, sender, labels, this.args, flags, params);
+        return new ParameterizedContext(command, sender, labels, Collections.<String>emptyList(), flags, params);
     }
 }

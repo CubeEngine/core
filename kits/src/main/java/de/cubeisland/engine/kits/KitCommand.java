@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -47,7 +46,7 @@ public class KitCommand extends ContainerCommand
         super(module, "kit", "Manages item-kits");
         this.module = module;
         this.manager = module.getKitManager();
-        this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
+        // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
         this.delegateChild(new MultiContextFilter() {
             @Override
             public CommandContext filterContext(CommandContext context, String child)

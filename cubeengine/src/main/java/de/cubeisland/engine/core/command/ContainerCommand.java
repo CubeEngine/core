@@ -18,8 +18,10 @@
 package de.cubeisland.engine.core.command;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
@@ -57,11 +59,16 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
     public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
     {
-        super(module, name, description, new ParameterizedContextFactory(new ArgBounds(0)));
-        this.setUsage("[action]");
+        super(module, name, description, new ParameterizedContextFactory(CommandParameterIndexed.emptyIndex("action")));
         this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;
+    }
+
+    @Override
+    protected String getUsage0(Locale locale)
+    {
+        return "[" + this.getModule().getCore().getI18n().translate(locale, "action") + "]";
     }
 
     public void delegateChild(String name)

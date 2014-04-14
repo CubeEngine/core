@@ -17,10 +17,12 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +32,9 @@ import java.util.Stack;
 
 import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.ArgumentReader;
+import de.cubeisland.engine.core.command.BasicContextFactory;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.ContextFactory;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
@@ -47,69 +49,27 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static java.util.Locale.ENGLISH;
 
-public class ParameterizedContextFactory implements ContextFactory
+public class ParameterizedContextFactory extends BasicContextFactory
 {
-    private ArgBounds bounds;
-    private final Map<String, CommandFlag> flagMap;
-    private final Map<String, CommandParameter> paramMap;
-    private final Map<Integer, CommandParameterIndexed> indexedMap;
+    private final Map<String, CommandFlag> flagMap = new THashMap<>();
+    private final LinkedHashMap<String, CommandParameter> paramMap = new LinkedHashMap<>();
 
-    private int indexedCount = 0;
-
-    public ParameterizedContextFactory(ArgBounds bounds)
+    public ParameterizedContextFactory(List<CommandParameterIndexed> indexed, Collection<CommandFlag> flags, Collection<CommandParameter> params)
     {
-        this.bounds = bounds;
-        this.flagMap = new THashMap<>();
-        this.paramMap = new THashMap<>();
-        this.indexedMap = new THashMap<>();
-    }
-
-    public ParameterizedContextFactory(ArgBounds bounds, List<CommandParameterIndexed> indexedParams, Collection<CommandFlag> flags, Collection<CommandParameter> params)
-    {
-        this(bounds);
+        super(indexed);
         this.addFlags(flags);
         this.addParameters(params);
-        this.addIndexed(indexedParams);
+        this.addIndexed(indexed);
     }
 
-    @Override
-    public ArgBounds getArgBounds()
+    public ParameterizedContextFactory(List<CommandParameterIndexed> indexed)
     {
-        return this.bounds;
+        super(indexed);
     }
 
-    public void setArgBounds(ArgBounds newBounds)
+    public ParameterizedContextFactory(CommandParameterIndexed action)
     {
-        this.bounds = newBounds;
-    }
-
-    private ParameterizedContextFactory addIndexed(List<CommandParameterIndexed> indexedParams)
-    {
-        if (indexedParams != null)
-        {
-            for (CommandParameterIndexed param : indexedParams)
-            {
-                this.addIndexed(param);
-            }
-        }
-        return this;
-    }
-
-    public ParameterizedContextFactory addIndexed(CommandParameterIndexed param)
-    {
-        this.indexedMap.put(indexedCount++, param);
-        return this;
-    }
-
-    public ParameterizedContextFactory removeLastIndexed()
-    {
-        this.indexedMap.remove(--indexedCount);
-        return this;
-    }
-
-    public CommandParameterIndexed getIndexed(int index)
-    {
-        return this.indexedMap.get(index);
+        this(Arrays.asList(action));
     }
 
     public ParameterizedContextFactory addParameters(Collection<CommandParameter> params)
@@ -162,7 +122,7 @@ public class ParameterizedContextFactory implements ContextFactory
 
     public Set<CommandParameter> getParameters()
     {
-        return new THashSet<>(this.paramMap.values());
+        return new LinkedHashSet<>(this.paramMap.values());
     }
 
     public void addFlags(Collection<CommandFlag> flags)
@@ -431,10 +391,5 @@ public class ParameterizedContextFactory implements ContextFactory
         }
 
         return new ParameterizedContext(command, context.getSender(), context.getLabels(), context.getArgs(), flags, params);
-    }
-
-    public Map<Integer, CommandParameterIndexed> getIndexedParameters()
-    {
-        return this.indexedMap;
     }
 }

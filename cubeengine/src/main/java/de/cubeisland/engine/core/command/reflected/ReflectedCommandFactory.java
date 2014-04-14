@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandFactory;
 import de.cubeisland.engine.core.command.CubeCommand;
@@ -41,7 +40,6 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
@@ -125,9 +123,9 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             params.add(cParam);
         }
 
-        List<CommandParameterIndexed> indexedParams = new ArrayList<>(annotation.args().length);
+        List<CommandParameterIndexed> indexedParams = new ArrayList<>(annotation.indexed().length);
         int count = 1;
-        for (Arg arg : annotation.args())
+        for (Grouped arg : annotation.indexed())
         {
             Indexed[] indexed = arg.value();
             if (indexed.length == 0)
@@ -181,80 +179,11 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             return null;
         }
         ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, annotation.desc(),
-                this.createContextFactory(new ArgBounds(annotation.min(), annotation.max()), indexedParams, flags, params));
+                this.createContextFactory(indexedParams, flags, params));
 
-        String usage = annotation.usage();
-        if (usage.isEmpty())
-        {
-            StringBuilder sb = new StringBuilder();
-            int inGroup = 0;
-            for (CommandParameterIndexed indexedParam : indexedParams)
-            {
-                if (indexedParam.getCount() == 1)
-                {
-                    sb.append(convertLabel(indexedParam.isGroupRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
-                    sb.append(' ');
-                    inGroup = 0;
-                }
-                else if (indexedParam.getCount() > 1)
-                {
-                    sb.append(indexedParam.isGroupRequired() ? '<' : '[');
-                    sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
-                    sb.append(' ');
-                    inGroup = indexedParam.getCount() - 1;
-                }
-                else if (indexedParam.getCount() == 0)
-                {
-                    sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
-                    inGroup--;
-                    if (inGroup == 0)
-                    {
-                        sb.append(indexedParam.isGroupRequired() ? '>' : ']');
-                    }
-                    sb.append(' ');
-                }
-                else
-                {
-                    // TODO handle neg count greedy arg
-                }
-            }
-            for (CommandParameter param : params)
-            {
-                if (param.isRequired())
-                {
-                    sb.append('<').append(param.getName()).append('<').append(param.getLabel()).append(">> ");
-                }
-                else
-                {
-                    sb.append('[').append(param.getName()).append('<').append(param.getLabel()).append(">] ");
-                }
-            }
-            for (CommandFlag flag : flags)
-            {
-                sb.append("[-").append(flag.getLongName()).append("] ");
-            }
-            usage = sb.toString().trim();
-            if (!usage.isEmpty())
-            {
-                // TODO actually use calculated argbounds
-                int min = 0;
-                int max = 0;
-                for (CommandParameterIndexed indexedParam : indexedParams)
-                {
-                    if (indexedParam.isGroupRequired())
-                    {
-                        min += indexedParam.getCount();
-                        if (!indexedParam.isRequired())
-                        {
-                            min -= 1;
-                        }
-                    }
-                    max += indexedParam.getCount();
-                }
-                System.out.println(usage + " (" + min + "-" + max + ")");
-            }
-        }
-        cmd.setUsage(usage);
+        // TODO remove
+        System.out.println(cmd.getUsage() + " (" + cmd.getContextFactory().getArgBounds().getMin() + "-" + cmd.getContextFactory().getArgBounds().getMin() + ")");
+
         cmd.setAliases(aliases);
         cmd.setLoggable(annotation.loggable());
         if (annotation.checkPerm())
@@ -275,40 +204,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         return (T)cmd;
     }
 
-    private String[] convertLabels(CommandParameterIndexed indexedParam)
-    {
-        String[] labels = indexedParam.getLabels().clone();
-        String[] rawLabels = indexedParam.getLabels();
-        for (int i = 0; i < rawLabels.length; i++)
-        {
-            if (rawLabels.length == 1)
-            {
-                labels[i] = convertLabel(true, "!" + rawLabels[i]);
-            }
-            else
-            {
-                labels[i] = convertLabel(true, rawLabels[i]);
-            }
-        }
-        return labels;
-    }
-
-    private String convertLabel(boolean req, String label)
-    {
-        if (label.startsWith("!"))
-        {
-            return label.substring(1);
-        }
-        else if (req)
-        {
-            return "<" + label + ">";
-        }
-        else
-        {
-            return "[" + label + "]";
-        }
-    }
-
     private Completer getCompleter(Module module, Class<? extends Completer> completerClass)
     {
         if (completerClass == Completer.class)
@@ -326,9 +221,9 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         }
     }
 
-    protected ParameterizedContextFactory createContextFactory(ArgBounds bounds, List<CommandParameterIndexed> indexed, Set<CommandFlag> flags, Set<CommandParameter> params)
+    protected ParameterizedContextFactory createContextFactory(List<CommandParameterIndexed> indexed, Set<CommandFlag> flags, Set<CommandParameter> params)
     {
-        return new ParameterizedContextFactory(bounds, indexed, flags, params);
+        return new ParameterizedContextFactory(indexed, flags, params);
     }
 
     @Override

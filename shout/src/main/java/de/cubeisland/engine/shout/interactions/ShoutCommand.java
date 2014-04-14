@@ -28,7 +28,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -36,7 +35,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
-import de.cubeisland.engine.core.command.reflected.Arg;
+import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
@@ -59,8 +58,8 @@ public class ShoutCommand extends ContainerCommand
         this.setAliases(new HashSet<>(asList("announce")));
         this.module = module;
 
-        this.setUsage("<announcement>");
-        this.getContextFactory().setArgBounds(new ArgBounds(1, 1));
+        // TODO this.setUsage("<announcement>");
+        // TODO this.getContextFactory().setArgBounds(new ArgBounds(1, 1));
     }
 
     public CommandResult run(CommandContext context)
@@ -128,7 +127,7 @@ public class ShoutCommand extends ContainerCommand
     }
 
     @Command(desc = "Creates a new announcement", min = 1, max = 1,
-             args = @Arg(@Indexed(value = "name")),
+             indexed = @Grouped(@Indexed(value = "name")),
              params = {
                      @Param(names ={"message", "m"}),
                      @Param(names ={"delay", "d"}, label = "<x> minutes|hours|days"),

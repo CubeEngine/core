@@ -33,7 +33,6 @@ public final class AliasCommand extends CubeCommand
     public AliasCommand(CubeCommand target, String name, Set<String> aliases, String prefix, String suffix)
     {
         super(target.getModule(), name, target.getDescription(), target.getContextFactory());
-        this.setUsage(target.getUsage());
         this.setAliases(aliases);
         this.target = target;
         this.prefix = (prefix == null || prefix.isEmpty() ? NO_ADDITION : explode(" ", prefix));

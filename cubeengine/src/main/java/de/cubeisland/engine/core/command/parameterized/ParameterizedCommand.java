@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.command.parameterized;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import de.cubeisland.engine.core.command.CommandContext;
@@ -163,5 +164,27 @@ public abstract class ParameterizedCommand extends CubeCommand
             return this.tabComplete((ParameterizedTabContext)context);
         }
         return super.tabComplete(context);
+    }
+
+    @Override
+    protected String getUsage0(Locale locale)
+    {
+        StringBuilder sb = new StringBuilder(super.getUsage0(locale)).append(' ');
+        for (CommandParameter param : this.getContextFactory().getParameters())
+        {
+            if (param.isRequired())
+            {
+                sb.append('<').append(param.getName()).append('<').append(param.getLabel()).append(">> ");
+            }
+            else
+            {
+                sb.append('[').append(param.getName()).append('<').append(param.getLabel()).append(">] ");
+            }
+        }
+        for (CommandFlag flag : this.getContextFactory().getFlags())
+        {
+            sb.append("[-").append(flag.getLongName()).append("] ");
+        }
+        return sb.toString().trim();
     }
 }

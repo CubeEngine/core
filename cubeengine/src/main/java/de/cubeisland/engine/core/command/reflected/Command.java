@@ -58,7 +58,7 @@ public @interface Command
 
     Param[] params() default {};
 
-    Arg[] args() default {};
+    Grouped[] indexed() default {};
 
     boolean loggable() default true;
 

@@ -17,14 +17,22 @@
  */
 package de.cubeisland.engine.core.command;
 
+import java.util.List;
 import java.util.Stack;
+
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 
 public interface ContextFactory
 {
     ArgBounds getArgBounds();
-    void setArgBounds(ArgBounds newBounds);
-    CommandContext tabCompleteParse(CubeCommand command, CommandSender sender, Stack<String> labels,
-                                                     String[] rawArgs);
-    CommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs);
+
+    ContextFactory addIndexed(List<CommandParameterIndexed> indexedParams);
+    ContextFactory addIndexed(CommandParameterIndexed param);
+    ContextFactory removeLastIndexed();
+    CommandParameterIndexed getIndexed(int index);
+    List<CommandParameterIndexed> getIndexedParameters();
+
     CommandContext parse(CubeCommand command, CommandContext context);
+    CommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs);
+    CommandContext tabCompleteParse(CubeCommand command, CommandSender sender, Stack<String> labels,String[] rawArgs);
 }

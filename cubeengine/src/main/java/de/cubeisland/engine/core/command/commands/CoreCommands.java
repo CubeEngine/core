@@ -38,7 +38,9 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
@@ -131,25 +133,25 @@ public class CoreCommands extends ContainerCommand
 
     @Command(names = {
         "clearpassword", "clearpw"
-    }, desc = "Clears your password.", max = 1, usage = "[<player>|-a]", flags = @Flag(longName = "all", name = "a"))
+    }, desc = "Clears your password.",
+             indexed = @Grouped(value = @Indexed({"player","*"}), req = false))
     public void clearPassword(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();
-        if (context.hasFlag("a"))
+        if (context.hasArg(0))
         {
-            if (core.perms().COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
+            if ("*".equals(context.getString(0)))
             {
-                final UserManager um = this.getModule().getCore().getUserManager();
-                um.resetAllPasswords();
-                sender.sendTranslated(POSITIVE, "All passwords reset!");
-            }
-            else
-            {
+                if (core.perms().COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
+                {
+                    final UserManager um = this.getModule().getCore().getUserManager();
+                    um.resetAllPasswords();
+                    sender.sendTranslated(POSITIVE, "All passwords reset!");
+                    return;
+                }
                 context.sendTranslated(NEGATIVE, "You are not allowed to clear all passwords!");
+                return;
             }
-        }
-        else if (context.hasArg(0))
-        {
             if (!core.perms().COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated(NEGATIVE, "You are not allowed to clear the password of other players!");
@@ -160,20 +162,21 @@ public class CoreCommands extends ContainerCommand
             {
                 this.core.getUserManager().resetPassword(target);
                 sender.sendTranslated(POSITIVE, "The player's password has been reset!");
+                return;
             }
-            else
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            }
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            return;
         }
-        else if (sender instanceof User)
+        if (sender instanceof User)
         {
             this.core.getUserManager().resetPassword((User)sender);
             sender.sendTranslated(POSITIVE, "Your password has been reset!");
         }
     }
 
-    @Command(desc = "Logs you in with your password!", usage = "<password>", min = 1, max = 1, permDefault = PermDefault.TRUE, loggable = false)
+    @Command(desc = "Logs you in with your password!",
+             indexed = @Grouped(@Indexed("password"))
+        , permDefault = PermDefault.TRUE, loggable = false)
     public void login(CommandContext context)
     {
         CommandSender sender = context.getSender();

@@ -23,7 +23,6 @@ import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -66,22 +65,22 @@ public class HomeCommand extends ContainerCommand
     {
         if (module.getConfig().homes.multipleHomes)
         {
-            this.setUsage("<<owner:>home>");
-            this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
+            // TODO this.setUsage("<<owner:>home>");
+            //this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
         }
         else
         { // Set usage and argBounds according to single homes
-            this.setUsage("<owner>");
-            this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
+            //this.setUsage("<owner>");
+            //this.getContextFactory().setArgBounds(new ArgBounds(0, 1));
 
-            this.getChild("set").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
-            this.getChild("move").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
-            this.getChild("remove").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
-            this.getChild("invite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
-            this.getChild("uninvite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
-            this.getChild("setgreeting").setUsage("[welcome message]");
-            this.getChild("makeprivate").setUsage("");
-            this.getChild("makepublic").setUsage("");
+            //this.getChild("set").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            //this.getChild("move").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            //this.getChild("remove").setUsage("").getContextFactory().setArgBounds(new ArgBounds(0, 0));
+            //this.getChild("invite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
+            //this.getChild("uninvite").setUsage("[user]").getContextFactory().setArgBounds(new ArgBounds(1, 1));
+            //this.getChild("setgreeting").setUsage("[welcome message]");
+            //this.getChild("makeprivate").setUsage("");
+            //this.getChild("makepublic").setUsage("");
         }
     }
 

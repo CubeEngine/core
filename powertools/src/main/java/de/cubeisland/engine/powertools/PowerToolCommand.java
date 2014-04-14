@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,7 +33,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -62,7 +62,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         super(module, "powertool", "Binding shortcuts to an item.");
         this.setAliases(new HashSet<>(asList("pt")));
         this.module = module;
-        this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
+        // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
 
         this.delegateChild(new MultiContextFilter() {
             @Override

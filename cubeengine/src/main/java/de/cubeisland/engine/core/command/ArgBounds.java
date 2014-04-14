@@ -17,6 +17,10 @@
  */
 package de.cubeisland.engine.core.command;
 
+import java.util.List;
+
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+
 public class ArgBounds
 {
     public static final int NO_MAX = -1;
@@ -36,6 +40,40 @@ public class ArgBounds
         }
         this.min = min;
         this.max = max;
+    }
+
+    public ArgBounds(List<CommandParameterIndexed> indexed)
+    {
+        int tMin = 0;
+        int tMax = 0;
+        for (int i = 0; i < indexed.size(); i++)
+        {
+            CommandParameterIndexed indexedParam = indexed.get(i);
+            if (indexedParam.getCount() == -1)
+            {
+                if (i + 1 == indexed.size())
+                {
+                    tMax = NO_MAX;
+                    if (indexedParam.isGroupRequired())
+                    {
+                        tMin++;
+                    }
+                    break;
+                }
+                throw new IllegalArgumentException("Greedy arguments are only allowed at the end!");
+            }
+            if (indexedParam.isGroupRequired())
+            {
+                tMin += indexedParam.getCount();
+                if (!indexedParam.isRequired())
+                {
+                    tMin -= 1;
+                }
+            }
+            tMax += indexedParam.getCount();
+        }
+        this.min = tMin;
+        this.max = tMax;
     }
 
     public int getMin()

@@ -30,7 +30,6 @@ import static java.util.Locale.ENGLISH;
 
 public class ParameterizedContext extends AbstractParameterizedContext<Object>
 {
-
     public ParameterizedContext(CubeCommand command, CommandSender sender, Stack<String> labels, List<String> args, Set<String> flags, Map<String, Object> params)
     {
         super(command, sender, labels, args, flags, params);
