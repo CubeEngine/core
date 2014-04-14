@@ -60,7 +60,7 @@ public class RolesEventHandler implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event)
     {
-        User user = this.module.getCore().getUserManager().findUser(event.getName());
+        User user = this.module.getCore().getUserManager().getExactUser(event.getUniqueId());
         if (user != null && (user.hasPlayedBefore() || user.isOnline())) // prevent NPE for players that never joined the server
         {
             if (user.getWorld() != null) // prevent NPE for players on deleted worlds
