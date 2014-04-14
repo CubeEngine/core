@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandFactory;
@@ -89,6 +90,8 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             aliases.add(commandNames[i].toLowerCase(Locale.ENGLISH));
         }
 
+        // TODO permissions for fastfail on flags/parameters ?
+
         Set<CommandFlag> flags = new HashSet<>(annotation.flags().length);
         for (Flag flag : annotation.flags())
         {
@@ -98,6 +101,9 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         Set<CommandParameter> params = new LinkedHashSet<>(annotation.params().length);
         for (Param param : annotation.params())
         {
+            // TODO multivalue param
+            // TODO greedy param (take args until next keyword)
+
             String[] names = param.names();
             if (names.length < 1)
             {
@@ -141,6 +147,21 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             {
                 label = String.valueOf(count - 1);
             }
+
+            // TODO grouped index
+            // e.g. x&y&z (displays at e.g. [<x> <y> <z>])
+
+            // TODO greedy index (count = -1)
+            // e.g. "players..." or "message" at the end (<players...>)
+
+            // TODO or tabcompleter
+            // players|* combine with registered completer (<players|*>)
+
+            // TODO or autotabcompleter
+            // true|false (no completer given) (<true|false>)
+
+            indexed.count();
+
             final CommandParameterIndexed indexedParam = new CommandParameterIndexed(label, indexed.type());
 
             Class<? extends Completer> completerClass = indexed.completer();
@@ -179,13 +200,17 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             for (CommandParameterIndexed indexedParam : indexedParams)
             {
                 i++;
-                if (i >= annotation.min() && i <= annotation.max())
+                if (i <= annotation.min())
                 {
                     usage += "<" + indexedParam.getLabel() + "> ";
                 }
                 else
                 {
                     usage += "[" + indexedParam.getLabel() + "] ";
+                }
+                if (i > annotation.max())
+                {
+                    CubeEngine.getLog().error("There are more IndexedParam than allowed for {}", name);
                 }
             }
             for (CommandParameter param : params)

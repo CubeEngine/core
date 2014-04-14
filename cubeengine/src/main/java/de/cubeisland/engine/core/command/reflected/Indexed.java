@@ -24,4 +24,6 @@ public @interface Indexed
     String label() default "";
     Class type() default String.class;
     Class<? extends Completer> completer() default Completer.class;
+
+    int count() default 1;
 }

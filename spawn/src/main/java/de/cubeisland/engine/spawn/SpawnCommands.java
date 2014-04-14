@@ -20,18 +20,19 @@ package de.cubeisland.engine.spawn;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.CommandSender;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
@@ -60,7 +61,11 @@ public class SpawnCommands
     }
 
     @Command(desc = "Changes the respawnpoint", max = 5,
-             usage = "[<role>|global] [<x> <y> <z>] [world]")
+             usage = "",
+             indexed = {@Indexed(label = "role|global"),
+                        // TODO indexed for 3
+                        @Indexed(label = "x&y&z", count = 3),
+                        @Indexed(label = "world")})
     public void setSpawn(CommandContext context)
     {
         if (!(context.getSender() instanceof User) && context.hasArg(4))
@@ -140,8 +145,8 @@ public class SpawnCommands
         manager.getProvider(world).recalculateRoles();
     }
 
-    @Command(desc = "Teleport directly to the worlds spawn.",
-             usage = "[player]|* [world <world>] [role <role>]", max = 1,
+    @Command(desc = "Teleport directly to the worlds spawn.", max = 1,
+             indexed = @Indexed(label = "player|*"),
              params = {@Param(names = {"world", "w", "in"}, type = World.class),
                        @Param(names = {"role", "r"}, type = String.class, completer = RoleCompleter.class)} ,
              flags = @Flag(longName = "force", name = "f"))
