@@ -29,6 +29,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
@@ -69,10 +71,11 @@ public class TeleportCommands
         return user.teleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
     }
 
-    @Command(desc = "Teleport directly to a player.", usage = "<player> [player] [-unsafe]", min = 1, max = 2, flags = {
-            @Flag(longName = "force", name = "f"), // is not shown directly in usage
-            @Flag(longName = "unsafe", name = "u")
-    })
+    @Command(desc = "Teleport directly to a player.",
+             indexed = { @Grouped(@Indexed("player")),
+                         @Grouped(req = false, value = @Indexed("player"))},
+             flags = { @Flag(longName = "force", name = "f"), // is not shown directly in usage
+                       @Flag(longName = "unsafe", name = "u")})
     public void tp(ParameterizedContext context)
     {
         User user = null;
@@ -170,7 +173,7 @@ public class TeleportCommands
     }
 
     @Command(desc = "Teleports everyone directly to a player.",
-             usage = "<player> [-unsafe]", min = 1, max = 1,
+             indexed = @Grouped(@Indexed("player")),
              flags = {@Flag(longName = "force", name = "f"),
                       @Flag(longName = "unsafe", name = "u")})
     public void tpall(ParameterizedContext context)
@@ -213,10 +216,10 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Teleport a player directly to you.", usage = "<player>", min = 1, max = 1,
-             flags = {
-                @Flag(longName = "force", name = "f"),
-                @Flag(longName = "unsafe", name = "u")})
+    @Command(desc = "Teleport a player directly to you.",
+             indexed = @Grouped(@Indexed("player")),
+             flags = { @Flag(longName = "force", name = "f"),
+                       @Flag(longName = "unsafe", name = "u")})
     public void tphere(ParameterizedContext context)
     {
         User sender = null;
@@ -259,10 +262,9 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Teleport every player directly to you.", max = 0,
-             flags = {
-                @Flag(longName = "force", name = "f"),
-                @Flag(longName = "unsafe", name = "u")})
+    @Command(desc = "Teleport every player directly to you.",
+             flags = {@Flag(longName = "force", name = "f"),
+                      @Flag(longName = "unsafe", name = "u")})
     public void tphereall(ParameterizedContext context)
     {
         User sender = null;
@@ -304,7 +306,10 @@ public class TeleportCommands
     }
 
     @Command(desc = "Direct teleport to a coordinate.",
-             usage = "<x> [y] <z> [w <world>]", min = 2, max = 4,
+             indexed = @Grouped(value = {
+                 @Indexed("x"),
+                 @Indexed(value = "y", req = false),
+                 @Indexed("z")}),
              params = @Param(names = {"world", "w"}, type = World.class),
              flags = @Flag(longName = "safe", name = "s"))
     public void tppos(ParameterizedContext context)

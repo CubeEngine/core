@@ -37,13 +37,16 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
+import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
+import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.entity.EntityType.DROPPED_ITEM;
 
 /**
  * Commands controlling / affecting worlds. /weather /remove /butcher
@@ -61,9 +64,11 @@ public class WorldControlCommands
         this.entityRemovals = new EntityRemovals(module);
     }
 
-    @Command(desc = "Changes the weather", min = 1, max = 3,
-             usage = "<sun|rain|storm> [duration] [in <world>]",
-             params = @Param(names = "in", type = World.class))
+    @Command(desc = "Changes the weather",
+             indexed = {
+                 @Grouped(@Indexed({"!sun","!rain","!storm"})),
+                 @Grouped(req = false, value = @Indexed("duration"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void weather(ParameterizedContext context)
     {
         User sender = null;
@@ -137,9 +142,11 @@ public class WorldControlCommands
         world.setWeatherDuration(duration);
     }
 
-    @Command(desc = "Removes entity", usage = "<entityType[:itemMaterial]> [radius]|[-all] [in <world>]", flags = @Flag(longName = "all", name = "a"), params = @Param(names = {
-        "in"
-    }, type = World.class), min = 1, max = NO_MAX)
+    @Command(desc = "Removes entity",
+             indexed = {
+                 @Grouped(@Indexed("entityType[:itemMaterial]")),
+                 @Grouped(req = false, value = @Indexed({"radius","!*"}))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void remove(ParameterizedContext context)
     {
         User sender = null;
@@ -162,18 +169,21 @@ public class WorldControlCommands
             world = sender.getWorld();
         }
         int radius = this.config.commands.removeDefaultRadius;
-        if (context.hasFlag("a")) // remove all selected entities in world
-        {
-            radius = -1;
-        }
-        else if (sender == null)
-        {
-            context.sendTranslated(NEGATIVE, "If not used ingame you can only remove all!");
-            return;
-        }
         if (context.hasArg(1))
         {
-            radius = context.getArg(1, Integer.class, 0);
+            if ("*".equals(context.getString(1)))
+            {
+                radius = -1;
+            }
+            else if (sender == null)
+            {
+                context.sendTranslated(NEGATIVE, "If not used ingame you can only remove all!");
+                return;
+            }
+            else
+            {
+                radius = context.getArg(1, Integer.class, 0);
+            }
             if (radius <= 0)
             {
                 context.sendTranslated(NEGATIVE, "The radius has to be a whole number greater than 0!");
@@ -208,7 +218,7 @@ public class WorldControlCommands
                 if (s_entityType.contains(":"))
                 {
                     EntityType type = Match.entity().any(s_entityType.substring(0, s_entityType.indexOf(":")));
-                    if (!EntityType.DROPPED_ITEM.equals(type))
+                    if (!DROPPED_ITEM.equals(type))
                     {
                         context.sendTranslated(NEGATIVE, "You can only specify data for removing items!");
                         return;
@@ -217,7 +227,7 @@ public class WorldControlCommands
                     List<Entity> remList = new ArrayList<>();
                     for (Entity entity : list)
                     {
-                        if (entity.getType().equals(EntityType.DROPPED_ITEM) && ((Item)entity).getItemStack().getType().equals(itemtype))
+                        if (entity.getType().equals(DROPPED_ITEM) && ((Item)entity).getItemStack().getType().equals(itemtype))
                         {
                             remList.add(entity);
                         }
@@ -231,13 +241,13 @@ public class WorldControlCommands
                     {
                         context.sendTranslated(NEGATIVE, "Invalid entity-type!");
                         context.sendTranslated(NEUTRAL, "Use one of those instead:");
-                        context.sendMessage(EntityType.DROPPED_ITEM.toString() + ChatFormat.YELLOW + ", " +
-                                                ChatFormat.GOLD + EntityType.ARROW + ChatFormat.YELLOW + ", " +
-                                                ChatFormat.GOLD + EntityType.BOAT + ChatFormat.YELLOW + ", " +
-                                                ChatFormat.GOLD + EntityType.MINECART + ChatFormat.YELLOW + ", " +
-                                                ChatFormat.GOLD + EntityType.PAINTING + ChatFormat.YELLOW + ", " +
-                                                ChatFormat.GOLD + EntityType.ITEM_FRAME + ChatFormat.YELLOW + " or " +
-                                                ChatFormat.GOLD + EntityType.EXPERIENCE_ORB);
+                        context.sendMessage(DROPPED_ITEM.toString() + YELLOW + ", " +
+                                                GOLD + EntityType.ARROW + YELLOW + ", " +
+                                                GOLD + EntityType.BOAT + YELLOW + ", " +
+                                                GOLD + EntityType.MINECART + YELLOW + ", " +
+                                                GOLD + EntityType.PAINTING + YELLOW + ", " +
+                                                GOLD + EntityType.ITEM_FRAME + YELLOW + " or " +
+                                                GOLD + EntityType.EXPERIENCE_ORB);
                         return;
                     }
                     if (type.isAlive())
@@ -286,11 +296,13 @@ public class WorldControlCommands
     }
 
     @Command(desc = "Gets rid of mobs close to you. Valid types are:\n" +
-        "monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc.", flags = {
-        @Flag(longName = "lightning", name = "l"), // die with style
-        @Flag(longName = "all", name = "a")// infinite radius
+        "monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc.",
+             flags = { @Flag(longName = "lightning", name = "l"), // die with style
+                       @Flag(longName = "all", name = "a")// infinite radius
     }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class),
-             usage = "[types...] [radius] [in <world>] [-l] [-all]", max = 2)
+             indexed = {
+                 @Grouped(value = @Indexed("types..."), req = false),
+                 @Grouped(value = @Indexed("radius"), req = false)})
     public void butcher(ParameterizedContext context)
     {
         User sender = null;

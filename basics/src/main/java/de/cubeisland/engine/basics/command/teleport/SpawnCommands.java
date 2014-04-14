@@ -26,6 +26,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
@@ -47,7 +49,11 @@ public class SpawnCommands
         this.module = basics;
     }
 
-    @Command(desc = "Changes the global respawnpoint", usage = "[world] [<x> <y> <z>]", max = 4)
+    @Command(desc = "Changes the global respawnpoint",
+             indexed = { @Grouped(req = false, value = @Indexed("world")),
+                         @Grouped(req = false, value = { @Indexed("x"),
+                                                         @Indexed("y"),
+                                                         @Indexed("z")})})
     public void setSpawn(CommandContext context)
     {
         User sender = null;
@@ -107,7 +113,8 @@ public class SpawnCommands
         context.sendTranslated(POSITIVE, "The spawn in {world} is now set to {vector:x\\=:y\\=:z\\=}", world, new BlockVector3(x, y, z));
     }
 
-    @Command(desc = "Teleport directly to the worlds spawn.", usage = "[player] [world <world>]", max = 2,
+    @Command(desc = "Teleport directly to the worlds spawn.",
+             indexed = @Grouped(req = false, value = @Indexed("player")),
              params = @Param(names = {"world", "w"}, type = World.class),
              flags = {@Flag(longName = "force", name = "f"),
                       @Flag(longName = "all", name = "a")})
@@ -192,7 +199,7 @@ public class SpawnCommands
             }
         }
         final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
-        final Location userLocation = user.getLocation(); // TODO possible NPE
+        final Location userLocation = user.getLocation(); // TODO possible NPE ?
         spawnLocation.setPitch(userLocation.getPitch());
         spawnLocation.setYaw(userLocation.getYaw());
         if (!TeleportCommands.teleport(user, spawnLocation, true, force, true))
@@ -202,7 +209,7 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleports you to the spawn of given world",
-             usage = "<world>", min = 1, max = 1)
+             indexed = @Grouped(@Indexed("world")))
     public void tpworld(CommandContext context)
     {
         if (context.getSender() instanceof User)

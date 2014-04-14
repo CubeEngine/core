@@ -36,6 +36,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.Vector3;
@@ -63,7 +65,11 @@ public class NukeCommand
 
     @Command(
         desc = "Makes a carpet of TNT fall on a player or where you're looking",
-        max = 3,
+        indexed = {
+            @Grouped(req = false, value = @Indexed("param1")),
+            @Grouped(req = false, value = @Indexed("param2")),
+            @Grouped(req = false, value = @Indexed("param3")),
+        },
         params =
             {
                 @Param(names = {"player", "p"}, type = User.class),
@@ -75,8 +81,7 @@ public class NukeCommand
             {
                 @Flag(longName = "unsafe", name = "u"),
                 @Flag(longName = "quiet", name = "q")
-            },
-        usage = "[param1] [param2] [param3] [Shape <shape>] [player <player>] [height <height>] [range <range>] [-unsafe] [-quiet]"
+            }
     )
     public void nuke(ParameterizedContext context)
     {

@@ -40,9 +40,10 @@ import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -50,7 +51,6 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeUtil;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static java.text.DateFormat.SHORT;
 
@@ -79,7 +79,8 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Refills your hunger bar", max = 1, usage = "(players)")
+    @Command(desc = "Refills your hunger bar",
+             indexed = @Grouped(value = @Indexed("player"), req = false))
     public void feed(CommandContext context)
     {
         if (context.hasArg(0))
@@ -149,7 +150,8 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Empties the hunger bar", max = 1, usage = "(players)")
+    @Command(desc = "Empties the hunger bar",
+             indexed = @Grouped(value = @Indexed("player"), req = false))
     public void starve(CommandContext context)
     {
         if (context.hasArg(0))
@@ -219,7 +221,8 @@ public class PlayerCommands
         context.sendMessage(context.getCommand().getUsage(context));
     }
 
-    @Command(desc = "Heals a player", max = 1, usage = "(player)")
+    @Command(desc = "Heals a player",
+             indexed = @Grouped(value = @Indexed("player"), req = false))
     public void heal(CommandContext context)
     {
         if (context.hasArg(0))
@@ -324,7 +327,9 @@ public class PlayerCommands
     }
 
     @Command(names = {"gamemode", "gm"}, max = 2,
-            desc = "Changes the gamemode", usage = "(player) [gamemode]")
+            desc = "Changes the gamemode",
+            indexed = { @Grouped(value = @Indexed("player"), req = false),
+                        @Grouped(value = @Indexed("gamemode"), req = false)})
     public void gamemode(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -375,13 +380,11 @@ public class PlayerCommands
         }
     }
 
-    @Command(names = {
-        "kill", "slay"
-    }, desc = "Kills a player", usage = "<player>", flags = {
-        @Flag(longName = "force", name = "f"),
-        @Flag(longName = "quiet", name = "q"),
-        @Flag(longName = "lightning", name = "l")
-    }, min = 0 , max = 1)
+    @Command(names = {"kill", "slay"}, desc = "Kills a player",
+             indexed = @Grouped(@Indexed("player")),
+             flags = {@Flag(longName = "force", name = "f"),
+                      @Flag(longName = "quiet", name = "q"),
+                      @Flag(longName = "lightning", name = "l")})
     public void kill(ParameterizedContext context)
     {
         boolean lightning = context.hasFlag("l") && module.perms().COMMAND_KILL_LIGHTNING.isAuthorized(context.getSender());
@@ -495,7 +498,8 @@ public class PlayerCommands
         return true;
     }
 
-    @Command(desc = "Shows when given player was online the last time", min = 1, max = 1, usage = "<player>")
+    @Command(desc = "Shows when given player was online the last time",
+             indexed = @Grouped(@Indexed("player")))
     public void seen(CommandContext context)
     {
         User user = context.getUser(0);
@@ -521,8 +525,9 @@ public class PlayerCommands
     }
 
     @Command(desc = "Makes a player send a message (including commands)",
-             usage = "<player> <message>",
-             min = 2, max = NO_MAX)
+             indexed = {
+                 @Grouped(@Indexed("player")),
+                 @Grouped(value = @Indexed("message"), greedy = true)})
     public void sudo(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -542,7 +547,7 @@ public class PlayerCommands
         context.sendTranslated(POSITIVE, "Forced {user} to chat: {input#message}", user, s);
     }
 
-    @Command(desc = "Kills yourself", max = 0)
+    @Command(desc = "Kills yourself")
     public void suicide(CommandContext context)
     {
         if (!(context.getSender() instanceof User))
@@ -556,7 +561,8 @@ public class PlayerCommands
         context.sendTranslated(NEGATIVE, "You ended your life. Why? {text:\\:(:color=DARK_RED}");
     }
 
-    @Command(desc = "Displays that you are afk", max = 1, usage = "(player)")
+    @Command(desc = "Displays that you are afk",
+             indexed = @Grouped(value = @Indexed("player"), req = false))
     public void afk(CommandContext context)
     {
         User user;
@@ -601,7 +607,8 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Displays informations from a player!", usage = "<player>", min = 1, max = 1)
+    @Command(desc = "Displays informations from a player!",
+             indexed = @Grouped(@Indexed("player")))
     public void whois(CommandContext context)
     {
         User user = context.getUser(0);
@@ -681,7 +688,8 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Toggles the god-mode!", usage = "[player]", max = 1)
+    @Command(desc = "Toggles the god-mode!",
+             indexed = @Grouped(value = @Indexed("player"), req = false))
     public void god(CommandContext context)
     {
         User user;
@@ -732,7 +740,9 @@ public class PlayerCommands
         context.sendTranslated(NEUTRAL, "You are no longer invincible!");
     }
 
-    @Command(desc = "Changes your walkspeed.", usage = "<speed> [player]", min = 1, max = 2)
+    @Command(desc = "Changes your walkspeed.",
+             indexed = { @Grouped(@Indexed("speed")),
+                         @Grouped(value = @Indexed("player"), req = false)})
     public void walkspeed(ParameterizedContext context)
     {
         User sender = null;
@@ -780,10 +790,10 @@ public class PlayerCommands
         user.sendTranslated(NEUTRAL, "Walk speed has to be a Number between {text:0} and {text:10}!");
     }
 
-    @Command(desc = "Lets you fly away", max = 2,
-            params = @Param(names = { "player", "p"}, type = User.class),
-            usage = "[flyspeed] [player]")
-    public void fly(ParameterizedContext context)
+    @Command(desc = "Lets you fly away",
+            indexed = { @Grouped(value = @Indexed("flyspeed"), req = false),
+                        @Grouped(value = @Indexed("player"), req = false)})
+    public void fly(CommandContext context)
     {
         final CommandSender sender = context.getSender();
         User target;

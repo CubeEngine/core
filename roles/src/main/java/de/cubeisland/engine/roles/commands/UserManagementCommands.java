@@ -26,6 +26,8 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.DataStore.PermissionValue;
@@ -46,10 +48,10 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"manuadd", "assignurole", "addurole", "giveurole"})
     @Command(names = {"assign", "add", "give"},
              desc = "Assign a role to the player [in world] [-temp]",
-             usage = "<player> <role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             flags = @Flag(name = "t",longName = "temp"),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("role"))},
+             params = @Param(names = "in", label = "world", type = World.class),
+             flags = @Flag(name = "t",longName = "temp"))
     public void assign(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
@@ -96,9 +98,9 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Alias(names = {"remurole", "manudel"})
     @Command(desc = "Removes a role from the player [in world]",
-             usage = "<player> <role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("role"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void remove(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
@@ -129,9 +131,8 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Alias(names = {"clearurole", "manuclear"})
     @Command(desc = "Clears all roles from the player and sets the defaultroles [in world]",
-             usage = "<player> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("player")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void clear(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
@@ -161,9 +162,10 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = "setuperm")
     @Command(names = {"setperm", "setpermission"},
              desc = "Sets a permission for this user [in world]",
-             usage = " <player> <permission> [true|false|reset] [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("permission")),
+                        @Grouped(req = false, value = @Indexed(value = {"!true","!false","!reset"}))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void setpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
@@ -203,9 +205,9 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = "resetuperm")
     @Command(names = {"resetperm", "resetpermission"},
              desc = "Resets a permission for this user [in world]",
-             usage = " <player> <permission> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("permission"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void resetpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
@@ -222,9 +224,10 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"setudata","setumeta","setumetadata"})
     @Command(names = {"setdata", "setmeta", "setmetadata"},
              desc = "Sets metadata for this user [in world]",
-             usage = "<player> <metaKey> <metaValue> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 3, min = 3)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("metaKey")),
+                        @Grouped(@Indexed("metaValue"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void setmetadata(ParameterizedContext context)
     {
         String metaKey = context.getString(1);
@@ -246,9 +249,9 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"resetudata","resetumeta","resetumetadata"})
     @Command(names = {"resetdata", "resetmeta", "resetmetadata", "deletedata", "deletemetadata", "deletemeta"},
              desc = "Resets metadata for this user [in world]",
-             usage = "<player> <metaKey> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("metaKey"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void resetmetadata(ParameterizedContext context)
     {
         String metaKey = context.getString(1);
@@ -269,9 +272,8 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"clearudata","clearumeta","clearumetadata"})
     @Command(names = {"cleardata", "clearmeta", "clearmetadata"},
              desc = "Resets metadata for this user [in world]",
-             usage = "<player> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("player")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void clearMetaData(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);

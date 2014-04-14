@@ -31,6 +31,8 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -64,11 +66,9 @@ public class RulebookCommands extends ContainerCommand
     @Alias( names = {"getrules", "rules"})
     @Command(
         desc = "gets the player the rulebook in the inventory",
-        usage = "[language] [Player <name>]",
-        params = @Param(names = {"player", "p"}, type = User.class),
-        permDefault = TRUE,
-        max = 1
-    )
+        indexed = @Grouped(req = false, value = @Indexed("language")),
+        params = @Param(names = {"player", "p"}, label = "name", type = User.class),
+        permDefault = TRUE)
     public void getRuleBook(ParameterizedContext context)
     {
         if(!(context.getSender() instanceof User) && !context.hasParam("player"))
@@ -155,10 +155,7 @@ public class RulebookCommands extends ContainerCommand
     @Command(
         desc = "list all available languages of the rulebooks.",
         flags = {@Flag(longName = "supported", name = "s")},
-        permDefault = TRUE,
-        usage = "[-supported]",
-        max = 0
-    )
+        permDefault = TRUE)
     public void list(ParameterizedContext context)
     {
         if(!context.hasFlag("s"))
@@ -189,10 +186,7 @@ public class RulebookCommands extends ContainerCommand
     @Alias(names = "removerules")
     @Command(
         desc = "removes the declared language and languagefiles!",
-        min = 1,
-        max = 1,
-        usage = "<language>"
-    )
+        indexed = @Grouped(@Indexed("language")))
     public void remove(CommandContext context)
     {
         Language language = this.rulebookManager.getLanguage(context.getString(0));
@@ -224,10 +218,7 @@ public class RulebookCommands extends ContainerCommand
     @Alias(names = "modifyrules")
     @Command(
         desc = "modified the rulebook of the declared language with the book in hand",
-        usage = "<language>",
-        min = 1,
-        max = 1
-    )
+        indexed = @Grouped(@Indexed("language")))
     public void modify(CommandContext context)
     {
         if(!(context.getSender() instanceof User))
@@ -276,10 +267,7 @@ public class RulebookCommands extends ContainerCommand
     @Alias(names = "addrules")
     @Command(
         desc = "adds the book in hand as rulebook of the declared language",
-        min = 1,
-        max = 1,
-        usage = "<language>"
-    )
+        indexed = @Grouped(@Indexed("language")))
     public void add(CommandContext context)
     {
         if(!(context.getSender() instanceof User))

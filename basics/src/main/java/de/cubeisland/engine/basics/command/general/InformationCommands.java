@@ -44,6 +44,8 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -76,7 +78,10 @@ public class InformationCommands
     }
 
     @Command(desc = "Displays the biome type you are standing in.",
-             usage = "(world) (block-x) (block-z)", max = 3)
+             indexed = {
+                 @Grouped(value = @Indexed("world"), req = false),
+                 @Grouped(value = @Indexed("block-x"), req = false),
+                 @Grouped(value = @Indexed("block-z"), req = false)})
     public void biome(CommandContext context)
     {
         World world;
@@ -115,7 +120,8 @@ public class InformationCommands
         context.sendTranslated(NEUTRAL, "Biome at {vector:x\\=:z\\=}: {biome}", new BlockVector2(x, z), biome);
     }
 
-    @Command(desc = "Displays the seed of a world.", usage = "(world)", max = 1)
+    @Command(desc = "Displays the seed of a world.",
+             indexed = @Grouped(value = @Indexed("world"), req = false))
     public void seed(CommandContext context)
     {
         World world = null;
@@ -196,7 +202,9 @@ public class InformationCommands
     }
 
     @Command(desc = "Displays near players(entities/mobs) to you.",
-             max = 2, usage = "[radius] [player] [-entity]|[-mob]",
+             indexed = {
+                 @Grouped(value = @Indexed("radius"), req = false),
+                 @Grouped(value = @Indexed("player"), req = false)},
              flags = {@Flag(longName = "entity", name = "e"),
                       @Flag(longName = "mob", name = "m")})
     public void near(ParameterizedContext context)
@@ -349,7 +357,7 @@ public class InformationCommands
         list.add(s);
     }
 
-    @Command(names = {"ping", "pong"}, desc = "Pong!", max = 0)
+    @Command(names = {"ping", "pong"}, desc = "Pong!")
     public void ping(CommandContext context)
     {
         final String label = context.getLabel().toLowerCase(Locale.ENGLISH);
@@ -364,7 +372,7 @@ public class InformationCommands
     }
 
     @Command(desc = "Displays chunk, memory and world information.",
-             max = 0, flags = @Flag(longName = "reset" , name = "r"))
+             flags = @Flag(longName = "reset" , name = "r"))
     public void lag(ParameterizedContext context)
     {
         if (context.hasFlag("r"))

@@ -23,6 +23,8 @@ import de.cubeisland.engine.conomy.account.ConomyManager;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 
@@ -43,8 +45,8 @@ public class EcoBankCommands extends ContainerCommand
 
     @Command(names = {"give", "grant"},
              desc = "Gives money to a bank or all banks",
-             usage = "<bank>|* <amount>",
-             min = 2, max = 2)
+             indexed = { @Grouped(@Indexed({"bank","!*"})),
+                         @Grouped(@Indexed("amount"))})
     public void give(ParameterizedContext context)
     {
         String amountString = context.getString(1);
@@ -86,8 +88,8 @@ public class EcoBankCommands extends ContainerCommand
 
     @Command(names = {"take", "remove"},
              desc = "Takes money from given bank or all banks",
-             usage = "<bank>|* <amount>",
-             min = 2, max = 2)
+             indexed = { @Grouped(@Indexed({"bank","!*"})),
+                         @Grouped(@Indexed("amount"))})
     public void take(ParameterizedContext context)
     {
         String amountString = context.getString(1);
@@ -128,8 +130,7 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Reset the money from given banks",
-             usage = "<bank>|*",
-             min = 1, max = 1)
+             indexed = @Grouped(@Indexed({"bank","!*"})))
     public void reset(ParameterizedContext context)
     {
         if (context.getString(0).equalsIgnoreCase("*"))
@@ -163,8 +164,8 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Sets the money from given banks",
-             usage = "<bank>|* <amount>",
-             min = 2, max = 2)
+             indexed = { @Grouped(@Indexed({"bank","!*"})),
+                         @Grouped(@Indexed("amount"))})
     public void set(ParameterizedContext context)
     {
         String amountString = context.getString(1);
@@ -205,8 +206,8 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Scales the money from given banks",
-             usage = "<bank>|* <factor>",
-             min = 2, max = 2)
+             indexed = { @Grouped(@Indexed({"bank","!*"})),
+                         @Grouped(@Indexed("factor"))})
     public void scale(ParameterizedContext context)
     {
         Float factor = context.getArg(1, Float.class, null);
@@ -243,8 +244,7 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Hides the account of given bank",
-             usage = "<bank>|*",
-             min = 1, max = 1)
+             indexed = @Grouped(@Indexed({"bank","!*"})))
     public void hide(ParameterizedContext context)
     {
         if (context.getString(0).equals("*"))
@@ -274,8 +274,7 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Unhides the account of given banks",
-             usage = "<bank>|*",
-             min = 1, max = 1)
+             indexed = @Grouped(@Indexed({"bank","!*"})))
     public void unhide(ParameterizedContext context)
     {
         if (context.getString(0).equals("*"))

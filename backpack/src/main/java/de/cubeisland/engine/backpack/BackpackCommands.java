@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.backpack;
 
-import java.util.Arrays;
 import java.util.HashSet;
 
 import org.bukkit.World;
@@ -32,15 +31,16 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static java.util.Arrays.asList;
-
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static java.util.Arrays.asList;
 
 public class BackpackCommands extends ContainerCommand
 {
@@ -56,9 +56,10 @@ public class BackpackCommands extends ContainerCommand
     }
 
     @Alias(names = "openbp")
-    @Command(desc = "opens a backpack", usage = "<name> [user] [w <world>]",
-             params = @Param(names = {"w", "world", "for", "in"},
-                             completer = WorldCompleter.class, type = World.class),
+    @Command(desc = "opens a backpack",
+             indexed = {@Grouped(@Indexed("name")),
+                        @Grouped(req = false, value = @Indexed("user"))},
+             params = @Param(names = {"world", "for", "in", "w"}, completer = WorldCompleter.class, type = World.class),
              min = 1, max = 2)
     public void open(ParameterizedContext context)
     {
@@ -102,15 +103,14 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "createbp")
     @Command(desc = "creates a new backpack",
-             usage = "<name> [user] [-global]|[-single] [-blockinput] [w <world>] [p <pages>] [s <size>]",
-             flags = {@Flag(name = "g", longName = "global"),
+             indexed = {@Grouped(@Indexed("name")),
+                        @Grouped(req = false, value = @Indexed("user"))},
+             flags = {@Flag(name = "g", longName = "global"), // TODO OR flags
                       @Flag(name = "s", longName = "single"),
                       @Flag(name = "b", longName = "blockinput")},
-             params = {@Param(names = {"w", "world", "for", "in"},
-                              completer = WorldCompleter.class, type = World.class),
+             params = {@Param(names = {"w", "world", "for", "in"}, completer = WorldCompleter.class, type = World.class),
                        @Param(names = {"p", "pages"}, type = Integer.class),
-                       @Param(names = {"s","size"}, type = Integer.class)},
-             min = 1, max = 2)
+                       @Param(names = {"s","size"}, type = Integer.class)})
     public void create(ParameterizedContext context)
     {
         User forUser = null;
@@ -155,12 +155,12 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "modifybp")
     @Command(desc = "modifies a backpack",
-             usage = "<name> [user] [w <world>] [pages <pages>] [s <size>] [blockinput <true|false>]",
-             params = {@Param(names = {"p","pages"}, type = Integer.class),
-                       @Param(names = {"s","size"}, type = Integer.class),@Param(names = {"b","blockinput"}, type = Boolean.class),
-                       @Param(names = {"w", "world", "for", "in"},
-                              completer = WorldCompleter.class, type = World.class),},
-             min = 1, max = 2)
+             indexed = {@Grouped(@Indexed("name")),
+                        @Grouped(req = false, value = @Indexed("user"))},
+             params = {@Param(names = {"pages","p"}, type = Integer.class),
+                       @Param(names = {"size","s"}, type = Integer.class),
+                       @Param(names = {"blockinput","b"}, type = Boolean.class, label = "true|false"),
+                       @Param(names = {"world", "for", "in", "w"}, completer = WorldCompleter.class, type = World.class)})
     public void modify(ParameterizedContext context)
     {
         User forUser = null;
@@ -206,16 +206,15 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "givebp")
     @Command(desc = "Puts items into a backpack",
-             usage = "<name> [user] [w <world>] <item <item>[:data]> [name <name>] [lore <loreline>[,<loreline>]] [ench <enchs...>] [amount <amount>]",
-    params = {@Param(names = {"i","item"}, required = true),
-              @Param(names = {"n","name"}),
-              @Param(names = {"l","lore"}),
-              @Param(names = {"l","lore"}),
-              @Param(names = {"a", "amount"}, type = Integer.class),
-              @Param(names = {"e","ench", "enchantments"}),
-              @Param(names = {"w", "world", "for", "in"},
-                     completer = WorldCompleter.class, type = World.class)
-    }, max = 2, min = 1)
+             indexed = {@Grouped(@Indexed("name")),
+                        @Grouped(req = false, value = @Indexed("user"))},
+    params = {@Param(names = {"item","i"}, required = true, label = "item[:data]"),
+              @Param(names = {"name","n"}),
+              @Param(names = {"lore","l"}, label = "lorelines..."),
+              @Param(names = {"amount","a"}, type = Integer.class),
+              @Param(names = {"ench", "enchantments","e"}, label = "enchs..."),
+              @Param(names = {"world", "for", "in", "w"},
+                     completer = WorldCompleter.class, type = World.class)})
     // /givebp premium Faithcaio item diamondpick:1500 name "broken pick" lore "A broken\npick" "ench unbreaking:1,effi:3"
     public void give(ParameterizedContext context)
     {

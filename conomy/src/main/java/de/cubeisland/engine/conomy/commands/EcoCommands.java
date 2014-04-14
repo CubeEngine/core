@@ -25,6 +25,8 @@ import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 
@@ -44,9 +46,9 @@ public class EcoCommands extends ContainerCommand
 
     @Command(names = {"give", "grant"},
              desc = "Gives money to one or all players.",
-             usage = "<player>|* <amount> [-o]",
-             flags = @Flag(longName = "online", name = "o"),
-             min = 2, max = 2)
+             indexed = { @Grouped(@Indexed({"player","!*"})),
+                         @Grouped(@Indexed("amount"))},
+             flags = @Flag(longName = "online", name = "o"))
     public void give(ParameterizedContext context)
     {
         String amountString = context.getString(1);
@@ -111,9 +113,9 @@ public class EcoCommands extends ContainerCommand
 
     @Command(names = {"take", "remove"},
              desc = "Takes money from given user",
-             usage = "<player>|* <amount> [-o]",
-             flags = @Flag(longName = "online", name = "o"),
-             min = 1, max = 2)
+             indexed = { @Grouped(@Indexed({"player","!*"})),
+                         @Grouped(@Indexed("amount"))},
+             flags = @Flag(longName = "online", name = "o"))
     public void take(ParameterizedContext context)
     {
         String amountString = context.getString(1);
@@ -171,9 +173,8 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Reset the money from given user",
-             usage = "<player>|* [-o]",
-             flags = @Flag(longName = "online", name = "o"),
-             min = 1, max = 1)
+             indexed = @Grouped(@Indexed({"player","!*"})),
+             flags = @Flag(longName = "online", name = "o"))
     public void reset(ParameterizedContext context)
     {
         if ("*".equalsIgnoreCase(context.getString(0)))
@@ -224,9 +225,9 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Sets the money of a given player",
-             usage = "<player>|* <amount> [-o]",
-             flags = @Flag(longName = "online", name = "o"),
-             min = 2, max = 2)
+             indexed = { @Grouped(@Indexed({"player","!*"})),
+                         @Grouped(@Indexed("amount"))},
+             flags = @Flag(longName = "online", name = "o"))
     public void set(ParameterizedContext context)
     {
         String amountString = context.getString(1);
@@ -284,9 +285,9 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Scales the money of a given player",
-             usage = "<player>|* <factor> [-o]",
-             flags = @Flag(longName = "online", name = "o"),
-             min = 2, max = 2)
+             indexed = {@Grouped(@Indexed({"player","!*"})),
+                        @Grouped(@Indexed("factor"))},
+             flags = @Flag(longName = "online", name = "o"))
     public void scale(ParameterizedContext context)
     {
         Float factor = context.getArg(1, Float.class, null);
@@ -336,8 +337,7 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Hides the account of a given player",
-             usage = "<player>|*",
-             min = 1, max = 1)
+             indexed = @Grouped(@Indexed({"player","!*"})))
     public void hide(ParameterizedContext context)
     {
         if ("*".equals(context.getString(0)))
@@ -374,8 +374,7 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Unhides the account of a given player",
-             usage = "<player>|*",
-             min = 1, max = 1)
+             indexed = @Grouped(@Indexed({"player","!*"})))
     public void unhide(ParameterizedContext context)
     {
         if ("*".equals(context.getString(0)))
@@ -412,9 +411,7 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes a users account.",
-             usage = "<player>",
-             min = 1, max = 1)
+    @Command(desc = "Deletes a users account.", indexed = @Grouped(@Indexed("player")))
     public void delete(CommandContext context)
     {
         User user = context.getUser(0);
@@ -434,9 +431,8 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Creates a new account",
-             usage = "[player]",
-             flags = @Flag(longName = "force", name = "f"),
-             min = 0, max = 1)
+             indexed = @Grouped(req = false, value = @Indexed("player")),
+             flags = @Flag(longName = "force", name = "f"))
     public void create(ParameterizedContext context)
     {
         if (context.hasArg(0))

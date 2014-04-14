@@ -34,6 +34,8 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -71,7 +73,8 @@ public class KickBanCommands
     }
 
     @Command(desc = "Kicks a player from the server",
-             usage = "<*|<player>> [reason]", min = 1, max = NO_MAX)
+             indexed = { @Grouped(@Indexed({"player","!*"})),
+                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)})
     public void kick(ParameterizedContext context)
     {
         String reason;
@@ -106,10 +109,10 @@ public class KickBanCommands
 
     @Command(names = {"ban", "kickban"},
              desc = "Bans a player permanently on your server.",
-             min = 1, max = NO_MAX,
-             usage = "<player> [reason] [-ipban]",
+             indexed = { @Grouped(@Indexed("player")),
+                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)},
              flags = {@Flag(longName = "ipban", name = "ip"),
-             @Flag(longName = "force", name = "f")})
+                      @Flag(longName = "force", name = "f")})
     public void ban(ParameterizedContext context)
     {
         if (this.cannotBanUser(context)) return;
@@ -198,7 +201,7 @@ public class KickBanCommands
 
     @Command(names = {"unban", "pardon"},
              desc = "Unbans a previously banned player.",
-             min = 1, max = 1, usage = "<player>")
+             indexed = @Grouped(@Indexed("player")))
     public void unban(CommandContext context)
     {
         String userName = context.getString(0);
@@ -217,7 +220,8 @@ public class KickBanCommands
 
     @Command(names = {"ipban", "banip"},
              desc = "Bans the IP from this server.",
-             min = 1, max = NO_MAX, usage = "<IP address> [reason]")
+             indexed = { @Grouped(@Indexed("IP address")),
+                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)})
     public void ipban(CommandContext context)
     {
         String ipaddress = context.getString(0);
@@ -258,7 +262,7 @@ public class KickBanCommands
 
     @Command(names = {"ipunban", "unbanip", "pardonip"},
              desc = "Bans the IP from this server.",
-             min = 1, max = 1, usage = "<IP address>")
+             indexed = @Grouped(@Indexed("IP address")))
     public void ipunban(CommandContext context)
     {
         String ipadress = context.getString(0);
@@ -282,12 +286,12 @@ public class KickBanCommands
 
     @Command(names = {"tempban","tban"},
              desc = "Bans a player for a given time.",
-             min = 2, max = NO_MAX,
-             usage = "<player> <time> [reason]",
+             indexed = { @Grouped(@Indexed("player")),
+                         @Grouped(@Indexed("time")),
+                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)},
              flags = @Flag(longName = "force", name = "f"))
     public void tempban(ParameterizedContext context)
     {
-        // TODO UUID stuff
         if (this.cannotBanUser(context)) return;
         OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
         User user = null;
@@ -352,7 +356,8 @@ public class KickBanCommands
         context.sendTranslated(POSITIVE, "Reloadhe ban lists successfully!");
     }
 
-    @Command(desc = "View all players banned from this server", usage = "[ips|players]", max = 1)
+    @Command(desc = "View all players banned from this server",
+             indexed = @Grouped(req = false, value = @Indexed(value = {"!ips","!players"})))
     public void banlist(CommandContext context)
     {
         // TODO paging

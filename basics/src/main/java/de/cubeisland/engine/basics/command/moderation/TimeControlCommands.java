@@ -32,6 +32,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -58,7 +60,7 @@ public class TimeControlCommands
     @Command(desc = "Changes the time of a world",
              flags = @Flag(longName = "lock", name = "l"),
              params = @Param(names = { "w", "worlds", "in"}),
-             max = 1, usage = "<time> [w <worlds>]")
+             indexed = @Grouped(value = @Indexed("time"), req = false))
     public void time(ParameterizedContext context)
     {
         List<World> worlds;
@@ -140,9 +142,10 @@ public class TimeControlCommands
         }
     }
 
-    @Command(desc = "Changes the time for a player", min = 1, max = 2, flags = {
-        @Flag(longName = "lock", name = "l")
-    }, usage = "<<time>|reset> [player]")
+    @Command(desc = "Changes the time for a player",
+             flags = @Flag(longName = "lock", name = "l"),
+             indexed = { @Grouped(@Indexed(value = {"time","!reset"})),
+                         @Grouped(req = false, value = @Indexed("player"))})
     public void ptime(ParameterizedContext context)
     {
         Long time = 0L;

@@ -34,12 +34,14 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Material.AIR;
 
 /**
  * item-related commands
@@ -63,7 +65,8 @@ public class ItemCommands
         this.module = module;
     }
 
-    @Command(desc = "Looks up an item for you!", max = 1, usage = "[item]")
+    @Command(desc = "Looks up an item for you!",
+            indexed = @Grouped(req = false, value = @Indexed("item")))
     public void itemDB(CommandContext context)
     {
         if (context.hasArg(0))
@@ -82,7 +85,7 @@ public class ItemCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            if (sender.getItemInHand().getType().equals(Material.AIR))
+            if (sender.getItemInHand().getType().equals(AIR))
             {
                 context.sendTranslated(NEUTRAL, "You hold nothing in your hands!");
                 return;
@@ -103,14 +106,16 @@ public class ItemCommands
         context.sendTranslated(NEGATIVE, "You need 1 parameter!");
     }
 
-    @Command(desc = "Changes the display name of the item in your hand.", usage = "<name> [lore...]", min = 1, max = NO_MAX)
+    @Command(desc = "Changes the display name of the item in your hand.",
+             indexed = { @Grouped(@Indexed("name")),
+                         @Grouped(req = false, value = @Indexed("lore..."),greedy = true)})
     public void rename(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
             ItemStack item = sender.getItemInHand();
-            if (item == null || item.getType().equals(Material.AIR))
+            if (item == null || item.getType().equals(AIR))
             {
                 context.sendTranslated(NEGATIVE, "You need to hold an item to rename in your hand!");
                 return;
@@ -133,7 +138,7 @@ public class ItemCommands
 
     @Command(names = {"headchange", "skullchange"},
              desc = "Changes a skull to a players skin.",
-             usage = "<name>", min = 1, max = 1)
+             indexed = @Grouped(req = false, value = @Indexed("name")))
     public void headchange(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -155,11 +160,10 @@ public class ItemCommands
         context.sendTranslated(NEGATIVE, "This will you only give headaches!");
     }
 
-    @Command(desc = "Grants unlimited items", max = 1, usage = "[on|off]")
-    @SuppressWarnings("deprecation")
+    @Command(desc = "Grants unlimited items",
+             indexed = @Grouped(req = false, value = @Indexed(value = {"!on","!off"})))
     public void unlimited(CommandContext context)
     {
-
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
@@ -198,9 +202,10 @@ public class ItemCommands
         context.sendTranslated(NEGATIVE, "This command can only be used by a player!");
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand", max = 2,
+    @Command(desc = "Adds an Enchantment to the item in your hand",
              flags = @Flag(longName = "unsafe", name = "u"),
-             usage = "<enchantment> [level] [-unsafe]")
+             indexed = { @Grouped(value = @Indexed("enchantment"), req = false),
+                         @Grouped(value = @Indexed("level"), req = false)})
     public void enchant(ParameterizedContext context)
     {
         if (!context.hasArg(0))
@@ -212,7 +217,7 @@ public class ItemCommands
         {
             User sender = (User)context.getSender();
             ItemStack item = sender.getItemInHand();
-            if (item.getType().equals(Material.AIR))
+            if (item.getType().equals(AIR))
             {
                 context.sendTranslated(NEUTRAL, "{text:ProTip}: You cannot enchant your fists!");
                 return;
@@ -316,8 +321,9 @@ public class ItemCommands
 
     @Command(desc = "Gives the specified Item to a player",
              flags = {@Flag(name = "b", longName = "blacklist")},
-             usage = "<player> <material[:data]> [amount] [-blacklist]",
-             min = 2, max = 3)
+             indexed = { @Grouped(@Indexed("player")),
+                         @Grouped(@Indexed("material[:data]")),
+                         @Grouped(value = @Indexed("amount"), req = false)})
     @SuppressWarnings("deprecation")
     public void give(ParameterizedContext context)
     {
@@ -357,11 +363,12 @@ public class ItemCommands
         user.sendTranslated(POSITIVE, "{user} just gave you {amount} {input#item}!", context.getSender().getName(), amount, matname);
     }
 
-    @Command(names = {
-        "item", "i"
-    }, desc = "Gives the specified Item to you", min = 1, max = NO_MAX, flags = {
-        @Flag(longName = "blacklist", name = "b")
-    }, usage = "<material[:data]> [enchantment[:level]] [amount] [-blacklist]")
+    @Command(names = {"item", "i"}, desc = "Gives the specified Item to you",
+             indexed = {
+                @Grouped(@Indexed("material[:data]")),
+                @Grouped(value = @Indexed("enchantment[:level]"), req = false),
+                @Grouped(value = @Indexed("amount"), req = false)},
+             flags = {@Flag(longName = "blacklist", name = "b")})
     @SuppressWarnings("deprecation")
     public void item(ParameterizedContext context)
     {
@@ -423,8 +430,9 @@ public class ItemCommands
         context.sendTranslated(NEUTRAL, "Did you try to use {text:/give} on your new I-Tem?");
     }
 
-    @Command(desc = "Refills the stack in hand", usage = "[amount] [-a]", max = 1, flags = @Flag(longName = "all", name = "a"))
-    public void more(ParameterizedContext context)
+    @Command(desc = "Refills the stack in hand",
+             indexed = @Grouped(value = @Indexed({"amount","!*"}), req = false))
+    public void more(CommandContext context)
     {
         User sender = null;
         if (context.getSender() instanceof User)
@@ -436,47 +444,51 @@ public class ItemCommands
             context.sendTranslated(NEGATIVE, "You can't get enough of it, can you?");
             return;
         }
-        if (sender.getItemInHand() == null || sender.getItemInHand().getType() == Material.AIR)
+
+        Integer amount = 1;
+        if (context.hasArg(0))
+        {
+            if ("*".equals(context.getString(0)))
+            {
+                for (ItemStack item : sender.getInventory().getContents())
+                {
+                    if (item.getType() != AIR)
+                    {
+                        item.setAmount(64);
+                    }
+                }
+                sender.sendTranslated(POSITIVE, "Refilled all stacks!");
+                return;
+            }
+
+            amount = context.getArg(0, Integer.class);
+            if (amount == null || amount <= 1)
+            {
+                context.sendTranslated(NEGATIVE, "Invalid amount {input#amount}", context.getString(0));
+                return;
+            }
+
+        }
+        if (sender.getItemInHand() == null || sender.getItemInHand().getType() == AIR)
         {
             context.sendTranslated(NEUTRAL, "More nothing is still nothing!");
             return;
         }
-        if (context.hasFlag("a"))
+        sender.getItemInHand().setAmount(64);
+        if (amount == 1)
         {
-            for (ItemStack item : sender.getInventory().getContents())
-            {
-                if (item.getType() != Material.AIR)
-                {
-                    item.setAmount(64);
-                }
-            }
-            sender.sendTranslated(POSITIVE, "Refilled all stacks!");
-        }
-        else
-        {
-            sender.getItemInHand().setAmount(64);
-            if (context.hasArg(0))
-            {
-                Integer amount = context.getArg(0, Integer.class);
-                if (amount == null || amount <= 1)
-                {
-                    context.sendTranslated(NEGATIVE, "Invalid amount {input#amount}", context.getString(0));
-                    return;
-                }
-                for (int i = 1; i < amount; ++i)
-                {
-                    sender.getInventory().addItem(sender.getItemInHand());
-                }
-                sender.sendTranslated(POSITIVE, "Refilled {amount} stacks in hand!", amount);
-                return;
-            }
             sender.sendTranslated(POSITIVE, "Refilled stack in hand!");
+            return;
         }
+        for (int i = 1; i < amount; ++i)
+        {
+            sender.getInventory().addItem(sender.getItemInHand());
+        }
+        sender.sendTranslated(POSITIVE, "Refilled {amount} stacks in hand!", amount);
     }
 
-    @Command(desc = "Repairs your items", flags = {
-        @Flag(longName = "all", name = "a")
-    }, usage = "[-all]")
+    @Command(desc = "Repairs your items",
+             flags = @Flag(longName = "all", name = "a"))
     // without item in hand
     public void repair(ParameterizedContext context)
     {

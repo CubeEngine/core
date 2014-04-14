@@ -32,6 +32,8 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
@@ -138,7 +140,8 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cunlock")
-    @Command(desc = "Unlocks a password protected chest", max = 1, min = 1,
+    @Command(desc = "Unlocks a password protected chest",
+             indexed = @Grouped(@Indexed("password")),
              flags = @Flag(longName = "persist", name = "p"))
     public void unlock(ParameterizedContext context)
     {
@@ -154,7 +157,7 @@ public class LockerCommands extends ContainerCommand
     @Alias(names = "cmodify")
     @Command(names = "modify",
              desc = "adds or removes player from the accesslist",
-                usage = "<players...>", min = 1, max = 1,
+             indexed = @Grouped(@Indexed("players...")),
     flags = {@Flag(name = "g", longName = "global"),
              @Flag(longName = "persist", name = "p")})
     public void modify(ParameterizedContext context)
@@ -195,8 +198,8 @@ public class LockerCommands extends ContainerCommand
 
     @Alias(names = "cgive")
     @Command(desc = "gives a protection to someone else",
-    usage = "<player>", min = 1, max = 1,
-    flags = @Flag(longName = "persist", name = "p"))
+             indexed = @Grouped(@Indexed("player")),
+             flags = @Flag(longName = "persist", name = "p"))
     public void give(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -216,7 +219,6 @@ public class LockerCommands extends ContainerCommand
     @Alias(names = "ckey")
     @Command(names = "key",
              desc = "creates a KeyBook or invalidates previous KeyBooks",
-             usage = "[-invalidate]",
              flags = { @Flag(longName = "invalidate", name = "i"),
                        @Flag(longName = "persist", name = "p")})
     public void key(ParameterizedContext context)
@@ -245,11 +247,10 @@ public class LockerCommands extends ContainerCommand
 
     @Alias(names = "cflag")
     @Command(desc = "Sets or unsets flags",
-             usage = "set|unset <flags...>",
-             params = {
-                 @Param(names = "set", completer = FlagCompleter.class),
-                 @Param(names = "unset", completer = FlagCompleter.class),
-             },
+             indexed = {@Grouped(@Indexed({"!set","!unset"})),
+                        @Grouped(@Indexed("flags..."))},
+             params = {@Param(names = "set", completer = FlagCompleter.class),
+                       @Param(names = "unset", completer = FlagCompleter.class)},
              flags = @Flag(longName = "persist", name = "p"))
     public void flag(ParameterizedContext context)
     {

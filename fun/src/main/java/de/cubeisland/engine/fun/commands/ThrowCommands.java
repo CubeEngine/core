@@ -43,6 +43,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -76,15 +78,11 @@ public class ThrowCommands
         }
     }
 
-    @Command
-    (
-        names = "throw", 
-        desc = "Throw something!", 
-        max = 2, 
-        params = @Param(names = { "delay", "d" }, type = Integer.class), 
-        flags = @Flag(longName = "unsafe", name = "u"), 
-        usage = "<material> [amount] [delay <value>] [-unsafe]"
-    )
+    @Command(names = "throw",desc = "Throw something!",
+        indexed = {@Grouped(@Indexed("material")),
+                   @Grouped(req = false, value = @Indexed("amount"))},
+        params = @Param(names = { "delay", "d" }, type = Integer.class),
+        flags = @Flag(longName = "unsafe", name = "u"))
     public void throwCommand(ParameterizedContext context)
     {
         if (!(context.getSender() instanceof User))

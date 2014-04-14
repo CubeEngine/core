@@ -26,6 +26,8 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
@@ -47,7 +49,8 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Command(desc = "Changes the owner of a portal",
-    usage = "<owner> [portal]", min = 1, max = 2)
+             indexed = {@Grouped(@Indexed("owner")),
+                        @Grouped(req = false, value = @Indexed("portal"))})
     public void owner(CommandContext context)
     {
         User user = context.getUser(0);
@@ -82,9 +85,9 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Alias(names = "mvpd")
-    @Command(names = {"destination","dest"},
-        desc = "changes the destination of the selected portal",
-             usage = "here|<world>|<p:<portal>> [portal]", min = 1, max = 2)
+    @Command(names = {"destination","dest"}, desc = "changes the destination of the selected portal",
+        indexed = {@Grouped(@Indexed({"!here","world","p:<portal>"})),
+                   @Grouped(req = false, value = @Indexed("portal"))})
     public void destination(CommandContext context)
     {
         Portal portal = null;
@@ -140,7 +143,8 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated(POSITIVE, "Portal destination set!");
     }
 
-    @Command(desc = "Changes a portals location", usage = "[portal]", max = 1)
+    @Command(desc = "Changes a portals location",
+             indexed = @Grouped(req = false, value = @Indexed("portal")))
     public void location(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -179,7 +183,8 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You have to be ingame to do this!");
     }
 
-    @Command(desc = "Modifies the location where a player exits when teleporting a portal", usage = "[portal]", max = 1)
+    @Command(desc = "Modifies the location where a player exits when teleporting a portal",
+             indexed = @Grouped(req = false, value = @Indexed("portal")))
     public void exit(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -215,7 +220,8 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You have to be ingame to do this!");
     }
 
-    @Command(desc = "Toggles safe teleportation for this portal", usage = "[portal]", max = 1)
+    @Command(desc = "Toggles safe teleportation for this portal",
+             indexed = @Grouped(req = false, value = @Indexed("portal")))
     public void togglesafe(CommandContext context)
     {
         Portal portal = null;
@@ -250,7 +256,8 @@ public class PortalModifyCommand extends ContainerCommand
         }
     }
 
-    @Command(desc = "Toggles whether entities can teleport with this portal", usage = "[portal]", max = 1)
+    @Command(desc = "Toggles whether entities can teleport with this portal",
+             indexed = @Grouped(req = false, value = @Indexed("portal")))
     public void entity(CommandContext context)
     {
         Portal portal = null;

@@ -19,9 +19,10 @@ package de.cubeisland.engine.chat;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
@@ -34,14 +35,17 @@ public class ChatCommands
         this.module = module;
     }
 
-    @Command(desc = "Allows you to emote", min = 1, max = NO_MAX, usage = "<message>")
+    @Command(desc = "Allows you to emote", indexed = @Grouped(value = @Indexed("message"), greedy = true))
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
         this.module.getCore().getUserManager().broadcastStatus(message, context.getSender());
     }
 
-    @Command(desc = "Changes your display name", usage = "<name>|-r [player]", min = 1, max = 2)
+    @Command(desc = "Changes your display name",
+             indexed = {
+                 @Grouped(@Indexed({"name","!reset"})),
+                 @Grouped(req = false, value = @Indexed("player"))})
     public void nick(CommandContext context)
     {
         User forUser;

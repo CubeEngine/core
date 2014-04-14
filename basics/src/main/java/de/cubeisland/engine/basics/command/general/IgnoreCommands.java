@@ -25,6 +25,8 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.storage.IgnoreList;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -79,8 +81,8 @@ public class IgnoreCommands
         return ignore != null;
     }
 
-    @Command(desc = "Ignores all messages from players", min = 1, max = 1, usage = "<player>")
-    // other usages: <player>[,<player>]...
+    @Command(desc = "Ignores all messages from players",
+             indexed = @Grouped(@Indexed("players...")))
     public void ignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -119,14 +121,14 @@ public class IgnoreCommands
                                rand1, rand2, rand1 + rand2);
     }
 
-    @Command(desc = "Stops ignoring all messages from a player", min = 1, max = 1, usage = "<player>")
-    // other usages: <player>[,<player>]...
+    @Command(desc = "Stops ignoring all messages from a player",
+             indexed = @Grouped(@Indexed("players...")))
     public void unignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            String[] userNames = StringUtils.explode(",",context.getString(0));
+            String[] userNames = StringUtils.explode(",", context.getString(0));
             List<String> added = new ArrayList<>();
             for (String name : userNames)
             {

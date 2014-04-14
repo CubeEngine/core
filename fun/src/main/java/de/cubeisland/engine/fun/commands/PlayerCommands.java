@@ -31,6 +31,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
@@ -49,19 +51,10 @@ public class PlayerCommands
         this.module.getCore().getEventManager().registerListener(module, explosionListener);
     }
     
-    @Command(
-            desc = "Gives a player a hat",
-            max = 1,
-            params =
-            {
-                @Param(names = {"player", "p"}, type = User.class)
-            },
-            flags =
-            {
-                @Flag(longName = "quiet", name = "q")
-            },
-            usage = "[item] [player <player>]"
-    )
+    @Command(desc = "Gives a player a hat",
+            params = @Param(names = {"player", "p"}, type = User.class),
+            flags = @Flag(longName = "quiet", name = "q"),
+            indexed = @Grouped(req = false, value = @Indexed("item")))
     public void hat(ParameterizedContext context)
     {
         User user;
@@ -155,19 +148,13 @@ public class PlayerCommands
         }        
     }
 
-    @Command(desc = "Creates an explosion", params = {
-            @Param(names = {
-                "player", "p"
-            }, type = User.class),
-            @Param(names = {
-                "damage", "d"
-            }, type = Integer.class)
-    }, flags = {
-            @Flag(longName = "unsafe", name = "u"),
-            @Flag(longName = "fire", name = "f"),
-            @Flag(longName = "blockDamage", name = "b"),
-            @Flag(longName = "playerDamage", name = "p")
-    }, max = 0, usage = "[player <name>] [damage <value>] [-blockDamage] [-playerDamage] [-fire] [-unsafe]")
+    @Command(desc = "Creates an explosion",
+             params = {@Param(names = {"player", "p"}, type = User.class),
+                       @Param(names = {"damage", "d"}, label = "value", type = Integer.class)},
+             flags = {@Flag(longName = "unsafe", name = "u"),
+                      @Flag(longName = "fire", name = "f"),
+                      @Flag(longName = "blockDamage", name = "b"),
+                      @Flag(longName = "playerDamage", name = "p")})
     public void explosion(ParameterizedContext context)
     {
         User user;
@@ -230,21 +217,11 @@ public class PlayerCommands
         user.getWorld().createExplosion(location.getX(), location.getY(), location.getZ(), power, context.hasFlag("f") || context.hasFlag("u"), context.hasFlag("b") || context.hasFlag("u"));
     }
 
-    @Command(names = {
-        "lightning", "strike"
-    }, desc = "Throws a lightning bolt at a player or where you're looking", max = 0, params = {
-            @Param(names = {
-                "player", "p"
-            }, type = User.class),
-            @Param(names = {
-                "damage", "d"
-            }, type = Integer.class),
-            @Param(names = {
-                "fireticks", "f"
-            }, type = Integer.class)
-    }, flags = {
-        @Flag(longName = "unsafe", name = "u")
-    }, usage = "[player <name>] [damage <value>] [fireticks <seconds>] [-unsafe]")
+    @Command(names = {"lightning", "strike"}, desc = "Throws a lightning bolt at a player or where you're looking",
+             params = {@Param(names = {"player", "p"}, type = User.class),
+                       @Param(names = {"damage", "d"}, label = "value", type = Integer.class),
+                       @Param(names = {"fireticks", "f"}, label = "seconds", type = Integer.class)},
+             flags = @Flag(longName = "unsafe", name = "u"))
     public void lightning(ParameterizedContext context)
     {
         User user;
@@ -303,7 +280,9 @@ public class PlayerCommands
         }
     }
 
-    @Command(desc = "Slaps a player", min = 1, max = 2, usage = "<player> [damage]")
+    @Command(desc = "Slaps a player",
+             indexed = {@Grouped(value = @Indexed("player")),
+                        @Grouped(req = false, value = @Indexed("damage"))})
     public void slap(CommandContext context)
     {
         User user = context.getUser(0);
@@ -326,9 +305,10 @@ public class PlayerCommands
         user.setVelocity(new Vector(userDirection.getX() * damage / 2, 0.05 * damage, userDirection.getZ() * damage / 2));
     }
 
-    @Command(desc = "Burns a player", min = 1, max = 2, flags = {
-        @Flag(longName = "unset", name = "u")
-    }, usage = "<player> [seconds] [-unset]")
+    @Command(desc = "Burns a player",
+             indexed = {@Grouped(value = @Indexed("player")),
+                        @Grouped(req = false, value = @Indexed("seconds"))},
+             flags = @Flag(longName = "unset", name = "u"))
     public void burn(ParameterizedContext context)
     {
         User user = context.getUser(0);

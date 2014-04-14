@@ -28,6 +28,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.FileUtil;
 
@@ -66,7 +68,7 @@ public class KitCommand extends ContainerCommand
 
     @Command(desc = "Creates a new kit with the items in your inventory.",
             flags = @Flag(longName = "toolbar", name = "t"),
-            usage = "<kitName> [-toolbar]", min = 1, max = 1)
+            indexed = @Grouped(@Indexed("kitname")))
     public void create(ParameterizedContext context)
     {
         User sender = null;
@@ -141,9 +143,11 @@ public class KitCommand extends ContainerCommand
     }
 
     @Alias(names = "kit")
-    @Command(desc = "Gives a set of items.", usage = "<kitname> [player]", min = 1, max = 2, flags = {
-        @Flag(longName = "all", name = "a"),
-        @Flag(longName = "force", name = "f")
+    @Command(desc = "Gives a set of items.",
+             indexed = {@Grouped(@Indexed("kitname")),
+                        @Grouped(req = false, value =  @Indexed("player"))},
+             flags = {@Flag(longName = "all", name = "a"),
+                      @Flag(longName = "force", name = "f")
     })
     public void give(ParameterizedContext context)
     {

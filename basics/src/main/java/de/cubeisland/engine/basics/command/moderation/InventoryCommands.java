@@ -27,6 +27,8 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 
@@ -51,7 +53,7 @@ public class InventoryCommands
             flags = {@Flag(longName = "force", name = "f"),
                      @Flag(longName = "quiet", name = "q"),
                      @Flag(longName = "ender", name = "e")},
-            usage = "<player>", min = 1, max = 1)
+            indexed = @Grouped(@Indexed("player")))
     public void invsee(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -147,9 +149,10 @@ public class InventoryCommands
     }
 
     @Command(names = {"clearinventory", "ci", "clear"},
-            desc = "Clears the inventory", usage = "[player]",
-            flags = {@Flag(longName = "removeArmor", name = "ra")
-            ,@Flag(longName = "quiet", name = "q")}, max = 1)
+            desc = "Clears the inventory",
+            indexed = @Grouped(req = false, value = @Indexed("player")),
+            flags = { @Flag(longName = "removeArmor", name = "ra"),
+                      @Flag(longName = "quiet", name = "q")})
     @SuppressWarnings("deprecation")
     public void clearinventory(ParameterizedContext context)
     {

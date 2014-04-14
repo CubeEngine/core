@@ -23,6 +23,8 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -43,7 +45,7 @@ public class TeleportRequestCommands
         this.basics = basics;
     }
 
-    @Command(desc = "Requests to teleport to a player.", usage = "<player>", min = 1, max = 1)
+    @Command(desc = "Requests to teleport to a player.", indexed = @Grouped(@Indexed("player")))
     public void tpa(CommandContext context)
     {
         User sender = null;
@@ -91,7 +93,7 @@ public class TeleportRequestCommands
         }
     }
 
-    @Command(desc = "Requests to teleport a player to you.", usage = "<player>", min = 1, max = 1)
+    @Command(desc = "Requests to teleport a player to you.", indexed = @Grouped(@Indexed("player")))
     public void tpahere(CommandContext context)
     {
         if (context.getSender() instanceof User)

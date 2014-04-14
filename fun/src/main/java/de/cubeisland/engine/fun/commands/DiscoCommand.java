@@ -26,6 +26,8 @@ import org.bukkit.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.fun.Fun;
 import gnu.trove.map.hash.THashMap;
@@ -46,8 +48,7 @@ public class DiscoCommand
 
     @Command(
         desc = "Rapidly changes from day to night",
-        usage = "[world] [delay <value>]",
-        max = 1,
+        indexed = @Grouped(req = false, value = @Indexed("world")),
         params = @Param(names = {"delay", "d"}, type = Integer.class)
     )
     public void disco(ParameterizedContext context)

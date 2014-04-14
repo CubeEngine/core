@@ -25,6 +25,8 @@ import org.bukkit.entity.Player;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.fun.Fun;
 
@@ -39,7 +41,8 @@ public class InvasionCommand
         this.module = module;
     }
 
-    @Command(desc = "Spawns a mob next to every player on the server", min = 1, max = 1, usage = "<mob>")
+    @Command(desc = "Spawns a mob next to every player on the server",
+             indexed = @Grouped(@Indexed("mob")))
     public void invasion(CommandContext context)
     {
         EntityType entityType = Match.entity().mob(context.getString(0, null));

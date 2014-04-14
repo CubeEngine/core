@@ -24,6 +24,8 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.reflect.codec.converter.Converter;
 import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.reflect.node.StringNode;
@@ -49,9 +51,10 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "setrperm")
     @Command(names = {"setperm", "setpermission"},
              desc = "Sets the permission for given role [in world]",
-             usage = "<[g:]role> <permission> [true|false|reset] [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("permission")),
+                        @Grouped(req = false, value = @Indexed({"!true","!false","!reset"}))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void setpermission(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -115,9 +118,10 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "setrdata")
     @Command(names = {"setdata", "setmeta", "setmetadata"},
              desc = "Sets the metadata for given role [in world]",
-             usage = "<[g:]role> <key> [value] [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 3, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("key")),
+                        @Grouped(req = false, value = @Indexed("value"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void setmetadata(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -152,9 +156,9 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "resetrdata")
     @Command(names = {"resetdata", "resetmeta", "resetmetadata"},
              desc = "Resets the metadata for given role [in world]",
-             usage = "<[g:]role> <key> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("key"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void resetmetadata(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -180,9 +184,8 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "clearrdata")
     @Command(names = {"cleardata", "clearmeta", "clearmetadata"},
              desc = "Clears the metadata for given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("[g:]role")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void clearmetadata(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -204,9 +207,9 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = {"addrparent","manradd"})
     @Command(desc = "Adds a parent role to given role [in world]",
-             usage = "<[g:]role> <[g:]parentrole> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("[g:]parentrole"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void addParent(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -260,9 +263,9 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "remrparent")
     @Command(desc = "Removes a parent role from given role [in world]",
-             usage = "<[g:]role> <[g:]parentrole> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("[g:]parentrole"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void removeParent(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -304,9 +307,8 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "clearrparent")
     @Command(desc = "Removes all parent roles from given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("[g:]role")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void clearParent(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -328,9 +330,9 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "setrolepriority")
     @Command(names = {"setprio", "setpriority"},
              desc = "Sets the priority of given role [in world]",
-             usage = "<[g:]role> <priority> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("priotity"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void setPriority(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -363,9 +365,9 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "renamerole")
     @Command(desc = "Renames given role [in world]",
-             usage = "<[g:]role> <new name> [in <world>]|[-global]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("new name"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void rename(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -402,10 +404,9 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "createrole")
     @Command(desc = "Creates a new role [in world]",
-             usage = "<rolename> [in <world>]|[-global]",
-             params = @Param(names = "in", type = World.class),
-             flags = @Flag(longName = "global", name = "g"),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("rolename")),
+             params = @Param(names = "in", label = "world", type = World.class),
+             flags = @Flag(longName = "global", name = "g"))
     public void create(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -433,9 +434,8 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "deleteRole")
     @Command(desc = "Deletes a role [in world]",
-             usage = "<[g:]rolename> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("[g:]rolename")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void delete(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -458,9 +458,8 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Command(names = {"toggledefault", "toggledef", "toggledefaultrole"},
              desc = "Toggles whether given role is a default role [in world]",
-             usage = "<rolename> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("rolename")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void toggleDefaultRole(ParameterizedContext context)
     {
         String roleName = context.getString(0);

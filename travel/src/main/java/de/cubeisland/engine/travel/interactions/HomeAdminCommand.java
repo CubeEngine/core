@@ -29,9 +29,10 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
@@ -112,11 +113,9 @@ public class HomeAdminCommand extends ContainerCommand
 
     @Alias(names = {"clearhomes"})
     @Command(desc = "Clear all homes (of an user)",
-             flags = {
-        @Flag(name = "pub", longName = "public"),
-        @Flag(name = "priv", longName = "Private")},
-             permDefault =  PermDefault.OP, max = 1,
-             usage = " <user> <-public> <-Private>")
+             flags = {@Flag(name = "pub", longName = "public"),
+                      @Flag(name = "priv", longName = "Private")},
+             indexed = @Grouped(req = false, value = @Indexed("player")))
     public CommandResult clear(final ParameterizedContext context)
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
@@ -206,12 +205,12 @@ public class HomeAdminCommand extends ContainerCommand
         }, context);
     }
 
-    @Command(desc = "List all (public) homes", flags = {
-        @Flag(name = "pub", longName = "public"),
-        @Flag(name = "priv", longName = "private"),
-        @Flag(name = "o", longName = "owned"),
-        @Flag(name = "i", longName = "invited")
-    }, permDefault =  PermDefault.OP, min = 0, max = 1, usage = " <<user>  <-owned> <-invited>> <-public> <-private>")
+    @Command(desc = "List all (public) homes",
+             flags = {@Flag(name = "pub", longName = "public"),
+                      @Flag(name = "priv", longName = "private"),
+                      @Flag(name = "o", longName = "owned"),
+                      @Flag(name = "i", longName = "invited")},
+             indexed = @Grouped(req = false, value = @Indexed("player")))
     public void list(ParameterizedContext context)
     {
         int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
@@ -266,9 +265,8 @@ public class HomeAdminCommand extends ContainerCommand
     }
 
     @Command(names = {"private", "makeprivate"},
-             permDefault =  PermDefault.OP,
              desc = "Make a users home private",
-             min = 1, max = 1, usage = "<owner>:<home>")
+             indexed = @Grouped(@Indexed("<owner>:<home>")))
     public void makePrivate(CommandContext context)
     {
         Home home;
@@ -288,10 +286,8 @@ public class HomeAdminCommand extends ContainerCommand
     }
 
     @Command(names = {"public", "makepublic"},
-             permDefault = PermDefault.OP,
              desc = "Make a users home public",
-             min = 1, max = 1,
-             usage = " owner:home")
+             indexed = @Grouped(@Indexed("<owner>:<home>")))
     public void makePublic(CommandContext context)
     {
         Home home;

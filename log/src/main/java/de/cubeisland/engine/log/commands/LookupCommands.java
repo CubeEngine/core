@@ -33,6 +33,8 @@ import de.cubeisland.engine.core.command.parameterized.completer.MaterialListCom
 import de.cubeisland.engine.core.command.parameterized.completer.PlayerListCompleter;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
@@ -90,19 +92,24 @@ public class LookupCommands
 
     @Command(
         desc = "Queries a lookup in the database\n    " + "Show availiable parameters with /lookup params",
-        usage = "[page <page>] [parameters]",
+        indexed = @Grouped(req = false, value = @Indexed("params")),
         flags = {
-            @Flag(longName = "coordinates", name = "coords"), @Flag(longName = "detailed", name = "det"), @Flag(longName = "nodate", name = "nd"), @Flag(longName = "descending", name = "desc")
-        },
+            @Flag(longName = "coordinates", name = "coords"),
+            @Flag(longName = "detailed", name = "det"),
+            @Flag(longName = "nodate", name = "nd"),
+            @Flag(longName = "descending", name = "desc")},
         params = {
-            @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
-            @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class), @Param(names = {"block", "b"}, completer = MaterialListCompleter.class), @Param(names = {"entity", "e"}), @Param(names = {"since", "time", "t"}), // if not given default since 3d
-            @Param(names = {"before"}), @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class),
-
-            @Param(names = {"limit", "pagelimit"}, type = Integer.class), @Param(names = {"page"}, type = Integer.class),
-
-            @Param(names = "params", completer = ActionTypeCompleter.class)
-        }, min = 0, max = 1)
+            @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class),
+            @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
+            @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class),
+            @Param(names = {"block", "b"}, completer = MaterialListCompleter.class),
+            @Param(names = {"entity", "e"}),
+            @Param(names = {"since", "time", "t"}), // if not given default since 3d
+            @Param(names = {"before"}),
+            @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class),
+            @Param(names = {"limit", "pagelimit"}, type = Integer.class),
+            @Param(names = {"page"}, type = Integer.class),
+            @Param(names = "params", completer = ActionTypeCompleter.class)})
     // TODO param for filter / chat / command / signtexts
     public void lookup(ParameterizedContext context)
     {
@@ -156,14 +163,14 @@ public class LookupCommands
         }
     }
 
-    @Command(
-        desc = "Performs a rollback", usage = "",
+    @Command(desc = "Performs a rollback",
         flags = @Flag(longName = "preview", name = "pre"),
+        indexed = @Grouped(req = false, value = @Indexed("!params")),
         params = {
             @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
             @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class), @Param(names = {"block", "b"}, completer = MaterialListCompleter.class), @Param(names = {"entity", "e"}), @Param(names = {"since", "time", "t"}), // if not given default since 3d
             @Param(names = {"before"}), @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class),
-        }, min = 0, max = 1)
+        })
     public void rollback(ParameterizedContext context)
     {
         if (context.hasArg(0))
@@ -212,13 +219,13 @@ public class LookupCommands
     }
 
     @Command(
-        desc = "Performs a rollback", usage = "",
+        desc = "Performs a rollback",
+        indexed = @Grouped(req = false, value = @Indexed("params")),
         flags = @Flag(longName = "preview", name = "pre"),
         params = {
             @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
             @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class), @Param(names = {"block", "b"}, completer = MaterialListCompleter.class), @Param(names = {"entity", "e"}), @Param(names = {"since", "time", "t"}), // if not given default since 3d
-            @Param(names = {"before"}), @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class),
-        }, min = 0, max = 1)
+            @Param(names = {"before"}), @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)})
     public void redo(ParameterizedContext context)
     {
         if (context.hasArg(0))

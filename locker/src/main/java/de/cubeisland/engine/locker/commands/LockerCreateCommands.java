@@ -23,6 +23,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
 import de.cubeisland.engine.locker.storage.LockManager;
@@ -56,7 +58,8 @@ public class LockerCreateCommands extends ContainerCommand
 
     @Alias(names = "cprivate")
     @Command(names = "private",
-    desc = "creates a private protection", max = 1, usage = "[password]",
+    desc = "creates a private protection",
+    indexed = @Grouped(req = false, value = @Indexed("password")),
     flags = @Flag(name = "key", longName = "keybook"))
     public void cPrivate(ParameterizedContext context)
     {
@@ -75,7 +78,8 @@ public class LockerCreateCommands extends ContainerCommand
 
     @Alias(names = "cdonation")
     @Command(names = "donation",
-             desc = "creates a donation protection", max = 1, usage = "[password]",
+             desc = "creates a donation protection",
+             indexed = @Grouped(req = false, value = @Indexed("password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cDonation(ParameterizedContext context)
     {
@@ -85,7 +89,8 @@ public class LockerCreateCommands extends ContainerCommand
 
     @Alias(names = "cfree")
     @Command(names = "free",
-             desc = "creates a free protection", max = 1, usage = "[password]",
+             desc = "creates a free protection",
+             indexed = @Grouped(req = false, value = @Indexed("password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cFree(ParameterizedContext context)
     {
@@ -95,7 +100,8 @@ public class LockerCreateCommands extends ContainerCommand
 
     @Alias(names = "cpassword")
     @Command(names = "password",
-             desc = "creates a donation protection", min = 1, max = 1, usage = "<password>",
+             desc = "creates a donation protection",
+             indexed = @Grouped(@Indexed("password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cPassword(ParameterizedContext context) // same as private but with pw
     {
@@ -105,7 +111,8 @@ public class LockerCreateCommands extends ContainerCommand
 
     @Alias(names = "cguarded")
     @Command(names = "guarded",
-             desc = "creates a guarded protection", min = 0, max = 1, usage = "[password]",
+             desc = "creates a guarded protection",
+             indexed = @Grouped(req = false, value = @Indexed("password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cguarded(ParameterizedContext context) // same as private but with pw
     {

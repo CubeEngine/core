@@ -31,6 +31,8 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
 
@@ -56,9 +58,10 @@ public class BorderCommands extends ContainerCommand
     private int generated;
     private boolean running = false;
 
-    @Command(desc = "Sets the center of the border", usage = "[<chunkX> <chunkZ>]|[-spawn] [in <world>]",
-    flags = @Flag(longName = "spawn", name = "s"),
-    params = @Param(names = {"in", "world", "w"}, type = World.class, completer = WorldCompleter.class))
+    @Command(desc = "Sets the center of the border",
+             indexed = @Grouped(req = false, value = {@Indexed("chunkX"), @Indexed("chunkZ")}),
+             flags = @Flag(longName = "spawn", name = "s"),
+             params = @Param(names = {"in", "world", "w"}, label = "world", type = World.class, completer = WorldCompleter.class))
     public void setCenter(ParameterizedContext context)
     {
         World world;
@@ -107,7 +110,7 @@ public class BorderCommands extends ContainerCommand
     }
 
     @Alias(names = "generateBorder")
-    @Command(desc = "Generates the chunks located in the border", min = 1, max = 1, usage = "<world>")
+    @Command(desc = "Generates the chunks located in the border", indexed = @Grouped(@Indexed("world")))
     public void generate(ParameterizedContext context)
     {
         if (running)

@@ -28,6 +28,8 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.Role;
@@ -46,8 +48,7 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Alias(names = "listroles")
     @Command(desc = "Lists all roles in a world or globally",
-             usage = "[in <world>]|[-global]",
-             params = @Param(names = "in", type = World.class),
+             params = @Param(names = "in", label = "world", type = World.class),
              flags = @Flag(longName = "global", name = "g"))
     public void list(ParameterizedContext context)
     {
@@ -82,9 +83,9 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Alias(names = "checkrperm")
     @Command(names = {"checkperm", "checkpermission"},
              desc = "Checks the permission in given role [in world]",
-             usage = "<[g:]role> <permission> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("[g:]role")),
+                        @Grouped(@Indexed("permission"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void checkperm(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -145,10 +146,9 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Alias(names = "listrperm")
     @Command(names = {"listperm", "listpermission"},
              desc = "Lists all permissions of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             flags = @Flag(longName = "all", name = "a"),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("[g:]role")),
+             params = @Param(names = "in", label = "world", type = World.class),
+             flags = @Flag(longName = "all", name = "a"))
     public void listperm(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -197,10 +197,9 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Alias(names = "listrdata")
     @Command(names = {"listdata", "listmeta", "listmetadata"},
              desc = "Lists all metadata of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             flags = @Flag(longName = "all", name = "a"),
-             max = 2, min = 1)
+             indexed = @Grouped(@Indexed("[g:]role")),
+             params = @Param(names = "in", label = "world", type = World.class),
+             flags = @Flag(longName = "all", name = "a"))
     public void listmetadata(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -241,9 +240,8 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Alias(names = "listrparent")
     @Command(desc = "Lists all parents of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("[g:]role")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void listParent(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -279,9 +277,8 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Command(names = {"prio", "priority"},
              desc = "Show the priority of given role [in world]",
-             usage = "<[g:]role> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1, min = 1)
+             indexed = @Grouped(@Indexed("[g:]role")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void priority(ParameterizedContext context)
     {
         String roleName = context.getString(0);
@@ -301,8 +298,7 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Command(names = {"default","defaultroles","listdefroles", "listdefaultroles"},
              desc = "Lists all default roles [in world]",
-             usage = "[in <world>]",
-             params = @Param(names = "in", type = World.class))
+             params = @Param(names = "in", label = "world", type = World.class))
     public void listDefaultRoles(ParameterizedContext context)
     {
         World world = this.getWorld(context);

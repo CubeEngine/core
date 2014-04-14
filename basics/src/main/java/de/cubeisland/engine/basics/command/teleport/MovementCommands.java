@@ -28,6 +28,8 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.LocationUtil;
@@ -50,7 +52,8 @@ public class MovementCommands
         this.module = module;
     }
 
-    @Command(desc = "Teleports you X amount of blocks into the air and puts a glass block beneath you.", usage = "<height>", min = 1, max = 1)
+    @Command(desc = "Teleports you X amount of blocks into the air and puts a glass block beneath you.",
+             indexed = @Grouped(@Indexed("height")))
     public void up(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -108,7 +111,7 @@ public class MovementCommands
         context.sendTranslated(NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
-    @Command(desc = "Teleports you to the next safe spot upwards.", max = 0)
+    @Command(desc = "Teleports you to the next safe spot upwards.")
     public void ascend(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -155,7 +158,7 @@ public class MovementCommands
         context.sendTranslated(NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
-    @Command(desc = "Teleports you to the next safe spot downwards.", max = 0)
+    @Command(desc = "Teleports you to the next safe spot downwards.")
     public void descend(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -191,9 +194,7 @@ public class MovementCommands
         context.sendTranslated(NEUTRAL, "Pro Tip: Teleport does not work IRL!");
     }
 
-    @Command(names = {
-        "jumpto", "jump", "j"
-    }, desc = "Jumps to the position you are looking at.", max = 0)
+    @Command(names = {"jumpto", "jump", "j"}, desc = "Jumps to the position you are looking at.")
     public void jumpTo(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -215,9 +216,7 @@ public class MovementCommands
         context.sendTranslated(NEUTRAL, "Jumping in the console is not allowed! Go play outside!");
     }
 
-    @Command(names = {
-        "through", "thru"
-    }, desc = "Jumps to the position you are looking at.", max = 0)
+    @Command(names = {"through", "thru"}, desc = "Jumps to the position you are looking at.")
     public void through(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -240,9 +239,8 @@ public class MovementCommands
         context.sendTranslated(NEUTRAL, "Passing through firewalls in the console is not allowed! Go play outside!");
     }
 
-    @Command(desc = "Teleports you to your last location", max = 0, flags =
-        @Flag(longName = "unsafe", name = "u") , checkPerm = false
-    )
+    @Command(desc = "Teleports you to your last location",
+             flags = @Flag(longName = "unsafe", name = "u"), checkPerm = false)
     public void back(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -291,9 +289,8 @@ public class MovementCommands
         context.sendTranslated(NEGATIVE, "Unfortunately teleporting is still not implemented in the game {text:'Life'}!");
     }
 
-    @Command(names = {
-        "place", "put"
-    }, desc = "Jumps to the position you are looking at.", max = 1, min = 1, usage = "<player>")
+    @Command(names = {"place", "put"}, desc = "Jumps to the position you are looking at.",
+             indexed = @Grouped(@Indexed("player")))
     public void place(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -328,7 +325,10 @@ public class MovementCommands
 
     }
 
-    @Command(desc = "Swaps you and another players position", min = 1, max = 2, usage = "<player> [player]")
+    @Command(desc = "Swaps you and another players position",
+             indexed = {
+                 @Grouped(@Indexed("player")),
+                 @Grouped(value = @Indexed("player"),req = false)})
     public void swap(CommandContext context)
     {
         User sender;

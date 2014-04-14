@@ -25,6 +25,8 @@ import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.user.User;
 
@@ -46,7 +48,7 @@ public class HideCommands implements CommandHolder
         return ReflectedCommand.class;
     }
 
-    @Command(desc = "Hides a player.", usage = "(player)", max = 1)
+    @Command(desc = "Hides a player.", indexed = @Grouped(req = false, value = @Indexed("player")))
     public void hide(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -81,7 +83,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Unhides a player.", usage = "(player)", max = 1)
+    @Command(desc = "Unhides a player.", indexed = @Grouped(req = false, value = @Indexed("player")))
     public void unhide(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -116,7 +118,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Checks whether a player is hidden.", usage = "(player)", max = 1)
+    @Command(desc = "Checks whether a player is hidden.", indexed = @Grouped(req = false, value = @Indexed("player")))
     public void hidden(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -166,7 +168,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Toggles the ability to see hidden players.", usage = "(player)", max = 1)
+    @Command(desc = "Toggles the ability to see hidden players.", indexed = @Grouped(req = false, value = @Indexed("player")))
     public void seehiddens(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -202,7 +204,8 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Checks whether a player can see hidden players.", usage = "(player)", max = 1)
+    @Command(desc = "Checks whether a player can see hidden players.",
+             indexed = @Grouped(req = false, value = @Indexed("player")))
     public void canseehiddens(CommandContext context)
     {
         CommandSender sender = context.getSender();

@@ -36,8 +36,6 @@ public @interface Command
 
     String desc();
 
-    String usage() default "";
-
     int min() default 0;
 
     int max() default 0;

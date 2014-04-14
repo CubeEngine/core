@@ -34,6 +34,8 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.fun.Fun;
@@ -57,11 +59,9 @@ public class RocketCommand
         return this.rocketListener;
     }
 
-    @Command(desc = "Shoots a player upwards with a cool smoke effect", max = 1, usage = "[height] [player <name>]", params = {
-        @Param(names = {
-            "player", "p"
-        }, type = User.class)
-    })
+    @Command(desc = "Shoots a player upwards with a cool smoke effect",
+             indexed = @Grouped(req = false, value = @Indexed("height")),
+             params = @Param(names = {"player", "p"}, type = User.class))
     public void rocket(ParameterizedContext context)
     {
         int height = context.getArg(0, Integer.class, 10);

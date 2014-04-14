@@ -26,6 +26,8 @@ import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
@@ -47,9 +49,8 @@ public class UserInformationCommands extends UserCommandHelper
 
     @Alias(names = "listuroles")
     @Command(desc = "Lists roles of a user [in world]",
-             usage = "[player] [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 1)
+             indexed = @Grouped(req = false, value = @Indexed("player")),
+             params = @Param(names = "in", label = "world", type = World.class))
     public void list(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
@@ -73,9 +74,9 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkuperm")
     @Command(names = {"checkperm", "checkpermission"},
              desc = "Checks for permissions of a user [in world]",
-             usage = "<player> <permission> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("permission"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void checkpermission(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -139,10 +140,9 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "listuperm")
     @Command(names = {"listperm", "listpermission"},
              desc = "List permission assigned to a user in a world",
-             usage = "[player] [in <world>] [-all]",
-             params = @Param(names = "in", type = World.class),
-             flags = @Flag(longName = "all", name = "a"),
-             max = 1)
+             indexed = @Grouped(req = false, value = @Indexed("player")),
+             params = @Param(names = "in", label = "world", type = World.class),
+             flags = @Flag(longName = "all", name = "a"))
     public void listpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
@@ -167,9 +167,9 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkumeta")
     @Command(names = {"checkdata", "checkmeta", "checkmetadata"},
              desc = "Checks for metadata of a user [in world]",
-             usage = "<player> <metadatakey> [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             max = 2, min = 2)
+             indexed = {@Grouped(@Indexed("player")),
+                        @Grouped(@Indexed("metadatakey"))},
+             params = @Param(names = "in", label = "world", type = World.class))
     public void checkmetadata(ParameterizedContext context)
     {
         User user = context.getUser(0);
@@ -204,10 +204,9 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "listumeta")
     @Command(names = {"listdata", "listmeta", "listmetadata"},
              desc = "Lists assigned metadata from a user [in world]",
-             usage = "[player] [in <world>]",
-             params = @Param(names = "in", type = World.class),
-             flags = @Flag(longName = "all", name = "a"),
-             max = 1)
+             indexed = @Grouped(req = false, value = @Indexed("player")),
+             params = @Param(names = "in", label = "world", type = World.class),
+             flags = @Flag(longName = "all", name = "a"))
     public void listmetadata(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);

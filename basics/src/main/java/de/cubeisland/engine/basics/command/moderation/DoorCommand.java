@@ -31,6 +31,8 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.Vector3;
 import de.cubeisland.engine.core.util.math.shape.Sphere;
@@ -48,18 +50,20 @@ public class DoorCommand
 
     @Command(
         desc = "Opens or closes doors around the player.",
-        usage = "<open|close> <radius> <world> <x> <y> <z>",
-        flags =
-        {
+        indexed = {
+            @Grouped(@Indexed({"!open","!close"})),
+            @Grouped(@Indexed("radius")),
+            @Grouped(req = false, value = {
+                @Indexed("world"),
+                @Indexed("x"),
+                @Indexed("y"),
+                @Indexed("z")})},
+        flags = {
             @Flag(longName = "all", name = "a"),
             @Flag(longName = "woodenDoor", name = "w"),
             @Flag(longName = "ironDoor", name = "i"),
             @Flag(longName = "trapDoor", name = "t"),
-            @Flag(longName = "fenceGate", name = "f")
-        },
-        min = 2,
-        max = 6
-    )
+            @Flag(longName = "fenceGate", name = "f")})
     public void doors(ParameterizedContext context)
     {
         boolean open;
