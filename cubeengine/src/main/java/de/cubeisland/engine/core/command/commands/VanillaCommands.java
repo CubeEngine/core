@@ -381,8 +381,8 @@ public class VanillaCommands implements CommandHolder
                 {
                     showSourceVersion(context, core.getSourceVersion());
                 }
-                context.sendTranslated(NEUTRAL, "Description: {input}", plugin.getDescription().getDescription());
-                context.sendTranslated(NEUTRAL, "Website: {input}", plugin.getDescription().getWebsite());
+                context.sendTranslated(NEUTRAL, "Description: {input}", plugin.getDescription().getDescription() == null ? "NONE" : plugin.getDescription().getDescription());
+                context.sendTranslated(NEUTRAL, "Website: {input}", plugin.getDescription().getWebsite() == null ? "NONE" : plugin.getDescription().getWebsite());
                 context.sendTranslated(NEUTRAL, "Authors:");
                 for (String author : plugin.getDescription().getAuthors())
                 {

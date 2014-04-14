@@ -15,34 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log.action.hanging;
+package de.cubeisland.engine.log;
 
 import org.bukkit.Art;
 
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.log.action.BaseAction;
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
-
-/**
- * Represents a player breaking an image
- */
-public class PaintingBreak extends HangingBreak
+public class ArtConverter implements Converter<Art>
 {
-    public Art art;
-
     @Override
-    public boolean canAttach(BaseAction action)
+    public Node toNode(Art object, ConverterManager manager) throws ConversionException
     {
-        return action instanceof PaintingBreak && this.player.equals(((PaintingBreak)action).player);
+        return StringNode.of(object.name());
     }
 
     @Override
-    public String translateAction(User user)
+    public Art fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        // TODO indirect
-        int count = this.countAttached();
-        return user.getTranslationN(POSITIVE, count, "{text:One painting} got removed by {user}",
-                                    "{1:amount} {text:painting} got removed by {user}", this.player.name, count);
+        return Art.valueOf(node.asText());
     }
 }
