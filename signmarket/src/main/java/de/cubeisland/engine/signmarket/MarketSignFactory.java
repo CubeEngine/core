@@ -146,43 +146,43 @@ public class MarketSignFactory
         }
     }
 
-    public void syncAndSaveSign(MarketSign marketSign)
+    public void syncAndSaveSign(MarketSign sign)
     {
-        if (marketSign.getItemInfo().getKey().longValue() == 0 || marketSign.getItemInfo().getReferenced().size() == 1) // de-synced sign OR possibly sync-able sign
+        if (sign.getItemInfo().getKey().longValue() == 0 || sign.getItemInfo().getReferenced().size() == 1) // de-synced sign OR possibly sync-able sign
         {
-            for (MarketSign sign : this.marketSigns.values())
+            for (MarketSign other : this.marketSigns.values())
             {
-                if (sign.hasDemand()) // skip if limited demand
+                if (other.hasDemand()) // skip if limited demand
                 {
                     continue;
                 }
-                if ((marketSign.getRawOwner().equals(sign.getRawOwner()) && marketSign != sign)  // same owner (but not same sign)
-                    && marketSign.canSync(sign)) // both have stock AND same item -> doSync
+                if ((sign.isAdminSign() && other.isAdminSign()) || (!sign.isAdminSign() && sign.getRawOwner().equals(other.getRawOwner()) && sign != other)  // same owner (but not same sign)
+                    && sign.canSync(other)) // both have stock AND same item -> doSync
                 {
                     // apply the found item-info to the marketsign
-                    SignMarketItemModel itemModel = marketSign.setItemInfo(sign.getItemInfo());
-                    if (marketSign.syncOnMe) // stock OR stock-size change
+                    SignMarketItemModel itemModel = sign.setItemInfo(other.getItemInfo());
+                    if (sign.syncOnMe) // stock OR stock-size change
                     {
-                        marketSign.setStock(itemModel.getStock().intValue());
-                        marketSign.setSize(itemModel.getSize().intValue());
-                        marketSign.syncOnMe = false;
+                        sign.setStock(itemModel.getStock().intValue());
+                        sign.setSize(itemModel.getSize().intValue());
+                        sign.syncOnMe = false;
                     }
-                    this.saveOrUpdate(marketSign);
+                    this.saveOrUpdate(sign);
                     this.module.getLog().debug("block-model #{} synced onto the item-model #{} (size: {})" ,
-                                               marketSign.getBlockInfo().getKey(), marketSign.getItemInfo().getKey(), marketSign.getItemInfo().getReferenced().size());
+                                               sign.getBlockInfo().getKey(), sign.getItemInfo().getKey(), sign.getItemInfo().getReferenced().size());
                     if (itemModel.getKey().longValue() != 0 && itemModel.isNotReferenced())
                     {
                         this.signMarketItemManager.delete(itemModel); // delete if no more referenced
-                        this.module.getLog().debug("{] deleted item-model #{}", marketSign.isAdminSign() ? "Server" : marketSign.getOwner().getDisplayName(), marketSign.getItemInfo().getKey());
+                        this.module.getLog().debug("{] deleted item-model #{}", sign.isAdminSign() ? "Server" : sign.getOwner().getDisplayName(), sign.getItemInfo().getKey());
                     }
-                    marketSign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
+                    sign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
                     return;
                 }
             }
             // no sync -> new ItemModel
         }
-        this.saveOrUpdate(marketSign);
-        marketSign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
+        this.saveOrUpdate(sign);
+        sign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
     }
 
     private void saveOrUpdate(MarketSign marketSign)
