@@ -62,13 +62,14 @@ import static org.bukkit.block.BlockFace.UP;
  * {@link PlayerJukeboxBreak}
  * {@link PlayerContainerBreak}
  * {@link PlayerBlockPlace}
+ * {@link de.cubeisland.engine.log.action.block.player.SignChange}
  */
 public class ListenerPlayerBlock extends LogListener
 {
     public ListenerPlayerBlock(Log module)
     {
         super(module, PlayerBlockBreak.class, PlayerBlockPlace.class, PlayerNoteBlockBreak.class, PlayerSignBreak.class,
-              PlayerJukeboxBreak.class, PlayerContainerBreak.class, PlayerBlockPlace.class);
+              PlayerJukeboxBreak.class, PlayerContainerBreak.class, PlayerBlockPlace.class, SignChange.class);
     }
 
     //Doors / Beds only logged bottom / feet
