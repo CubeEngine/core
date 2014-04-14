@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -94,7 +95,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             flags.add(new CommandFlag(flag.name(), flag.longName()));
         }
 
-        Set<CommandParameter> params = new HashSet<>(annotation.params().length);
+        Set<CommandParameter> params = new LinkedHashSet<>(annotation.params().length);
         for (Param param : annotation.params())
         {
             String[] names = param.names();
@@ -111,7 +112,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             {
                 paramAliases = new String[0];
             }
-            final CommandParameter commandParameter = new CommandParameter(names[0], param.type());
+            final CommandParameter commandParameter = new CommandParameter(names[0], param.label(), param.type());
             commandParameter.addAliases(paramAliases);
             commandParameter.setRequired(param.required());
 
@@ -169,9 +170,42 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             return null;
         }
         ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, annotation.desc(),
-                                                    this.createContextFactory(new ArgBounds(annotation.min(), annotation.max()), indexedParams, flags, params)
-        );
-        cmd.setUsage(annotation.usage());
+                this.createContextFactory(new ArgBounds(annotation.min(), annotation.max()), indexedParams, flags, params));
+
+        String usage = annotation.usage();
+        if (usage.isEmpty())
+        {
+            int i = 0;
+            for (CommandParameterIndexed indexedParam : indexedParams)
+            {
+                i++;
+                if (i >= annotation.min() && i <= annotation.max())
+                {
+                    usage += "<" + indexedParam.getLabel() + "> ";
+                }
+                else
+                {
+                    usage += "[" + indexedParam.getLabel() + "] ";
+                }
+            }
+            for (CommandParameter param : params)
+            {
+                if (param.isRequired())
+                {
+                    usage += "<" + param.getName() + " <" + param.getLabel() + ">> ";
+                }
+                else
+                {
+                    usage += "[" + param.getName() + " <" + param.getLabel() + ">] ";
+                }
+            }
+            for (CommandFlag flag : flags)
+            {
+                usage += "[-" + flag.getLongName() + "] ";
+            }
+            usage = usage.trim();
+        }
+        cmd.setUsage(usage);
         cmd.setAliases(aliases);
         cmd.setLoggable(annotation.loggable());
         if (annotation.checkPerm())

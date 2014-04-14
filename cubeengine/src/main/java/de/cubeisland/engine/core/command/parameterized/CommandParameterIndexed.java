@@ -39,6 +39,11 @@ public class CommandParameterIndexed
         this.type = type;
     }
 
+    public String getLabel()
+    {
+        return label;
+    }
+
     public Class<?> getType()
     {
         return type;

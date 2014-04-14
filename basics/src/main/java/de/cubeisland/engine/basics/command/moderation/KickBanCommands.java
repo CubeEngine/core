@@ -369,7 +369,7 @@ public class KickBanCommands
             }
             else
             {
-                context.sendTranslated(NEUTRAL, context.getCommand().getUsage());
+                context.sendTranslated(NEUTRAL, context.getCommand().getUsage(context));
             }
         }
         if (players)

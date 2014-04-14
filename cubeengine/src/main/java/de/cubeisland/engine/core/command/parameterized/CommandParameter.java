@@ -28,6 +28,7 @@ import static de.cubeisland.engine.core.contract.Contract.expect;
 public class CommandParameter
 {
     private final String name;
+    private final String label;
     private final Set<String> aliases;
 
     private final Class<?> type;
@@ -35,14 +36,20 @@ public class CommandParameter
 
     private Completer completer;
 
-    public CommandParameter(String name, Class<?> type)
+    public CommandParameter(String name, String label, Class<?> type)
     {
         expect(ArgumentReader.hasReader(type), "The named parameter '" + name + "' has an unreadable type: " + type.getName());
         this.name = name;
+        this.label = label.isEmpty() ? name : label;
         this.aliases = new HashSet<>(0);
         this.type = type;
         this.required = false;
         this.completer = null;
+    }
+
+    public String getLabel()
+    {
+        return label;
     }
 
     public String getName()

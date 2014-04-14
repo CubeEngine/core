@@ -21,6 +21,8 @@ public @interface Param
 {
     String[] names();
 
+    String label() default "";
+
     Class type() default String.class;
 
     boolean required() default false;

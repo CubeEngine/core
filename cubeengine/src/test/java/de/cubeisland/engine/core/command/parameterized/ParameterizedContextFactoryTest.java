@@ -81,7 +81,7 @@ public class ParameterizedContextFactoryTest extends TestCase
             new ArgBounds(0),
             Collections.<CommandParameterIndexed>emptyList(),
             Arrays.asList(new CommandFlag("a", "all")),
-            Arrays.asList(new CommandParameter("test", String.class))
+            Arrays.asList(new CommandParameter("test", "label", String.class))
         );
 
         Stack<String> labels = new Stack<>();

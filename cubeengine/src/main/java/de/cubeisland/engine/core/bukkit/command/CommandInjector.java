@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.bukkit.command;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -36,11 +35,10 @@ import de.cubeisland.engine.core.bukkit.command.WrappedCubeCommandHelpTopic.Fact
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
-
 import gnu.trove.set.hash.THashSet;
 
-import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
@@ -115,10 +113,10 @@ public class CommandInjector
     private Command wrapCommand(CubeCommand command)
     {
         Command cmd = new WrappedCubeCommand(command);
-        
-        cmd.setAliases(new ArrayList<>(command.getAliases()));
-        cmd.setUsage(command.getUsage());
-        cmd.setDescription(command.getDescription());
+        // TODO why got this set: ?
+        //cmd.setAliases(new ArrayList<>(command.getAliases()));
+        //cmd.setUsage(command.getUsage());
+        //cmd.setDescription(command.getDescription());
         return cmd;
     }
 

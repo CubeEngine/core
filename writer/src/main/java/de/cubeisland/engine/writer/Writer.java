@@ -50,11 +50,10 @@ public class Writer extends Module
 
     @Command(names = {"edit", "rewrite"},
              desc = "Edit a sign or unsign a book",
-             usage = "[1 \"line1\"] [2 \"line2\"] [3 \"line3\"] [4 \"line4\"] ",
-             params = {@Param(names ={"1", "Line1"}),
-                       @Param(names ={"2", "Line2"}),
-                       @Param(names ={"3", "Line3"}),
-                       @Param(names ={"4", "Line4"})})
+             params = {@Param(names ={"1", "Line1"}, label = "1st line"),
+                       @Param(names ={"2", "Line2"}, label = "2nd line"),
+                       @Param(names ={"3", "Line3"}, label = "3rd line"),
+                       @Param(names ={"4", "Line4"}, label = "4th line")})
     public void edit(ParameterizedContext context)
     {
         if (!(context.getSender() instanceof User))
