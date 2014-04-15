@@ -48,11 +48,11 @@ public class RolesManager
 
     private GlobalRoleProvider globalRoleProvider;
 
-    private Map<World, WorldRoleProvider> worldRoleProviders;
-    private Set<RoleProvider> providerSet;
+    private Map<World, WorldRoleProvider> worldRoleProviders = new HashMap<>();
+    private Set<RoleProvider> providerSet = new LinkedHashSet<>();
 
-    protected Map<World, World> assignedUserDataMirrors;
-    protected Map<World, World> assignedRolesMirrors;
+    protected Map<World, World> assignedUserDataMirrors = new HashMap<>();
+    protected Map<World, World> assignedRolesMirrors = new HashMap<>();
 
     public RolesManager(Roles module)
     {
@@ -183,6 +183,7 @@ public class RolesManager
             worldRoleProvider = this.worldRoleProviders.get(world);
         }
         return worldRoleProvider;
+
     }
 
     public Path getRolesFolder()
