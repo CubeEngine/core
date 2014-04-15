@@ -159,14 +159,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 labels = new String[]{String.valueOf(index)};
             }
 
-            // TODO greedy index (count = -1) can ONLY be last index
-            // e.g. "players..." or "message" at the end (<players...>)
-
-            // TODO or tabcompleter
-            // players|* combine with registered completer (<players|*>)
-
-            // TODO or autotabcompleter
-            // true|false (no completer given) (<true|false>)
             int greed = indexed.length;
             if (arg.greedy())
             {
@@ -174,8 +166,22 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             }
             CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(), greed);
             indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
+
+            Set<String> staticLabels = new HashSet<>();
+            for (String label : labels)
+            {
+                if (label.startsWith("!"))
+                {
+                    staticLabels.add(label.substring(1));
+                }
+            }
+
+            if (!staticLabels.isEmpty())
+            {
+                indexedParam.setCompleter(new IndexedParameterCompleter(indexedParam.getCompleter(), staticLabels));
+            }
+
             indexedParams.add(indexedParam);
-            // TODO labeled OR completer e.g. label = "true|false"
 
             if (indexed.length > 1)
             {
