@@ -204,9 +204,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, annotation.desc(),
                 this.createContextFactory(indexedParams, flags, params), permission);
 
-        // TODO remove
-        System.out.println(cmd.getUsage() + " (" + cmd.getContextFactory().getArgBounds().getMin() + "-" + cmd.getContextFactory().getArgBounds().getMin() + ")");
-
         cmd.setAliases(aliases);
         cmd.setLoggable(annotation.loggable());
 
