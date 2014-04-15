@@ -179,11 +179,11 @@ public abstract class ParameterizedCommand extends CubeCommand
             {
                 if (param.isRequired())
                 {
-                    sb.append('<').append(param.getName()).append('<').append(param.getLabel()).append(">> ");
+                    sb.append('<').append(param.getName()).append(" <").append(param.getLabel()).append(">> ");
                 }
                 else
                 {
-                    sb.append('[').append(param.getName()).append('<').append(param.getLabel()).append(">] ");
+                    sb.append('[').append(param.getName()).append(" <").append(param.getLabel()).append(">] ");
                 }
             }
         }

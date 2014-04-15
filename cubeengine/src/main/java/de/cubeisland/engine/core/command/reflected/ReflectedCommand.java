@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
@@ -69,6 +70,10 @@ public class ReflectedCommand extends ParameterizedCommand
             }
             catch (InvocationTargetException e)
             {
+                if (e.getCause() instanceof CommandException)
+                {
+                    throw (CommandException)e.getCause();
+                }
                 throw new RuntimeException(e.getCause());
             }
         }

@@ -49,9 +49,13 @@ public class CommandFlag
     {
         return longName;
     }
-
     public boolean checkPermission(Permissible permissible)
     {
         return this.permission == null || permissible == null || this.permission.isAuthorized(permissible);
+    }
+
+    public Permission getPermission()
+    {
+        return permission;
     }
 }
