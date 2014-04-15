@@ -107,7 +107,7 @@ public class WrappedCubeCommand extends Command
     @Override
     public String getPermission()
     {
-        return this.command.getPermission();
+        return this.command.getPermission() == null ? null : this.command.getPermission().getFullName();
     }
 
     @Override

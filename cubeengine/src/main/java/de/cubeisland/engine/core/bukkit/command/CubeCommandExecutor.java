@@ -90,10 +90,6 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                 {
                     break;
                 }
-                if (!child.isAuthorized(sender))
-                {
-                    throw new PermissionDeniedException(child.getPermission());
-                }
                 command = child;
                 labels.push(args[0]);
                 args = Arrays.copyOfRange(args, 1, args.length);
@@ -112,6 +108,10 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             System.arraycopy(suffix, 0, newArgs, prefix.length + args.length, suffix.length);
 
             args = newArgs;
+        }
+        if (!command.isAuthorized(sender))
+        {
+            throw new PermissionDeniedException(command.getPermission());
         }
         if (tabComplete)
         {
@@ -177,6 +177,10 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         try
         {
             context = toCommandContext(this.command, sender, label, args, true);
+        }
+        catch (PermissionDeniedException e)
+        {
+            return Collections.emptyList();
         }
         catch (CommandException e)
         {

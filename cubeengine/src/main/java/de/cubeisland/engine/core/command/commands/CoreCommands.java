@@ -63,7 +63,6 @@ public class CoreCommands extends ContainerCommand
         super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.");
         this.setAliases(new HashSet<>(asList("ce")));
         this.core = (BukkitCore)core;
-        this.setGeneratePermission(true);
         this.banManager = core.getBanManager();
     }
 

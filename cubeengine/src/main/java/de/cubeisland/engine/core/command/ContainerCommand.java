@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
+import org.bukkit.permissions.Permissible;
+
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
@@ -59,14 +61,14 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
     public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
     {
-        super(module, name, description, new ParameterizedContextFactory(CommandParameterIndexed.emptyIndex("action")));
+        super(module, name, description, new ParameterizedContextFactory(CommandParameterIndexed.emptyIndex("action")), null);
         this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;
     }
 
     @Override
-    protected String getUsage0(Locale locale)
+    protected String getUsage0(Locale locale, Permissible permissible)
     {
         return "[" + this.getModule().getCore().getI18n().translate(locale, "action") + "]";
     }

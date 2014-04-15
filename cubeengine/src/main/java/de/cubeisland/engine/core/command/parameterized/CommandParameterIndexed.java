@@ -81,7 +81,7 @@ public class CommandParameterIndexed
 
     public static CommandParameterIndexed greedyIndex()
     {
-        return new CommandParameterIndexed(new String[0], String.class, false, false, -1);
+        return new CommandParameterIndexed(new String[]{"0"}, String.class, false, false, -1);
     }
 
     public static CommandParameterIndexed emptyIndex(String label)

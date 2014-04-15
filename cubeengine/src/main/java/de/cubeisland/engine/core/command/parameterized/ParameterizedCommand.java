@@ -23,18 +23,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.bukkit.permissions.Permissible;
+
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.Permission;
 
 import static de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.Type.*;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 public abstract class ParameterizedCommand extends CubeCommand
 {
-    protected ParameterizedCommand(Module module, String name, String description, ParameterizedContextFactory parser)
+    protected ParameterizedCommand(Module module, String name, String description, ParameterizedContextFactory parser, Permission permission)
     {
-        super(module, name, description, parser);
+        super(module, name, description, parser, permission);
     }
 
     @Override
@@ -167,23 +170,29 @@ public abstract class ParameterizedCommand extends CubeCommand
     }
 
     @Override
-    protected String getUsage0(Locale locale)
+    protected String getUsage0(Locale locale, Permissible permissible)
     {
-        StringBuilder sb = new StringBuilder(super.getUsage0(locale)).append(' ');
+        StringBuilder sb = new StringBuilder(super.getUsage0(locale, permissible)).append(' ');
         for (CommandParameter param : this.getContextFactory().getParameters())
         {
-            if (param.isRequired())
+            if (param.checkPermission(permissible))
             {
-                sb.append('<').append(param.getName()).append('<').append(param.getLabel()).append(">> ");
-            }
-            else
-            {
-                sb.append('[').append(param.getName()).append('<').append(param.getLabel()).append(">] ");
+                if (param.isRequired())
+                {
+                    sb.append('<').append(param.getName()).append('<').append(param.getLabel()).append(">> ");
+                }
+                else
+                {
+                    sb.append('[').append(param.getName()).append('<').append(param.getLabel()).append(">] ");
+                }
             }
         }
         for (CommandFlag flag : this.getContextFactory().getFlags())
         {
-            sb.append("[-").append(flag.getLongName()).append("] ");
+            if (flag.checkPermission(permissible))
+            {
+                sb.append("[-").append(flag.getLongName()).append("] ");
+            }
         }
         return sb.toString().trim();
     }

@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
-import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import org.bukkit.Server;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.PermissionAttachment;
@@ -34,6 +33,7 @@ import org.bukkit.plugin.Plugin;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
@@ -42,9 +42,6 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.joda.time.Duration;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
-
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 /**
  * A Kit of Items a User can receive
@@ -206,7 +203,7 @@ public class Kit
         @Override
         public boolean isAuthorized(Permission perm)
         {
-            return this.hasPermission(perm.getName());
+            return perm.isAuthorized(this);
         }
 
         @Override

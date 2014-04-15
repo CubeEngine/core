@@ -30,31 +30,31 @@ public class LockerPerm extends PermissionContainer<Locker>
     {
         super(module);
         CubeCommand createCmd = mainCmd.getChild("create");
-        PROTECT.attach(Permission.getFor(mainCmd.getChild("info")),
-                       Permission.getFor(mainCmd.getChild("persist")),
-                       Permission.getFor(mainCmd.getChild("remove")),
-                       Permission.getFor(mainCmd.getChild("unlock")),
-                       Permission.getFor(mainCmd.getChild("modify")),
-                       Permission.getFor(mainCmd.getChild("unlock")),
-                       Permission.getFor(mainCmd.getChild("key")),
-                       Permission.getFor(mainCmd.getChild("flag")),
-                       Permission.getFor(mainCmd.getChild("give")),
-                       Permission.getFor(createCmd.getChild("private")),
-                       Permission.getFor(createCmd.getChild("public")),
-                       Permission.getFor(createCmd.getChild("donation")),
-                       Permission.getFor(createCmd.getChild("free")),
-                       Permission.getFor(createCmd.getChild("password")),
-                       Permission.getFor(createCmd.getChild("guarded")),
+        PROTECT.attach(mainCmd.getChild("info").getPermission(),
+                       mainCmd.getChild("persist").getPermission(),
+                       mainCmd.getChild("remove").getPermission(),
+                       mainCmd.getChild("unlock").getPermission(),
+                       mainCmd.getChild("modify").getPermission(),
+                       mainCmd.getChild("unlock").getPermission(),
+                       mainCmd.getChild("key").getPermission(),
+                       mainCmd.getChild("flag").getPermission(),
+                       mainCmd.getChild("give").getPermission(),
+                       createCmd.getChild("private").getPermission(),
+                       createCmd.getChild("public").getPermission(),
+                       createCmd.getChild("donation").getPermission(),
+                       createCmd.getChild("free").getPermission(),
+                       createCmd.getChild("password").getPermission(),
+                       createCmd.getChild("guarded").getPermission(),
                        CMD_INFO_SHOW_OWNER);
         MODERATOR.attach(PROTECT, SHOW_OWNER, CMD_INFO_OTHER, ACCESS_OTHER, CMD_REMOVE_OTHER);
         CubeCommand adminCmd = mainCmd.getChild("admin");
         ADMIN.attach(BREAK_OTHER, EXPAND_OTHER, CMD_REMOVE_OTHER, CMD_KEY_OTHER, CMD_MODIFY_OTHER, CMD_GIVE_OTHER, EXPAND_OTHER,
-                     Permission.getFor(adminCmd.getChild("view")),
-                     Permission.getFor(adminCmd.getChild("remove")),
-                     Permission.getFor(adminCmd.getChild("tp")),
-                     Permission.getFor(adminCmd.getChild("purge")),
-            //         Permission.getFor(adminCmd.getChild("cleanup")),
-              //       Permission.getFor(adminCmd.getChild("list")),
+                     adminCmd.getChild("view").getPermission(),
+                     adminCmd.getChild("remove").getPermission(),
+                     adminCmd.getChild("tp").getPermission(),
+                     adminCmd.getChild("purge").getPermission(),
+            //         adminCmd.getChild("cleanup").getPermission(),
+              //       adminCmd.getChild("list").getPermission(),
             MODERATOR);
         this.registerAllPermissions();
     }

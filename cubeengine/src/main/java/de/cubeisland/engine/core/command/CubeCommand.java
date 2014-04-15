@@ -28,15 +28,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+
+import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.core.permission.PermDefault.OP;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
@@ -54,20 +57,19 @@ public abstract class CubeCommand
     private String label;
     private final Set<String> aliases;
     private String description;
-    private String permission;
-    
+
     private CubeCommand parent;
     private final Map<String, CubeCommand> children;
     protected final List<String> childrenAliases;
     private final ContextFactory contextFactory;
     private boolean loggable;
     private boolean asynchronous = false;
-    private boolean generatePermission;
-    private PermDefault generatedPermissionDefault;
+    private final Permission permission;
 
     private final Map<Locale, String> usages = new HashMap<>();
+    private boolean permRegistered = false;
 
-    public CubeCommand(Module module, String name, String description, ContextFactory contextFactory)
+    public CubeCommand(Module module, String name, String description, ContextFactory contextFactory, Permission permission)
     {
         if ("?".equals(name))
         {
@@ -83,8 +85,12 @@ public abstract class CubeCommand
         this.children = new HashMap<>();
         this.childrenAliases = new ArrayList<>();
         this.loggable = true;
-        this.generatePermission = false;
-        this.generatedPermissionDefault = PermDefault.DEFAULT;
+        this.permission = permission;
+    }
+
+    public CubeCommand(Module module, String name, String description, BasicContextFactory cFactory)
+    {
+        this(module, name, description, cFactory, Permission.detachedPermission(name, OP));
     }
 
     public String getName()
@@ -114,24 +120,40 @@ public abstract class CubeCommand
 
     public boolean isAuthorized(CommandSender sender)
     {
-        final String permission = this.getPermission();
-        if (permission == null || permission.isEmpty())
+        return this.permission == null || sender == null || this.permission.isAuthorized(sender);
+    }
+
+    public Permission getPermission()
+    {
+        return permission;
+    }
+
+    public void registerPermission()
+    {
+        if (this.permission == null)
         {
-            return true;
+            return;
         }
-        return sender.hasPermission(this.permission);
-    }
-    
-    public CubeCommand setPermission(String permission)
-    {
-        this.generatePermission = false;
-        this.permission = permission;
-        return this;
-    }
-    
-    public String getPermission()
-    {
-        return this.permission;
+        if (permRegistered)
+        {
+            this.module.getCore().getPermissionManager().removePermission(module, this.permission);
+        }
+        Stack<String> cmds = new Stack<>();
+        CubeCommand cmd = this;
+        while ((cmd = cmd.getParent()) != null)
+        {
+            cmds.push(cmd.getName());
+        }
+
+        Permission perm = this.getModule().getBasePermission().childWildcard("command");
+
+        while (!cmds.isEmpty())
+        {
+            perm = perm.childWildcard(cmds.pop());
+        }
+        this.permission.setParent(perm);
+        this.module.getCore().getPermissionManager().registerPermission(module, this.permission);
+        this.permRegistered = true;
     }
 
     public boolean isAsynchronous()
@@ -144,7 +166,6 @@ public abstract class CubeCommand
         this.asynchronous = asynchronous;
     }
 
-
     public void setLoggable(boolean state)
     {
         this.loggable = state;
@@ -155,84 +176,9 @@ public abstract class CubeCommand
         return this.loggable;
     }
 
-    public boolean isGeneratePermission()
-    {
-        return generatePermission;
-    }
-
-    public void setGeneratePermission(boolean generatePermission)
-    {
-        this.generatePermission = generatePermission;
-    }
-
-    public PermDefault getGeneratedPermissionDefault()
-    {
-        return generatedPermissionDefault;
-    }
-
-    public void setGeneratedPermissionDefault(PermDefault generatedPermissionDefault)
-    {
-        this.setGeneratePermission(true);
-        this.generatedPermissionDefault = generatedPermissionDefault;
-    }
-
     protected void registerAlias(String[] names, String[] parents)
     {
         this.registerAlias(names, parents, "", "");
-    }
-
-    protected Permission generatePermissionNode()
-    {
-        Permission commandBase = this.getModule().getBasePermission().childWildcard("command");
-        LinkedList<String> cmds = new LinkedList<>();
-        CubeCommand cmd = this;
-        do
-        {
-            cmds.addFirst(cmd.getName());
-        }
-        while ((cmd = cmd.getParent()) != null);
-        Permission perm = commandBase;
-        Iterator<String> it = cmds.iterator();
-        while (it.hasNext())
-        {
-            String permString = it.next();
-            if (it.hasNext())
-            {
-                perm = perm.childWildcard(permString);
-            }
-            else
-            {
-                perm = perm.child(permString, this.getGeneratedPermissionDefault());
-            }
-        }
-        return perm;
-    }
-
-    public void updateGeneratedPermission()
-    {
-        if (this.isGeneratePermission())
-        {
-            PermDefault def = null;
-            String node = this.getPermission();
-            if (node != null)
-            {
-                def = this.getModule().getCore().getPermissionManager().getDefaultFor(node);
-            }
-            if (def == null)
-            {
-                def = this.getGeneratedPermissionDefault();
-            }
-            this.setGeneratedPermission(def);
-        }
-    }
-
-    public void setGeneratedPermission(PermDefault def)
-    {
-        this.generatePermission = true;
-        this.setGeneratedPermissionDefault(def);
-        Permission perm = this.generatePermissionNode();
-        this.permission = perm.getName();
-        this.getModule().getCore().getPermissionManager().registerPermission(this.getModule(), perm);
     }
 
     protected void registerAlias(String[] names, String[] parents, String prefix, String suffix)
@@ -306,22 +252,22 @@ public abstract class CubeCommand
 
     public String getUsage()
     {
-        return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(this.module.getCore().getI18n().getDefaultLanguage().getLocale());
+        return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(this.module.getCore().getI18n().getDefaultLanguage().getLocale(), null);
     }
 
-    public final String getUsage(Locale locale)
+    public final String getUsage(Locale locale, Permissible permissible)
     {
         String usage = this.usages.get(locale);
         if (usage != null)
         {
             return usage;
         }
-        usage = this.getUsage0(locale);
+        usage = this.getUsage0(locale, permissible);
         this.usages.put(locale, usage);
         return usage;
     }
 
-    protected String getUsage0(Locale locale)
+    protected String getUsage0(Locale locale, Permissible permissible)
     {
         StringBuilder sb = new StringBuilder();
         int inGroup = 0;
@@ -397,7 +343,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender)
     {
-        String usage = this.getUsage(sender.getLocale());
+        String usage = this.getUsage(sender.getLocale(), sender);
         return (sender instanceof User ? "/" : "") + this.implodeCommandParentNames(" ") + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
@@ -412,7 +358,7 @@ public abstract class CubeCommand
     public String getUsage(CommandContext context)
     {
         final CommandSender sender = context.getSender();
-        String usage = this.getUsage(sender.getLocale());
+        String usage = this.getUsage(sender.getLocale(), context.getSender());
         return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, usage);
     }
 
@@ -426,7 +372,7 @@ public abstract class CubeCommand
      */
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
-        String usage = this.getUsage(sender.getLocale());
+        String usage = this.getUsage(sender.getLocale(), sender);
         return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + usage;
     }
 

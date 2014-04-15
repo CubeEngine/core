@@ -19,13 +19,13 @@ package de.cubeisland.engine.core.command.reflected;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.Permission;
 
 public class ReflectedCommand extends ParameterizedCommand
 {
@@ -34,9 +34,9 @@ public class ReflectedCommand extends ParameterizedCommand
     private final Class<? extends CommandContext> contextType;
 
     @SuppressWarnings("unchecked")
-    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, ParameterizedContextFactory factory)
+    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, ParameterizedContextFactory factory, Permission permission)
     {
-        super(module, name, description, factory);
+        super(module, name, description, factory, permission);
 
         this.holder = holder;
         this.method = method;

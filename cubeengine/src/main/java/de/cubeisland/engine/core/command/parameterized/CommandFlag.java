@@ -17,15 +17,27 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
+import org.bukkit.permissions.Permissible;
+
+import de.cubeisland.engine.core.permission.Permission;
+
 public class CommandFlag
 {
     private final String name;
     private final String longName;
 
-    public CommandFlag(String name, String longName)
+    private final Permission permission;
+
+    public CommandFlag(String name, String longName, Permission permission)
     {
         this.name = name;
         this.longName = longName;
+        this.permission = permission;
+    }
+
+    public CommandFlag(String name, String longName)
+    {
+        this(name, longName, null);
     }
 
     public String getName()
@@ -36,5 +48,10 @@ public class CommandFlag
     public String getLongName()
     {
         return longName;
+    }
+
+    public boolean checkPermission(Permissible permissible)
+    {
+        return this.permission == null || permissible == null || this.permission.isAuthorized(permissible);
     }
 }

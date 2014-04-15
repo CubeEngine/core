@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.command;
 
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
 
@@ -32,7 +31,7 @@ public final class AliasCommand extends CubeCommand
 
     public AliasCommand(CubeCommand target, String name, Set<String> aliases, String prefix, String suffix)
     {
-        super(target.getModule(), name, target.getDescription(), target.getContextFactory());
+        super(target.getModule(), name, target.getDescription(), target.getContextFactory(), target.getPermission());
         this.setAliases(aliases);
         this.target = target;
         this.prefix = (prefix == null || prefix.isEmpty() ? NO_ADDITION : explode(" ", prefix));

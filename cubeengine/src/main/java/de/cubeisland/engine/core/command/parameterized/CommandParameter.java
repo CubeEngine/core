@@ -21,7 +21,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.permissions.Permissible;
+
 import de.cubeisland.engine.core.command.ArgumentReader;
+import de.cubeisland.engine.core.permission.Permission;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
@@ -32,11 +35,12 @@ public class CommandParameter
     private final Set<String> aliases;
 
     private final Class<?> type;
+    private final Permission permission;
     private boolean required;
 
     private Completer completer;
 
-    public CommandParameter(String name, String label, Class<?> type)
+    public CommandParameter(String name, String label, Class<?> type, Permission permission)
     {
         expect(ArgumentReader.hasReader(type), "The named parameter '" + name + "' has an unreadable type: " + type.getName());
         this.name = name;
@@ -45,6 +49,12 @@ public class CommandParameter
         this.type = type;
         this.required = false;
         this.completer = null;
+        this.permission = permission;
+    }
+
+    public CommandParameter(String name, String label, Class<?> type)
+    {
+        this(name, label, type, null);
     }
 
     public String getLabel()
@@ -129,5 +139,10 @@ public class CommandParameter
     {
         this.completer = completer;
         return this;
+    }
+
+    public boolean checkPermission(Permissible permissible)
+    {
+        return this.permission == null || permissible == null ||this.permission.isAuthorized(permissible);
     }
 }

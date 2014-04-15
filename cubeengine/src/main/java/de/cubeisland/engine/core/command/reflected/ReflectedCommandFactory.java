@@ -39,9 +39,8 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
-
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 
 public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFactory<T>
 {
@@ -88,12 +87,27 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             aliases.add(commandNames[i].toLowerCase(Locale.ENGLISH));
         }
 
-        // TODO permissions for fastfail on flags/parameters ?
+        String permNode = annotation.permNode();
+        if (permNode.isEmpty())
+        {
+            permNode = name;
+        }
+        PermDefault permDefault = annotation.permDefault();
+        if (!annotation.checkPerm())
+        {
+            permDefault = PermDefault.TRUE;
+        }
+        Permission permission = Permission.detachedPermission(permNode, permDefault);
 
         Set<CommandFlag> flags = new HashSet<>(annotation.flags().length);
         for (Flag flag : annotation.flags())
         {
-            flags.add(new CommandFlag(flag.name(), flag.longName()));
+            Permission flagPerm = null;
+            if (!flag.permission().isEmpty())
+            {
+                flagPerm = permission.child(flag.permission(), flag.permDefault());
+            }
+            flags.add(new CommandFlag(flag.name(), flag.longName(), flagPerm));
         }
 
         Set<CommandParameter> params = new LinkedHashSet<>(annotation.params().length);
@@ -116,7 +130,13 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             {
                 paramAliases = new String[0];
             }
-            final CommandParameter cParam = new CommandParameter(names[0], param.label(), param.type());
+
+            Permission paramPerm = null;
+            if (!param.permission().isEmpty())
+            {
+                paramPerm = permission.child(param.permission(), param.permDefault());
+            }
+            final CommandParameter cParam = new CommandParameter(names[0], param.label(), param.type(), paramPerm);
             cParam.addAliases(paramAliases);
             cParam.setRequired(param.required());
             cParam.setCompleter(getCompleter(module, param.completer()));
@@ -176,27 +196,14 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             index++;
         }
         ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, annotation.desc(),
-                this.createContextFactory(indexedParams, flags, params));
+                this.createContextFactory(indexedParams, flags, params), permission);
 
         // TODO remove
         System.out.println(cmd.getUsage() + " (" + cmd.getContextFactory().getArgBounds().getMin() + "-" + cmd.getContextFactory().getArgBounds().getMin() + ")");
 
         cmd.setAliases(aliases);
         cmd.setLoggable(annotation.loggable());
-        if (annotation.checkPerm())
-        {
-            String node = annotation.permNode();
-            if (node.isEmpty())
-            {
-                cmd.setGeneratedPermissionDefault(annotation.permDefault());
-            }
-            else
-            {
-                Permission perm = module.getBasePermission().childWildcard("command").child(node, annotation.permDefault());
-                module.getCore().getPermissionManager().registerPermission(module, perm);
-                cmd.setPermission(perm.getName());
-            }
-        }
+
         cmd.setAsynchronous(annotation.async());
         return (T)cmd;
     }

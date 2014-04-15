@@ -22,13 +22,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
-import de.cubeisland.engine.core.bukkit.command.CubeCommandExecutor;
 import de.cubeisland.engine.core.bukkit.command.WrappedCubeCommand;
 import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.CommandFactory;
@@ -121,9 +118,10 @@ public class BukkitCommandManager implements CommandManager
         {
             parentCommand.addChild(command);
         }
+
         if (!(command instanceof AliasCommand))
         {
-            command.updateGeneratedPermission();
+            command.registerPermission();
         }
 
         if (command instanceof CommandHolder)

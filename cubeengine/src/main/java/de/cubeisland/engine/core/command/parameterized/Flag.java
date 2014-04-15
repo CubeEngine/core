@@ -17,9 +17,17 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
+import de.cubeisland.engine.core.permission.PermDefault;
+
+import static de.cubeisland.engine.core.permission.PermDefault.OP;
+
 public @interface Flag
 {
     String name();
 
     String longName() default "";
+
+    String permission() default "";
+
+    PermDefault permDefault() default OP;
 }

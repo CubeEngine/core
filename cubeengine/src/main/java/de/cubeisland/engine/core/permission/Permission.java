@@ -62,10 +62,6 @@ public class Permission
 
     private Permission(Permission permission, String name, PermDefault def, boolean wildcard)
     {
-        if (name.contains("."))
-        {
-            throw new IllegalArgumentException("Permissions are not allowed to contain .");
-        }
         this.nameParent = permission;
         this.baseName = name;
         this.def = def;
@@ -326,35 +322,6 @@ public class Permission
         }
         this.parents.clear();
         return this;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass())
-        {
-            return false;
-        }
-
-        Permission that = (Permission)o;
-
-        if (wildcard != that.wildcard)
-        {
-            return false;
-        }
-        return !(baseName != null ? !baseName.equals(that.baseName) : that.baseName != null);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = baseName != null ? baseName.hashCode() : 0;
-        result = 31 * result + (wildcard ? 1 : 0);
-        return result;
     }
 
     public static Permission detachedPermission(String permission, PermDefault permDefault)
