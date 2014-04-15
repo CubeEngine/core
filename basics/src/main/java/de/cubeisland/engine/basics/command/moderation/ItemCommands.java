@@ -71,10 +71,12 @@ public class ItemCommands
     {
         if (context.hasArg(0))
         {
-            ItemStack item = Match.material().itemStack(context.getString(0));
-            if (item != null)
+            List<ItemStack> items = Match.material().itemStackList(context.getString(0));
+            if (items != null)
             {
-                context.sendTranslated(POSITIVE, "Matched {input#item} ({input#id}:{input#data}) for {input}", Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                for (ItemStack item : items) {
+                    context.sendTranslated(POSITIVE, "Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                }
             }
             else
             {
@@ -96,10 +98,10 @@ public class ItemCommands
                 String found = Match.material().getNameFor(item);
                 if (found == null)
                 {
-                    context.sendTranslated(NEGATIVE, "Itemname unknown! Itemdata: {input#id}:{input#data}", item.getType().getId(), item.getDurability());
+                    context.sendTranslated(NEGATIVE, "Itemname unknown! Itemdata: {integer#id}:{short#data}", item.getType().getId(), item.getDurability());
                     return;
                 }
-                context.sendTranslated(POSITIVE, "The Item in your hand is: {input#item} ({input#id}:{input#data})", found, item.getType().getId(), item.getDurability());
+                context.sendTranslated(POSITIVE, "The Item in your hand is: {input#item} ({integer#id}:{short#data})", found, item.getType().getId(), item.getDurability());
             }
             return;
         }
