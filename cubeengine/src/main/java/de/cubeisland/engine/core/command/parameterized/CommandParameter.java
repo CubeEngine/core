@@ -145,4 +145,9 @@ public class CommandParameter
     {
         return this.permission == null || permissible == null ||this.permission.isAuthorized(permissible);
     }
+
+    public Permission getPermission()
+    {
+        return permission;
+    }
 }

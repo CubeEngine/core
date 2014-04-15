@@ -39,6 +39,7 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.LastType;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.Type;
 import gnu.trove.map.hash.THashMap;
@@ -192,7 +193,7 @@ public class ParameterizedContextFactory extends BasicContextFactory
         final Set<String> flags = new THashSet<>();
         final Map<String, String> rawParams = new LinkedHashMap<>();
 
-        Type last = readCommand(rawArgs, clazz == ParameterizedTabContext.class, flags, args, rawParams);
+        Type last = readCommand(rawArgs, clazz == ParameterizedTabContext.class, flags, args, rawParams, sender);
 
         if (clazz == ParameterizedTabContext.class)
         {
@@ -201,7 +202,8 @@ public class ParameterizedContextFactory extends BasicContextFactory
         return (T)new ParameterizedContext(command, sender, labels, args, flags, readParams(sender, args, rawParams));
     }
 
-    private Type readCommand(String[] rawArgs, boolean tabComplete, Set<String> flags, List<String> args, Map<String, String> rawParams)
+    private Type readCommand(String[] rawArgs, boolean tabComplete, Set<String> flags, List<String> args,
+                             Map<String, String> rawParams, CommandSender sender)
     {
         if (rawArgs.length < 1)
         {
@@ -224,19 +226,20 @@ public class ParameterizedContextFactory extends BasicContextFactory
             else if (rawArg.length() >= 1 && rawArg.charAt(0) == '-')
             {
                 // reads a flag or indexed param
-                offset = readFlag(rawArg, args, flags, offset, type);
+                offset = readFlag(rawArg, args, flags, offset, type, tabComplete, sender);
             }
             else
             {
                 // reads a named param or indexed param
-                offset = readRawParam(rawArgs, args, rawParams, offset, type);
+                offset = readRawParam(rawArgs, args, rawParams, offset, type, tabComplete, sender);
             }
         }
 
         return type.last;
     }
 
-    private int readFlag(String rawArg, List<String> args, Set<String> flags, int offset, LastType type)
+    private int readFlag(String rawArg, List<String> args, Set<String> flags, int offset, LastType type,
+                         boolean tabComplete, CommandSender sender)
     {
         String flag = rawArg;
         if (flag.charAt(0) == '-')
@@ -256,6 +259,10 @@ public class ParameterizedContextFactory extends BasicContextFactory
         CommandFlag cmdFlag = this.flagMap.get(flag);
         if (cmdFlag != null) // has flag ?
         {
+            if (!tabComplete && !cmdFlag.checkPermission(sender))
+            {
+                throw new PermissionDeniedException(cmdFlag.getPermission());
+            }
             flags.add(cmdFlag.getName()); // added flag
             type.last = NOTHING;
         }
@@ -268,7 +275,8 @@ public class ParameterizedContextFactory extends BasicContextFactory
         return offset;
     }
 
-    private int readRawParam(String[] rawArgs, List<String> args, Map<String, String> rawParams, int offset, LastType type)
+    private int readRawParam(String[] rawArgs, List<String> args, Map<String, String> rawParams, int offset,
+                             LastType type, boolean tabComplete, CommandSender sender)
     {
         String paramName = rawArgs[offset].toLowerCase(ENGLISH);
         // has alias named Param ?
@@ -276,6 +284,10 @@ public class ParameterizedContextFactory extends BasicContextFactory
         // is named Param?
         if (param != null && offset + 1 < rawArgs.length)
         {
+            if (!tabComplete && !param.checkPermission(sender))
+            {
+                throw new PermissionDeniedException(param.getPermission());
+            }
             StringBuilder paramValue = new StringBuilder();
             offset++;
             offset += readString(paramValue, rawArgs, offset);
