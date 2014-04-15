@@ -103,7 +103,16 @@ public class UserBase implements Player
     {
         if (this.cachedOfflinePlayer == null)
         {
-            this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
+            this.cachedOfflinePlayer = Bukkit.getPlayer(uuid);
+            if (cachedOfflinePlayer == null)
+            {
+                this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
+                CubeEngine.getLog().debug("Caching Offline Player");
+            }
+            else
+            {
+                CubeEngine.getLog().debug("Caching Online Player");
+            }
         }
         return cachedOfflinePlayer;
     }

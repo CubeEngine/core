@@ -112,6 +112,7 @@ public class VanillaCommands implements CommandHolder
             Locale locale = context.getSender().getLocale();
             long time = System.currentTimeMillis();
             this.core.getServer().reload();
+            // TODO NPE here fix me!!!
             context.sendMessage(this.core.getI18n().translate(locale, POSITIVE, "The reload is completed after {amount} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
         }
     }

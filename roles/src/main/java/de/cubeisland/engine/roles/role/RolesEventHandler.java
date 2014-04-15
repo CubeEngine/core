@@ -20,13 +20,11 @@ package de.cubeisland.engine.roles.role;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAuthorizedEvent;
 import de.cubeisland.engine.roles.Roles;
 
@@ -55,19 +53,6 @@ public class RolesEventHandler implements Listener
             }
         }
         this.rolesManager.getRolesAttachment(event.getPlayer()).getCurrentDataHolder().apply();
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPreLogin(AsyncPlayerPreLoginEvent event)
-    {
-        User user = this.module.getCore().getUserManager().findUser(event.getName());
-        if (user != null && (user.hasPlayedBefore() || user.isOnline())) // prevent NPE for players that never joined the server
-        {
-            if (user.getWorld() != null) // prevent NPE for players on deleted worlds
-            {
-                user.attachOrGet(RolesAttachment.class, this.module).getDataHolder(user.getWorld()); // Pre-calculate
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -170,6 +170,21 @@ public class BukkitUserManager extends AbstractUserManager
         return null;
     }
 
+    private User getExactUser(OfflinePlayer player)
+    {
+        User user = this.cachedUserByUUID.get(player.getUniqueId());
+        if (user == null)
+        {
+            user = this.loadUserFromDatabase(player.getUniqueId());
+            if (user == null)
+            {
+                user = new User(core, player);
+                user.getEntity().insert();
+            }
+            this.cacheUser(user);
+        }
+        return user;
+    }
 
     private class UserListener implements Listener
     {
@@ -227,7 +242,7 @@ public class BukkitUserManager extends AbstractUserManager
         {
             if (event.getResult() == ALLOWED)
             {
-                User user = getExactUser(event.getPlayer().getUniqueId());
+                User user = getExactUser(event.getPlayer());
                 onlineUsers.add(user);
             }
         }
@@ -235,7 +250,7 @@ public class BukkitUserManager extends AbstractUserManager
         @EventHandler(priority = EventPriority.LOWEST)
         public void onJoin(final PlayerJoinEvent event)
         {
-            final User user = getExactUser(event.getPlayer().getUniqueId());
+            final User user = getExactUser(event.getPlayer());
             if (user != null)
             {
                 updateLastName(user);
@@ -269,7 +284,7 @@ public class BukkitUserManager extends AbstractUserManager
         @EventHandler(priority = EventPriority.MONITOR)
         public void onJoin(PlayerJoinEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer().getUniqueId()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
                 attachment.onJoin(event.getJoinMessage());
             }
@@ -278,7 +293,7 @@ public class BukkitUserManager extends AbstractUserManager
         @EventHandler(priority = EventPriority.MONITOR)
         public void onQuit(PlayerQuitEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer().getUniqueId()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
                 attachment.onQuit(event.getQuitMessage());
             }
@@ -287,7 +302,7 @@ public class BukkitUserManager extends AbstractUserManager
         @EventHandler(priority = EventPriority.MONITOR)
         public void onKick(PlayerKickEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer().getUniqueId()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
                 attachment.onKick(event.getLeaveMessage());
             }
@@ -296,7 +311,7 @@ public class BukkitUserManager extends AbstractUserManager
         @EventHandler(priority = EventPriority.MONITOR)
         public void onChat(AsyncPlayerChatEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer().getUniqueId()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
                 attachment.onChat(event.getFormat(), event.getMessage());
             }
@@ -305,7 +320,7 @@ public class BukkitUserManager extends AbstractUserManager
         @EventHandler(priority = EventPriority.MONITOR)
         public void onCommand(PlayerCommandPreprocessEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer().getUniqueId()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
                 attachment.onCommand(event.getMessage());
             }
