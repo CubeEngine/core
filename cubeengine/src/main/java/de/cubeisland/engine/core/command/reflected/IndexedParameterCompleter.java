@@ -24,6 +24,8 @@ import java.util.Set;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 
+import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
+
 public class IndexedParameterCompleter implements Completer
 {
     private final Completer completer;
@@ -43,7 +45,13 @@ public class IndexedParameterCompleter implements Completer
         {
             result.addAll(this.completer.complete(context, token));
         }
-        result.addAll(staticLabels);
+        for (String staticLabel : staticLabels)
+        {
+            if (startsWithIgnoreCase(staticLabel, token))
+            {
+                result.add(staticLabel);
+            }
+        }
         return result;
     }
 }
