@@ -164,19 +164,21 @@ public abstract class AbstractUserManager implements UserManager
         User user = this.cachedUserByUUID.get(uuid);
         if (user == null)
         {
-            UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
-            if (entity == null)
+            user = this.loadUserFromDatabase(uuid);
+            if (user == null)
             {
                 user = new User(core, Bukkit.getOfflinePlayer(uuid));
                 user.getEntity().insert();
             }
-            else
-            {
-                user = new User(entity);
-            }
             this.cacheUser(user);
         }
         return user;
+    }
+
+    protected User loadUserFromDatabase(UUID uuid)
+    {
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
+        return entity == null ? null : new User(entity);
     }
 
     public synchronized User getUser(UInteger id)
