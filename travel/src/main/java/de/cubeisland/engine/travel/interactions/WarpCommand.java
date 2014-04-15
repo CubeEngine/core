@@ -89,9 +89,9 @@ public class WarpCommand extends ContainerCommand
 
 
     @Alias(names = {"createwarp", "mkwarp", "makewarp"})
-    @Command(names = {"create", "make"},
+    @Command(names = {"create", "make"}, desc = "Create a warp",
              flags = {@Flag(name = "priv", longName = "private")},
-             desc = "Create a warp", min = 1, max = 1)
+             indexed = @Grouped(@Indexed("name")))
     public void createWarp(ParameterizedContext context)
     {
         if (this.telePointManager.getNumberOfWarps() == this.module.getConfig().warps.max)
@@ -125,8 +125,8 @@ public class WarpCommand extends ContainerCommand
     }
 
     @Alias(names = {"removewarp", "deletewarp", "delwarp", "remwarp"})
-    @Command(names = {"remove", "delete"},
-             desc = "Remove a warp", min = 1, max = 1)
+    @Command(names = {"remove", "delete"}, desc = "Remove a warp",
+             indexed = @Grouped(@Indexed("warp")))
     public void removeWarp(CommandContext context)
     {
         Warp warp;
@@ -147,7 +147,9 @@ public class WarpCommand extends ContainerCommand
         context.sendTranslated(POSITIVE, "The warp is now deleted");
     }
 
-    @Command(desc = "Rename a warp", min = 2, max = 2)
+    @Command(desc = "Rename a warp",
+             indexed = {@Grouped(@Indexed("warp")),
+                        @Grouped(@Indexed("new name"))})
     public void rename(CommandContext context)
     {
         String name = context.getString(1);
@@ -177,7 +179,7 @@ public class WarpCommand extends ContainerCommand
         context.sendTranslated(POSITIVE, "The warps name is now changed");
     }
 
-    @Command(desc = "Move a warp", min = 1, max = 2)
+    @Command(desc = "Move a warp", indexed = @Grouped(@Indexed("warp")))
     public void move(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -203,7 +205,9 @@ public class WarpCommand extends ContainerCommand
         user.sendTranslated(POSITIVE, "The warp is now moved to your current location");
     }
 
-    @Command(permDefault = PermDefault.TRUE, desc = "Search for a warp", min = 1, max = 2)
+    @Command(permDefault = PermDefault.TRUE, desc = "Search for a warp",
+             indexed = {@Grouped(@Indexed("name")),
+                        @Grouped(req = false, value = @Indexed("amount"))})
     public CommandResult search(CommandContext context)
     {
         String search = context.getString(0);

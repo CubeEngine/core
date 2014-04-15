@@ -36,10 +36,6 @@ public @interface Command
 
     String desc();
 
-    int min() default 0;
-
-    int max() default 0;
-
     boolean checkPerm() default true;
 
     /**

@@ -137,7 +137,7 @@ public class TeleportRequestCommands
         context.sendTranslated(NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
     }
 
-    @Command(names = {"tpac", "tpaccept"}, desc = "Accepts any pending teleport request.", max = 0)
+    @Command(names = {"tpac", "tpaccept"}, desc = "Accepts any pending teleport request.")
     public void tpaccept(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -189,7 +189,7 @@ public class TeleportRequestCommands
         context.sendTranslated(NEGATIVE, "No one wants to teleport to you!");
     }
 
-    @Command(desc = "Denies any pending teleport request.", max = 0)
+    @Command(desc = "Denies any pending teleport request.")
     public void tpdeny(CommandContext context)
     {
         User sender = null;

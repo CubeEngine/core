@@ -126,7 +126,7 @@ public class ShoutCommand extends ContainerCommand
         }
     }
 
-    @Command(desc = "Creates a new announcement", min = 1, max = 1,
+    @Command(desc = "Creates a new announcement",
              indexed = @Grouped(@Indexed(value = "name")),
              params = {
                      @Param(names ={"message", "m"}),

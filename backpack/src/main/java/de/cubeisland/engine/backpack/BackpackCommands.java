@@ -59,8 +59,7 @@ public class BackpackCommands extends ContainerCommand
     @Command(desc = "opens a backpack",
              indexed = {@Grouped(@Indexed("name")),
                         @Grouped(req = false, value = @Indexed("user"))},
-             params = @Param(names = {"world", "for", "in", "w"}, completer = WorldCompleter.class, type = World.class),
-             min = 1, max = 2)
+             params = @Param(names = {"world", "for", "in", "w"}, completer = WorldCompleter.class, type = World.class))
     public void open(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)

@@ -61,7 +61,7 @@ public class SpawnCommands
         manager = roles.getRolesManager();
     }
 
-    @Command(desc = "Changes the respawnpoint", max = 5,
+    @Command(desc = "Changes the respawnpoint",
              indexed = {@Grouped(req = false,
                   value = @Indexed({"role","!global"})),
                      @Grouped(req = false,
@@ -149,7 +149,7 @@ public class SpawnCommands
         manager.getProvider(world).recalculateRoles();
     }
 
-    @Command(desc = "Teleport directly to the worlds spawn.", max = 1,
+    @Command(desc = "Teleport directly to the worlds spawn.",
              indexed = @Grouped(value = @Indexed({"players","!*"}), req = false),
              params = {@Param(names = {"world", "w", "in"}, type = World.class),
                        @Param(names = {"role", "r"}, completer = RoleCompleter.class)} ,

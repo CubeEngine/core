@@ -326,8 +326,7 @@ public class PlayerCommands
         }
     }
 
-    @Command(names = {"gamemode", "gm"}, max = 2,
-            desc = "Changes the gamemode",
+    @Command(names = {"gamemode", "gm"}, desc = "Changes the gamemode",
             indexed = { @Grouped(value = @Indexed("player"), req = false),
                         @Grouped(value = @Indexed("gamemode"), req = false)})
     public void gamemode(CommandContext context)

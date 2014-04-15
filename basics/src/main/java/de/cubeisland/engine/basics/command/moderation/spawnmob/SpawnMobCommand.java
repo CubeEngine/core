@@ -45,22 +45,16 @@ public class SpawnMobCommand
         config = basics.getConfiguration();
     }
 
-    @Command(desc = "Spawns the specified Mob", max = 3,
-             indexed = {
-                 @Grouped(@Indexed("<mob>[:data][,<ridingmob>[:data]]")),
-                 @Grouped(value = @Indexed("amount"), req = false),
-                 @Grouped(value = @Indexed("player"), req = false)})
+    @Command(desc = "Spawns the specified Mob",
+             indexed = {@Grouped(@Indexed("<mob>[:data][,<ridingmob>[:data]]")),
+                        @Grouped(value = @Indexed("amount"), req = false),
+                        @Grouped(value = @Indexed("player"), req = false)})
     public void spawnMob(CommandContext context)
     {
         User sender = null;
         if (context.getSender() instanceof User)
         {
             sender = (User)context.getSender();
-        }
-        if (!context.hasArg(0))
-        {
-            context.sendTranslated(NEGATIVE, "You need to define what mob to spawn!");
-            return;
         }
         Location loc;
         if (context.hasArg(2))
