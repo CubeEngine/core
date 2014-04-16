@@ -20,6 +20,8 @@ package de.cubeisland.engine.basics.command.moderation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -71,11 +73,13 @@ public class ItemCommands
     {
         if (context.hasArg(0))
         {
-            List<ItemStack> items = Match.material().itemStackList(context.getString(0));
-            if (items != null)
+            TreeMap<ItemStack, Double> itemMap = Match.material().itemStackList(context.getString(0));
+            if (itemMap != null && itemMap.size() > 0)
             {
-                for (ItemStack item : items) {
-                    context.sendTranslated(POSITIVE, "Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                context.sendTranslated(POSITIVE, "Best Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(itemMap.firstKey()), itemMap.firstKey().getType().getId(), itemMap.firstKey().getDurability(), context.getString(0));
+                itemMap.remove(itemMap.firstKey());
+                for (Entry<ItemStack, Double> item : itemMap.entrySet()) {
+                    context.sendTranslated(POSITIVE, "Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(item.getKey()), item.getKey().getType().getId(), item.getKey().getDurability(), context.getString(0));
                 }
             }
             else

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -272,9 +273,9 @@ public class MaterialMatcher
         return null;
     }
 
-    private HashSet<ItemStack> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map, int maxDistance, int minPercentage)
+    private TreeMap<ItemStack, Double> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map, int maxDistance, int minPercentage)
     {
-        HashSet<ItemStack> itemList = new HashSet<>();
+        TreeMap<ItemStack, Double> itemMap = new TreeMap<>();
         TreeMap<String, Integer> itemNameList = Match.string().getMatches(s, map.keySet(), maxDistance, true);
 
         for (Entry<String, Integer> entry : itemNameList.entrySet())
@@ -282,24 +283,11 @@ public class MaterialMatcher
             double curPercentage = (entry.getKey().length() - entry.getValue()) * 100 / entry.getKey().length();
             if (curPercentage >= minPercentage)
             {
-                itemList.add(new ItemStack(map.get(entry.getKey())));
+                itemMap.put(new ItemStack(map.get(entry.getKey())), curPercentage);
             }
         }
 
-        if (itemList.size() < 1)
-        {
-            return null;
-        }
-
-        return itemList;
-    }
-    private HashSet appendHashSetToHashSet(HashSet hashSet1, HashSet hashSet2)
-    {
-        for (Object e : hashSet2)
-        {
-            hashSet1.add(e);
-        }
-        return hashSet1;
+        return itemMap;
     }
 
     /**
@@ -384,7 +372,7 @@ public class MaterialMatcher
      * @param name the name
      * @return the found ItemStack
      */
-    public List<ItemStack> itemStackList(String name)
+    public TreeMap<ItemStack, Double> itemStackList(String name)
     {
         if (name == null)
         {
@@ -392,15 +380,15 @@ public class MaterialMatcher
         }
 
         String s = name.toLowerCase(Locale.ENGLISH);
-        List<ItemStack> itemList;
-        HashSet<ItemStack> itemSet;
+        TreeMap<ItemStack, Double> itemMap = new TreeMap<>();
 
         try
         { // id match
             Material mat = Material.getMaterial(Integer.parseInt(s));
             if (mat != null)
             {
-                return Arrays.asList(new ItemStack(mat, 1));
+                itemMap.put(new ItemStack(mat, 1), 0d);
+                return itemMap;
             }
         }
         catch (NumberFormatException e)
@@ -409,7 +397,8 @@ public class MaterialMatcher
             { // id and data match
                 ItemStack item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
                 item = materialDataMatcher.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
-                return Arrays.asList(item);
+                itemMap.put(item, 0d);
+                return itemMap;
             }
             catch (Exception ignored)
             {}
@@ -422,37 +411,25 @@ public class MaterialMatcher
         }
 
         // ld-match
-        itemSet = this.allMatchesWithLevenshteinDistance(material, items, 1, 75);
+        itemMap = this.allMatchesWithLevenshteinDistance(material, items, 5, 50);
         // Try to match bukkit name
-        appendHashSetToHashSet(itemSet, this.allMatchesWithLevenshteinDistance(material, bukkitnames, 1, 75));
-
-        itemList = new ArrayList<>(itemSet);
-
-        for (ItemStack item : itemList)
-        {
-            item = new ItemStack(item);
-            item.setAmount(1);
-        }
+        itemMap.putAll(this.allMatchesWithLevenshteinDistance(material, bukkitnames, 5, 50));
 
         if (s.contains(":"))
         {
             // name match with data
             String data = name.substring(name.indexOf(":") + 1);
 
-            for (int i = itemList.size() - 1; i >= 0; i--)
+            for (Entry<ItemStack, Double> item : itemMap.entrySet())
             {
-                ItemStack item = itemList.get(i);
-                item = materialDataMatcher.setData(item, data); // Try to set data / returns null if couldn't
-                if (item == null)
+                if (materialDataMatcher.setData(item.getKey(), data) == null) // returns null if the item data could not be found
                 {
-                    itemList.remove(i);
-                } else {
-                    itemList.set(i, item);
+                    itemMap.remove(item.getKey());
                 }
             }
         }
 
-        return itemList;
+        return itemMap;
     }
 
     /**
