@@ -47,6 +47,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
         this.module = module;
         this.iManager = iManager;
         this.attachmentClass = clazz;
+        this.load();
     }
 
     public abstract void load();
@@ -77,7 +78,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
         return user.attachOrGet(this.attachmentClass, this.module).findOne(name);
     }
 
-    public boolean has(String name, User user)
+    public boolean has(User user, String name)
     {
         return user.attachOrGet(HomeAttachment.class, this.module).getOwned(name) != null;
     }
@@ -99,7 +100,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
         user.attachOrGet(this.attachmentClass, this.module).remove(point);
     }
 
-    public abstract T create(Location location, String name, User owner, short visibility);
+    public abstract T create(User owner, String name, Location location, boolean publicVisiblity);
 
     public void delete(T point)
     {
@@ -118,6 +119,11 @@ public abstract class TelePointManager<T extends TeleportPoint>
 
     public Set<T> list(boolean privates, boolean publics)
     {
+        if (!privates && ! publics)
+        {
+            privates = true;
+            publics = true;
+        }
         HashSet<T> set = new HashSet<>();
         for (Map<String, T> map : this.points.values())
         {
@@ -136,9 +142,9 @@ public abstract class TelePointManager<T extends TeleportPoint>
         return set;
     }
 
-    public Set<T> list(User user, boolean showOwned, boolean showPublic, boolean showInvited)
+    public Set<T> list(User user, boolean owned, boolean publics, boolean invited)
     {
-        return user.attachOrGet(attachmentClass, module).list(showOwned, showPublic, showInvited);
+        return user.attachOrGet(attachmentClass, module).list(owned, publics, invited);
     }
 
     public void massDelete(boolean privates, boolean publics)
@@ -149,11 +155,23 @@ public abstract class TelePointManager<T extends TeleportPoint>
         }
     }
 
-    public void massDelete(User user, boolean showOwned, boolean showPublic, boolean showInvited)
+    public void massDelete(User user, boolean privates, boolean publics)
     {
-        for (T point : this.list(user, showOwned, showPublic, showInvited))
+        if (!privates && ! publics)
         {
-            this.delete(point);
+            privates = true;
+            publics = true;
+        }
+        for (T point : this.list(user, true, false, false))
+        {
+            if (privates && !point.isPublic())
+            {
+                this.delete(point);
+            }
+            if (publics && point.isPublic())
+            {
+                this.delete(point);
+            }
         }
     }
 
@@ -172,5 +190,10 @@ public abstract class TelePointManager<T extends TeleportPoint>
         this.addPoint(point);
         return true;
         // There already is a point named like that for this user!
+    }
+
+    public int getCount()
+    {
+        return this.list(true, true).size();
     }
 }

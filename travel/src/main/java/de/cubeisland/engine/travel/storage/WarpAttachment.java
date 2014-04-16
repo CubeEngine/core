@@ -17,11 +17,15 @@
  */
 package de.cubeisland.engine.travel.storage;
 
+import de.cubeisland.engine.travel.Travel;
+
 public class WarpAttachment extends TeleportPointAttachment<Warp>
 {
     @Override
     public void onAttach()
     {
+        WarpManager warpManager = ((Travel)getModule()).getWarpManager();
+
         // TODO get all warps accesible
     }
 }

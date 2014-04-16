@@ -30,8 +30,8 @@ import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
-import de.cubeisland.engine.travel.storage.TelePointManager;
 import de.cubeisland.engine.travel.storage.Warp;
+import de.cubeisland.engine.travel.storage.WarpManager;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PRIVATE;
@@ -39,7 +39,7 @@ import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_
 
 public class WarpAdminCommand extends ContainerCommand
 {
-    private final TelePointManager tpManager;
+    private final WarpManager manager;
     private final Travel module;
 
 
@@ -47,7 +47,7 @@ public class WarpAdminCommand extends ContainerCommand
     {
         super(module, "admin", "Teleport to a warp");
         this.module = module;
-        this.tpManager = module.getTelepointManager();
+        this.manager = module.getWarpManager();
 
         // TODO this.setUsage("[User] [warp]");
         // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
@@ -127,74 +127,18 @@ public class WarpAdminCommand extends ContainerCommand
             {
                 if (context.getArgCount() == 0)
                 { // No user
-                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-                    if (context.hasFlag("pub"))
-                    {
-                        mask |= tpManager.PUBLIC;
-                    }
-                    if (context.hasFlag("priv"))
-                    {
-                        mask |= tpManager.PRIVATE;
-                    }
-                    tpManager.deleteWarps(mask);
+                    manager.massDelete(context.hasFlag("priv"), context.hasFlag("pub"));
                     context.sendTranslated(POSITIVE, "The warps are now deleted");
                 }
                 else
                 {
                     User user = context.getUser(0);
-                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-                    if (context.hasFlag("pub"))
-                    {
-                        mask |= tpManager.PUBLIC;
-                    }
-                    if (context.hasFlag("priv"))
-                    {
-                        mask |= tpManager.PRIVATE;
-                    }
-                    tpManager.deleteWarps(user, mask);
-                    context.sendTranslated(POSITIVE, "The warps are now deleted");
+                    manager.massDelete(user, context.hasFlag("priv"), context.hasFlag("pub"));
+                    context.sendTranslated(POSITIVE, "Deleted warps.");
                 }
             }
         }, context);
     }
 
-    @Command(names = {"privae", "makeprivate"}, desc = "Make a players warp private",
-             indexed = @Grouped(@Indexed("<owner>:<home>")))
-    public void makePrivate(CommandContext context)
-    {
-        Warp warp;
-        warp = tpManager.getWarp(context.getString(0));
-        if (warp == null)
-        {
-            context.sendTranslated(NEGATIVE, "Warp {name} not found!", context.getString(0));
-            return;
-        }
-        if (!warp.isPublic())
-        {
-            context.sendTranslated(NEGATIVE, "{name#warp} is already private!", context.getString(0));
-            return;
-        }
-        warp.setVisibility(VISIBILITY_PRIVATE);
-        context.sendTranslated(POSITIVE, "{name#warp} is now private", context.getString(0));
-    }
 
-    @Command(names = "public", desc = "Make a users warp public",
-             indexed = @Grouped(@Indexed("<owner>:<home>")))
-    public void makePublic(CommandContext context)
-    {
-        Warp warp;
-        warp = tpManager.getWarp(context.getString(0));
-        if (warp == null)
-        {
-            context.sendTranslated(NEGATIVE, "Warp {name} not found!", context.getString(0));
-            return;
-        }
-        if (warp.isPublic())
-        {
-            context.sendTranslated(NEGATIVE, "{name#warp} is already public!", context.getString(0));
-            return;
-        }
-        warp.setVisibility(VISIBILITY_PUBLIC);
-        context.sendTranslated(POSITIVE, "{name#warp} is now public", context.getString(0));
-    }
 }

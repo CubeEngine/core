@@ -26,8 +26,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
-import de.cubeisland.engine.travel.storage.TelePointManager;
-import de.cubeisland.engine.travel.storage.TeleportPointModel;
+import de.cubeisland.engine.travel.storage.HomeManager;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static org.bukkit.Material.BED;
@@ -37,45 +36,49 @@ import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 public class HomeListener implements Listener
 {
     private final Travel module;
-    private final TelePointManager tpManager;
+    private final HomeManager homeManager;
 
     public HomeListener(Travel module)
     {
         this.module = module;
-        this.tpManager = module.getTelepointManager();
+        this.homeManager = module.getHomeManager();
     }
     @EventHandler(priority = EventPriority.LOWEST)
     public void rightClickBed(PlayerInteractEvent event)
     {
-        if (event.getAction() == RIGHT_CLICK_BLOCK)
+        if (event.getAction() != RIGHT_CLICK_BLOCK)
         {
-            Material block = event.getClickedBlock().getType();
-            if (block == BED_BLOCK || block == BED)
+            return;
+        }
+        Material block = event.getClickedBlock().getType();
+        if (block == BED_BLOCK || block == BED)
+        {
+            User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
+            if (user.isSneaking())
             {
-                User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
-                if (user.isSneaking())
+                if (homeManager.has(user, "home"))
                 {
-                    if (tpManager.has("home", user))
+                    Home home = homeManager.find(user, "home");
+                    if (user.getLocation().equals(home.getLocation()))
                     {
-                        Home home = tpManager.find(user, "home");
-                        home.setLocation(user.getLocation());
-                        home.update();
-                        user.sendTranslated(POSITIVE, "Your home has been set!");
+                        return;
                     }
-                    else
-                    {
-                        if (this.tpManager.getCount(user) == this.module.getConfig().homes.max)
-                        {
-                            user.sendTranslated(CRITICAL, "You have reached your maximum number of homes!");
-                            user.sendTranslated(NEGATIVE, "You have to delete a home to make a new one");
-                            return;
-                        }
-                        Home home = tpManager.create(user.getLocation(), "home", user,
-                                                     TeleportPointModel.VISIBILITY_PRIVATE);
-                        user.sendTranslated(POSITIVE, "Your home has been created!");
-                        event.setCancelled(true);
-                    }
+                    home.setLocation(user.getLocation());
+                    home.update();
+                    user.sendTranslated(POSITIVE, "Your home has been set!");
                 }
+                else
+                {
+                    if (this.homeManager.getCount(user) == this.module.getConfig().homes.max)
+                    {
+                        user.sendTranslated(CRITICAL, "You have reached your maximum number of homes!");
+                        user.sendTranslated(NEGATIVE, "You have to delete a home to make a new one");
+                        return;
+                    }
+                    Home home = homeManager.create(user, "home", user.getLocation(), false);
+                    user.sendTranslated(POSITIVE, "Your home has been created!");
+                }
+                event.setCancelled(true);
             }
         }
     }

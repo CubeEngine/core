@@ -66,7 +66,6 @@ public abstract class CubeCommand
     private boolean asynchronous = false;
     private final Permission permission;
 
-    private final Map<Locale, String> usages = new HashMap<>();
     private boolean permRegistered = false;
 
     public CubeCommand(Module module, String name, String description, ContextFactory contextFactory, Permission permission)
@@ -257,14 +256,7 @@ public abstract class CubeCommand
 
     public final String getUsage(Locale locale, Permissible permissible)
     {
-        String usage = this.usages.get(locale);
-        if (usage != null)
-        {
-            return usage;
-        }
-        usage = this.getUsage0(locale, permissible);
-        this.usages.put(locale, usage);
-        return usage;
+        return this.getUsage0(locale, permissible);
     }
 
     protected String getUsage0(Locale locale, Permissible permissible)
@@ -533,5 +525,10 @@ public abstract class CubeCommand
         }
         context.sendMessage(" ");
         context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
+    }
+
+    public void addIndexed(CommandParameterIndexed indexed)
+    {
+        this.getContextFactory().addIndexed(indexed);
     }
 }

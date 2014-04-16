@@ -25,6 +25,8 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
@@ -36,29 +38,28 @@ import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.Home;
-import de.cubeisland.engine.travel.storage.TelePointManager;
+import de.cubeisland.engine.travel.storage.HomeManager;
 import de.cubeisland.engine.travel.storage.TeleportPointModel;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class HomeAdminCommand extends ContainerCommand
 {
-    private final TelePointManager tpManager;
+    private final HomeManager manager;
     private final Travel module;
 
     public HomeAdminCommand(Travel module)
     {
         super(module, "admin", "Teleport to another users home");
+        this.addIndexed(new CommandParameterIndexed(new String[]{"[owner:]home"}, String.class, false, true, 1));
         this.module = module;
-        this.tpManager = module.getTelepointManager();
-
-        // TODO this.setUsage("[User] [Home]");
-        // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
+        this.manager = module.getHomeManager();
     }
 
     @Override
     public CommandResult run(CommandContext context)
     {
+        // TODO
         if (context.isSender(User.class))
         {
             User sender = (User)context.getSender();
@@ -72,7 +73,7 @@ public class HomeAdminCommand extends ContainerCommand
 
             if (context.getArgCount() == 2)
             {
-                home = tpManager.find(user, context.getString(1));
+                home = manager.find(user, context.getString(1));
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "{user} does not have a home named {name#home}!", user, context.getString(1));
@@ -81,7 +82,7 @@ public class HomeAdminCommand extends ContainerCommand
             }
             else
             {
-                home = tpManager.find(user, "home");
+                home = manager.find(user, "home");
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "{user} does not have a home!", user);
@@ -120,7 +121,7 @@ public class HomeAdminCommand extends ContainerCommand
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
         {
-            context.sendMessage("You have permission to this command, but it has been disabled from ingame usage to enhance security.");
+            context.sendMessage("This command has been disabled for ingame use via the configuration");
             return null;
         }
         if (context.getArgCount() > 0)
@@ -174,31 +175,13 @@ public class HomeAdminCommand extends ContainerCommand
             {
                 if (context.getArgCount() == 0)
                 { // No user
-                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-                    if (context.hasFlag("pub"))
-                    {
-                        mask |= tpManager.PUBLIC;
-                    }
-                    if (context.hasFlag("priv"))
-                    {
-                        mask |= tpManager.PRIVATE;
-                    }
-                    tpManager.massDelete(mask);
+                    manager.massDelete(context.hasFlag("priv"), context.hasFlag("pub"));
                     context.sendTranslated(POSITIVE, "The homes are now deleted");
                 }
                 else
                 {
                     User user = context.getUser(0);
-                    int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-                    if (context.hasFlag("pub"))
-                    {
-                        mask |= tpManager.PUBLIC;
-                    }
-                    if (context.hasFlag("priv"))
-                    {
-                        mask |= tpManager.PRIVATE;
-                    }
-                    tpManager.massDelete(user, mask);
+                    manager.massDelete(user, context.hasFlag("priv"), context.hasFlag("pub"));
                     context.sendTranslated(POSITIVE, "Deleted homes.");
                 }
             }
@@ -213,30 +196,8 @@ public class HomeAdminCommand extends ContainerCommand
              indexed = @Grouped(req = false, value = @Indexed("player")))
     public void list(ParameterizedContext context)
     {
-        int mask = context.getFlagCount() == 0 ? tpManager.ALL : 0;
-        if (context.hasFlag("pub"))
-        {
-            mask |= tpManager.PUBLIC;
-        }
-        if (context.hasFlag("priv"))
-        {
-            mask |= tpManager.PRIVATE;
-        }
-        if (context.hasFlag("o"))
-        {
-            mask |= tpManager.OWNED;
-        }
-        if (context.hasFlag("i"))
-        {
-            mask |= tpManager.INVITED;
-        }
-
         Set<Home> homes;
-        if (context.getArgCount() == 0)
-        {
-            homes = tpManager.list(mask);
-        }
-        else
+        if (context.hasArg(0))
         {
             User user = context.getUser(0);
             if (user == null)
@@ -244,7 +205,11 @@ public class HomeAdminCommand extends ContainerCommand
                 context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
-            homes = tpManager.list(mask, user);
+            homes = manager.list(user, context.hasFlag("o"), context.hasFlag("pub"), context.hasFlag("i"));
+        }
+        else
+        {
+            homes = manager.list(context.hasFlag("priv"), context.hasFlag("pub"));
         }
         if (homes.isEmpty())
         {
@@ -255,22 +220,35 @@ public class HomeAdminCommand extends ContainerCommand
         {
             if (home.isPublic())
             {
-                context.sendTranslated(NEUTRAL, "  {text:public}:{name#home}", home.getName());
+                context.sendTranslated(NEUTRAL, "  {user}:{name#home} ({text:public})", home.getOwnerName(), home.getName());
             }
             else
             {
-                context.sendTranslated(NEUTRAL, "  {user}:{name#home}", home.getOwnerName(), home.getName());
+                context.sendTranslated(NEUTRAL, "  {user}:{name#home} ({text:private})", home.getOwnerName(), home.getName());
             }
         }
     }
 
     @Command(names = {"private", "makeprivate"},
-             desc = "Make a users home private",
-             indexed = @Grouped(@Indexed("<owner>:<home>")))
+             desc = "Make a players home private",
+             indexed = {@Grouped(@Indexed("home")),
+                        @Grouped(req = false, value = @Indexed("owner"))})
     public void makePrivate(CommandContext context)
     {
-        Home home;
-        home = tpManager.find(context.getString(0));
+        User user;
+        if (context.hasArg(1))
+        {
+            user = context.getUser(1);
+        }
+        else if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
+        else
+        {
+            throw new IncorrectUsageException("Player not provided");
+        }
+        Home home = manager.find(user, context.getString(0));
         if (home == null)
         {
             context.sendTranslated(NEGATIVE, "Home {input} not found!", context.getString(0));
@@ -287,11 +265,24 @@ public class HomeAdminCommand extends ContainerCommand
 
     @Command(names = {"public", "makepublic"},
              desc = "Make a users home public",
-             indexed = @Grouped(@Indexed("<owner>:<home>")))
+             indexed = {@Grouped(@Indexed("home")),
+                        @Grouped(req = false, value = @Indexed("owner"))})
     public void makePublic(CommandContext context)
     {
-        Home home;
-        home = tpManager.find(context.getString(0));
+        User user;
+        if (context.hasArg(1))
+        {
+            user = context.getUser(1);
+        }
+        else if (context.getSender() instanceof User)
+        {
+            user = (User)context.getSender();
+        }
+        else
+        {
+            throw new IncorrectUsageException("Player not provided");
+        }
+        Home home = manager.find(user, context.getString(0));
         if (home == null)
         {
             context.sendTranslated(NEGATIVE, "Home {input#home} not found!", context.getString(0));

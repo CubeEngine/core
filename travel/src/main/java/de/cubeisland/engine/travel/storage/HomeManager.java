@@ -7,6 +7,8 @@ import de.cubeisland.engine.travel.Travel;
 
 import static de.cubeisland.engine.travel.storage.TableTeleportPoint.TABLE_TP_POINT;
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.TYPE_HOME;
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PRIVATE;
+import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
 public class HomeManager extends TelePointManager<Home>
 {
@@ -25,13 +27,13 @@ public class HomeManager extends TelePointManager<Home>
     }
 
     @Override
-    public Home create(Location location, String name, User owner, short visibility)
+    public Home create(User owner, String name, Location location, boolean publicVisibility)
     {
-        if (this.has(name, owner))
+        if (this.has(owner, name))
         {
             throw new IllegalArgumentException("Tried to create duplicate home!");
         }
-        TeleportPointModel model = this.dsl.newRecord(TABLE_TP_POINT).newTPPoint(location, name, owner, null, TYPE_HOME, visibility);
+        TeleportPointModel model = this.dsl.newRecord(TABLE_TP_POINT).newTPPoint(location, name, owner, null, TYPE_HOME, publicVisibility ? VISIBILITY_PUBLIC : VISIBILITY_PRIVATE);
         Home home = new Home(model, this, iManager, this.module);
         model.insert();
         this.assignTeleportPoint(home, home.getOwner());

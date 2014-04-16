@@ -230,6 +230,12 @@ public class TeleportPointAttachment<T extends TeleportPoint> extends UserAttach
 
     public Set<T> list(boolean owned, boolean publics, boolean invited)
     {
+        if (!owned && !publics && !invited)
+        {
+            owned = true;
+            publics = true;
+            invited = true;
+        }
         Set<T> set = new HashSet<>();
         if (owned)
         {
