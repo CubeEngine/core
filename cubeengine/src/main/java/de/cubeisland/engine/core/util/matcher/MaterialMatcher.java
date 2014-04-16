@@ -349,7 +349,10 @@ public class MaterialMatcher
                 {
                     // Try to match bukkit name
                     item = this.matchWithLevenshteinDistance(s, bukkitnames);
-                    if (item == null) return null;
+                    if (item == null)
+                    {
+                        return null;
+                    }
                 }
             }
         }
@@ -372,8 +375,8 @@ public class MaterialMatcher
         }
 
         String s = name.toLowerCase(Locale.ENGLISH);
-        List<ItemStack> itemList = new ArrayList<>();
-        HashSet<ItemStack> itemSet = new HashSet<>();
+        List<ItemStack> itemList;
+        HashSet<ItemStack> itemSet;
 
         try
         { // id match
@@ -386,8 +389,7 @@ public class MaterialMatcher
         catch (NumberFormatException e)
         {
             try
-            {
-                // id and data match
+            { // id and data match
                 ItemStack item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
                 item = materialDataMatcher.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
                 return Arrays.asList(item);
@@ -396,53 +398,41 @@ public class MaterialMatcher
             {}
         }
 
+        String material = s;
+        if (s.contains(":"))
+        {
+            material = s.substring(0, s.indexOf(":"));
+        }
+
+        // ld-match
+        itemSet = this.allMatchesWithLevenshteinDistance(material, items);
+        // Try to match bukkit name
+        appendHashSetToHashSet(itemSet, this.allMatchesWithLevenshteinDistance(material, bukkitnames));
+
+        itemList = new ArrayList<>(itemSet);
+
+        for (ItemStack item : itemList)
+        {
+            item = new ItemStack(item);
+            item.setAmount(1);
+        }
+
         if (s.contains(":"))
         {
             // name match with data
-            String material = s.substring(0, s.indexOf(":"));
             String data = name.substring(name.indexOf(":") + 1);
 
-            // ld-match
-            itemSet = this.allMatchesWithLevenshteinDistance(material, items);
-            // Try to match bukkit name
-            appendHashSetToHashSet(itemSet, this.allMatchesWithLevenshteinDistance(material, bukkitnames));
-
-            itemList = new ArrayList<>(itemSet);
-
-            if (itemList != null)
+            for (int i = itemList.size() - 1; i >= 0; i--)
             {
-                for (int i = itemList.size() - 1; i >= 0; i--) {
-                    ItemStack item = itemList.get(i);
-                    item = new ItemStack(item);
-                    item.setAmount(1);
-                    item = materialDataMatcher.setData(item, data); // Try to set data / returns null if couldn't
-                    if (item == null) {
-                        itemList.remove(i);
-                    } else {
-                        itemList.set(i, item);
-                    }
+                ItemStack item = itemList.get(i);
+                item = materialDataMatcher.setData(item, data); // Try to set data / returns null if couldn't
+                if (item == null)
+                {
+                    itemList.remove(i);
+                } else {
+                    itemList.set(i, item);
                 }
-                return itemList;
             }
-        }
-
-        if (itemList == null)
-        {
-            // ld-match
-            itemSet = this.allMatchesWithLevenshteinDistance(s, items);
-            // Try to match bukkit name
-            appendHashSetToHashSet(itemSet, this.allMatchesWithLevenshteinDistance(s, bukkitnames));
-
-            itemList = new ArrayList<>(itemSet);
-        }
-
-        if (itemList == null) return null;
-
-        for (int i = 0; i < itemList.size(); i++) {
-            ItemStack item = itemList.get(i);
-            item = new ItemStack(item);
-            item.setAmount(1);
-            itemList.set(i, item);
         }
 
         return itemList;
