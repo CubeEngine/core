@@ -21,15 +21,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -273,9 +275,9 @@ public class MaterialMatcher
         return null;
     }
 
-    private TreeMap<ItemStack, Double> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map, int maxDistance, int minPercentage)
+    private HashMap<ItemStack, Double> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map, int maxDistance, int minPercentage)
     {
-        TreeMap<ItemStack, Double> itemMap = new TreeMap<>();
+        HashMap<ItemStack, Double> itemMap = new HashMap<>();
         TreeMap<String, Integer> itemNameList = Match.string().getMatches(s, map.keySet(), maxDistance, true);
 
         for (Entry<String, Integer> entry : itemNameList.entrySet())
@@ -372,7 +374,7 @@ public class MaterialMatcher
      * @param name the name
      * @return the found ItemStack
      */
-    public TreeMap<ItemStack, Double> itemStackList(String name)
+    public TreeSet<Entry<ItemStack, Double>> itemStackList(String name)
     {
         if (name == null)
         {
@@ -380,7 +382,8 @@ public class MaterialMatcher
         }
 
         String s = name.toLowerCase(Locale.ENGLISH);
-        TreeMap<ItemStack, Double> itemMap = new TreeMap<>();
+        HashMap<ItemStack, Double> itemMap = new HashMap<>();
+        TreeSet<Entry<ItemStack, Double>> itemSet = new TreeSet<>(new ItemStackComparator());
 
         try
         { // id match
@@ -388,7 +391,8 @@ public class MaterialMatcher
             if (mat != null)
             {
                 itemMap.put(new ItemStack(mat, 1), 0d);
-                return itemMap;
+                itemSet.addAll(itemMap.entrySet());
+                return itemSet;
             }
         }
         catch (NumberFormatException e)
@@ -398,7 +402,8 @@ public class MaterialMatcher
                 ItemStack item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
                 item = materialDataMatcher.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
                 itemMap.put(item, 0d);
-                return itemMap;
+                itemSet.addAll(itemMap.entrySet());
+                return itemSet;
             }
             catch (Exception ignored)
             {}
@@ -429,7 +434,9 @@ public class MaterialMatcher
             }
         }
 
-        return itemMap;
+        itemSet.addAll(itemMap.entrySet());
+
+        return itemSet;
     }
 
     /**
@@ -530,6 +537,26 @@ public class MaterialMatcher
         private ImmutableItemStack(Material type)
         {
             super(type, 0);
+        }
+    }
+
+    private class ItemStackComparator implements Comparator<Entry<ItemStack, Double>>
+    {
+        @Override
+        public int compare(Entry<ItemStack, Double> item1, Entry<ItemStack, Double> item2)
+        {
+            if (item1.getValue() > item2.getValue())
+            {
+                return -1;
+            }
+            else if (item1.getValue() < item2.getValue())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }
