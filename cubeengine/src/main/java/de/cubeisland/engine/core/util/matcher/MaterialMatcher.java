@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -271,14 +272,18 @@ public class MaterialMatcher
         return null;
     }
 
-    private HashSet<ItemStack> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
+    private HashSet<ItemStack> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map, int maxDistance, int minPercentage)
     {
         HashSet<ItemStack> itemList = new HashSet<>();
-        Set<String> itemNameList = Match.string().getBestMatches(s, map.keySet(), 3);
+        TreeMap<String, Integer> itemNameList = Match.string().getMatches(s, map.keySet(), maxDistance, true);
 
-        for (String itemName : itemNameList)
+        for (Entry<String, Integer> entry : itemNameList.entrySet())
         {
-            itemList.add(new ItemStack(map.get(itemName)));
+            double curPercentage = (entry.getKey().length() - entry.getValue()) * 100 / entry.getKey().length();
+            if (curPercentage >= minPercentage)
+            {
+                itemList.add(new ItemStack(map.get(entry.getKey())));
+            }
         }
 
         if (itemList.size() < 1)
@@ -417,9 +422,9 @@ public class MaterialMatcher
         }
 
         // ld-match
-        itemSet = this.allMatchesWithLevenshteinDistance(material, items);
+        itemSet = this.allMatchesWithLevenshteinDistance(material, items, 1, 75);
         // Try to match bukkit name
-        appendHashSetToHashSet(itemSet, this.allMatchesWithLevenshteinDistance(material, bukkitnames));
+        appendHashSetToHashSet(itemSet, this.allMatchesWithLevenshteinDistance(material, bukkitnames, 1, 75));
 
         itemList = new ArrayList<>(itemSet);
 
