@@ -34,7 +34,7 @@ public class Warp extends TeleportPoint
         {
             this.permission = module.getBasePermission().
                 childWildcard("warps").childWildcard("access").
-                child(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+                child(model.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
         }
         else
@@ -43,29 +43,7 @@ public class Warp extends TeleportPoint
         }
     }
 
-    public void invite(User user)
-    {
-        super.invite(user);
-        telePointManager.putWarpToUser(this, user);
-    }
 
-    public void unInvite(User user)
-    {
-        super.unInvite(user);
-        telePointManager.removeWarpFromUser(this, user);
-    }
-
-    public String getStorageName()
-    {
-        if (isPublic())
-        {
-            return "public:" + this.getName();
-        }
-        else
-        {
-            return super.getStorageName();
-        }
-    }
 
     public boolean canAccess(User user)
     {

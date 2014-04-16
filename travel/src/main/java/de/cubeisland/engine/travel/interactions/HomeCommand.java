@@ -94,7 +94,7 @@ public class HomeCommand extends ContainerCommand
             User sender = (User)context.getSender();
             if (context.getArgCount() == 0)
             {
-                Home home = this.tpManager.getHome(sender, "home");
+                Home home = this.tpManager.find(sender, "home");
                 if (home == null)
                 {
                     context.sendTranslated(NEGATIVE, "You don't have a home! Use {text:/sethome}");
@@ -129,7 +129,7 @@ public class HomeCommand extends ContainerCommand
                     User user = this.module.getCore().getUserManager().findUser(context.getString(0));
                     if (!user.equals(context.getSender())) // user & sender are the same (home named like user)
                     {
-                        Home home = this.tpManager.getHome(user, "home");
+                        Home home = this.tpManager.find(user, "home");
                         if (home != null && home.canAccess(sender))
                         {
                             Location location = home.getLocation();
@@ -151,7 +151,7 @@ public class HomeCommand extends ContainerCommand
                         }
                     }
                 }
-                Home home = this.tpManager.getHome(sender, context.getString(0).toLowerCase());
+                Home home = this.tpManager.find(sender, context.getString(0).toLowerCase());
                 if (home == null)
                 {
                     context.sendTranslated(NEGATIVE, "Home {name} not found!", context.getString(0).toLowerCase());
@@ -204,7 +204,7 @@ public class HomeCommand extends ContainerCommand
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            if (this.tpManager.getNumberOfHomes(sender) >= this.module.getConfig().homes.max) // TODO permission to allow more
+            if (this.tpManager.getCount(sender) >= this.module.getConfig().homes.max) // TODO permission to allow more
             {
                 sender.sendTranslated(NEGATIVE, "You have reached your maximum number of homes!");
                 sender.sendTranslated(NEUTRAL, "You have to delete a home to make a new one");
@@ -213,13 +213,13 @@ public class HomeCommand extends ContainerCommand
             Location location = sender.getLocation();
             if (context.getArgCount() == 0)
             {
-                Home test = this.tpManager.getHome(sender, "home");
+                Home test = this.tpManager.find(sender, "home");
                 if (test != null && test.isOwner(sender))
                 {
                     sender.sendTranslated(NEGATIVE, "You already have a home! You can move it with {text:/home move}");
                     return;
                 }
-                this.tpManager.createHome(location, "home", sender, VISIBILITY_PRIVATE);
+                this.tpManager.create(location, "home", sender, VISIBILITY_PRIVATE);
                 sender.sendTranslated(POSITIVE, "Your home has been created!");
             }
             else if (this.module.getConfig().homes.multipleHomes)
@@ -229,9 +229,9 @@ public class HomeCommand extends ContainerCommand
                 if (context.hasFlag("pub"))
                 {
                     visibility = VISIBILITY_PUBLIC;
-                    if (this.tpManager.getHome(name) != null)
+                    if (this.tpManager.find(name) != null)
                     {
-                        if (this.tpManager.getHome(name).isPublic())
+                        if (this.tpManager.find(name).isPublic())
                         {
                             sender.sendTranslated(NEGATIVE, "A public home by that name has already been taken. Please choose another name");
                             return;
@@ -243,12 +243,12 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated(NEGATIVE, "Homes may not have names that are longer then 32 characters nor contain colon(:)'s!");
                     return;
                 }
-                if (this.tpManager.hasHome(name, sender))
+                if (this.tpManager.has(name, sender))
                 {
                     sender.sendTranslated(NEGATIVE, "You already have a home with that name! You can move it with {text:/home move}");
                     return;
                 }
-                this.tpManager.createHome(location, name, sender, visibility);
+                this.tpManager.create(location, name, sender, visibility);
                 sender.sendTranslated(POSITIVE, "Your home {name} has been created!", context.getString(0));
             }
             return;
@@ -270,7 +270,7 @@ public class HomeCommand extends ContainerCommand
             Home home;
             if (context.hasParam("home"))
             {
-                home = this.tpManager.getHome(sender, context.getString("home"));
+                home = this.tpManager.find(sender, context.getString("home"));
                 if (home == null || !home.isOwner(sender))
                 {
                     sender.sendTranslated(NEGATIVE, "You don't own {name#home}!", context.getString("home"));
@@ -279,7 +279,7 @@ public class HomeCommand extends ContainerCommand
             }
             else
             {
-                home = this.tpManager.getHome(sender, "home");
+                home = this.tpManager.find(sender, "home");
                 if (home == null || !home.isOwner(sender))
                 {
                     sender.sendTranslated(NEGATIVE, "You don't have a home!");
@@ -311,7 +311,7 @@ public class HomeCommand extends ContainerCommand
             User sender = (User)context.getSender();
             if (context.getArgCount() == 0 || !this.module.getConfig().homes.multipleHomes)
             {
-                Home home = this.tpManager.getHome(sender, "home");
+                Home home = this.tpManager.find(sender, "home");
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "Home {name} not found!", context.getString(0));
@@ -329,7 +329,7 @@ public class HomeCommand extends ContainerCommand
             }
             if (this.module.getConfig().homes.multipleHomes)
             {
-                Home home = this.tpManager.getHome(sender, context.getString(0));
+                Home home = this.tpManager.find(sender, context.getString(0));
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "You do not have a home named {name#home}!", context.getString(0));
@@ -362,7 +362,7 @@ public class HomeCommand extends ContainerCommand
             User sender = (User)context.getSender();
             if (context.getArgCount() == 0)
             {
-                Home home = this.tpManager.getHome(sender, "home");
+                Home home = this.tpManager.find(sender, "home");
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "Home {name} not found!", context.getString(0));
@@ -373,12 +373,12 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated(NEGATIVE, "You can't remove another players home");
                     return;
                 }
-                this.tpManager.deleteHome(home);
+                this.tpManager.delete(home);
                 sender.sendTranslated(POSITIVE, "Your home have been removed");
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
-                Home home = this.tpManager.getHome(sender, context.getString(0));
+                Home home = this.tpManager.find(sender, context.getString(0));
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "Home {name} not found!", context.getString(0));
@@ -389,7 +389,7 @@ public class HomeCommand extends ContainerCommand
                     sender.sendTranslated(NEGATIVE, "You can't remove another players home");
                     return;
                 }
-                this.tpManager.deleteHome(home);
+                this.tpManager.delete(home);
                 sender.sendTranslated(NEGATIVE, "{name#home} have been removed", context.getString(0));
             }
             return;
@@ -432,7 +432,7 @@ public class HomeCommand extends ContainerCommand
         {
             mask |= this.tpManager.INVITED;
         }
-        Set<Home> homes = this.tpManager.listHomes(user, mask);
+        Set<Home> homes = this.tpManager.list(mask, user);
         if (homes.isEmpty())
         {
             user.sendTranslated(NEGATIVE, "You are not invited to any home!");
@@ -468,7 +468,7 @@ public class HomeCommand extends ContainerCommand
         if (context.getSender() instanceof User)
         {
             User user = (User)context.getSender();
-            Set<Home> homes = this.tpManager.listHomes(user, this.tpManager.OWNED);
+            Set<Home> homes = this.tpManager.list(this.tpManager.OWNED, user);
             if (!homes.isEmpty())
             {
                 user.sendTranslated(NEUTRAL, "Here is a list of all your homes with the players invited to them:");
@@ -505,7 +505,7 @@ public class HomeCommand extends ContainerCommand
             User sender = (User)context.getSender();
             if (context.getArgCount() == 1 || !this.module.getConfig().homes.multipleHomes)
             {
-                Home home = this.tpManager.getHome(sender, "home");
+                Home home = this.tpManager.find(sender, "home");
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "You don't have a home!");
@@ -546,7 +546,7 @@ public class HomeCommand extends ContainerCommand
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
-                Home home = this.tpManager.getHome(sender, context.getString(0));
+                Home home = this.tpManager.find(sender, context.getString(0));
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "Home {input} not found!", context.getString(0));
@@ -595,7 +595,7 @@ public class HomeCommand extends ContainerCommand
             User sender = (User)context.getSender();
             if (context.getArgCount() == 1)
             {
-                Home home = this.tpManager.getHome(sender, "home");
+                Home home = this.tpManager.find(sender, "home");
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "You don't have a home!");
@@ -631,7 +631,7 @@ public class HomeCommand extends ContainerCommand
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
-                Home home = this.tpManager.getHome(sender, context.getString(0));
+                Home home = this.tpManager.find(sender, context.getString(0));
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "{name#home} is not a home!", context.getString(0));
@@ -684,11 +684,11 @@ public class HomeCommand extends ContainerCommand
             Home home;
             if (context.getArgCount() == 0)
             {
-                home = this.tpManager.getHome(sender, "home");
+                home = this.tpManager.find(sender, "home");
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
-                home = this.tpManager.getHome(sender, context.getString(0));
+                home = this.tpManager.find(sender, context.getString(0));
             }
             else
             {
@@ -729,11 +729,11 @@ public class HomeCommand extends ContainerCommand
             Home home;
             if (context.getArgCount() == 0)
             {
-                home = this.tpManager.getHome(sender, "home");
+                home = this.tpManager.find(sender, "home");
             }
             else if (this.module.getConfig().homes.multipleHomes)
             {
-                home = this.tpManager.getHome(sender, context.getString(0));
+                home = this.tpManager.find(sender, context.getString(0));
             }
             else
             {

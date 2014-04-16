@@ -72,7 +72,7 @@ public class HomeAdminCommand extends ContainerCommand
 
             if (context.getArgCount() == 2)
             {
-                home = tpManager.getHome(user, context.getString(1));
+                home = tpManager.find(user, context.getString(1));
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "{user} does not have a home named {name#home}!", user, context.getString(1));
@@ -81,7 +81,7 @@ public class HomeAdminCommand extends ContainerCommand
             }
             else
             {
-                home = tpManager.getHome(user, "home");
+                home = tpManager.find(user, "home");
                 if (home == null)
                 {
                     sender.sendTranslated(NEGATIVE, "{user} does not have a home!", user);
@@ -183,7 +183,7 @@ public class HomeAdminCommand extends ContainerCommand
                     {
                         mask |= tpManager.PRIVATE;
                     }
-                    tpManager.deleteHomes(mask);
+                    tpManager.massDelete(mask);
                     context.sendTranslated(POSITIVE, "The homes are now deleted");
                 }
                 else
@@ -198,7 +198,7 @@ public class HomeAdminCommand extends ContainerCommand
                     {
                         mask |= tpManager.PRIVATE;
                     }
-                    tpManager.deleteHomes(user, mask);
+                    tpManager.massDelete(user, mask);
                     context.sendTranslated(POSITIVE, "Deleted homes.");
                 }
             }
@@ -234,7 +234,7 @@ public class HomeAdminCommand extends ContainerCommand
         Set<Home> homes;
         if (context.getArgCount() == 0)
         {
-            homes = tpManager.listHomes(mask);
+            homes = tpManager.list(mask);
         }
         else
         {
@@ -244,7 +244,7 @@ public class HomeAdminCommand extends ContainerCommand
                 context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return;
             }
-            homes = tpManager.listHomes(user, mask);
+            homes = tpManager.list(mask, user);
         }
         if (homes.isEmpty())
         {
@@ -270,7 +270,7 @@ public class HomeAdminCommand extends ContainerCommand
     public void makePrivate(CommandContext context)
     {
         Home home;
-        home = tpManager.getHome(context.getString(0));
+        home = tpManager.find(context.getString(0));
         if (home == null)
         {
             context.sendTranslated(NEGATIVE, "Home {input} not found!", context.getString(0));
@@ -291,7 +291,7 @@ public class HomeAdminCommand extends ContainerCommand
     public void makePublic(CommandContext context)
     {
         Home home;
-        home = tpManager.getHome(context.getString(0));
+        home = tpManager.find(context.getString(0));
         if (home == null)
         {
             context.sendTranslated(NEGATIVE, "Home {input#home} not found!", context.getString(0));

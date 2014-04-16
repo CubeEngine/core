@@ -58,7 +58,7 @@ public class Travel extends Module
         this.inviteManager = new InviteManager(db, this);
 
         log.trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        this.telePointManager.load(this.inviteManager);
+        this.telePointManager.load();
         final CommandManager cm = this.getCore().getCommandManager();
 
         log.trace("{} ms - register commands", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));

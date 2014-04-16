@@ -36,7 +36,7 @@ public class Home extends TeleportPoint
         {
             this.permission = module.getBasePermission().
                 childWildcard("publichomes").childWildcard("access").
-                child(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+                child(model.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
         }
         else
@@ -45,12 +45,11 @@ public class Home extends TeleportPoint
         }
     }
 
-
     public void setVisibility(short visibility)
     {
         super.setVisibility(visibility);
-        parent.update();
-        telePointManager.removeHomeFromUser(this, this.getOwner());
+        model.update();
+        pManager.unassignTeleportPoint(this, this.getOwner());
         if (this.invited != null)
         {
             for (UInteger uid : this.invited)
@@ -58,7 +57,7 @@ public class Home extends TeleportPoint
                 User user = CubeEngine.getUserManager().getUser(uid);
                 if (user != null)
                 {
-                    telePointManager.removeHomeFromUser(this, user);
+                    pManager.unassignTeleportPoint(this, user);
                 }
             }
         }
@@ -66,28 +65,14 @@ public class Home extends TeleportPoint
         {
             this.permission = module.getBasePermission().
                 childWildcard("publichomes").childWildcard("access").
-                child(parent.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+                child(model.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
             module.getCore().getPermissionManager().registerPermission(module, this.permission);
-            this.inviteManager.removeInvites(this);
+            this.iManager.removeInvites(this);
         }
         else
         {
             module.getCore().getPermissionManager().removePermission(this.module, permission);
             this.permission = null;
         }
-    }
-
-    @Override
-    public void invite(User user)
-    {
-        super.invite(user);
-        telePointManager.putHomeToUser(this, user);
-    }
-
-    @Override
-    public void unInvite(User user)
-    {
-        super.unInvite(user);
-        telePointManager.removeHomeFromUser(this, user);
     }
 }

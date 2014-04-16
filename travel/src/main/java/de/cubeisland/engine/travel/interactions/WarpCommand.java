@@ -64,7 +64,7 @@ public class WarpCommand extends ContainerCommand
         if (context.isSender(User.class) && context.getArgCount() > 0)
         {
             User sender = (User)context.getSender();
-            Warp warp = telePointManager.getWarp(sender, context.getString(0).toLowerCase());
+            Warp warp = telePointManager.findWarp(sender, context.getString(0).toLowerCase());
             if (warp == null)
             {
                 context.sendTranslated(NEGATIVE, "You don't have access to any warp with that name");
@@ -132,7 +132,7 @@ public class WarpCommand extends ContainerCommand
         Warp warp;
         if (context.getSender() instanceof User)
         {
-            warp = telePointManager.getWarp((User)context.getSender(), context.getString(0));
+            warp = telePointManager.findWarp((User)context.getSender(), context.getString(0));
         }
         else
         {
@@ -156,7 +156,7 @@ public class WarpCommand extends ContainerCommand
         Warp warp;
         if (context.getSender() instanceof User)
         {
-            warp = telePointManager.getWarp((User)context.getSender(), context.getString(0));
+            warp = telePointManager.findWarp((User)context.getSender(), context.getString(0));
         }
         else
         {
@@ -175,7 +175,7 @@ public class WarpCommand extends ContainerCommand
             return;
         }
 
-        telePointManager.renameWarp(warp, name);
+        telePointManager.rename(warp, name);
         context.sendTranslated(POSITIVE, "The warps name is now changed");
     }
 
@@ -189,7 +189,7 @@ public class WarpCommand extends ContainerCommand
         }
         User user = (User)sender;
 
-        Warp warp = telePointManager.getWarp(user, context.getString(0));
+        Warp warp = telePointManager.findWarp(user, context.getString(0));
         if (warp == null)
         {
             user.sendTranslated(NEGATIVE, "That warp could not be found!");
@@ -214,7 +214,7 @@ public class WarpCommand extends ContainerCommand
         Warp first;
         if (context.getSender() instanceof User)
         {
-            first = telePointManager.getWarp((User)context.getSender(), search);
+            first = telePointManager.findWarp((User)context.getSender(), search);
         }
         else
         {

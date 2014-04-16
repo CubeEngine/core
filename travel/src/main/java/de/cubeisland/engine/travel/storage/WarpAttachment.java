@@ -17,74 +17,11 @@
  */
 package de.cubeisland.engine.travel.storage;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import de.cubeisland.engine.core.user.UserAttachment;
-
-public class WarpAttachment extends UserAttachment
+public class WarpAttachment extends TeleportPointAttachment<Warp>
 {
-    final Map<String, Warp> warps;
-
-    public WarpAttachment()
+    @Override
+    public void onAttach()
     {
-        warps = new HashMap<>();
-    }
-
-    /**
-     * Will try to find a warp with that name among the warps the user can access
-     * Different variations with the prefix is also tried
-     *
-     * @return the warp if found, else null
-     */
-    public Warp getWarp(String name)
-    {
-        if (name == null)
-        {
-            return null;
-        }
-        else if (warps.containsKey(name))
-        {
-            return warps.get(name);
-        }
-        else if (name.contains(":"))
-        {
-            return warps.get(name.substring(name.lastIndexOf(":") + 1, name.length()));
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /**
-     * Will check if getWarp(name) is not null
-     */
-    public boolean hasWarp(String name)
-    {
-        return getWarp(name) != null;
-    }
-
-    /**
-     * Will find direct matches
-     */
-    public boolean containsWarp(String name)
-    {
-        return warps.containsKey(name);
-    }
-
-    public Map<String, Warp> allWarps()
-    {
-        return this.warps;
-    }
-
-    public void addWarp(String name, Warp warp)
-    {
-        warps.put(name, warp);
-    }
-
-    public void removeWarp(String name)
-    {
-        warps.remove(name);
+        // TODO get all warps accesible
     }
 }

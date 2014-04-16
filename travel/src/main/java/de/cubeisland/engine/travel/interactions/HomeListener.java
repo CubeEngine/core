@@ -55,22 +55,23 @@ public class HomeListener implements Listener
                 User user = module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
                 if (user.isSneaking())
                 {
-                    if (tpManager.hasHome("home", user))
+                    if (tpManager.has("home", user))
                     {
-                        Home home = tpManager.getHome(user, "home");
+                        Home home = tpManager.find(user, "home");
                         home.setLocation(user.getLocation());
                         home.update();
                         user.sendTranslated(POSITIVE, "Your home has been set!");
                     }
                     else
                     {
-                        if (this.tpManager.getNumberOfHomes(user) == this.module.getConfig().homes.max)
+                        if (this.tpManager.getCount(user) == this.module.getConfig().homes.max)
                         {
                             user.sendTranslated(CRITICAL, "You have reached your maximum number of homes!");
                             user.sendTranslated(NEGATIVE, "You have to delete a home to make a new one");
                             return;
                         }
-                        Home home = tpManager.createHome(user.getLocation(), "home", user, TeleportPointModel.VISIBILITY_PRIVATE);
+                        Home home = tpManager.create(user.getLocation(), "home", user,
+                                                     TeleportPointModel.VISIBILITY_PRIVATE);
                         user.sendTranslated(POSITIVE, "Your home has been created!");
                         event.setCancelled(true);
                     }
