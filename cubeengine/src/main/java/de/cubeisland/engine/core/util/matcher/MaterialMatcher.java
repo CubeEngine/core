@@ -367,10 +367,10 @@ public class MaterialMatcher
     }
 
     /**
-     * Tries to match a ItemStack for given name
+     * Tries to match a ItemStack-list for given name
      *
      * @param name the name
-     * @return the found ItemStack
+     * @return the found ItemStack-list
      */
     public TreeSet<Entry<ItemStack, Double>> itemStackList(String name)
     {
@@ -538,7 +538,7 @@ public class MaterialMatcher
         }
     }
 
-    private class ItemStackComparator implements Comparator<Entry<ItemStack, Double>>
+    private static class ItemStackComparator implements Comparator<Entry<ItemStack, Double>>
     {
         @Override
         public int compare(Entry<ItemStack, Double> item1, Entry<ItemStack, Double> item2)
@@ -551,10 +551,7 @@ public class MaterialMatcher
             {
                 return 1;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
     }
 }
