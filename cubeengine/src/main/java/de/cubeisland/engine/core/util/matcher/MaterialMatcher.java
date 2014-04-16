@@ -273,8 +273,20 @@ public class MaterialMatcher
 
     private HashSet<ItemStack> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map)
     {
-        // TODO: Funktion zum funktionieren bringen
-        return null;
+        HashSet<ItemStack> itemList = new HashSet<>();
+        Set<String> itemNameList = Match.string().getBestMatches(s, map.keySet(), 3);
+
+        for (String itemName : itemNameList)
+        {
+            itemList.add(new ItemStack(map.get(itemName)));
+        }
+
+        if (itemList.size() < 1)
+        {
+            return null;
+        }
+
+        return itemList;
     }
     private HashSet appendHashSetToHashSet(HashSet hashSet1, HashSet hashSet2)
     {
