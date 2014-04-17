@@ -21,9 +21,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import net.minecraft.server.v1_7_R3.DedicatedPlayerList;
@@ -156,7 +155,7 @@ public class BukkitBanManager implements BanManager
         expect(isMainThread());
 
         String[] bannedIps = this.ipBans.getEntries();
-        Set<IpBan> bans = new TreeSet<>(new BanComparator());
+        Set<IpBan> bans = new HashSet<>();
 
         for (String bannedIp : bannedIps)
         {
@@ -181,7 +180,7 @@ public class BukkitBanManager implements BanManager
         expect(isMainThread());
 
         String[] bannedUUIDs = this.profileBan.getEntries();
-        Set<UserBan> bans = new TreeSet<>(new BanComparator());
+        Set<UserBan> bans = new HashSet<>();
 
         for (String bannedUUID : bannedUUIDs)
         {
@@ -191,21 +190,12 @@ public class BukkitBanManager implements BanManager
         return bans;
     }
 
-    private static final class BanComparator implements Comparator<Ban<?>>
-    {
-        @Override
-        public int compare(Ban<?> o1, Ban<?> o2)
-        {
-            return o1.getCreated().compareTo(o2.getCreated());
-        }
-    }
-
     @Override
     public Set<Ban<?>> getBans()
     {
         expect(isMainThread());
         
-        Set<Ban<?>> bans = new TreeSet<>(new BanComparator());
+        Set<Ban<?>> bans = new HashSet<>();
         bans.addAll(this.getIpBans());
         bans.addAll(this.getUserBans());
         return bans;
