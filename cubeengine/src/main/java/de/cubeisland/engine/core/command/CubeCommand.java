@@ -32,6 +32,9 @@ import java.util.Stack;
 
 import org.bukkit.permissions.Permissible;
 
+import de.cubeisland.engine.core.command.exception.CommandException;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
@@ -42,6 +45,7 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
@@ -66,8 +70,9 @@ public abstract class CubeCommand
     private boolean asynchronous = false;
     private final Permission permission;
 
-    private final Map<Locale, String> usages = new HashMap<>();
     private boolean permRegistered = false;
+
+    private String onlyIngame = null;
 
     public CubeCommand(Module module, String name, String description, ContextFactory contextFactory, Permission permission)
     {
@@ -252,19 +257,13 @@ public abstract class CubeCommand
 
     public String getUsage()
     {
-        return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(this.module.getCore().getI18n().getDefaultLanguage().getLocale(), null);
+        return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(
+            this.module.getCore().getI18n().getDefaultLanguage().getLocale(), null);
     }
 
     public final String getUsage(Locale locale, Permissible permissible)
     {
-        String usage = this.usages.get(locale);
-        if (usage != null)
-        {
-            return usage;
-        }
-        usage = this.getUsage0(locale, permissible);
-        this.usages.put(locale, usage);
-        return usage;
+        return this.getUsage0(locale, permissible);
     }
 
     protected String getUsage0(Locale locale, Permissible permissible)
@@ -533,5 +532,51 @@ public abstract class CubeCommand
         }
         context.sendMessage(" ");
         context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
+    }
+
+    public void addIndexed(CommandParameterIndexed indexed)
+    {
+        this.getContextFactory().addIndexed(indexed);
+    }
+
+    public boolean isOnlyIngame()
+    {
+        return onlyIngame != null;
+    }
+
+    public void setOnlyIngame(String onlyIngame)
+    {
+        this.onlyIngame = onlyIngame;
+    }
+
+    public String getOnlyIngame()
+    {
+        return this.onlyIngame;
+    }
+
+    public void checkContext(CommandContext ctx) throws CommandException
+    {
+        ArgBounds bounds = ctx.getCommand().getContextFactory().getArgBounds();
+        if (ctx.getArgCount() < bounds.getMin())
+        {
+            throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too few arguments."));
+        }
+        if (bounds.getMax() > ArgBounds.NO_MAX && ctx.getArgCount() > bounds.getMax())
+        {
+            throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too many arguments."));
+        }
+        if (!ctx.getCommand().isAuthorized(ctx.getSender()))
+        {
+            throw new PermissionDeniedException(ctx.getCommand().getPermission());
+        }
+        if (ctx.getCommand().isOnlyIngame() && !(ctx.isSender(User.class)))
+        {
+            String onlyIngame = ctx.getCommand().getOnlyIngame();
+            if (onlyIngame.isEmpty())
+            {
+                throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "This command can only be used ingame!"), false);
+            }
+            throw new IncorrectUsageException(onlyIngame, false);
+        }
     }
 }

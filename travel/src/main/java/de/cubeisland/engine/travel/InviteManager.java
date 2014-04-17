@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.storage;
+package de.cubeisland.engine.travel;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,10 +23,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.travel.Travel;
+import de.cubeisland.engine.travel.storage.TeleportInvite;
+import de.cubeisland.engine.travel.storage.TeleportPointModel;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
 
@@ -52,21 +52,6 @@ public class InviteManager
         TeleportInvite invite = this.dsl.newRecord(TABLE_INVITE).newInvite(tPP.getKey(), user.getEntity().getKey());
         this.invites.add(invite);
         invite.insert();
-    }
-
-    /**
-     * All users invited to a teleport point.
-     *
-     * @return A set of User objects invited to the home
-     */
-    public Set<User> getInvitedUsers(TeleportPointModel tPP)
-    {
-        Set<User> invitedUsers = new HashSet<>();
-        for (UInteger uid : getInvited(tPP))
-        {
-            invitedUsers.add(CubeEngine.getUserManager().getUser(uid));
-        }
-        return invitedUsers;
     }
 
     /**

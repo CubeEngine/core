@@ -55,7 +55,8 @@ public class TableTeleportPoint extends AutoIncrementTable<TeleportPointModel, U
     public final TableField<TeleportPointModel, String> WELCOMEMSG = createField("welcomemsg", LONGTEXT, this);
 
     @Override
-    public Class<TeleportPointModel> getRecordType() {
+    public Class<TeleportPointModel> getRecordType()
+    {
         return TeleportPointModel.class;
     }
 }

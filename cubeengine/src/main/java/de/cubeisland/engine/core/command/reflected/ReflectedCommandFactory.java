@@ -206,8 +206,13 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
 
         cmd.setAliases(aliases);
         cmd.setLoggable(annotation.loggable());
-
         cmd.setAsynchronous(annotation.async());
+
+        if (method.isAnnotationPresent(OnlyIngame.class))
+        {
+            cmd.setOnlyIngame(method.getAnnotation(OnlyIngame.class).value());
+        }
+
         return (T)cmd;
     }
 

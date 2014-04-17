@@ -15,47 +15,46 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.storage;
+package de.cubeisland.engine.travel;
 
 import java.util.Set;
 
 import org.bukkit.Location;
 
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.travel.Travel;
+import de.cubeisland.engine.travel.storage.TeleportPointModel;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
 public abstract class TeleportPoint
 {
-    protected final TeleportPointModel parent;
+    protected final TeleportPointModel model;
     protected final Travel module;
-    protected final TelePointManager telePointManager;
-    protected final InviteManager inviteManager;
+    protected final InviteManager iManager;
 
     protected Permission permission;
     protected Set<UInteger> invited;
 
     protected String ownerName = null;
 
-    public TeleportPoint(TeleportPointModel teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
+    public TeleportPoint(TeleportPointModel model, Travel module)
     {
-        this.parent = teleportPoint;
-        this.telePointManager = telePointManager;
-        this.inviteManager = inviteManager;
+        this.model = model;
+        this.iManager = module.getInviteManager();
         this.module = module;
     }
 
     public void update()
     {
-        parent.update();
+        model.update();
     }
 
     public Location getLocation()
     {
-        Location location = parent.getLocation();
+        Location location = model.getLocation();
         if (location.getWorld() == null)
         {
             this.module.getLog().warn("Tried to get location from TeleportPoint in deleted world!");
@@ -66,42 +65,46 @@ public abstract class TeleportPoint
 
     public void setLocation(Location location)
     {
-        parent.setLocation(location);
+        model.setLocation(location);
     }
 
     public User getOwner()
     {
-        return this.module.getCore().getUserManager().getUser(parent.getOwnerKey());
+        return this.module.getCore().getUserManager().getUser(model.getOwnerKey());
     }
 
     public void setOwner(User owner)
     {
-        this.parent.setOwnerKey(owner.getEntity().getKey());
+        this.model.setOwnerKey(owner.getEntity().getKey());
     }
 
-    public boolean isOwner(User user)
+    public boolean isOwner(CommandSender user)
     {
-        return parent.getOwnerKey().equals(user.getEntity().getKey());
+        if (user instanceof User)
+        {
+            return model.getOwnerKey().equals(((User)user).getEntity().getKey());
+        }
+        return false;
     }
 
     public void invite(User user)
     {
         if (this.invited == null)
         {
-            this.invited = inviteManager.getInvited(parent);
+            this.invited = iManager.getInvited(model);
         }
         this.invited.add(user.getEntity().getKey());
-        inviteManager.invite(this.getModel(), user);
+        iManager.invite(this.getModel(), user);
     }
 
     public void unInvite(User user)
     {
         if (this.invited == null)
         {
-            this.invited = inviteManager.getInvited(parent);
+            this.invited = iManager.getInvited(model);
         }
         this.invited.remove(user.getEntity().getKey());
-        inviteManager.updateInvited(this.parent, this.invited);
+        iManager.updateInvited(this.model, this.invited);
     }
 
     public boolean isInvited(User user)
@@ -111,69 +114,59 @@ public abstract class TeleportPoint
 
     public void setVisibility(short visibility)
     {
-        parent.setVisibility(visibility);
+        model.setVisibility(visibility);
     }
 
     public short getVisibility()
     {
-        return parent.getVisibility();
+        return model.getVisibility();
     }
 
     public Set<UInteger> getInvited()
     {
         if (this.invited == null)
         {
-            this.invited = inviteManager.getInvited(parent);
+            this.invited = iManager.getInvited(model);
         }
         return this.invited;
     }
 
-    public Set<User> getInvitedUsers()
-    {
-        return inviteManager.getInvitedUsers(parent);
-    }
-
     public TeleportPointModel getModel()
     {
-        return parent;
-    }
-
-    public Long getKey()
-    {
-        return this.parent.getKey().longValue();
+        return model;
     }
 
     public String getOwnerName()
     {
         if (this.ownerName == null)
         {
-            this.ownerName = this.module.getCore().getUserManager().getUserName(parent.getOwnerKey());
+            this.ownerName = this.module.getCore().getUserManager().getUserName(model.getOwnerKey());
         }
         return this.ownerName;
     }
 
     public String getName()
     {
-        return parent.getName();
+        return model.getName();
     }
 
     public void setName(String name)
     {
-        parent.setName(name);
+        model.setName(name);
     }
 
     public String getWelcomeMsg()
     {
-        if (parent.getWelcomemsg() == null || parent.getWelcomemsg().isEmpty())
+        if (model.getWelcomemsg() == null || model.getWelcomemsg().isEmpty())
         {
             return null;
         }
-        return parent.getWelcomemsg();
+        return model.getWelcomemsg();
     }
 
     public void setWelcomeMsg(String welcomeMsg)
     {
-        parent.setWelcomemsg(welcomeMsg);
+        model.setWelcomemsg(welcomeMsg);
     }
 
     public boolean isPublic()
@@ -186,8 +179,5 @@ public abstract class TeleportPoint
         return this.isPublic() ? this.permission.isAuthorized(user) : (this.isInvited(user) || this.isOwner(user));
     }
 
-    public String getStorageName()
-    {
-        return parent.getOwnerKey().longValue() + ":" + this.getName();
-    }
+    protected abstract Permission generatePublicPerm();
 }

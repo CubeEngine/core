@@ -15,27 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel;
+package de.cubeisland.engine.core.command.reflected;
 
-public class TravelException extends Exception
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface OnlyIngame
 {
-    public TravelException()
-    {
-        super();
-    }
-
-    public TravelException(String message)
-    {
-        super(message);
-    }
-
-    public TravelException(Throwable cause)
-    {
-        super(cause);
-    }
-
-    public TravelException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+    String value() default "";
 }

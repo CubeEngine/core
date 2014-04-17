@@ -25,7 +25,6 @@ import de.cubeisland.engine.conomy.account.ConomyManager;
 import de.cubeisland.engine.conomy.account.UserAccount;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
@@ -51,19 +50,17 @@ public class MoneyCommand extends ContainerCommand
         super(module, "money", "Manages your money.");
         this.module = module;
         this.manager = module.getManager();
+
+        this.delegateChild(new ContextFilter()
+        {
+            @Override
+            public String delegateTo(CommandContext context)
+            {
+                return context.hasArg(0) ? null : "balance";
+            }
+        });
     }
 
-    @Override
-    public CommandResult run(CommandContext context)
-    {
-        if (context.hasArg(0))
-        {
-            return super.run(context);
-        }
-        this.balance((ParameterizedContext)context);
-        return null;
-    }
-    
     private UserAccount getUserAccount(User user)
     {
         return this.manager.getUserAccount(user, this.module.getConfig().autocreateUserAcc);

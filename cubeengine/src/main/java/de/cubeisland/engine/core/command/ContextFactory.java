@@ -35,4 +35,6 @@ public interface ContextFactory
     CommandContext parse(CubeCommand command, CommandContext context);
     CommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs);
     CommandContext tabCompleteParse(CubeCommand command, CommandSender sender, Stack<String> labels,String[] rawArgs);
+
+    void calculateArgBounds();
 }

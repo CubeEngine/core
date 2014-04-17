@@ -64,15 +64,12 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         this.module = module;
         // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
 
-        this.delegateChild(new MultiContextFilter() {
+        this.delegateChild(new ContextFilter()
+        {
             @Override
-            public String getChild(CommandContext context)
+            public String delegateTo(CommandContext context)
             {
-                if (context.hasArg(0))
-                {
-                    return "add"; // acts as /pt add with -r flag
-                }
-                return "clear"; // /pt without params clears the tool
+                return context.hasArg(0) ? "add" : "clear";
             }
 
             @Override

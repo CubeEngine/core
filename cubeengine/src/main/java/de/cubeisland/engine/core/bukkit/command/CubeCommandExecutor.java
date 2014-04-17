@@ -39,10 +39,13 @@ import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.ContainerCommand.ChildDelegation;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.sender.BlockCommandSender;
@@ -109,15 +112,37 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
 
             args = newArgs;
         }
-        if (!command.isAuthorized(sender))
-        {
-            throw new PermissionDeniedException(command.getPermission());
-        }
+
+        CommandContext ctx;
         if (tabComplete)
         {
-            return command.getContextFactory().tabCompleteParse(command, sender, labels, args);
+             ctx = command.getContextFactory().tabCompleteParse(command, sender, labels, args);
         }
-        return command.getContextFactory().parse(command, sender, labels, args);
+        else
+        {
+            ctx = command.getContextFactory().parse(command, sender, labels, args);
+        }
+        if (command instanceof ContainerCommand)
+        {
+            if (!(ctx.getArgCount() == 1 && "".equals(ctx.getString(0))))
+            {
+                ChildDelegation delegation = ((ContainerCommand)command).getDelegation();
+                if (delegation != null)
+                {
+                    String child = delegation.delegateTo(ctx);
+                    if (child != null)
+                    {
+                        CubeCommand target = command.getChild(child);
+                        if (target != null)
+                        {
+                            return target.getContextFactory().tabCompleteParse(target, sender, labels, args);
+                        }
+                        command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
+                    }
+                }
+            }
+        }
+        return ctx;
     }
 
     @Override
@@ -177,10 +202,10 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         try
         {
             context = toCommandContext(this.command, sender, label, args, true);
-        }
-        catch (PermissionDeniedException e)
-        {
-            return Collections.emptyList();
+            if (!context.getCommand().isAuthorized(sender))
+            {
+                return Collections.emptyList();
+            }
         }
         catch (CommandException e)
         {
@@ -270,6 +295,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
     {
         try
         {
+            ctx.getCommand().checkContext(ctx);
             CommandResult result = ctx.getCommand().run(ctx);
             if (result != null)
             {
@@ -327,13 +353,26 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                 final String usage;
                 if (context != null)
                 {
-                    usage = this.command.getUsage(context);
+                    usage = context.getCommand().getUsage(context);
                 }
                 else
                 {
+                    // TODO can this happen at all?
                     usage = this.command.getUsage(sender);
                 }
                 sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
+            }
+        }
+        else if (t instanceof InvalidArgumentException)
+        {
+            InvalidArgumentException e = (InvalidArgumentException)t;
+            if (e.getMessage() != null)
+            {
+                sender.sendMessage(t.getMessage());
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "Invalid Argument...");
             }
         }
         else if (t instanceof PermissionDeniedException)
