@@ -24,10 +24,6 @@ import org.bukkit.Location;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
-import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
@@ -38,9 +34,8 @@ import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.reflected.OnlyIngame;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.travel.InviteManager;
+import de.cubeisland.engine.travel.TpPointCommand;
 import de.cubeisland.engine.travel.Travel;
 import de.cubeisland.engine.travel.storage.TeleportInvite;
 
@@ -51,110 +46,77 @@ import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 import static org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND;
 
-public class HomeCommand extends ContainerCommand
+public class HomeCommand extends TpPointCommand
 {
     private final HomeManager manager;
-    private final InviteManager iManager;
     private final Travel module;
 
     public HomeCommand(Travel module)
     {
         super(module, "home", "Teleport to your home");
-        this.getContextFactory().removeLastIndexed();
-        this.addIndexed(new CommandParameterIndexed(new String[]{"home"}, String.class, false, true, 1));
-        this.addIndexed(new CommandParameterIndexed(new String[]{"owner"}, User.class, false, true, 1));
         this.module = module;
         this.manager = module.getHomeManager();
-        this.iManager = module.getInviteManager();
+        this.delegateChild(new ContextFilter()
+        {
+            @Override
+            public String delegateTo(CommandContext context)
+            {
+                return context.isSender(User.class) ? "tp" : null;
+            }
+        });
     }
 
-    @Override
-    public CommandResult run(CommandContext context)
-    {
-        if (!context.isSender(User.class))
-        {
-            return super.run(context);
-        }
-        Permission tpPerm = context.getCommand().getChild("tp").getPermission();
-        if (tpPerm.isAuthorized(context.getSender()))
-        {
-            this.tp(context);
-            return null;
-        }
-        throw new PermissionDeniedException(tpPerm);
-    }
-
+    @OnlyIngame
     @Command(desc = "Teleport to a home",
              indexed = {@Grouped(req = false, value = @Indexed("home")),
                         @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
-    @OnlyIngame
     public void tp(CommandContext context)
     {
-        User user;
-        if (context.hasArg(1))
-        {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
-                return;
-            }
-        }
-        else
-        {
-            user = (User)context.getSender();
-        }
+        User user = this.getUser(context, 1);
         User sender = (User)context.getSender();
         String name = context.getString(0, "home");
-        Home home = this.manager.find(user, name);
+        Home home = this.manager.findOne(user, name);
         if (home == null)
         {
-            if (user.equals(sender))
-            {
-                context.sendTranslated(NEGATIVE, "You have no home named {name#home}! Use {text:/sethome} to set your home", name);
-            }
-            else
-            {
-                context.sendTranslated(NEGATIVE, "{user} has no home named {name#home}! Use {text:/sethome} to set your home", user, name);
-            }
+            homeNotFoundMessage(context, user, name);
+            context.sendTranslated(NEUTRAL, "Use {text:/sethome} to set your home");
             return;
         }
-        if (module.getPermissions().HOME_TP_OTHER.isAuthorized(sender) || home.isPublic() || home.isOwner(sender) || home.isInvited(sender))
+        if (!home.canAccess(sender))
         {
-            Location location = home.getLocation();
-            if (location == null)
-            {
-                context.sendTranslated(NEGATIVE, "This home {name} from {user} is in a world that no longer exists!", home.getName(), home.getOwnerName());
-                return;
-            }
-            if (sender.teleport(location, COMMAND))
-            {
-                if (home.getWelcomeMsg() != null)
-                {
-                    context.sendMessage(home.getWelcomeMsg());
-                    return;
-                }
-                if (home.isOwner(sender))
-                {
-                    context.sendTranslated(POSITIVE, "You have been teleported to your home {name}!", home.getName());
-                    return;
-                }
-                context.sendTranslated(POSITIVE, "You have been teleported to the home {name} of {user}!", home.getName(), home.getOwnerName());
-                return;
-            }
-            context.sendTranslated(CRITICAL, "The teleportation got aborted!");
+            context.ensurePermission(module.getPermissions().HOME_TP_OTHER);
+        }
+        Location location = home.getLocation();
+        if (location == null)
+        {
+            homeInDeletedWorldMessage(context, user, home);
             return;
         }
-        context.sendTranslated(NEGATIVE, "You do not have access to any home named {name#home}!", name);
+        if (sender.teleport(location, COMMAND))
+        {
+            if (home.getWelcomeMsg() != null)
+            {
+                context.sendMessage(home.getWelcomeMsg());
+                return;
+            }
+            if (home.isOwner(sender))
+            {
+                context.sendTranslated(POSITIVE, "You have been teleported to your home {name}!", home.getName());
+                return;
+            }
+            context.sendTranslated(POSITIVE, "You have been teleported to the home {name} of {user}!", home.getName(), home.getOwnerName());
+            return;
+        }
+        context.sendTranslated(CRITICAL, "The teleportation got aborted!");
     }
 
     @Alias(names = {"sethome"})
-    @Command(names = {"set", "sethome"},
+    @Command(names = {"set", "sethome", "create", "createhome"},
              desc = "Set your home",
              indexed = @Grouped(req = false, value = @Indexed("name")),
-             flags = {@Flag(longName = "public", name = "pub")})
+             flags = {@Flag(longName = "public", name = "pub", permission = "public")})
     @OnlyIngame("Ok so I'll need your new address then. No seriously this won't work!")
-    public void setHome(ParameterizedContext context)
+    public void create(ParameterizedContext context)
     {
         User sender = (User)context.getSender();
         if (this.manager.getCount(sender) >= this.module.getConfig().homes.max && !module.getPermissions().HOME_SET_MORE.isAuthorized(context.getSender()))
@@ -174,8 +136,8 @@ public class HomeCommand extends ContainerCommand
             context.sendTranslated(NEGATIVE, "The home already exists! You can move it with {text:/home move}");
             return;
         }
-        this.manager.create(sender, name, sender.getLocation(), context.hasFlag("pub"));
-        context.sendTranslated(POSITIVE, "Your home has been created!");
+        Home home = this.manager.create(sender, name, sender.getLocation(), context.hasFlag("pub"));
+        context.sendTranslated(POSITIVE, "Your home {name} has been created!", home.getName());
     }
 
     @Command(desc = "Set the welcome message of homes",
@@ -184,38 +146,14 @@ public class HomeCommand extends ContainerCommand
                         @Grouped(req = false, value = @Indexed("welcome message"), greedy = true)},
              params = @Param(names = "owner", type = User.class, permission = "other"),
              flags = @Flag(longName = "append", name = "a"))
-    public void setWelcomeMessage(ParameterizedContext context)
+    public void greeting(ParameterizedContext context)
     {
-        User user;
-        if (context.hasParam("owner"))
-        {
-            user = context.getUser("owner");
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString("owner"));
-                return;
-            }
-        }
-        else if (context.isSender(User.class))
-        {
-            user = (User)context.getSender();
-        }
-        else
-        {
-            throw new IncorrectUsageException("You need to provide a owner");
-        }
+        User user = this.getUser(context, "owner");
         String name = context.getString(0);
-        Home home = this.manager.find(user, name);
+        Home home = this.manager.getExact(user, name);
         if (home == null)
         {
-            if (user.equals(context.getSender()))
-            {
-                context.sendTranslated(NEGATIVE, "You do not own a home named {name#home}!", name);
-            }
-            else
-            {
-                context.sendTranslated(NEGATIVE, "{user} has no home named {name#home}!", user, name);
-            }
+            homeNotFoundMessage(context, user, name);
             return;
         }
         if (context.hasFlag("a"))
@@ -227,97 +165,110 @@ public class HomeCommand extends ContainerCommand
             home.setWelcomeMsg(context.getStrings(0));
         }
         home.update();
-        context.sendTranslated(POSITIVE, "The welcome message for the home {name} is now set to:", home.getName());
-        context.sendMessage(home.getWelcomeMsg());
-    }
-
-    @Command(names = {"move", "replace"}, desc = "Move a home",
-             indexed = {@Grouped(req = false, value = @Indexed("name")),
-                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
-    @OnlyIngame("I am calling the moving company right now!")
-    public void moveHome(CommandContext context)
-    {
-        User user;
-        if (context.hasArg(1))
+        if (home.isOwner(context.getSender()))
         {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
-                return;
-            }
+            context.sendTranslated(POSITIVE, "The welcome message for your home {name} is now set to:", home.getName());
         }
         else
         {
-            user = (User)context.getSender();
+            context.sendTranslated(POSITIVE, "The welcome message for the home {name} of {user} is now set to:", home.getName(), user);
         }
-        User sender = (User)context.getSender();
+        context.sendMessage(home.getWelcomeMsg());
+    }
+
+    @OnlyIngame("I am calling the moving company right now!")
+    @Command(names = {"move", "replace"}, desc = "Move a home",
+             indexed = {@Grouped(req = false, value = @Indexed("name")),
+                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
+    public void move(CommandContext context)
+    {
+        User user = this.getUser(context, 1);
         String name = context.getString(0, "home");
-        Home home = this.manager.find(user, name);
+        Home home = this.manager.getExact(user, name);
         if (home == null)
         {
-            context.sendTranslated(NEGATIVE, "There is no home named {name#home}! Use {text:/sethome} to set your home", name);
+            homeNotFoundMessage(context, user, name);
+            context.sendTranslated(NEUTRAL, "Use {text:/sethome} to set your home");
             return;
         }
-        if (module.getPermissions().HOME_MOVE_OTHER.isAuthorized(sender) || home.isOwner(sender))
+        if (!home.isOwner(context.getSender()))
         {
-            home.setLocation(sender.getLocation());
-            home.update();
-            if (user.equals(sender))
-            {
-                context.sendTranslated(POSITIVE, "Your home {name} has been moved to your current location!", name);
-                return;
-            }
-            context.sendTranslated(POSITIVE, "The home {name} of {user} has been moved to your current location", name, user);
+            context.ensurePermission(module.getPermissions().HOME_MOVE_OTHER);
+        }
+        User sender = (User)context.getSender();
+        home.setLocation(sender.getLocation());
+        home.update();
+        if (home.isOwner(sender))
+        {
+            context.sendTranslated(POSITIVE, "Your home {name} has been moved to your current location!", home.getName());
             return;
         }
-        context.sendTranslated(NEGATIVE, "You do not have the right to change this home!");
+        context.sendTranslated(POSITIVE, "The home {name} of {user} has been moved to your current location", home.getName(), user);
     }
 
     @Alias(names = {"remhome", "removehome", "delhome", "deletehome"})
     @Command(names = {"remove", "delete", "rem", "del"}, desc = "Remove a home",
              indexed = {@Grouped(req = false, value = @Indexed("name")),
                         @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
-    public void removeHome(CommandContext context)
+    public void remove(CommandContext context)
     {
-        User user;
-        if (context.hasArg(1))
-        {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
-                return;
-            }
-        }
-        else if (context.isSender(User.class))
-        {
-            user = (User)context.getSender();
-        }
-        else
-        {
-            throw new IncorrectUsageException("So where do you want to sleep this night?");
-        }
+        User user = this.getUser(context, 1);
         String name = context.getString(0, "home");
-        Home home = this.manager.find(user, name);
+        Home home = this.manager.getExact(user, name);
         if (home == null)
         {
-            context.sendTranslated(NEGATIVE, "{user} has no home named {name#home}!", user, name);
+            homeNotFoundMessage(context, user, name);
             return;
         }
-        if (module.getPermissions().HOME_REMOVE_OTHER.isAuthorized(context.getSender()) ||
-            (context.isSender(User.class) && home.isOwner((User)context.getSender())))
+        if (!home.isOwner(context.getSender()))
         {
-            this.manager.delete(home);
-            if (user.equals(context.getSender()))
+            context.ensurePermission(module.getPermissions().HOME_REMOVE_OTHER);
+        }
+        this.manager.delete(home);
+        if (user.equals(context.getSender()))
+        {
+            context.sendTranslated(POSITIVE, "Your home {name} has been removed!", name);
+            return;
+        }
+        context.sendTranslated(POSITIVE, "The home {name} of {user} has been removed", name, user);
+    }
+
+    @Command(desc = "Rename a home",
+             indexed = {@Grouped(@Indexed("home")),
+                        @Grouped(@Indexed("new name"))},
+             params = @Param(names = "owner", type = User.class))
+    public void rename(ParameterizedContext context)
+    {
+        User user = getUser(context, "owner");
+        String name = context.getString(0);
+        Home home = manager.getExact(user, name);
+        if (home == null)
+        {
+            homeNotFoundMessage(context, user, name);
+            return;
+        }
+        if (!home.isOwner(context.getSender()))
+        {
+            context.ensurePermission(module.getPermissions().HOME_RENAME_OTHER);
+        }
+        String newName = context.getString(1);
+        if (name.contains(":") || name.length() >= 32)
+        {
+            context.sendTranslated(NEGATIVE, "Homes may not have names that are longer than 32 characters or contain colon(:)'s!");
+            return;
+        }
+        if (manager.rename(home, newName))
+        {
+            if (home.isOwner(context.getSender()))
             {
-                context.sendTranslated(POSITIVE, "Your home {name} has been removed!", name);
+                context.sendTranslated(POSITIVE, "Your home {name} has been renamed to {name}", home.getName(), newName);
                 return;
             }
-            context.sendTranslated(POSITIVE, "The home {name} of {user} has been removed", name, user);
+            context.sendTranslated(POSITIVE, "The home {name} of {user} has been renamed to {name}", home.getName(),
+                                   user, newName);
             return;
         }
-        context.sendTranslated(NEGATIVE, "You do not have the right to remove this home!");
+        context.sendTranslated(POSITIVE, "Could not rename the home to {name}", newName);
     }
 
     @Alias(names = {"listhomes", "homes"})
@@ -326,32 +277,19 @@ public class HomeCommand extends ContainerCommand
              flags = {@Flag(name = "pub", longName = "public"),
                       @Flag(name = "o", longName = "owned"),
                       @Flag(name = "i", longName = "invited")},
-             indexed = @Grouped(req = false, value = @Indexed(value = "player", type = User.class)))
+             indexed = @Grouped(req = false, value = @Indexed(value = "owner", type = User.class)))
     public void list(ParameterizedContext context) throws Exception
     {
-        User user;
-        if (context.hasArg(0) && module.getPermissions().HOME_LIST_OTHER.isAuthorized(context.getSender()))
+        if ((context.hasArg(0) && "*".equals(context.getString(0))) || !(context.hasArg(0) || context.isSender(User.class)))
         {
-            if ("*".equals(context.getString(0)))
-            {
-                this.listAll(context);
-                return;
-            }
-            user = context.getUser(0);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
-        }
-        else if (context.isSender(User.class))
-        {
-            user = (User)context.getSender();
-        }
-        else
-        {
+            context.ensurePermission(module.getPermissions().HOME_LIST_OTHER);
             this.listAll(context);
             return;
+        }
+        User user = this.getUser(context, 0);
+        if (!user.equals(context.getSender()))
+        {
+            context.ensurePermission(module.getPermissions().HOME_LIST_OTHER);
         }
         Set<Home> homes = this.manager.list(user, context.hasFlag("o"), context.hasFlag("pub"), context.hasFlag("i"));
         if (homes.isEmpty())
@@ -372,7 +310,7 @@ public class HomeCommand extends ContainerCommand
         {
             context.sendTranslated(NEUTRAL, "The following homes are available to {user}:", user.getDisplayName());
         }
-        listHomes(context, user, homes);
+        showList(context, user, homes);
     }
 
     private void listAll(ParameterizedContext context)
@@ -384,36 +322,7 @@ public class HomeCommand extends ContainerCommand
             return;
         }
         context.sendTranslatedN(POSITIVE, count, "There is one home set:", "There are {amount} homes set:", count);
-        this.listHomes(context, null, this.manager.list(true, true));
-    }
-
-    private void listHomes(ParameterizedContext context, User user, Set<Home> homes)
-    {
-        for (Home home : homes)
-        {
-            if (home.isPublic())
-            {
-                if (home.isOwner(user))
-                {
-                    context.sendTranslated(NEUTRAL, "  {name#home} ({text:public})", home.getName());
-                }
-                else
-                {
-                    context.sendTranslated(NEUTRAL, "  {user}:{name#home} ({text:public})", home.getOwnerName(), home.getName());
-                }
-            }
-            else
-            {
-                if (home.isOwner(user))
-                {
-                    context.sendTranslated(NEUTRAL, "  {name#home} ({text:private})", home.getName());
-                }
-                else
-                {
-                    context.sendTranslated(NEUTRAL, "  {user}:{name#home} ({text:private})", home.getOwnerName(), home.getName());
-                }
-            }
-        }
+        this.showList(context, null, this.manager.list(true, true));
     }
 
     @Command(names = {"ilist", "invited"},
@@ -422,24 +331,7 @@ public class HomeCommand extends ContainerCommand
              params = @Param(names = "owner", type = User.class, permission = "other"))
     public void invitedList(ParameterizedContext context)
     {
-        User user;
-        if (context.hasParam("owner"))
-        {
-            user = context.getUser("owner");
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
-        }
-        else if (context.isSender(User.class))
-        {
-            user = (User)context.getSender();
-        }
-        else
-        {
-            throw new IncorrectUsageException("No one will ever invite a console to his home");
-        }
+        User user = this.getUser(context, "owner");
         Set<Home> homes = new HashSet<>();
         for (Home home : this.manager.list(user, true, false, false))
         {
@@ -480,15 +372,15 @@ public class HomeCommand extends ContainerCommand
         }
     }
 
+    @OnlyIngame("How about making a phone call to invite someone instead?")
     @Command(desc = "Invite a user to one of your homes",
              indexed = {@Grouped(req = false, value = @Indexed("home")),
                         @Grouped(@Indexed(value = "player", type = User.class))})
-    @OnlyIngame("How about making a phone call to invite someone instead?")
     public void invite(CommandContext context)
     {
         User sender = (User)context.getSender();
         String name = context.hasArg(1) ? context.getString(0, "home") : "home";
-        Home home = this.manager.find(sender, name);
+        Home home = this.manager.getExact(sender, name);
         if (home == null || !home.isOwner(sender))
         {
             context.sendTranslated(NEGATIVE, "You do not own a home named {name#home}!", name);
@@ -518,20 +410,20 @@ public class HomeCommand extends ContainerCommand
         home.invite(invited);
         if (invited.isOnline())
         {
-            invited.sendTranslated(NEUTRAL, "{user} invited you to their home. To teleport to it use: /home {user} {name#home}", sender, sender, name);
+            invited.sendTranslated(NEUTRAL, "{user} invited you to their home. To teleport to it use: /home {user} {name#home}", sender, sender, home.getName());
         }
-        context.sendTranslated(POSITIVE, "{user} is now invited to your home {name}", context.getString(0), name);
+        context.sendTranslated(POSITIVE, "{user} is now invited to your home {name}", context.getString(0), home.getName());
     }
 
+    @OnlyIngame
     @Command(desc = "Uninvite a player from one of your homes",
              indexed = {@Grouped(req = false, value = @Indexed("home")),
                         @Grouped(@Indexed(value = "player", type = User.class))})
-    @OnlyIngame
     public void unInvite(CommandContext context)
     {
         User sender = (User)context.getSender();
         String name = context.hasArg(1) ? context.getString(0, "home") : "home";
-        Home home = this.manager.find(sender, name);
+        Home home = this.manager.getExact(sender, name);
         if (home == null || !home.isOwner(sender))
         {
             context.sendTranslated(NEGATIVE, "You do not own a home named {name#home}!", name);
@@ -539,7 +431,7 @@ public class HomeCommand extends ContainerCommand
         }
         if (home.isPublic())
         {
-            context.sendTranslated(NEGATIVE, "This home is public make it private to disallow other to access it.");
+            context.sendTranslated(NEGATIVE, "This home is public. Make it private to disallow others to access it.");
             return;
         }
         User invited = context.hasArg(1) ? context.getUser(1) : context.getUser(0);
@@ -561,40 +453,27 @@ public class HomeCommand extends ContainerCommand
         home.unInvite(invited);
         if (invited.isOnline())
         {
-            invited.sendTranslated(NEUTRAL, "You are no longer invited to {user}'s home {name#home}", sender, name);
+            invited.sendTranslated(NEUTRAL, "You are no longer invited to {user}'s home {name#home}", sender, home.getName());
         }
-        context.sendTranslated(POSITIVE, "{user} is no longer invited to your home {name}", context.getString(0), name);
+        context.sendTranslated(POSITIVE, "{user} is no longer invited to your home {name}", context.getString(0), home.getName());
     }
 
-    @Command(names = {"makeprivate", "setprivate", "private"},
+    @Command(names = {"private", "makeprivate", "setprivate"},
              desc = "Make one of your homes private",
              indexed = {@Grouped(req = false, value = @Indexed("home")),
                         @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
     public void makePrivate(CommandContext context)
     {
-        User user;
-        if (context.hasArg(1) && module.getPermissions().HOME_CHANGE_OTHER.isAuthorized(context.getSender()))
+        User user = this.getUser(context, 1);
+        if (!user.equals(context.getSender()))
         {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
-                return;
-            }
-        }
-        else if (context.isSender(User.class))
-        {
-            user = (User)context.getSender();
-        }
-        else
-        {
-            throw new IncorrectUsageException("You need to provide a player");
+            context.ensurePermission(module.getPermissions().HOME_PRIVATE_OTHER);
         }
         String name = context.getString(0, "home");
-        Home home = this.manager.find(user, name);
+        Home home = this.manager.findOne(user, name);
         if (home == null)
         {
-            context.sendTranslated(NEGATIVE, "{user} has no home named {name#home}!", user, name);
+            homeNotFoundMessage(context, user, name);
             return;
         }
         if (!home.isPublic())
@@ -603,44 +482,30 @@ public class HomeCommand extends ContainerCommand
             return;
         }
         home.setVisibility(VISIBILITY_PRIVATE);
-        if (context.getSender().equals(user))
+        if (home.isOwner(context.getSender()))
         {
             context.sendTranslated(POSITIVE, "Your home {name} is now private", home.getName());
+            return;
         }
-        else
-        {
-            context.sendTranslated(POSITIVE, "The home {name} of {user} is now private", home.getOwnerName(), home.getName());
-        }
+        context.sendTranslated(POSITIVE, "The home {name} of {user} is now private", home.getOwnerName(), home.getName());
     }
 
-    @Command(names = {"makepublic", "setpublic", "public"},
+    @Command(names = {"public", "makepublic", "setpublic"},
              desc = "Make one of your homes public",
-             indexed = {@Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
+             indexed = {@Grouped(req = false, value = @Indexed("home")),
+                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
     public void makePublic(CommandContext context)
     {
-        User user;
-        if (context.hasArg(1) && module.getPermissions().HOME_CHANGE_OTHER.isAuthorized(context.getSender()))
+        User user = this.getUser(context, 1);
+        if (!user.equals(context.getSender()))
         {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
-                return;
-            }
-        }
-        else if (context.isSender(User.class))
-        {
-            user = (User)context.getSender();
-        }
-        else
-        {
-            throw new IncorrectUsageException("You need to provide a player");
+            context.ensurePermission(module.getPermissions().HOME_PUBLIC_OTHER);
         }
         String name = context.getString(0, "home");
-        Home home = this.manager.find(user, name);
+        Home home = this.manager.findOne(user, name);
         if (home == null)
         {
-            context.sendTranslated(NEGATIVE, "{user} has no home named {name#home}!", user, name);
+            homeNotFoundMessage(context, user, name);
             return;
         }
         if (home.isPublic())
@@ -649,52 +514,44 @@ public class HomeCommand extends ContainerCommand
             return;
         }
         home.setVisibility(VISIBILITY_PUBLIC);
-        if (context.getSender().equals(user))
+        if (home.isOwner(context.getSender()))
         {
             context.sendTranslated(POSITIVE, "Your home {name} is now public", home.getName());
+            return;
         }
-        else
-        {
-            context.sendTranslated(POSITIVE, "The home {name} of {user} is now public", home.getOwnerName(), home.getName());
-        }
+        context.sendTranslated(POSITIVE, "The home {name} of {user} is now public", home.getOwnerName(), home.getName());
     }
 
     @Alias(names = {"clearhomes"})
     @Command(desc = "Clear all homes (of an user)",
              flags = {@Flag(name = "pub", longName = "public"),
                       @Flag(name = "priv", longName = "private")},
-             indexed = @Grouped(req = false, value = @Indexed(value = "player", type = User.class)))
+             indexed = @Grouped(req = false, value = @Indexed(value = "owner", type = User.class)))
     public CommandResult clear(final ParameterizedContext context)
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
         {
-            context.sendMessage("This command has been disabled for ingame use via the configuration");
+            context.sendTranslated(NEGATIVE, "This command has been disabled for ingame use via the configuration");
             return null;
         }
-        if (context.getArgCount() > 0)
+        if (context.hasArg(0))
         {
             if (context.getUser(0) == null)
             {
                 context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
                 return null;
             }
+            if (context.hasFlag("pub"))
+            {
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public homes ever created by {user}?", context.getString(0));
+            }
+            else if (context.hasFlag("priv"))
+            {
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private homes ever created by {user}?", context.getString(0));
+            }
             else
             {
-                if (context.hasFlag("pub"))
-                {
-                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public homes ever created by {user}?", context.getString(0));
-                    context.sendTranslated(NEUTRAL, "To delete all the public homes, do: {text:/confirm} before 30 seconds has passed");
-                }
-                else if (context.hasFlag("priv"))
-                {
-                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private homes ever created by {user}?", context.getString(0));
-                    context.sendTranslated(NEUTRAL, "To delete all the private homes, do: {text:/confirm} before 30 seconds has passed");
-                }
-                else
-                {
-                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all homes ever created by {user}?", context.getString(0));
-                    context.sendTranslated(NEUTRAL, "To delete all the homes, do: &{text:/confirm} before 30 seconds has passed");
-                }
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all homes ever created by {user}?", context.getString(0));
             }
         }
         else
@@ -702,19 +559,17 @@ public class HomeCommand extends ContainerCommand
             if (context.hasFlag("pub"))
             {
                 context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public homes ever created on this server!?");
-                context.sendTranslated(NEUTRAL, "To delete all the public homes of every user, do: {text:/confirm} before 30 seconds has passed");
             }
             else if (context.hasFlag("priv"))
             {
                 context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private homes ever created on this server?");
-                context.sendTranslated(NEUTRAL, "To delete all the private homes of every user, do: {text:/confirm} before 30 seconds has passed");
             }
             else
             {
                 context.sendTranslated(NEUTRAL, "Are you sure you want to delete all homes ever created on this server!?");
-                context.sendTranslated(NEUTRAL, "To delete all the homes of every user, do: {text:/confirm} before 30 seconds has passed");
             }
         }
+        context.sendTranslated(NEUTRAL, "Confirm with: {text:/confirm} before 30 seconds have passed to delete the homes");
         return new ConfirmResult(new Runnable()
         {
             @Override
@@ -733,5 +588,25 @@ public class HomeCommand extends ContainerCommand
                 }
             }
         }, context);
+    }
+
+    private void homeInDeletedWorldMessage(CommandContext context, User user, Home home)
+    {
+        if (home.isOwner(user))
+        {
+            context.sendTranslated(NEGATIVE, "Your home {name} is in a world that no longer exists!", home.getName());
+            return;
+        }
+        context.sendTranslated(NEGATIVE, "The home {name} of {user} is in a world that no longer exists!", home.getName(), home.getOwnerName());
+    }
+
+    private void homeNotFoundMessage(CommandContext context, User user, String name)
+    {
+        if (context.getSender().equals(user))
+        {
+            context.sendTranslated(NEGATIVE, "You have no home named {name#home}!", name);
+            return;
+        }
+        context.sendTranslated(NEGATIVE, "{user} has no home named {name#home}!", user, name);
     }
 }

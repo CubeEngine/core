@@ -57,7 +57,7 @@ public class HomeListener implements Listener
             {
                 if (homeManager.has(user, "home"))
                 {
-                    Home home = homeManager.find(user, "home");
+                    Home home = homeManager.findOne(user, "home");
                     if (user.getLocation().equals(home.getLocation()))
                     {
                         return;

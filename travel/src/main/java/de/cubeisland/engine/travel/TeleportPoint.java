@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.storage.TeleportPointModel;
@@ -77,13 +78,13 @@ public abstract class TeleportPoint
         this.model.setOwnerKey(owner.getEntity().getKey());
     }
 
-    public boolean isOwner(User user)
+    public boolean isOwner(CommandSender user)
     {
-        if (user == null)
+        if (user instanceof User)
         {
-            return false;
+            return model.getOwnerKey().equals(((User)user).getEntity().getKey());
         }
-        return model.getOwnerKey().equals(user.getEntity().getKey());
+        return false;
     }
 
     public void invite(User user)

@@ -67,7 +67,15 @@ public abstract class TelePointManager<T extends TeleportPoint>
         return this.dsl.selectFrom(TABLE_TP_POINT).where(TABLE_TP_POINT.KEY.eq(UInteger.valueOf(key))).fetchOne();
     }
 
-    public T find(User user, String name)
+    /**
+     * Returns a TeleportPoint given user has access to
+     * <p>Favouring owned over public over invited TeleportPoints
+     *
+     * @param user
+     * @param name
+     * @return
+     */
+    public T findOne(User user, String name)
     {
         Map<String, T> map = this.points.get(name);
         if (map == null)
@@ -106,6 +114,12 @@ public abstract class TelePointManager<T extends TeleportPoint>
             match = point;
         }
         return match;
+    }
+
+    public T getExact(User user, String name)
+    {
+        Map<String, T> map = this.points.get(name);
+        return map == null ? null : map.get(user.getName());
     }
 
     public boolean has(User user, String name)
@@ -269,7 +283,6 @@ public abstract class TelePointManager<T extends TeleportPoint>
     {
         return this.list(true, true).size();
     }
-
 
     public static TreeSet<String> findIn(String pName, Set<String> strings)
     {
