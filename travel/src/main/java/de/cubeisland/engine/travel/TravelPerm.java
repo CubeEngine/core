@@ -22,6 +22,8 @@ import de.cubeisland.engine.core.permission.PermissionContainer;
 import de.cubeisland.engine.travel.home.HomeCommand;
 import de.cubeisland.engine.travel.warp.WarpCommand;
 
+import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
+
 public class TravelPerm extends PermissionContainer<Travel>
 {
     public TravelPerm(Travel module, HomeCommand homeCmd, WarpCommand warpCmd)
@@ -44,8 +46,22 @@ public class TravelPerm extends PermissionContainer<Travel>
         WARP_PRIVATE_OTHER = warpCmd.getChild("private").getPermission().child("other");
         WARP_PUBLIC_OTHER = warpCmd.getChild("public").getPermission().child("other");
 
+        HOME_USER.attach(homeCmd.getChild("tp").getPermission(),
+                         homeCmd.getChild("set").getPermission(),
+                         homeCmd.getChild("move").getPermission(),
+                         homeCmd.getChild("remove").getPermission(),
+                         homeCmd.getChild("rename").getPermission(),
+                         homeCmd.getChild("list").getPermission(),
+                         homeCmd.getChild("private").getPermission(),
+                         homeCmd.getChild("greeting").getPermission(),
+                         homeCmd.getChild("ilist").getPermission(),
+                         homeCmd.getChild("invite").getPermission(),
+                         homeCmd.getChild("uninvite").getPermission());
+
         this.registerAllPermissions();
     }
+
+    public final Permission HOME_USER = getBasePerm().child("home-user", TRUE);
 
     public final Permission HOME_TP_OTHER;
     public final Permission HOME_SET_MORE;

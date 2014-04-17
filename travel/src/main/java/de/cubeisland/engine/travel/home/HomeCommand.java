@@ -141,7 +141,7 @@ public class HomeCommand extends TpPointCommand
     }
 
     @Command(desc = "Set the welcome message of homes",
-             names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
+             names = {"greeting", "setgreeting", "setwelcome", "setwelcomemsg"},
              indexed = {@Grouped(@Indexed("home")),
                         @Grouped(req = false, value = @Indexed("welcome message"), greedy = true)},
              params = @Param(names = "owner", type = User.class, permission = "other"),
