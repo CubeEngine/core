@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Locale;
 
@@ -223,8 +224,15 @@ public class BukkitUtils
         private ClearJsonList(JsonList toClear)
         {
             super(toClear.c());
-            this.save();
-            toClear.load();
+            try
+            {
+                this.save();
+                toClear.load();
+            }
+            catch (IOException e)
+            {
+                throw new IllegalStateException(e);
+            }
         }
     }
 

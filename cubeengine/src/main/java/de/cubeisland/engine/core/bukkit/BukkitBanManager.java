@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -44,7 +45,7 @@ import static de.cubeisland.engine.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static org.bukkit.BanList.Type.IP;
-import static org.bukkit.BanList.Type.UUID;
+import static org.bukkit.BanList.Type.NAME;
 
 public class BukkitBanManager implements BanManager
 {
@@ -71,7 +72,7 @@ public class BukkitBanManager implements BanManager
 
         if (ban instanceof UserBan)
         {
-            Bukkit.getBanList(UUID).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
+            Bukkit.getBanList(NAME).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
                                                 ban.getSource());
         }
         else if (ban instanceof IpBan)
@@ -214,7 +215,14 @@ public class BukkitBanManager implements BanManager
     public synchronized void reloadBans()
     {
         expect(isMainThread());
-        this.profileBan.load();
-        this.ipBans.load();
+        try
+        {
+            this.profileBan.load();
+            this.ipBans.load();
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e);
+        }
     }
 }
