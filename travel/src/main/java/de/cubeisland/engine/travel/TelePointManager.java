@@ -59,7 +59,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
             map = new HashMap<>();
             points.put(point.getName(), map);
         }
-        map.put(point.getOwnerName(), point);
+        map.put(point.getOwnerName().toLowerCase(), point);
     }
 
     public TeleportPointModel get(Long key)
@@ -119,7 +119,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
     public T getExact(User user, String name)
     {
         Map<String, T> map = this.points.get(name);
-        return map == null ? null : map.get(user.getName());
+        return map == null ? null : map.get(user.getName().toLowerCase());
     }
 
     public boolean has(User user, String name)

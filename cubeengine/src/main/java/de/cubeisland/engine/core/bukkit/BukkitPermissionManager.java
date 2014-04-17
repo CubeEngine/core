@@ -204,7 +204,7 @@ public class BukkitPermissionManager implements PermissionManager
         for (Permission parentPerm : permission.getParents())
         {
             org.bukkit.permissions.Permission bParent;
-            if (parentPerm.isWildcard())
+            if (parentPerm.isWildcard() || parentPerm.getChildren().contains(permission))
             {
                 bParent = this.registerWildcard(module, parentPerm.getName(), parentPerm.getDefault());
             }
@@ -213,10 +213,6 @@ public class BukkitPermissionManager implements PermissionManager
                 bParent = this.registerPermission(module, parentPerm.getName(), parentPerm.getDefault());
             }
             addParentIfNotExists(mainBPerm, bParent);
-            if (mainBWCPerm != null)
-            {
-                addParentIfNotExists(mainBWCPerm, bParent);
-            }
             if (!module.getBasePermission().equals(parentPerm))
             {
                 this.registerPermission(module, parentPerm);

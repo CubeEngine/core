@@ -84,6 +84,11 @@ public class HomeCommand extends TpPointCommand
         }
         if (!home.canAccess(sender))
         {
+            if (user.equals(sender))
+            {
+                homeNotFoundMessage(context, user, name);
+                return;
+            }
             context.ensurePermission(module.getPermissions().HOME_TP_OTHER);
         }
         Location location = home.getLocation();
@@ -158,11 +163,11 @@ public class HomeCommand extends TpPointCommand
         }
         if (context.hasFlag("a"))
         {
-            home.setWelcomeMsg(home.getWelcomeMsg() + context.getStrings(0));
+            home.setWelcomeMsg(home.getWelcomeMsg() + context.getStrings(1));
         }
         else
         {
-            home.setWelcomeMsg(context.getStrings(0));
+            home.setWelcomeMsg(context.getStrings(1));
         }
         home.update();
         if (home.isOwner(context.getSender()))
@@ -410,9 +415,9 @@ public class HomeCommand extends TpPointCommand
         home.invite(invited);
         if (invited.isOnline())
         {
-            invited.sendTranslated(NEUTRAL, "{user} invited you to their home. To teleport to it use: /home {user} {name#home}", sender, sender, home.getName());
+            invited.sendTranslated(NEUTRAL, "{user} invited you to their home. To teleport to it use: /home {name#home} {user}", sender, home.getName(), sender);
         }
-        context.sendTranslated(POSITIVE, "{user} is now invited to your home {name}", context.getString(0), home.getName());
+        context.sendTranslated(POSITIVE, "{user} is now invited to your home {name}", invited, home.getName());
     }
 
     @OnlyIngame
@@ -455,7 +460,7 @@ public class HomeCommand extends TpPointCommand
         {
             invited.sendTranslated(NEUTRAL, "You are no longer invited to {user}'s home {name#home}", sender, home.getName());
         }
-        context.sendTranslated(POSITIVE, "{user} is no longer invited to your home {name}", context.getString(0), home.getName());
+        context.sendTranslated(POSITIVE, "{user} is no longer invited to your home {name}", invited, home.getName());
     }
 
     @Command(names = {"private", "makeprivate", "setprivate"},

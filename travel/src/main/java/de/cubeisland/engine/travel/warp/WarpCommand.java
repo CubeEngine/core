@@ -163,11 +163,11 @@ public class WarpCommand extends TpPointCommand
         }
         if (context.hasFlag("a"))
         {
-            warp.setWelcomeMsg(warp.getWelcomeMsg() + context.getStrings(0));
+            warp.setWelcomeMsg(warp.getWelcomeMsg() + context.getStrings(1));
         }
         else
         {
-            warp.setWelcomeMsg(context.getStrings(0));
+            warp.setWelcomeMsg(context.getStrings(1));
         }
         warp.update();
         if (warp.isOwner(context.getSender()))
@@ -290,6 +290,11 @@ public class WarpCommand extends TpPointCommand
         User user = this.getUser(context, 0);
         if (!user.equals(context.getSender()))
         {
+            if (user.equals(context.getSender()))
+            {
+                warpNotFoundMessage(context, user, context.getString(0));
+                return;
+            }
             context.ensurePermission(module.getPermissions().WARP_LIST_OTHER);
         }
         Set<Warp> warps = this.manager.list(user, context.hasFlag("o"), !context.hasFlag("priv"), context.hasFlag("i"));
@@ -422,9 +427,9 @@ public class WarpCommand extends TpPointCommand
         warp.invite(invited);
         if (invited.isOnline())
         {
-            invited.sendTranslated(NEUTRAL, "{user} invited you to their private warp. To teleport to it use: /warp {user} {name#warp}", sender, sender, warp.getName());
+            invited.sendTranslated(NEUTRAL, "{user} invited you to their private warp. To teleport to it use: /warp {name#warp} {user}", sender, warp.getName(), sender);
         }
-        context.sendTranslated(POSITIVE, "{user} is now invited to your warp {name}", context.getString(0), warp.getName());
+        context.sendTranslated(POSITIVE, "{user} is now invited to your warp {name}", invited, warp.getName());
     }
 
     @OnlyIngame
@@ -466,7 +471,7 @@ public class WarpCommand extends TpPointCommand
         {
             invited.sendTranslated(NEUTRAL, "You are no longer invited to {user}'s warp {name#warp}", sender, warp.getName());
         }
-        context.sendTranslated(POSITIVE, "{user} is no longer invited to your warp {name}", context.getString(0), warp.getName());
+        context.sendTranslated(POSITIVE, "{user} is no longer invited to your warp {name}", invited, warp.getName());
     }
 
     @Command(names = {"private", "makeprivate"}, desc = "Make a players warp private",
