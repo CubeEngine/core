@@ -39,6 +39,8 @@ import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.ContainerCommand.ChildDelegation;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.exception.CommandException;
@@ -47,7 +49,6 @@ import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
@@ -112,11 +113,33 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             args = newArgs;
         }
 
+        CommandContext ctx;
         if (tabComplete)
         {
-            return command.getContextFactory().tabCompleteParse(command, sender, labels, args);
+             ctx = command.getContextFactory().tabCompleteParse(command, sender, labels, args);
         }
-        return command.getContextFactory().parse(command, sender, labels, args);
+        else
+        {
+            ctx = command.getContextFactory().parse(command, sender, labels, args);
+        }
+        if (command instanceof ContainerCommand)
+        {
+            ChildDelegation delegation = ((ContainerCommand)command).getDelegation();
+            if (delegation != null)
+            {
+                String child = delegation.delegateTo(ctx);
+                if (child != null)
+                {
+                    CubeCommand target = command.getChild(child);
+                    if (target != null)
+                    {
+                        return target.getContextFactory().parse(target, sender, labels, args);
+                    }
+                    command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
+                }
+            }
+        }
+        return ctx;
     }
 
     @Override
@@ -128,23 +151,9 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         try
         {
             context = toCommandContext(this.command, sender, label, args, false);
-            if (!context.getCommand().isAuthorized(sender))
-            {
-                throw new PermissionDeniedException(context.getCommand().getPermission());
-            }
-            if (context.getCommand().isOnlyIngame() && !(sender instanceof User))
-            {
-                String onlyIngame = context.getCommand().getOnlyIngame();
-                if (onlyIngame.isEmpty())
-                {
-                    throw new IncorrectUsageException("This command can only be used ingame!", false);
-                }
-                throw new IncorrectUsageException(onlyIngame, false);
-            }
         }
         catch (CommandException e)
         {
-            // TODO argbound exception make so that context and resulting in it the subcmd is not available
             this.handleCommandException(null, sender, e);
             return true;
         }
@@ -283,6 +292,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
     {
         try
         {
+            ctx.getCommand().checkContext(ctx);
             CommandResult result = ctx.getCommand().run(ctx);
             if (result != null)
             {

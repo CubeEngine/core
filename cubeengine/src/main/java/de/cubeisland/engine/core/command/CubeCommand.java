@@ -32,6 +32,9 @@ import java.util.Stack;
 
 import org.bukkit.permissions.Permissible;
 
+import de.cubeisland.engine.core.command.exception.CommandException;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
@@ -548,5 +551,31 @@ public abstract class CubeCommand
     public String getOnlyIngame()
     {
         return this.onlyIngame;
+    }
+
+    public void checkContext(CommandContext ctx) throws CommandException
+    {
+        ArgBounds bounds = ctx.getCommand().getContextFactory().getArgBounds();
+        if (ctx.getArgCount() < bounds.getMin())
+        {
+            throw new IncorrectUsageException("You've given too few arguments.");
+        }
+        if (bounds.getMax() > ArgBounds.NO_MAX && ctx.getArgCount() > bounds.getMax())
+        {
+            throw new IncorrectUsageException("You've given too many arguments.");
+        }
+        if (!ctx.getCommand().isAuthorized(ctx.getSender()))
+        {
+            throw new PermissionDeniedException(ctx.getCommand().getPermission());
+        }
+        if (ctx.getCommand().isOnlyIngame() && !(ctx.isSender(User.class)))
+        {
+            String onlyIngame = ctx.getCommand().getOnlyIngame();
+            if (onlyIngame.isEmpty())
+            {
+                throw new IncorrectUsageException("This command can only be used ingame!", false);
+            }
+            throw new IncorrectUsageException(onlyIngame, false);
+        }
     }
 }

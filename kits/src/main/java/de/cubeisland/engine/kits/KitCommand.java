@@ -49,19 +49,12 @@ public class KitCommand extends ContainerCommand
         this.module = module;
         this.manager = module.getKitManager();
         // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
-        this.delegateChild(new MultiContextFilter() {
+        this.delegateChild(new ContextFilter()
+        {
             @Override
-            public CommandContext filterContext(CommandContext context, String child)
+            public String delegateTo(CommandContext context)
             {
-                ParameterizedContext pContext = (ParameterizedContext)context;
-                return new ParameterizedContext(context.getCommand(), context.getSender(), context.getLabels(), context.getArgs(), pContext.getFlags(), pContext.getParams());
-            }
-
-            @Override
-            public String getChild(CommandContext context)
-            {
-                if (context.hasArg(0)) return "give";
-                return null;
+                return context.hasArg(0) ? "give" : null;
             }
         });
     }

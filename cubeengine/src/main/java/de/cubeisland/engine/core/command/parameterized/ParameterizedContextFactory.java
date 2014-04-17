@@ -30,7 +30,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.command.ArgBounds;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.BasicContextFactory;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -38,8 +37,6 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
-import de.cubeisland.engine.core.command.exception.MissingParameterException;
-import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.LastType;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.Type;
 import gnu.trove.map.hash.THashMap;
@@ -193,17 +190,17 @@ public class ParameterizedContextFactory extends BasicContextFactory
         final Set<String> flags = new THashSet<>();
         final Map<String, String> rawParams = new LinkedHashMap<>();
 
-        Type last = readCommand(rawArgs, clazz == ParameterizedTabContext.class, flags, args, rawParams, sender);
+        Type last = readCommand(rawArgs, clazz == ParameterizedTabContext.class, flags, args, rawParams);
 
         if (clazz == ParameterizedTabContext.class)
         {
             return (T)new ParameterizedTabContext(command, sender, labels, args, flags, rawParams, last);
         }
-        return (T)new ParameterizedContext(command, sender, labels, args, flags, readParams(sender, args, rawParams));
+        return (T)new ParameterizedContext(command, sender, labels, args, flags, readParams(sender, rawParams));
     }
 
     private Type readCommand(String[] rawArgs, boolean tabComplete, Set<String> flags, List<String> args,
-                             Map<String, String> rawParams, CommandSender sender)
+                             Map<String, String> rawParams)
     {
         if (rawArgs.length < 1)
         {
@@ -226,20 +223,19 @@ public class ParameterizedContextFactory extends BasicContextFactory
             else if (rawArg.length() >= 1 && rawArg.charAt(0) == '-')
             {
                 // reads a flag or indexed param
-                offset = readFlag(rawArg, args, flags, offset, type, tabComplete, sender);
+                offset = readFlag(rawArg, args, flags, offset, type);
             }
             else
             {
                 // reads a named param or indexed param
-                offset = readRawParam(rawArgs, args, rawParams, offset, type, tabComplete, sender);
+                offset = readRawParam(rawArgs, args, rawParams, offset, type);
             }
         }
 
         return type.last;
     }
 
-    private int readFlag(String rawArg, List<String> args, Set<String> flags, int offset, LastType type,
-                         boolean tabComplete, CommandSender sender)
+    private int readFlag(String rawArg, List<String> args, Set<String> flags, int offset, LastType type)
     {
         String flag = rawArg;
         if (flag.charAt(0) == '-')
@@ -259,10 +255,6 @@ public class ParameterizedContextFactory extends BasicContextFactory
         CommandFlag cmdFlag = this.flagMap.get(flag);
         if (cmdFlag != null) // has flag ?
         {
-            if (!tabComplete && !cmdFlag.checkPermission(sender))
-            {
-                throw new PermissionDeniedException(cmdFlag.getPermission());
-            }
             flags.add(cmdFlag.getName()); // added flag
             type.last = NOTHING;
         }
@@ -275,8 +267,7 @@ public class ParameterizedContextFactory extends BasicContextFactory
         return offset;
     }
 
-    private int readRawParam(String[] rawArgs, List<String> args, Map<String, String> rawParams, int offset,
-                             LastType type, boolean tabComplete, CommandSender sender)
+    private int readRawParam(String[] rawArgs, List<String> args, Map<String, String> rawParams, int offset, LastType type)
     {
         String paramName = rawArgs[offset].toLowerCase(ENGLISH);
         // has alias named Param ?
@@ -284,10 +275,6 @@ public class ParameterizedContextFactory extends BasicContextFactory
         // is named Param?
         if (param != null && offset + 1 < rawArgs.length)
         {
-            if (!tabComplete && !param.checkPermission(sender))
-            {
-                throw new PermissionDeniedException(param.getPermission());
-            }
             StringBuilder paramValue = new StringBuilder();
             offset++;
             offset += readString(paramValue, rawArgs, offset);
@@ -305,7 +292,7 @@ public class ParameterizedContextFactory extends BasicContextFactory
         return offset;
     }
 
-    private Map<String, Object> readParams(CommandSender sender, List<String> args, Map<String, String> rawParams)
+    private Map<String, Object> readParams(CommandSender sender, Map<String, String> rawParams)
     {
         Map<String, Object> readParams = new LinkedHashMap<>();
 
@@ -320,21 +307,7 @@ public class ParameterizedContextFactory extends BasicContextFactory
             {
                 throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument for {input}: {}", param.getName(),
                                                                         sender.getTranslation(NONE, ex.getMessage(), ex.getMessageArgs())));
-            }
-        }
-        if (args.size() < this.getArgBounds().getMin())
-        {
-            throw new IncorrectUsageException("You've given too few arguments.");
-        }
-        if (this.getArgBounds().getMax() > ArgBounds.NO_MAX && args.size() > this.getArgBounds().getMax())
-        {
-            throw new IncorrectUsageException("You've given too many arguments.");
-        }
-        for (CommandParameter param : this.paramMap.values())
-        {
-            if (param.isRequired() && !rawParams.containsKey(param.getName()))
-            {
-                throw new MissingParameterException(param.getName());
+                // TODO move else where so context is not null when showing error
             }
         }
         return readParams;
