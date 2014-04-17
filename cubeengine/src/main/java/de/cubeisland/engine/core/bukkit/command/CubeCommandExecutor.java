@@ -124,18 +124,21 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
         if (command instanceof ContainerCommand)
         {
-            ChildDelegation delegation = ((ContainerCommand)command).getDelegation();
-            if (delegation != null)
+            if (!(ctx.getArgCount() == 1 && "".equals(ctx.getString(0))))
             {
-                String child = delegation.delegateTo(ctx);
-                if (child != null)
+                ChildDelegation delegation = ((ContainerCommand)command).getDelegation();
+                if (delegation != null)
                 {
-                    CubeCommand target = command.getChild(child);
-                    if (target != null)
+                    String child = delegation.delegateTo(ctx);
+                    if (child != null)
                     {
-                        return target.getContextFactory().parse(target, sender, labels, args);
+                        CubeCommand target = command.getChild(child);
+                        if (target != null)
+                        {
+                            return target.getContextFactory().tabCompleteParse(target, sender, labels, args);
+                        }
+                        command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
                     }
-                    command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
                 }
             }
         }

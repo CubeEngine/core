@@ -89,6 +89,10 @@ public abstract class ParameterizedCommand extends CubeCommand
             tabCompleteParam(context, cFactory, result, last);
             tabCompleteFlags(context, cFactory, result, last);
         }
+        if (result.isEmpty())
+        {
+            return null; //TODO remove once ALL our commands have tabcompleter for players
+        }
         return result;
     }
 
@@ -106,7 +110,7 @@ public abstract class ParameterizedCommand extends CubeCommand
         {
             return completer.complete(context, lastParameter.getValue());
         }
-        return null; // TODO check if bukkit wont do player tab completion
+        return null; //TODO remove once ALL our commands have tabcompleter for players
     }
 
     private void tabCompleteParam(ParameterizedTabContext context, ParameterizedContextFactory cFactory, List<String> result, String last)
