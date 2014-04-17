@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.interactions;
+package de.cubeisland.engine.travel.warp;
 
 import java.util.Set;
 
@@ -35,8 +35,6 @@ import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
-import de.cubeisland.engine.travel.storage.Warp;
-import de.cubeisland.engine.travel.storage.WarpManager;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PRIVATE;
@@ -306,9 +304,9 @@ public class WarpCommand extends ContainerCommand
     }
 
     @Alias(names = {"clearwarps"})
-    @Command(desc = "Clear all warps (of a player)", flags = {
-        @Flag(name = "pub", longName = "public"),
-        @Flag(name = "priv", longName = "private")},
+    @Command(desc = "Clear all warps (of a player)",
+             flags = {@Flag(name = "pub", longName = "public"),
+                      @Flag(name = "priv", longName = "private")},
              indexed = @Grouped(req = false, value = @Indexed("user")))
     public ConfirmResult clear(final ParameterizedContext context)
     {
@@ -328,14 +326,12 @@ public class WarpCommand extends ContainerCommand
             {
                 if (context.hasFlag("pub"))
                 {
-                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public warps ever created by {user}?", context
-                        .getString(0));
+                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public warps ever created by {user}?", context.getString(0));
                     context.sendTranslated(NEUTRAL, "To delete all the public warps, do: {text:/confirm} before 30 seconds has passed");
                 }
                 else if (context.hasFlag("priv"))
                 {
-                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private warps ever created by {user}?", context
-                        .getString(0));
+                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private warps ever created by {user}?", context.getString(0));
                     context.sendTranslated(NEUTRAL, "To delete all the private warps, do: {text:/confirm} before 30 seconds has passed");
                 }
                 else

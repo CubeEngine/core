@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.storage;
+package de.cubeisland.engine.travel;
 
 import java.util.Set;
 
@@ -23,7 +23,7 @@ import org.bukkit.Location;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.travel.Travel;
+import de.cubeisland.engine.travel.storage.TeleportPointModel;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
@@ -177,4 +177,6 @@ public abstract class TeleportPoint
     {
         return this.isPublic() ? this.permission.isAuthorized(user) : (this.isInvited(user) || this.isOwner(user));
     }
+
+    protected abstract Permission generatePublicPerm();
 }

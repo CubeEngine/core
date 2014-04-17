@@ -23,14 +23,13 @@ import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.travel.interactions.HomeCommand;
-import de.cubeisland.engine.travel.interactions.HomeListener;
-import de.cubeisland.engine.travel.interactions.WarpCommand;
-import de.cubeisland.engine.travel.storage.HomeManager;
-import de.cubeisland.engine.travel.storage.InviteManager;
+import de.cubeisland.engine.travel.home.HomeCommand;
+import de.cubeisland.engine.travel.home.HomeListener;
+import de.cubeisland.engine.travel.home.HomeManager;
+import de.cubeisland.engine.travel.warp.WarpCommand;
 import de.cubeisland.engine.travel.storage.TableInvite;
 import de.cubeisland.engine.travel.storage.TableTeleportPoint;
-import de.cubeisland.engine.travel.storage.WarpManager;
+import de.cubeisland.engine.travel.warp.WarpManager;
 
 public class Travel extends Module
 {

@@ -15,31 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.storage;
+package de.cubeisland.engine.travel.warp;
 
 import java.util.Locale;
 
 import de.cubeisland.engine.core.permission.PermDefault;
+import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.travel.TeleportPoint;
 import de.cubeisland.engine.travel.Travel;
+import de.cubeisland.engine.travel.storage.TeleportPointModel;
 
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
-public class Home extends TeleportPoint
+public class Warp extends TeleportPoint
 {
-    public Home(TeleportPointModel teleportPoint, Travel module)
+    public Warp(TeleportPointModel teleportPoint, Travel module)
     {
         super(teleportPoint, module);
         if (teleportPoint.getVisibility() == VISIBILITY_PUBLIC)
         {
-            this.permission = module.getBasePermission().
-                childWildcard("publichomes").childWildcard("access").
-                child(model.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
-            module.getCore().getPermissionManager().registerPermission(module, this.permission);
+            this.permission = generatePublicPerm();
+            return;
         }
-        else
-        {
-            this.permission = null;
-        }
+        this.permission = null;
     }
 
     public void setVisibility(short visibility)
@@ -48,16 +46,20 @@ public class Home extends TeleportPoint
         model.update();
         if (visibility == VISIBILITY_PUBLIC)
         {
-            this.permission = module.getBasePermission().
-                childWildcard("publichomes").childWildcard("access").
-                child(model.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
-            module.getCore().getPermissionManager().registerPermission(module, this.permission);
+            this.permission = generatePublicPerm();
             this.iManager.removeInvites(this);
+            return;
         }
-        else
-        {
-            module.getCore().getPermissionManager().removePermission(this.module, permission);
-            this.permission = null;
-        }
+        module.getCore().getPermissionManager().removePermission(this.module, permission);
+        this.permission = null;
+    }
+
+    @Override
+    protected Permission generatePublicPerm()
+    {
+        Permission perm =  module.getBasePermission().childWildcard("warps").childWildcard("access").child(
+            model.getName().toLowerCase(Locale.ENGLISH), PermDefault.TRUE);
+        module.getCore().getPermissionManager().registerPermission(module, perm);
+        return perm;
     }
 }

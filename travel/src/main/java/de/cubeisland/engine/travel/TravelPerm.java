@@ -19,7 +19,7 @@ package de.cubeisland.engine.travel;
 
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionContainer;
-import de.cubeisland.engine.travel.interactions.HomeCommand;
+import de.cubeisland.engine.travel.home.HomeCommand;
 
 public class TravelPerm extends PermissionContainer<Travel>
 {
@@ -40,5 +40,4 @@ public class TravelPerm extends PermissionContainer<Travel>
     public final Permission HOME_REMOVE_OTHER;
     public final Permission HOME_LIST_OTHER;
     public final Permission HOME_CHANGE_OTHER = getBasePerm().child("change-other");
-
 }

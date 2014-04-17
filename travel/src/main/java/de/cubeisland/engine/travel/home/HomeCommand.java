@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.interactions;
+package de.cubeisland.engine.travel.home;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,10 +40,8 @@ import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.travel.InviteManager;
 import de.cubeisland.engine.travel.Travel;
-import de.cubeisland.engine.travel.storage.Home;
-import de.cubeisland.engine.travel.storage.HomeManager;
-import de.cubeisland.engine.travel.storage.InviteManager;
 import de.cubeisland.engine.travel.storage.TeleportInvite;
 
 import static de.cubeisland.engine.core.util.ChatFormat.DARK_GREEN;
@@ -87,8 +85,8 @@ public class HomeCommand extends ContainerCommand
     }
 
     @Command(desc = "Teleport to a home",
-    indexed = {@Grouped(req = false, value = @Indexed("home")),
-               @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
+             indexed = {@Grouped(req = false, value = @Indexed("home")),
+                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
     @OnlyIngame
     public void tp(CommandContext context)
     {
@@ -234,10 +232,8 @@ public class HomeCommand extends ContainerCommand
     }
 
     @Command(names = {"move", "replace"}, desc = "Move a home",
-             indexed = {
-                 @Grouped(req = false, value = @Indexed("name")),
-                 @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))
-             })
+             indexed = {@Grouped(req = false, value = @Indexed("name")),
+                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
     @OnlyIngame("I am calling the moving company right now!")
     public void moveHome(CommandContext context)
     {
@@ -260,7 +256,6 @@ public class HomeCommand extends ContainerCommand
         Home home = this.manager.find(user, name);
         if (home == null)
         {
-
             context.sendTranslated(NEGATIVE, "There is no home named {name#home}! Use {text:/sethome} to set your home", name);
             return;
         }

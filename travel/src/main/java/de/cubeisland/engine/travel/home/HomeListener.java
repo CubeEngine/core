@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.interactions;
+package de.cubeisland.engine.travel.home;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -25,8 +25,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
-import de.cubeisland.engine.travel.storage.Home;
-import de.cubeisland.engine.travel.storage.HomeManager;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static org.bukkit.Material.BED;
@@ -76,7 +74,7 @@ public class HomeListener implements Listener
                         user.sendTranslated(NEGATIVE, "You have to delete a home to make a new one");
                         return;
                     }
-                    Home home = homeManager.create(user, "home", user.getLocation(), false);
+                    homeManager.create(user, "home", user.getLocation(), false);
                     user.sendTranslated(POSITIVE, "Your home has been created!");
                 }
                 event.setCancelled(true);

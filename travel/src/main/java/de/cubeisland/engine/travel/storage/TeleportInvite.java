@@ -39,68 +39,68 @@ public class TeleportInvite extends UpdatableRecordImpl<TeleportInvite> implemen
         return this;
     }
 
-    public void setTeleportpoint(UInteger value) {
+    public void setTeleportpoint(UInteger value)
+    {
         setValue(0, value);
     }
 
-    public UInteger getTeleportpoint() {
-        return (UInteger) getValue(0);
+    public UInteger getTeleportpoint()
+    {
+        return (UInteger)getValue(0);
     }
 
-    public void setUserkey(UInteger value) {
+    public void setUserkey(UInteger value)
+    {
         setValue(1, value);
     }
 
-    public UInteger getUserkey() {
-        return (UInteger) getValue(1);
+    public UInteger getUserkey()
+    {
+        return (UInteger)getValue(1);
     }
 
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
-
     @Override
-    public Record2<UInteger, UInteger> key() {
-        return (Record2) super.key();
+    @SuppressWarnings("unchecked")
+    public Record2<UInteger, UInteger> key()
+    {
+        return (Record2)super.key();
     }
 
-    // -------------------------------------------------------------------------
-    // Record2 type implementation
-    // -------------------------------------------------------------------------
-
-    
     @Override
-    public Row2<UInteger, UInteger> fieldsRow() {
-        return (Row2) super.fieldsRow();
+    @SuppressWarnings("unchecked")
+    public Row2<UInteger, UInteger> fieldsRow()
+    {
+        return (Row2)super.fieldsRow();
     }
 
-    
     @Override
-    public Row2<UInteger, UInteger> valuesRow() {
-        return (Row2) super.valuesRow();
+    @SuppressWarnings("unchecked")
+    public Row2<UInteger, UInteger> valuesRow()
+    {
+        return (Row2)super.valuesRow();
     }
 
-    
     @Override
-    public Field<UInteger> field1() {
+    public Field<UInteger> field1()
+    {
         return TABLE_INVITE.TELEPORTPOINT;
     }
 
-    
     @Override
-    public Field<UInteger> field2() {
+    public Field<UInteger> field2()
+    {
         return TABLE_INVITE.USERKEY;
     }
 
-    
     @Override
-    public UInteger value1() {
+    public UInteger value1()
+    {
         return getTeleportpoint();
     }
 
-    
     @Override
-    public UInteger value2() {
+    public UInteger value2()
+    {
         return getUserkey();
     }
 }

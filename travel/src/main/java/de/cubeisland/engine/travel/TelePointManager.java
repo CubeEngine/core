@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel.storage;
+package de.cubeisland.engine.travel;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import org.bukkit.Location;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.travel.Travel;
+import de.cubeisland.engine.travel.storage.TeleportPointModel;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
 
@@ -144,7 +144,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
 
     public Set<T> list(boolean privates, boolean publics)
     {
-        if (!privates && ! publics)
+        if (!privates && !publics)
         {
             privates = true;
             publics = true;
@@ -230,7 +230,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
 
     public void massDelete(User user, boolean privates, boolean publics)
     {
-        if (!privates && ! publics)
+        if (!privates && !publics)
         {
             privates = true;
             publics = true;
