@@ -35,7 +35,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 {
     private static final Set<String> NO_ALIASES = Collections.emptySet();
     private final Class<? extends CubeCommand> subCommandType;
-    private ChildDelegation delegation;
+    private DelegatingContextFilter delegation;
 
     public ContainerCommand(Module module, String name, String description)
     {
@@ -60,14 +60,21 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         this.delegation = null;
     }
 
-    public void delegateChild(String name)
+    public void delegateChild(final String name)
     {
-        this.delegation = new ChildDelegation(name);
+        this.delegation = new DelegatingContextFilter()
+        {
+            @Override
+            public String delegateTo(CommandContext context)
+            {
+                return name;
+            }
+        };
     }
     
-    public void delegateChild(ContextFilter filter)
+    public void delegateChild(DelegatingContextFilter filter)
     {
-        this.delegation = new ChildDelegation(filter);
+        this.delegation = filter;
     }
 
     public Class<? extends CubeCommand> getCommandType()
@@ -82,7 +89,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         return null;
     }
 
-    public ChildDelegation getDelegation()
+    public DelegatingContextFilter getDelegation()
     {
         return this.delegation;
     }
@@ -120,39 +127,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 
-    public static class ChildDelegation
-    {
-        private final ContextFilter contextFilter;
-
-        private ChildDelegation(final String childName)
-        {
-            this(new ContextFilter() {
-
-                @Override
-                public String delegateTo(CommandContext context)
-                {
-                    return childName;
-                }
-            });
-        }
-
-        private ChildDelegation(ContextFilter contextFilter)
-        {
-            this.contextFilter = contextFilter;
-        }
-
-        public String delegateTo(CommandContext context)
-        {
-            return contextFilter.delegateTo(context);
-        }
-
-        public CommandContext filterContext(CommandContext context, String child)
-        {
-            return this.contextFilter.filterContext(context, child);
-        }
-    }
-
-    protected static abstract class ContextFilter
+    public static abstract class DelegatingContextFilter
     {
         public abstract String delegateTo(CommandContext context);
         public CommandContext filterContext(CommandContext context, String child)

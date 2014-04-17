@@ -64,7 +64,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
         this.module = module;
         // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, NO_MAX));
 
-        this.delegateChild(new ContextFilter()
+        this.delegateChild(new DelegatingContextFilter()
         {
             @Override
             public String delegateTo(CommandContext context)

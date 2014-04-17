@@ -56,7 +56,7 @@ public class HomeCommand extends TpPointCommand
         super(module, "home", "Teleport to your home");
         this.module = module;
         this.manager = module.getHomeManager();
-        this.delegateChild(new ContextFilter()
+        this.delegateChild(new DelegatingContextFilter()
         {
             @Override
             public String delegateTo(CommandContext context)

@@ -40,7 +40,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.ContainerCommand.ChildDelegation;
+import de.cubeisland.engine.core.command.ContainerCommand.DelegatingContextFilter;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.exception.CommandException;
@@ -126,7 +126,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         {
             if (!(ctx.getArgCount() == 1 && "".equals(ctx.getString(0))))
             {
-                ChildDelegation delegation = ((ContainerCommand)command).getDelegation();
+                DelegatingContextFilter delegation = ((ContainerCommand)command).getDelegation();
                 if (delegation != null)
                 {
                     String child = delegation.delegateTo(ctx);

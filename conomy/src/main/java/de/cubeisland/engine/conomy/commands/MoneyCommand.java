@@ -51,7 +51,7 @@ public class MoneyCommand extends ContainerCommand
         this.module = module;
         this.manager = module.getManager();
 
-        this.delegateChild(new ContextFilter()
+        this.delegateChild(new DelegatingContextFilter()
         {
             @Override
             public String delegateTo(CommandContext context)

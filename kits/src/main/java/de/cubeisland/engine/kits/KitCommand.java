@@ -49,7 +49,7 @@ public class KitCommand extends ContainerCommand
         this.module = module;
         this.manager = module.getKitManager();
         // TODO this.getContextFactory().setArgBounds(new ArgBounds(0, 2));
-        this.delegateChild(new ContextFilter()
+        this.delegateChild(new DelegatingContextFilter()
         {
             @Override
             public String delegateTo(CommandContext context)

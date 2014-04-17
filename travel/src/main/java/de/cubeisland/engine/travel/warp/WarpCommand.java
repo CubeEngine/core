@@ -53,7 +53,7 @@ public class WarpCommand extends TpPointCommand
     public WarpCommand(Travel module)
     {
         super(module, "warp", "Teleport to a warp");
-        this.delegateChild(new ContextFilter()
+        this.delegateChild(new DelegatingContextFilter()
         {
             @Override
             public String delegateTo(CommandContext context)
