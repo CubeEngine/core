@@ -20,10 +20,7 @@ package de.cubeisland.engine.core.command;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-
-import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
@@ -32,15 +29,8 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.util.ChatFormat.*;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
-
-/**
- *
- * @author Phillip Schichtel
- */
 public abstract class ContainerCommand extends ParameterizedCommand implements CommandHolder
 {
     private static final Set<String> NO_ALIASES = Collections.emptySet();
@@ -68,12 +58,6 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;
-    }
-
-    @Override
-    protected String getUsage0(Locale locale, Permissible permissible)
-    {
-        return "[" + this.getModule().getCore().getI18n().translate(locale, "action") + "]";
     }
 
     public void delegateChild(String name)

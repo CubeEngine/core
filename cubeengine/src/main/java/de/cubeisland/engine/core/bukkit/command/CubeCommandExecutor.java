@@ -47,6 +47,8 @@ import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
@@ -109,10 +111,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
 
             args = newArgs;
         }
-        if (!command.isAuthorized(sender))
-        {
-            throw new PermissionDeniedException(command.getPermission());
-        }
+
         if (tabComplete)
         {
             return command.getContextFactory().tabCompleteParse(command, sender, labels, args);
@@ -129,9 +128,23 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         try
         {
             context = toCommandContext(this.command, sender, label, args, false);
+            if (!context.getCommand().isAuthorized(sender))
+            {
+                throw new PermissionDeniedException(context.getCommand().getPermission());
+            }
+            if (context.getCommand().isOnlyIngame() && !(sender instanceof User))
+            {
+                String onlyIngame = context.getCommand().getOnlyIngame();
+                if (onlyIngame.isEmpty())
+                {
+                    throw new IncorrectUsageException("This command can only be used ingame!", false);
+                }
+                throw new IncorrectUsageException(onlyIngame, false);
+            }
         }
         catch (CommandException e)
         {
+            // TODO argbound exception make so that context and resulting in it the subcmd is not available
             this.handleCommandException(null, sender, e);
             return true;
         }
@@ -177,10 +190,10 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         try
         {
             context = toCommandContext(this.command, sender, label, args, true);
-        }
-        catch (PermissionDeniedException e)
-        {
-            return Collections.emptyList();
+            if (!context.getCommand().isAuthorized(sender))
+            {
+                return Collections.emptyList();
+            }
         }
         catch (CommandException e)
         {
@@ -316,7 +329,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             IncorrectUsageException e = (IncorrectUsageException)t;
             if (e.getMessage() != null)
             {
-                sender.sendMessage(t.getMessage());
+                sender.sendMessage(ChatFormat.RED + t.getMessage());
             }
             else
             {
@@ -327,10 +340,11 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                 final String usage;
                 if (context != null)
                 {
-                    usage = this.command.getUsage(context);
+                    usage = context.getCommand().getUsage(context);
                 }
                 else
                 {
+                    // TODO can this happen at all?
                     usage = this.command.getUsage(sender);
                 }
                 sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);

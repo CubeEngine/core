@@ -68,6 +68,8 @@ public abstract class CubeCommand
 
     private boolean permRegistered = false;
 
+    private String onlyIngame = null;
+
     public CubeCommand(Module module, String name, String description, ContextFactory contextFactory, Permission permission)
     {
         if ("?".equals(name))
@@ -251,7 +253,8 @@ public abstract class CubeCommand
 
     public String getUsage()
     {
-        return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(this.module.getCore().getI18n().getDefaultLanguage().getLocale(), null);
+        return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(
+            this.module.getCore().getI18n().getDefaultLanguage().getLocale(), null);
     }
 
     public final String getUsage(Locale locale, Permissible permissible)
@@ -530,5 +533,20 @@ public abstract class CubeCommand
     public void addIndexed(CommandParameterIndexed indexed)
     {
         this.getContextFactory().addIndexed(indexed);
+    }
+
+    public boolean isOnlyIngame()
+    {
+        return onlyIngame != null;
+    }
+
+    public void setOnlyIngame(String onlyIngame)
+    {
+        this.onlyIngame = onlyIngame;
+    }
+
+    public String getOnlyIngame()
+    {
+        return this.onlyIngame;
     }
 }
