@@ -45,11 +45,11 @@ import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
@@ -339,7 +339,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             IncorrectUsageException e = (IncorrectUsageException)t;
             if (e.getMessage() != null)
             {
-                sender.sendMessage(ChatFormat.RED + t.getMessage());
+                sender.sendMessage(t.getMessage());
             }
             else
             {
@@ -358,6 +358,18 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                     usage = this.command.getUsage(sender);
                 }
                 sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
+            }
+        }
+        else if (t instanceof InvalidArgumentException)
+        {
+            InvalidArgumentException e = (InvalidArgumentException)t;
+            if (e.getMessage() != null)
+            {
+                sender.sendMessage(t.getMessage());
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "Invalid Argument...");
             }
         }
         else if (t instanceof PermissionDeniedException)

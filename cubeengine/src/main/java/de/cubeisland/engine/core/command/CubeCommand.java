@@ -45,6 +45,7 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
@@ -558,11 +559,11 @@ public abstract class CubeCommand
         ArgBounds bounds = ctx.getCommand().getContextFactory().getArgBounds();
         if (ctx.getArgCount() < bounds.getMin())
         {
-            throw new IncorrectUsageException("You've given too few arguments.");
+            throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too few arguments."));
         }
         if (bounds.getMax() > ArgBounds.NO_MAX && ctx.getArgCount() > bounds.getMax())
         {
-            throw new IncorrectUsageException("You've given too many arguments.");
+            throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too many arguments."));
         }
         if (!ctx.getCommand().isAuthorized(ctx.getSender()))
         {
@@ -573,7 +574,7 @@ public abstract class CubeCommand
             String onlyIngame = ctx.getCommand().getOnlyIngame();
             if (onlyIngame.isEmpty())
             {
-                throw new IncorrectUsageException("This command can only be used ingame!", false);
+                throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "This command can only be used ingame!"), false);
             }
             throw new IncorrectUsageException(onlyIngame, false);
         }
