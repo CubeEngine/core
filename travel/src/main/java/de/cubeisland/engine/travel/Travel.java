@@ -23,10 +23,8 @@ import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.travel.interactions.HomeAdminCommand;
 import de.cubeisland.engine.travel.interactions.HomeCommand;
 import de.cubeisland.engine.travel.interactions.HomeListener;
-import de.cubeisland.engine.travel.interactions.WarpAdminCommand;
 import de.cubeisland.engine.travel.interactions.WarpCommand;
 import de.cubeisland.engine.travel.storage.HomeManager;
 import de.cubeisland.engine.travel.storage.InviteManager;
@@ -42,6 +40,8 @@ public class Travel extends Module
     private HomeManager homeManager;
     private WarpManager warpManager;
 
+    private TravelPerm permissions;
+
     @Override
     public void onEnable()
     {
@@ -55,16 +55,18 @@ public class Travel extends Module
         this.getLog().trace("Loading TeleportPoints...");
         this.inviteManager = new InviteManager(db, this);
         this.homeManager = new HomeManager(this, this.inviteManager);
+        this.homeManager.load();
         this.warpManager = new WarpManager(this, this.inviteManager);
+        this.warpManager.load();
         this.getLog().trace("Loaded TeleportPoints in {} ms", Profiler.endProfiling("travelEnable",TimeUnit.MILLISECONDS));
 
         final CommandManager cm = this.getCore().getCommandManager();
-        HomeCommand home = new HomeCommand(this);
-        cm.registerCommand(home);
-        cm.registerCommand(new HomeAdminCommand(this), "home");
+        HomeCommand homeCmd = new HomeCommand(this);
+        cm.registerCommand(homeCmd);
         cm.registerCommand(new WarpCommand(this));
-        cm.registerCommand(new WarpAdminCommand(this), "warp");
         this.getCore().getEventManager().registerListener(this, new HomeListener(this));
+
+        this.permissions = new TravelPerm(this, homeCmd);
     }
 
     public TravelConfig getConfig()
@@ -85,5 +87,10 @@ public class Travel extends Module
     public InviteManager getInviteManager()
     {
         return this.inviteManager;
+    }
+
+    public TravelPerm getPermissions()
+    {
+        return permissions;
     }
 }

@@ -32,7 +32,6 @@ public abstract class TeleportPoint
 {
     protected final TeleportPointModel model;
     protected final Travel module;
-    protected final TelePointManager pManager;
     protected final InviteManager iManager;
 
     protected Permission permission;
@@ -40,11 +39,10 @@ public abstract class TeleportPoint
 
     protected String ownerName = null;
 
-    public TeleportPoint(TeleportPointModel model, TelePointManager pManager, InviteManager iManager, Travel module)
+    public TeleportPoint(TeleportPointModel model, Travel module)
     {
         this.model = model;
-        this.pManager = pManager;
-        this.iManager = iManager;
+        this.iManager = module.getInviteManager();
         this.module = module;
     }
 
@@ -81,6 +79,10 @@ public abstract class TeleportPoint
 
     public boolean isOwner(User user)
     {
+        if (user == null)
+        {
+            return false;
+        }
         return model.getOwnerKey().equals(user.getEntity().getKey());
     }
 
@@ -92,7 +94,6 @@ public abstract class TeleportPoint
         }
         this.invited.add(user.getEntity().getKey());
         iManager.invite(this.getModel(), user);
-        pManager.assignTeleportPoint(this, user);
     }
 
     public void unInvite(User user)
@@ -103,7 +104,6 @@ public abstract class TeleportPoint
         }
         this.invited.remove(user.getEntity().getKey());
         iManager.updateInvited(this.model, this.invited);
-        pManager.unassignTeleportPoint(this, user);
     }
 
     public boolean isInvited(User user)
@@ -130,19 +130,9 @@ public abstract class TeleportPoint
         return this.invited;
     }
 
-    public Set<User> getInvitedUsers()
-    {
-        return iManager.getInvitedUsers(model);
-    }
-
     public TeleportPointModel getModel()
     {
         return model;
-    }
-
-    public Long getKey()
-    {
-        return this.model.getKey().longValue();
     }
 
     public String getOwnerName()

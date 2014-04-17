@@ -43,6 +43,7 @@ public class HomeListener implements Listener
         this.module = module;
         this.homeManager = module.getHomeManager();
     }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void rightClickBed(PlayerInteractEvent event)
     {

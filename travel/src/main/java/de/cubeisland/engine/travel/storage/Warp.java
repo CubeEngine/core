@@ -20,16 +20,15 @@ package de.cubeisland.engine.travel.storage;
 import java.util.Locale;
 
 import de.cubeisland.engine.core.permission.PermDefault;
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
 
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
 public class Warp extends TeleportPoint
 {
-    public Warp(TeleportPointModel teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
+    public Warp(TeleportPointModel teleportPoint, Travel module)
     {
-        super(teleportPoint, telePointManager, inviteManager, module);
+        super(teleportPoint, module);
         if (teleportPoint.getVisibility() == VISIBILITY_PUBLIC)
         {
             this.permission = module.getBasePermission().
@@ -41,12 +40,5 @@ public class Warp extends TeleportPoint
         {
             this.permission = null;
         }
-    }
-
-
-
-    public boolean canAccess(User user)
-    {
-        return this.isPublic() ? this.permission.isAuthorized(user) : (this.isInvited(user) || this.isOwner(user));
     }
 }

@@ -31,9 +31,10 @@ import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
+import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
-import de.cubeisland.engine.travel.storage.Home;
 import de.cubeisland.engine.travel.storage.Warp;
 import de.cubeisland.engine.travel.storage.WarpManager;
 
@@ -50,8 +51,9 @@ public class WarpCommand extends ContainerCommand
     public WarpCommand(Travel module)
     {
         super(module, "warp", "Teleport to a warp");
-        this.addIndexed(new CommandParameterIndexed(new String[]{"[owner:]warp"}, String.class, false, true, 1));
-        // TODO recalculate bounds
+        this.getContextFactory().removeLastIndexed();
+        this.addIndexed(new CommandParameterIndexed(new String[]{"warp"}, String.class, false, true, 1));
+        this.addIndexed(new CommandParameterIndexed(new String[]{"owner"}, User.class, false, true, 1));
         this.module = module;
         this.manager = module.getWarpManager();
     }
@@ -301,5 +303,83 @@ public class WarpCommand extends ContainerCommand
         }
         warp.setVisibility(VISIBILITY_PUBLIC);
         context.sendTranslated(POSITIVE, "Your warp {name} is now public", name);
+    }
+
+    @Alias(names = {"clearwarps"})
+    @Command(desc = "Clear all warps (of a player)", flags = {
+        @Flag(name = "pub", longName = "public"),
+        @Flag(name = "priv", longName = "private")},
+             indexed = @Grouped(req = false, value = @Indexed("user")))
+    public ConfirmResult clear(final ParameterizedContext context)
+    {
+        if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
+        {
+            context.sendMessage("You have permission to this command, but it has been disabled from ingame usage for security reasons.");
+            return null;
+        }
+        if (context.getArgCount() > 0)
+        {
+            if (module.getCore().getUserManager().findExactUser(context.getString(0)) == null)
+            {
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                return null;
+            }
+            else
+            {
+                if (context.hasFlag("pub"))
+                {
+                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public warps ever created by {user}?", context
+                        .getString(0));
+                    context.sendTranslated(NEUTRAL, "To delete all the public warps, do: {text:/confirm} before 30 seconds has passed");
+                }
+                else if (context.hasFlag("priv"))
+                {
+                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private warps ever created by {user}?", context
+                        .getString(0));
+                    context.sendTranslated(NEUTRAL, "To delete all the private warps, do: {text:/confirm} before 30 seconds has passed");
+                }
+                else
+                {
+                    context.sendTranslated(NEUTRAL, "Are you sure you want to delete all warps ever created by {user}?", context.getString(0));
+                    context.sendTranslated(NEUTRAL, "To delete all the warps, do: {text:/confirm} before 30 seconds has passed");
+                }
+            }
+        }
+        else
+        {
+            if (context.hasFlag("pub"))
+            {
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public warps ever created on this server!?");
+                context.sendTranslated(NEUTRAL, "To delete all the public warps of every player, do: {text:/confirm} before 30 seconds has passed");
+            }
+            else if (context.hasFlag("priv"))
+            {
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private warps ever created on this server?");
+                context.sendTranslated(NEUTRAL, "To delete all the private warps of every player, do: {text:/confirm} before 30 seconds has passed");
+            }
+            else
+            {
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all warps ever created on this server!?");
+                context.sendTranslated(NEUTRAL, "To delete all the warps of every player, do: {text:/confirm} before 30 seconds has passed");
+            }
+        }
+        return new ConfirmResult(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (context.getArgCount() == 0)
+                { // No user
+                    manager.massDelete(context.hasFlag("priv"), context.hasFlag("pub"));
+                    context.sendTranslated(POSITIVE, "The warps are now deleted");
+                }
+                else
+                {
+                    User user = context.getUser(0);
+                    manager.massDelete(user, context.hasFlag("priv"), context.hasFlag("pub"));
+                    context.sendTranslated(POSITIVE, "Deleted warps.");
+                }
+            }
+        }, context);
     }
 }

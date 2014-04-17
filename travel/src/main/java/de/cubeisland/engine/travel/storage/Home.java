@@ -19,19 +19,16 @@ package de.cubeisland.engine.travel.storage;
 
 import java.util.Locale;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.permission.PermDefault;
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
-import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.travel.storage.TeleportPointModel.VISIBILITY_PUBLIC;
 
 public class Home extends TeleportPoint
 {
-    public Home(TeleportPointModel teleportPoint, TelePointManager telePointManager, InviteManager inviteManager, Travel module)
+    public Home(TeleportPointModel teleportPoint, Travel module)
     {
-        super(teleportPoint, telePointManager, inviteManager, module);
+        super(teleportPoint, module);
         if (teleportPoint.getVisibility() == VISIBILITY_PUBLIC)
         {
             this.permission = module.getBasePermission().
@@ -49,18 +46,6 @@ public class Home extends TeleportPoint
     {
         super.setVisibility(visibility);
         model.update();
-        pManager.unassignTeleportPoint(this, this.getOwner());
-        if (this.invited != null)
-        {
-            for (UInteger uid : this.invited)
-            {
-                User user = CubeEngine.getUserManager().getUser(uid);
-                if (user != null)
-                {
-                    pManager.unassignTeleportPoint(this, user);
-                }
-            }
-        }
         if (visibility == VISIBILITY_PUBLIC)
         {
             this.permission = module.getBasePermission().

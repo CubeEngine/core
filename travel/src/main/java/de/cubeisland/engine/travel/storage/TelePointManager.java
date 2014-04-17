@@ -17,15 +17,18 @@
  */
 package de.cubeisland.engine.travel.storage;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.travel.Travel;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
@@ -39,15 +42,11 @@ public abstract class TelePointManager<T extends TeleportPoint>
     protected final InviteManager iManager;
     protected final Map<String, Map<String, T>> points = new HashMap<>();
 
-    private final Class<? extends TeleportPointAttachment<T>> attachmentClass;
-
-    public TelePointManager(Travel module, InviteManager iManager, Class<? extends TeleportPointAttachment<T>> clazz)
+    public TelePointManager(Travel module, InviteManager iManager)
     {
         this.dsl = module.getCore().getDB().getDSL();
         this.module = module;
         this.iManager = iManager;
-        this.attachmentClass = clazz;
-        this.load();
     }
 
     public abstract void load();
@@ -61,11 +60,6 @@ public abstract class TelePointManager<T extends TeleportPoint>
             points.put(point.getName(), map);
         }
         map.put(point.getOwnerName(), point);
-
-        for (User user : point.getInvitedUsers())
-        {
-            this.assignTeleportPoint(point, user);
-        }
     }
 
     public TeleportPointModel get(Long key)
@@ -75,29 +69,64 @@ public abstract class TelePointManager<T extends TeleportPoint>
 
     public T find(User user, String name)
     {
-        return user.attachOrGet(this.attachmentClass, this.module).findOne(name);
+        Map<String, T> map = this.points.get(name);
+        if (map == null)
+        {
+            for (String found : findIn(name, this.points.keySet()))
+            {
+                map = this.points.get(found);
+                break;
+            }
+            if (map == null)
+            {
+                return null;
+            }
+        }
+        for (T point : map.values())
+        {
+            if (point.isOwner(user))
+            {
+                return point;
+            }
+        }
+        for (T point : map.values())
+        {
+            if (point.isPublic())
+            {
+                return point;
+            }
+        }
+        T match = null;
+        for (T point : map.values())
+        {
+            if (point.isInvited(user))
+            {
+                return point;
+            }
+            match = point;
+        }
+        return match;
     }
 
     public boolean has(User user, String name)
     {
-        return user.attachOrGet(HomeAttachment.class, this.module).getOwned(name) != null;
+        Map<String, T> map = this.points.get(name);
+        if (map != null)
+        {
+            for (T value : map.values())
+            {
+                if (value.isOwner(user))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public int getCount(User user)
     {
         return this.dsl.selectFrom(TABLE_TP_POINT).where(TABLE_TP_POINT.OWNER.eq(user.getEntity().getKey())).fetchCount();
-    }
-
-    @SuppressWarnings("unchecked")
-    public void assignTeleportPoint(T point, User user)
-    {
-        user.attachOrGet(this.attachmentClass, this.module).add(point);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void unassignTeleportPoint(T point, User user)
-    {
-        user.attachOrGet(this.attachmentClass, this.module).remove(point);
     }
 
     public abstract T create(User owner, String name, Location location, boolean publicVisiblity);
@@ -111,10 +140,6 @@ public abstract class TelePointManager<T extends TeleportPoint>
     private void removePoint(T point)
     {
         this.points.get(point.getName()).remove(point.getOwnerName());
-        for (User user : CubeEngine.getUserManager().getLoadedUsers())
-        {
-            this.unassignTeleportPoint(point, user);
-        }
     }
 
     public Set<T> list(boolean privates, boolean publics)
@@ -144,7 +169,55 @@ public abstract class TelePointManager<T extends TeleportPoint>
 
     public Set<T> list(User user, boolean owned, boolean publics, boolean invited)
     {
-        return user.attachOrGet(attachmentClass, module).list(owned, publics, invited);
+        if (!owned && !publics && !invited)
+        {
+            owned = true;
+            publics = true;
+            invited = true;
+        }
+        Set<T> set = new HashSet<>();
+        for (Map<String, T> map : this.points.values())
+        {
+            set.addAll(findIn(user, owned, publics, invited, map));
+        }
+        return set;
+    }
+
+    public Set<T> find(User user, String token, boolean owned, boolean publics, boolean invited)
+    {
+        if (!owned && !publics && !invited)
+        {
+            owned = true;
+            publics = true;
+            invited = true;
+        }
+        Set<T> set = new LinkedHashSet<>();
+        for (String name : findIn(token, this.points.keySet()))
+        {
+            set.addAll(findIn(user, owned, publics, invited, this.points.get(name)));
+        }
+        return set;
+    }
+
+    private Set<T> findIn(User user, boolean owned, boolean publics, boolean invited, Map<String, T> map)
+    {
+        Set<T> set = new LinkedHashSet<>();
+        for (T value : map.values())
+        {
+            if (owned && value.isOwner(user))
+            {
+                set.add(value);
+            }
+            if (publics && value.isPublic() && !value.isOwner(user))
+            {
+                set.add(value);
+            }
+            if (invited && value.isInvited(user))
+            {
+                set.add(value);
+            }
+        }
+        return set;
     }
 
     public void massDelete(boolean privates, boolean publics)
@@ -195,5 +268,33 @@ public abstract class TelePointManager<T extends TeleportPoint>
     public int getCount()
     {
         return this.list(true, true).size();
+    }
+
+
+    public static TreeSet<String> findIn(String pName, Set<String> strings)
+    {
+        TreeSet<String> result = new TreeSet<>(new StringLengthComparator());
+        for (String s : strings)
+        {
+            if (StringUtils.startsWithIgnoreCase(s, pName))
+            {
+                result.add(s);
+            }
+        }
+        return result;
+    }
+
+    private static class StringLengthComparator implements Comparator<String>
+    {
+        @Override
+        public int compare(String o1, String o2)
+        {
+            int dif = o1.length() - o2.length();
+            if (dif == 0)
+            {
+                dif = 1;
+            }
+            return dif;
+        }
     }
 }

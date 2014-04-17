@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.travel.Travel;
@@ -52,21 +51,6 @@ public class InviteManager
         TeleportInvite invite = this.dsl.newRecord(TABLE_INVITE).newInvite(tPP.getKey(), user.getEntity().getKey());
         this.invites.add(invite);
         invite.insert();
-    }
-
-    /**
-     * All users invited to a teleport point.
-     *
-     * @return A set of User objects invited to the home
-     */
-    public Set<User> getInvitedUsers(TeleportPointModel tPP)
-    {
-        Set<User> invitedUsers = new HashSet<>();
-        for (UInteger uid : getInvited(tPP))
-        {
-            invitedUsers.add(CubeEngine.getUserManager().getUser(uid));
-        }
-        return invitedUsers;
     }
 
     /**
