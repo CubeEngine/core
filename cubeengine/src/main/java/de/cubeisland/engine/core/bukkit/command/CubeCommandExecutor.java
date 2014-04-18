@@ -122,31 +122,28 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         {
             ctx = command.getContextFactory().parse(command, sender, labels, args);
         }
-        if (command instanceof ContainerCommand)
+        if (command instanceof ContainerCommand && ctx.getArgCount() != 1)
         {
-            if (!(ctx.getArgCount() == 1 && "".equals(ctx.getString(0))))
+            DelegatingContextFilter delegation = ((ContainerCommand)command).getDelegation();
+            if (delegation != null)
             {
-                DelegatingContextFilter delegation = ((ContainerCommand)command).getDelegation();
-                if (delegation != null)
+                String child = delegation.delegateTo(ctx);
+                if (child != null)
                 {
-                    String child = delegation.delegateTo(ctx);
-                    if (child != null)
+                    CubeCommand target = command.getChild(child);
+                    if (target != null)
                     {
-                        CubeCommand target = command.getChild(child);
-                        if (target != null)
-                        {
 
-                            if (tabComplete)
-                            {
-                                return target.getContextFactory().tabCompleteParse(target, sender, labels, args);
-                            }
-                            else
-                            {
-                                return target.getContextFactory().parse(target, sender, labels, args);
-                            }
+                        if (tabComplete)
+                        {
+                            return target.getContextFactory().tabCompleteParse(target, sender, labels, args);
                         }
-                        command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
+                        else
+                        {
+                            return target.getContextFactory().parse(target, sender, labels, args);
+                        }
                     }
+                    command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
                 }
             }
         }
