@@ -258,7 +258,7 @@ public abstract class CubeCommand
     public String getUsage()
     {
         return "/" + this.implodeCommandParentNames(" ") + " " + this.getUsage(
-            this.module.getCore().getI18n().getDefaultLanguage().getLocale(), null);
+            this.module.getCore().getConfiguration().defaultLocale, null);
     }
 
     public final String getUsage(Locale locale, Permissible permissible)
