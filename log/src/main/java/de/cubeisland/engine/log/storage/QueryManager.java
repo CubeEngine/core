@@ -77,6 +77,8 @@ public class QueryManager
 
     private final DBCollection collection;
 
+    private static final int STATISTIC_UPDATE_TIME = 5;
+
     private final Queue<Map<Class<? extends BaseAction>, Integer>> statistics = new LinkedList<>();
     private Map<Class<? extends BaseAction>, Integer> curStatistics = new ConcurrentHashMap<>();
 
@@ -146,7 +148,7 @@ public class QueryManager
             {
                 updateStatistics();
             }
-        },1 , 100); // 5 * 20 Ticks = 5 Seconds
+        },1 , 20 * STATISTIC_UPDATE_TIME); // 5 * 20 Ticks = 5 Seconds
     }
 
     private synchronized void updateStatistics()
@@ -487,7 +489,8 @@ public class QueryManager
                 map.put(entry.getKey(), value);
             }
         }
-        this.module.getLog().info("{} logs/minute average load ({} in {}s)", (count * 60) / (5*this.statistics.size()), count, this.statistics.size()*5);
+        int time = STATISTIC_UPDATE_TIME * this.statistics.size();
+        this.module.getLog().info("{} logs/minute average load ({} in {}s)", (count * 60) / time, count, time);
         for (Entry<Class<? extends BaseAction>, Integer> entry : map.entrySet())
         {
             this.module.getLog().info("{} x{}", entry.getKey().getSimpleName(), entry.getValue());
