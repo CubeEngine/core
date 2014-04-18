@@ -112,8 +112,7 @@ public class LogListener implements Listener
     public final boolean isActive(Class<? extends BaseAction> clazz, World world)
     {
         LoggingConfiguration config = this.getConfig(world);
-        this.module.getActionManager().isActive(clazz, config);
-        return true;
+        return this.module.getActionManager().isActive(clazz, config);
     }
 
     public <T extends BaseAction> Reference<T> reference(BaseAction action)
