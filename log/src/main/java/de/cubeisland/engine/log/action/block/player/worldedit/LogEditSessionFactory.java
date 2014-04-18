@@ -45,7 +45,9 @@ public class LogEditSessionFactory extends EditSessionFactory
         WorldEdit worldEdit = WorldEdit.getInstance();
         if (worldEdit != null)
         {
-            worldEdit.setEditSessionFactory(new LogEditSessionFactory(module, worldEdit.getEditSessionFactory()));
+            LogEditSessionFactory factory = new LogEditSessionFactory(module, worldEdit.getEditSessionFactory());
+            worldEdit.setEditSessionFactory(factory);
+            module.getActionManager().registerListener(factory.listener);
             return true;
         }
         return false;
