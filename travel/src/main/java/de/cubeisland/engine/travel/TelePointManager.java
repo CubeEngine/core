@@ -153,7 +153,7 @@ public abstract class TelePointManager<T extends TeleportPoint>
 
     private void removePoint(T point)
     {
-        this.points.get(point.getName()).remove(point.getOwnerName());
+        this.points.get(point.getName()).remove(point.getOwnerName().toLowerCase());
     }
 
     public Set<T> list(boolean privates, boolean publics)

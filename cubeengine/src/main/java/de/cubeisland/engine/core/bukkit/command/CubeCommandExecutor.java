@@ -122,7 +122,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         {
             ctx = command.getContextFactory().parse(command, sender, labels, args);
         }
-        if (command instanceof ContainerCommand && ctx.getArgCount() != 1)
+        if (command instanceof ContainerCommand && (ctx.getArgCount() != 1 || !tabComplete))
         {
             DelegatingContextFilter delegation = ((ContainerCommand)command).getDelegation();
             if (delegation != null)
