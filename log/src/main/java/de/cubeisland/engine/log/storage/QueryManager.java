@@ -487,7 +487,7 @@ public class QueryManager
                 map.put(entry.getKey(), value);
             }
         }
-        this.module.getLog().info("{} logs/minute average load", count / (5*this.statistics.size()));
+        this.module.getLog().info("{} logs/minute average load ({} in {}s)", (count * 60) / (5*this.statistics.size()), count, this.statistics.size()*5);
         for (Entry<Class<? extends BaseAction>, Integer> entry : map.entrySet())
         {
             this.module.getLog().info("{} x{}", entry.getKey().getSimpleName(), entry.getValue());
