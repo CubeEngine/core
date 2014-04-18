@@ -275,7 +275,7 @@ public class WarpCommand extends TpPointCommand
     }
 
     @Command(desc = "List all available warps",
-             flags = {@Flag(name = "priv", longName = "private"),
+             flags = {@Flag(name = "pub", longName = "public"),
                       @Flag(name = "o", longName = "owned"),
                       @Flag(name = "i", longName = "invited")},
              indexed = @Grouped(req = false, value = @Indexed(value = "owner", type = User.class)))
@@ -297,7 +297,7 @@ public class WarpCommand extends TpPointCommand
             }
             context.ensurePermission(module.getPermissions().WARP_LIST_OTHER);
         }
-        Set<Warp> warps = this.manager.list(user, context.hasFlag("o"), !context.hasFlag("priv"), context.hasFlag("i"));
+        Set<Warp> warps = this.manager.list(user, context.hasFlag("o"), context.hasFlag("pub"), context.hasFlag("i"));
         if (warps.isEmpty())
         {
             context.sendTranslated(NEGATIVE, "No warps are available to you!");
