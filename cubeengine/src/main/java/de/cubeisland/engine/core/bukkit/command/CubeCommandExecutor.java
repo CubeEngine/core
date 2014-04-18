@@ -135,7 +135,15 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                         CubeCommand target = command.getChild(child);
                         if (target != null)
                         {
-                            return target.getContextFactory().tabCompleteParse(target, sender, labels, args);
+
+                            if (tabComplete)
+                            {
+                                return target.getContextFactory().tabCompleteParse(target, sender, labels, args);
+                            }
+                            else
+                            {
+                                return target.getContextFactory().parse(target, sender, labels, args);
+                            }
                         }
                         command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
                     }
