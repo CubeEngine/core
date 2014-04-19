@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log;
+package de.cubeisland.engine.log.converter;
 
 import net.minecraft.server.v1_7_R3.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
@@ -30,6 +30,7 @@ import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.reflect.node.IntNode;
 import de.cubeisland.engine.reflect.node.MapNode;
 import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.NullNode;
 import de.cubeisland.engine.reflect.node.StringNode;
 
 public class ItemStackConverter implements Converter<ItemStack>
@@ -37,6 +38,11 @@ public class ItemStackConverter implements Converter<ItemStack>
     @Override
     public Node toNode(ItemStack itemStack, ConverterManager converterManager) throws ConversionException
     {
+        if (itemStack == null)
+        {
+            return NullNode.emptyNode();
+        }
+
         MapNode item = MapNode.emptyMap();
         item.setExactNode("Count", new IntNode(itemStack.getAmount()));
         item.setExactNode("Damage", new IntNode(itemStack.getDurability()));
@@ -77,6 +83,10 @@ public class ItemStackConverter implements Converter<ItemStack>
             {
                 throw ConversionException.of(this, node, "Invalid SubNodes!");
             }
+        }
+        else if (node instanceof NullNode)
+        {
+            return null;
         }
         else
         {

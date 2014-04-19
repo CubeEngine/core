@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log;
+package de.cubeisland.engine.log.converter;
 
-import org.bukkit.entity.EntityType;
+import org.bukkit.block.BlockFace;
 
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 import de.cubeisland.engine.reflect.codec.converter.Converter;
@@ -25,17 +25,17 @@ import de.cubeisland.engine.reflect.exception.ConversionException;
 import de.cubeisland.engine.reflect.node.Node;
 import de.cubeisland.engine.reflect.node.StringNode;
 
-public class EntityTypeConverter implements Converter<EntityType>
+public class BlockFaceConverter implements Converter<BlockFace>
 {
     @Override
-    public Node toNode(EntityType object, ConverterManager manager) throws ConversionException
+    public Node toNode(BlockFace object, ConverterManager manager) throws ConversionException
     {
         return StringNode.of(object.name());
     }
 
     @Override
-    public EntityType fromNode(Node node, ConverterManager manager) throws ConversionException
+    public BlockFace fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        return EntityType.valueOf(node.asText());
+        return BlockFace.valueOf(node.asText());
     }
 }

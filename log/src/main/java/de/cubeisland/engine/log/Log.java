@@ -18,6 +18,7 @@
 package de.cubeisland.engine.log;
 
 import org.bukkit.Art;
+import org.bukkit.Note;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,12 @@ import de.cubeisland.engine.log.action.player.item.container.ContainerType;
 import de.cubeisland.engine.log.action.player.item.container.ContainerTypeConverter;
 import de.cubeisland.engine.log.commands.LogCommands;
 import de.cubeisland.engine.log.commands.LookupCommands;
+import de.cubeisland.engine.log.converter.ArtConverter;
+import de.cubeisland.engine.log.converter.BlockFaceConverter;
+import de.cubeisland.engine.log.converter.DamageCauseConverter;
+import de.cubeisland.engine.log.converter.EntityTypeConverter;
+import de.cubeisland.engine.log.converter.ItemStackConverter;
+import de.cubeisland.engine.log.converter.NoteConverter;
 import de.cubeisland.engine.log.storage.LogManager;
 import de.cubeisland.engine.log.tool.ToolListener;
 import de.cubeisland.engine.messagecompositor.macro.example.DateFormatter;
@@ -69,6 +76,7 @@ public class Log extends Module implements Listener
         cMan.registerConverter(DamageCause.class, new DamageCauseConverter());
         cMan.registerConverter(BlockFace.class, new BlockFaceConverter());
         cMan.registerConverter(Art.class, new ArtConverter());
+        cMan.registerConverter(Note.class, new NoteConverter());
         this.getCore().getConfigFactory().getCodecManager().getCodec(MongoDBCodec.class).
             getConverterManager().registerConverter(ItemStack.class, new ItemStackConverter());
         this.logManager = new LogManager(this, bigdata);
