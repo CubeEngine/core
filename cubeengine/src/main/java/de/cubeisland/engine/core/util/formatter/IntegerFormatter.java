@@ -23,7 +23,7 @@ import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
 
-@Names({"amount","integer","long"})
+@Names({"amount", "integer", "long", "short"})
 public class IntegerFormatter extends ReflectedFormatter
 {
     @Format
@@ -36,5 +36,11 @@ public class IntegerFormatter extends ReflectedFormatter
     public String format(Long l, MacroContext context)
     {
         return ChatFormat.GOLD + String.valueOf(l);
+    }
+
+    @Format
+    public String format(Short s, MacroContext context)
+    {
+        return ChatFormat.GOLD + String.valueOf(s);
     }
 }

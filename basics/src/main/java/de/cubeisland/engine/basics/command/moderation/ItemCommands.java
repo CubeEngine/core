@@ -20,6 +20,8 @@ package de.cubeisland.engine.basics.command.moderation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -71,10 +73,14 @@ public class ItemCommands
     {
         if (context.hasArg(0))
         {
-            ItemStack item = Match.material().itemStack(context.getString(0));
-            if (item != null)
+            TreeSet<Entry<ItemStack, Double>> itemSet = Match.material().itemStackList(context.getString(0));
+            if (itemSet != null && itemSet.size() > 0)
             {
-                context.sendTranslated(POSITIVE, "Matched {input#item} ({input#id}:{input#data}) for {input}", Match.material().getNameFor(item), item.getType().getId(), item.getDurability(), context.getString(0));
+                context.sendTranslated(POSITIVE, "Best Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(itemSet.first().getKey()), itemSet.first().getKey().getType().getId(), itemSet.first().getKey().getDurability(), context.getString(0));
+                itemSet.remove(itemSet.first());
+                for (Entry<ItemStack, Double> item : itemSet) {
+                    context.sendTranslated(POSITIVE, "Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(item.getKey()), item.getKey().getType().getId(), item.getKey().getDurability(), context.getString(0));
+                }
             }
             else
             {
@@ -96,10 +102,10 @@ public class ItemCommands
                 String found = Match.material().getNameFor(item);
                 if (found == null)
                 {
-                    context.sendTranslated(NEGATIVE, "Itemname unknown! Itemdata: {input#id}:{input#data}", item.getType().getId(), item.getDurability());
+                    context.sendTranslated(NEGATIVE, "Itemname unknown! Itemdata: {integer#id}:{short#data}", item.getType().getId(), item.getDurability());
                     return;
                 }
-                context.sendTranslated(POSITIVE, "The Item in your hand is: {input#item} ({input#id}:{input#data})", found, item.getType().getId(), item.getDurability());
+                context.sendTranslated(POSITIVE, "The Item in your hand is: {input#item} ({integer#id}:{short#data})", found, item.getType().getId(), item.getDurability());
             }
             return;
         }

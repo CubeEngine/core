@@ -22,12 +22,16 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -269,7 +273,22 @@ public class MaterialMatcher
         return null;
     }
 
-    // TODO match more than one ItemStack for ItemDB CE-357
+    private HashMap<ItemStack, Double> allMatchesWithLevenshteinDistance(String s, Map<String, ImmutableItemStack> map, int maxDistance, int minPercentage)
+    {
+        HashMap<ItemStack, Double> itemMap = new HashMap<>();
+        TreeMap<String, Integer> itemNameList = Match.string().getMatches(s, map.keySet(), maxDistance, true);
+
+        for (Entry<String, Integer> entry : itemNameList.entrySet())
+        {
+            double curPercentage = (entry.getKey().length() - entry.getValue()) * 100 / entry.getKey().length();
+            if (curPercentage >= minPercentage)
+            {
+                itemMap.put(new ItemStack(map.get(entry.getKey())), curPercentage);
+            }
+        }
+
+        return itemMap;
+    }
 
     /**
      * Tries to match a ItemStack for given name
@@ -316,7 +335,7 @@ public class MaterialMatcher
                 if (item == null)
                 {
                     //name was probably wrong check ld:
-                    item = matchWithLevenshteinDistance(material, items);
+                    item = this.matchWithLevenshteinDistance(material, items);
                     item = materialDataMatcher.setData(item, data); // Try to set data / returns null if couldn't
                 }
                 if (item == null) // Contained ":" but could not find any matching item
@@ -330,18 +349,92 @@ public class MaterialMatcher
             if (item == null)
             {
                 // ld-match
-                item = matchWithLevenshteinDistance(s, items);
+                item = this.matchWithLevenshteinDistance(s, items);
                 if (item == null)
                 {
                     // Try to match bukkit name
                     item = this.matchWithLevenshteinDistance(s, bukkitnames);
-                    if (item == null) return null;
+                    if (item == null)
+                    {
+                        return null;
+                    }
                 }
             }
         }
         item = new ItemStack(item);
         item.setAmount(1);
         return item;
+    }
+
+    /**
+     * Tries to match a ItemStack-list for given name
+     *
+     * @param name the name
+     * @return the found ItemStack-list
+     */
+    public TreeSet<Entry<ItemStack, Double>> itemStackList(String name)
+    {
+        if (name == null)
+        {
+            return null;
+        }
+
+        String s = name.toLowerCase(Locale.ENGLISH);
+        HashMap<ItemStack, Double> itemMap = new HashMap<>();
+        TreeSet<Entry<ItemStack, Double>> itemSet = new TreeSet<>(new ItemStackComparator());
+
+        try
+        { // id match
+            Material mat = Material.getMaterial(Integer.parseInt(s));
+            if (mat != null)
+            {
+                itemMap.put(new ItemStack(mat, 1), 0d);
+                itemSet.addAll(itemMap.entrySet());
+                return itemSet;
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            try
+            { // id and data match
+                ItemStack item = new ItemStack(Integer.parseInt(s.substring(0, s.indexOf(":"))), 1);
+                item = materialDataMatcher.setData(item, name.substring(name.indexOf(":") + 1)); // Try to set data / returns null if couldn't
+                itemMap.put(item, 0d);
+                itemSet.addAll(itemMap.entrySet());
+                return itemSet;
+            }
+            catch (Exception ignored)
+            {}
+        }
+
+        String material = s;
+        if (s.contains(":"))
+        {
+            material = s.substring(0, s.indexOf(":"));
+        }
+
+        // ld-match
+        itemMap = this.allMatchesWithLevenshteinDistance(material, items, 5, 50);
+        // Try to match bukkit name
+        itemMap.putAll(this.allMatchesWithLevenshteinDistance(material, bukkitnames, 5, 50));
+
+        if (s.contains(":"))
+        {
+            // name match with data
+            String data = name.substring(name.indexOf(":") + 1);
+
+            for (Entry<ItemStack, Double> item : itemMap.entrySet())
+            {
+                if (materialDataMatcher.setData(item.getKey(), data) == null) // returns null if the item data could not be found
+                {
+                    itemMap.remove(item.getKey());
+                }
+            }
+        }
+
+        itemSet.addAll(itemMap.entrySet());
+
+        return itemSet;
     }
 
     /**
@@ -442,6 +535,23 @@ public class MaterialMatcher
         private ImmutableItemStack(Material type)
         {
             super(type, 0);
+        }
+    }
+
+    private static class ItemStackComparator implements Comparator<Entry<ItemStack, Double>>
+    {
+        @Override
+        public int compare(Entry<ItemStack, Double> item1, Entry<ItemStack, Double> item2)
+        {
+            if (item1.getValue() > item2.getValue())
+            {
+                return -1;
+            }
+            else if (item1.getValue() < item2.getValue())
+            {
+                return 1;
+            }
+            return 0;
         }
     }
 }
