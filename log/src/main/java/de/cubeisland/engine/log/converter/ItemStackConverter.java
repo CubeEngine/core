@@ -23,6 +23,7 @@ import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 import de.cubeisland.engine.reflect.codec.converter.Converter;
@@ -38,7 +39,7 @@ public class ItemStackConverter implements Converter<ItemStack>
     @Override
     public Node toNode(ItemStack itemStack, ConverterManager converterManager) throws ConversionException
     {
-        if (itemStack == null)
+        if (itemStack == null || itemStack.getType() == Material.AIR)
         {
             return NullNode.emptyNode();
         }
@@ -47,7 +48,13 @@ public class ItemStackConverter implements Converter<ItemStack>
         item.setExactNode("Count", new IntNode(itemStack.getAmount()));
         item.setExactNode("Damage", new IntNode(itemStack.getDurability()));
         item.setExactNode("Item", StringNode.of(itemStack.getType().name()));
-        NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).tag;
+        net.minecraft.server.v1_7_R3.ItemStack nmsCopy = CraftItemStack.asNMSCopy(itemStack);
+        if (nmsCopy == null)
+        {
+            CubeEngine.getLog().error("NMSCopy is unexpectedly null! " + itemStack);
+            return null;
+        }
+        NBTTagCompound tag = nmsCopy.tag;
         item.setExactNode("tag", tag == null ? MapNode.emptyMap() : NBTUtils.convertNBTToNode(tag));
         return item;
     }
