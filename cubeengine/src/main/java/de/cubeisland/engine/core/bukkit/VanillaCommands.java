@@ -402,7 +402,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-    protected static void showSourceVersion(ParameterizedContext context, String sourceVersion)
+    public static void showSourceVersion(ParameterizedContext context, String sourceVersion)
     {
         if (context.hasFlag("s") && sourceVersion != null)
         {
