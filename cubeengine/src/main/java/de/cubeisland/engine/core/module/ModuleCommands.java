@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.commands;
+package de.cubeisland.engine.core.module;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +26,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import de.cubeisland.engine.core.bukkit.VanillaCommands;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
