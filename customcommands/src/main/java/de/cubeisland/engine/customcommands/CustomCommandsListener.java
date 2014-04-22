@@ -49,7 +49,7 @@ public class CustomCommandsListener implements Listener
     {
         this.FLY_FEATHER = fly.getBasePermission().child("feather");
         fly.getCore().getPermissionManager().registerPermission(fly,FLY_FEATHER);
-        this.fly = fly;
+        this.customCommands = customCommands;
         this.usermanager = fly.getCore().getUserManager();
     }
 
