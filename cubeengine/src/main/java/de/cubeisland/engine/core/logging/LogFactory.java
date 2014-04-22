@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.logging;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.logging.DefaultLogFactory;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
@@ -105,6 +106,12 @@ public class LogFactory extends DefaultLogFactory
             databaseLog.addTarget(target);
         }
         return this.databaseLog;
+    }
+
+    public void shutdown(Module module)
+    {
+        this.remove(module.getLog());
+        module.getLog().shutdown();
     }
 
     // TODO log-cycling on shutdown ?

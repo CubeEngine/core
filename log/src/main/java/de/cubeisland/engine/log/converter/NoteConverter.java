@@ -15,27 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log;
+package de.cubeisland.engine.log.converter;
 
-import org.bukkit.Art;
+import org.bukkit.Note;
 
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 import de.cubeisland.engine.reflect.codec.converter.Converter;
 import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.ByteNode;
 import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
 
-public class ArtConverter implements Converter<Art>
+public class NoteConverter implements Converter<Note>
 {
     @Override
-    public Node toNode(Art object, ConverterManager manager) throws ConversionException
+    public Node toNode(Note object, ConverterManager manager) throws ConversionException
     {
-        return StringNode.of(object.name());
+        return new ByteNode(object.getId());
     }
 
     @Override
-    public Art fromNode(Node node, ConverterManager manager) throws ConversionException
+    public Note fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        return Art.valueOf(node.asText());
+        if (node instanceof ByteNode)
+        {
+            return new Note(((ByteNode)node).getValue().intValue());
+        }
+        throw ConversionException.of(this, node, "Note is not a ByteNode!");
     }
 }

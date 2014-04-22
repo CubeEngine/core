@@ -226,7 +226,7 @@ public class ModuleCommands extends ContainerCommand
         ModuleInfo moduleInfo = module.getInfo();
         context.sendTranslated(POSITIVE, "Name: {input}", moduleInfo.getName());
         context.sendTranslated(POSITIVE, "Description: {input}", moduleInfo.getDescription());
-        context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion());
+        context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion().toString());
         VanillaCommands.showSourceVersion(context, moduleInfo.getSourceVersion());
 
         Map<String, Version> dependencies = moduleInfo.getDependencies();

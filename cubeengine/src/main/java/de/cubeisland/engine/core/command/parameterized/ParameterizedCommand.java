@@ -27,6 +27,9 @@ import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.exception.CommandException;
+import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 
@@ -86,6 +89,10 @@ public abstract class ParameterizedCommand extends CubeCommand
             tabCompleteParam(context, cFactory, result, last);
             tabCompleteFlags(context, cFactory, result, last);
         }
+        if (result.isEmpty())
+        {
+            return null; //TODO remove once ALL our commands have tabcompleter for players
+        }
         return result;
     }
 
@@ -103,7 +110,7 @@ public abstract class ParameterizedCommand extends CubeCommand
         {
             return completer.complete(context, lastParameter.getValue());
         }
-        return null; // TODO check if bukkit wont do player tab completion
+        return null; //TODO remove once ALL our commands have tabcompleter for players
     }
 
     private void tabCompleteParam(ParameterizedTabContext context, ParameterizedContextFactory cFactory, List<String> result, String last)
@@ -195,5 +202,40 @@ public abstract class ParameterizedCommand extends CubeCommand
             }
         }
         return sb.toString().trim();
+    }
+
+    @Override
+    public void checkContext(CommandContext ctx) throws CommandException
+    {
+        super.checkContext(ctx);
+        for (CommandParameter param : this.getContextFactory().getParameters())
+        {
+            if (param.isRequired())
+            {
+                if (!(ctx instanceof ParameterizedContext && ((ParameterizedContext)ctx).hasParam(param.getName())))
+                {
+                    throw new MissingParameterException(param.getName());
+                }
+            }
+        }
+        if (ctx instanceof ParameterizedContext)
+        {
+            for (CommandParameter param : this.getContextFactory().getParameters())
+            {
+                if (((ParameterizedContext)ctx).hasParam(param.getName()) &&
+                    !param.checkPermission(ctx.getSender()))
+                {
+                    throw new PermissionDeniedException(param.getPermission());
+                }
+            }
+            for (CommandFlag flag : this.getContextFactory().getFlags())
+            {
+                if (((ParameterizedContext)ctx).hasFlag(flag.getName())
+                    && !flag.checkPermission(ctx.getSender()))
+                {
+                    throw new PermissionDeniedException(flag.getPermission());
+                }
+            }
+        }
     }
 }

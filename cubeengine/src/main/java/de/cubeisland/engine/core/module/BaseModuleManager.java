@@ -611,7 +611,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.modules.remove(module.getId());
         this.moduleInfoMap.remove(module.getId());
 
-        module.getLog().shutdown();
+        this.core.getLogFactory().shutdown(module);
 
         // null all the fields referencing this module
         for (Module m : this.modules.values())

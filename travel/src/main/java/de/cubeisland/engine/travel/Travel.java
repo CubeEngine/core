@@ -23,56 +23,50 @@ import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.travel.interactions.HomeAdminCommand;
-import de.cubeisland.engine.travel.interactions.HomeCommand;
-import de.cubeisland.engine.travel.interactions.HomeListener;
-import de.cubeisland.engine.travel.interactions.WarpAdminCommand;
-import de.cubeisland.engine.travel.interactions.WarpCommand;
-import de.cubeisland.engine.travel.storage.InviteManager;
+import de.cubeisland.engine.travel.home.HomeCommand;
+import de.cubeisland.engine.travel.home.HomeListener;
+import de.cubeisland.engine.travel.home.HomeManager;
+import de.cubeisland.engine.travel.warp.WarpCommand;
 import de.cubeisland.engine.travel.storage.TableInvite;
 import de.cubeisland.engine.travel.storage.TableTeleportPoint;
-import de.cubeisland.engine.travel.storage.TelePointManager;
+import de.cubeisland.engine.travel.warp.WarpManager;
 
 public class Travel extends Module
 {
-    private TelePointManager telePointManager;
-    private InviteManager inviteManager;
-
     private TravelConfig config;
+
+    private InviteManager inviteManager;
+    private HomeManager homeManager;
+    private WarpManager warpManager;
+
+    private TravelPerm permissions;
 
     @Override
     public void onEnable()
     {
-        Profiler.startProfiling("travelEnable");
+
         this.config = this.loadConfig(TravelConfig.class);
         Database db = this.getCore().getDB();
         db.registerTable(TableTeleportPoint.class);
         db.registerTable(TableInvite.class);
 
-        Log log = this.getLog();
-        log.trace("{} ms - TelePointManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        this.telePointManager = new TelePointManager(this);
-
-        log.trace("{} ms - InviteManager", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
+        Profiler.startProfiling("travelEnable");
+        this.getLog().trace("Loading TeleportPoints...");
         this.inviteManager = new InviteManager(db, this);
+        this.homeManager = new HomeManager(this, this.inviteManager);
+        this.homeManager.load();
+        this.warpManager = new WarpManager(this, this.inviteManager);
+        this.warpManager.load();
+        this.getLog().trace("Loaded TeleportPoints in {} ms", Profiler.endProfiling("travelEnable",TimeUnit.MILLISECONDS));
 
-        log.trace("{} ms - InviteManager-load", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        this.telePointManager.load(this.inviteManager);
         final CommandManager cm = this.getCore().getCommandManager();
-
-        log.trace("{} ms - register commands", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
-        HomeCommand home = new HomeCommand(this);
-        cm.registerCommand(home);
-        home.initChildren();
-        cm.registerCommand(new HomeAdminCommand(this), "home");
-        cm.registerCommand(new WarpCommand(this));
-        cm.registerCommand(new WarpAdminCommand(this), "warp");
-
-
-        log.trace("{} ms - register listener", Profiler.getCurrentDelta("travelEnable", TimeUnit.MILLISECONDS));
+        HomeCommand homeCmd = new HomeCommand(this);
+        cm.registerCommand(homeCmd);
+        WarpCommand warpCmd = new WarpCommand(this);
+        cm.registerCommand(warpCmd);
         this.getCore().getEventManager().registerListener(this, new HomeListener(this));
-        log.trace("{} ms - Done", Profiler.endProfiling("travelEnable", TimeUnit.MILLISECONDS));
+
+        this.permissions = new TravelPerm(this, homeCmd, warpCmd);
     }
 
     public TravelConfig getConfig()
@@ -80,13 +74,23 @@ public class Travel extends Module
         return this.config;
     }
 
-    public TelePointManager getTelepointManager()
+    public HomeManager getHomeManager()
     {
-        return this.telePointManager;
+        return homeManager;
+    }
+
+    public WarpManager getWarpManager()
+    {
+        return warpManager;
     }
 
     public InviteManager getInviteManager()
     {
         return this.inviteManager;
+    }
+
+    public TravelPerm getPermissions()
+    {
+        return permissions;
     }
 }

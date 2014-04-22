@@ -20,10 +20,7 @@ package de.cubeisland.engine.core.command;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-
-import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
@@ -32,20 +29,13 @@ import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.util.ChatFormat.*;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
-
-/**
- *
- * @author Phillip Schichtel
- */
 public abstract class ContainerCommand extends ParameterizedCommand implements CommandHolder
 {
     private static final Set<String> NO_ALIASES = Collections.emptySet();
     private final Class<? extends CubeCommand> subCommandType;
-    private ChildDelegation delegation;
+    private DelegatingContextFilter delegation;
 
     public ContainerCommand(Module module, String name, String description)
     {
@@ -70,25 +60,21 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         this.delegation = null;
     }
 
-    @Override
-    protected String getUsage0(Locale locale, Permissible permissible)
+    public void delegateChild(final String name)
     {
-        return "[" + this.getModule().getCore().getI18n().translate(locale, "action") + "]";
-    }
-
-    public void delegateChild(String name)
-    {
-        this.delegation = new ChildDelegation(name);
+        this.delegation = new DelegatingContextFilter()
+        {
+            @Override
+            public String delegateTo(CommandContext context)
+            {
+                return name;
+            }
+        };
     }
     
-    public void delegateChild(String name, ContextFilter filter)
+    public void delegateChild(DelegatingContextFilter filter)
     {
-        this.delegation = new ChildDelegation(name, filter);
-    }
-
-    public void delegateChild(MultiContextFilter filter)
-    {
-        this.delegation = new ChildDelegation(filter);
+        this.delegation = filter;
     }
 
     public Class<? extends CubeCommand> getCommandType()
@@ -99,33 +85,13 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     @Override
     public CommandResult run(CommandContext context)
     {
-        if (this.delegation != null)
-        {
-            if (this.delegation.isMultiDelegation())
-            {
-                CubeCommand command = this.getChild(this.delegation.getMultiContextFilter().getChild(context));
-                if (command != null)
-                {
-                    CommandContext childContext = command.getContextFactory().parse(command, context);
-                    childContext = this.delegation.getMultiContextFilter().filterContext(childContext, command.getName());
-                    return command.run(childContext);
-                }
-            }
-            else
-            {
-                CubeCommand command = this.getChild(this.delegation.getChildName());
-                if (command != null)
-                {
-                    CommandContext childContext = command.getContextFactory().parse(command, context);
-                    childContext = this.delegation.getContextFilter().filterContext(childContext);
-                    return command.run(childContext);
-                }
-                this.getModule().getLog().warn("Child delegation failed: child '{}' not found!", this.delegation.getChildName());
-            }
-        }
-
         this.help(new HelpContext(context));
         return null;
+    }
+
+    public DelegatingContextFilter getDelegation()
+    {
+        return this.delegation;
     }
 
     @Override
@@ -161,66 +127,12 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 
-    private class ChildDelegation
+    public static abstract class DelegatingContextFilter
     {
-        private final String childName;
-        private final ContextFilter contextFilter;
-        private final MultiContextFilter multiContextFilter;
-
-        private ChildDelegation(String childName)
+        public abstract String delegateTo(CommandContext context);
+        public CommandContext filterContext(CommandContext context, String child)
         {
-            this(childName, new ContextFilter() {
-                @Override
-                public CommandContext filterContext(CommandContext context)
-                {
-                    return context;
-                }
-            });
+            return context;
         }
-
-        private ChildDelegation(String childName, ContextFilter contextFilter)
-        {
-            this.childName = childName;
-            this.contextFilter = contextFilter;
-            this.multiContextFilter = null;
-        }
-
-        private ChildDelegation(MultiContextFilter multiContextFilter)
-        {
-            this.childName = null;
-            this.contextFilter = null;
-            this.multiContextFilter = multiContextFilter;
-        }
-
-        public String getChildName()
-        {
-            return childName;
-        }
-
-        public ContextFilter getContextFilter()
-        {
-            return contextFilter;
-        }
-
-        public MultiContextFilter getMultiContextFilter()
-        {
-            return multiContextFilter;
-        }
-
-        public boolean isMultiDelegation()
-        {
-            return this.multiContextFilter != null;
-        }
-    }
-
-    protected static interface ContextFilter
-    {
-        CommandContext filterContext(CommandContext context);
-    }
-
-    protected static interface MultiContextFilter
-    {
-        String getChild(CommandContext context);
-        CommandContext filterContext(CommandContext context, String child);
     }
 }

@@ -21,7 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.bukkit.Bukkit;
+
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
@@ -173,5 +177,14 @@ public class BasicContext implements CommandContext
     public User getUser(int i)
     {
         return this.getArg(i, User.class);
+    }
+
+    @Override
+    public void ensurePermission(Permission permission) throws PermissionDeniedException
+    {
+        if (!permission.isAuthorized(this.getSender()))
+        {
+            throw new PermissionDeniedException(permission);
+        }
     }
 }

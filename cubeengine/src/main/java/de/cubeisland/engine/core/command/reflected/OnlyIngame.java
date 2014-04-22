@@ -15,27 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.log;
+package de.cubeisland.engine.core.command.reflected;
 
-import org.bukkit.block.BlockFace;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
-
-public class BlockFaceConverter implements Converter<BlockFace>
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface OnlyIngame
 {
-    @Override
-    public Node toNode(BlockFace object, ConverterManager manager) throws ConversionException
-    {
-        return StringNode.of(object.name());
-    }
-
-    @Override
-    public BlockFace fromNode(Node node, ConverterManager manager) throws ConversionException
-    {
-        return BlockFace.valueOf(node.asText());
-    }
+    String value() default "";
 }

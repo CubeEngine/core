@@ -17,12 +17,12 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import net.minecraft.server.v1_7_R3.DedicatedPlayerList;
@@ -44,7 +44,7 @@ import static de.cubeisland.engine.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static org.bukkit.BanList.Type.IP;
-import static org.bukkit.BanList.Type.UUID;
+import static org.bukkit.BanList.Type.NAME;
 
 public class BukkitBanManager implements BanManager
 {
@@ -71,7 +71,7 @@ public class BukkitBanManager implements BanManager
 
         if (ban instanceof UserBan)
         {
-            Bukkit.getBanList(UUID).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
+            Bukkit.getBanList(NAME).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
                                                 ban.getSource());
         }
         else if (ban instanceof IpBan)
@@ -155,7 +155,7 @@ public class BukkitBanManager implements BanManager
         expect(isMainThread());
 
         String[] bannedIps = this.ipBans.getEntries();
-        Set<IpBan> bans = new TreeSet<>(new BanComparator());
+        Set<IpBan> bans = new HashSet<>();
 
         for (String bannedIp : bannedIps)
         {
@@ -180,7 +180,7 @@ public class BukkitBanManager implements BanManager
         expect(isMainThread());
 
         String[] bannedUUIDs = this.profileBan.getEntries();
-        Set<UserBan> bans = new TreeSet<>(new BanComparator());
+        Set<UserBan> bans = new HashSet<>();
 
         for (String bannedUUID : bannedUUIDs)
         {
@@ -190,21 +190,12 @@ public class BukkitBanManager implements BanManager
         return bans;
     }
 
-    private static final class BanComparator implements Comparator<Ban<?>>
-    {
-        @Override
-        public int compare(Ban<?> o1, Ban<?> o2)
-        {
-            return o1.getCreated().compareTo(o2.getCreated());
-        }
-    }
-
     @Override
     public Set<Ban<?>> getBans()
     {
         expect(isMainThread());
         
-        Set<Ban<?>> bans = new TreeSet<>(new BanComparator());
+        Set<Ban<?>> bans = new HashSet<>();
         bans.addAll(this.getIpBans());
         bans.addAll(this.getUserBans());
         return bans;
@@ -214,7 +205,14 @@ public class BukkitBanManager implements BanManager
     public synchronized void reloadBans()
     {
         expect(isMainThread());
-        this.profileBan.load();
-        this.ipBans.load();
+        try
+        {
+            this.profileBan.load();
+            this.ipBans.load();
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e);
+        }
     }
 }

@@ -20,12 +20,15 @@ package de.cubeisland.engine.log.storage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -73,6 +76,11 @@ public class QueryManager
     private boolean cleanUpRunning = false;
 
     private final DBCollection collection;
+
+    private static final int STATISTIC_UPDATE_TIME = 5;
+
+    private final Queue<Map<Class<? extends BaseAction>, Integer>> statistics = new LinkedList<>();
+    private Map<Class<? extends BaseAction>, Integer> curStatistics = new ConcurrentHashMap<>();
 
     public QueryManager(Log module, DBCollection collection)
     {
@@ -132,6 +140,26 @@ public class QueryManager
                 }
             }
         }, delay, delay);
+
+        this.module.getCore().getTaskManager().runTimer(module, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                updateStatistics();
+            }
+        },1 , 20 * STATISTIC_UPDATE_TIME); // 5 * 20 Ticks = 5 Seconds
+    }
+
+    private synchronized void updateStatistics()
+    {
+        Map<Class<? extends BaseAction>, Integer> map = curStatistics;
+        curStatistics = new ConcurrentHashMap<>();
+        this.statistics.add(map);
+        if (statistics.size() > 120) // 600 / 5 = 12
+        {
+            statistics.poll();
+        }
     }
 
     private void cleanUpLogs() throws InterruptedException
@@ -314,6 +342,16 @@ public class QueryManager
                 }
             }
 
+            for (BaseAction log : logs)
+            {
+                Integer count = this.curStatistics.get(log.getClass());
+                if (count == null)
+                {
+                    count = 0;
+                }
+                this.curStatistics.put(log.getClass(), ++count);
+            }
+
             Profiler.startProfiling("logging");
             int logSize = logs.size();
             List<DBObject> toLog = new ArrayList<>();
@@ -431,10 +469,31 @@ public class QueryManager
     {
         this.module.getLog().info("{} logs queued!", this.queuedLogs.size());
         this.module.getLog().info("Permit availiable? {}", this.latch.availablePermits() == 1);
-
         if (this.futureStore != null)
         {
             this.module.getLog().info("FutureStore is {}done!", this.futureStore.isDone() ? "" : "NOT ");
+        }
+        Map<Class<? extends BaseAction>, Integer> map = new HashMap<>();
+        int count = 0;
+        for (Map<Class<? extends BaseAction>, Integer> statistic : this.statistics)
+        {
+            for (Entry<Class<? extends BaseAction>, Integer> entry : statistic.entrySet())
+            {
+                Integer value = map.get(entry.getKey());
+                if (value == null)
+                {
+                    value = 0;
+                }
+                value += entry.getValue();
+                count += entry.getValue();
+                map.put(entry.getKey(), value);
+            }
+        }
+        int time = STATISTIC_UPDATE_TIME * this.statistics.size();
+        this.module.getLog().info("{} logs/minute average load ({} in {}s)", (count * 60) / time, count, time);
+        for (Entry<Class<? extends BaseAction>, Integer> entry : map.entrySet())
+        {
+            this.module.getLog().info("{} x{}", entry.getKey().getSimpleName(), entry.getValue());
         }
     }
 

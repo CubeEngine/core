@@ -15,27 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.travel;
+package de.cubeisland.engine.log.converter;
 
-public class TravelException extends Exception
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.reflect.codec.converter.Converter;
+import de.cubeisland.engine.reflect.exception.ConversionException;
+import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.reflect.node.StringNode;
+
+public class DamageCauseConverter implements Converter<DamageCause>
 {
-    public TravelException()
+    @Override
+    public Node toNode(DamageCause object, ConverterManager manager) throws ConversionException
     {
-        super();
+        return StringNode.of(object.name());
     }
 
-    public TravelException(String message)
+    @Override
+    public DamageCause fromNode(Node node, ConverterManager manager) throws ConversionException
     {
-        super(message);
-    }
-
-    public TravelException(Throwable cause)
-    {
-        super(cause);
-    }
-
-    public TravelException(String message, Throwable cause)
-    {
-        super(message, cause);
+        return DamageCause.valueOf(node.asText());
     }
 }

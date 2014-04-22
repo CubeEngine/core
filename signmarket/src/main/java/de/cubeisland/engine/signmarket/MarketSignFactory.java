@@ -156,7 +156,7 @@ public class MarketSignFactory
                 {
                     continue;
                 }
-                if ((sign.isAdminSign() && other.isAdminSign()) || (!sign.isAdminSign() && sign.getRawOwner().equals(other.getRawOwner()) && sign != other)  // same owner (but not same sign)
+                if (((sign.isAdminSign() && other.isAdminSign()) || (!sign.isAdminSign() && sign.getRawOwner().equals(other.getRawOwner()) && sign != other))  // same owner (but not same sign)
                     && sign.canSync(other)) // both have stock AND same item -> doSync
                 {
                     // apply the found item-info to the marketsign
@@ -173,7 +173,7 @@ public class MarketSignFactory
                     if (itemModel.getKey().longValue() != 0 && itemModel.isNotReferenced())
                     {
                         this.signMarketItemManager.delete(itemModel); // delete if no more referenced
-                        this.module.getLog().debug("{] deleted item-model #{}", sign.isAdminSign() ? "Server" : sign.getOwner().getDisplayName(), sign.getItemInfo().getKey());
+                        this.module.getLog().debug("{} deleted item-model #{}", sign.isAdminSign() ? "Server" : sign.getOwner().getDisplayName(), sign.getItemInfo().getKey());
                     }
                     sign.getItemInfo().updateSignTexts(); // update all signs that use the same itemInfo
                     return;

@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 
 public class BasicContextFactory implements ContextFactory
@@ -93,14 +92,6 @@ public class BasicContextFactory implements ContextFactory
     @Override
     public BasicContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
-        if (rawArgs.length < this.getArgBounds().getMin())
-        {
-            throw new IncorrectUsageException("You've given too few arguments.");
-        }
-        if (this.getArgBounds().getMax() > ArgBounds.NO_MAX && rawArgs.length > this.getArgBounds().getMax())
-        {
-            throw new IncorrectUsageException("You've given too many arguments.");
-        }
         return new BasicContext(command, sender, labels, new LinkedList<>(Arrays.asList(rawArgs)));
     }
 
@@ -114,5 +105,11 @@ public class BasicContextFactory implements ContextFactory
     public CommandContext parse(CubeCommand command, CommandContext context)
     {
         return new BasicContext(command, context.getSender(), context.getLabels(), context.getArgs());
+    }
+
+    @Override
+    public void calculateArgBounds()
+    {
+        this.bounds = new ArgBounds(new ArrayList<>(this.indexedMap.values()));
     }
 }

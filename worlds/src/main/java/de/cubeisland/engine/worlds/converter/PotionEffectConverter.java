@@ -61,7 +61,7 @@ public class PotionEffectConverter implements Converter<PotionEffect>
                 PotionEffectType byName = PotionEffectType.getByName(type.asText());
                 if (byName != null)
                 {
-                    return new PotionEffect(byName, ((IntNode)duration).getValue(), ((IntNode)amplifier).getValue(), ambient.getValue() == 1);
+                    return new PotionEffect(byName, ((IntNode)duration).getValue(), ((IntNode)amplifier).getValue(), ((ByteNode)ambient).getValue() == 1);
                 }
                 else
                 {

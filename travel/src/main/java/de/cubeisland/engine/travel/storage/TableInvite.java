@@ -43,7 +43,8 @@ public class TableInvite extends Table<TeleportInvite>
     public final TableField<TeleportInvite, UInteger> USERKEY = createField("userkey", U_INTEGER.nullable(false), this);
 
     @Override
-    public Class<TeleportInvite> getRecordType() {
+    public Class<TeleportInvite> getRecordType()
+    {
         return TeleportInvite.class;
     }
 }

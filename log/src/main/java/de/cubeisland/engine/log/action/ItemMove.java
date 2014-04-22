@@ -54,7 +54,7 @@ public class ItemMove extends BaseAction
     {
         int count = this.countAttached();
         return user.getTranslationN(POSITIVE, count, "Moved {1:name#item} {name#direction}",
-                                    "Moved {2:count} items {name#direction}", this.direction.name(),
+                                    "Moved {2:amount} items {name#direction}", this.direction.name(),
                                     this.item.getType().name(), count);
         // TODO from invType to invType
         // TODO separate for entity containers with uuid to be able to track position

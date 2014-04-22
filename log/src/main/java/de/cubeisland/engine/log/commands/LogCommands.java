@@ -110,8 +110,8 @@ public class LogCommands extends ContainerCommand
         else
         {
             context.sendTranslated(POSITIVE, "{integer} logs are currently queued!", size);
-            this.module.getLogManager().getQueryManager().logStatus();
         }
+        this.module.getLogManager().getQueryManager().logStatus();
     }
 
     private Material matchType(String type, boolean block)// or item

@@ -43,6 +43,8 @@ import org.joda.time.Duration;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+
 /**
  * A Kit of Items a User can receive
  */
@@ -90,7 +92,7 @@ public class Kit
         {
             if (!this.getPermission().isAuthorized(sender))
             {
-                throw new PermissionDeniedException("You are not allowed to give this kit.", getPermission());
+                throw new PermissionDeniedException(sender.getTranslation(NEGATIVE, "You are not allowed to give this kit."), getPermission());
             }
         }
         if (!force)
