@@ -29,7 +29,7 @@ public class Customcommands extends Module
         this.config = this.loadConfig(CustomCommandsConfig.class);
         this.getLog().info("Test");
 
-        if (this.config.commands != null && this.config.commands.size() > 0)
+        if (this.config.commands.size() > 0)
         {
             this.getCore().getEventManager().registerListener(this, new CustomCommandsListener(this));
             this.getLog().info("CustomCommandsListener registered!");

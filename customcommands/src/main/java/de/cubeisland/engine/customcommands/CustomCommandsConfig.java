@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.customcommands;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
@@ -25,5 +26,5 @@ import de.cubeisland.engine.reflect.annotations.Name;
 @SuppressWarnings("all")
 public class CustomCommandsConfig extends ReflectedYaml
 {
-    Map<String, String> commands;
+    public Map<String, String> commands = new HashMap<>();
 }
