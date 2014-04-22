@@ -19,7 +19,7 @@ package de.cubeisland.engine.customcommands;
 
 import de.cubeisland.engine.core.module.Module;
 
-public class CustomCommands extends Module
+public class Customcommands extends Module
 {
     private CustomCommandsConfig config;
 
@@ -27,10 +27,17 @@ public class CustomCommands extends Module
     public void onEnable()
     {
         this.config = this.loadConfig(CustomCommandsConfig.class);
-        if (this.config.commands.size() > 0)
+        this.getLog().info("Test");
+
+        if (this.config.commands != null && this.config.commands.size() > 0)
         {
             this.getCore().getEventManager().registerListener(this, new CustomCommandsListener(this));
+            this.getLog().info("CustomCommandsListener registered!");
         }
-        //this.getCore().getFileManager().dropResources(FlyResource.values());
+    }
+
+    public CustomCommandsConfig getConfig()
+    {
+        return config;
     }
 }

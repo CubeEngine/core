@@ -17,119 +17,40 @@
  */
 package de.cubeisland.engine.customcommands;
 
-import java.util.HashMap;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-
-import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.task.Task;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserManager;
-
-import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class CustomCommandsListener implements Listener
 {
-    private final UserManager usermanager;
-    private final HashMap<Player, Task> tasks = new HashMap<>();
-    private final CustomCommands customCommands;
-    private final Location helperLocation = new Location(null, 0, 0, 0);
+    private final Customcommands customcommands;
 
-    private final Permission FLY_FEATHER;
-
-    public CustomCommandsListener(CustomCommands customCommands)
+    public CustomCommandsListener(Customcommands customcommands)
     {
-        this.FLY_FEATHER = fly.getBasePermission().child("feather");
-        fly.getCore().getPermissionManager().registerPermission(fly,FLY_FEATHER);
-        this.customCommands = customCommands;
-        this.usermanager = fly.getCore().getUserManager();
+        this.customcommands = customcommands;
     }
 
     @EventHandler
-    public void playerInteract(final PlayerInteractEvent event)
+    public void onChat(AsyncPlayerChatEvent event)
     {
-        final Player player = event.getPlayer();
-        if (!(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)))
-        {
-            return;
-        }
-        if (!player.getItemInHand().getType().equals(Material.FEATHER))
-        {
-            return;
-        }
-        User user = usermanager.getExactUser(player.getUniqueId());
-        if (user == null)//User does not exist
-        {
-            return;
-        }
+        String message = event.getMessage();
 
-        if (!FLY_FEATHER.isAuthorized(player))
+        while (message.contains("!"))
         {
-            user.sendTranslated(NEGATIVE, "You dont have permission to use this!");
-            player.setAllowFlight(false); //Disable when player is flying
-            return;
+            message = message.substring(message.indexOf("!"));
+            event.getPlayer().sendMessage(processCommand(message));
         }
+    }
 
-        FlyStartEvent flyStartEvent = new FlyStartEvent(fly.getCore(), user);
-        if (flyStartEvent.isCancelled())
+    private String processCommand(String message)
+    {
+        String command = message.substring(0, message.indexOf(" "));
+
+        if (command != null)
         {
-            user.sendTranslated(NEGATIVE, "You are not allowed to fly now!");
-            player.setAllowFlight(false); //Disable when player is flying
-            return;
+            String text = customcommands.getConfig().commands.get(command);
+            return text;
         }
-        //I Believe I Can Fly ...     
-        player.setAllowFlight(!player.getAllowFlight());
-        if (player.getAllowFlight())
-        {
-            final ItemStack feather = new ItemStack(Material.FEATHER, 1);
-            player.getInventory().removeItem(feather);
-            player.setVelocity(player.getVelocity().setY(player.getVelocity().getY() + 1));
-            player.teleport(player.getLocation(this.helperLocation).add(new Vector(0, 0.05, 0))); //make sure the player stays flying
-            player.setFlying(true);
-            user.sendTranslated(POSITIVE, "You can now fly!");
-            Task flymore = new Task(fly)
-            {
-                public void run()//2 feather/min
-                {
-                    if (!player.isFlying())
-                    {
-                        player.setAllowFlight(false);
-                        this.cancelTask();
-                        return;
-                    }
-                    if (player.isFlying())
-                    {
-                        if (player.getInventory().contains(Material.FEATHER))
-                        {
-                            player.getInventory().removeItem(feather);
-                        }
-                        else
-                        {
-                            player.setAllowFlight(false);
-                            this.cancelTask();
-                        }
-                    }
-                }
-            };
-            flymore.scheduleAsyncRepeatingTask(1000 * 30, 1000 * 30);
-            Task oldTask = this.tasks.put(player, flymore);
-            if (oldTask != null)
-            {
-                oldTask.cancelTask();
-            }
-        }
-        else
-        {//or not
-            player.setFallDistance(0);
-            user.sendTranslated(NEUTRAL, "You cannot fly anymore!");
-        }
+        return null;
     }
 }

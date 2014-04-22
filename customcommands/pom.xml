@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>customcommands</artifactId>
-  <name>Custom Commands</name>
+  <name>CustomCommands</name>
   <version>1.0.0-SNAPSHOT</version>
   <description>module adding custom chat commands</description>
 
