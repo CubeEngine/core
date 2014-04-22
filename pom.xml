@@ -29,6 +29,7 @@
     <module>cubeengine</module>
     <module>fly</module>
     <module>conomy</module>
+    <module>customcommands</module>
     <module>basics</module>
     <module>fun</module>
     <module>log</module>
