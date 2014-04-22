@@ -37,19 +37,26 @@ public class CustomCommandsListener implements Listener
 
         while (message.contains("!"))
         {
-            message = message.substring(message.indexOf("!"));
+            message = message.substring(message.indexOf("!") + 1);
             event.getPlayer().sendMessage(processCommand(message));
         }
     }
 
     private String processCommand(String message)
     {
-        String command = message.substring(0, message.indexOf(" "));
+        String command;
+        if (message.contains(" "))
+        {
+            command = message.substring(0, message.indexOf(" "));
+        }
+        else
+        {
+            command = message;
+        }
 
         if (command != null)
         {
-            String text = customcommands.getConfig().commands.get(command);
-            return text;
+            return customcommands.getConfig().commands.get(command);
         }
         return null;
     }
