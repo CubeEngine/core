@@ -17,47 +17,87 @@
  */
 package de.cubeisland.engine.customcommands;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
+import de.cubeisland.engine.core.util.StringUtils;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static java.util.Locale.ENGLISH;
+
 public class CustomCommandsListener implements Listener
 {
     private final Customcommands customcommands;
+    private final CustomCommandsConfig config;
 
     public CustomCommandsListener(Customcommands customcommands)
     {
         this.customcommands = customcommands;
+        this.config = this.customcommands.getConfig();
     }
 
     @EventHandler
     public void onChat(ServerCommandEvent event)
     {
-        String message = event.getCommand();
-        List<String> commands = customcommands.processMessage(message);
+        List<String> messages = this.processMessage(event.getCommand());
 
-        for (String command : commands)
-        {
-            event.getSender().sendMessage(command);
-        }
+        sendMessages(messages, event);
     }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event)
     {
-        String message = event.getMessage();
-        List<String> commands = customcommands.processMessage(message);
+        List<String> messages = this.processMessage(event.getMessage());
 
-        for (String command : commands)
+        sendMessages(messages, event);
+    }
+
+    private List<String> processMessage(String message)
+    {
+        String[] commands;
+        List<String> messages = new ArrayList<>();
+
+        if (message.contains("!"))
         {
-            event.getPlayer().sendMessage(command);
-            if (this.customcommands.getConfig().surpressMessage)
+            commands = StringUtils.explode("!", message.substring(message.indexOf("!")), false);
+
+            for (String command : commands)
             {
-                event.setCancelled(true);
+                command = command.toLowerCase(ENGLISH);
+                int indexOfSpace = command.indexOf(" ");
+
+                if (indexOfSpace > -1)
+                {
+                    command = command.substring(0, indexOfSpace);
+                }
+
+                command = config.commands.get(command);
+                if (command == null || "".equals(command))
+                {
+                    continue;
+                }
+
+                messages.add(command);
             }
+        }
+        return messages;
+    }
+    private void sendMessages(List<String> messages, Event event)
+    {
+        for (String message : messages)
+        {
+            customcommands.getCore().getUserManager().broadcastMessage(NONE, message);
+        }
+        if (config.surpressMessage && event instanceof Cancellable)
+        {
+            ((Cancellable)event).setCancelled(true);
         }
     }
 }
