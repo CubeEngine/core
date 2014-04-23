@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
 
@@ -32,13 +33,12 @@ public class Customcommands extends Module
     public void onEnable()
     {
         this.config = this.loadConfig(CustomCommandsConfig.class);
-        this.getLog().info("Test");
 
         if (this.config.commands.size() > 0)
         {
             this.getCore().getEventManager().registerListener(this, new CustomCommandsListener(this));
-            this.getLog().info("CustomCommandsListener registered!");
         }
+        this.getCore().getCommandManager().registerCommands(this, new ManagementCommands(this), ReflectedCommand.class);
     }
 
     public CustomCommandsConfig getConfig()
