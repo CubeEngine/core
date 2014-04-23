@@ -83,7 +83,6 @@ public class ModuleInfo
     {
         name = name.toLowerCase(Locale.US);
         name = name.replaceAll("[^a-z0-9]", "");
-        name = name.replaceAll("^[0-9]]", "");
         return name;
     }
 

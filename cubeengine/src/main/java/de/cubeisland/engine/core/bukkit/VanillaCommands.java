@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.commands;
+package de.cubeisland.engine.core.bukkit;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -402,7 +402,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-    protected static void showSourceVersion(ParameterizedContext context, String sourceVersion)
+    public static void showSourceVersion(ParameterizedContext context, String sourceVersion)
     {
         if (context.hasFlag("s") && sourceVersion != null)
         {
