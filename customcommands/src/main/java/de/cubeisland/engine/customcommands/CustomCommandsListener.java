@@ -56,6 +56,10 @@ public class CustomCommandsListener implements Listener
         for (String command : commands)
         {
             event.getPlayer().sendMessage(command);
+            if (this.customcommands.getConfig().surpressMessage)
+            {
+                event.setCancelled(true);
+            }
         }
     }
 }

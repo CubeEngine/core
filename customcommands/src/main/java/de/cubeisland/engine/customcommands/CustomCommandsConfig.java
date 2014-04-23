@@ -30,6 +30,7 @@ import de.cubeisland.engine.reflect.annotations.Name;
 public class CustomCommandsConfig extends ReflectedYaml
 {
     public HashMap<String, String> commands = new HashMap<>();
+    public boolean surpressMessage;
 
     @Override
     public void onLoaded(File loadedFrom)
