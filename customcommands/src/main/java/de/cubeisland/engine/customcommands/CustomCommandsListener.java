@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.customcommands;
 
+import java.util.List;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -37,38 +39,23 @@ public class CustomCommandsListener implements Listener
     public void onChat(ServerCommandEvent event)
     {
         String message = event.getCommand();
-        String[] commands;
+        List<String> commands = customcommands.processMessage(message);
 
-        if (message.contains("!"))
+        for (String command : commands)
         {
-            commands = StringUtils.explode("!", message.substring(message.indexOf("!")));
-
-            for (String command : commands)
-            {
-                String processedCommand = processCommand(command);
-                if (processedCommand != "")
-                {
-                    event.getSender().sendMessage(processedCommand);
-                }
-            }
+            event.getSender().sendMessage(command);
         }
     }
 
-    private String processCommand(String message)
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event)
     {
-        String command = message;
-        int indexOfSpace = message.indexOf(" ");
+        String message = event.getMessage();
+        List<String> commands = customcommands.processMessage(message);
 
-        if (indexOfSpace > -1)
+        for (String command : commands)
         {
-            command = message.substring(0, indexOfSpace);
+            event.getPlayer().sendMessage(command);
         }
-
-        command = customcommands.getConfig().commands.get(command);
-        if (command != null)
-        {
-            return command;
-        }
-        return "";
     }
 }
