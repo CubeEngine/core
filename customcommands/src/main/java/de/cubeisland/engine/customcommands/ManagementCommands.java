@@ -53,7 +53,7 @@ public class ManagementCommands extends ContainerCommand
         {
             if (context.hasFlag("force"))
             {
-                config.commands.replace(name, message);
+                config.commands.put(name, message);
                 context.sendTranslated(POSITIVE, "Custom command {input} has successfully been replaced.", "!" + name);
             }
             else
