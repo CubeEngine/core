@@ -48,11 +48,10 @@ public class ManagementCommands extends ContainerCommand
     {
         String name = context.getString(0);
         String message = context.getStrings(1);
-        boolean force = context.hasFlag("force");
 
         if (config.commands.containsKey(name))
         {
-            if (force)
+            if (context.hasFlag("force"))
             {
                 config.commands.replace(name, message);
                 context.sendTranslated(POSITIVE, "Custom command {input} has successfully been replaced.", "!" + name);

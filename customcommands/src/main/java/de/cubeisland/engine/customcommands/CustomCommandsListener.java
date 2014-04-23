@@ -67,7 +67,7 @@ public class CustomCommandsListener implements Listener
             ((Cancellable)event).setCancelled(true);
         }
     }
-    
+
     private List<String> processMessage(String message)
     {
         String[] commands;
