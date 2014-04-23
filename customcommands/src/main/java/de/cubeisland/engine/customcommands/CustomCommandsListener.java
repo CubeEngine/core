@@ -46,19 +46,28 @@ public class CustomCommandsListener implements Listener
     @EventHandler
     public void onChat(ServerCommandEvent event)
     {
-        List<String> messages = this.processMessage(event.getCommand());
-
-        sendMessages(messages, event);
+        handleMessages(event.getCommand(), event);
     }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event)
     {
-        List<String> messages = this.processMessage(event.getMessage());
-
-        sendMessages(messages, event);
+        handleMessages(event.getMessage(), event);
     }
 
+    private void handleMessages(String message, Event event)
+    {
+        List<String> messages = processMessage(message);
+        for (String currMessage : messages)
+        {
+            customcommands.getCore().getUserManager().broadcastMessage(NONE, currMessage);
+        }
+        if (config.surpressMessage && event instanceof Cancellable)
+        {
+            ((Cancellable)event).setCancelled(true);
+        }
+    }
+    
     private List<String> processMessage(String message)
     {
         String[] commands;
@@ -88,16 +97,5 @@ public class CustomCommandsListener implements Listener
             }
         }
         return messages;
-    }
-    private void sendMessages(List<String> messages, Event event)
-    {
-        for (String message : messages)
-        {
-            customcommands.getCore().getUserManager().broadcastMessage(NONE, message);
-        }
-        if (config.surpressMessage && event instanceof Cancellable)
-        {
-            ((Cancellable)event).setCancelled(true);
-        }
     }
 }
