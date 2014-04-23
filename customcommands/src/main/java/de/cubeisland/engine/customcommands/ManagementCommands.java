@@ -41,11 +41,9 @@ public class ManagementCommands extends ContainerCommand
     }
 
     @Command(desc = "Adds a custom chat command.",
-             indexed = {
-                 @Grouped(@Indexed("name")),
-                 @Grouped(value = @Indexed("message"), greedy = true)
-             },
-            flags = @Flag(name = "force"))
+             indexed = {@Grouped(@Indexed("name")),
+                        @Grouped(value = @Indexed("message"), greedy = true)},
+             flags = @Flag(name = "force"))
     public void add(ParameterizedContext context)
     {
         String name = context.getString(0);
