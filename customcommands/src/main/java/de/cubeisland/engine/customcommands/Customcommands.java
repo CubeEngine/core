@@ -19,11 +19,11 @@ package de.cubeisland.engine.customcommands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
+
+import static java.util.Locale.ENGLISH;
 
 public class Customcommands extends Module
 {
@@ -57,8 +57,8 @@ public class Customcommands extends Module
 
             for (String command : commands)
             {
-                String processedCommand = this.processCommand(command.toLowerCase(Locale.ENGLISH));
-                if (!processedCommand.equals(""))
+                String processedCommand = this.processCommand(command.toLowerCase(ENGLISH));
+                if (!"".equals(processedCommand))
                 {
 
                     messages.add(processedCommand);

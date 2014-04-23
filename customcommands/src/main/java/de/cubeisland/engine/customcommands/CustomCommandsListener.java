@@ -24,8 +24,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
-import de.cubeisland.engine.core.util.StringUtils;
-
 public class CustomCommandsListener implements Listener
 {
     private final Customcommands customcommands;

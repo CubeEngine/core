@@ -19,12 +19,11 @@ package de.cubeisland.engine.customcommands;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
-import de.cubeisland.engine.reflect.annotations.Name;
+
+import static java.util.Locale.ENGLISH;
 
 @SuppressWarnings("all")
 public class CustomCommandsConfig extends ReflectedYaml
@@ -35,13 +34,11 @@ public class CustomCommandsConfig extends ReflectedYaml
     @Override
     public void onLoaded(File loadedFrom)
     {
-        super.onLoaded(loadedFrom);
-
         HashMap<String, String> dummyMap = new HashMap<>();
 
         for(Entry<String, String> entry : commands.entrySet())
         {
-            dummyMap.put(entry.getKey().toLowerCase(Locale.ENGLISH), entry.getValue());
+            dummyMap.put(entry.getKey().toLowerCase(ENGLISH), entry.getValue());
         }
 
         commands = dummyMap;

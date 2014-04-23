@@ -17,15 +17,16 @@
  */
 package de.cubeisland.engine.customcommands;
 
-import java.util.Locale;
-
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
-import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static java.util.Locale.ENGLISH;
 
 public class ManagementCommands extends ContainerCommand
 {
@@ -56,18 +57,18 @@ public class ManagementCommands extends ContainerCommand
             if (force)
             {
                 config.commands.replace(name, message);
-                context.sendTranslated(MessageType.POSITIVE, "Custom command {input} has successfully been replaced.", "!" + name);
+                context.sendTranslated(POSITIVE, "Custom command {input} has successfully been replaced.", "!" + name);
             }
             else
             {
-                context.sendTranslated(MessageType.NEGATIVE, "Custom command {input} already exists. Set the flag {text:-force} if you want to replace the message.", "!" + name);
+                context.sendTranslated(NEGATIVE, "Custom command {input} already exists. Set the flag {text:-force} if you want to replace the message.", "!" + name);
                 return;
             }
         }
         else
         {
-            config.commands.put(name.toLowerCase(Locale.ENGLISH), message);
-            context.sendTranslated(MessageType.POSITIVE, "Custom command {input} has successfully been added.", "!" + name);
+            config.commands.put(name.toLowerCase(ENGLISH), message);
+            context.sendTranslated(POSITIVE, "Custom command {input} has successfully been added.", "!" + name);
         }
         config.save();
     }
@@ -80,14 +81,14 @@ public class ManagementCommands extends ContainerCommand
 
         if (config.commands.containsKey(name))
         {
-            config.commands.remove(name.toLowerCase(Locale.ENGLISH));
+            config.commands.remove(name.toLowerCase(ENGLISH));
             config.save();
 
-            context.sendTranslated(MessageType.POSITIVE, "Custom command {input} has successfully been deleted.", "!" + name);
+            context.sendTranslated(POSITIVE, "Custom command {input} has successfully been deleted.", "!" + name);
         }
         else
         {
-            context.sendTranslated(MessageType.NEGATIVE, "Custom command {input} has not been found.", "!" + name);
+            context.sendTranslated(NEGATIVE, "Custom command {input} has not been found.", "!" + name);
         }
     }
 }
