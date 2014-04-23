@@ -19,8 +19,8 @@ package de.cubeisland.cubeengine.core.command.result.paginated;
 
 import java.util.List;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandResult;
 
 public class PaginatedResult implements CommandResult
 {

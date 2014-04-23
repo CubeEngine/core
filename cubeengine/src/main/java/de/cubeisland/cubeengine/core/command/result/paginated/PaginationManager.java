@@ -20,12 +20,12 @@ package de.cubeisland.cubeengine.core.command.result.paginated;
 import java.util.Arrays;
 import java.util.List;
 
-import de.cubeisland.cubeengine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.CommandSender;
 
 public class PaginationManager
 {
-    public static final String HEADER = "----------Page %d----------";
-    public static final String FOOTER = "--/prev - Page %d - /next--";
+    public static final String HEADER = "----------Page {integer}----------";
+    public static final String FOOTER = "--/prev - Page {integer} - /next--";
     public static final String CARET = " - ";
     public static final int LINES_PER_PAGE = 5;
 

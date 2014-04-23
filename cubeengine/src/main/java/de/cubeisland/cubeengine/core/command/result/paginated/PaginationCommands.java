@@ -17,10 +17,12 @@
  */
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
-import de.cubeisland.cubeengine.core.command.CommandContext;
-import de.cubeisland.cubeengine.core.command.CommandHolder;
-import de.cubeisland.cubeengine.core.command.CubeCommand;
-import de.cubeisland.cubeengine.core.command.reflected.ReflectedCommand;
+
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandHolder;
+import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class PaginationCommands implements CommandHolder
 {
@@ -35,29 +37,29 @@ public class PaginationCommands implements CommandHolder
     {
         if (!this.pgManager.hasResult(context.getSender()))
         {
-            context.sendTranslated("&cYou don't have any results to show!");
+            context.sendTranslated(MessageType.NEGATIVE, "You don't have any results to show!");
             return;
         }
-        context.sendTranslated(PaginationManager.HEADER);
+        context.sendTranslated(MessageType.NONE, PaginationManager.HEADER);
         for (String line : pgManager.getNextPage(context.getSender()))
         {
             context.sendMessage(line);
         }
-        context.sendTranslated(PaginationManager.FOOTER);
+        context.sendTranslated(MessageType.NONE, PaginationManager.FOOTER);
     }
 
     public void prev(CommandContext context)
     {
         if (!this.pgManager.hasResult(context.getSender()))
         {
-            context.sendTranslated("&cYou don't have any results to show!");
+            context.sendTranslated(MessageType.NEGATIVE, "You don't have any results to show!");
             return;
         }
-        context.sendTranslated(PaginationManager.HEADER);
+        context.sendTranslated(MessageType.NONE, PaginationManager.HEADER);
         for (String line : pgManager.getPrevPage(context.getSender()))
         {
             context.sendMessage(line);
         }
-        context.sendTranslated(PaginationManager.FOOTER);
+        context.sendTranslated(MessageType.NONE, PaginationManager.FOOTER);
     }
 }
