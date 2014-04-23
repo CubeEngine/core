@@ -19,6 +19,7 @@ package de.cubeisland.engine.customcommands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -52,12 +53,12 @@ public class Customcommands extends Module
 
         if (message.contains("!"))
         {
-            commands = StringUtils.explode("!", message.substring(message.indexOf("!")));
+            commands = StringUtils.explode("!", message.substring(message.indexOf("!")), false);
 
             for (String command : commands)
             {
-                String processedCommand = this.processCommand(command);
-                if (processedCommand != "")
+                String processedCommand = this.processCommand(command.toLowerCase(Locale.ENGLISH));
+                if (!processedCommand.equals(""))
                 {
 
                     messages.add(processedCommand);

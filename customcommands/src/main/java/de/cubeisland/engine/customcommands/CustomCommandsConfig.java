@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.customcommands;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,9 +32,9 @@ public class CustomCommandsConfig extends ReflectedYaml
     public HashMap<String, String> commands = new HashMap<>();
 
     @Override
-    public void onLoad()
+    public void onLoaded(File loadedFrom)
     {
-        super.onLoad();
+        super.onLoaded(loadedFrom);
 
         HashMap<String, String> dummyMap = new HashMap<>();
 
