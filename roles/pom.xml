@@ -4,23 +4,19 @@
   <parent>
     <groupId>de.cubeisland.engine</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.0</version>
-    <relativePath>../parent/pom.xml</relativePath>
+    <version>1</version>
+    <relativePath/>
   </parent>
 
   <artifactId>roles</artifactId>
   <name>Roles</name>
   <version>1.0.0-SNAPSHOT</version>
-  <description>This modules assigns permissions based on roles.</description>
+  <description>This module assigns permissions based on roles.</description>
 
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>cubeengine</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>basics</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <type>jar</type>
       <scope>provided</scope>
