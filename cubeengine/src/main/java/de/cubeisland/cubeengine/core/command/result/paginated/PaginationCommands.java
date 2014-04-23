@@ -18,15 +18,25 @@
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
 
+import java.util.List;
+
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+
 public class PaginationCommands implements CommandHolder
 {
     private PaginationManager pgManager;
+
+    public PaginationCommands(PaginationManager pgManager)
+    {
+        this.pgManager = pgManager;
+    }
 
     public Class<? extends CubeCommand> getCommandType()
     {
@@ -35,31 +45,26 @@ public class PaginationCommands implements CommandHolder
 
     public void next(CommandContext context)
     {
-        if (!this.pgManager.hasResult(context.getSender()))
-        {
-            context.sendTranslated(MessageType.NEGATIVE, "You don't have any results to show!");
-            return;
-        }
-        context.sendTranslated(MessageType.NONE, PaginationManager.HEADER);
-        for (String line : pgManager.getNextPage(context.getSender()))
-        {
-            context.sendMessage(line);
-        }
-        context.sendTranslated(MessageType.NONE, PaginationManager.FOOTER);
+        showPage(context, pgManager.getNextPage(context.getSender()));
     }
 
     public void prev(CommandContext context)
     {
+        showPage(context, pgManager.getPrevPage(context.getSender()));
+    }
+
+    private void showPage(CommandContext context, List<String> lines)
+    {
         if (!this.pgManager.hasResult(context.getSender()))
         {
-            context.sendTranslated(MessageType.NEGATIVE, "You don't have any results to show!");
+            context.sendTranslated(NEGATIVE, "You don't have any results to show!");
             return;
         }
-        context.sendTranslated(MessageType.NONE, PaginationManager.HEADER);
-        for (String line : pgManager.getPrevPage(context.getSender()))
+        context.sendTranslated(NONE, PaginationManager.HEADER);
+        for (String line : lines)
         {
             context.sendMessage(line);
         }
-        context.sendTranslated(MessageType.NONE, PaginationManager.FOOTER);
+        context.sendTranslated(NONE, PaginationManager.FOOTER);
     }
 }

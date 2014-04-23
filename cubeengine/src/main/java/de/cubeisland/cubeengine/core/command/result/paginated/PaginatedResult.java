@@ -25,19 +25,22 @@ import de.cubeisland.engine.core.command.CommandResult;
 public class PaginatedResult implements CommandResult
 {
     private final CommandContext context;
-    private final List<Object> lines;
+    private final List<String> lines;
 
-    public PaginatedResult(CommandContext context, List<Object> lines)
+    public PaginatedResult(CommandContext context, List<String> lines)
     {
         this.context = context;
         this.lines = lines;
 
-        context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
+        // context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
     }
 
     @Override
     public void show(CommandContext context)
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        for(String line : lines)
+        {
+            context.sendMessage(line);
+        }
     }
 }
