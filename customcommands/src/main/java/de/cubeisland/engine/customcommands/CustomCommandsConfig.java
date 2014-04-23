@@ -18,7 +18,9 @@
 package de.cubeisland.engine.customcommands;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Name;
@@ -26,5 +28,20 @@ import de.cubeisland.engine.reflect.annotations.Name;
 @SuppressWarnings("all")
 public class CustomCommandsConfig extends ReflectedYaml
 {
-    public Map<String, String> commands = new HashMap<>();
+    public HashMap<String, String> commands = new HashMap<>();
+
+    @Override
+    public void onLoad()
+    {
+        super.onLoad();
+
+        HashMap<String, String> dummyMap = new HashMap<>();
+
+        for(Entry<String, String> entry : commands.entrySet())
+        {
+            dummyMap.put(entry.getKey().toLowerCase(Locale.ENGLISH), entry.getValue());
+        }
+
+        commands = dummyMap;
+    }
 }

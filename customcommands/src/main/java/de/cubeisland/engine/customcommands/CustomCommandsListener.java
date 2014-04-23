@@ -20,6 +20,9 @@ package de.cubeisland.engine.customcommands;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.server.ServerCommandEvent;
+
+import de.cubeisland.engine.core.util.StringUtils;
 
 public class CustomCommandsListener implements Listener
 {
@@ -31,33 +34,41 @@ public class CustomCommandsListener implements Listener
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event)
+    public void onChat(ServerCommandEvent event)
     {
-        String message = event.getMessage();
+        String message = event.getCommand();
+        String[] commands;
 
-        while (message.contains("!"))
+        if (message.contains("!"))
         {
-            message = message.substring(message.indexOf("!") + 1);
-            event.getPlayer().sendMessage(processCommand(message));
+            commands = StringUtils.explode("!", message.substring(message.indexOf("!")));
+
+            for (String command : commands)
+            {
+                String processedCommand = processCommand(command);
+                if (processedCommand != "")
+                {
+                    event.getSender().sendMessage(processedCommand);
+                }
+            }
         }
     }
 
     private String processCommand(String message)
     {
-        String command;
-        if (message.contains(" "))
+        String command = message;
+        int indexOfSpace = message.indexOf(" ");
+
+        if (indexOfSpace > -1)
         {
-            command = message.substring(0, message.indexOf(" "));
-        }
-        else
-        {
-            command = message;
+            command = message.substring(0, indexOfSpace);
         }
 
+        command = customcommands.getConfig().commands.get(command);
         if (command != null)
         {
-            return customcommands.getConfig().commands.get(command);
+            return command;
         }
-        return null;
+        return "";
     }
 }
