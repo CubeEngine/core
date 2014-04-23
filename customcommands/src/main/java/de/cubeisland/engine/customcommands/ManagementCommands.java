@@ -17,27 +17,77 @@
  */
 package de.cubeisland.engine.customcommands;
 
+import java.util.Locale;
+
+import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class ManagementCommands
 {
     private final Customcommands module;
+    private final CustomCommandsConfig config;
 
     public ManagementCommands(Customcommands module)
     {
         this.module = module;
+        this.config = module.getConfig();
     }
 
-    @Command(desc = "Add a custom chat command to the module config.",
+    @Command(desc = "Adds a custom chat command.",
              indexed = {
                  @Grouped(@Indexed("name")),
                  @Grouped(value = @Indexed("message"), greedy = true)
-             })
+             },
+            flags = @Flag(name = "force"))
     public void add(ParameterizedContext context)
     {
+        String name = context.getString(0);
+        String message = context.getStrings(1);
+        boolean force = context.hasFlag("force");
+
+        if (config.commands.containsKey(name))
+        {
+            if (force)
+            {
+                config.commands.replace(name, message);
+                context.sendTranslated(MessageType.POSITIVE, "Custom command !{input} has successfully been replaced.", name);
+            }
+            else
+            {
+                context.sendTranslated(MessageType.POSITIVE, "Custom command !{input} already exists. Set the flag '-force' if you want to replace the message.", name);
+                return;
+            }
+        }
+        else
+        {
+            config.commands.put(name.toLowerCase(Locale.ENGLISH), message);
+            context.sendTranslated(MessageType.POSITIVE, "Custom command !{input} has successfully been added.", name);
+        }
+        config.save();
+    }
+
+    @Command(desc = "Deletes a custom chat command.",
+             indexed = @Grouped(@Indexed("name")))
+    public void delete(ParameterizedContext context)
+    {
+        String name = context.getString(0);
+
+        if (config.commands.containsKey(name))
+        {
+            config.commands.remove(name.toLowerCase(Locale.ENGLISH));
+            config.save();
+
+            context.sendTranslated(MessageType.POSITIVE, "Custom command !{input} has successfully been deleted.", name);
+        }
+        else
+        {
+            context.sendTranslated(MessageType.POSITIVE, "Custom command !{input} has not been found.", name);
+        }
+
 
     }
 }
