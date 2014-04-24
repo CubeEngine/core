@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 
 import de.cubeisland.engine.core.command.ArgumentReader;
@@ -27,14 +29,14 @@ public class FloatReader extends ArgumentReader
     @Override
     public Float read(String arg, Locale locale) throws InvalidArgumentException
     {
-        String num = arg.replaceFirst("\\D", ".").replaceAll("[^\\d\\.]]", "");
         try
         {
-            return Float.parseFloat(num);
+            NumberFormat format = NumberFormat.getInstance(locale);
+            return format.parse(arg).floatValue();
         }
-        catch (NumberFormatException e)
+        catch (ParseException e)
         {
-            throw new InvalidArgumentException("Could not parse " + arg + " to Float!");
+            throw new InvalidArgumentException("Could not parse {input} to float!", arg);
         }
     }
 }

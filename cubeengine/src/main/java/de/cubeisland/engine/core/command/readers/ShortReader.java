@@ -27,14 +27,13 @@ public class ShortReader extends ArgumentReader
     @Override
     public Short read(String arg, Locale locale) throws InvalidArgumentException
     {
-        String num = arg.replace(',', '.').replace(".", "");
         try
         {
-            return Short.parseShort(num);
+            return Short.parseShort(arg);
         }
         catch (NumberFormatException e)
         {
-            throw new InvalidArgumentException("Could not parse " + arg + "to Integer!");
+            throw new InvalidArgumentException("Could not parse {input} to short!", arg);
         }
     }
 }
