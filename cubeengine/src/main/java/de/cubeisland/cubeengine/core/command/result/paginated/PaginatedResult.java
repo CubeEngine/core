@@ -17,6 +17,7 @@
  */
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.cubeisland.engine.core.command.CommandContext;
@@ -25,22 +26,59 @@ import de.cubeisland.engine.core.command.CommandResult;
 public class PaginatedResult implements CommandResult
 {
     private final CommandContext context;
-    private final List<String> lines;
+    private final PaginationIterator iterator;
+
+    private int pageNumber;
+
+    private final PaginationManager paginationManager;
 
     public PaginatedResult(CommandContext context, List<String> lines)
     {
         this.context = context;
-        this.lines = lines;
+        this.iterator = new StringListIterator(lines);
 
-        // context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
+        pageNumber = 0;
+
+        paginationManager = context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
+    }
+    public PaginatedResult(CommandContext context, PaginationIterator iterator)
+    {
+        this.context = context;
+        this.iterator = iterator;
+
+        pageNumber = 0;
+
+        paginationManager = context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
     }
 
     @Override
     public void show(CommandContext context)
     {
-        for(String line : lines)
+        for(String line : iterator.getPage(pageNumber, PaginationManager.LINES_PER_PAGE))
         {
             context.sendMessage(line);
+        }
+    }
+
+    private class StringListIterator implements PaginationIterator
+    {
+        private List<String> lines;
+
+        public StringListIterator(List<String> lines)
+        {
+            this.lines = lines;
+        }
+
+        @Override
+        public List<String> getPage(int page, int numberOfLines)
+        {
+            int offset = page * numberOfLines;
+            if (offset < lines.size())
+            {
+                int lastItem = Math.min(offset + numberOfLines, lines.size());
+                return lines.subList(offset, lastItem);
+            }
+            return new ArrayList<>();
         }
     }
 }
