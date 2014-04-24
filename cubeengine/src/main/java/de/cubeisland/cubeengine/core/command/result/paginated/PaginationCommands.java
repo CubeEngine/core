@@ -74,7 +74,7 @@ public class PaginationCommands implements CommandHolder
     {
         if (paginationManager.hasResult(context.getSender()))
         {
-            int pageNumber = context.getArg(0, Integer.class);
+            int pageNumber = context.getArg(0, Integer.class) - 1;
             paginationManager.getResult(context.getSender()).showPage(pageNumber);
         }
         else
