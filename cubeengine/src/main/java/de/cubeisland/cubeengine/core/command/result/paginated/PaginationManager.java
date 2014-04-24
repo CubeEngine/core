@@ -38,9 +38,8 @@ public class PaginationManager implements Listener
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
 
-    public PaginationManager(BukkitCore core)
+    public PaginationManager()
     {
-        core.getEventManager().registerListener(core.getModuleManager().getCoreModule(), this);
     }
 
     @EventHandler
