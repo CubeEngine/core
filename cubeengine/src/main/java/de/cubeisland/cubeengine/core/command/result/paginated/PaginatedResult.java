@@ -67,6 +67,10 @@ public class PaginatedResult implements CommandResult
             pageNumber++;
             this.show(this.context);
         }
+        else
+        {
+            context.sendTranslated(NEGATIVE, "You are already at the last page.");
+        }
     }
     public void prevPage()
     {
@@ -74,6 +78,10 @@ public class PaginatedResult implements CommandResult
         {
             pageNumber--;
             this.show(this.context);
+        }
+        else
+        {
+            context.sendTranslated(NEGATIVE, "You are already at page 1.");
         }
     }
 

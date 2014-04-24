@@ -28,8 +28,10 @@ import de.cubeisland.engine.core.command.CommandSender;
 
 public class PaginationManager
 {
-    public static final String HEADER = "----------Page {integer}----------";
-    public static final String FOOTER = "--/prev - Page {integer} - /next--";
+    public static final String HEADER =       "--------- page {integer} / {integer} ---------";
+    public static final String FOOTER =       "- /prev - page {integer} / {integer} - /next -";
+    public static final String FIRST_FOOTER = "--------- page {integer} / {integer} - /next -";
+    public static final String LAST_FOOTER =  "- /prev - page {integer} / {integer} ---------";
     public static final String CARET = " - ";
     public static final int LINES_PER_PAGE = 5;
 
@@ -44,7 +46,6 @@ public class PaginationManager
     public void registerResult(CommandSender sender, PaginatedResult result)
     {
         userCommandMap.put(sender, result);
-        core.getUserManager().
     }
 
     public PaginatedResult getResult(CommandSender sender)
