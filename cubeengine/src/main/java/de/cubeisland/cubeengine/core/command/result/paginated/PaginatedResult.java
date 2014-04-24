@@ -123,17 +123,6 @@ public class PaginatedResult implements CommandResult
         }
 
         @Override
-        public boolean hasNextPage(int page, int numberOfLines)
-        {
-            int offset = (page + 1) * numberOfLines;
-            if (offset < lines.size())
-            {
-                return true;
-            }
-            return false;
-        }
-
-        @Override
         public int pageCount(int numberOfLinesPerPage)
         {
             return (int) Math.ceil((float) lines.size() / (float) numberOfLinesPerPage);
