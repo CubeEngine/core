@@ -74,7 +74,7 @@ public class PaginatedResult implements CommandResult
         }
         else
         {
-            context.sendTranslated(NONE, FOOTER, pageNumber + 1);
+            context.sendTranslated(NONE, FOOTER, pageNumber + 1, pageCount);
         }
     }
 
