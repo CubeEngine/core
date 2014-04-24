@@ -22,42 +22,53 @@ import java.util.List;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.cubeengine.core.command.result.paginated.PaginationManager.*;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class PaginatedResult implements CommandResult
 {
     private final CommandContext context;
     private final PaginationIterator iterator;
 
-    private int pageNumber;
-
-    private final PaginationManager paginationManager;
+    private int pageNumber = 0;
 
     public PaginatedResult(CommandContext context, List<String> lines)
     {
         this.context = context;
         this.iterator = new StringListIterator(lines);
 
-        pageNumber = 0;
-
-        paginationManager = context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
+        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSender(), this);
     }
     public PaginatedResult(CommandContext context, PaginationIterator iterator)
     {
         this.context = context;
         this.iterator = iterator;
 
-        pageNumber = 0;
-
-        paginationManager = context.getCommand().getModule().getCore().getCommandManager().getPaginationManager();
+        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSender(), this);
     }
 
     @Override
     public void show(CommandContext context)
     {
-        for(String line : iterator.getPage(pageNumber, PaginationManager.LINES_PER_PAGE))
+        context.sendTranslated(NONE, HEADER, pageNumber);
+        for(String line : iterator.getPage(pageNumber, LINES_PER_PAGE))
         {
             context.sendMessage(line);
         }
+        context.sendTranslated(NONE, FOOTER, pageNumber);
+    }
+
+    public void nextPage()
+    {
+        pageNumber++;
+        this.show(this.context);
+    }
+    public void prevPage()
+    {
+        pageNumber = ((pageNumber < 1) ? 0 : pageNumber--);
+        this.show(this.context);
     }
 
     private class StringListIterator implements PaginationIterator

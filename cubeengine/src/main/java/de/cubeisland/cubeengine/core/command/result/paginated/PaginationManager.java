@@ -18,8 +18,12 @@
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import de.cubeisland.engine.core.bukkit.BukkitCommandManager;
+import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.command.CommandSender;
 
 public class PaginationManager
@@ -29,23 +33,25 @@ public class PaginationManager
     public static final String CARET = " - ";
     public static final int LINES_PER_PAGE = 5;
 
-    public List<String> getPage(CommandSender sender, int page)
+    private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
+
+    public PaginationManager(BukkitCore core)
     {
-         return Arrays.asList("-");
+        core.getCommandManager().registerCommands(core.getModuleManager().getCoreModule(), new PaginationCommands(this));
     }
 
-    public List<String> getNextPage(CommandSender sender)
+    public void registerResult(CommandSender sender, PaginatedResult result)
     {
-        return getPage(sender, 1);
+        userCommandMap.put(sender, result);
     }
 
-    public List<String> getPrevPage(CommandSender sender)
+    public PaginatedResult getResult(CommandSender sender)
     {
-        return getPage(sender, 0);
+        return userCommandMap.get(sender);
     }
 
     public boolean hasResult(CommandSender sender)
     {
-        return false;
+        return userCommandMap.containsKey(sender);
     }
 }

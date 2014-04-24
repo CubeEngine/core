@@ -17,54 +17,52 @@
  */
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
-
-import java.util.List;
-
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 public class PaginationCommands implements CommandHolder
 {
-    private PaginationManager pgManager;
+    private PaginationManager paginationManager;
 
-    public PaginationCommands(PaginationManager pgManager)
+    public PaginationCommands(PaginationManager paginationManager)
     {
-        this.pgManager = pgManager;
+        this.paginationManager = paginationManager;
     }
 
+    @Override
     public Class<? extends CubeCommand> getCommandType()
     {
         return ReflectedCommand.class;
     }
 
-    public void next(CommandContext context)
+    @Command(desc = "Display the next page of your previous command.")
+    public void nextPage(CommandContext context)
     {
-        showPage(context, pgManager.getNextPage(context.getSender()));
-    }
-
-    public void prev(CommandContext context)
-    {
-        showPage(context, pgManager.getPrevPage(context.getSender()));
-    }
-
-    private void showPage(CommandContext context, List<String> lines)
-    {
-        if (!this.pgManager.hasResult(context.getSender()))
+        if (paginationManager.hasResult(context.getSender()))
+        {
+            paginationManager.getResult(context.getSender()).nextPage();
+        }
+        else
         {
             context.sendTranslated(NEGATIVE, "You don't have any results to show!");
-            return;
         }
-        context.sendTranslated(NONE, PaginationManager.HEADER);
-        for (String line : lines)
+    }
+
+    @Command(desc = "Display the previous page of your previous command.")
+    public void prevPage(CommandContext context)
+    {
+        if (paginationManager.hasResult(context.getSender()))
         {
-            context.sendMessage(line);
+            paginationManager.getResult(context.getSender()).prevPage();
         }
-        context.sendTranslated(NONE, PaginationManager.FOOTER);
+        else
+        {
+            context.sendTranslated(NEGATIVE, "You don't have any results to show!");
+        }
     }
 }

@@ -51,6 +51,7 @@ public class BukkitCommandManager implements CommandManager
     private final ConsoleCommandSender consoleSender;
     private final Log commandLogger;
     private final ConfirmManager confirmManager;
+    private final PaginationManager paginationManager;
 
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
@@ -61,6 +62,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
         // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
+        this.paginationManager = new PaginationManager(core);
     }
 
     public CommandInjector getInjector()
@@ -230,6 +232,6 @@ public class BukkitCommandManager implements CommandManager
     @Override
     public PaginationManager getPaginationManager()
     {
-        return null;
+        return paginationManager;
     }
 }
