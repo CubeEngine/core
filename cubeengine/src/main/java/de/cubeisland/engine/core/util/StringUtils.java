@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 
 /**
@@ -454,6 +455,24 @@ public final class StringUtils
         }
 
         return sb.toString();
+    }
+
+    public static boolean isNumeric(String string)
+    {
+        expectNotNull(string, "The string must not be null!");
+        final int len = string.length();
+        if (len == 0)
+        {
+            return false;
+        }
+        for (int i = 0; i < len; ++i)
+        {
+            if (!Character.isDigit(string.charAt(i)))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static interface ReplaceCallback
