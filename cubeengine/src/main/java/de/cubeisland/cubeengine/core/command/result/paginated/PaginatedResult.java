@@ -62,13 +62,19 @@ public class PaginatedResult implements CommandResult
 
     public void nextPage()
     {
-        pageNumber++;
-        this.show(this.context);
+        if (iterator.hasNextPage(pageNumber, LINES_PER_PAGE))
+        {
+            pageNumber++;
+            this.show(this.context);
+        }
     }
     public void prevPage()
     {
-        pageNumber = ((pageNumber < 1) ? 0 : pageNumber--);
-        this.show(this.context);
+        if (pageNumber > 0)
+        {
+            pageNumber--;
+            this.show(this.context);
+        }
     }
 
     private class StringListIterator implements PaginationIterator
@@ -90,6 +96,17 @@ public class PaginatedResult implements CommandResult
                 return lines.subList(offset, lastItem);
             }
             return new ArrayList<>();
+        }
+
+        @Override
+        public boolean hasNextPage(int page, int numberOfLines)
+        {
+            int offset = page * numberOfLines;
+            if (offset < lines.size())
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

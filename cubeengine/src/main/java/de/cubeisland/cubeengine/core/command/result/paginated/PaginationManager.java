@@ -34,14 +34,17 @@ public class PaginationManager
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
+    private BukkitCore core;
 
-    public PaginationManager()
+    public PaginationManager(BukkitCore core)
     {
+        this.core = core;
     }
 
     public void registerResult(CommandSender sender, PaginatedResult result)
     {
         userCommandMap.put(sender, result);
+        core.getUserManager().
     }
 
     public PaginatedResult getResult(CommandSender sender)
