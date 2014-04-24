@@ -29,10 +29,10 @@ import de.cubeisland.engine.core.command.CommandSender;
 
 public class PaginationManager implements Listener
 {
-    public static final String HEADER =       "--------- page {integer} / {integer} ---------";
-    public static final String FOOTER =       "- /prev - page {integer} / {integer} - /next -";
-    public static final String FIRST_FOOTER = "--------- page {integer} / {integer} - /next -";
-    public static final String LAST_FOOTER =  "- /prev - page {integer} / {integer} ---------";
+    public static final String HEADER =       "--------- page {integer}/{integer} ---------";
+    public static final String FOOTER =       "- /prev - page {integer}/{integer} - /next -";
+    public static final String FIRST_FOOTER = "--------- page {integer}/{integer} - /next -";
+    public static final String LAST_FOOTER =  "- /prev - page {integer}/{integer} ---------";
     public static final String CARET = " - ";
     public static final int LINES_PER_PAGE = 5;
 

@@ -52,12 +52,12 @@ public class PaginatedResult implements CommandResult
     @Override
     public void show(CommandContext context)
     {
-        context.sendTranslated(NONE, HEADER, pageNumber + 1);
+        context.sendTranslated(NONE, HEADER, pageNumber + 1, 0);
         for(String line : iterator.getPage(pageNumber, LINES_PER_PAGE))
         {
             context.sendMessage(line);
         }
-        context.sendTranslated(NONE, FOOTER, pageNumber + 1);
+        context.sendTranslated(NONE, FOOTER, pageNumber + 1, 0);
     }
 
     public void nextPage()
@@ -81,7 +81,7 @@ public class PaginatedResult implements CommandResult
         }
         else
         {
-            context.sendTranslated(NEGATIVE, "You are already at page 1.");
+            context.sendTranslated(NEGATIVE, "You are already at the first page.");
         }
     }
 
@@ -110,7 +110,7 @@ public class PaginatedResult implements CommandResult
         public boolean hasNextPage(int page, int numberOfLines)
         {
             int offset = page * numberOfLines;
-            if (offset < lines.size())
+            if (offset < lines.size() - 1)
             {
                 return true;
             }

@@ -278,8 +278,14 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
         }
-        this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new PaginationCommands(this.commandManager.getPaginationManager()));
-        this.eventManager.registerListener(this.getModuleManager().getCoreModule(), this.commandManager.getPaginationManager());
+        this.addInitHook(new Runnable() {
+            @Override
+            public void run()
+            {
+                commandManager.registerCommands(getModuleManager().getCoreModule(), new PaginationCommands(commandManager.getPaginationManager()));
+                eventManager.registerListener(getModuleManager().getCoreModule(), commandManager.getPaginationManager());
+            }
+        });
 
         this.matcherManager = new Match();
         this.inventoryGuard = new InventoryGuardFactory(this);
