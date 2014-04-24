@@ -17,16 +17,17 @@
  */
 package de.cubeisland.cubeengine.core.command.result.paginated;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import de.cubeisland.engine.core.bukkit.BukkitCommandManager;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.command.CommandSender;
 
-public class PaginationManager
+public class PaginationManager implements Listener
 {
     public static final String HEADER =       "--------- page {integer} / {integer} ---------";
     public static final String FOOTER =       "- /prev - page {integer} / {integer} - /next -";
@@ -36,11 +37,16 @@ public class PaginationManager
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
-    private BukkitCore core;
 
     public PaginationManager(BukkitCore core)
     {
-        this.core = core;
+        core.getEventManager().registerListener(core.getModuleManager().getCoreModule(), this);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event)
+    {
+        userCommandMap.remove(event.getPlayer());
     }
 
     public void registerResult(CommandSender sender, PaginatedResult result)
