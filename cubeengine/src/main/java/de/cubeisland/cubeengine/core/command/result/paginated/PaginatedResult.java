@@ -52,12 +52,12 @@ public class PaginatedResult implements CommandResult
     @Override
     public void show(CommandContext context)
     {
-        context.sendTranslated(NONE, HEADER, pageNumber);
+        context.sendTranslated(NONE, HEADER, pageNumber + 1);
         for(String line : iterator.getPage(pageNumber, LINES_PER_PAGE))
         {
             context.sendMessage(line);
         }
-        context.sendTranslated(NONE, FOOTER, pageNumber);
+        context.sendTranslated(NONE, FOOTER, pageNumber + 1);
     }
 
     public void nextPage()

@@ -41,7 +41,7 @@ public class PaginationCommands implements CommandHolder
     }
 
     @Command(desc = "Display the next page of your previous command.")
-    public void nextPage(CommandContext context)
+    public void next(CommandContext context)
     {
         if (paginationManager.hasResult(context.getSender()))
         {
@@ -54,7 +54,7 @@ public class PaginationCommands implements CommandHolder
     }
 
     @Command(desc = "Display the previous page of your previous command.")
-    public void prevPage(CommandContext context)
+    public void prev(CommandContext context)
     {
         if (paginationManager.hasResult(context.getSender()))
         {
