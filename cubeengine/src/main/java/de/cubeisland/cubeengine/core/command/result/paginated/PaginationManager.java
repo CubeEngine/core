@@ -35,7 +35,6 @@ public class PaginationManager implements Listener
     public static final String FIRST_FOOTER =    "--------- page {integer}/{integer} - /next -";
     public static final String LAST_FOOTER =     "- /prev - page {integer}/{integer} ---------";
     public static final String ONE_PAGE_FOOTER = "--------- page {integer}/{integer} ---------";
-    public static final String CARET = " - ";
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
