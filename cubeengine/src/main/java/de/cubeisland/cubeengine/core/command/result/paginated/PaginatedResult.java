@@ -22,7 +22,6 @@ import java.util.List;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.cubeengine.core.command.result.paginated.PaginationManager.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
