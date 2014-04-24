@@ -80,26 +80,24 @@ public class PaginatedResult implements CommandResult
 
     public void nextPage()
     {
-        if (iterator.hasNextPage(pageNumber, LINES_PER_PAGE))
-        {
-            pageNumber++;
-            this.show(this.context);
-        }
-        else
-        {
-            context.sendTranslated(NEGATIVE, "You are already at the last page.");
-        }
+        showPage(pageNumber++);
     }
+
     public void prevPage()
     {
-        if (pageNumber > 0)
+        showPage(pageNumber--);
+    }
+
+    public void showPage(int pageNumber)
+    {
+        if (pageNumber >= 0 && pageNumber < iterator.pageCount(LINES_PER_PAGE))
         {
-            pageNumber--;
+            this.pageNumber = pageNumber;
             this.show(this.context);
         }
         else
         {
-            context.sendTranslated(NEGATIVE, "You are already at the first page.");
+            context.sendTranslated(NEGATIVE, "The page you want to see is out of bounds.");
         }
     }
 

@@ -21,6 +21,8 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -59,6 +61,21 @@ public class PaginationCommands implements CommandHolder
         if (paginationManager.hasResult(context.getSender()))
         {
             paginationManager.getResult(context.getSender()).prevPage();
+        }
+        else
+        {
+            context.sendTranslated(NEGATIVE, "You don't have any results to show!");
+        }
+    }
+
+    @Command(desc = "Display the given page of your previous command.",
+             indexed = @Grouped(@Indexed("pageNumber")))
+    public void showpage(CommandContext context)
+    {
+        if (paginationManager.hasResult(context.getSender()))
+        {
+            int pageNumber = context.getArg(0, Integer.class);
+            paginationManager.getResult(context.getSender()).showPage(pageNumber);
         }
         else
         {
