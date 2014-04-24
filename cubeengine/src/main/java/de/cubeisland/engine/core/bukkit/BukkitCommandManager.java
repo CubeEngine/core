@@ -62,7 +62,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
         // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
-        this.paginationManager = new PaginationManager();
+        this.paginationManager = new PaginationManager(core);
     }
 
     public CommandInjector getInjector()
