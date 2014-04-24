@@ -35,9 +35,8 @@ public class PaginationManager
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
 
-    public PaginationManager(BukkitCore core)
+    public PaginationManager()
     {
-        core.getCommandManager().registerCommands(core.getModuleManager().getCoreModule(), new PaginationCommands(this));
     }
 
     public void registerResult(CommandSender sender, PaginatedResult result)
