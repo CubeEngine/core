@@ -52,12 +52,31 @@ public class PaginatedResult implements CommandResult
     @Override
     public void show(CommandContext context)
     {
-        context.sendTranslated(NONE, HEADER, pageNumber + 1, 0);
+        int pageCount = iterator.pageCount(LINES_PER_PAGE);
+        context.sendTranslated(NONE, HEADER, pageNumber + 1, pageCount);
         for(String line : iterator.getPage(pageNumber, LINES_PER_PAGE))
         {
             context.sendMessage(line);
         }
-        context.sendTranslated(NONE, FOOTER, pageNumber + 1, 0);
+        if (pageNumber < 1)
+        {
+            if (pageCount == 1)
+            {
+                context.sendTranslated(NONE, ONE_PAGE_FOOTER, pageNumber + 1, pageCount);
+            }
+            else
+            {
+                context.sendTranslated(NONE, FIRST_FOOTER, pageNumber + 1, pageCount);
+            }
+        }
+        else if (pageNumber >= pageCount)
+        {
+            context.sendTranslated(NONE, LAST_FOOTER, pageNumber + 1, pageCount);
+        }
+        else
+        {
+            context.sendTranslated(NONE, FOOTER, pageNumber + 1);
+        }
     }
 
     public void nextPage()
@@ -115,6 +134,12 @@ public class PaginatedResult implements CommandResult
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public int pageCount(int numberOfLinesPerPage)
+        {
+            return (int) Math.ceil((float) lines.size() / (float) numberOfLinesPerPage);
         }
     }
 }

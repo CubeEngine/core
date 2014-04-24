@@ -20,6 +20,7 @@ package de.cubeisland.cubeengine.core.command.result.paginated;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -29,23 +30,26 @@ import de.cubeisland.engine.core.command.CommandSender;
 
 public class PaginationManager implements Listener
 {
-    public static final String HEADER =       "--------- page {integer}/{integer} ---------";
-    public static final String FOOTER =       "- /prev - page {integer}/{integer} - /next -";
-    public static final String FIRST_FOOTER = "--------- page {integer}/{integer} - /next -";
-    public static final String LAST_FOOTER =  "- /prev - page {integer}/{integer} ---------";
+    public static final String HEADER =          "--------- page {integer}/{integer} ---------";
+    public static final String FOOTER =          "- /prev - page {integer}/{integer} - /next -";
+    public static final String FIRST_FOOTER =    "--------- page {integer}/{integer} - /next -";
+    public static final String LAST_FOOTER =     "- /prev - page {integer}/{integer} ---------";
+    public static final String ONE_PAGE_FOOTER = "--------- page {integer}/{integer} ---------";
     public static final String CARET = " - ";
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
+    private BukkitCore core;
 
-    public PaginationManager()
+    public PaginationManager(BukkitCore core)
     {
+        this.core = core;
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        userCommandMap.remove(event.getPlayer());
+        userCommandMap.remove(core.getUserManager().getExactUser(event.getPlayer().getUniqueId()));
     }
 
     public void registerResult(CommandSender sender, PaginatedResult result)

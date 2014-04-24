@@ -23,4 +23,5 @@ public interface PaginationIterator
 {
     public List<String> getPage(int page, int numberOfLines);
     public boolean hasNextPage(int page, int numberOfLines);
+    public int pageCount(int numberOfLinesPerPage);
 }
