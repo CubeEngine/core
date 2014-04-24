@@ -80,12 +80,12 @@ public class PaginatedResult implements CommandResult
 
     public void nextPage()
     {
-        showPage(pageNumber++);
+        showPage(pageNumber + 1);
     }
 
     public void prevPage()
     {
-        showPage(pageNumber--);
+        showPage(pageNumber - 1);
     }
 
     public void showPage(int pageNumber)
