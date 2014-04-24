@@ -24,6 +24,7 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
+import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
@@ -74,8 +75,15 @@ public class PaginationCommands implements CommandHolder
     {
         if (paginationManager.hasResult(context.getSender()))
         {
-            int pageNumber = context.getArg(0, Integer.class) - 1;
-            paginationManager.getResult(context.getSender()).showPage(pageNumber);
+            String pageNumber = context.getString(0);
+            if (StringUtils.isNumeric(pageNumber) && !"".equals(pageNumber))
+            {
+                paginationManager.getResult(context.getSender()).showPage(Integer.parseInt(pageNumber));
+            }
+            else
+            {
+                context.sendTranslated(NEGATIVE, "You have to call the command with an numeric parameter.");
+            }
         }
         else
         {
