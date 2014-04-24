@@ -70,19 +70,19 @@ public class PaginationCommands implements CommandHolder
     }
 
     @Command(desc = "Display the given page of your previous command.",
-             indexed = @Grouped(@Indexed("pageNumber")))
+             indexed = @Grouped(@Indexed(value = "pageNumber", type = int.class)))
     public void showpage(CommandContext context)
     {
         if (paginationManager.hasResult(context.getSender()))
         {
-            String pageNumber = context.getString(0);
-            if (StringUtils.isNumeric(pageNumber) && !"".equals(pageNumber))
+            Integer pageNumber = context.getArg(0, int.class);
+            if (pageNumber != null)
             {
-                paginationManager.getResult(context.getSender()).showPage(Integer.parseInt(pageNumber) - 1);
+                paginationManager.getResult(context.getSender()).showPage(pageNumber - 1);
             }
             else
             {
-                context.sendTranslated(NEGATIVE, "You have to call the command with one numeric parameter.");
+                context.sendTranslated(NEGATIVE, "You have to call the command with a numeric parameter.");
             }
         }
         else
