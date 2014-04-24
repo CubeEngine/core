@@ -78,11 +78,11 @@ public class PaginationCommands implements CommandHolder
             String pageNumber = context.getString(0);
             if (StringUtils.isNumeric(pageNumber) && !"".equals(pageNumber))
             {
-                paginationManager.getResult(context.getSender()).showPage(Integer.parseInt(pageNumber));
+                paginationManager.getResult(context.getSender()).showPage(Integer.parseInt(pageNumber) - 1);
             }
             else
             {
-                context.sendTranslated(NEGATIVE, "You have to call the command with an numeric parameter.");
+                context.sendTranslated(NEGATIVE, "You have to call the command with one numeric parameter.");
             }
         }
         else
