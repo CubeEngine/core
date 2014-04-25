@@ -131,7 +131,7 @@ public class ManagementCommands extends ContainerCommand
                         return lines;
                     }
 
-                    lines.add(entry.getKey() + " -> " + entry.getValue());
+                    lines.add("!" + entry.getKey() + " -> " + entry.getValue());
                 }
             }
             return lines;
