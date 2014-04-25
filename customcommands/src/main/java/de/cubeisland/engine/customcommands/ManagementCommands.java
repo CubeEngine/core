@@ -158,13 +158,13 @@ public class ManagementCommands extends ContainerCommand
         }
     }
 
-    private class CustomCommandCompleter implements Completer
+    public static class CustomCommandCompleter implements Completer
     {
         @Override
         public List<String> complete(ParameterizedTabContext context, String token)
         {
             ArrayList<String> list = new ArrayList<>();
-            for (String item : config.commands.keySet())
+            for (String item : ((Customcommands)context.getCommand().getModule()).getConfig().commands.keySet())
             {
                 if (item.startsWith(token.toLowerCase(ENGLISH)))
                 {
