@@ -18,7 +18,7 @@
 package de.cubeisland.engine.customcommands;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import de.cubeisland.engine.reflect.ReflectedYaml;
@@ -28,13 +28,13 @@ import static java.util.Locale.ENGLISH;
 @SuppressWarnings("all")
 public class CustomCommandsConfig extends ReflectedYaml
 {
-    public HashMap<String, String> commands = new HashMap<>();
+    public LinkedHashMap<String, String> commands = new LinkedHashMap<>();
     public boolean surpressMessage;
 
     @Override
     public void onLoaded(File loadedFrom)
     {
-        HashMap<String, String> dummyMap = new HashMap<>();
+        LinkedHashMap<String, String> dummyMap = new LinkedHashMap<>();
 
         for(Entry<String, String> entry : commands.entrySet())
         {

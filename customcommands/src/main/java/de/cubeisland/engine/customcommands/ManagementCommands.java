@@ -17,14 +17,23 @@
  */
 package de.cubeisland.engine.customcommands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+
+import de.cubeisland.cubeengine.core.command.result.paginated.PaginatedResult;
+import de.cubeisland.cubeengine.core.command.result.paginated.PaginationIterator;
+
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static java.util.Locale.ENGLISH;
 
@@ -86,6 +95,53 @@ public class ManagementCommands extends ContainerCommand
         else
         {
             context.sendTranslated(NEGATIVE, "Custom command {input} has not been found.", "!" + name);
+        }
+    }
+
+    @Command(desc = "Prints out all the custom chat commands.")
+    public PaginatedResult help(ParameterizedContext context)
+    {
+        return new PaginatedResult(context, new CustomCommandIterator());
+    }
+
+    private class CustomCommandIterator implements PaginationIterator
+    {
+
+        @Override
+        public List<String> getPage(int page, int numberOfLines)
+        {
+            int counter = 0;
+            int commandsSize = config.commands.size();
+            int offset = page * numberOfLines;
+
+            ArrayList<String> lines = new ArrayList<>();
+
+            if (offset < commandsSize)
+            {
+                int lastItem = Math.min(offset + numberOfLines, commandsSize);
+
+                for (Entry<String, String> entry : config.commands.entrySet())
+                {
+                    if (counter < offset)
+                    {
+                        counter++;
+                        continue;
+                    }
+                    else if (counter > lastItem)
+                    {
+                        return lines;
+                    }
+
+                    lines.add(entry.getKey() + " -> " + entry.getValue());
+                }
+            }
+            return lines;
+        }
+
+        @Override
+        public int pageCount(int numberOfLinesPerPage)
+        {
+            return (int) Math.ceil((float) config.commands.size() / (float) numberOfLinesPerPage);
         }
     }
 }
