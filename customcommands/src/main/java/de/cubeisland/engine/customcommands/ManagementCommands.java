@@ -24,16 +24,15 @@ import java.util.Map.Entry;
 import de.cubeisland.cubeengine.core.command.result.paginated.PaginatedResult;
 import de.cubeisland.cubeengine.core.command.result.paginated.PaginationIterator;
 
+import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static java.util.Locale.ENGLISH;
 
@@ -99,7 +98,7 @@ public class ManagementCommands extends ContainerCommand
     }
 
     @Command(desc = "Prints out all the custom chat commands.")
-    public PaginatedResult help(ParameterizedContext context)
+    public CommandResult help(ParameterizedContext context)
     {
         return new PaginatedResult(context, new CustomCommandIterator());
     }
