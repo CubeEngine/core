@@ -54,7 +54,8 @@ public class ManagementCommands extends ContainerCommand
              indexed = {@Grouped(@Indexed("name")),
                         @Grouped(value = @Indexed("message"), greedy = true)},
              flags = {@Flag(name = "force", permDefault = TRUE),
-                      @Flag(name = "global")})
+                      @Flag(name = "global")},
+             permDefault = TRUE)
     public void add(ParameterizedContext context)
     {
         String name = context.getString(0);
@@ -83,7 +84,8 @@ public class ManagementCommands extends ContainerCommand
 
     @Command(desc = "Deletes a custom chat command.",
              indexed = @Grouped(@Indexed("name")),
-             flags = @Flag(name = "global"))
+             flags = @Flag(name = "global"),
+             permDefault = TRUE)
     public void delete(ParameterizedContext context)
     {
         String name = context.getString(0);
