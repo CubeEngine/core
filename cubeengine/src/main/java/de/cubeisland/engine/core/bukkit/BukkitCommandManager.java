@@ -23,6 +23,8 @@ import java.util.Map.Entry;
 
 import org.bukkit.command.Command;
 
+import de.cubeisland.cubeengine.core.command.result.paginated.PaginationManager;
+
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
@@ -49,6 +51,7 @@ public class BukkitCommandManager implements CommandManager
     private final ConsoleCommandSender consoleSender;
     private final Log commandLogger;
     private final ConfirmManager confirmManager;
+    private final PaginationManager paginationManager;
 
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
@@ -59,6 +62,7 @@ public class BukkitCommandManager implements CommandManager
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
         // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
+        this.paginationManager = new PaginationManager(core);
     }
 
     public CommandInjector getInjector()
@@ -223,5 +227,11 @@ public class BukkitCommandManager implements CommandManager
     public ConfirmManager getConfirmManager()
     {
         return this.confirmManager;
+    }
+
+    @Override
+    public PaginationManager getPaginationManager()
+    {
+        return paginationManager;
     }
 }

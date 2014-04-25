@@ -43,6 +43,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.cubeisland.cubeengine.core.command.result.paginated.PaginationCommands;
+
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
@@ -276,6 +278,14 @@ public final class BukkitCore extends JavaPlugin implements Core
             this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
             this.commandManager.registerCommand(new WhitelistCommand(this));
         }
+        this.addInitHook(new Runnable() {
+            @Override
+            public void run()
+            {
+                commandManager.registerCommands(getModuleManager().getCoreModule(), new PaginationCommands(commandManager.getPaginationManager()));
+                eventManager.registerListener(getModuleManager().getCoreModule(), commandManager.getPaginationManager());
+            }
+        });
 
         this.matcherManager = new Match();
         this.inventoryGuard = new InventoryGuardFactory(this);

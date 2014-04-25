@@ -15,32 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.customcommands;
+package de.cubeisland.cubeengine.core.command.result.paginated;
 
-import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
+import java.util.List;
 
-import de.cubeisland.engine.reflect.ReflectedYaml;
-
-import static java.util.Locale.ENGLISH;
-
-@SuppressWarnings("all")
-public class CustomCommandsConfig extends ReflectedYaml
+public interface PaginationIterator
 {
-    public LinkedHashMap<String, String> commands = new LinkedHashMap<>();
-    public boolean surpressMessage;
-
-    @Override
-    public void onLoaded(File loadedFrom)
-    {
-        LinkedHashMap<String, String> dummyMap = new LinkedHashMap<>();
-
-        for(Entry<String, String> entry : commands.entrySet())
-        {
-            dummyMap.put(entry.getKey().toLowerCase(ENGLISH), entry.getValue());
-        }
-
-        commands = dummyMap;
-    }
+    public List<String> getPage(int page, int numberOfLines);
+    public int pageCount(int numberOfLinesPerPage);
 }
