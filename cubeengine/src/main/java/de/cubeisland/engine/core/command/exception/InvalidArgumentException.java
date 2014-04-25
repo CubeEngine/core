@@ -19,15 +19,15 @@ package de.cubeisland.engine.core.command.exception;
 
 public class InvalidArgumentException extends CommandException
 {
-    private final String[] args;
+    private final Object[] args;
 
-    public InvalidArgumentException(String message, String... args)
+    public InvalidArgumentException(String message, Object... args)
     {
         super(message);
         this.args = args;
     }
 
-    public String[] getMessageArgs()
+    public Object[] getMessageArgs()
     {
         return args;
     }

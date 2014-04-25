@@ -27,14 +27,13 @@ public class LongReader extends ArgumentReader
     @Override
     public Long read(String arg, Locale locale) throws InvalidArgumentException
     {
-        String num = arg.replace(',', '.').replace(".", "");
         try
         {
-            return Long.parseLong(num);
+            return Long.parseLong(arg);
         }
         catch (NumberFormatException e)
         {
-            throw new InvalidArgumentException("Could not parse " + arg + " to Long!");
+            throw new InvalidArgumentException("Could not parse {input} to long!", arg);
         }
     }
 }
