@@ -247,10 +247,8 @@ public class LockerCommands extends ContainerCommand
 
     @Alias(names = "cflag")
     @Command(desc = "Sets or unsets flags",
-             indexed = {@Grouped(@Indexed({"!set","!unset"})),
-                        @Grouped(@Indexed("flags..."))},
-             params = {@Param(names = "set", completer = FlagCompleter.class),
-                       @Param(names = "unset", completer = FlagCompleter.class)},
+             params = {@Param(names = "set", label = "flags...", completer = FlagCompleter.class),
+                       @Param(names = "unset", label = "flags...", completer = FlagCompleter.class)},
              flags = @Flag(longName = "persist", name = "p"))
     public void flag(ParameterizedContext context)
     {
