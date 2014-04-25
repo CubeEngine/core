@@ -31,7 +31,9 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.permission.PermDefault;
 
+import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 import static java.util.Locale.ENGLISH;
@@ -51,7 +53,8 @@ public class ManagementCommands extends ContainerCommand
     @Command(desc = "Adds a custom chat command.",
              indexed = {@Grouped(@Indexed("name")),
                         @Grouped(value = @Indexed("message"), greedy = true)},
-             flags = @Flag(name = "force"))
+             flags = {@Flag(name = "force", permDefault = TRUE),
+                      @Flag(name = "global")})
     public void add(ParameterizedContext context)
     {
         String name = context.getString(0);
@@ -79,7 +82,8 @@ public class ManagementCommands extends ContainerCommand
     }
 
     @Command(desc = "Deletes a custom chat command.",
-             indexed = @Grouped(@Indexed("name")))
+             indexed = @Grouped(@Indexed("name")),
+             flags = @Flag(name = "global"))
     public void delete(ParameterizedContext context)
     {
         String name = context.getString(0);
@@ -97,7 +101,8 @@ public class ManagementCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Prints out all the custom chat commands.")
+    @Command(desc = "Prints out all the custom chat commands.",
+             permDefault = TRUE)
     public CommandResult help(ParameterizedContext context)
     {
         return new PaginatedResult(context, new CustomCommandIterator());
