@@ -18,49 +18,41 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:chat:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:43+0200\n"
+"POT-Creation-Date: 2014-05-01 13:33:23+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/chat/ChatCommands.java:36
-msgid "<message>"
-msgstr ""
-
-#: de/cubeisland/engine/chat/ChatCommands.java:43
-msgid "<name>|-r [player]"
-msgstr ""
-
-#: de/cubeisland/engine/chat/ChatCommands.java:36
+#: de/cubeisland/engine/chat/ChatCommands.java:38
 msgid "Allows you to emote"
 msgstr ""
 
-#: de/cubeisland/engine/chat/ChatCommands.java:43
+#: de/cubeisland/engine/chat/ChatCommands.java:45
 msgid "Changes your display name"
 msgstr ""
 
-#: de/cubeisland/engine/chat/ChatCommands.java:83
+#: de/cubeisland/engine/chat/ChatCommands.java:88
 msgid "Display name changed from {user} to {user}"
 msgstr ""
 
-#: de/cubeisland/engine/chat/ChatCommands.java:74
+#: de/cubeisland/engine/chat/ChatCommands.java:79
 msgid "Display name reset to {user}"
 msgstr ""
 
-#: de/cubeisland/engine/chat/ChatCommands.java:52
+#: de/cubeisland/engine/chat/ChatCommands.java:57
 msgid "Player {user} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/chat/ChatCommands.java:80
+#: de/cubeisland/engine/chat/ChatCommands.java:85
 msgid "This name has been taken by another player!"
 msgstr ""
 
-#: de/cubeisland/engine/chat/ChatCommands.java:57
+#: de/cubeisland/engine/chat/ChatCommands.java:62
 msgid "You are not allowed to change the nickname of another player!"
 msgstr ""
 
-#: de/cubeisland/engine/chat/ChatCommands.java:67
+#: de/cubeisland/engine/chat/ChatCommands.java:72
 msgid "You cannot change the consoles display name"
 msgstr ""

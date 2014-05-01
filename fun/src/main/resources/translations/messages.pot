@@ -18,94 +18,50 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:fun:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:42+0200\n"
+"POT-Creation-Date: 2014-05-01 13:33:22+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/fun/commands/ThrowCommands.java:84
-msgid "<material> [amount] [delay <value>] [-unsafe]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/InvasionCommand.java:41
-msgid "<mob>"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:305
-msgid "<player> [damage]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:330
-msgid "<player> [seconds] [-unset]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:328
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:308
 msgid "Burns a player"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:157
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:151
 msgid "Creates an explosion"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:305
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:283
 msgid "Slaps a player"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/ThrowCommands.java:80
+#: de/cubeisland/engine/fun/commands/ThrowCommands.java:81
 msgid "Throw something!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/RocketCommand.java:58
-msgid "[height] [player <name>]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:62
-msgid "[item] [player <player>]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:77
-msgid ""
-"[param1] [param2] [param3] [Shape <shape>] [player <player>] [height "
-"<height>] [range <range>] [-unsafe] [-quiet]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:169
-msgid ""
-"[player <name>] [damage <value>] [-blockDamage] [-playerDamage] [-fire] [-"
-"unsafe]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:246
-msgid "[player <name>] [damage <value>] [fireticks <seconds>] [-unsafe]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:47
-msgid "[world] [delay <value>]"
-msgstr ""
-
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:52
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:54
 msgid "Gives a player a hat"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:63
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:67
 msgid "Makes a carpet of TNT fall on a player or where you're looking"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:46
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:50
 msgid "Rapidly changes from day to night"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/RocketCommand.java:58
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:62
 msgid "Shoots a player upwards with a cool smoke effect"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/InvasionCommand.java:41
+#: de/cubeisland/engine/fun/commands/InvasionCommand.java:44
 msgid "Spawns a mob next to every player on the server"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:234
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:220
 msgid "Throws a lightning bolt at a player or where you're looking"
 msgstr ""
 
@@ -113,11 +69,11 @@ msgstr ""
 msgid "All objects thrown."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/RocketCommand.java:88
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:90
 msgid "Do you never wanna see {user} again?"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/InvasionCommand.java:47
+#: de/cubeisland/engine/fun/commands/InvasionCommand.java:51
 msgid "EntityType {input} not found"
 msgstr ""
 
@@ -125,39 +81,39 @@ msgstr ""
 msgid "Failed to throw this!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:112
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:106
 msgid "Item not found!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:73
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:76
 msgid "No world has been specified!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:348
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:329
 msgid "Only 1 to {integer} seconds are allowed!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:319
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:299
 msgid "Only damage values from 1 to 20 are allowed!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:109
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:116
 msgid "Player not found"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:88
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:186
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:269
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:311
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:336
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:82
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:174
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:247
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:291
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:317
 msgid "Player not found!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/RocketCommand.java:72
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:74
 msgid "Player {user} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:119
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:113
 msgid "Please specify an item!"
 msgstr ""
 
@@ -173,11 +129,11 @@ msgstr ""
 msgid "The amount must be a number from 1 to {integer}"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:275
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:253
 msgid "The damage value has to be a number from 1 to 20"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:80
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:83
 msgid "The delay has to be a number between {integer} and {integer}"
 msgstr ""
 
@@ -185,19 +141,19 @@ msgstr ""
 msgid "The delay must be a number from 0 to {integer}"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:108
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:111
 msgid "The disco can't be started!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:96
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:99
 msgid "The disco has been stopped!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:104
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:107
 msgid "The disco started!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:94
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:101
 msgid "The explosion range can't be less than 0 or greater than {integer}"
 msgstr ""
 
@@ -205,25 +161,25 @@ msgstr ""
 msgid "The given object was not found!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/DiscoCommand.java:66
+#: de/cubeisland/engine/fun/commands/DiscoCommand.java:69
 msgid "The given world was not found!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/RocketCommand.java:93
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:95
 msgid "The height has to be greater than 0"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:204
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:192
 msgid "The power of the explosion shouldn't be greater than {integer}"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:167
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:174
 msgid "The shape {input} was not found!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:122
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:195
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:284
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:129
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:183
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:262
 #: de/cubeisland/engine/fun/commands/ThrowCommands.java:90
 msgid "This command can only be used by a player!"
 msgstr ""
@@ -234,7 +190,7 @@ msgid ""
 "mode."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:118
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:112
 msgid "Trying to be Notch? No hat for you!"
 msgstr ""
 
@@ -242,15 +198,15 @@ msgstr ""
 msgid "You are no longer throwing."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:210
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:198
 msgid "You are not allowed to break blocks"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:89
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:96
 msgid "You are not allowed to change the explosion range of the nuke carpet!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:220
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:208
 msgid "You are not allowed to damage another player"
 msgstr ""
 
@@ -258,19 +214,19 @@ msgstr ""
 msgid "You are not allowed to execute this command in unsafe mode."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:215
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:203
 msgid "You are not allowed to set fireticks"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:102
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:109
 msgid "You are not allowed to specify a player!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:180
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:168
 msgid "You are not allowed to specify a player."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:255
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:233
 msgid "You are not allowed to specify the damage!"
 msgstr ""
 
@@ -278,24 +234,24 @@ msgstr ""
 msgid "You are not allowed to throw this."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:260
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:238
 msgid "You are not allowed to use the unsafe flag"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:106
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:100
 msgid "You can only use your item in hand!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:80
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:74
 msgid "You can't set the hat of an other player."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:129
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:123
 msgid "You do not have any item in your hand!"
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:98
-#: de/cubeisland/engine/fun/commands/RocketCommand.java:80
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:92
+#: de/cubeisland/engine/fun/commands/RocketCommand.java:82
 msgid "You have to specify a player!"
 msgstr ""
 
@@ -303,7 +259,7 @@ msgstr ""
 msgid "You have to specify the material you want to throw."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/NukeCommand.java:138
+#: de/cubeisland/engine/fun/commands/NukeCommand.java:145
 msgid "You spawned {integer} blocks of tnt."
 msgstr ""
 
@@ -311,6 +267,6 @@ msgstr ""
 msgid "You will keep throwing until you run this command again."
 msgstr ""
 
-#: de/cubeisland/engine/fun/commands/PlayerCommands.java:153
+#: de/cubeisland/engine/fun/commands/PlayerCommands.java:147
 msgid "Your hat was changed"
 msgstr ""

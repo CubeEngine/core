@@ -16,39 +16,41 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: de.cubeisland.engine:spawner:1.0.0-SNAPSHOT\n"
+"Project-Id-Version: de.cubeisland.engine:customcommands:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-01 13:33:28+0200\n"
+"POT-Creation-Date: 2014-05-01 13:33:21+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/spawner/Spawner.java:151
-msgid "Invalid SpawnEgg!"
+#: de/cubeisland/engine/customcommands/ManagementCommands.java:43
+msgid "Adds a custom chat command."
 msgstr ""
 
-#: de/cubeisland/engine/spawner/Spawner.java:108
-msgid "Dropped inactive Monster Spawner!"
+#: de/cubeisland/engine/customcommands/ManagementCommands.java:61
+msgid ""
+"Custom command {input} already exists. Set the flag {text:-force} if you "
+"want to replace the message."
 msgstr ""
 
-#: de/cubeisland/engine/spawner/Spawner.java:122
-msgid "Inactive Monster Spawner placed!"
+#: de/cubeisland/engine/customcommands/ManagementCommands.java:88
+msgid "Custom command {input} has not been found."
 msgstr ""
 
-#: de/cubeisland/engine/spawner/Spawner.java:172
-msgid "Monster Spawner activated!"
+#: de/cubeisland/engine/customcommands/ManagementCommands.java:68
+msgid "Custom command {input} has successfully been added."
 msgstr ""
 
-#: de/cubeisland/engine/spawner/Spawner.java:155
-msgid "You are not allowed to change Monster Spawner to this EntityType!"
+#: de/cubeisland/engine/customcommands/ManagementCommands.java:84
+msgid "Custom command {input} has successfully been deleted."
 msgstr ""
 
-#: de/cubeisland/engine/spawner/Spawner.java:142
-msgid "You can only change inactive Monster Spawner!"
+#: de/cubeisland/engine/customcommands/ManagementCommands.java:57
+msgid "Custom command {input} has successfully been replaced."
 msgstr ""
 
-#: de/cubeisland/engine/spawner/Spawner.java:104
-msgid "Inactive Monster Spawner"
+#: de/cubeisland/engine/customcommands/ManagementCommands.java:73
+msgid "Deletes a custom chat command."
 msgstr ""
