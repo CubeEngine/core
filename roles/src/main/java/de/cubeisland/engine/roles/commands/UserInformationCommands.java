@@ -154,7 +154,12 @@ public class UserInformationCommands extends UserCommandHelper
         Map<String,Boolean> perms = context.hasFlag("a") ? rawData.getAllRawPermissions() : rawData.getRawPermissions();
         if (perms.isEmpty())
         {
-            context.sendTranslated(NEUTRAL, "{user} has no permissions set in {world}.", user, world);
+            if (context.hasFlag("a"))
+            {
+                context.sendTranslated(NEUTRAL, "{user} has no permissions set in {world}.", user, world);
+                return;
+            }
+            context.sendTranslated(NEUTRAL, "{user} has no permissions set directly in {world}.", user, world);
             return;
         }
         context.sendTranslated(NEUTRAL, "Permissions of {user} in {world}.", user, world);
