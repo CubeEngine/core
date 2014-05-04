@@ -176,7 +176,10 @@ public class ListenerExplode extends LogListener
         action.setOldBlock(block.getState());
         action.setNewBlock(AIR);
         action.setEntity(entity);
-        action.setPlayer(player);
+        if (player != null)
+        {
+            action.setPlayer(player);
+        }
         this.logAction(action);
     }
 }
