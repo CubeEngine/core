@@ -411,6 +411,7 @@ public class Universe
             save.setTarget(path.toFile());
             save.lastName = player.getName();
             save.applyToPlayer(player);
+            save.applyFromPlayer(player);
             save.save();
             this.savePlayer(player, player.getWorld());
         }
