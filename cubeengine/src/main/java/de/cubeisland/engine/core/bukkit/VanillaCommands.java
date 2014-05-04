@@ -32,8 +32,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -153,8 +151,11 @@ public class VanillaCommands implements CommandHolder
             }
             if (difficulty == null)
             {
-                difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.US));
-                if (difficulty == null)
+                try
+                {
+                    difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.US));
+                }
+                catch (IllegalArgumentException e)
                 {
                     sender.sendTranslated(NEGATIVE, "{input} is not a known difficulty!", context.getString(0));
                     return;
