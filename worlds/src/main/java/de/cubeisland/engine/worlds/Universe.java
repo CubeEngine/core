@@ -408,7 +408,10 @@ public class Universe
         {
             this.module.getLog().debug("Created PlayerDataConfig for {} in the {} universe" , player.getDisplayName(), this.getName());
             PlayerDataConfig save = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
+            save.setTarget(path.toFile());
+            save.lastName = player.getName();
             save.applyToPlayer(player);
+            save.save();
             this.savePlayer(player, player.getWorld());
         }
         if (!(this.universeConfig.keepFlyMode || module.perms().KEEP_FLYMODE.isAuthorized(player)))

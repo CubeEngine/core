@@ -57,6 +57,7 @@ public class UserBan extends Ban<UUID>
     @Override
     public String toString()
     {
-        return DARK_GREEN + Bukkit.getOfflinePlayer(target).getName() + YELLOW + "(" + GOLD +  this.getTarget().toString() + YELLOW + ")";
+        String name = Bukkit.getOfflinePlayer(target).getName();
+        return DARK_GREEN + (name == null ? "Unknown" : name) + YELLOW + "(" + GOLD +  this.getTarget().toString() + YELLOW + ")";
     }
 }
