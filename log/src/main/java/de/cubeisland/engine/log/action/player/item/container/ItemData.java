@@ -126,7 +126,7 @@ public class ItemData
         }
         if (enchantments != null)
         {
-            itemStack.addEnchantments(enchantments);
+            itemStack.addUnsafeEnchantments(enchantments);
         }
         itemStack.setItemMeta(meta);
         return itemStack;
