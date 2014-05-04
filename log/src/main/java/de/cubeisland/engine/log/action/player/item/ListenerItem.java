@@ -123,10 +123,13 @@ public class ListenerItem extends ListenerPlayerLog
         if (event.getAction() == RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getType() == FIREWORK)
         {
             UseFirework action = this.newAction(UseFirework.class, event.getPlayer().getWorld());
-            action.setPlayer(event.getPlayer());
-            action.setLocation(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation());
-            // TODO item
-            this.logAction(action);
+            if (action != null)
+            {
+                action.setPlayer(event.getPlayer());
+                action.setLocation(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation());
+                // TODO item
+                this.logAction(action);
+            }
         }
     }
 
