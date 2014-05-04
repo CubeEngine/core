@@ -37,6 +37,7 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.ban.UserBan;
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Flag;
@@ -719,6 +720,7 @@ public class PlayerCommands
         }
         BasicsUserEntity bUser = module.getBasicsUser(user).getbUEntity();
         bUser.setGodmode(!bUser.getGodmode());
+        BukkitUtils.setInvulnerable(user, bUser.getGodmode());
         if (bUser.getGodmode())
         {
             if (other)

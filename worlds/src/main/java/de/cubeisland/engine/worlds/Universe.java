@@ -417,7 +417,8 @@ public class Universe
         }
         if (!(this.universeConfig.keepFlyMode || module.perms().KEEP_FLYMODE.isAuthorized(player)))
         {
-            player.setFlying(player.isFlying());
+            player.setAllowFlight(false);
+            player.setFlying(false);
         }
         if (!module.perms().KEEP_GAMEMODE.isAuthorized(player))
         {
