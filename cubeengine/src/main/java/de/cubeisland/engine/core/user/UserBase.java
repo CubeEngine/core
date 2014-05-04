@@ -968,7 +968,10 @@ public class UserBase implements Player
             {
                 playerToHide = playerToHide.getPlayer();
             }
-            player.hidePlayer(playerToHide);
+            if (playerToHide != null)
+            {
+                player.hidePlayer(playerToHide);
+            }
         }
     }
 
@@ -982,7 +985,10 @@ public class UserBase implements Player
             {
                 playerToShow = playerToShow.getPlayer();
             }
-            player.showPlayer(playerToShow);
+            if (playerToShow != null)
+            {
+                player.showPlayer(playerToShow);
+            }
         }
     }
 
