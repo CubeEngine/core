@@ -92,7 +92,7 @@ public class ListenerBlock extends LogListener
 
     public ListenerBlock(Log module)
     {
-        super(module, BlockBreak.class, BlockFade.class,
+        super(module, BlockBurn.class, BlockBreak.class, BlockFade.class,
               BlockForm.class, BlockSpread.class, BlockDecay.class, BlockGrow.class, BlockShift.class,
               PlayerBlockGrow.class, PlayerBlockBreak.class, PlayerSignBreak.class, BlockFall.class);
     }
