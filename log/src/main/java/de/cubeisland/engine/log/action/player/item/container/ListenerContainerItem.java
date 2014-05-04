@@ -238,7 +238,7 @@ public class ListenerContainerItem extends LogListener
                         {
                             if (event.getRawSlot() == 3)
                             {
-                                if (!BukkitUtils.canBePlacedInBrewingstand(cursorItem.getType())) // can be put
+                                if (!BukkitUtils.canBePlacedInBrewingstand(cursorItem)) // can be put
                                 {
                                     return;
                                 }
@@ -277,7 +277,7 @@ public class ListenerContainerItem extends LogListener
                             {
                                 if (event.getRawSlot() == 3)
                                 {
-                                    if (!BukkitUtils.canBePlacedInBrewingstand(cursorItem.getType())) // can be put
+                                    if (!BukkitUtils.canBePlacedInBrewingstand(cursorItem)) // can be put
                                     {
                                         return;
                                     }
@@ -311,7 +311,7 @@ public class ListenerContainerItem extends LogListener
                 if (holder instanceof BrewingStand)
                 {
                     BrewerInventory brewerInventory = (BrewerInventory)event.getView().getTopInventory();
-                    if (BukkitUtils.canBePlacedInBrewingstand(inventoryItem.getType()))
+                    if (BukkitUtils.canBePlacedInBrewingstand(inventoryItem))
                     {
                         if (inventoryItem.isSimilar(brewerInventory.getIngredient())) // could fit into inventory
                         {
