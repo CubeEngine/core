@@ -507,9 +507,13 @@ public class Universe
         return false;
     }
 
-    public Location getRespawnLocation(World world)
+    public Location getRespawnLocation(World world, boolean bedSpawn, Location respawnLocation)
     {
         WorldConfig worldConfig = this.getWorldConfig(world);
+        if (worldConfig.spawn.allowBedRespawn && bedSpawn)
+        {
+            return respawnLocation;
+        }
         if (worldConfig.spawn.respawnWorld == null)
         {
             return this.getSpawnLocation(this.getMainWorld());
