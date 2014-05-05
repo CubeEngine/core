@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:worlds:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-01 13:33:26+0200\n"
+"POT-Creation-Date: 2014-05-05 05:00:20+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -93,7 +93,7 @@ msgstr ""
 msgid "Configuration for the world {name#world} removed!"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:258
+#: de/cubeisland/engine/worlds/Multiverse.java:261
 msgid "Cooling plasma a bit to make {world} in the universe {name#universe}"
 msgstr ""
 
@@ -117,28 +117,28 @@ msgstr ""
 msgid "Could not unload {world}"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:247
+#: de/cubeisland/engine/worlds/Multiverse.java:250
 msgid "Discovered a new Universe! Heating up stars..."
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:129
+#: de/cubeisland/engine/worlds/Multiverse.java:132
 msgid "Discovering unknown worlds..."
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:131
-#: de/cubeisland/engine/worlds/Multiverse.java:161
+#: de/cubeisland/engine/worlds/Multiverse.java:134
+#: de/cubeisland/engine/worlds/Multiverse.java:164
 msgid "Finishing research..."
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:261
+#: de/cubeisland/engine/worlds/Multiverse.java:264
 msgid "Found a cold rock named {world} in the universe {name#universe}"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:168
+#: de/cubeisland/engine/worlds/Multiverse.java:171
 msgid "Found {amount#universes} universes with {amount#worlds} worlds!"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:150
+#: de/cubeisland/engine/worlds/Multiverse.java:153
 msgid "Found {amount} new worlds in the universe {name#universe}!"
 msgstr ""
 
@@ -159,7 +159,7 @@ msgstr ""
 msgid "Saved {user}'s data to file!"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:158
+#: de/cubeisland/engine/worlds/Multiverse.java:161
 msgid "Scraping together Matter..."
 msgstr ""
 
@@ -231,7 +231,7 @@ msgstr ""
 msgid "World {world} loaded!"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:331
+#: de/cubeisland/engine/worlds/Multiverse.java:334
 msgid "You are not allowed to enter the universe {name#universe}!"
 msgstr ""
 
@@ -270,7 +270,7 @@ msgid ""
 "in the universe {name}"
 msgstr ""
 
-#: de/cubeisland/engine/worlds/Multiverse.java:255
+#: de/cubeisland/engine/worlds/Multiverse.java:258
 msgid ""
 "{world} gets formed by crushing rocks together in the universe "
 "{name#universe}"

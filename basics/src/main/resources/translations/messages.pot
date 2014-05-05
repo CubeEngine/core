@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:basics:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-01 13:33:21+0200\n"
+"POT-Creation-Date: 2014-05-05 05:00:15+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -58,7 +58,7 @@ msgstr ""
 msgid "Changes the display name of the item in your hand."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:329
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:330
 msgid "Changes the gamemode"
 msgstr ""
 
@@ -78,7 +78,7 @@ msgstr ""
 msgid "Changes the weather"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:742
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:744
 msgid "Changes your walkspeed."
 msgstr ""
 
@@ -94,7 +94,7 @@ msgstr ""
 msgid "Displays all loaded worlds"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:609
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:610
 msgid "Displays informations from a player!"
 msgstr ""
 
@@ -102,7 +102,7 @@ msgstr ""
 msgid "Displays near players(entities/mobs) to you."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:563
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:564
 msgid "Displays that you are afk"
 msgstr ""
 
@@ -126,7 +126,7 @@ msgstr ""
 msgid "Displays your current location."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:153
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:154
 msgid "Empties the hunger bar"
 msgstr ""
 
@@ -152,15 +152,15 @@ msgstr ""
 msgid "Kicks a player from the server"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:382
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:383
 msgid "Kills a player"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:549
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:550
 msgid "Kills yourself"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:792
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:794
 msgid "Lets you fly away"
 msgstr ""
 
@@ -168,7 +168,7 @@ msgstr ""
 msgid "Looks up an item for you!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:526
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:527
 msgid "Makes a player send a message (including commands)"
 msgstr ""
 
@@ -188,7 +188,7 @@ msgstr ""
 msgid "Refills the stack in hand"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:82
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:83
 msgid "Refills your hunger bar"
 msgstr ""
 
@@ -236,7 +236,7 @@ msgstr ""
 msgid "Shows a random number from 0 to 100"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:500
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:501
 msgid "Shows when given player was online the last time"
 msgstr ""
 
@@ -296,7 +296,7 @@ msgstr ""
 msgid "Teleports you to your last location"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:690
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:691
 msgid "Toggles the god-mode!"
 msgstr ""
 
@@ -316,7 +316,7 @@ msgstr ""
 msgid "Grants unlimited items"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:224
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:225
 msgid "Heals a player"
 msgstr ""
 
@@ -354,7 +354,7 @@ msgid ""
 "you."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:220
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:221
 msgid "\n"
 "\n"
 "\n"
@@ -371,7 +371,7 @@ msgid "\n"
 "I'll give you only one line to eat!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:668
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:669
 msgid "AFK: {text:true:color=BRIGHT_GREEN}"
 msgstr ""
 
@@ -396,7 +396,7 @@ msgstr ""
 msgid "Ascended a level!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:686
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:687
 msgid "Banned by {user} on {input#date}: {input#reason} ({input#expire})"
 msgstr ""
 
@@ -420,7 +420,7 @@ msgstr ""
 msgid "Cleared all mails!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:542
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:543
 msgid "Command {input#command} executed as {user}"
 msgstr ""
 
@@ -441,15 +441,15 @@ msgstr ""
 msgid "Could not find any item named {input}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:123
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:124
 msgid "Could not find any of those players to feed!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:265
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:266
 msgid "Could not find any of those players to heal!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:194
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:195
 msgid "Could not find any of those players to starve!"
 msgstr ""
 
@@ -463,11 +463,11 @@ msgid ""
 "offline?"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:439
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:440
 msgid "Could not kill any of given players!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:435
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:436
 msgid "Could not kill {user}"
 msgstr ""
 
@@ -499,7 +499,7 @@ msgstr ""
 msgid "Do not know whether I should close or open the doors"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:149
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:150
 msgid "Don't feed the troll!"
 msgstr ""
 
@@ -507,23 +507,23 @@ msgstr ""
 msgid "Enchantment {input#enchantment} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:126
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:127
 msgid "Fed {amount} players!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:671
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:672
 msgid "First played: {input#date}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:842
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:844
 msgid "FlySpeed has to be a Number between {text:0} and {text:10}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:651
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:652
 msgid "Flymode: {text:false:color=RED}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:647
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:648
 msgid "Flymode: {text:true:color=BRIGHT_GREEN} {input#flying}"
 msgstr ""
 
@@ -532,7 +532,7 @@ msgid "Following Enchantments are availiable:\n"
 "{input#enchs}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:546
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:547
 msgid "Forced {user} to chat: {input#message}"
 msgstr ""
 
@@ -546,7 +546,7 @@ msgid "Found those nearby {user}:\n"
 "{}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:643
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:644
 msgid "Gamemode: {input#gamemode}"
 msgstr ""
 
@@ -556,11 +556,11 @@ msgid ""
 "monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:664
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:665
 msgid "GodMode: {input#godmode}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:268
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:269
 msgid "Healed {amount} players!"
 msgstr ""
 
@@ -568,7 +568,7 @@ msgstr ""
 msgid "I am right {text:behind:color=RED} you!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:639
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:640
 msgid "IP: {input#ip}"
 msgstr ""
 
@@ -649,8 +649,8 @@ msgstr ""
 msgid "Invalid z-value {input}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:787
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:840
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:789
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:842
 msgid "It's over 9000!"
 msgstr ""
 
@@ -675,15 +675,15 @@ msgstr ""
 msgid "Jumping in the console is not allowed! Go play outside!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:593
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:594
 msgid "Just go!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:631
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:632
 msgid "Level: {integer#level} + {integer#percent}%"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:629
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:630
 msgid "Life: {decimal:0}/{decimal#max:0}"
 msgstr ""
 
@@ -711,15 +711,15 @@ msgstr ""
 msgid "More nothing is still nothing!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:660
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:661
 msgid "Muted until {input#time}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:625
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:626
 msgid "Nickname: {user}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:621
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:622
 msgid "Nickname: {user} ({text:offline})"
 msgstr ""
 
@@ -753,7 +753,7 @@ msgstr ""
 msgid "No one wants to teleport to you!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:465
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:466
 msgid "No player to kill in sight!"
 msgstr ""
 
@@ -782,11 +782,11 @@ msgstr ""
 msgid "Nothing to stack!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:655
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:656
 msgid "OP: {text:true:color=BRIGHT_GREEN}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:287
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:288
 msgid "Only time can heal your wounds!"
 msgstr ""
 
@@ -804,18 +804,18 @@ msgid ""
 "Passing through firewalls in the console is not allowed! Go play outside!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:421
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:422
 msgid "Player {user} not found or offline!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:116
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:187
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:258
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:535
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:578
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:616
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:706
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:804
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:117
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:188
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:259
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:536
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:579
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:617
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:707
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:806
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:339
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:102
 #: de/cubeisland/engine/basics/command/moderation/TimeControlCommands.java:179
@@ -846,7 +846,7 @@ msgstr ""
 msgid "Please provide valid whole number x and/or z coordinates!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:471
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:472
 msgid "Please specify a victim!"
 msgstr ""
 
@@ -854,7 +854,7 @@ msgstr ""
 msgid "Poof!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:635
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:636
 msgid "Position: {vector} in {world}"
 msgstr ""
 
@@ -922,7 +922,7 @@ msgstr ""
 msgid "Server has been running since {input#uptime}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:817
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:819
 msgid "So... Stopping the Server in {text:3..:color=RED}"
 msgstr ""
 
@@ -934,7 +934,7 @@ msgstr ""
 msgid "Spawned {amount} {input#message}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:197
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:198
 msgid "Starved {amount} players!"
 msgstr ""
 
@@ -1112,9 +1112,9 @@ msgid "The time you entered is not valid!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/ListCommand.java:80
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:101
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:172
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:243
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:102
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:173
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:244
 msgid "There are no players online at the moment!"
 msgstr ""
 
@@ -1144,7 +1144,7 @@ msgstr ""
 msgid "This will you only give headaches!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/GeneralsListener.java:146
+#: de/cubeisland/engine/basics/command/general/GeneralsListener.java:141
 msgid "This {name#entity} belongs to {tamer}!"
 msgstr ""
 
@@ -1224,7 +1224,7 @@ msgstr ""
 msgid "Use {name#sun}, {name#rain} or {name#storm}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/GeneralsListener.java:122
+#: de/cubeisland/engine/basics/command/general/GeneralsListener.java:109
 msgid "Use {text:/mail read} to display them."
 msgstr ""
 
@@ -1233,7 +1233,7 @@ msgstr ""
 msgid "Use {text:/tpaccept} to accept or {text:/tpdeny} to deny the request!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:769
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:771
 msgid "User {user} not found or offline!"
 msgstr ""
 
@@ -1246,8 +1246,8 @@ msgstr ""
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:143
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:172
 #: de/cubeisland/engine/basics/command/general/MailCommand.java:277
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:343
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:507
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:344
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:508
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:65
 #: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:65
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:361
@@ -1255,7 +1255,7 @@ msgstr ""
 msgid "User {user} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:789
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:791
 msgid "Walk speed has to be a Number between {text:0} and {text:10}!"
 msgstr ""
 
@@ -1300,7 +1300,7 @@ msgstr ""
 msgid "You added {user#list} to your ignore list!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:717
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:718
 msgid "You are god already!"
 msgstr ""
 
@@ -1308,8 +1308,8 @@ msgstr ""
 msgid "You are looking to {input#direction}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:735
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:739
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:737
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:741
 msgid "You are no longer invincible!"
 msgstr ""
 
@@ -1321,15 +1321,15 @@ msgstr ""
 msgid "You are not allowed to butcher all types of living entities at once!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:572
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:573
 msgid "You are not allowed to change the afk-state of an other player!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:824
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:826
 msgid "You are not allowed to change the fly mode of other player!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:362
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:363
 msgid "You are not allowed to change the game mode of an other player!"
 msgstr ""
 
@@ -1337,7 +1337,7 @@ msgstr ""
 msgid "You are not allowed to change the time of other players!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:774
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:776
 msgid "You are not allowed to change the walk speed of other user!"
 msgstr ""
 
@@ -1357,15 +1357,15 @@ msgstr ""
 msgid "You are not allowed to do this!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:90
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:91
 msgid "You are not allowed to feed other players!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:700
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:701
 msgid "You are not allowed to god others!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:232
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:233
 msgid "You are not allowed to heal other players!"
 msgstr ""
 
@@ -1377,11 +1377,11 @@ msgstr ""
 msgid "You are not allowed to kick everyone!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:400
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:401
 msgid "You are not allowed to kill everyone!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:161
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:162
 msgid "You are not allowed to let other players starve!"
 msgstr ""
 
@@ -1424,16 +1424,16 @@ msgstr ""
 msgid "You are not holding a head."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:146
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:147
 msgid "You are now fed!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:284
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:285
 msgid "You are now healed!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:726
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:730
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:728
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:732
 msgid "You are now invincible!"
 msgstr ""
 
@@ -1445,7 +1445,7 @@ msgstr ""
 msgid "You are now on top!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:217
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:218
 msgid "You are now starving!"
 msgstr ""
 
@@ -1459,7 +1459,7 @@ msgid ""
 "You are on heightlevel {integer#blocks} ({amount#blocks} below sealevel)"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:203
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:204
 msgid "You are suddenly starving!"
 msgstr ""
 
@@ -1496,15 +1496,15 @@ msgstr ""
 msgid "You can now cycle through the paintings using your mousewheel."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:834
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:836
 msgid "You can now fly at {decimal#speed:2}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:852
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:854
 msgid "You can now fly!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:782
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:784
 msgid "You can now walk at {decimal:2}!"
 msgstr ""
 
@@ -1533,11 +1533,11 @@ msgstr ""
 msgid "You cannot descend here"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:855
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:857
 msgid "You cannot fly anymore!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:480
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:481
 msgid "You cannot kill {user}!"
 msgstr ""
 
@@ -1558,11 +1558,11 @@ msgstr ""
 msgid "You cannot teleport to an offline player!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:373
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:374
 msgid "You changed the game mode of {user} to {input#gamemode}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:378
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:379
 msgid "You changed your game mode to {input#gamemode}!"
 msgstr ""
 
@@ -1583,7 +1583,7 @@ msgstr ""
 msgid "You do not have any mail!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:356
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:357
 msgid "You do not not have any game mode!"
 msgstr ""
 
@@ -1596,7 +1596,7 @@ msgstr ""
 msgid "You dug too deep!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:560
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:561
 msgid "You ended your life. Why? {text:\\:(:color=DARK_RED}"
 msgstr ""
 
@@ -1609,11 +1609,11 @@ msgstr ""
 msgid "You gave {user} {amount} {input#item}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:132
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:133
 msgid "You got fed by {user}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:274
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:275
 msgid "You got healed by {sender}!"
 msgstr ""
 
@@ -1637,7 +1637,7 @@ msgstr ""
 msgid "You haven't ignored {user}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:246
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:247
 msgid "You healed everyone!"
 msgstr ""
 
@@ -1669,19 +1669,19 @@ msgstr ""
 msgid "You just teleported {user} to {user}... Not very useful right?"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:443
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:444
 msgid "You killed {user#list}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:491
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:492
 msgid "You killed {user}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:175
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:176
 msgid "You let everyone starve to death!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:104
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:105
 msgid "You made everyone fat!"
 msgstr ""
 
@@ -1733,7 +1733,7 @@ msgstr ""
 msgid "You removed {user#list} from your ignore list!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:764
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:766
 msgid "You suddenly feel much faster!"
 msgstr ""
 
@@ -1757,13 +1757,13 @@ msgstr ""
 msgid "You unbanned the IP {input#ip}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:554
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:555
 msgid ""
 "You want to kill yourself? {text:The command for that is stop!:color="
 "BRIGHT_GREEN}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:495
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:496
 msgid "You were killed by {user}"
 msgstr ""
 
@@ -1783,7 +1783,7 @@ msgstr ""
 msgid "Your destination seems to be obstructed!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:374
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:375
 msgid "Your game mode has been changed to {input#gamemode}!"
 msgstr ""
 
@@ -1823,7 +1823,7 @@ msgstr ""
 msgid "ever"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:684
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:685
 msgid "for ever"
 msgstr ""
 
@@ -1878,7 +1878,7 @@ msgstr ""
 msgid "{text:ProTip}: I assume you are looking right at your screen, right?"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:816
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:818
 msgid "{text:ProTip}: If your server flies away it will go offline."
 msgstr ""
 
@@ -1942,11 +1942,11 @@ msgstr ""
 msgid "{user} is already on your ignore list!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:512
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:513
 msgid "{user} is currently online!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:736
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:738
 msgid "{user} is no longer invincible!"
 msgstr ""
 
@@ -1958,15 +1958,15 @@ msgstr ""
 msgid "{user} is not banned, maybe you misspelled his name?"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:583
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:584
 msgid "{user} is not online!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:727
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:729
 msgid "{user} is now invincible!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:520
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:521
 msgid "{user} is offline since {input#time}"
 msgstr ""
 
@@ -1983,7 +1983,7 @@ msgstr ""
 msgid "{user} was already muted!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:523
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:524
 msgid "{user} was last seen {input#date}."
 msgstr ""
 
@@ -1995,7 +1995,7 @@ msgstr ""
 msgid "{world} ({input#environment}): {amount} chunks {amount} entities"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:630
+#: de/cubeisland/engine/basics/command/general/PlayerCommands.java:631
 msgid ""
 "Hunger: {integer#foodlvl:0}/{text:20} ({integer#saturation}/{integer#foodlvl:"
 "0})"
@@ -2061,7 +2061,7 @@ msgstr ""
 msgid "You cannot IP ban {user} because he was offline for too long!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/GeneralsListener.java:121
+#: de/cubeisland/engine/basics/command/general/GeneralsListener.java:108
 msgid "You have a new mail!"
 msgid_plural "You have {amount} of mail!"
 msgstr[0] ""

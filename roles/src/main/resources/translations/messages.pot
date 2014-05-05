@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:roles:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-01 13:33:21+0200\n"
+"POT-Creation-Date: 2014-05-05 05:00:15+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -33,7 +33,7 @@ msgstr ""
 msgid "Assign a role to the player [in world] [-temp]"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:169
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:174
 msgid "Checks for metadata of a user [in world]"
 msgstr ""
 
@@ -85,7 +85,7 @@ msgstr ""
 msgid "Lists all roles in a world or globally"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:206
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:211
 msgid "Lists assigned metadata from a user [in world]"
 msgstr ""
 
@@ -273,7 +273,7 @@ msgstr ""
 msgid "Metadata of {user} cleared in {world}!"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:220
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:225
 msgid "Metadata of {user} in {world}:"
 msgstr ""
 
@@ -326,11 +326,11 @@ msgid ""
 "<world>}"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:196
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:201
 msgid "Origin: {name#role}"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:200
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:205
 msgid "Origin: {text:directly assigned}"
 msgstr ""
 
@@ -371,13 +371,13 @@ msgstr ""
 msgid "Permissions of the role {name} in {world}:"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:160
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:165
 msgid "Permissions of {user} in {world}."
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/UserCommandHelper.java:73
 #: de/cubeisland/engine/roles/commands/UserInformationCommands.java:85
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:178
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:183
 msgid "Player {user} not found!"
 msgstr ""
 
@@ -577,11 +577,11 @@ msgstr ""
 msgid "Your temporary role {name} is not available in {world}"
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:190
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:195
 msgid "{input#key} is not set for {user} in {world}."
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:193
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:198
 msgid "{input#key}: {input#value} is set for {user} in {world}."
 msgstr ""
 
@@ -711,10 +711,14 @@ msgstr ""
 msgid "{user} did not have the role {name} in {world}."
 msgstr ""
 
-#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:157
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:159
 msgid "{user} has no permissions set in {world}."
 msgstr ""
 
 #: de/cubeisland/engine/roles/commands/UserInformationCommands.java:96
 msgid "{user} is op!"
+msgstr ""
+
+#: de/cubeisland/engine/roles/commands/UserInformationCommands.java:162
+msgid "{user} has no permissions set directly in {world}."
 msgstr ""
