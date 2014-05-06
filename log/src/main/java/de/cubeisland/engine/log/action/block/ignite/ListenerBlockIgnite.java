@@ -100,7 +100,7 @@ public class ListenerBlockIgnite extends LogListener
             break;
         case FLINT_AND_STEEL:
             action = this.newAction(IgniteLighter.class, oldState.getWorld());
-            if (event.getPlayer() != null)
+            if (action != null && event.getPlayer() != null)
             {
                 ((IgniteLighter)action).setPlayer(event.getPlayer());
             }
