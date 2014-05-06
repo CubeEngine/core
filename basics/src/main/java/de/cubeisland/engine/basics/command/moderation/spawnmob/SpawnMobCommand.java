@@ -93,7 +93,7 @@ public class SpawnMobCommand
         }
         if (amount > config.commands.spawnmobLimit)
         {
-            context.sendTranslated(NEGATIVE, "The serverlimit is set to {number}, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
+            context.sendTranslated(NEGATIVE, "The serverlimit is set to {amount}, you cannot spawn more mobs at once!", config.commands.spawnmobLimit);
             return;
         }
         loc.add(0.5, 0, 0.5);
