@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:basics:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-05 05:00:15+0200\n"
+"POT-Creation-Date: 2014-05-07 05:00:15+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1079,11 +1079,6 @@ msgstr ""
 msgid "The server is running in {text:OFFLINE-mode:color=DARK_RED}."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:96
-msgid ""
-"The serverlimit is set to {number}, you cannot spawn more mobs at once!"
-msgstr ""
-
 #: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:113
 msgid "The spawn in {world} is now set to {vector:x\\=:y\\=:z\\=}"
 msgstr ""
@@ -2069,4 +2064,9 @@ msgstr[1] ""
 
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:215
 msgid "You unbanned {user}({name#uuid})!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/moderation/spawnmob/SpawnMobCommand.java:96
+msgid ""
+"The serverlimit is set to {amount}, you cannot spawn more mobs at once!"
 msgstr ""
