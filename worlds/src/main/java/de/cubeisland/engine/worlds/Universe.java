@@ -283,12 +283,12 @@ public class Universe
             }
             if (Files.exists(Bukkit.getServer().getWorldContainer().toPath().resolve(name))) // world is just not loaded yet
             {
-                module.getLog().info("Loading World {}[{}]...", name, config.generation.environment.name());
-                world = this.wm.createWorld(WorldCreator.name(name));
+                module.getLog().info("Loading World {} [{}]...", name, config.generation.environment.name());
+                world = this.wm.createWorld(WorldCreator.name(name).environment(config.generation.environment));
             }
             else // World does not exist
             {
-                module.getLog().info("Creating new World {}[{}]...", name, config.generation.environment.name());
+                module.getLog().info("Creating new World {} [{}]...", name, config.generation.environment.name());
                 world = this.wm.createWorld(config.applyToCreator(WorldCreator.name(name)));
             }
             if (config.spawn.spawnLocation == null)
