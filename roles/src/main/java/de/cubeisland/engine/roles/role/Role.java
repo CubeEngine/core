@@ -96,7 +96,7 @@ public class Role extends ResolvedDataHolder implements Comparable<Role>
                                          .valueOf(this.module.getCore().getWorldManager().getWorldId(entry.getKey())));
                 }
             }
-            this.manager.dsl.update(TABLE_ROLE).set(DSL.row(TABLE_ROLE.ROLENAME), DSL.row(newName)).
+            this.manager.dsl.update(TABLE_ROLE).set(TABLE_ROLE.ROLENAME, newName).
                 where(TABLE_ROLE.ROLENAME.eq(this.getName()), TABLE_ROLE.WORLDID.in(worldMirrors)).execute();
         }
         this.delete();
