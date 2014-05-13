@@ -160,7 +160,10 @@ public class ListenerHanging extends LogListener
             else if (hanging instanceof Painting)
             {
                 action = this.newAction(PaintingBreak.class, location.getWorld());
-                ((PaintingBreak)action).art = ((Painting)hanging).getArt();
+                if (action != null)
+                {
+                    ((PaintingBreak)action).art = ((Painting)hanging).getArt();
+                }
             }
             else
             {
@@ -207,7 +210,10 @@ public class ListenerHanging extends LogListener
         if (hanging instanceof Painting)
         {
             action = this.newAction(PaintingPlace.class, hanging.getWorld());
-            ((PaintingPlace)action).art = ((Painting)hanging).getArt();
+            if (action != null)
+            {
+                ((PaintingPlace)action).art = ((Painting)hanging).getArt();
+            }
         }
         else
         {
