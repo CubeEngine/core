@@ -70,7 +70,6 @@ public class RolesListCommand extends ListCommand
                 }
             }
         }
-
         SortedMap<String, Set<User>> grouped = new TreeMap<>();
         Role role;
         for (Entry<Role, Set<User>> entry : groupedRoles.entrySet())
@@ -98,7 +97,12 @@ public class RolesListCommand extends ListCommand
         @Override
         public int compare(Role o1, Role o2)
         {
-            return o2.getPriorityValue() - o1.getPriorityValue();
+            int i = o2.getPriorityValue() - o1.getPriorityValue();
+            if (i == 0)
+            {
+                return o1.getName().compareTo(o2.getName());
+            }
+            return i;
         }
     }
 }
