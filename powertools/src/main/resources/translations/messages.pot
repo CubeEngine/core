@@ -18,93 +18,81 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:powertools:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:45+0200\n"
+"POT-Creation-Date: 2014-05-01 13:33:27+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:185
-msgid "<commandstring>"
-msgstr ""
-
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:182
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:181
 msgid "Adds a command to your powertool"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:219
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:218
 msgid "Lists your powertool-bindings."
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:125
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:122
 msgid "Removes a command from your powertool"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:92
-msgid "[-a]"
-msgstr ""
-
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:125
-msgid "[command] [-chat]"
-msgstr ""
-
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:91
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:90
 msgid "Removes all commands from your powertool"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:261
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:260
 msgid "No commands saved on this item!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:175
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:174
 msgid "No more commands saved on this item!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:119
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:140
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:118
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:139
 msgid "No more power for you!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:105
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:104
 msgid "Removed all commands bound to items in your inventory!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:115
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:114
 msgid "Removed all commands bound to the item in your hand!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:165
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:164
 msgid "Removed the command: {input#command} bound to this item!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:150
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:149
 msgid "Removed the last command bound to this item!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:169
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:168
 msgid "The command {input#command} was not found on this item!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:215
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:252
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:214
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:251
 msgid "You already have enough power!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:111
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:133
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:110
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:132
 msgid "You are not holding any item in your hand."
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:195
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:194
 msgid "You do not have an item in your hand to bind the command to!"
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:244
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:243
 msgid "You do not have an item in your hand."
 msgstr ""
 
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:273
-#: de/cubeisland/engine/powertools/PowerToolCommand.java:278
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:272
+#: de/cubeisland/engine/powertools/PowerToolCommand.java:277
 msgid "{amount} command(s) bound to this item:{}"
 msgstr ""

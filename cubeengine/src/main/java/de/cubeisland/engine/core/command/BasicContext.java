@@ -21,12 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import org.bukkit.Bukkit;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class BasicContext implements CommandContext
@@ -35,10 +32,10 @@ public class BasicContext implements CommandContext
     private final CubeCommand command;
     private final CommandSender sender;
     private final Stack<String> labels;
-    private final List<String> args;
+    private final List<Object> args;
     private final int argCount;
 
-    public BasicContext(CubeCommand command, CommandSender sender, Stack<String> labels, List<String> args)
+    public BasicContext(CubeCommand command, CommandSender sender, Stack<String> labels, List<Object> args)
     {
         this.core = command.getModule().getCore();
         this.command = command;
@@ -110,7 +107,7 @@ public class BasicContext implements CommandContext
         return this.argCount > 0;
     }
 
-    public List<String> getArgs()
+    public List<Object> getArgs()
     {
         return new ArrayList<>(this.args);
     }
@@ -128,28 +125,33 @@ public class BasicContext implements CommandContext
     }
 
     @Override
-    public <T> T getArg(int index, Class<T> type)
+    @SuppressWarnings("unchecked")
+    public <T> T getArg(int i)
     {
         try
         {
-            return ArgumentReader.read(type, this.args.get(index), this.getSender());
+            return (T)this.args.get(i);
         }
-        catch (Exception e)
+        catch (IndexOutOfBoundsException e)
         {
             return null;
         }
     }
 
-    public <T> T getArg(int index, Class<T> type, T def)
-    {
-        final T value = this.getArg(index, type);
-        return value == null ? def : value;
-    }
-
     @Override
-    public String getString(int i)
+    public <T> T getArg(int index, T def)
     {
-        return this.getArg(i, String.class);
+        try
+        {
+            T value = this.getArg(index);
+            if (value != null)
+            {
+                return value;
+            }
+        }
+        catch (ClassCastException ignored)
+        {}
+        return def;
     }
 
     @Override
@@ -159,10 +161,10 @@ public class BasicContext implements CommandContext
         {
             return null;
         }
-        StringBuilder sb = new StringBuilder(this.getString(from));
+        StringBuilder sb = new StringBuilder(this.<String>getArg(from));
         while (this.hasArg(++from))
         {
-            sb.append(" ").append(this.getString(from));
+            sb.append(" ").append(this.getArg(from));
         }
         return sb.toString();
     }
@@ -170,13 +172,7 @@ public class BasicContext implements CommandContext
     @Override
     public String getString(int i, String def)
     {
-        return this.getArg(i, String.class, def);
-    }
-
-    @Override
-    public User getUser(int i)
-    {
-        return this.getArg(i, User.class);
+        return this.getArg(i, def);
     }
 
     @Override

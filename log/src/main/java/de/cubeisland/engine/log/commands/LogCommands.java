@@ -214,18 +214,18 @@ public class LogCommands extends ContainerCommand
         "player: Shows player-interacions only\n" +
         "kills: Shows kill-interactions only\n" +
         "block: Shows block-changes only",
-             indexed = @Grouped(req = false, value = @Indexed("log-type")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "log-type")))
     public void block(CommandContext context)
     {
         //TODO tabcompleter for logBlockTypes (waiting for CE-389)
         if (context.getSender() instanceof User)
         {
-            Material blockMaterial = this.matchType(context.getString(0), true);
+            Material blockMaterial = this.matchType(context.<String>getArg(0), true);
             if (blockMaterial == null)
             {
                 context
                     .sendTranslated(NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context
-                        .getString(0));
+                        .getArg(0));
                 return;
             }
             User user = (User)context.getSender();
@@ -245,16 +245,17 @@ public class LogCommands extends ContainerCommand
         "player: Shows player-interacions only\n" +
         "kills: Shows kill-interactions only\n" +
         "block: Shows block-changes only",
-             indexed = @Grouped(req = false, value = @Indexed("log-type")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "log-type")))
     public void tool(CommandContext context)
     {
         //TODO tabcompleter for logToolTypes (waiting for CE-389)
         if (context.getSender() instanceof User)
         {
-            Material blockMaterial = this.matchType(context.getString(0), false);
+            Material blockMaterial = this.matchType(context.<String>getArg(0), false);
             if (blockMaterial == null)
             {
-                context.sendTranslated(NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "{input} is not a valid log-type. Use chest, container, player, block or kills instead!", context.getArg(
+                    0));
                 return;
             }
             User user = (User)context.getSender();

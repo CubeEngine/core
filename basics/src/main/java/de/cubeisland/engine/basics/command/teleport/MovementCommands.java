@@ -53,13 +53,13 @@ public class MovementCommands
     }
 
     @Command(desc = "Teleports you X amount of blocks into the air and puts a glass block beneath you.",
-             indexed = @Grouped(@Indexed("height")))
+             indexed = @Grouped(@Indexed(label = "height")))
     public void up(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            int height = context.getArg(0, Integer.class, -1);
+            int height = context.getArg(0, -1);
             if ((height < 0))
             {
                 context.sendTranslated(NEGATIVE, "Invalid height. The height has to be a whole number greater than 0!");
@@ -290,18 +290,13 @@ public class MovementCommands
     }
 
     @Command(names = {"place", "put"}, desc = "Jumps to the position you are looking at.",
-             indexed = @Grouped(@Indexed("player")))
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void place(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            User user = context.getUser(0);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
+            User user = context.getArg(0);
             if (!user.isOnline())
             {
                 context.sendTranslated(NEGATIVE, "You cannot move an offline player!");
@@ -327,19 +322,14 @@ public class MovementCommands
 
     @Command(desc = "Swaps you and another players position",
              indexed = {
-                 @Grouped(@Indexed("player")),
-                 @Grouped(value = @Indexed("player"),req = false)})
+                 @Grouped(@Indexed(label = "player")),
+                 @Grouped(value = @Indexed(label = "player", type = User.class),req = false)})
     public void swap(CommandContext context)
     {
         User sender;
         if (context.hasArg(1))
         {
-            sender = context.getUser(1);
-            if (sender == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
+            sender = context.getArg(1);
         }
         else
         {
@@ -355,12 +345,7 @@ public class MovementCommands
                 return;
             }
         }
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         if (!user.isOnline() || !sender.isOnline())
         {
             context.sendTranslated(NEGATIVE, "You cannot move an offline player!");

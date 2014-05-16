@@ -59,7 +59,7 @@ public class BorderCommands extends ContainerCommand
     private boolean running = false;
 
     @Command(desc = "Sets the center of the border",
-             indexed = @Grouped(req = false, value = {@Indexed("chunkX"), @Indexed("chunkZ")}),
+             indexed = @Grouped(req = false, value = {@Indexed(label = "chunkX"), @Indexed(label = "chunkZ")}),
              flags = @Flag(longName = "spawn", name = "s"),
              params = @Param(names = {"in", "world", "w"}, label = "world", type = World.class, completer = WorldCompleter.class))
     public void setCenter(ParameterizedContext context)
@@ -87,8 +87,8 @@ public class BorderCommands extends ContainerCommand
         }
         else if (context.hasArg(1))
         {
-            Integer x = context.getArg(0, Integer.class, null);
-            Integer z = context.getArg(0, Integer.class, null);
+            Integer x = context.getArg(0, null);
+            Integer z = context.getArg(0, null);
             if (x == null || z == null)
             {
                 context.sendTranslated(NEGATIVE, "Invalid Chunk coordinates!");
@@ -110,7 +110,7 @@ public class BorderCommands extends ContainerCommand
     }
 
     @Alias(names = "generateBorder")
-    @Command(desc = "Generates the chunks located in the border", indexed = @Grouped(@Indexed("world")))
+    @Command(desc = "Generates the chunks located in the border", indexed = @Grouped(@Indexed(label = "world")))
     public void generate(ParameterizedContext context)
     {
         if (running)
@@ -118,7 +118,7 @@ public class BorderCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "Chunk generation is already running!");
             return;
         }
-        String worldName = context.getString(0);
+        String worldName = context.getArg(0);
         this.chunksToGenerate = new LinkedList<>();
         this.chunksToUnload = new LinkedList<>();
         if (worldName.equals("*"))

@@ -79,9 +79,9 @@ public class InformationCommands
 
     @Command(desc = "Displays the biome type you are standing in.",
              indexed = {
-                 @Grouped(value = @Indexed("world"), req = false),
-                 @Grouped(value = @Indexed("block-x"), req = false),
-                 @Grouped(value = @Indexed("block-z"), req = false)})
+                 @Grouped(value = @Indexed(label = "world"), req = false),
+                 @Grouped(value = @Indexed(label = "block-x"), req = false),
+                 @Grouped(value = @Indexed(label = "block-z"), req = false)})
     public void biome(CommandContext context)
     {
         World world;
@@ -89,14 +89,14 @@ public class InformationCommands
         Integer z;
         if (context.hasArg(2))
         {
-            world = context.getArg(0,World.class,null);
+            world = context.getArg(0, null);
             if (world == null)
             {
-                context.sendTranslated(NEGATIVE, "Unknown world {input#world}!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Unknown world {input#world}!", context.getArg(0));
                 return;
             }
-            x = context.getArg(1,Integer.class,null);
-            z = context.getArg(2,Integer.class,null);
+            x = context.getArg(1, null);
+            z = context.getArg(2, null);
             if (x == null || z == null)
             {
                 context.sendTranslated(NEGATIVE, "Please provide valid whole number x and/or z coordinates!");
@@ -121,16 +121,16 @@ public class InformationCommands
     }
 
     @Command(desc = "Displays the seed of a world.",
-             indexed = @Grouped(value = @Indexed("world"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "world"), req = false))
     public void seed(CommandContext context)
     {
         World world = null;
         if (context.hasArg(0))
         {
-            world = context.getArg(0, World.class, null);
+            world = context.getArg(0, null);
             if (world == null)
             {
-                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getArg(0));
                 return;
             }
         }
@@ -203,8 +203,8 @@ public class InformationCommands
 
     @Command(desc = "Displays near players(entities/mobs) to you.",
              indexed = {
-                 @Grouped(value = @Indexed("radius"), req = false),
-                 @Grouped(value = @Indexed("player"), req = false)},
+                 @Grouped(value = @Indexed(label = "radius"), req = false),
+                 @Grouped(value = @Indexed(label = "player", type = User.class), req = false)},
              flags = {@Flag(longName = "entity", name = "e"),
                       @Flag(longName = "mob", name = "m")})
     public void near(ParameterizedContext context)
@@ -212,12 +212,7 @@ public class InformationCommands
         User user;
         if (context.hasArg(1))
         {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(1));
-                return;
-            }
+            user = context.getArg(1);
         }
         else if (context.getSender() instanceof User)
         {
@@ -231,7 +226,7 @@ public class InformationCommands
         int radius = this.module.getConfiguration().commands.nearDefaultRadius;
         if (context.hasArg(0))
         {
-            radius = context.getArg(0, Integer.class, radius);
+            radius = context.getArg(0, radius);
         }
         int squareRadius = radius * radius;
         Location userLocation = user.getLocation();

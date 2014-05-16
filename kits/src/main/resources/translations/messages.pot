@@ -18,105 +18,89 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:kits:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:45+0200\n"
+"POT-Creation-Date: 2014-05-01 13:33:28+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/kits/KitCommand.java:67
-msgid "<kitName> [-toolbar]"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:142
-msgid "<kitname> [player]"
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:65
+#: de/cubeisland/engine/kits/KitCommand.java:62
 msgid "Creates a new kit with the items in your inventory."
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:130
+#: de/cubeisland/engine/kits/KitCommand.java:127
 msgid "Lists all currently available kits."
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:142
+#: de/cubeisland/engine/kits/KitCommand.java:139
 msgid "Gives a set of items."
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:125
+#: de/cubeisland/engine/kits/KitCommand.java:122
 msgid "Created the {name#kit} kit!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:77
+#: de/cubeisland/engine/kits/KitCommand.java:74
 msgid "Just log in or use the config!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/Kit.java:103
-msgid "Kit limit reached."
-msgstr ""
-
-#: de/cubeisland/engine/kits/KitCommand.java:158
+#: de/cubeisland/engine/kits/KitCommand.java:157
 msgid "Kit {input} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:190
+#: de/cubeisland/engine/kits/KitCommand.java:189
 msgid "No one received the kit!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:216
+#: de/cubeisland/engine/kits/KitCommand.java:215
 msgid "Player {user} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:173
+#: de/cubeisland/engine/kits/KitCommand.java:172
 msgid "Received the {name#kit} kit!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:178
-#: de/cubeisland/engine/kits/KitCommand.java:230
-#: de/cubeisland/engine/kits/KitCommand.java:242
+#: de/cubeisland/engine/kits/KitCommand.java:177
+#: de/cubeisland/engine/kits/KitCommand.java:229
+#: de/cubeisland/engine/kits/KitCommand.java:241
 msgid "Received the {name#kit} kit. Enjoy."
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:133
+#: de/cubeisland/engine/kits/KitCommand.java:130
 msgid "The following kits are available:"
 msgstr ""
 
-#: de/cubeisland/engine/kits/Kit.java:112
-msgid "This kit isn't available at the moment. Try again later!"
-msgstr ""
-
-#: de/cubeisland/engine/kits/Kit.java:91
+#: de/cubeisland/engine/kits/Kit.java:95
 msgid "You are not allowed to give this kit."
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:258
+#: de/cubeisland/engine/kits/KitCommand.java:257
 msgid "You don't have enough space in your inventory for this kit!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:177
-#: de/cubeisland/engine/kits/KitCommand.java:239
+#: de/cubeisland/engine/kits/KitCommand.java:176
+#: de/cubeisland/engine/kits/KitCommand.java:238
 msgid "You gave {user} the {name#kit} kit!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:211
+#: de/cubeisland/engine/kits/KitCommand.java:210
 msgid "You need to specify a player!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:194
+#: de/cubeisland/engine/kits/KitCommand.java:193
 msgid "{amount} players did not receive a kit!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:117
+#: de/cubeisland/engine/kits/KitCommand.java:114
 msgid ""
 "{name#kit} is is not a valid name! Do not use characters like *, | or ?"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:254
+#: de/cubeisland/engine/kits/KitCommand.java:253
 msgid "{user} has not enough space in your inventory for this kit!"
 msgstr ""
 
-#: de/cubeisland/engine/kits/KitCommand.java:221
+#: de/cubeisland/engine/kits/KitCommand.java:220
 msgid "{user} is not online!"
 msgstr ""

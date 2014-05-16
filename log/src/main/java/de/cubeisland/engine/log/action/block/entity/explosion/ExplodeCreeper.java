@@ -19,7 +19,6 @@ package de.cubeisland.engine.log.action.block.entity.explosion;
 
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.log.LoggingConfiguration;
-import de.cubeisland.engine.log.action.ActionCategory;
 import de.cubeisland.engine.log.action.BaseAction;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
@@ -54,7 +53,7 @@ public class ExplodeCreeper extends ExplosionAction
                                         count);
         }
         return user.getTranslationN(POSITIVE, count, "{user} let a Creeper detonate and destroy {name#block}",
-                                    "{user} let a Creeper detonate and destroy {amount}x {name#block}",
+                                    "{user} let a Creeper detonate and destroy {2:amount}x {name#block}",
                                     this.player.name, this.oldBlock.name(), count);
     }
 

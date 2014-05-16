@@ -31,7 +31,7 @@ public class ParameterizedTabContext extends AbstractParameterizedContext<String
 {
     public ParameterizedTabContext(CubeCommand command, CommandSender sender, Stack<String> labels, List<String> args, Set<String> flags, Map<String, String> rawParams, Type last)
     {
-        super(command, sender, labels, args, flags, rawParams);
+        super(command, sender, labels, (List)args, flags, rawParams);
         this.last = last;
     }
 

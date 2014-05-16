@@ -61,7 +61,7 @@ public class KitCommand extends ContainerCommand
 
     @Command(desc = "Creates a new kit with the items in your inventory.",
             flags = @Flag(longName = "toolbar", name = "t"),
-            indexed = @Grouped(@Indexed("kitname")))
+            indexed = @Grouped(@Indexed(label = "kitname")))
     public void create(ParameterizedContext context)
     {
         User sender = null;
@@ -108,7 +108,7 @@ public class KitCommand extends ContainerCommand
                             item.getEnchantments()));
             }
         }
-        Kit kit = new Kit(module, context.getString(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
+        Kit kit = new Kit(module, context.<String>getArg(0), false, 0, -1, true, "", new ArrayList<String>(), itemList);
         if (!FileUtil.isValidFileName(kit.getKitName()))
         {
             context.sendTranslated(NEGATIVE, "{name#kit} is is not a valid name! Do not use characters like *, | or ?", kit.getKitName());
@@ -137,14 +137,14 @@ public class KitCommand extends ContainerCommand
 
     @Alias(names = "kit")
     @Command(desc = "Gives a set of items.",
-             indexed = {@Grouped(@Indexed("kitname")),
-                        @Grouped(req = false, value =  @Indexed("player"))},
+             indexed = {@Grouped(@Indexed(label = "kitname")),
+                        @Grouped(req = false, value =  @Indexed(label = "player", type = User.class))},
              flags = {@Flag(longName = "all", name = "a"),
                       @Flag(longName = "force", name = "f")
     })
     public void give(ParameterizedContext context)
     {
-        String kitname = context.getString(0);
+        String kitname = context.getArg(0);
         User user;
         Kit kit = manager.getKit(kitname);
         boolean force = false;
@@ -198,7 +198,7 @@ public class KitCommand extends ContainerCommand
             boolean other = false;
             if (context.hasArg(1))
             {
-                user = context.getUser(1);
+                user = context.getArg(1);
                 other = true;
             }
             else if (context.getSender() instanceof User)
@@ -212,7 +212,7 @@ public class KitCommand extends ContainerCommand
             }
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(1));
                 return;
             }
             if (!user.isOnline())

@@ -35,7 +35,7 @@ public class ChatCommands
         this.module = module;
     }
 
-    @Command(desc = "Allows you to emote", indexed = @Grouped(value = @Indexed("message"), greedy = true))
+    @Command(desc = "Allows you to emote", indexed = @Grouped(value = @Indexed(label = "message"), greedy = true))
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -44,17 +44,17 @@ public class ChatCommands
 
     @Command(desc = "Changes your display name",
              indexed = {
-                 @Grouped(@Indexed({"name","!reset"})),
-                 @Grouped(req = false, value = @Indexed("player"))})
+                 @Grouped(@Indexed(label = {"name","!reset"})),
+                 @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
     public void nick(CommandContext context)
     {
         User forUser;
         if (context.hasArg(1))
         {
-            forUser = context.getUser(1);
+            forUser = context.getArg(1);
             if (forUser == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(1));
                 return;
            }
            if (forUser != context.getSender() && !module.perms().COMMAND_NICK_OTHER.isAuthorized(context.getSender()))
@@ -72,7 +72,7 @@ public class ChatCommands
             context.sendTranslated(NEGATIVE, "You cannot change the consoles display name");
             return;
         }
-        String name = context.getString(0);
+        String name = context.getArg(0);
         if (name.equalsIgnoreCase("-r") || name.equalsIgnoreCase("-reset"))
         {
             forUser.setDisplayName(context.getSender().getName());

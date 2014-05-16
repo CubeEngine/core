@@ -34,8 +34,8 @@ public class LocaleConfiguration extends ReflectedYaml implements LanguageDefini
     public String localName;
     public Locale parent = null;
     public Locale[] clones = null;
-    private int pluralCount;
-    private PluralExpr pluralExpression;
+    public int pluralCount;
+    public PluralExpr pluralExpression;
 
     @Override
     public Locale getLocale()

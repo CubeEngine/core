@@ -18,37 +18,37 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:powersigns:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-29 12:20:49+0100\n"
+"POT-Creation-Date: 2014-05-01 13:33:24+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:113
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:115
 msgid "Changed destination to {amount} floors down! Floorname: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:109
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:111
 msgid "Changed destination to {input} floors up! Floorname: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:102
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:104
 msgid "Could not find any other LiftSign!"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:97
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:99
 msgid "There are no more LiftSigns here!"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:90
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:92
 msgid "You can not depart from this sign but only arrive!"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:66
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:68
 msgid "Could not find any other sign to lift to! Has it been destroyed?"
 msgstr ""
 
-#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:60
+#: de/cubeisland/engine/powersigns/signtype/LiftSign.java:62
 msgid "You can only arrive from this sign!"
 msgstr ""

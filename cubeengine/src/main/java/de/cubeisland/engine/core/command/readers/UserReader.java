@@ -20,9 +20,12 @@ package de.cubeisland.engine.core.command.readers;
 import java.util.Locale;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.user.User;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 /**
  * This argument is used to get users
@@ -42,7 +45,7 @@ public class UserReader extends ArgumentReader
         User user = this.core.getUserManager().findUser(arg);
         if (user == null)
         {
-            throw new InvalidArgumentException("Player {user} not found!", arg);
+            throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Player {user} not found!", arg));
         }
         return user;
     }

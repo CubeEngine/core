@@ -92,7 +92,7 @@ public class LookupCommands
 
     @Command(
         desc = "Queries a lookup in the database\n    " + "Show availiable parameters with /lookup params",
-        indexed = @Grouped(req = false, value = @Indexed("params")),
+        indexed = @Grouped(req = false, value = @Indexed(label = "params")),
         flags = {
             @Flag(longName = "coordinates", name = "coords"),
             @Flag(longName = "detailed", name = "det"),
@@ -113,7 +113,7 @@ public class LookupCommands
     // TODO param for filter / chat / command / signtexts
     public void lookup(ParameterizedContext context)
     {
-        if ((context.hasArg(0) && context.getString(0).equalsIgnoreCase("params")) || context.hasParam("params"))
+        if ((context.hasArg(0) && "params".equalsIgnoreCase(context.<String>getArg(0))) || context.hasParam("params"))
         {
             this.params(context);
         }
@@ -165,7 +165,7 @@ public class LookupCommands
 
     @Command(desc = "Performs a rollback",
         flags = @Flag(longName = "preview", name = "pre"),
-        indexed = @Grouped(req = false, value = @Indexed("!params")),
+        indexed = @Grouped(req = false, value = @Indexed(label = "!params")),
         params = {
             @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
             @Param(names = {"user", "player", "p"}, completer = PlayerListCompleter.class), @Param(names = {"block", "b"}, completer = MaterialListCompleter.class), @Param(names = {"entity", "e"}), @Param(names = {"since", "time", "t"}), // if not given default since 3d
@@ -175,7 +175,7 @@ public class LookupCommands
     {
         if (context.hasArg(0))
         {
-            if (context.getString(0).equalsIgnoreCase("params"))
+            if ("params".equalsIgnoreCase(context.<String>getArg(0)))
             {
                 this.params(context);
             }
@@ -220,7 +220,7 @@ public class LookupCommands
 
     @Command(
         desc = "Performs a rollback",
-        indexed = @Grouped(req = false, value = @Indexed("params")),
+        indexed = @Grouped(req = false, value = @Indexed(label = "params")),
         flags = @Flag(longName = "preview", name = "pre"),
         params = {
             @Param(names = {"action", "a"}, completer = ActionTypeCompleter.class), @Param(names = {"radius", "r"}),//<radius> OR selection|sel OR global|g OR player|p:<radius>
@@ -230,7 +230,7 @@ public class LookupCommands
     {
         if (context.hasArg(0))
         {
-            if (context.getString(0).equalsIgnoreCase("params"))
+            if ("params".equalsIgnoreCase(context.<String>getArg(0)))
             {
                 this.params(context);
             }
@@ -425,7 +425,7 @@ public class LookupCommands
         }
         if (context.hasArg(0))
         {
-            if (context.getString(0).equalsIgnoreCase("show"))
+            if ("show".equalsIgnoreCase(context.<String>getArg(0)))
             {
                 if (lookup != null && lookup.queried())
                 {

@@ -24,6 +24,7 @@ import java.util.Random;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.storage.IgnoreList;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.readers.UserListReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -82,22 +83,16 @@ public class IgnoreCommands
     }
 
     @Command(desc = "Ignores all messages from players",
-             indexed = @Grouped(@Indexed("players...")))
+             indexed = @Grouped(@Indexed(label = "players", type = UserListReader.class)))
     public void ignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            String[] userNames = StringUtils.explode(",", context.getString(0));
             List<String> added = new ArrayList<>();
-            for (String name : userNames)
+            for (User user : context.<List<User>>getArg(0))
             {
-                User user = this.um.findUser(name);
-                if (user == null)
-                {
-                    context.sendTranslated(NEGATIVE, "User {user} not found!", name);
-                }
-                else if (!this.addIgnore(sender, user))
+                if (!this.addIgnore(sender, user))
                 {
                     if (module.perms().COMMAND_IGNORE_PREVENT.isAuthorized(user))
                     {
@@ -108,7 +103,7 @@ public class IgnoreCommands
                 }
                 else
                 {
-                    added.add(name);
+                    added.add(user.getName());
                 }
             }
             context.sendTranslated(POSITIVE, "You added {user#list} to your ignore list!",
@@ -122,28 +117,22 @@ public class IgnoreCommands
     }
 
     @Command(desc = "Stops ignoring all messages from a player",
-             indexed = @Grouped(@Indexed("players...")))
+             indexed = @Grouped(@Indexed(label = "players", type = UserListReader.class)))
     public void unignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            String[] userNames = StringUtils.explode(",", context.getString(0));
             List<String> added = new ArrayList<>();
-            for (String name : userNames)
+            for (User user : context.<List<User>>getArg(0))
             {
-                User user = this.um.findUser(name);
-                if (user == null)
-                {
-                    context.sendTranslated(NEGATIVE, "User {user} not found!", name);
-                }
-                else if (!this.removeIgnore(sender, user))
+                if (!this.removeIgnore(sender, user))
                 {
                     context.sendTranslated(NEGATIVE, "You haven't ignored {user}!", user);
                 }
                 else
                 {
-                    added.add(name);
+                    added.add(user.getName());
                 }
             }
             context.sendTranslated(POSITIVE, "You removed {user#list} from your ignore list!",

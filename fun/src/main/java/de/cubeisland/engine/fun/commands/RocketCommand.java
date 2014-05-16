@@ -60,11 +60,11 @@ public class RocketCommand
     }
 
     @Command(desc = "Shoots a player upwards with a cool smoke effect",
-             indexed = @Grouped(req = false, value = @Indexed("height")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "height")),
              params = @Param(names = {"player", "p"}, type = User.class))
     public void rocket(ParameterizedContext context)
     {
-        int height = context.getArg(0, Integer.class, 10);
+        int height = context.getArg(0, 10);
         User user;
         if (context.hasParam("player"))
         {

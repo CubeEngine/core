@@ -48,7 +48,7 @@ public class LockerAdminCommands extends ContainerCommand
         if (LockerCommands.isNotUser(context.getSender())) return null;
         if (id == null)
         {
-            context.sendTranslated(NEGATIVE, "{input} is not a valid id!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "{input} is not a valid id!", context.getArg(0));
             return null;
         }
         Lock lockById = this.manager.getLockById(id);
@@ -59,12 +59,10 @@ public class LockerAdminCommands extends ContainerCommand
         return lockById;
     }
 
-    @Command(desc = "Opens a protected chest by protection id",indexed = @Grouped(@Indexed("id")))
+    @Command(desc = "Opens a protected chest by protection id", indexed = @Grouped(@Indexed(label = "id", type = Integer.class)))
     public void view(ParameterizedContext context)
     {
-
-        Lock lock = this.getLockById(context, context.getArg(0, Integer.class, null));
-        if (lock == null) return;
+        Lock lock = this.getLockById(context, context.<Integer>getArg(0));
         switch (lock.getProtectedType())
         {
             case CONTAINER:
@@ -85,18 +83,18 @@ public class LockerAdminCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes a protection by its id", indexed = @Grouped(@Indexed("id")))
+    @Command(desc = "Deletes a protection by its id", indexed = @Grouped(@Indexed(label = "id", type = Integer.class)))
     public void remove(ParameterizedContext context)
     {
-        Lock lock = this.getLockById(context, context.getArg(0, Integer.class, null));
+        Lock lock = this.getLockById(context, context.<Integer>getArg(0, null));
         if (lock == null) return;
         lock.delete((User)context.getSender());
     }
 
-    @Command(desc = "Teleport to a protection", indexed = @Grouped(@Indexed("id")))
+    @Command(desc = "Teleport to a protection", indexed = @Grouped(@Indexed(label = "id", type = Integer.class)))
     public void tp(ParameterizedContext context)
     {
-        Lock lock = this.getLockById(context, context.getArg(0, Integer.class, null));
+        Lock lock = this.getLockById(context, context.<Integer>getArg(0, null));
         if (lock == null) return;
         if (lock.isBlockLock())
         {
@@ -109,15 +107,10 @@ public class LockerAdminCommands extends ContainerCommand
     }
 
     @Command(desc = "Deletes all locks of given player",
-             indexed = @Grouped(@Indexed("player")))
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void purge(ParameterizedContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         this.manager.purgeLocksFrom(user);
         context.sendTranslated(POSITIVE, "All locks for {user} are now deleted!", user);
     }

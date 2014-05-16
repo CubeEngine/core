@@ -58,14 +58,14 @@ public class ManagementCommands extends ContainerCommand
     }
 
     @Command(desc = "Adds a custom chat command.",
-             indexed = {@Grouped(@Indexed("name")),
-                        @Grouped(value = @Indexed("message"), greedy = true)},
+    		 permDefault = TRUE,
+             indexed = {@Grouped(@Indexed(label = "name")),
+                        @Grouped(value = @Indexed(label = "message"), greedy = true)},
              flags = {@Flag(name = "force", permDefault = TRUE),
-                      @Flag(name = "global")},
-             permDefault = TRUE)
+                      @Flag(name = "global")})
     public void add(ParameterizedContext context)
     {
-        String name = context.getString(0);
+        String name = context.getArg(0);
         String message = context.getStrings(1);
 
         if (config.commands.containsKey(name))
@@ -90,12 +90,12 @@ public class ManagementCommands extends ContainerCommand
     }
 
     @Command(desc = "Deletes a custom chat command.",
-             indexed = @Grouped(@Indexed(value = "name", completer = CustomCommandCompleter.class)),
+             indexed = @Grouped(@Indexed(label = "name", completer = CustomCommandCompleter.class)),
              flags = @Flag(name = "global"),
              permDefault = TRUE)
     public void delete(ParameterizedContext context)
     {
-        String name = context.getString(0);
+        String name = context.getArg(0);
 
         if (config.commands.containsKey(name))
         {

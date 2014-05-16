@@ -39,6 +39,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -78,6 +79,8 @@ public class Multiverse implements Listener
 
     private final Map<String, Universe> universes = new HashMap<>(); // universeName -> Universe
     private final Map<String, Universe> worlds = new HashMap<>(); // worldName -> belonging to Universe
+
+    private Map<UUID, World> lastDeath = new HashMap<>();
 
     private final Path dirPlayers;
     private final Path dirUniverses;
@@ -444,14 +447,22 @@ public class Multiverse implements Listener
         this.savePlayer(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.LOW) // Allow others e.g spawn module to adjust spawn later
+    @EventHandler
     public void onRespawn(PlayerRespawnEvent event)
     {
-        if (!event.isBedSpawn())
+        World world = lastDeath.remove(event.getPlayer().getUniqueId());
+        if (world == null)
         {
-            World world = event.getRespawnLocation().getWorld();
-            event.setRespawnLocation(this.getUniverseFrom(world).getRespawnLocation(world));
+            world = event.getPlayer().getWorld();
         }
+        Universe universe = this.getUniverseFrom(world);
+        event.setRespawnLocation(universe.getRespawnLocation(world, event.isBedSpawn(), event.getRespawnLocation()));
+    }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event)
+    {
+        lastDeath.put(event.getEntity().getUniqueId(), event.getEntity().getWorld());
     }
 
     @EventHandler(ignoreCancelled = true)

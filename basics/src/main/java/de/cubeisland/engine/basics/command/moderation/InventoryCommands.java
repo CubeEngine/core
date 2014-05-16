@@ -53,16 +53,16 @@ public class InventoryCommands
             flags = {@Flag(longName = "force", name = "f"),
                      @Flag(longName = "quiet", name = "q"),
                      @Flag(longName = "ender", name = "e")},
-            indexed = @Grouped(@Indexed("player")))
+            indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void invsee(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            User user = context.getUser(0);
+            User user = context.getArg(0);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
                 return;
             }
             boolean denyModify = false;
@@ -150,7 +150,7 @@ public class InventoryCommands
 
     @Command(names = {"clearinventory", "ci", "clear"},
             desc = "Clears the inventory",
-            indexed = @Grouped(req = false, value = @Indexed("player")),
+            indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
             flags = { @Flag(longName = "removeArmor", name = "ra"),
                       @Flag(longName = "quiet", name = "q")})
     @SuppressWarnings("deprecation")
@@ -160,7 +160,7 @@ public class InventoryCommands
         final User target;
         if (context.hasArgs())
         {
-            target = context.getArg(0, User.class);
+            target = context.getArg(0);
             if (target == null)
             {
                 sender.sendTranslated(NEGATIVE, "The specified user was not found!");

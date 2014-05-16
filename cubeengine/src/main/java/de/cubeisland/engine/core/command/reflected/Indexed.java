@@ -21,8 +21,8 @@ import de.cubeisland.engine.core.command.parameterized.Completer;
 
 public @interface Indexed
 {
-    String[] value();
-    Class type() default String.class;
+    String[] label();
+    Class[] type() default String.class;
     Class<? extends Completer> completer() default Completer.class;
     boolean req() default true;
 }

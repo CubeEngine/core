@@ -47,6 +47,7 @@ import de.cubeisland.engine.locker.storage.ProtectionFlag;
 import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
 import static de.cubeisland.engine.core.util.ChatFormat.GREY;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
 import static java.util.Arrays.asList;
 
 public class LockerCommands extends ContainerCommand
@@ -141,7 +142,7 @@ public class LockerCommands extends ContainerCommand
 
     @Alias(names = "cunlock")
     @Command(desc = "Unlocks a password protected chest",
-             indexed = @Grouped(@Indexed("password")),
+             indexed = @Grouped(@Indexed(label = "password")),
              flags = @Flag(longName = "persist", name = "p"))
     public void unlock(ParameterizedContext context)
     {
@@ -150,14 +151,14 @@ public class LockerCommands extends ContainerCommand
         {
             this.persist(context);
         }
-        this.manager.commandListener.setCommandType(context.getSender(), CommandType.UNLOCK, context.getString(0));
+        this.manager.commandListener.setCommandType(context.getSender(), CommandType.UNLOCK, context.<String>getArg(0));
         context.sendTranslated(POSITIVE, "Right click to unlock a password protected chest!");
     }
 
     @Alias(names = "cmodify")
     @Command(names = "modify",
              desc = "adds or removes player from the accesslist",
-             indexed = @Grouped(@Indexed("players...")),
+             indexed = @Grouped(@Indexed(label = "players")),
     flags = {@Flag(name = "g", longName = "global"),
              @Flag(longName = "persist", name = "p")})
     public void modify(ParameterizedContext context)
@@ -167,7 +168,7 @@ public class LockerCommands extends ContainerCommand
         {
             this.persist(context);
         }
-        String[] explode = StringUtils.explode(",", context.getString(0));
+        String[] explode = StringUtils.explode(",", context.<String>getArg(0));
         for (String name : explode)
         {
             if (name.startsWith("@"))
@@ -187,18 +188,18 @@ public class LockerCommands extends ContainerCommand
         } // All users do exist!
         if (context.hasFlag("g"))
         {
-            this.manager.setGlobalAccess((User)context.getSender(), context.getString(0));
+            this.manager.setGlobalAccess((User)context.getSender(), context.<String>getArg(0));
         }
         else
         {
-            this.manager.commandListener.setCommandType(context.getSender(), CommandType.MODIFY, context.getString(0));
+            this.manager.commandListener.setCommandType(context.getSender(), MODIFY, context.<String>getArg(0));
             context.sendTranslated(POSITIVE, "Right click a protection to modify it!");
         }
     }
 
     @Alias(names = "cgive")
     @Command(desc = "gives a protection to someone else",
-             indexed = @Grouped(@Indexed("player")),
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
              flags = @Flag(longName = "persist", name = "p"))
     public void give(ParameterizedContext context)
     {
@@ -207,13 +208,7 @@ public class LockerCommands extends ContainerCommand
         {
             this.persist(context);
         }
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
-        this.manager.commandListener.setCommandType(context.getSender(), CommandType.GIVE, context.getString(0));
+        this.manager.commandListener.setCommandType(context.getSender(), GIVE, context.<User>getArg(0).getName());
     }
 
     @Alias(names = "ckey")
@@ -235,12 +230,13 @@ public class LockerCommands extends ContainerCommand
         }
         if (context.hasFlag("i"))
         {
-            this.manager.commandListener.setCommandType(context.getSender(), CommandType.INVALIDATE_KEYS, context.getString(0));
+            this.manager.commandListener.setCommandType(context.getSender(), INVALIDATE_KEYS, context.<String>getArg(
+                0));
             context.sendTranslated(POSITIVE, "Right click a protection to invalidate old KeyBooks for it!");
         }
         else
         {
-            this.manager.commandListener.setCommandType(context.getSender(), CommandType.KEYS, context.getString(0), true);
+            this.manager.commandListener.setCommandType(context.getSender(), KEYS, context.<String>getArg(0), true);
             context.sendTranslated(POSITIVE, "Right click a protection to with a book to create a new KeyBook!");
         }
     }

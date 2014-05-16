@@ -54,7 +54,7 @@ public class UserCommandHelper extends ContainerCommand
         User user = null;
         if (context.hasArg(pos))
         {
-            user = context.getUser(pos);
+            user = context.getArg(pos);
         }
         else
         {
@@ -67,11 +67,6 @@ public class UserCommandHelper extends ContainerCommand
                 context.sendTranslated(NEGATIVE, "You have to specify a player.");
                 return null;
             }
-        }
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(pos));
-            return null;
         }
         return user;
     }

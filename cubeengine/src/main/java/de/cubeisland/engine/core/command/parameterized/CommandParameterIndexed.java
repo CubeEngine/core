@@ -27,18 +27,23 @@ public class CommandParameterIndexed
      * The display label for the indexed parameter
      */
     private final String[] labels;
-    private final Class<?> type;
+    private final Class<?>[] types;
     private final int count;
     private final boolean groupRequired;
     private final boolean required;
 
     private Completer completer;
 
-    public CommandParameterIndexed(String[] labels, Class<?> type, boolean groupRequiered, boolean required, int count)
+    public CommandParameterIndexed(String[] labels, Class<?>[] types, boolean groupRequiered, boolean required, int count)
     {
-        expect(ArgumentReader.hasReader(type), "The indexed parameter '" + labels[0] + "' has an unreadable type: " + type.getName());
+        int i = 0;
+        for (Class<?> type : types)
+        {
+            expect(ArgumentReader.hasReader(type), "The indexed parameter '" + labels[0] + "(" + i + ")' has an unreadable type: " + type.getName());
+            i++;
+        }
         this.labels = labels;
-        this.type = type;
+        this.types = types;
         this.groupRequired = groupRequiered;
         this.required = required;
         this.count = count;
@@ -54,9 +59,9 @@ public class CommandParameterIndexed
         return labels;
     }
 
-    public Class<?> getType()
+    public Class<?>[] getType()
     {
-        return type;
+        return types;
     }
 
     public Completer getCompleter()
@@ -81,11 +86,11 @@ public class CommandParameterIndexed
 
     public static CommandParameterIndexed greedyIndex()
     {
-        return new CommandParameterIndexed(new String[]{"0"}, String.class, false, false, -1);
+        return new CommandParameterIndexed(new String[]{"0"}, new Class[]{String.class}, false, false, -1);
     }
 
     public static CommandParameterIndexed emptyIndex(String label)
     {
-        return new CommandParameterIndexed(new String[]{label}, String.class, false, false, 1);
+        return new CommandParameterIndexed(new String[]{label}, new Class[]{String.class}, false, false, 1);
     }
 }

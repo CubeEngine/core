@@ -18,13 +18,11 @@
 package de.cubeisland.engine.basics.command.general;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -39,6 +37,7 @@ import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.BasicsUser;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.bukkit.AfterJoinEvent;
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -54,19 +53,6 @@ public class GeneralsListener implements Listener
     public GeneralsListener(Basics basics)
     {
         this.module = basics;
-    }
-
-    @EventHandler
-    public void onDamage(final EntityDamageEvent event)
-    {
-        if (event.getEntity() instanceof Player)
-        {
-            BasicsUserEntity bUser = this.module.getBasicsUser((Player)event.getEntity()).getbUEntity();
-            if (bUser.getGodmode())
-            {
-                event.setCancelled(true);
-            }
-        }
     }
 
     @EventHandler
@@ -102,6 +88,7 @@ public class GeneralsListener implements Listener
         if (!module.perms().COMMAND_GOD_KEEP.isAuthorized(event.getPlayer()))
         {
             bUser.setGodmode(false);
+            BukkitUtils.setInvulnerable(event.getPlayer(), false);
         }
         bUser.update();
         if (!module.perms().COMMAND_GAMEMODE_KEEP.isAuthorized(event.getPlayer()))
@@ -130,7 +117,15 @@ public class GeneralsListener implements Listener
         BasicsUser bUser = this.module.getBasicsUser(user);
         if (bUser.getbUEntity().getGodmode())
         {
-            user.setInvulnerable(true);
+            if (module.perms().COMMAND_GOD_KEEP.isAuthorized(user))
+            {
+                user.setInvulnerable(true);
+            }
+            else
+            {
+                bUser.getbUEntity().setGodmode(false);
+                bUser.getbUEntity().update();
+            }
         }
     }
 

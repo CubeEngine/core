@@ -18,14 +18,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:signmarket:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-03-30 13:23:43+0200\n"
+"POT-Creation-Date: 2014-05-01 13:33:23+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/signmarket/SignMarketCommands.java:41
+#: de/cubeisland/engine/signmarket/SignMarketCommands.java:46
 msgid "Enters the editmode allowing to change market signs easily"
 msgstr ""
 
@@ -37,7 +37,7 @@ msgstr ""
 msgid "--------- {text:Sign Market} ---------"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:443
+#: de/cubeisland/engine/signmarket/EditModeListener.java:446
 msgid "A negative price!? Are you serious?"
 msgstr ""
 
@@ -49,15 +49,15 @@ msgstr ""
 msgid "Added {amount}x {input#material} to the stock!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:274
+#: de/cubeisland/engine/signmarket/EditModeListener.java:277
 msgid "Admin signs cannot have a demand!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:400
+#: de/cubeisland/engine/signmarket/EditModeListener.java:403
 msgid "Admin-signs with stock are not allowed!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:380
+#: de/cubeisland/engine/signmarket/EditModeListener.java:383
 msgid "Admin-signs without stock are not allowed!"
 msgstr ""
 
@@ -65,15 +65,15 @@ msgstr ""
 msgid "Book-Enchantments:"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:269
+#: de/cubeisland/engine/signmarket/EditModeListener.java:272
 msgid "Buy signs cannot have a demand!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:109
+#: de/cubeisland/engine/signmarket/EditModeListener.java:112
 msgid "Changed active sign!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/SignMarketCommands.java:59
+#: de/cubeisland/engine/signmarket/SignMarketCommands.java:64
 msgid "Chat will now work as commands."
 msgstr ""
 
@@ -85,7 +85,7 @@ msgstr ""
 msgid "Enchantments:"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:144
+#: de/cubeisland/engine/signmarket/EditModeListener.java:147
 msgid "Exiting edit mode."
 msgstr ""
 
@@ -101,20 +101,20 @@ msgstr ""
 msgid "In stock: {amount}/{text:Unknown:color=RED}"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:456
+#: de/cubeisland/engine/signmarket/EditModeListener.java:459
 msgid "Invalid amount {input#amount}!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/MarketSign.java:970
+#: de/cubeisland/engine/signmarket/MarketSign.java:973
 msgid "Invalid amount!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:298
+#: de/cubeisland/engine/signmarket/EditModeListener.java:301
 msgid "Invalid demand amount!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:437
-#: de/cubeisland/engine/signmarket/MarketSign.java:976
+#: de/cubeisland/engine/signmarket/EditModeListener.java:440
+#: de/cubeisland/engine/signmarket/MarketSign.java:981
 msgid "Invalid price!"
 msgstr ""
 
@@ -122,15 +122,15 @@ msgstr ""
 msgid "Invalid sign!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:493
+#: de/cubeisland/engine/signmarket/EditModeListener.java:496
 msgid "Invalid size! Use -1 for infinite OR 1-6 inventory-lines!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:643
+#: de/cubeisland/engine/signmarket/EditModeListener.java:646
 msgid "Item in sign updated!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:474
+#: de/cubeisland/engine/signmarket/EditModeListener.java:477
 msgid "Item not found!"
 msgstr ""
 
@@ -138,51 +138,51 @@ msgstr ""
 msgid "MarketSign destroyed!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:155
-#: de/cubeisland/engine/signmarket/EditModeListener.java:565
-#: de/cubeisland/engine/signmarket/EditModeListener.java:659
-#: de/cubeisland/engine/signmarket/EditModeListener.java:684
-#: de/cubeisland/engine/signmarket/SignMarketCommands.java:54
+#: de/cubeisland/engine/signmarket/EditModeListener.java:158
+#: de/cubeisland/engine/signmarket/EditModeListener.java:568
+#: de/cubeisland/engine/signmarket/EditModeListener.java:662
+#: de/cubeisland/engine/signmarket/EditModeListener.java:687
+#: de/cubeisland/engine/signmarket/SignMarketCommands.java:59
 msgid "MarketSigns are disabled in the configuration for this world!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:461
+#: de/cubeisland/engine/signmarket/EditModeListener.java:464
 msgid "Negative amounts could be unfair! Just sayin'"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/MarketSign.java:982
+#: de/cubeisland/engine/signmarket/MarketSign.java:989
 msgid "No item given!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:180
+#: de/cubeisland/engine/signmarket/EditModeListener.java:183
 msgid "No market sign at position! This should not happen!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:189
+#: de/cubeisland/engine/signmarket/EditModeListener.java:192
 msgid "No market sign at previous position."
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/MarketSign.java:964
+#: de/cubeisland/engine/signmarket/MarketSign.java:965
 msgid "No sign-type given!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/SignMarketCommands.java:65
+#: de/cubeisland/engine/signmarket/SignMarketCommands.java:70
 msgid "Only players can edit market signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:346
+#: de/cubeisland/engine/signmarket/EditModeListener.java:349
 msgid "Player {user} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:174
+#: de/cubeisland/engine/signmarket/EditModeListener.java:177
 msgid "Please select a sign to edit."
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:579
+#: de/cubeisland/engine/signmarket/EditModeListener.java:582
 msgid "Someone else is editing this sign!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:588
+#: de/cubeisland/engine/signmarket/EditModeListener.java:591
 msgid "That is not a market sign!"
 msgstr ""
 
@@ -194,11 +194,11 @@ msgstr ""
 msgid "The market sign inventory is full!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:510
+#: de/cubeisland/engine/signmarket/EditModeListener.java:513
 msgid "The maximum size of admin-signs is set to {amount}!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:524
+#: de/cubeisland/engine/signmarket/EditModeListener.java:527
 msgid "The maximum size of player signs is set to {amount}!"
 msgstr ""
 
@@ -226,7 +226,7 @@ msgid ""
 "items to it."
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:422
+#: de/cubeisland/engine/signmarket/EditModeListener.java:425
 msgid "This sign has no stock! Use \"stock\" first to enable it!"
 msgstr ""
 
@@ -235,7 +235,7 @@ msgstr ""
 msgid "This sign is being edited right now!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:630
+#: de/cubeisland/engine/signmarket/EditModeListener.java:633
 msgid "This sign is not a market-sign!"
 msgstr ""
 
@@ -246,11 +246,11 @@ msgstr ""
 msgid "This signs inventory is being edited right now!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/SignMarketCommands.java:60
+#: de/cubeisland/engine/signmarket/SignMarketCommands.java:65
 msgid "Type exit or use this command again to leave the edit mode."
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:589
+#: de/cubeisland/engine/signmarket/EditModeListener.java:592
 msgid "Use shift leftclick to convert the sign."
 msgstr ""
 
@@ -258,7 +258,7 @@ msgstr ""
 msgid "Use your bare hands to break the sign!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:407
+#: de/cubeisland/engine/signmarket/EditModeListener.java:410
 msgid "User signs cannot have no stock!"
 msgstr ""
 
@@ -279,59 +279,59 @@ msgstr ""
 msgid "You are not allowed to break your own market signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:538
+#: de/cubeisland/engine/signmarket/EditModeListener.java:541
 msgid "You are not allowed to change the sign inventory-size."
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:196
+#: de/cubeisland/engine/signmarket/EditModeListener.java:199
 msgid "You are not allowed to copy admin signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:201
+#: de/cubeisland/engine/signmarket/EditModeListener.java:204
 msgid "You are not allowed to copy player signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/MarketSignFactory.java:103
+#: de/cubeisland/engine/signmarket/MarketSignFactory.java:104
 msgid "You are not allowed to create Admin or User MarketSigns!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:217
+#: de/cubeisland/engine/signmarket/EditModeListener.java:220
 msgid "You are not allowed to create admin buy signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:244
+#: de/cubeisland/engine/signmarket/EditModeListener.java:247
 msgid "You are not allowed to create admin sell signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:319
+#: de/cubeisland/engine/signmarket/EditModeListener.java:322
 msgid "You are not allowed to create admin signs"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:374
+#: de/cubeisland/engine/signmarket/EditModeListener.java:377
 msgid "You are not allowed to create admin-signs with no stock"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:394
+#: de/cubeisland/engine/signmarket/EditModeListener.java:397
 msgid "You are not allowed to create admin-signs with stock"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:666
+#: de/cubeisland/engine/signmarket/EditModeListener.java:669
 msgid "You are not allowed to create market signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:229
+#: de/cubeisland/engine/signmarket/EditModeListener.java:232
 msgid "You are not allowed to create player buy signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:256
+#: de/cubeisland/engine/signmarket/EditModeListener.java:259
 msgid "You are not allowed to create player sell signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:335
+#: de/cubeisland/engine/signmarket/EditModeListener.java:338
 msgid "You are not allowed to create player signs"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:356
+#: de/cubeisland/engine/signmarket/EditModeListener.java:359
 msgid "You are not allowed to create player signs for other players"
 msgstr ""
 
@@ -339,15 +339,15 @@ msgstr ""
 msgid "You are not allowed to destroy others market signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:133
+#: de/cubeisland/engine/signmarket/EditModeListener.java:136
 msgid "You are not allowed to edit Signs of other players!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:121
+#: de/cubeisland/engine/signmarket/EditModeListener.java:124
 msgid "You are not allowed to edit admin signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:127
+#: de/cubeisland/engine/signmarket/EditModeListener.java:130
 msgid "You are not allowed to edit player signs!"
 msgstr ""
 
@@ -355,15 +355,15 @@ msgstr ""
 msgid "You are not allowed to see the market signs inventories"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:292
+#: de/cubeisland/engine/signmarket/EditModeListener.java:295
 msgid "You are not allowed to set a demand!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:500
+#: de/cubeisland/engine/signmarket/EditModeListener.java:503
 msgid "You are not allowed to set infinite inventories!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:428
+#: de/cubeisland/engine/signmarket/EditModeListener.java:431
 msgid "You are not allowed to set the stock!"
 msgstr ""
 
@@ -375,7 +375,7 @@ msgstr ""
 msgid "You are not allowed to use sell market signs!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/SignMarketCommands.java:58
+#: de/cubeisland/engine/signmarket/SignMarketCommands.java:63
 msgid "You are now in edit mode!"
 msgstr ""
 
@@ -395,13 +395,13 @@ msgstr ""
 msgid "You don't have enough space in your inventory for these items!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:638
+#: de/cubeisland/engine/signmarket/EditModeListener.java:641
 msgid ""
 "You have to take all items out of the market sign to be able to change the "
 "item in it!"
 msgstr ""
 
-#: de/cubeisland/engine/signmarket/EditModeListener.java:482
+#: de/cubeisland/engine/signmarket/EditModeListener.java:485
 msgid ""
 "You have to take all items out of the market-sign to be able to change the "
 "item in it!"

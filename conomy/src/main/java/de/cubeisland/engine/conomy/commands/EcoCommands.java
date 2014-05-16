@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.conomy.commands;
 
+import java.util.List;
+
 import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.account.Account;
 import de.cubeisland.engine.conomy.account.ConomyManager;
@@ -24,11 +26,11 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.readers.UserListOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
@@ -46,285 +48,179 @@ public class EcoCommands extends ContainerCommand
 
     @Command(names = {"give", "grant"},
              desc = "Gives money to one or all players.",
-             indexed = { @Grouped(@Indexed({"player","!*"})),
-                         @Grouped(@Indexed("amount"))},
+             indexed = { @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))},
              flags = @Flag(longName = "online", name = "o"))
     public void give(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
-        Double amount = this.manager.parse(amountString, context.getSender().getLocale());
-        if (amount == null)
-        {
-            context.sendTranslated(NEGATIVE, "{input#amount} is not a valid number!", amountString);
-            return;
-        }
+        Double amount = context.getArg(1);
         String format = manager.format(amount);
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             if (context.hasFlag("o"))
             {
-                if (this.manager.transactionAllOnline(amount))
+                this.manager.transactionAllOnline(amount);
+                context.sendTranslated(POSITIVE, "You gave {input#amount} to every online player!", format);
+                return;
+            }
+            this.manager.transactionAll(true, false, amount);
+            context.sendTranslated(POSITIVE, "You gave {input#amount} to every player!", format);
+            return;
+        }
+        for (User user : context.<List<User>>getArg(0))
+        {
+            Account target = this.manager.getUserAccount(user, false);
+            if (target == null)
+            {
+                context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
+                continue;
+            }
+            if (this.manager.transaction(null, target, amount, true))
+            {
+                context.sendTranslated(POSITIVE, "You gave {input#amount} to {user}!", format, user.getName());
+                if (!context.getSender().equals(user) && user.isOnline())
                 {
-                    context.sendTranslated(POSITIVE, "You gave {input#amount} to every online player!", format);
-                }
-                else
-                {
-                    context.sendTranslated(NEGATIVE, "Please try again!");
+                    user.sendTranslated(POSITIVE, "You were granted {input#amount}.", format);
                 }
             }
             else
             {
-                this.manager.transactionAll(true, false, amount);
-                context.sendTranslated(POSITIVE, "You gave {input#amount} to every player!", format);
-            }
-        }
-        else
-        {
-            String[] users = StringUtils.explode(",", context.getString(0));
-            for (String userString : users)
-            {
-                User user = this.module.getCore().getUserManager().findUser(userString);
-                if (user == null)
-                {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                    continue;
-                }
-                Account target = this.manager.getUserAccount(user, false);
-                if (target == null)
-                {
-                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
-                    continue;
-                }
-                if (this.manager.transaction(null, target, amount, true))
-                {
-                    context.sendTranslated(POSITIVE, "You gave {input#amount} to {user}!", format, user.getName());
-                    if (!context.getSender().equals(user) && user.isOnline())
-                    {
-                        user.sendTranslated(POSITIVE, "You were granted {input#amount}.", format);
-                    }
-                }
-                else
-                {
-                    context.sendTranslated(NEGATIVE, "Could not give the money to {user}!", user);
-                }
+                context.sendTranslated(NEGATIVE, "Could not give the money to {user}!", user);
             }
         }
     }
 
     @Command(names = {"take", "remove"},
              desc = "Takes money from given user",
-             indexed = { @Grouped(@Indexed({"player","!*"})),
-                         @Grouped(@Indexed("amount"))},
+             indexed = { @Grouped(@Indexed(label = {"player","!*"}, type = UserListOrAllReader.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))},
              flags = @Flag(longName = "online", name = "o"))
     public void take(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
-        Double amount = manager.parse(amountString, context.getSender().getLocale());
-        if (amount == null)
-        {
-            context.sendTranslated(NEGATIVE, "Could not parse amount!");
-            return;
-        }
+        Double amount = context.getArg(1);
         String format = manager.format(amount);
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             if (context.hasFlag("o"))
             {
-                if (this.manager.transactionAllOnline(-amount))
-                {
-                    context.sendTranslated(POSITIVE, "You took {input#amount} from every online player!", format);
-                }
-                else
-                {
-                    context.sendTranslated(NEGATIVE, "Please try again!");
-                }
+                this.manager.transactionAllOnline(-amount);
+                context.sendTranslated(POSITIVE, "You took {input#amount} from every online player!", format);
+                return;
             }
-            else
-            {
-                this.manager.transactionAll(true, false, -amount);
-                context.sendTranslated(POSITIVE, "You took {input#amount} from every player!", format);
-            }
+            this.manager.transactionAll(true, false, -amount);
+            context.sendTranslated(POSITIVE, "You took {input#amount} from every player!", format);
+            return;
         }
-        else
+        for (User user : context.<List<User>>getArg(0))
         {
-            String[] users = StringUtils.explode(",", context.getString(0));
-            for (String userString : users)
+            Account target = this.manager.getUserAccount(user, false);
+            if (target == null)
             {
-                User user = this.module.getCore().getUserManager().findUser(userString);
-                if (user == null)
-                {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                    return;
-                }
-                Account target = this.manager.getUserAccount(user, false);
-                if (target == null)
-                {
-                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
-                    return;
-                }
-                this.manager.transaction(target, null, amount, true);
-                context.sendTranslated(POSITIVE, "You took {input#amount} from {user}!", format, user);
-                if (!context.getSender().equals(user) && user.isOnline())
-                {
-                    user.sendTranslated(NEUTRAL, "Withdrew {input#amount} from your account.", format);
-                }
+                context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
+                return;
+            }
+            this.manager.transaction(target, null, amount, true);
+            context.sendTranslated(POSITIVE, "You took {input#amount} from {user}!", format, user);
+            if (!context.getSender().equals(user) && user.isOnline())
+            {
+                user.sendTranslated(NEUTRAL, "Withdrew {input#amount} from your account.", format);
             }
         }
     }
 
     @Command(desc = "Reset the money from given user",
-             indexed = @Grouped(@Indexed({"player","!*"})),
+             indexed = @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
              flags = @Flag(longName = "online", name = "o"))
     public void reset(ParameterizedContext context)
     {
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             if (context.hasFlag("o"))
             {
-                if (this.manager.setAllOnline(this.manager.getDefaultBalance()))
-                {
-                    context.sendTranslated(POSITIVE, "You reset every online players' account!");
-                }
-                else
-                {
-                    context.sendTranslated(NEGATIVE, "Please try again!");
-                }
+                this.manager.setAllOnline(this.manager.getDefaultBalance());
+                context.sendTranslated(POSITIVE, "You reset every online players' account!");
+                return;
             }
-            else
-            {
-                this.manager.setAll(true, false, this.manager.getDefaultBalance());
-                context.sendTranslated(POSITIVE, "You reset every players' account!");
-            }
+            this.manager.setAll(true, false, this.manager.getDefaultBalance());
+            context.sendTranslated(POSITIVE, "You reset every players' account!");
+            return;
         }
-        else
+        for (User user : context.<List<User>>getArg(0))
         {
-            String[] users = StringUtils.explode(",", context.getString(0));
-            for (String userString : users)
+            Account target = this.manager.getUserAccount(user, false);
+            if (target == null)
             {
-                User user = this.module.getCore().getUserManager().findUser(userString);
-                if (user == null)
-                {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                    return;
-                }
-                Account target = this.manager.getUserAccount(user, false);
-                if (target == null)
-                {
-                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
-                    return;
-                }
-                target.reset();
-                String format = this.manager.format(this.manager.getDefaultBalance());
-                context.sendTranslated(POSITIVE, "{user} account reset to {input#balance}!", user, format);
-                if (!context.getSender().equals(user) && user.isOnline())
-                {
-                    user.sendTranslated(NEUTRAL, "Your balance got reset to {input#balance}.", format);
-                }
+                context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
+                return;
+            }
+            target.reset();
+            String format = this.manager.format(this.manager.getDefaultBalance());
+            context.sendTranslated(POSITIVE, "{user} account reset to {input#balance}!", user, format);
+            if (!context.getSender().equals(user) && user.isOnline())
+            {
+                user.sendTranslated(NEUTRAL, "Your balance got reset to {input#balance}.", format);
             }
         }
     }
 
     @Command(desc = "Sets the money of a given player",
-             indexed = { @Grouped(@Indexed({"player","!*"})),
-                         @Grouped(@Indexed("amount"))},
+             indexed = { @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))},
              flags = @Flag(longName = "online", name = "o"))
     public void set(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
-        Double amount = manager.parse(amountString, context.getSender().getLocale());
-        if (amount == null)
-        {
-            context.sendTranslated(NEGATIVE, "That isn't a valid amount!");
-            return;
-        }
+        Double amount = context.getArg(1);
         String format = this.manager.format(amount);
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             if (context.hasFlag("o"))
             {
-                if (this.manager.setAllOnline(amount))
-                {
-                    context.sendTranslated(POSITIVE, "You have set every online player account to {input#balance}!", format);
-                }
-                else
-                {
-                    context.sendTranslated(NEGATIVE, "Please try again!");
-                }
+                this.manager.setAllOnline(amount);
+                context.sendTranslated(POSITIVE, "You have set every online player account to {input#balance}!", format);
+                return;
             }
-            else
-            {
-                this.manager.setAll(true, false, amount);
-                context.sendTranslated(POSITIVE, "You have set every player account to {input#balance}!", format);
-            }
+            this.manager.setAll(true, false, amount);
+            context.sendTranslated(POSITIVE, "You have set every player account to {input#balance}!", format);
+            return;
         }
-        else
+        for (User user : context.<List<User>>getArg(0))
         {
-            String[] users = StringUtils.explode(",", context.getString(0));
-            for (String userString : users)
+            Account target = this.manager.getUserAccount(user, false);
+            if (target == null)
             {
-                User user = this.module.getCore().getUserManager().findUser(userString);
-                if (user == null)
-                {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                    return;
-                }
-                Account target = this.manager.getUserAccount(user, false);
-                if (target == null)
-                {
-                    context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
-                    return;
-                }
-                target.set(amount);
-                context.sendTranslated(POSITIVE, "{user} account set to {input#balance}!", user, format);
-                if (!context.getSender().equals(user) && user.isOnline())
-                {
-                    user.sendTranslated(NEUTRAL, "Your balance has been set to {input#balance}.", format);
-                }
+                context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
+                return;
+            }
+            target.set(amount);
+            context.sendTranslated(POSITIVE, "{user} account set to {input#balance}!", user, format);
+            if (!context.getSender().equals(user) && user.isOnline())
+            {
+                user.sendTranslated(NEUTRAL, "Your balance has been set to {input#balance}.", format);
             }
         }
     }
 
     @Command(desc = "Scales the money of a given player",
-             indexed = {@Grouped(@Indexed({"player","!*"})),
-                        @Grouped(@Indexed("factor"))},
+             indexed = {@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
+                        @Grouped(@Indexed(label = "factor", type = Float.class))},
              flags = @Flag(longName = "online", name = "o"))
     public void scale(ParameterizedContext context)
     {
-        Float factor = context.getArg(1, Float.class, null);
-        if (factor == null)
-        {
-            context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
-            return;
-        }
-        if ("*".equals(context.getString(0)))
+        Float factor = context.getArg(1);
+        if ("*".equals(context.getArg(0)))
         {
             if (context.hasFlag("o"))
             {
-                if (this.manager.scaleAllOnline(factor))
-                {
-                    context.sendTranslated(POSITIVE, "Scaled the balance of every online player by {decimal#factor}!", factor);
-                }
-                else
-                {
-                    context.sendTranslated(NEGATIVE, "Please try again!");
-                }
-            }
-            else
-            {
-                this.manager.scaleAll(true, false, factor);
-                context.sendTranslated(POSITIVE, "Scaled the balance of every player by {decimal#factor}!", factor);
-            }
-            return;
-        }
-        String[] users = StringUtils.explode(",", context.getString(0));
-        for (String userString : users)
-        {
-            User user = this.module.getCore().getUserManager().findUser(userString);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                this.manager.scaleAllOnline(factor);
+                context.sendTranslated(POSITIVE, "Scaled the balance of every online player by {decimal#factor}!", factor);
                 return;
             }
+            this.manager.scaleAll(true, false, factor);
+            context.sendTranslated(POSITIVE, "Scaled the balance of every player by {decimal#factor}!", factor);
+            return;
+        }
+        for (User user : context.<List<User>>getArg(0))
+        {
             Account account = this.manager.getUserAccount(user, false);
             if (account == null)
             {
@@ -337,101 +233,74 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Hides the account of a given player",
-             indexed = @Grouped(@Indexed({"player","!*"})))
+             indexed = @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)))
     public void hide(ParameterizedContext context)
     {
-        if ("*".equals(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.hideAll(true, false);
             return;
         }
-        String[] users = StringUtils.explode(",", context.getString(0));
-        for (String userString : users)
+        for (User user : context.<List<User>>getArg(0))
         {
-            User user = this.module.getCore().getUserManager().findUser(userString);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
             Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
                 context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                 return;
             }
-            boolean isHidden = target.isHidden();
-            if (isHidden)
+            if (target.isHidden())
             {
                 context.sendTranslated(NEUTRAL, "{user}'s account is already hidden!", user);
+                return;
             }
-            else
-            {
-                target.setHidden(true);
-                context.sendTranslated(POSITIVE, "{user}'s account is now hidden!", user);
-            }
+            target.setHidden(true);
+            context.sendTranslated(POSITIVE, "{user}'s account is now hidden!", user);
         }
     }
 
     @Command(desc = "Unhides the account of a given player",
-             indexed = @Grouped(@Indexed({"player","!*"})))
+             indexed = @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)))
     public void unhide(ParameterizedContext context)
     {
-        if ("*".equals(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.unhideAll(true, false);
             return;
         }
-        String[] users = StringUtils.explode(",", context.getString(0));
-        for (String userString : users)
+        for (User user : context.<List<User>>getArg(0))
         {
-            User user = this.module.getCore().getUserManager().findUser(userString);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
             Account target = this.manager.getUserAccount(user, false);
             if (target == null)
             {
                 context.sendTranslated(NEGATIVE, "{user} does not have an account!", user);
                 return;
             }
-            boolean isHidden = target.isHidden();
-
-            if (isHidden)
-            {
-                target.setHidden(false);
-                context.sendTranslated(POSITIVE, "{user}'s account is no longer hidden!", user);
-            }
-            else
+            if (!target.isHidden())
             {
                 context.sendTranslated(NEUTRAL, "{user}'s account was not hidden!", user);
+                return;
             }
+            target.setHidden(false);
+            context.sendTranslated(POSITIVE, "{user}'s account is no longer hidden!", user);
+
         }
     }
 
-    @Command(desc = "Deletes a users account.", indexed = @Grouped(@Indexed("player")))
+    @Command(desc = "Deletes a users account.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void delete(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         if (this.manager.deleteUserAccount(user))
         {
             context.sendTranslated(POSITIVE, "Deleted the account of {user}", user);
+            return;
         }
-        else
-        {
-            context.sendTranslated(NEUTRAL, "{user} did not have an account to delete!", user);
-        }
+        context.sendTranslated(NEUTRAL, "{user} did not have an account to delete!", user);
     }
 
     @Command(desc = "Creates a new account",
-             indexed = @Grouped(req = false, value = @Indexed("player")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
              flags = @Flag(longName = "force", name = "f"))
     public void create(ParameterizedContext context)
     {
@@ -442,25 +311,25 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated(NEGATIVE, "You are not allowed to create account for other users!");
                 return;
             }
-            User user = context.getUser(0);
+            User user = context.getArg(0);
             if (user == null)
             {
                 if (module.perms().ECO_CREATE_FORCE.isAuthorized(context.getSender()))
                 {
                     if (!context.hasFlag("f"))
                     {
-                        context.sendTranslated(NEUTRAL, "{user} has never played on this server!", context.getString(0));
+                        context.sendTranslated(NEUTRAL, "{user} has never played on this server!", context.getArg(0));
                         context.sendTranslated(POSITIVE, "Use the -force flag to create the account anyway.");
                         return;
                     }
                     else
                     {
-                        user = this.module.getCore().getUserManager().findExactUser(context.getString(0));
+                        user = this.module.getCore().getUserManager().findExactUser(context.<String>getArg(0)); // TODO unreachable
                     }
                 }
                 else
                 {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                     return;
                 }
             }

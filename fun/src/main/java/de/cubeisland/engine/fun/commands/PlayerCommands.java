@@ -54,7 +54,7 @@ public class PlayerCommands
     @Command(desc = "Gives a player a hat",
             params = @Param(names = {"player", "p"}, type = User.class),
             flags = @Flag(longName = "quiet", name = "q"),
-            indexed = @Grouped(req = false, value = @Indexed("item")))
+            indexed = @Grouped(req = false, value = @Indexed(label = "item")))
     public void hat(ParameterizedContext context)
     {
         User user;
@@ -100,7 +100,7 @@ public class PlayerCommands
                 context.sendTranslated(NEGATIVE, "You can only use your item in hand!");
                 return;
             }
-            head = Match.material().itemStack( context.getArg( 0, String.class ) );
+            head = Match.material().itemStack( context.<String>getArg(0) );
             if(head == null)
             {
                 context.sendTranslated(NEGATIVE, "Item not found!");
@@ -281,18 +281,12 @@ public class PlayerCommands
     }
 
     @Command(desc = "Slaps a player",
-             indexed = {@Grouped(value = @Indexed("player")),
-                        @Grouped(req = false, value = @Indexed("damage"))})
+             indexed = {@Grouped(value = @Indexed(label = "player", type = User.class)),
+                        @Grouped(req = false, value = @Indexed(label = "damage"))})
     public void slap(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player not found!");
-            return;
-        }
-
-        int damage = context.getArg(1, Integer.class, 3);
+        User user = context.getArg(0);
+        int damage = context.getArg(1, 3);
 
         if (damage < 1 || damage > 20)
         {
@@ -306,19 +300,13 @@ public class PlayerCommands
     }
 
     @Command(desc = "Burns a player",
-             indexed = {@Grouped(value = @Indexed("player")),
-                        @Grouped(req = false, value = @Indexed("seconds"))},
+             indexed = {@Grouped(value = @Indexed(label = "player", type = User.class)),
+                        @Grouped(req = false, value = @Indexed(label = "seconds"))},
              flags = @Flag(longName = "unset", name = "u"))
     public void burn(ParameterizedContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player not found!");
-            return;
-        }
-
-        int seconds = context.getArg(1, Integer.class, 5);
+        User user = context.getArg(0);
+        int seconds = context.getArg(1, 5);
 
         if (context.hasFlag("u"))
         {

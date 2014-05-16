@@ -31,12 +31,18 @@ public class DoubleReader extends ArgumentReader
     {
         try
         {
-            NumberFormat format = NumberFormat.getInstance(locale);
-            return format.parse(arg).doubleValue();
+            return NumberFormat.getInstance(locale).parse(arg).doubleValue();
         }
         catch (ParseException e)
         {
-            throw new InvalidArgumentException("Could not parse {input} to double!", arg);
+            try
+            {
+                return NumberFormat.getInstance().parse(arg).doubleValue(); // Try parsing with default locale
+            }
+            catch (ParseException e1)
+            {
+                throw new InvalidArgumentException("Could not parse {input} to double!", arg);
+            }
         }
     }
 }

@@ -253,7 +253,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         if (command.hasChildren() && context.getArgCount() == 1)
         {
             List<String> actions = new ArrayList<>();
-            String token = context.getString(0).toLowerCase(Locale.ENGLISH);
+            String token = context.<String>getArg(0).toLowerCase(Locale.ENGLISH);
 
             CommandSender sender = context.getSender();
             Set<CubeCommand> names = command.getChildren();

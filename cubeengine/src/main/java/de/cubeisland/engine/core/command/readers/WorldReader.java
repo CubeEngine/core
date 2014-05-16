@@ -22,8 +22,11 @@ import java.util.Locale;
 import org.bukkit.World;
 
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class WorldReader extends ArgumentReader
 {
@@ -37,6 +40,11 @@ public class WorldReader extends ArgumentReader
     @Override
     public World read(String arg, Locale locale) throws InvalidArgumentException
     {
-        return this.core.getWorldManager().getWorld(arg);
+        World world = this.core.getWorldManager().getWorld(arg);
+        if (world == null)
+        {
+            throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale, NEGATIVE, "World {input} not found!", arg));
+        }
+        return world;
     }
 }

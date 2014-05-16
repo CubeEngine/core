@@ -136,73 +136,31 @@ public class ConomyManager
         return acc != null;
     }
 
-    /**
-     * Returns false if an action is currently running
-     *
-     * @param r the runnable tu run
-     *
-     * @return true if the thread got started
-     */
-    private boolean startThread(Runnable r)
+    public void setAllOnline(final double value)
     {
-        if (this.thread == null || !this.thread.isAlive())
+        for (User user : this.module.getCore().getUserManager().getOnlineUsers())
         {
-            thread = this.threadFactory.newThread(r);
-            thread.start();
-            return true;
+            UserAccount userAccount = ConomyManager.this.getUserAccount(user, true);
+            userAccount.set(value);
         }
-        return false;
     }
 
-    public boolean setAllOnline(final double value)
+    public void transactionAllOnline(final double value)
     {
-        final Set<User> onlineUsers = this.module.getCore().getUserManager().getOnlineUsers();
-        return this.startThread(new Runnable()
+        for (User user : this.um.getOnlineUsers())
         {
-            @Override
-            public void run()
-            {
-                for (User user : onlineUsers)
-                {
-                    UserAccount userAccount = ConomyManager.this.getUserAccount(user, true);
-                    userAccount.set(value);
-                }
-            }
-        });
+            UserAccount userAccount = ConomyManager.this.getUserAccount(user, true);
+            userAccount.deposit(value);
+        }
     }
 
-    public boolean transactionAllOnline(final double value)
+    public void scaleAllOnline(final float factor)
     {
-        final Set<User> onlineUsers = this.um.getOnlineUsers();
-        return this.startThread(new Runnable()
+        for (User user : this.um.getOnlineUsers())
         {
-            @Override
-            public void run()
-            {
-                for (User user : onlineUsers)
-                {
-                    UserAccount userAccount = ConomyManager.this.getUserAccount(user, true);
-                    userAccount.deposit(value);
-                }
-            }
-        });
-    }
-
-    public boolean scaleAllOnline(final float factor)
-    {
-        final Set<User> onlineUsers = this.um.getOnlineUsers();
-        return this.startThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                for (User user : onlineUsers)
-                {
-                    UserAccount userAccount = ConomyManager.this.getUserAccount(user, true);
-                    userAccount.scale(factor);
-                }
-            }
-        });
+            UserAccount userAccount = ConomyManager.this.getUserAccount(user, true);
+            userAccount.scale(factor);
+        }
     }
 
     public void setAll(boolean userAcc, boolean bankAcc, double value)

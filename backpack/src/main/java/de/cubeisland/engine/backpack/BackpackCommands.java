@@ -57,8 +57,8 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "openbp")
     @Command(desc = "opens a backpack",
-             indexed = {@Grouped(@Indexed("name")),
-                        @Grouped(req = false, value = @Indexed("user"))},
+             indexed = {@Grouped(@Indexed(label = "name")),
+                        @Grouped(req = false, value = @Indexed(label = "user", type = User.class))},
              params = @Param(names = {"world", "for", "in", "w"}, completer = WorldCompleter.class, type = World.class))
     public void open(ParameterizedContext context)
     {
@@ -67,12 +67,7 @@ public class BackpackCommands extends ContainerCommand
             User forUser = (User)context.getSender();
             if (context.hasArg(1))
             {
-                forUser = context.getUser(1);
-                if (forUser == null)
-                {
-                    context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(1));
-                    return;
-                }
+                forUser = context.getArg(1);
             }
             World forWorld = forUser.getWorld();
             if (context.hasParam("w"))
@@ -94,7 +89,7 @@ public class BackpackCommands extends ContainerCommand
                 context.sendTranslated(NEGATIVE, "You are not allowed to open backpacks from an other world!");
                 return;
             }
-            manager.openBackpack((User)context.getSender(), forUser, forWorld, context.getString(0));
+            manager.openBackpack((User)context.getSender(), forUser, forWorld, context.<String>getArg(0));
             return;
         }
         context.sendTranslated(NEGATIVE, "You cannot open a inventory in console!"); // TODO perhaps save inventory to yml
@@ -102,8 +97,8 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "createbp")
     @Command(desc = "creates a new backpack",
-             indexed = {@Grouped(@Indexed("name")),
-                        @Grouped(req = false, value = @Indexed("user"))},
+             indexed = {@Grouped(@Indexed(label = "name")),
+                        @Grouped(req = false, value = @Indexed(label = "user", type = User.class))},
              flags = {@Flag(name = "g", longName = "global"), // TODO OR flags
                       @Flag(name = "s", longName = "single"),
                       @Flag(name = "b", longName = "blockinput")},
@@ -135,27 +130,22 @@ public class BackpackCommands extends ContainerCommand
         }
         if (context.hasArg(1))
         {
-            forUser = context.getUser(1);
-            if (forUser == null)
-            {
-                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(1));
-                return;
-            }
+            forUser = context.getArg(1);
         }
         else if (!(context.getSender() instanceof User))
         {
             context.sendTranslated(NEGATIVE, "You need to specify a user");
             return;
         }
-        manager.createBackpack(context.getSender(), forUser, context.getString(0), forWorld,
+        manager.createBackpack(context.getSender(), forUser, context.<String>getArg(0), forWorld,
                                context.hasFlag("g"), context.hasFlag("s"), context.hasFlag("b"),
                                context.getParam("p", 1), context.getParam("s", 6));
     }
 
     @Alias(names = "modifybp")
     @Command(desc = "modifies a backpack",
-             indexed = {@Grouped(@Indexed("name")),
-                        @Grouped(req = false, value = @Indexed("user"))},
+             indexed = {@Grouped(@Indexed(label = "name")),
+                        @Grouped(req = false, value = @Indexed(label = "user", type = User.class))},
              params = {@Param(names = {"pages","p"}, type = Integer.class),
                        @Param(names = {"size","s"}, type = Integer.class),
                        @Param(names = {"blockinput","b"}, type = Boolean.class, label = "true|false"),
@@ -185,19 +175,14 @@ public class BackpackCommands extends ContainerCommand
         }
         if (context.hasArg(1))
         {
-            forUser = context.getUser(1);
-            if (forUser == null)
-            {
-                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(1));
-                return;
-            }
+            forUser = context.getArg(1);
         }
         else if (!(context.getSender() instanceof User))
         {
             context.sendTranslated(NEGATIVE, "You need to specify a user");
             return;
         }
-        manager.modifyBackpack(context.getSender(), forUser, context.getString(0), forWorld,
+        manager.modifyBackpack(context.getSender(), forUser, context.<String>getArg(0), forWorld,
                                (Integer)context.getParam("p", null),
                                (Boolean)context.getParam("b", null),
                                (Integer)context.getParam("s", null));
@@ -205,8 +190,8 @@ public class BackpackCommands extends ContainerCommand
 
     @Alias(names = "givebp")
     @Command(desc = "Puts items into a backpack",
-             indexed = {@Grouped(@Indexed("name")),
-                        @Grouped(req = false, value = @Indexed("user"))},
+             indexed = {@Grouped(@Indexed(label = "name")),
+                        @Grouped(req = false, value = @Indexed(label = "user", type = User.class))},
     params = {@Param(names = {"item","i"}, required = true, label = "item[:data]"),
               @Param(names = {"name","n"}),
               @Param(names = {"lore","l"}, label = "lorelines..."),
@@ -235,12 +220,7 @@ public class BackpackCommands extends ContainerCommand
         }
         if (context.hasArg(1))
         {
-            forUser = context.getUser(1);
-            if (forUser == null)
-            {
-                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(1));
-                return;
-            }
+            forUser = context.getArg(1);
         }
         else if (!(context.getSender() instanceof User))
         {
@@ -304,6 +284,6 @@ public class BackpackCommands extends ContainerCommand
             }
         }
         matchedItem.setAmount(amount);
-        this.manager.giveItem(context.getSender(), forUser, forWorld, context.getString(0), matchedItem);
+        this.manager.giveItem(context.getSender(), forUser, forWorld, context.<String>getArg(0), matchedItem);
     }
 }

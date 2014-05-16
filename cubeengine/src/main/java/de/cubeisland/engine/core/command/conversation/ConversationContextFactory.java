@@ -88,6 +88,6 @@ public class ConversationContextFactory extends ParameterizedContextFactory
                 offset++;
             }
         }
-        return new ParameterizedContext(command, sender, labels, Collections.<String>emptyList(), flags, params);
+        return new ParameterizedContext(command, sender, labels, Collections.<Object>emptyList(), flags, params);
     }
 }

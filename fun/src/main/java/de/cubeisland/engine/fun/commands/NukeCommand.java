@@ -66,9 +66,9 @@ public class NukeCommand
     @Command(
         desc = "Makes a carpet of TNT fall on a player or where you're looking",
         indexed = {
-            @Grouped(req = false, value = @Indexed("param1")),
-            @Grouped(req = false, value = @Indexed("param2")),
-            @Grouped(req = false, value = @Indexed("param3")),
+            @Grouped(req = false, value = @Indexed(label = "param1")),
+            @Grouped(req = false, value = @Indexed(label = "param2")),
+            @Grouped(req = false, value = @Indexed(label = "param3")),
         },
         params =
             {
@@ -154,20 +154,20 @@ public class NukeCommand
         {
         case "cylinder":
             location = this.getSpawnLocation(location, locationHeight);
-            int radiusX = context.getArg(0, Integer.class, 1);
+            int radiusX = context.getArg(0, 1);
             return new Cylinder(new Vector3(location.getX(), location.getY(), location.getZ()), radiusX, context
-                .getArg(2, Integer.class, radiusX), context.getArg(1, Integer.class, 1));
+                .getArg(2, radiusX), context.getArg(1, 1));
         case "cube":
         case "cuboid":
-            int width = context.getArg(0, Integer.class, 1);
-            int height = shapeName.equals("cube") ? width : context.getArg(1, Integer.class, width);
-            int depth = shapeName.equals("cube") ? width : context.getArg(2, Integer.class, width);
+            int width = context.getArg(0, 1);
+            int height = shapeName.equals("cube") ? width : context.getArg(1, width);
+            int depth = shapeName.equals("cube") ? width : context.getArg(2, width);
 
             location = location.subtract(width / 2d, 0, depth / 2d);
             location = this.getSpawnLocation(location, locationHeight);
             return new Cuboid(new Vector3(location.getX(), location.getY(), location.getZ()), width, height, depth);
         case "sphere":
-            int radius = context.getArg(0, Integer.class, 1);
+            int radius = context.getArg(0, 1);
             location = this.getSpawnLocation(location, locationHeight);
             return new Sphere(new Vector3(location.getX(), location.getY(), location.getZ()), radius);
         default:

@@ -72,8 +72,8 @@ public class TeleportCommands
     }
 
     @Command(desc = "Teleport directly to a player.",
-             indexed = { @Grouped(@Indexed("player")),
-                         @Grouped(req = false, value = @Indexed("player"))},
+             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
+                         @Grouped(req = false, value = @Indexed(label = "player", type = User.class))},
              flags = { @Flag(longName = "force", name = "f"), // is not shown directly in usage
                        @Flag(longName = "unsafe", name = "u")})
     public void tp(ParameterizedContext context)
@@ -83,10 +83,10 @@ public class TeleportCommands
         {
             user = (User)context.getSender();
         }
-        User target = context.getUser(0);
+        User target = context.getArg(0);
         if (target == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         if (!target.isOnline())
@@ -98,10 +98,10 @@ public class TeleportCommands
         if (context.hasArg(1)) //tp player1 player2
         {
             user = target; // The first user is not the target
-            target = context.getUser(1);
+            target = context.getArg(1);
             if (target == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(1));
                 return;
             }
             if (!target.isOnline())
@@ -173,15 +173,15 @@ public class TeleportCommands
     }
 
     @Command(desc = "Teleports everyone directly to a player.",
-             indexed = @Grouped(@Indexed("player")),
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
              flags = {@Flag(longName = "force", name = "f"),
                       @Flag(longName = "unsafe", name = "u")})
     public void tpall(ParameterizedContext context)
     {
-        User user = context.getUser(0);
+        User user = context.getArg(0);
         if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         if (!user.isOnline())
@@ -217,7 +217,7 @@ public class TeleportCommands
     }
 
     @Command(desc = "Teleport a player directly to you.",
-             indexed = @Grouped(@Indexed("player")),
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
              flags = { @Flag(longName = "force", name = "f"),
                        @Flag(longName = "unsafe", name = "u")})
     public void tphere(ParameterizedContext context)
@@ -232,10 +232,10 @@ public class TeleportCommands
             context.sendTranslated(NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
             return;
         }
-        User target = context.getUser(0);
+        User target = context.getArg(0);
         if (target == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         if (!target.isOnline())
@@ -307,9 +307,9 @@ public class TeleportCommands
 
     @Command(desc = "Direct teleport to a coordinate.",
              indexed = @Grouped(value = {
-                 @Indexed("x"),
-                 @Indexed(value = "y", req = false),
-                 @Indexed("z")}),
+                 @Indexed(label = "x", type = Integer.class),
+                 @Indexed(label = "y", req = false, type = Integer.class),
+                 @Indexed(label = "z", type = Integer.class)}),
              params = @Param(names = {"world", "w"}, type = World.class),
              flags = @Flag(longName = "safe", name = "s"))
     public void tppos(ParameterizedContext context)
@@ -317,7 +317,7 @@ public class TeleportCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            Integer x = context.getArg(0, Integer.class);
+            Integer x = context.getArg(0);
             Integer y;
             Integer z;
             World world = sender.getWorld();
@@ -332,12 +332,12 @@ public class TeleportCommands
             }
             if (context.hasArg(2))
             {
-                y = context.getArg(1, Integer.class, null);
-                z = context.getArg(2, Integer.class, null);
+                y = context.getArg(1, null);
+                z = context.getArg(2, null);
             }
             else
             {
-                z = context.getArg(1, Integer.class, null);
+                z = context.getArg(1, null);
                 if (x == null || z == null)
                 {
                     context.sendTranslated(NEGATIVE, "Coordinates have to be numbers!");

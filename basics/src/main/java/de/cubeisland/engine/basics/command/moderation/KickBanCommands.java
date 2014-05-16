@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.readers.UserOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -44,7 +45,6 @@ import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
@@ -73,14 +73,14 @@ public class KickBanCommands
     }
 
     @Command(desc = "Kicks a player from the server",
-             indexed = { @Grouped(@Indexed({"player","!*"})),
-                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)})
+             indexed = { @Grouped(@Indexed(label = {"player","!*"}, type = UserOrAllReader.class)),
+                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
     public void kick(ParameterizedContext context)
     {
         String reason;
         reason = this.getReasonFrom(context, 1, module.perms().COMMAND_KICK_NOREASON);
         if (reason == null) return;
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getArg(0)))
         {
             if (!module.perms().COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {
@@ -96,10 +96,10 @@ public class KickBanCommands
             }
             return;
         }
-        User user = context.getUser(0);
+        User user = context.getArg(0);
         if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         user.kickPlayer(user.getTranslation(NEGATIVE, kickMessage) + "\n\n" + RESET + reason);
@@ -109,14 +109,14 @@ public class KickBanCommands
 
     @Command(names = {"ban", "kickban"},
              desc = "Bans a player permanently on your server.",
-             indexed = { @Grouped(@Indexed("player")),
-                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)},
+             indexed = { @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)),
+                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)},
              flags = {@Flag(longName = "ipban", name = "ip"),
                       @Flag(longName = "force", name = "f")})
     public void ban(ParameterizedContext context)
     {
         if (this.cannotBanUser(context)) return;
-        OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
+        OfflinePlayer player = context.getArg(0);
         User user = null;
         if (player.hasPlayedBefore() || player.isOnline())
         {
@@ -173,7 +173,7 @@ public class KickBanCommands
                 context.sendTranslated(NEGATIVE, "{user} is already banned!", player);
                 return;
             }
-            this.banManager.addBan(new UserBan(player.getUniqueId(),context.getSender().getName(), reason));
+            this.banManager.addBan(new UserBan(player.getName(), context.getSender().getName(), reason));
             if (user != null)
             {
                 user.kickPlayer(user.getTranslation(NEGATIVE, banMessage) + "\n\n" + RESET + reason);
@@ -201,10 +201,10 @@ public class KickBanCommands
 
     @Command(names = {"unban", "pardon"},
              desc = "Unbans a previously banned player.",
-             indexed = @Grouped(@Indexed("player")))
+             indexed = @Grouped(@Indexed(label = "player")))
     public void unban(CommandContext context)
     {
-        String userName = context.getString(0);
+        String userName = context.getArg(0);
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(userName);
         if (offlinePlayer.getUniqueId().version() == 3)
         {
@@ -220,11 +220,11 @@ public class KickBanCommands
 
     @Command(names = {"ipban", "banip"},
              desc = "Bans the IP from this server.",
-             indexed = { @Grouped(@Indexed("IP address")),
-                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)})
+             indexed = { @Grouped(@Indexed(label = "IP address")),
+                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
     public void ipban(CommandContext context)
     {
-        String ipaddress = context.getString(0);
+        String ipaddress = context.getArg(0);
         try
         {
             InetAddress address = InetAddress.getByName(ipaddress);
@@ -262,10 +262,10 @@ public class KickBanCommands
 
     @Command(names = {"ipunban", "unbanip", "pardonip"},
              desc = "Bans the IP from this server.",
-             indexed = @Grouped(@Indexed("IP address")))
+             indexed = @Grouped(@Indexed(label = "IP address")))
     public void ipunban(CommandContext context)
     {
-        String ipadress = context.getString(0);
+        String ipadress = context.getArg(0);
         try
         {
             InetAddress address = InetAddress.getByName(ipadress);
@@ -286,14 +286,14 @@ public class KickBanCommands
 
     @Command(names = {"tempban","tban"},
              desc = "Bans a player for a given time.",
-             indexed = { @Grouped(@Indexed("player")),
-                         @Grouped(@Indexed("time")),
-                         @Grouped(value = @Indexed("reason"), req = false, greedy = true)},
+             indexed = { @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)),
+                         @Grouped(@Indexed(label = "time")),
+                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)},
              flags = @Flag(longName = "force", name = "f"))
     public void tempban(ParameterizedContext context)
     {
         if (this.cannotBanUser(context)) return;
-        OfflinePlayer player = context.getSender().getServer().getOfflinePlayer(context.getString(0));
+        OfflinePlayer player = context.getArg(0);
         User user = null;
         if (player.hasPlayedBefore() || player.isOnline())
         {
@@ -313,9 +313,9 @@ public class KickBanCommands
         }
         try
         {
-            long millis = StringUtils.convertTimeToMillis(context.getString(1));
+            long millis = StringUtils.convertTimeToMillis(context.<String>getArg(1));
             Date toDate = new Date(System.currentTimeMillis() + millis);
-            this.banManager.addBan(new UserBan(player.getUniqueId(),context.getSender().getName(), reason, toDate));
+            this.banManager.addBan(new UserBan(player.getName(),context.getSender().getName(), reason, toDate));
             if (player.isOnline())
             {
                 if (user == null) throw new IllegalStateException();
@@ -357,18 +357,18 @@ public class KickBanCommands
     }
 
     @Command(desc = "View all players banned from this server",
-             indexed = @Grouped(req = false, value = @Indexed(value = {"!ips","!players"})))
+             indexed = @Grouped(req = false, value = @Indexed(label = {"!ips","!players"})))
     public void banlist(CommandContext context)
     {
         // TODO paging
         boolean players = true;
         if (context.hasArg(0))
         {
-            if ("players".equalsIgnoreCase(context.getString(0)))
+            if ("players".equalsIgnoreCase(context.<String>getArg(0)))
             {
                 players = true;
             }
-            else if ("ips".equalsIgnoreCase(context.getString(0)))
+            else if ("ips".equalsIgnoreCase(context.<String>getArg(0)))
             {
                 players = false;
             }

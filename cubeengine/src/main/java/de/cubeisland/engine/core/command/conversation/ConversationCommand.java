@@ -107,7 +107,7 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
         {
             params.add(param.getName().toLowerCase());
         }
-        List<String> args = context.getArgs();
+        List<Object> args = context.getArgs();
         if (args.isEmpty())
         {
             list.addAll(flags);
@@ -116,8 +116,8 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
         else
         {
             final int argc = args.size();
-            String lastArg = args.get(argc - 1).toLowerCase();
-            String beforeLastArg = argc - 2 >= 0 ? args.get(argc - 2) : null;
+            String lastArg = args.get(argc - 1).toString().toLowerCase();
+            String beforeLastArg = argc - 2 >= 0 ? args.get(argc - 2).toString() : null;
             if (lastArg.isEmpty())
             {
                 //check for named

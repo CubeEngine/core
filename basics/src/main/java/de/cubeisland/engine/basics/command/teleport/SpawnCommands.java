@@ -50,10 +50,10 @@ public class SpawnCommands
     }
 
     @Command(desc = "Changes the global respawnpoint",
-             indexed = { @Grouped(req = false, value = @Indexed("world")),
-                         @Grouped(req = false, value = { @Indexed("x"),
-                                                         @Indexed("y"),
-                                                         @Indexed("z")})})
+             indexed = { @Grouped(req = false, value = @Indexed(label = "world", type = World.class)),
+                         @Grouped(req = false, value = { @Indexed(label = "x"),
+                                                         @Indexed(label = "y"),
+                                                         @Indexed(label = "z")})})
     public void setSpawn(CommandContext context)
     {
         User sender = null;
@@ -67,12 +67,7 @@ public class SpawnCommands
         World world;
         if (context.hasArg(0))
         {
-            world = context.getSender().getServer().getWorld(context.getString(0));
-            if (world == null)
-            {
-                context.sendTranslated(NEGATIVE, "World {input} not found", context.getString(0));
-                return;
-            }
+            world = context.getArg(0);
         }
         else
         {
@@ -86,9 +81,9 @@ public class SpawnCommands
 
         if (context.hasArg(3))
         {
-            x = context.getArg(1, Integer.class, null);
-            y = context.getArg(2, Integer.class, null);
-            z = context.getArg(3, Integer.class, null);
+            x = context.getArg(1, null);
+            y = context.getArg(2, null);
+            z = context.getArg(3, null);
             if (x == null || y == null || z == null)
             {
                 context.sendTranslated(NEGATIVE, "Coordinates are invalid!");
@@ -114,7 +109,7 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.",
-             indexed = @Grouped(req = false, value = @Indexed("player")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
              params = @Param(names = {"world", "w"}, type = World.class),
              flags = {@Flag(longName = "force", name = "f"),
                       @Flag(longName = "all", name = "a")})
@@ -181,12 +176,7 @@ public class SpawnCommands
         }
         if (context.hasArg(0))
         {
-            user = context.getUser(0);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
+            user = context.getArg(0);
             if (!user.isOnline())
             {
                 context.sendTranslated(NEGATIVE, "You cannot teleport an offline player to spawn!");
@@ -209,13 +199,13 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleports you to the spawn of given world",
-             indexed = @Grouped(@Indexed("world")))
+             indexed = @Grouped(@Indexed(label = "world")))
     public void tpworld(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            World world = context.getArg(0, World.class, null);
+            World world = context.getArg(0, null);
             if (world == null)
             {
                 context.sendTranslated(NEGATIVE, "World not found!");

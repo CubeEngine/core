@@ -68,7 +68,7 @@ public class MoneyCommand extends ContainerCommand
 
     @Alias(names = {"balance", "moneybalance", "pmoney"})
     @Command(desc = "Shows your balance",
-             indexed = @Grouped(req = false, value = @Indexed("player")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
              flags = @Flag(longName = "showHidden", name = "f"))
     public void balance(ParameterizedContext context)
     {
@@ -76,12 +76,7 @@ public class MoneyCommand extends ContainerCommand
         boolean showHidden = context.hasFlag("f") && module.perms().USER_SHOWHIDDEN.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
-            user = context.getUser(0);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return;
-            }
+            user = context.getArg(0);
         }
         else
         {
@@ -106,7 +101,7 @@ public class MoneyCommand extends ContainerCommand
 
     @Alias(names = {"toplist", "balancetop", "topmoney"})
     @Command(desc = "Shows the players with the highest balance.",
-             indexed = @Grouped(req = false, value = @Indexed("[fromRank-]toRank")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "[fromRank-]toRank")),
              flags = @Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
@@ -122,7 +117,7 @@ public class MoneyCommand extends ContainerCommand
         {
             try
             {
-                String range = context.getString(0);
+                String range = context.getArg(0);
                 if (range.contains("-"))
                 {
                     fromRank = Integer.parseInt(range.substring(0, range.indexOf("-")));
@@ -157,13 +152,13 @@ public class MoneyCommand extends ContainerCommand
     @Alias(names = {"pay"})
     @Command(names = {"pay", "give"},
              desc = "Transfer the given amount to another account.",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("amount"))},
+             indexed = {@Grouped(@Indexed(label = "player")),
+                        @Grouped(@Indexed(label = "amount"))},
              params = @Param(names = "as", type = User.class),
              flags = @Flag(longName = "force", name = "f"))
     public void pay(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
+        String amountString = context.getArg(1);
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
@@ -215,13 +210,13 @@ public class MoneyCommand extends ContainerCommand
             }
             return;
         }
-        String[] users = StringUtils.explode(",", context.getString(0));
+        String[] users = StringUtils.explode(",", context.<String>getArg(0));
         for (String userString : users)
         {
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                 continue;
             }
             Account target = this.manager.getUserAccount(user, false);

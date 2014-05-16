@@ -244,13 +244,17 @@ public class BukkitUtils
     /**
      * Returns true if given material is allowed to be placed in the top brewingstand slot
      *
-     * @param material
+     * @param item
      * @return
      */
-    public static boolean canBePlacedInBrewingstand(Material material)
+    public static boolean canBePlacedInBrewingstand(ItemStack item)
     {
-        // TODO NPE when pufferfish
-        return getItem(material).i(null) != null; // Items that can be brewed return a String here else null
+        // TODO better check
+        if (item.getType() == Material.RAW_FISH)
+        {
+            return item.getDurability() == 3; // pufferfish
+        }
+        return getItem(item.getType()).i(null) != null; // Items that can be brewed return a String here else null
     }
 
     public static boolean isFuel(ItemStack item)

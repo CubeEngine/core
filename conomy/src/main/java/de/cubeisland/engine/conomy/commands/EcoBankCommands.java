@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.conomy.commands;
 
+import java.util.List;
+
 import de.cubeisland.engine.conomy.Conomy;
 import de.cubeisland.engine.conomy.account.BankAccount;
 import de.cubeisland.engine.conomy.account.ConomyManager;
@@ -26,9 +28,7 @@ import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.StringUtils;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
 
 public class EcoBankCommands extends ContainerCommand
@@ -45,42 +45,27 @@ public class EcoBankCommands extends ContainerCommand
 
     @Command(names = {"give", "grant"},
              desc = "Gives money to a bank or all banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("amount"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"}, type = BankOrAllReader.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))})
     public void give(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
-        Double amount = this.manager.parse(amountString, context.getSender().getLocale());
-        if (amount == null)
-        {
-            context.sendTranslated(NEGATIVE, "Could not parse amount! {input}", amountString);
-            return;
-        }
+        Double amount = context.getArg(1);
         String format = manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.transactionAll(false, true, amount);
             context.sendTranslated(POSITIVE, "You gave {input#amount} to every bank!", format);
+            return;
         }
-        else
+        for (BankAccount target : context.<List<BankAccount>>getArg(0))
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
-            for (String bankString : banks)
+            this.manager.transaction(null, target, amount, true);
+            context.sendTranslated(POSITIVE, "You gave {input#amount} to the bank {input#bank}!", format, target.getName());
+            for (User user : this.module.getCore().getUserManager().getOnlineUsers())
             {
-                BankAccount target = this.manager.getBankAccount(bankString, false);
-                if (target == null)
+                if (target.isOwner(user))
                 {
-                    context.sendTranslated(NEGATIVE, "There is no bank account named {input#name}!", bankString);
-                    continue;
-                }
-                this.manager.transaction(null, target, amount, true);
-                context.sendTranslated(POSITIVE, "You gave {input#amount} to the bank {input#bank}!", format, bankString);
-                for (User user : this.module.getCore().getUserManager().getOnlineUsers())
-                {
-                    if (target.isOwner(user))
-                    {
-                        user.sendTranslated(POSITIVE, "{user} granted {input#amount} to your bank {input#bank}!", context.getSender(), format, bankString);
-                    }
+                    user.sendTranslated(POSITIVE, "{user} granted {input#amount} to your bank {input#bank}!", context.getSender(), format, target.getName());
                 }
             }
         }
@@ -88,217 +73,152 @@ public class EcoBankCommands extends ContainerCommand
 
     @Command(names = {"take", "remove"},
              desc = "Takes money from given bank or all banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("amount"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"}, type = BankOrAllReader.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))})
     public void take(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
-        Double amount = manager.parse(amountString, context.getSender().getLocale());
-        if (amount == null)
-        {
-            context.sendTranslated(NEGATIVE, "Could not parse amount!");
-            return;
-        }
+        Double amount = context.getArg(1);
         String format = manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.transactionAll(false, true, -amount);
             context.sendTranslated(POSITIVE, "You took {input#amount} from every bank!", format);
+            return;
         }
-        else
+        for (BankAccount target : context.<List<BankAccount>>getArg(0))
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
-            for (String bankString : banks)
+            this.manager.transaction(target, null, amount, true);
+            context.sendTranslated(POSITIVE, "You took {input#amount} from the bank {input#bank}!", format, target.getName());
+            for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
             {
-                BankAccount target = this.manager.getBankAccount(bankString, false);
-                if (target == null)
+                if (target.isOwner(onlineUser))
                 {
-                    context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", bankString);
-                    return;
-                }
-                this.manager.transaction(target, null, amount, true);
-                context.sendTranslated(POSITIVE, "You took {input#amount} from the bank {input#bank}!", format, bankString);
-                for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
-                {
-                    if (target.isOwner(onlineUser))
-                    {
-                        onlineUser.sendTranslated(POSITIVE, "{user} charged your bank {input#bank} for {input#amount}!", context.getSender(), bankString, format);
-                    }
+                    onlineUser.sendTranslated(POSITIVE, "{user} charged your bank {input#bank} for {input#amount}!", context.getSender(), target.getName(), format);
                 }
             }
         }
     }
 
     @Command(desc = "Reset the money from given banks",
-             indexed = @Grouped(@Indexed({"bank","!*"})))
+             indexed = @Grouped(@Indexed(label = {"bank","!*"}, type = BankOrAllReader.class)))
     public void reset(ParameterizedContext context)
     {
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.setAll(false, true, this.manager.getDefaultBankBalance());
             context.sendTranslated(POSITIVE, "You reset every bank account!");
+            return;
         }
-        else
+        for (BankAccount target : context.<List<BankAccount>>getArg(0))
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
-            for (String bankString : banks)
+            target.reset();
+            String format = this.manager.format(this.manager.getDefaultBalance());
+            context.sendTranslated(POSITIVE, "The account of the bank {input#bank} got reset to {input#balance}!", target.getName(), format);
+            for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
             {
-                BankAccount target = this.manager.getBankAccount(bankString, false);
-                if (target == null)
+                if (target.isOwner(onlineUser))
                 {
-                    context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", bankString);
-                    return;
-                }
-                target.reset();
-                String format = this.manager.format(this.manager.getDefaultBalance());
-                context.sendTranslated(POSITIVE, "The account of the bank {input#bank} got reset to {input#balance}!", bankString, format);
-                for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
-                {
-                    if (target.isOwner(onlineUser))
-                    {
-                        onlineUser.sendTranslated(POSITIVE, "{user} reset the money of your bank {input#bank} to {input#balance}!", context.getSender(), bankString, format);
-                    }
+                    onlineUser.sendTranslated(POSITIVE, "{user} reset the money of your bank {input#bank} to {input#balance}!", context.getSender(), target.getName(), format);
                 }
             }
         }
     }
 
     @Command(desc = "Sets the money from given banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("amount"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"}, type = BankOrAllReader.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))})
     public void set(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
-        Double amount = manager.parse(amountString, context.getSender().getLocale());
-        if (amount == null)
-        {
-            context.sendTranslated(NEGATIVE, "Could not parse amount!");
-            return;
-        }
+        Double amount = context.getArg(1);
         String format = this.manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.setAll(false, true, amount);
             context.sendTranslated(POSITIVE, "You have set every bank account to {input#balance}!", format);
+            return;
         }
-        else
+        for (BankAccount target : context.<List<BankAccount>>getArg(0))
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
-            for (String bankString : banks)
+            target.set(amount);
+            context.sendTranslated(POSITIVE, "The money of bank account {input#bank} got set to {input#balance}!", target.getName(), format);
+            for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
             {
-                BankAccount target = this.manager.getBankAccount(bankString, false);
-                if (target == null)
+                if (target.isOwner(onlineUser))
                 {
-                    context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", bankString);
-                    return;
-                }
-                target.set(amount);
-                context.sendTranslated(POSITIVE, "The money of bank account {input#bank} got set to {input#balance}!", bankString, format);
-                for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
-                {
-                    if (target.isOwner(onlineUser))
-                    {
-                        onlineUser.sendTranslated(POSITIVE, "{user} set the money of your bank {input#bank} to {input#balance}!", context.getSender(), bankString, format);
-                    }
+                    onlineUser.sendTranslated(POSITIVE, "{user} set the money of your bank {input#bank} to {input#balance}!", context.getSender(), target.getName(), format);
                 }
             }
         }
     }
 
     @Command(desc = "Scales the money from given banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("factor"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"}, type = BankOrAllReader.class)),
+                         @Grouped(@Indexed(label = "factor", type = Float.class))})
     public void scale(ParameterizedContext context)
     {
-        Float factor = context.getArg(1, Float.class, null);
-        if (factor == null)
-        {
-            context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
-            return;
-        }
-        if (context.getString(0).equals("*"))
+        Float factor = context.getArg(1);
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.scaleAll(false, true, factor);
             context.sendTranslated(POSITIVE, "Scaled the balance of every bank by {decimal#factor}!", factor);
             return;
         }
-        String[] banks = StringUtils.explode(",", context.getString(0));
-        for (String bankString : banks)
+        for (BankAccount target : context.<List<BankAccount>>getArg(0))
         {
-            BankAccount account = this.manager.getBankAccount(bankString, false);
-            if (account == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", bankString);
-                return;
-            }
-            account.scale(factor);
-            context.sendTranslated(POSITIVE, "Scaled the balance of the bank {input#bank} by {decimal#factor}!", bankString, factor);
+            target.scale(factor);
+            context.sendTranslated(POSITIVE, "Scaled the balance of the bank {input#bank} by {decimal#factor}!", target.getName(), factor);
             for (User onlineUser : this.module.getCore().getUserManager().getOnlineUsers())
             {
-                if (account.isOwner(onlineUser))
+                if (target.isOwner(onlineUser))
                 {
-                    onlineUser.sendTranslated(POSITIVE, "{user} scaled the money of your bank {input#bank} by {decimal#factor}", context.getSender().getName(), bankString, factor);
+                    onlineUser.sendTranslated(POSITIVE, "{user} scaled the money of your bank {input#bank} by {decimal#factor}", context.getSender().getName(), target.getName(), factor);
                 }
             }
         }
     }
 
     @Command(desc = "Hides the account of given bank",
-             indexed = @Grouped(@Indexed({"bank","!*"})))
+             indexed = @Grouped(@Indexed(label = {"bank","!*"}, type = BankOrAllReader.class)))
     public void hide(ParameterizedContext context)
     {
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.hideAll(false, true);
             return;
         }
-        String[] banks = StringUtils.explode(",", context.getString(0));
-        for (String bankString : banks)
+        for (BankAccount target : context.<List<BankAccount>>getArg(0))
         {
-            BankAccount target = this.manager.getBankAccount(bankString, false);
-            if (target == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", bankString);
-                return;
-            }
             if (target.isHidden())
             {
-                context.sendTranslated(POSITIVE, "The bank {input#bank} is already hidden!", bankString);
+                context.sendTranslated(POSITIVE, "The bank {input#bank} is already hidden!", target.getName());
             }
             else
             {
                 target.setHidden(true);
-                context.sendTranslated(POSITIVE, "The bank {input#bank} is now hidden!", bankString);
+                context.sendTranslated(POSITIVE, "The bank {input#bank} is now hidden!", target.getName());
             }
         }
     }
 
     @Command(desc = "Unhides the account of given banks",
-             indexed = @Grouped(@Indexed({"bank","!*"})))
+             indexed = @Grouped(@Indexed(label = {"bank","!*"})))
     public void unhide(ParameterizedContext context)
     {
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.unhideAll(false, true);
             return;
         }
-        String[] banks = StringUtils.explode(",", context.getString(0));
-        for (String bankString : banks)
+        for (BankAccount target : context.<List<BankAccount>>getArg(0))
         {
-            BankAccount target = this.manager.getBankAccount(bankString, false);
-            if (target == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", bankString);
-                return;
-            }
             if (target.isHidden())
             {
                 target.setHidden(false);
-                context.sendTranslated(POSITIVE, "The bank {input#bank} is no longer hidden!", bankString);
+                context.sendTranslated(POSITIVE, "The bank {input#bank} is no longer hidden!", target.getName());
             }
             else
             {
-                context.sendTranslated(POSITIVE, "The bank {input#bank} was not hidden!", bankString);
+                context.sendTranslated(POSITIVE, "The bank {input#bank} was not hidden!", target.getName());
             }
         }
     }

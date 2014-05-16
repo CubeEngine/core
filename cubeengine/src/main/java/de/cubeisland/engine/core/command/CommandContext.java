@@ -23,7 +23,6 @@ import java.util.Stack;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public interface CommandContext
@@ -118,7 +117,7 @@ public interface CommandContext
      *
      * @return the arguments
      */
-    List<String> getArgs();
+    List<Object> getArgs();
 
     /**
      * Checks whether the given index is available in the args list
@@ -132,28 +131,18 @@ public interface CommandContext
      * The method returns a arg as a specific type
      *
      * @param i the index
-     * @param type the type class
-     * @param <T> the type
-     * @return the converted arg value or null
-     */
-    <T> T getArg(int i, Class<T> type);
-
-    /**
-     * The method returns a arg as a specific type
-     *
-     * @param i the index
-     * @param type the type class
-     * @param <T> the type
      * @return the converted arg value or the default value
      */
-    <T> T getArg(int i, Class<T> type, T def);
+    <T> T getArg(int i, T def);
 
     /**
-     * This method returns the raw arg string at the given index
+     * * The method returns a arg as a specific type
+     *
      * @param i the index
-     * @return the raw string value
+     * @param <T>
+     * @return the converted arg value
      */
-    String getString(int i);
+    <T> T getArg(int i);
 
     /**
      * This method returns the raw arg string at the given index or the default value
@@ -170,15 +159,6 @@ public interface CommandContext
      * @return the aggregated string
      */
     String getStrings(int from);
-
-    /**
-     * Returns the arg at the given index as a user.
-     * This is the same as getArg(i, User.class)
-     *
-     * @param i the index
-     * @return a user or null
-     */
-    User getUser(int i);
 
     void ensurePermission(Permission permission) throws PermissionDeniedException;
 }

@@ -283,12 +283,12 @@ public class Universe
             }
             if (Files.exists(Bukkit.getServer().getWorldContainer().toPath().resolve(name))) // world is just not loaded yet
             {
-                module.getLog().info("Loading World {}...", name);
-                world = this.wm.createWorld(WorldCreator.name(name));
+                module.getLog().info("Loading World {} [{}]...", name, config.generation.environment.name());
+                world = this.wm.createWorld(WorldCreator.name(name).environment(config.generation.environment));
             }
             else // World does not exist
             {
-                module.getLog().info("Creating new World {}...", name);
+                module.getLog().info("Creating new World {} [{}]...", name, config.generation.environment.name());
                 world = this.wm.createWorld(config.applyToCreator(WorldCreator.name(name)));
             }
             if (config.spawn.spawnLocation == null)
@@ -408,12 +408,17 @@ public class Universe
         {
             this.module.getLog().debug("Created PlayerDataConfig for {} in the {} universe" , player.getDisplayName(), this.getName());
             PlayerDataConfig save = this.module.getCore().getConfigFactory().create(PlayerDataConfig.class);
+            save.setTarget(path.toFile());
+            save.lastName = player.getName();
             save.applyToPlayer(player);
+            save.applyFromPlayer(player);
+            save.save();
             this.savePlayer(player, player.getWorld());
         }
         if (!(this.universeConfig.keepFlyMode || module.perms().KEEP_FLYMODE.isAuthorized(player)))
         {
-            player.setFlying(player.isFlying());
+            player.setAllowFlight(false);
+            player.setFlying(false);
         }
         if (!module.perms().KEEP_GAMEMODE.isAuthorized(player))
         {
@@ -502,9 +507,13 @@ public class Universe
         return false;
     }
 
-    public Location getRespawnLocation(World world)
+    public Location getRespawnLocation(World world, boolean bedSpawn, Location respawnLocation)
     {
         WorldConfig worldConfig = this.getWorldConfig(world);
+        if (worldConfig.spawn.allowBedRespawn && bedSpawn)
+        {
+            return respawnLocation;
+        }
         if (worldConfig.spawn.respawnWorld == null)
         {
             return this.getSpawnLocation(this.getMainWorld());

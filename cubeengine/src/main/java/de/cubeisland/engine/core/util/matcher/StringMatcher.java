@@ -89,7 +89,6 @@ public class StringMatcher
         }
         if (in.contains(search))
         {
-            CubeEngine.getLog().debug("Direct Match FOUND: {}", search);
             return search; // Direct Match
         }
         Map<String, Integer> firstEditDistanceCheck = this.getMatches(search, in, firstEditDistance, ignoreCase);

@@ -67,16 +67,16 @@ public class WarpCommand extends TpPointCommand
 
     @OnlyIngame
     @Command(desc = "Teleport to a warp",
-             indexed = {@Grouped(@Indexed("warp")),
-                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
+             indexed = {@Grouped(@Indexed(label = "warp")),
+                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void tp(CommandContext context)
     {
         User user = getUser(context, 1);
         User sender = (User)context.getSender();
-        Warp warp = manager.findOne(user, context.getString(0));
+        Warp warp = manager.findOne(user, context.<String>getArg(0));
         if (warp == null)
         {
-            warpNotFoundMessage(context, user, context.getString(0));
+            warpNotFoundMessage(context, user, context.<String>getArg(0));
             return;
         }
         if (!warp.canAccess(sender))
@@ -115,7 +115,7 @@ public class WarpCommand extends TpPointCommand
     @Alias(names = {"createwarp", "mkwarp", "makewarp"})
     @Command(names = {"create", "make"}, desc = "Create a warp",
              flags = {@Flag(name = "priv", longName = "private", permission = "private")},
-             indexed = @Grouped(@Indexed("name")))
+             indexed = @Grouped(@Indexed(label = "name")))
     public void create(ParameterizedContext context)
     {
         if (this.manager.getCount() >= this.module.getConfig().warps.max)
@@ -125,7 +125,7 @@ public class WarpCommand extends TpPointCommand
             return;
         }
         User sender = (User)context.getSender();
-        String name = context.getString(0);
+        String name = context.getArg(0);
         if (manager.has(sender, name))
         {
             context.sendTranslated(NEGATIVE, "A warp by that name already exist!");
@@ -147,14 +147,14 @@ public class WarpCommand extends TpPointCommand
 
     @Command(desc = "Set the welcome message of warps",
              names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
-             indexed = {@Grouped(@Indexed("warp")),
-                        @Grouped(req = false, value = @Indexed("welcome message"), greedy = true)},
+             indexed = {@Grouped(@Indexed(label = "warp")),
+                        @Grouped(req = false, value = @Indexed(label = "welcome message"), greedy = true)},
              params = @Param(names = "owner", type = User.class, permission = "other"),
              flags = @Flag(longName = "append", name = "a"))
     public void greeting(ParameterizedContext context)
     {
         User user = this.getUser(context, "owner");
-        String name = context.getString(0);
+        String name = context.getArg(0);
         Warp warp = this.manager.getExact(user, name);
         if (warp == null)
         {
@@ -183,12 +183,12 @@ public class WarpCommand extends TpPointCommand
 
     @OnlyIngame
     @Command(desc = "Move a warp",
-             indexed = {@Grouped(value = @Indexed("warp")),
-                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
+             indexed = {@Grouped(value = @Indexed(label = "warp")),
+                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void move(CommandContext context)
     {
         User user = this.getUser(context, 1);
-        String name = context.getString(0);
+        String name = context.getArg(0);
         Warp warp = manager.getExact(user, name);
         if (warp == null)
         {
@@ -212,12 +212,12 @@ public class WarpCommand extends TpPointCommand
 
     @Alias(names = {"removewarp", "deletewarp", "delwarp", "remwarp"})
     @Command(names = {"remove", "delete"}, desc = "Remove a warp",
-             indexed = {@Grouped(@Indexed("warp")),
-                        @Grouped(req = false, value = @Indexed("owner"))})
+             indexed = {@Grouped(@Indexed(label = "warp")),
+                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void remove(CommandContext context)
     {
         User user = getUser(context, 1);
-        String name = context.getString(0);
+        String name = context.getArg(0);
         Warp warp = manager.getExact(user, name);
         if (warp == null)
         {
@@ -238,13 +238,13 @@ public class WarpCommand extends TpPointCommand
     }
 
     @Command(desc = "Rename a warp",
-             indexed = {@Grouped(@Indexed("warp")),
-                        @Grouped(@Indexed("new name"))},
+             indexed = {@Grouped(@Indexed(label = "warp")),
+                        @Grouped(@Indexed(label = "new name"))},
             params = @Param(names = "owner", type = User.class))
     public void rename(ParameterizedContext context)
     {
         User user = getUser(context, "owner");
-        String name = context.getString(0);
+        String name = context.getArg(0);
         Warp warp = manager.getExact(user, name);
         if (warp == null)
         {
@@ -255,7 +255,7 @@ public class WarpCommand extends TpPointCommand
         {
             context.ensurePermission(module.getPermissions().WARP_RENAME_OTHER);
         }
-        String newName = context.getString(1);
+        String newName = context.getArg(1);
         if (name.contains(":") || name.length() >= 32)
         {
             context.sendTranslated(NEGATIVE, "Warps may not have names that are longer than 32 characters or contain colon(:)'s!");
@@ -278,10 +278,10 @@ public class WarpCommand extends TpPointCommand
              flags = {@Flag(name = "pub", longName = "public"),
                       @Flag(name = "o", longName = "owned"),
                       @Flag(name = "i", longName = "invited")},
-             indexed = @Grouped(req = false, value = @Indexed(value = "owner", type = User.class)))
+             indexed = @Grouped(req = false, value = @Indexed(label = {"owner","!*"}, type = {User.class, String.class})))
     public void list(ParameterizedContext context)
     {
-        if ((context.hasArg(0) && "*".equals(context.getString(0))) || !(context.hasArg(0) || context.isSender(User.class)))
+        if ((context.hasArg(0) && "*".equals(context.getArg(0))) || !(context.hasArg(0) || context.isSender(User.class)))
         {
             context.ensurePermission(module.getPermissions().WARP_LIST_OTHER);
             this.listAll(context);
@@ -290,11 +290,6 @@ public class WarpCommand extends TpPointCommand
         User user = this.getUser(context, 0);
         if (!user.equals(context.getSender()))
         {
-            if (user.equals(context.getSender()))
-            {
-                warpNotFoundMessage(context, user, context.getString(0));
-                return;
-            }
             context.ensurePermission(module.getPermissions().WARP_LIST_OTHER);
         }
         Set<Warp> warps = this.manager.list(user, context.hasFlag("o"), context.hasFlag("pub"), context.hasFlag("i"));
@@ -345,7 +340,7 @@ public class WarpCommand extends TpPointCommand
 
     @Command(names = {"ilist", "invited"},
              desc = "List all players invited to your warps",
-             indexed = @Grouped(req = false, value = @Indexed("warp")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "warp")),
              params = @Param(names = "owner", type = User.class, permission = "other"))
     public void invitedList(ParameterizedContext context)
     {
@@ -392,15 +387,15 @@ public class WarpCommand extends TpPointCommand
 
     @OnlyIngame
     @Command(desc = "Invite a user to one of your warps",
-             indexed = {@Grouped(@Indexed("warp")),
-                        @Grouped(@Indexed(value = "player", type = User.class))})
+             indexed = {@Grouped(@Indexed(label = "warp")),
+                        @Grouped(@Indexed(label = "player", type = User.class))})
     public void invite(CommandContext context)
     {
         User sender = (User)context.getSender();
-        Warp warp = this.manager.findOne(sender, context.getString(0));
+        Warp warp = this.manager.findOne(sender, context.<String>getArg(0));
         if (warp == null || !warp.isOwner(sender))
         {
-            context.sendTranslated(NEGATIVE, "You do not own a warp named {name#warp}!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "You do not own a warp named {name#warp}!", context.getArg(0));
             return;
         }
         if (warp.isPublic())
@@ -408,12 +403,7 @@ public class WarpCommand extends TpPointCommand
             context.sendTranslated(NEGATIVE, "You can't invite a person to a public warp.");
             return;
         }
-        User invited = context.getUser(1);
-        if (invited == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        User invited = context.getArg(1);
         if (invited.equals(sender))
         {
             context.sendTranslated(NEGATIVE, "You cannot invite yourself to your own warp!");
@@ -434,15 +424,15 @@ public class WarpCommand extends TpPointCommand
 
     @OnlyIngame
     @Command(desc = "Uninvite a player from one of your warps",
-             indexed = {@Grouped(value = @Indexed("warp")),
-                        @Grouped(@Indexed(value = "player", type = User.class))})
+             indexed = {@Grouped(value = @Indexed(label = "warp")),
+                        @Grouped(@Indexed(label = "player", type = User.class))})
     public void unInvite(CommandContext context)
     {
         User sender = (User)context.getSender();
-        Warp warp = this.manager.getExact(sender, context.getString(0));
+        Warp warp = this.manager.getExact(sender, context.<String>getArg(0));
         if (warp == null || !warp.isOwner(sender))
         {
-            context.sendTranslated(NEGATIVE, "You do not own a warp named {name#warp}!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "You do not own a warp named {name#warp}!", context.getArg(0));
             return;
         }
         if (warp.isPublic())
@@ -450,12 +440,7 @@ public class WarpCommand extends TpPointCommand
             context.sendTranslated(NEGATIVE, "This warp is public. Make it private to disallow others to access it.");
             return;
         }
-        User invited = context.hasArg(1) ? context.getUser(1) : context.getUser(0);
-        if (invited == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        User invited = context.getArg(1);
         if (invited.equals(sender))
         {
             context.sendTranslated(NEGATIVE, "You cannot uninvite yourself from your own warp!");
@@ -475,8 +460,8 @@ public class WarpCommand extends TpPointCommand
     }
 
     @Command(names = {"private", "makeprivate"}, desc = "Make a players warp private",
-             indexed = {@Grouped(req = false, value = @Indexed("warp")),
-                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
+             indexed = {@Grouped(req = false, value = @Indexed(label = "warp")),
+                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void makePrivate(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -484,7 +469,7 @@ public class WarpCommand extends TpPointCommand
         {
             context.ensurePermission(module.getPermissions().WARP_PUBLIC_OTHER);
         }
-        String name = context.getString(0);
+        String name = context.getArg(0);
         Warp warp = this.manager.findOne(user, name);
         if (warp == null)
         {
@@ -506,8 +491,8 @@ public class WarpCommand extends TpPointCommand
     }
 
     @Command(names = "public", desc = "Make a users warp public",
-             indexed = {@Grouped(req = false, value = @Indexed("warp")),
-                        @Grouped(req = false, value = @Indexed(value = "owner", type = User.class))})
+             indexed = {@Grouped(req = false, value = @Indexed(label = "warp")),
+                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void makePublic(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -515,7 +500,7 @@ public class WarpCommand extends TpPointCommand
         {
             context.ensurePermission(module.getPermissions().WARP_PUBLIC_OTHER);
         }
-        String name = context.getString(0);
+        String name = context.getArg(0);
         Warp warp = this.manager.findOne(user, name);
         if (warp == null)
         {
@@ -540,7 +525,7 @@ public class WarpCommand extends TpPointCommand
     @Command(desc = "Clear all warps (of a player)",
              flags = {@Flag(name = "pub", longName = "public"),
                       @Flag(name = "priv", longName = "private")},
-             indexed = @Grouped(req = false, value = @Indexed("player")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
     public ConfirmResult clear(final ParameterizedContext context)
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))
@@ -548,24 +533,23 @@ public class WarpCommand extends TpPointCommand
             context.sendTranslated(NEGATIVE, "This command has been disabled for ingame use via the configuration");
             return null;
         }
-        if (context.getArgCount() > 0)
+        final User user = context.getArg(0, null);
+        if (context.hasArg(0))
         {
-            if (module.getCore().getUserManager().findExactUser(context.getString(0)) == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return null;
-            }
             if (context.hasFlag("pub"))
             {
-                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public warps ever created by {user}?", context.getString(0));
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all public warps ever created by {user}?",
+                                       user);
             }
             else if (context.hasFlag("priv"))
             {
-                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private warps ever created by {user}?", context.getString(0));
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all private warps ever created by {user}?",
+                                       user);
             }
             else
             {
-                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all warps ever created by {user}?", context.getString(0));
+                context.sendTranslated(NEUTRAL, "Are you sure you want to delete all warps ever created by {user}?",
+                                       user);
             }
         }
         else
@@ -589,16 +573,15 @@ public class WarpCommand extends TpPointCommand
             @Override
             public void run()
             {
-                if (context.getArgCount() == 0)
-                { // No user
-                    manager.massDelete(context.hasFlag("priv"), context.hasFlag("pub"));
-                    context.sendTranslated(POSITIVE, "The warps are now deleted");
+                if (context.hasArg(0))
+                {
+                    manager.massDelete(user, context.hasFlag("priv"), context.hasFlag("pub"));
+                    context.sendTranslated(POSITIVE, "Deleted warps.");
                 }
                 else
                 {
-                    User user = context.getUser(0);
-                    manager.massDelete(user, context.hasFlag("priv"), context.hasFlag("pub"));
-                    context.sendTranslated(POSITIVE, "Deleted warps.");
+                    manager.massDelete(context.hasFlag("priv"), context.hasFlag("pub"));
+                    context.sendTranslated(POSITIVE, "The warps are now deleted");
                 }
             }
         }, context);

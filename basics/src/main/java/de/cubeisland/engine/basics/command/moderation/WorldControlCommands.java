@@ -36,6 +36,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
+import de.cubeisland.engine.core.command.readers.IntegerOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -66,8 +67,8 @@ public class WorldControlCommands
 
     @Command(desc = "Changes the weather",
              indexed = {
-                 @Grouped(@Indexed({"!sun","!rain","!storm"})),
-                 @Grouped(req = false, value = @Indexed("duration"))},
+                 @Grouped(@Indexed(label = {"!sun","!rain","!storm"})),
+                 @Grouped(req = false, value = @Indexed(label = "duration"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void weather(ParameterizedContext context)
     {
@@ -79,10 +80,10 @@ public class WorldControlCommands
         boolean sunny = true;
         boolean noThunder = true;
         int duration = 10000000;
-        String weather = Match.string().matchString(context.getString(0), "sun", "rain", "storm");
+        String weather = Match.string().matchString(context.<String>getArg(0), "sun", "rain", "storm");
         if (weather == null)
         {
-            context.sendTranslated(NEGATIVE, "Invalid weather! {input}", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Invalid weather! {input}", context.getArg(0));
             context.sendTranslated(NEUTRAL, "Use {name#sun}, {name#rain} or {name#storm}!", "sun", "rain", "storm");
             return;
         }
@@ -103,7 +104,7 @@ public class WorldControlCommands
         }
         if (context.hasArg(1))
         {
-            duration = context.getArg(1, Integer.class, 0);
+            duration = context.getArg(1, 0);
             if (duration == 0)
             {
                 context.sendTranslated(NEGATIVE, "The given duration is invalid!");
@@ -117,7 +118,7 @@ public class WorldControlCommands
             world = context.getParam("in", null);
             if (world == null)
             {
-                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getArg(1));
                 return;
             }
         }
@@ -144,8 +145,8 @@ public class WorldControlCommands
 
     @Command(desc = "Removes entity",
              indexed = {
-                 @Grouped(@Indexed("entityType[:itemMaterial]")),
-                 @Grouped(req = false, value = @Indexed({"radius","!*"}))},
+                 @Grouped(@Indexed(label = "entityType[:itemMaterial]")),
+                 @Grouped(req = false, value = @Indexed(label = {"radius","!*"}, type = IntegerOrAllReader.class))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void remove(ParameterizedContext context)
     {
@@ -171,7 +172,7 @@ public class WorldControlCommands
         int radius = this.config.commands.removeDefaultRadius;
         if (context.hasArg(1))
         {
-            if ("*".equals(context.getString(1)))
+            if ("*".equals(context.getArg(1)))
             {
                 radius = -1;
             }
@@ -182,7 +183,7 @@ public class WorldControlCommands
             }
             else
             {
-                radius = context.getArg(1, Integer.class, 0);
+                radius = context.getArg(1, 0);
             }
             if (radius <= 0)
             {
@@ -196,7 +197,7 @@ public class WorldControlCommands
             loc = sender.getLocation();
         }
         int entitiesRemoved;
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.getArg(0)))
         {
             List<Entity> list = new ArrayList<>();
             for (Entity entity : world.getEntities())
@@ -211,7 +212,7 @@ public class WorldControlCommands
         else
         {
             List<Entity> list = world.getEntities(); // All entites remaining in that list will not get deleted!
-            String[] s_entityTypes = StringUtils.explode(",", context.getString(0));
+            String[] s_entityTypes = StringUtils.explode(",", context.<String>getArg(0));
             List<org.bukkit.entity.EntityType> types = new ArrayList<>();
             for (String s_entityType : s_entityTypes)
             {
@@ -275,7 +276,7 @@ public class WorldControlCommands
         {
             context.sendTranslated(NEUTRAL, "No entities to remove!");
         }
-        else if (context.getString(0).equalsIgnoreCase("*"))
+        else if ("*".equals(context.getArg(0)))
         {
             if (radius == -1)
             {
@@ -301,8 +302,8 @@ public class WorldControlCommands
                        @Flag(longName = "all", name = "a")// infinite radius
     }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class),
              indexed = {
-                 @Grouped(value = @Indexed("types..."), req = false),
-                 @Grouped(value = @Indexed("radius"), req = false)})
+                 @Grouped(value = @Indexed(label = "types..."), req = false),
+                 @Grouped(value = @Indexed(label = "radius"), req = false)})
     public void butcher(ParameterizedContext context)
     {
         User sender = null;
@@ -324,7 +325,7 @@ public class WorldControlCommands
         }
         if (context.hasArg(1))
         {
-            radius = context.getArg(1, Integer.class, 0);
+            radius = context.getArg(1, 0);
             if (radius < 0 && !(radius == -1 && module.perms().COMMAND_BUTCHER_FLAG_ALL.isAuthorized(context
                                                                                                          .getSender())))
             {
@@ -354,7 +355,7 @@ public class WorldControlCommands
         boolean allTypes = false;
         if (context.hasArg(0))
         {
-            if (context.getString(0).equals("*"))
+            if (context.getArg(0).equals("*"))
             {
                 allTypes = true;
                 if (!module.perms().COMMAND_BUTCHER_FLAG_ALLTYPE.isAuthorized(context.getSender()))
@@ -365,7 +366,7 @@ public class WorldControlCommands
             }
             else
             {
-                s_types = StringUtils.explode(",", context.getString(0));
+                s_types = StringUtils.explode(",", context.<String>getArg(0));
             }
         }
         List<Entity> remList = new ArrayList<>();

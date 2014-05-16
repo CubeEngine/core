@@ -342,8 +342,8 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
 
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, error.getRepsonseStatus(), Unpooled.copiedBuffer(this.serialize(data), this.UTF8));
         response.headers().set(CONTENT_TYPE, MimeType.JSON.toString());
-
-        context.write(response).addListener(ChannelFutureListener.CLOSE).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+        context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE).addListener(
+            ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
     public static String normalizeRoute(String route)

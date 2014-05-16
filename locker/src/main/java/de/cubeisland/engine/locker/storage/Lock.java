@@ -232,7 +232,7 @@ public class Lock
         {
             if (!this.isPublic())
             {
-                String[] explode = StringUtils.explode(",", usersString);
+                String[] explode = StringUtils.explode(",", usersString); // TODO custom reader also for all other occurences of user with - or @ in front
                 for (String name : explode)
                 {
                     boolean add = true;

@@ -18,30 +18,27 @@
 package de.cubeisland.engine.core.ban;
 
 import java.util.Date;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
-import static de.cubeisland.engine.core.util.ChatFormat.DARK_GREEN;
-import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
-import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
+import static de.cubeisland.engine.core.util.ChatFormat.*;
 
-public class UserBan extends Ban<UUID>
+public class UserBan extends Ban<String>
 {
-    private final UUID target;
+    private final String target;
 
-    public UserBan(UUID target, String source, String reason)
+    public UserBan(String target, String source, String reason)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), null);
     }
 
-    public UserBan(UUID target, String source, String reason, Date expires)
+    public UserBan(String target, String source, String reason, Date expires)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    public UserBan(UUID target, String source, String reason, Date created, Date expires)
+    public UserBan(String target, String source, String reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
         expectNotNull(target, "The user must not be null!");
@@ -49,7 +46,7 @@ public class UserBan extends Ban<UUID>
     }
 
     @Override
-    public UUID getTarget()
+    public String getTarget()
     {
         return this.target;
     }
@@ -57,6 +54,7 @@ public class UserBan extends Ban<UUID>
     @Override
     public String toString()
     {
-        return DARK_GREEN + Bukkit.getOfflinePlayer(target).getName() + YELLOW + "(" + GOLD +  this.getTarget().toString() + YELLOW + ")";
+        String name = Bukkit.getOfflinePlayer(target).getName();
+        return DARK_GREEN + (name == null ? "Unknown" : name) + YELLOW + "(" + GOLD +  this.getTarget().toString() + YELLOW + ")";
     }
 }

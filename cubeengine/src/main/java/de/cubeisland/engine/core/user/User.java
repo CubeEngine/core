@@ -609,7 +609,6 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             return ((org.bukkit.command.CommandSender)o).getName().equals(this.getName());
         }
-
         return false;
     }
 
@@ -662,7 +661,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void ban(CommandSender source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new UserBan(this.getUniqueId(), source.getName(), reason, created, expire));
+        this.getCore().getBanManager().addBan(new UserBan(this.getName(), source.getName(), reason, created, expire));
     }
 
     public UserEntity getEntity()

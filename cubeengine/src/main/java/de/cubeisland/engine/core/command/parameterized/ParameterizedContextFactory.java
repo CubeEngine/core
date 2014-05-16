@@ -44,7 +44,6 @@ import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext.Type.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 import static java.util.Locale.ENGLISH;
 
 public class ParameterizedContextFactory extends BasicContextFactory
@@ -196,7 +195,7 @@ public class ParameterizedContextFactory extends BasicContextFactory
         {
             return (T)new ParameterizedTabContext(command, sender, labels, args, flags, rawParams, last);
         }
-        return (T)new ParameterizedContext(command, sender, labels, args, flags, readParams(sender, rawParams));
+        return (T)new ParameterizedContext(command, sender, labels, readArgs(sender, args), flags, readParams(sender, rawParams));
     }
 
     private Type readCommand(String[] rawArgs, boolean tabComplete, Set<String> flags, List<String> args,
@@ -305,8 +304,7 @@ public class ParameterizedContextFactory extends BasicContextFactory
             }
             catch (InvalidArgumentException ex)
             {
-                throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument for {input}: {}", param.getName(),
-                                                                        sender.getTranslation(NONE, ex.getMessage(), ex.getMessageArgs())));
+                throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument for {input}: {}", param.getName(), ex.getMessage()));
                 // TODO move else where so context is not null when showing error
             }
         }
