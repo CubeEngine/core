@@ -30,6 +30,8 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import de.cubeisland.cubeengine.core.command.result.paginated.PaginatedResult;
+
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -68,33 +70,38 @@ public class ItemCommands
     }
 
     @Command(desc = "Looks up an item for you!",
-            indexed = @Grouped(req = false, value = @Indexed("item")))
-    public void itemDB(CommandContext context)
+             indexed = @Grouped(req = false, value = @Indexed("item")))
+    public PaginatedResult itemDB(CommandContext context)
     {
         if (context.hasArg(0))
         {
             TreeSet<Entry<ItemStack, Double>> itemSet = Match.material().itemStackList(context.getString(0));
             if (itemSet != null && itemSet.size() > 0)
             {
-                context.sendTranslated(POSITIVE, "Best Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(itemSet.first().getKey()), itemSet.first().getKey().getType().getId(), itemSet.first().getKey().getDurability(), context.getString(0));
+                List<String> lines = new ArrayList<>();
+
+                lines.add(context.getSender().getTranslation(POSITIVE, "Best Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(itemSet.first().getKey()), itemSet.first().getKey().getType().getId(), itemSet.first().getKey().getDurability(), context.getString(0)));
                 itemSet.remove(itemSet.first());
                 for (Entry<ItemStack, Double> item : itemSet) {
-                    context.sendTranslated(POSITIVE, "Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(item.getKey()), item.getKey().getType().getId(), item.getKey().getDurability(), context.getString(0));
+                    lines.add(context.getSender().getTranslation(POSITIVE,
+                                                                 "Matched {input#item} ({integer#id}:{short#data}) for {input}",
+                                                                 Match.material().getNameFor(item.getKey()),
+                                                                 item.getKey().getType().getId(),
+                                                                 item.getKey().getDurability(), context.getString(0)));
                 }
+                return new PaginatedResult(context, lines);
             }
             else
             {
                 context.sendTranslated(NEGATIVE, "Could not find any item named {input}!", context.getString(0));
             }
-            return;
         }
-        if (context.getSender() instanceof User)
+        else if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
             if (sender.getItemInHand().getType().equals(AIR))
             {
                 context.sendTranslated(NEUTRAL, "You hold nothing in your hands!");
-                return;
             }
             else
             {
@@ -103,13 +110,18 @@ public class ItemCommands
                 if (found == null)
                 {
                     context.sendTranslated(NEGATIVE, "Itemname unknown! Itemdata: {integer#id}:{short#data}", item.getType().getId(), item.getDurability());
-                    return;
                 }
-                context.sendTranslated(POSITIVE, "The Item in your hand is: {input#item} ({integer#id}:{short#data})", found, item.getType().getId(), item.getDurability());
+                else
+                {
+                    context.sendTranslated(POSITIVE, "The Item in your hand is: {input#item} ({integer#id}:{short#data})", found, item.getType().getId(), item.getDurability());
+                }
             }
-            return;
         }
-        context.sendTranslated(NEGATIVE, "You need 1 parameter!");
+        else
+        {
+            context.sendTranslated(NEGATIVE, "You need 1 parameter!");
+        }
+        return null;
     }
 
     @Command(desc = "Changes the display name of the item in your hand.",
