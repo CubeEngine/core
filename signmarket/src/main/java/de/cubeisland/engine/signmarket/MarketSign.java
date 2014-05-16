@@ -28,7 +28,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
@@ -56,6 +55,7 @@ import static de.cubeisland.engine.core.util.InventoryUtil.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static de.cubeisland.engine.signmarket.storage.TableSignBlock.TABLE_SIGN_BLOCK;
 import static de.cubeisland.engine.signmarket.storage.TableSignItem.TABLE_SIGN_ITEM;
+import static org.bukkit.event.inventory.InventoryType.DISPENSER;
 
 // TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/414 shift-click to edit multiple signs at the same time
 // TODO http://git.cubeisland.de/cubeengine/cubeengine/issues/431 blacklist
@@ -286,9 +286,9 @@ public class MarketSign
                         int newStock = getAmountOf(inventory, MarketSign.this.itemInfo.getItemStack());
                         if (newStock != MarketSign.this.inventoryStock)
                         {
-                            MarketSign.this.setStock(MarketSign.this.getStock() - MarketSign.this.inventoryStock + newStock);
-                            MarketSign.this.inventoryStock = newStock;
-                            MarketSign.this.updateSignText();
+                            setStock(getStock() - inventoryStock + newStock);
+                            inventoryStock = newStock;
+                            updateSignText();
                         }
                     }
                 }
@@ -312,7 +312,7 @@ public class MarketSign
         {
             if (this.displayInventory == null)
             {
-                this.displayInventory = Bukkit.createInventory(null,InventoryType.DISPENSER);
+                this.displayInventory = Bukkit.createInventory(null, DISPENSER, this.isAdminSign() ? "Server" : this.getOwner().getName());
                 this.displayInventory.setItem(4,this.getItem());
             }
             InventoryGuardFactory.prepareInventory(this.displayInventory, user)
@@ -1226,7 +1226,7 @@ public class MarketSign
         {
             if (this.isAdminSign())
             {
-                inventory = Bukkit.getServer().createInventory(this.itemInfo, InventoryType.DISPENSER);
+                inventory = Bukkit.getServer().createInventory(this.itemInfo, DISPENSER);
             }
             else
             {
