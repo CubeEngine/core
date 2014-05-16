@@ -44,7 +44,6 @@ import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.TimeConversionException;
 
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
@@ -173,7 +172,7 @@ public class KickBanCommands
                 context.sendTranslated(NEGATIVE, "{user} is already banned!", player);
                 return;
             }
-            this.banManager.addBan(new UserBan(player.getUniqueId(),context.getSender().getName(), reason));
+            this.banManager.addBan(new UserBan(player.getName(), context.getSender().getName(), reason));
             if (user != null)
             {
                 user.kickPlayer(user.getTranslation(NEGATIVE, banMessage) + "\n\n" + RESET + reason);
@@ -315,7 +314,7 @@ public class KickBanCommands
         {
             long millis = StringUtils.convertTimeToMillis(context.getString(1));
             Date toDate = new Date(System.currentTimeMillis() + millis);
-            this.banManager.addBan(new UserBan(player.getUniqueId(),context.getSender().getName(), reason, toDate));
+            this.banManager.addBan(new UserBan(player.getName(),context.getSender().getName(), reason, toDate));
             if (player.isOnline())
             {
                 if (user == null) throw new IllegalStateException();

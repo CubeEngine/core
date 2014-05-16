@@ -89,7 +89,7 @@ public class BukkitBanManager implements BanManager
         GameProfileBanEntry entry = (GameProfileBanEntry)this.profileBan.get(new GameProfile(uuid, null));
         if (entry != null)
         {
-            return new UserBan(uuid, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
+            return new UserBan(((GameProfile)entry.f()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
         }
         return null;
     }
@@ -99,7 +99,6 @@ public class BukkitBanManager implements BanManager
     {
         expectNotNull(address, "The address must not be null!");
         expect(isMainThread());
-
         IpBanEntry entry = (IpBanEntry)this.ipBans.get(address.toString());
         if (entry != null)
         {
@@ -184,7 +183,7 @@ public class BukkitBanManager implements BanManager
         for (JsonListEntry e : this.profileBan.getValues())
         {
             GameProfileBanEntry entry = (GameProfileBanEntry)e;
-            bans.add(new UserBan(((GameProfile)entry.f()).getId(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
+            bans.add(new UserBan(((GameProfile)entry.f()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
         }
         return bans;
     }
