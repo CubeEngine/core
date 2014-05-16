@@ -36,6 +36,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
+import de.cubeisland.engine.core.command.readers.IntegerOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -145,7 +146,7 @@ public class WorldControlCommands
     @Command(desc = "Removes entity",
              indexed = {
                  @Grouped(@Indexed(label = "entityType[:itemMaterial]")),
-                 @Grouped(req = false, value = @Indexed(label = {"radius","!*"}))},
+                 @Grouped(req = false, value = @Indexed(label = {"radius","!*"}, type = IntegerOrAllReader.class))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void remove(ParameterizedContext context)
     {

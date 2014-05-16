@@ -45,6 +45,7 @@ import de.cubeisland.engine.core.command.readers.EntityTypeReader;
 import de.cubeisland.engine.core.command.readers.EnvironmentReader;
 import de.cubeisland.engine.core.command.readers.FloatReader;
 import de.cubeisland.engine.core.command.readers.IntReader;
+import de.cubeisland.engine.core.command.readers.IntegerOrAllReader;
 import de.cubeisland.engine.core.command.readers.ItemStackReader;
 import de.cubeisland.engine.core.command.readers.LogLevelReader;
 import de.cubeisland.engine.core.command.readers.LongReader;
@@ -52,16 +53,18 @@ import de.cubeisland.engine.core.command.readers.OfflinePlayerReader;
 import de.cubeisland.engine.core.command.readers.ProfessionReader;
 import de.cubeisland.engine.core.command.readers.ShortReader;
 import de.cubeisland.engine.core.command.readers.StringReader;
+import de.cubeisland.engine.core.command.readers.UserListOrAllReader;
+import de.cubeisland.engine.core.command.readers.UserListReader;
+import de.cubeisland.engine.core.command.readers.UserOrAllReader;
 import de.cubeisland.engine.core.command.readers.UserReader;
 import de.cubeisland.engine.core.command.readers.WorldReader;
 import de.cubeisland.engine.core.command.readers.WorldTypeReader;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.logging.LogLevel;
 
-import static de.cubeisland.engine.core.contract.Contract.expect;
-
 public abstract class ArgumentReader
 {
+    // TODO unregister reader from a module!!! else memory leakage
     private static final Map<Class<?>, ArgumentReader> READERS = new ConcurrentHashMap<>();
 
     /**
@@ -95,6 +98,11 @@ public abstract class ArgumentReader
         registerReader(new WorldTypeReader(), WorldType.class);
         registerReader(new DifficultyReader(), Difficulty.class);
         registerReader(new LogLevelReader(), LogLevel.class);
+
+        registerReader(new UserOrAllReader()); // "*" or User.class
+        registerReader(new UserListReader()); // "*" or Integer.class
+        registerReader(new UserListOrAllReader()); // "*" or Integer.class
+        registerReader(new IntegerOrAllReader()); // "*" or Integer.class
     }
 
     public static void registerReader(ArgumentReader reader, Class<?>... classes)

@@ -47,6 +47,7 @@ import de.cubeisland.engine.locker.storage.ProtectionFlag;
 import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
 import static de.cubeisland.engine.core.util.ChatFormat.GREY;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.locker.commands.CommandListener.CommandType.*;
 import static java.util.Arrays.asList;
 
 public class LockerCommands extends ContainerCommand
@@ -191,7 +192,7 @@ public class LockerCommands extends ContainerCommand
         }
         else
         {
-            this.manager.commandListener.setCommandType(context.getSender(), CommandType.MODIFY, context.<String>getArg(0));
+            this.manager.commandListener.setCommandType(context.getSender(), MODIFY, context.<String>getArg(0));
             context.sendTranslated(POSITIVE, "Right click a protection to modify it!");
         }
     }
@@ -207,8 +208,7 @@ public class LockerCommands extends ContainerCommand
         {
             this.persist(context);
         }
-        User user = context.getArg(0);
-        this.manager.commandListener.setCommandType(context.getSender(), CommandType.GIVE, context.<String>getArg(0));
+        this.manager.commandListener.setCommandType(context.getSender(), GIVE, context.<User>getArg(0).getName());
     }
 
     @Alias(names = "ckey")
@@ -230,13 +230,13 @@ public class LockerCommands extends ContainerCommand
         }
         if (context.hasFlag("i"))
         {
-            this.manager.commandListener.setCommandType(context.getSender(), CommandType.INVALIDATE_KEYS, context.<String>getArg(
+            this.manager.commandListener.setCommandType(context.getSender(), INVALIDATE_KEYS, context.<String>getArg(
                 0));
             context.sendTranslated(POSITIVE, "Right click a protection to invalidate old KeyBooks for it!");
         }
         else
         {
-            this.manager.commandListener.setCommandType(context.getSender(), CommandType.KEYS, context.<String>getArg(0), true);
+            this.manager.commandListener.setCommandType(context.getSender(), KEYS, context.<String>getArg(0), true);
             context.sendTranslated(POSITIVE, "Right click a protection to with a book to create a new KeyBook!");
         }
     }

@@ -128,7 +128,14 @@ public class BasicContext implements CommandContext
     @SuppressWarnings("unchecked")
     public <T> T getArg(int i)
     {
-        return (T)this.args.get(i);
+        try
+        {
+            return (T)this.args.get(i);
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            return null;
+        }
     }
 
     @Override

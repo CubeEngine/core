@@ -31,12 +31,18 @@ public class FloatReader extends ArgumentReader
     {
         try
         {
-            NumberFormat format = NumberFormat.getInstance(locale);
-            return format.parse(arg).floatValue();
+            return NumberFormat.getInstance(locale).parse(arg).floatValue();
         }
         catch (ParseException e)
         {
-            throw new InvalidArgumentException("Could not parse {input} to float!", arg);
+            try
+            {
+                return NumberFormat.getInstance().parse(arg).floatValue(); // Try default locale
+            }
+            catch (ParseException e1)
+            {
+                throw new InvalidArgumentException("Could not parse {input} to float!", arg);
+            }
         }
     }
 }

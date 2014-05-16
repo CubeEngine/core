@@ -17,32 +17,26 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.StringUtils;
 
-public class DoubleReader extends ArgumentReader
+public class UserListReader extends ArgumentReader
 {
     @Override
-    public Double read(String arg, Locale locale) throws InvalidArgumentException
+    public List<User> read(String arg, Locale locale) throws InvalidArgumentException
     {
-        try
+        List<User> users = new ArrayList<>();
+        String[] userStrings = StringUtils.explode(",", arg);
+        for (String userString : userStrings)
         {
-            return NumberFormat.getInstance(locale).parse(arg).doubleValue();
+            users.add(ArgumentReader.read(User.class, userString, locale));
         }
-        catch (ParseException e)
-        {
-            try
-            {
-                return NumberFormat.getInstance().parse(arg).doubleValue(); // Try parsing with default locale
-            }
-            catch (ParseException e1)
-            {
-                throw new InvalidArgumentException("Could not parse {input} to double!", arg);
-            }
-        }
+        return users;
     }
 }

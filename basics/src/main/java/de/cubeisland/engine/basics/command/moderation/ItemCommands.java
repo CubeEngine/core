@@ -35,6 +35,7 @@ import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.readers.IntegerOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -373,7 +374,7 @@ public class ItemCommands
 
     @Command(names = {"item", "i"}, desc = "Gives the specified Item to you",
              indexed = {
-                @Grouped(@Indexed(label = "material[:data]")),
+                @Grouped(@Indexed(label = "material[:data]", type = ItemStack.class)),
                 @Grouped(value = @Indexed(label = "enchantment[:level]"), req = false),
                 @Grouped(value = @Indexed(label = "amount"), req = false)},
              flags = {@Flag(longName = "blacklist", name = "b")})
@@ -384,11 +385,6 @@ public class ItemCommands
         {
             User sender = (User)context.getSender();
             ItemStack item = context.getArg(0, null);
-            if (item == null)
-            {
-                context.sendTranslated(NEGATIVE, "Item {input#item} not found!", context.getArg(0));
-                return;
-            }
             if (!context.hasFlag("b") && module.perms().ITEM_BLACKLIST.isAuthorized(sender)
                     && this.module.getConfiguration().commands.containsBlackListed(item))
             {
@@ -439,20 +435,15 @@ public class ItemCommands
     }
 
     @Command(desc = "Refills the stack in hand",
-             indexed = @Grouped(value = @Indexed(label = {"amount","!*"}, type = {Integer.class,String.class}), req = false))
+             indexed = @Grouped(value = @Indexed(label = {"amount","!*"}, type = IntegerOrAllReader.class), req = false))
     public void more(CommandContext context)
     {
-        User sender = null;
-        if (context.getSender() instanceof User)
-        {
-            sender = (User)context.getSender();
-        }
-        if (sender == null)
+        if (!context.isSender(User.class))
         {
             context.sendTranslated(NEGATIVE, "You can't get enough of it, can you?");
             return;
         }
-
+        User sender = (User)context.getSender();
         Integer amount = 1;
         if (context.hasArg(0))
         {
@@ -468,14 +459,12 @@ public class ItemCommands
                 sender.sendTranslated(POSITIVE, "Refilled all stacks!");
                 return;
             }
-
             amount = context.getArg(0);
-            if (amount == null || amount <= 1)
+            if (amount <= 1)
             {
-                context.sendTranslated(NEGATIVE, "Invalid amount {input#amount}", context.getArg(0));
+                context.sendTranslated(NEGATIVE, "Invalid amount {input#amount}", amount);
                 return;
             }
-
         }
         if (sender.getItemInHand() == null || sender.getItemInHand().getType() == AIR)
         {

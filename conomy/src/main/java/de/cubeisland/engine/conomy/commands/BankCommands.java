@@ -51,18 +51,13 @@ public class BankCommands extends ContainerCommand
 
     @Alias(names = "bbalance")
     @Command(desc = "Shows the balance of the specified bank",
-             indexed = @Grouped(req = false, value = @Indexed(label = "name")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class)),
              flags = @Flag(longName = "showHidden", name = "f"))
     public void balance(ParameterizedContext context)
     {
         if (context.hasArg(0))
         {
-            BankAccount bankAccount = this.manager.getBankAccount(context.<String>getArg(0), false);
-            if (bankAccount == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-                return;
-            }
+            BankAccount bankAccount = context.getArg(0);
             boolean showHidden = context.hasFlag("f") && module.perms().COMMAND_BANK_BALANCE_SHOWHIDDEN.isAuthorized(context.getSender());
             if (!showHidden && bankAccount.isHidden())
             {
@@ -89,7 +84,8 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "Please do specify the bank you want to show the balance of!");
     }
 
-    @Command(desc = "Lists all banks", indexed = @Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
+    @Command(desc = "Lists all banks",
+             indexed = @Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
     public void list(CommandContext context) //Lists all banks [of given player]
     {
         String format = " - " + ChatFormat.YELLOW;
@@ -124,8 +120,8 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Invites a user to a bank",
-             indexed = { @Grouped(@Indexed(label = "player")),
-                         @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))},
+             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
+                         @Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class))},
              flags = @Flag(longName = "force", name = "f"))
     public void invite(ParameterizedContext context)
     {
@@ -134,12 +130,7 @@ public class BankCommands extends ContainerCommand
             && module.perms().COMMAND_BANK_INVITE_FORCE.isAuthorized(context.getSender());
         if (context.hasArg(1))
         {
-            BankAccount account = this.getBankAccount(context.<String>getArg(1));
-            if (account == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(1));
-                return;
-            }
+            BankAccount account = context.getArg(1);
             if (!account.needsInvite())
             {
                 context.sendTranslated(NEUTRAL, "This bank does not need an invite to be able to join!");
@@ -179,7 +170,7 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Joins a bank",
-             indexed = { @Grouped(@Indexed(label = "bank")),
+             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
                          @Grouped(req = false, value = @Indexed(label = "player", type = User.class))},
              flags = @Flag(longName = "force", name = "f"))
     public void join(ParameterizedContext context)
@@ -205,12 +196,7 @@ public class BankCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "Please specify a player to join!");
             return;
         }
-        BankAccount account = this.getBankAccount(context.<String>getArg(0));
-        if (account == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank-account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount account = context.getArg(0);
         if (account.isOwner(user))
         {
             if (other)
@@ -247,7 +233,7 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Leaves a bank",
-             indexed = { @Grouped(req = false, value = @Indexed(label = "bank")),
+             indexed = { @Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class)),
                          @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
     public void leave(CommandContext context)
     {
@@ -277,12 +263,7 @@ public class BankCommands extends ContainerCommand
             BankAccount account;
             if (context.hasArg(0))
             {
-                account = this.getBankAccount(context.<String>getArg(0));
-                if (account == null)
-                {
-                    context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-                    return;
-                }
+                account = context.getArg(0);
             }
             else
             {
@@ -320,16 +301,11 @@ public class BankCommands extends ContainerCommand
 
     @Command(desc = "Removes a player from the invite-list",
              indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
-                         @Grouped(@Indexed(label = "bank"))})
+                         @Grouped(@Indexed(label = "bank", type = BankAccount.class))})
     public void uninvite(CommandContext context)
     {
         User user = context.getArg(0);
-        BankAccount bankAccount = this.getBankAccount(context.<String>getArg(1));
-        if (bankAccount == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount bankAccount = context.getArg(1);
         if (bankAccount.isOwner(user) || module.perms().COMMAND_BANK_UNINVITE_FORCE.isAuthorized(context.getSender()))
         {
             if (!bankAccount.isInvited(user))
@@ -344,18 +320,14 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You are not allowed to uninvite someone from this bank!");
     }
 
-    @Command(desc = "Rejects an invite from a bank", indexed = @Grouped(@Indexed(label = "bank")))
+    @Command(desc = "Rejects an invite from a bank",
+             indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void rejectinvite(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User user = (User)context.getSender();
-            BankAccount bankAccount = this.getBankAccount(context.<String>getArg(0));
-            if (bankAccount == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-                return;
-            }
+            BankAccount bankAccount = context.getArg(0);
             if (bankAccount.isInvited(user))
             {
                 context.sendTranslated(NEGATIVE, "You are not invited to the bank {name#bank}!", bankAccount.getName());
@@ -387,15 +359,10 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes a bank", indexed = @Grouped(@Indexed(label = "bank")))
+    @Command(desc = "Deletes a bank", indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void delete(CommandContext context)
     {
-        BankAccount account = this.getBankAccount(context.<String>getArg(0));
-        if (account == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount account = context.getArg(0);
         if (context.getSender() instanceof User)
         {
             if (account.isOwner((User)context.getSender()))
@@ -420,17 +387,12 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Renames a bank",
-             indexed = { @Grouped(@Indexed(label = "name")),
+             indexed = { @Grouped(@Indexed(label = "name",type = BankAccount.class)),
                          @Grouped(@Indexed(label = "new name"))},
              flags = @Flag(longName = "force", name = "f"))
     public void rename(ParameterizedContext context)
     {
-        BankAccount account = this.getBankAccount(context.<String>getArg(0));
-        if (account == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount account = context.getArg(0);
         boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_RENAME_FORCE.isAuthorized(context.getSender());
         if (!force && context.getSender() instanceof User)
         {
@@ -449,18 +411,13 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Sets given user as owner for a bank",
-             indexed = { @Grouped(@Indexed(label = "bank")),
+             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
                          @Grouped(@Indexed(label = "player", type = User.class))},
              flags = @Flag(longName = "force", name = "f"))
     public void setOwner(ParameterizedContext context)
     {
         User user = context.getArg(1);
-        BankAccount account = this.getBankAccount(context.<String>getArg(0));
-        if (account == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount account = context.getArg(0);
         boolean force = context.hasFlag("f") && module.perms().COMMAND_BANK_SETOWNER_FORCE.isAuthorized(context.getSender());
         if (force || context.getSender() instanceof User)
         {
@@ -474,15 +431,11 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "{user} is now owner of the bank {name#bank}!", user, account.getName());
     }
 
-    @Command(desc = "Lists the current invites of a bank", indexed = @Grouped(@Indexed(label = "bank")))
+    @Command(desc = "Lists the current invites of a bank",
+             indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void listinvites(ParameterizedContext context)
     {
-        BankAccount account = this.getBankAccount(context.<String>getArg(0));
-        if (account == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank-account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount account = context.getArg(0);
         if (account.needsInvite())
         {
             if (context.getSender() instanceof User && !account.hasAccess((User)context.getSender()))
@@ -510,15 +463,11 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEUTRAL, "This bank does not require invites");
     }
 
-    @Command(desc = "Lists the members of a bank", indexed = @Grouped(@Indexed(label = "bank")))
+    @Command(desc = "Lists the members of a bank",
+             indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void listmembers(CommandContext context)
     {
-        BankAccount account = this.getBankAccount(context.<String>getArg(0));
-        if (account == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount account = context.getArg(0);
         Set<String> owners = account.getOwners();
         Set<String> members = account.getMembers();
         String format = " - " + ChatFormat.DARK_GREEN;
@@ -554,27 +503,16 @@ public class BankCommands extends ContainerCommand
     {}
 
     @Command(desc = "Deposits given amount of money into the bank",
-             indexed = { @Grouped(@Indexed(label = "bank")),
-                         @Grouped(@Indexed(label = "amount"))},
+             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))},
              flags = @Flag(longName = "force", name = "f"))
     public void deposit(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
         {
-            BankAccount account = this.getBankAccount(context.<String>getArg(0));
-            if (account == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-                return;
-            }
-            Double amount = context.getArg(1, null);
-            if (amount == null)
-            {
-                context.sendTranslated(NEGATIVE, "{input#amount} is not a valid amount!", context.getArg(1));
-                return;
-            }
-            UserAccount userAccount = this.manager.getUserAccount((User)context.getSender(), this.manager
-                .getAutoCreateUserAccount());
+            BankAccount account = context.getArg(0);
+            Double amount = context.getArg(1);
+            UserAccount userAccount = this.manager.getUserAccount((User)context.getSender(), this.manager.getAutoCreateUserAccount());
             if (userAccount == null)
             {
                 context.sendTranslated(NEGATIVE, "You do not have an account!");
@@ -593,30 +531,20 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Withdraws given amount of money from the bank",
-             indexed = { @Grouped(@Indexed(label = "bank")),
-                         @Grouped(@Indexed(label = "amount"))},
+             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
+                         @Grouped(@Indexed(label = "amount", type = Double.class))},
              flags = @Flag(longName = "force", name = "f"))
     public void withdraw(ParameterizedContext context)//takes money from the bank
     {
         if (context.getSender() instanceof User)
         {
-            BankAccount account = this.getBankAccount(context.<String>getArg(0));
-            if (account == null)
-            {
-                context.sendTranslated(NEGATIVE, "There is no bank-account named {input#bank}!", context.getArg(0));
-                return;
-            }
-            if (!account.isOwner((User)context.getSender()))
+            BankAccount account = context.getArg(0);
+            if (!account.isOwner((User)context.getSender())) // TODO perm
             {
                 context.sendTranslated(NEGATIVE, "Only owners of the bank are allowed to withdraw from it!");
                 return;
             }
-            Double amount = context.getArg(1, null);
-            if (amount == null)
-            {
-                context.sendTranslated(NEGATIVE, "{input#amount} is not a valid amount!", context.getArg(1));
-                return;
-            }
+            Double amount = context.getArg(1);
             UserAccount userAccount = this.manager.getUserAccount((User)context.getSender(), this.manager.getAutoCreateUserAccount());
             if (userAccount == null)
             {
@@ -636,19 +564,14 @@ public class BankCommands extends ContainerCommand
     }
 
     @Command(desc = "Pays given amount of money as bank to another account",
-             indexed = { @Grouped(@Indexed(label = "bank")),
+             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
                          @Grouped(@Indexed(label = "target-account" )),
-                         @Grouped(@Indexed(label = "amount"))},
+                         @Grouped(@Indexed(label = "amount", type = Double.class))},
              flags = {@Flag(longName = "force", name = "f"),
                       @Flag(longName = "bank", name = "b")})
     public void pay(ParameterizedContext context)//pay AS bank to a player or other bank <name> [-bank]
     {
-        BankAccount account = this.getBankAccount(context.<String>getArg(0));
-        if (account == null)
-        {
-            context.sendTranslated(NEGATIVE, "There is no bank account named {input#bank}!", context.getArg(0));
-            return;
-        }
+        BankAccount account = context.getArg(0);
         if (!account.isOwner((User)context.getSender()))
         {
             context.sendTranslated(NEGATIVE, "Only owners of the bank are allowed to spend the money from it!");
@@ -674,12 +597,7 @@ public class BankCommands extends ContainerCommand
                 return;
             }
         }
-        Double amount = context.getArg(2, null);
-        if (amount == null)
-        {
-            context.sendTranslated(NEGATIVE, "{input#amount} is not a valid amount!", context.getArg(1));
-            return;
-        }
+        Double amount = context.getArg(2);
         if (amount < 0)
         {
             context.sendTranslated(NEGATIVE, "Sorry but robbing a bank is not allowed!");
@@ -699,10 +617,5 @@ public class BankCommands extends ContainerCommand
             return;
         }
         context.sendTranslated(NEGATIVE, "The bank does not hold enough money to spend that much!");
-    }
-
-    private BankAccount getBankAccount(String name)
-    {
-        return this.manager.getBankAccount(name, false);
     }
 }

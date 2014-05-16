@@ -31,6 +31,7 @@ import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
+import de.cubeisland.engine.core.command.readers.UserListOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -150,7 +151,7 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.",
-             indexed = @Grouped(value = @Indexed(label = {"players","!*"}), req = false),
+             indexed = @Grouped(value = @Indexed(label = {"players","!*"}, type = UserListOrAllReader.class), req = false),
              params = {@Param(names = {"world", "w", "in"}, type = World.class),
                        @Param(names = {"role", "r"}, completer = RoleCompleter.class)} ,
              flags = @Flag(longName = "force", name = "f"))
@@ -241,15 +242,8 @@ public class SpawnCommands
             }
             else
             {
-                String[] names = StringUtils.explode(",", context.<String>getArg(0));
-                for (String name : names)
+                for (User user : context.<List<User>>getArg(0))
                 {
-                    User user = context.getCore().getUserManager().findUser(name);
-                    if (user == null)
-                    {
-                        context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
-                        return;
-                    }
                     if (!user.isOnline())
                     {
                         context.sendTranslated(NEGATIVE, "You cannot teleport an offline player to spawn!");

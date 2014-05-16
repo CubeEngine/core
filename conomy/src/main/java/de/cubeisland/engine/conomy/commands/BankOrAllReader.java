@@ -15,34 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.readers;
+package de.cubeisland.engine.conomy.commands;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import de.cubeisland.engine.conomy.account.BankAccount;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.util.StringUtils;
 
-public class DoubleReader extends ArgumentReader
+public class BankOrAllReader extends ArgumentReader
 {
     @Override
-    public Double read(String arg, Locale locale) throws InvalidArgumentException
+    public Object read(String arg, Locale locale) throws InvalidArgumentException
     {
-        try
+        if ("*".equals(arg))
         {
-            return NumberFormat.getInstance(locale).parse(arg).doubleValue();
+            return "*";
         }
-        catch (ParseException e)
+        List<BankAccount> banks = new ArrayList<>();
+        String[] bankStrings = StringUtils.explode(",", arg);
+        for (String bankString : bankStrings)
         {
-            try
-            {
-                return NumberFormat.getInstance().parse(arg).doubleValue(); // Try parsing with default locale
-            }
-            catch (ParseException e1)
-            {
-                throw new InvalidArgumentException("Could not parse {input} to double!", arg);
-            }
+            banks.add(ArgumentReader.read(BankAccount.class, bankString, locale));
         }
+        return banks;
     }
 }

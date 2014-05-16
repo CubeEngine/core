@@ -42,6 +42,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.readers.UserListOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -81,7 +82,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Refills your hunger bar",
-             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player", type = UserListOrAllReader.class), req = false))
     public void feed(CommandContext context)
     {
         if (context.hasArg(0))
@@ -93,7 +94,7 @@ public class PlayerCommands
             }
             Collection<User> users;
             boolean all = false;
-            if (context.getArg(0).equals("*"))
+            if ("*".equals(context.getArg(0)))
             {
                 all = true;
                 users = this.um.getOnlineUsers();
@@ -107,23 +108,7 @@ public class PlayerCommands
             }
             else
             {
-                users = new ArrayList<>();
-                String[] userNames = StringUtils.explode(",",context.<String>getArg(0));
-                for (String name : userNames)
-                {
-                    User user = this.um.findUser(name);
-                    if (user == null || !user.isOnline())
-                    {
-                        context.sendTranslated(NEGATIVE, "Player {user} not found!", name);
-                        continue;
-                    }
-                    users.add(user);
-                }
-                if (users.isEmpty())
-                {
-                    context.sendTranslated(NEUTRAL, "Could not find any of those players to feed!");
-                    return;
-                }
+                users = context.<List<User>>getArg(0);
                 context.sendTranslated(POSITIVE, "Fed {amount} players!", users.size());
             }
             for (User user : users)
@@ -152,7 +137,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Empties the hunger bar",
-             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "players", type = UserListOrAllReader.class), req = false))
     public void starve(CommandContext context)
     {
         if (context.hasArg(0))
@@ -164,7 +149,7 @@ public class PlayerCommands
             }
             Collection<User> users;
             boolean all = false;
-            if (context.getArg(0).equals("*"))
+            if ("*".equals(context.getArg(0)))
             {
                 all = true;
                 users = this.um.getOnlineUsers();
@@ -178,23 +163,7 @@ public class PlayerCommands
             }
             else
             {
-                users = new ArrayList<>();
-                String[] userNames = StringUtils.explode(",",context.<String>getArg(0));
-                for (String name : userNames)
-                {
-                    User user = this.um.findUser(name);
-                    if (user == null || !user.isOnline())
-                    {
-                        context.sendTranslated(NEGATIVE, "Player {user} not found!", name);
-                        continue;
-                    }
-                    users.add(user);
-                }
-                if (users.isEmpty())
-                {
-                    context.sendTranslated(NEUTRAL, "Could not find any of those players to starve!");
-                    return;
-                }
+                users = context.getArg(0);
                 context.sendTranslated(POSITIVE, "Starved {amount} players!", users.size());
             }
             for (User user : users)
@@ -223,7 +192,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Heals a player",
-             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "players", type = UserListOrAllReader.class), req = false))
     public void heal(CommandContext context)
     {
         if (context.hasArg(0))
@@ -235,7 +204,7 @@ public class PlayerCommands
             }
             Collection<User> users;
             boolean all = false;
-            if (context.getArg(0).equals("*"))
+            if ("*".equals(context.getArg(0)))
             {
                 all = true;
                 users = this.um.getOnlineUsers();
@@ -249,23 +218,7 @@ public class PlayerCommands
             }
             else
             {
-                users = new ArrayList<>();
-                String[] userNames = StringUtils.explode(",",context.<String>getArg(0));
-                for (String name : userNames)
-                {
-                    User user = this.um.findUser(name);
-                    if (user == null || !user.isOnline())
-                    {
-                        context.sendTranslated(NEGATIVE, "Player {user} not found!", name);
-                        continue;
-                    }
-                    users.add(user);
-                }
-                if (users.isEmpty())
-                {
-                    context.sendTranslated(NEUTRAL, "Could not find any of those players to heal!");
-                    return;
-                }
+                users = context.getArg(0);
                 context.sendTranslated(POSITIVE, "Healed {amount} players!", users.size());
             }
             for (User user : users)
@@ -381,7 +334,7 @@ public class PlayerCommands
     }
 
     @Command(names = {"kill", "slay"}, desc = "Kills a player",
-             indexed = @Grouped(@Indexed(label = "player")),
+             indexed = @Grouped(@Indexed(label = "players", type = UserListOrAllReader.class)),
              flags = {@Flag(longName = "force", name = "f"),
                       @Flag(longName = "quiet", name = "q"),
                       @Flag(longName = "lightning", name = "l")})
@@ -392,9 +345,9 @@ public class PlayerCommands
         boolean quiet = context.hasFlag("q") && module.perms().COMMAND_KILL_QUIET.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
-            String[] names = StringUtils.explode(",",context.<String>getArg(0));
             List<String> killed = new ArrayList<>();
-            if ("*".equals(names[0]))
+            Object arg0 = context.getArg(0);
+            if ("*".equals(arg0))
             {
                 if (!module.perms().COMMAND_KILL_ALL.isAuthorized(context.getSender()))
                 {
@@ -414,14 +367,8 @@ public class PlayerCommands
             }
             else
             {
-                for (String name : names)
+                for (User user : context.<List<User>>getArg(0))
                 {
-                    User user = this.um.findUser(name);
-                    if (user == null || !user.isOnline())
-                    {
-                        context.sendTranslated(NEGATIVE, "Player {user} not found or offline!", name);
-                        continue;
-                    }
                     if (this.kill(user, lightning, context, false, force, quiet))
                     {
                         killed.add(user.getDisplayName());
@@ -431,13 +378,13 @@ public class PlayerCommands
 
             if (killed.isEmpty())
             {
-                if (names.length == 1)
+                if (arg0 instanceof List && ((List)arg0).size() == 1)
                 {
-                    context.sendTranslated(NEGATIVE, "Could not kill {user}", names[0]);
+                    context.sendTranslated(NEGATIVE, "Could not kill {user}", ((List)arg0).get(0));
                 }
                 else
                 {
-                    context.sendTranslated(NEUTRAL, "Could not kill any of given players!");
+                    context.sendTranslated(NEUTRAL, "Could not kill any player!");
                 }
                 return;
             }
@@ -574,11 +521,6 @@ public class PlayerCommands
                 return;
             }
             user = context.getArg(0);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
-                return;
-            }
             if (!user.isOnline())
             {
                 context.sendTranslated(NEGATIVE, "{user} is not online!", user);
@@ -612,11 +554,6 @@ public class PlayerCommands
     public void whois(CommandContext context)
     {
         User user = context.getArg(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
-            return;
-        }
         if (!user.isOnline())
         {
             context.sendTranslated(NEUTRAL, "Nickname: {user} ({text:offline})", user);
@@ -689,7 +626,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Toggles the god-mode!",
-             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player", type = User.class), req = false))
     public void god(CommandContext context)
     {
         User user;
@@ -702,11 +639,6 @@ public class PlayerCommands
                 return;
             }
             user = context.getArg(0);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
-                return;
-            }
             other = true;
         }
         else if (context.getSender() instanceof User)
@@ -756,7 +688,7 @@ public class PlayerCommands
         if (context.hasArg(1))
         {
             user = context.getArg(1);
-            if (user != sender)
+            if (user.equals(sender))
             {
                 other = true;
             }
@@ -766,9 +698,9 @@ public class PlayerCommands
             context.sendTranslated(NEUTRAL, "You suddenly feel much faster!");
             return;
         }
-        if (user == null || !user.isOnline())
+        if (!user.isOnline())
         {
-            context.sendTranslated(NEGATIVE, "User {user} not found or offline!", context.getString("player"));
+            context.sendTranslated(NEGATIVE, "{user} is offline!", user.getName());
             return;
         }
         if (other && !module.perms().COMMAND_WALKSPEED_OTHER.isAuthorized(context.getSender())) // PermissionChecks
@@ -801,11 +733,6 @@ public class PlayerCommands
         if (context.hasArg(1))
         {
             target = context.getArg(1);
-            if (target == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(1));
-                return;
-            }
         }
         else
         {

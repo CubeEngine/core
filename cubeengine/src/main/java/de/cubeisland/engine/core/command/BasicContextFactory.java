@@ -30,7 +30,6 @@ import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 public class BasicContextFactory implements ContextFactory
 {
@@ -97,7 +96,7 @@ public class BasicContextFactory implements ContextFactory
     @Override
     public BasicContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
-        return new BasicContext(command, sender, labels, new LinkedList<Object>(Arrays.asList(rawArgs)));
+        return new BasicContext(command, sender, labels, this.readArgs(sender, Arrays.asList(rawArgs)));
     }
 
     protected List<Object> readArgs(CommandSender sender, List<String> args)
@@ -129,9 +128,7 @@ public class BasicContextFactory implements ContextFactory
                 }
                 if (e != null)
                 {
-                    throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument at {}: {}", i,
-                                                                            sender.getTranslation(NONE, e.getMessage(),
-                                                                                                  e.getMessageArgs())));
+                    throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument at {}: {}", i, e.getMessage()));
                 }
             }
         }

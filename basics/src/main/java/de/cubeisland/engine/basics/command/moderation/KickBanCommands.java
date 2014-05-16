@@ -33,6 +33,7 @@ import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.readers.UserOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -72,14 +73,14 @@ public class KickBanCommands
     }
 
     @Command(desc = "Kicks a player from the server",
-             indexed = { @Grouped(@Indexed(label = {"player","!*"}, type = {User.class, String.class})),
+             indexed = { @Grouped(@Indexed(label = {"player","!*"}, type = UserOrAllReader.class)),
                          @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
     public void kick(ParameterizedContext context)
     {
         String reason;
         reason = this.getReasonFrom(context, 1, module.perms().COMMAND_KICK_NOREASON);
         if (reason == null) return;
-        if (context.getArg(0).equals("*"))
+        if ("*".equals(context.getArg(0)))
         {
             if (!module.perms().COMMAND_KICK_ALL.isAuthorized(context.getSender()))
             {

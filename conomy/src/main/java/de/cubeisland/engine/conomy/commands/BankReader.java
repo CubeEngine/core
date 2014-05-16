@@ -15,34 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.readers;
+package de.cubeisland.engine.conomy.commands;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Locale;
 
+import de.cubeisland.engine.conomy.account.BankAccount;
+import de.cubeisland.engine.conomy.account.ConomyManager;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 
-public class DoubleReader extends ArgumentReader
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+
+public class BankReader extends ArgumentReader
 {
-    @Override
-    public Double read(String arg, Locale locale) throws InvalidArgumentException
+    private final ConomyManager manager;
+
+    public BankReader(ConomyManager manager)
     {
-        try
+        this.manager = manager;
+    }
+
+    @Override
+    public Object read(String arg, Locale locale) throws InvalidArgumentException
+    {
+        BankAccount target = this.manager.getBankAccount(arg, false);
+        if (target == null)
         {
-            return NumberFormat.getInstance(locale).parse(arg).doubleValue();
+            throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale,NEGATIVE, "There is no bank account named {input#name}!", arg));
         }
-        catch (ParseException e)
-        {
-            try
-            {
-                return NumberFormat.getInstance().parse(arg).doubleValue(); // Try parsing with default locale
-            }
-            catch (ParseException e1)
-            {
-                throw new InvalidArgumentException("Could not parse {input} to double!", arg);
-            }
-        }
+        return target;
     }
 }
