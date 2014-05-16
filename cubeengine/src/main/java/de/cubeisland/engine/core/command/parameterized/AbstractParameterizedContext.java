@@ -38,7 +38,7 @@ public abstract class AbstractParameterizedContext<T> extends BasicContext
     protected final int paramCount;
 
     public AbstractParameterizedContext(CubeCommand command, CommandSender sender, Stack<String> labels,
-                                        List<String> args, Set<String> flags, Map<String, T> params)
+                                        List<Object> args, Set<String> flags, Map<String, T> params)
     {
         super(command, sender, labels, args);
         this.flags = flags;

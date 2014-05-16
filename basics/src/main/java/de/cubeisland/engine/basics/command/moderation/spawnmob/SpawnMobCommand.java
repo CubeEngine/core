@@ -46,9 +46,9 @@ public class SpawnMobCommand
     }
 
     @Command(desc = "Spawns the specified Mob",
-             indexed = {@Grouped(@Indexed("<mob>[:data][,<ridingmob>[:data]]")),
-                        @Grouped(value = @Indexed("amount"), req = false),
-                        @Grouped(value = @Indexed("player"), req = false)})
+             indexed = {@Grouped(@Indexed(label = "<mob>[:data][,<ridingmob>[:data]]")),
+                        @Grouped(value = @Indexed(label = "amount"), req = false),
+                        @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void spawnMob(CommandContext context)
     {
         User sender = null;
@@ -59,10 +59,10 @@ public class SpawnMobCommand
         Location loc;
         if (context.hasArg(2))
         {
-            User user = context.getUser(2);
+            User user = context.getArg(2);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(2));
+                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(2));
                 return;
             }
             loc = user.getLocation();
@@ -79,10 +79,10 @@ public class SpawnMobCommand
         Integer amount = 1;
         if (context.hasArg(1))
         {
-            amount = context.getArg(1, Integer.class, null);
+            amount = context.getArg(1, null);
             if (amount == null)
             {
-                context.sendTranslated(NEUTRAL, "{input} is not a number! Really!", context.getString(1));
+                context.sendTranslated(NEUTRAL, "{input} is not a number! Really!", context.getArg(1));
                 return;
             }
             if (amount <= 0)
@@ -97,7 +97,7 @@ public class SpawnMobCommand
             return;
         }
         loc.add(0.5, 0, 0.5);
-        Entity[] entitiesSpawned = spawnMobs(context, context.getString(0), loc, amount);
+        Entity[] entitiesSpawned = spawnMobs(context, context.<String>getArg(0), loc, amount);
         if (entitiesSpawned == null)
         {
             return;

@@ -79,8 +79,8 @@ public class ThrowCommands
     }
 
     @Command(names = "throw",desc = "Throw something!",
-        indexed = {@Grouped(@Indexed("material")),
-                   @Grouped(req = false, value = @Indexed("amount"))},
+        indexed = {@Grouped(@Indexed(label = "material")),
+                   @Grouped(req = false, value = @Indexed(label = "amount"))},
         params = @Param(names = { "delay", "d" }, type = Integer.class),
         flags = @Flag(longName = "unsafe", name = "u"))
     public void throwCommand(ParameterizedContext context)
@@ -99,7 +99,7 @@ public class ThrowCommands
         ThrowTask task = this.thrownItems.remove(user.getUniqueId());
         if (task != null)
         {
-            if (!context.hasArg(0) || (type = Match.entity().any(context.getString(0))) == task.getType() && task.getInterval() == context.getParam("delay", task.getInterval()) && task.getPreventDamage() != unsafe && !context.hasArg(1))
+            if (!context.hasArg(0) || (type = Match.entity().any(context.<String>getArg(0))) == task.getType() && task.getInterval() == context.getParam("delay", task.getInterval()) && task.getPreventDamage() != unsafe && !context.hasArg(1))
             {
                 task.stop(true);
                 return;
@@ -113,7 +113,7 @@ public class ThrowCommands
             return;
         }
 
-        int amount = context.getArg(1, Integer.class, -1);
+        int amount = context.getArg(1, -1);
         if ((amount > this.module.getConfig().command.throwSection.maxAmount || amount < 1) && amount != -1)
         {
             context.sendTranslated(NEGATIVE, "The amount must be a number from 1 to {integer}", this.module.getConfig().command.throwSection.maxAmount);
@@ -133,7 +133,7 @@ public class ThrowCommands
             return;
         }
 
-        String object = context.getString(0);
+        String object = context.getArg(0);
         if (type == null)
         {
             type = Match.entity().any(object);

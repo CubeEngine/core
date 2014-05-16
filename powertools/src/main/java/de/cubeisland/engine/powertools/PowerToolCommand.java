@@ -121,7 +121,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     @Alias(names = "ptr")
     @Command(names = {"remove", "del", "delete", "rm"}, desc = "Removes a command from your powertool",
              flags = @Flag(longName = "chat", name = "c"),
-             indexed = @Grouped(req = false, value = @Indexed("command"), greedy = true))
+             indexed = @Grouped(req = false, value = @Indexed(label = "command"), greedy = true))
     public void remove(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -181,7 +181,7 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     @Command(desc = "Adds a command to your powertool", flags = {
         @Flag(longName = "chat", name = "c"),
         @Flag(longName = "replace", name = "r")},
-             indexed = @Grouped(value = @Indexed("commandstring"), greedy = true))
+             indexed = @Grouped(value = @Indexed(label = "commandstring"), greedy = true))
     public void add(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();

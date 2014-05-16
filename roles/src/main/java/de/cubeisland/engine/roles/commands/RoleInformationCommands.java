@@ -83,19 +83,19 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Alias(names = "checkrperm")
     @Command(names = {"checkperm", "checkpermission"},
              desc = "Checks the permission in given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("permission"))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "permission"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void checkperm(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        String permission = context.getString(1);
+        String permission = context.getArg(1);
         ResolvedPermission myPerm = role.getPermissions().get(permission);
         if (myPerm != null)
         {
@@ -146,12 +146,12 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Alias(names = "listrperm")
     @Command(names = {"listperm", "listpermission"},
              desc = "Lists all permissions of given role [in world]",
-             indexed = @Grouped(@Indexed("[g:]role")),
+             indexed = @Grouped(@Indexed(label = "[g:]role")),
              params = @Param(names = "in", label = "world", type = World.class),
              flags = @Flag(longName = "all", name = "a"))
     public void listperm(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -197,12 +197,12 @@ public class RoleInformationCommands extends RoleCommandHelper
     @Alias(names = "listrdata")
     @Command(names = {"listdata", "listmeta", "listmetadata"},
              desc = "Lists all metadata of given role [in world]",
-             indexed = @Grouped(@Indexed("[g:]role")),
+             indexed = @Grouped(@Indexed(label = "[g:]role")),
              params = @Param(names = "in", label = "world", type = World.class),
              flags = @Flag(longName = "all", name = "a"))
     public void listmetadata(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -240,11 +240,11 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Alias(names = "listrparent")
     @Command(desc = "Lists all parents of given role [in world]",
-             indexed = @Grouped(@Indexed("[g:]role")),
+             indexed = @Grouped(@Indexed(label = "[g:]role")),
              params = @Param(names = "in", label = "world", type = World.class))
     public void listParent(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -277,11 +277,11 @@ public class RoleInformationCommands extends RoleCommandHelper
 
     @Command(names = {"prio", "priority"},
              desc = "Show the priority of given role [in world]",
-             indexed = @Grouped(@Indexed("[g:]role")),
+             indexed = @Grouped(@Indexed(label = "[g:]role")),
              params = @Param(names = "in", label = "world", type = World.class))
     public void priority(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;

@@ -25,7 +25,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 public class BasicContextFactory implements ContextFactory
 {
@@ -92,13 +97,51 @@ public class BasicContextFactory implements ContextFactory
     @Override
     public BasicContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
-        return new BasicContext(command, sender, labels, new LinkedList<>(Arrays.asList(rawArgs)));
+        return new BasicContext(command, sender, labels, new LinkedList<Object>(Arrays.asList(rawArgs)));
+    }
+
+    protected List<Object> readArgs(CommandSender sender, List<String> args)
+    {
+        List<Object> result = new ArrayList<>();
+        int i = 0;
+        for (String arg : args)
+        {
+            CommandParameterIndexed indexed = this.indexedMap.get(i++);
+            if (indexed == null)
+            {
+                result.add(arg); // handle OOB somewhere else
+            }
+            else
+            {
+                InvalidArgumentException e = null;
+                for (Class<?> type : indexed.getType())
+                {
+                    try
+                    {
+                        result.add(ArgumentReader.read(type, arg, sender));
+                        e = null;
+                        break;
+                    }
+                    catch (InvalidArgumentException ex)
+                    {
+                        e = ex;
+                    }
+                }
+                if (e != null)
+                {
+                    throw new IncorrectUsageException(sender.getTranslation(NEGATIVE, "Invalid argument at {}: {}", i,
+                                                                            sender.getTranslation(NONE, e.getMessage(),
+                                                                                                  e.getMessageArgs())));
+                }
+            }
+        }
+        return result;
     }
 
     @Override
     public CommandContext tabCompleteParse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
-        return new BasicContext(command, sender, labels, new LinkedList<>(Arrays.asList(rawArgs)));
+        return new BasicContext(command, sender, labels, new LinkedList<Object>(Arrays.asList(rawArgs)));
     }
 
     @Override

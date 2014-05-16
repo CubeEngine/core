@@ -81,7 +81,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Refills your hunger bar",
-             indexed = @Grouped(value = @Indexed("player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
     public void feed(CommandContext context)
     {
         if (context.hasArg(0))
@@ -93,7 +93,7 @@ public class PlayerCommands
             }
             Collection<User> users;
             boolean all = false;
-            if (context.getString(0).equals("*"))
+            if (context.getArg(0).equals("*"))
             {
                 all = true;
                 users = this.um.getOnlineUsers();
@@ -108,7 +108,7 @@ public class PlayerCommands
             else
             {
                 users = new ArrayList<>();
-                String[] userNames = StringUtils.explode(",",context.getString(0));
+                String[] userNames = StringUtils.explode(",",context.<String>getArg(0));
                 for (String name : userNames)
                 {
                     User user = this.um.findUser(name);
@@ -152,7 +152,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Empties the hunger bar",
-             indexed = @Grouped(value = @Indexed("player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
     public void starve(CommandContext context)
     {
         if (context.hasArg(0))
@@ -164,7 +164,7 @@ public class PlayerCommands
             }
             Collection<User> users;
             boolean all = false;
-            if (context.getString(0).equals("*"))
+            if (context.getArg(0).equals("*"))
             {
                 all = true;
                 users = this.um.getOnlineUsers();
@@ -179,7 +179,7 @@ public class PlayerCommands
             else
             {
                 users = new ArrayList<>();
-                String[] userNames = StringUtils.explode(",",context.getString(0));
+                String[] userNames = StringUtils.explode(",",context.<String>getArg(0));
                 for (String name : userNames)
                 {
                     User user = this.um.findUser(name);
@@ -223,7 +223,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Heals a player",
-             indexed = @Grouped(value = @Indexed("player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
     public void heal(CommandContext context)
     {
         if (context.hasArg(0))
@@ -235,7 +235,7 @@ public class PlayerCommands
             }
             Collection<User> users;
             boolean all = false;
-            if (context.getString(0).equals("*"))
+            if (context.getArg(0).equals("*"))
             {
                 all = true;
                 users = this.um.getOnlineUsers();
@@ -250,7 +250,7 @@ public class PlayerCommands
             else
             {
                 users = new ArrayList<>();
-                String[] userNames = StringUtils.explode(",",context.getString(0));
+                String[] userNames = StringUtils.explode(",",context.<String>getArg(0));
                 for (String name : userNames)
                 {
                     User user = this.um.findUser(name);
@@ -328,20 +328,20 @@ public class PlayerCommands
     }
 
     @Command(names = {"gamemode", "gm"}, desc = "Changes the gamemode",
-            indexed = { @Grouped(value = @Indexed("player"), req = false),
-                        @Grouped(value = @Indexed("gamemode"), req = false)})
+            indexed = { @Grouped(value = @Indexed(label = "player"), req = false),
+                        @Grouped(value = @Indexed(label = "gamemode"), req = false)})
     public void gamemode(CommandContext context)
     {
         CommandSender sender = context.getSender();
         User target = null;
         if (context.getArgCount() > 0)
         {
-            if (context.getArgCount() > 1 || getGameMode(context.getString(0)) == null)
+            if (context.getArgCount() > 1 || getGameMode(context.<String>getArg(0)) == null)
             {
-                target = um.findUser(context.getString(0));
+                target = um.findUser(context.<String>getArg(0));
                 if (target == null)
                 {
-                    context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
                     return;
                 }
             }
@@ -363,7 +363,7 @@ public class PlayerCommands
             context.sendTranslated(NEGATIVE, "You are not allowed to change the game mode of an other player!");
             return;
         }
-        GameMode newMode = getGameMode(context.getString(context.getArgCount() - 1));
+        GameMode newMode = getGameMode(context.<String>getArg(context.getArgCount() - 1));
         if (newMode == null)
         {
             newMode = toggleGameMode(target.getGameMode());
@@ -381,7 +381,7 @@ public class PlayerCommands
     }
 
     @Command(names = {"kill", "slay"}, desc = "Kills a player",
-             indexed = @Grouped(@Indexed("player")),
+             indexed = @Grouped(@Indexed(label = "player")),
              flags = {@Flag(longName = "force", name = "f"),
                       @Flag(longName = "quiet", name = "q"),
                       @Flag(longName = "lightning", name = "l")})
@@ -392,7 +392,7 @@ public class PlayerCommands
         boolean quiet = context.hasFlag("q") && module.perms().COMMAND_KILL_QUIET.isAuthorized(context.getSender());
         if (context.hasArg(0))
         {
-            String[] names = StringUtils.explode(",",context.getString(0));
+            String[] names = StringUtils.explode(",",context.<String>getArg(0));
             List<String> killed = new ArrayList<>();
             if ("*".equals(names[0]))
             {
@@ -499,13 +499,13 @@ public class PlayerCommands
     }
 
     @Command(desc = "Shows when given player was online the last time",
-             indexed = @Grouped(@Indexed("player")))
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void seen(CommandContext context)
     {
-        User user = context.getUser(0);
+        User user = context.getArg(0);
         if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
             return;
         }
         if (user.isOnline())
@@ -526,14 +526,14 @@ public class PlayerCommands
 
     @Command(desc = "Makes a player send a message (including commands)",
              indexed = {
-                 @Grouped(@Indexed("player")),
-                 @Grouped(value = @Indexed("message"), greedy = true)})
+                 @Grouped(@Indexed(label = "player", type = User.class)),
+                 @Grouped(value = @Indexed(label = "message"), greedy = true)})
     public void sudo(ParameterizedContext context)
     {
-        User user = context.getUser(0);
+        User user = context.getArg(0);
         if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         String s = context.getStrings(1);
@@ -562,7 +562,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Displays that you are afk",
-             indexed = @Grouped(value = @Indexed("player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player", type = User.class), req = false))
     public void afk(CommandContext context)
     {
         User user;
@@ -573,10 +573,10 @@ public class PlayerCommands
                 context.sendTranslated(NEGATIVE, "You are not allowed to change the afk-state of an other player!");
                 return;
             }
-            user = context.getUser(0);
+            user = context.getArg(0);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                 return;
             }
             if (!user.isOnline())
@@ -608,13 +608,13 @@ public class PlayerCommands
     }
 
     @Command(desc = "Displays informations from a player!",
-             indexed = @Grouped(@Indexed("player")))
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void whois(CommandContext context)
     {
-        User user = context.getUser(0);
+        User user = context.getArg(0);
         if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         if (!user.isOnline())
@@ -689,7 +689,7 @@ public class PlayerCommands
     }
 
     @Command(desc = "Toggles the god-mode!",
-             indexed = @Grouped(value = @Indexed("player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player"), req = false))
     public void god(CommandContext context)
     {
         User user;
@@ -701,10 +701,10 @@ public class PlayerCommands
                 context.sendTranslated(NEGATIVE, "You are not allowed to god others!");
                 return;
             }
-            user = context.getUser(0);
+            user = context.getArg(0);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                 return;
             }
             other = true;
@@ -742,8 +742,8 @@ public class PlayerCommands
     }
 
     @Command(desc = "Changes your walkspeed.",
-             indexed = { @Grouped(@Indexed("speed")),
-                         @Grouped(value = @Indexed("player"), req = false)})
+             indexed = { @Grouped(@Indexed(label = "speed")),
+                         @Grouped(value = @Indexed(label = "player"), req = false)})
     public void walkspeed(ParameterizedContext context)
     {
         User sender = null;
@@ -755,7 +755,7 @@ public class PlayerCommands
         boolean other = false;
         if (context.hasArg(1))
         {
-            user = context.getUser(1);
+            user = context.getArg(1);
             if (user != sender)
             {
                 other = true;
@@ -777,7 +777,7 @@ public class PlayerCommands
             return;
         }
         user.setWalkSpeed(0.2f);
-        Float speed = context.getArg(0, Float.class, null);
+        Float speed = context.getArg(0, null);
         if (speed != null && speed >= 0 && speed <= 10)
         {
             user.setWalkSpeed(speed / 10f);
@@ -792,18 +792,18 @@ public class PlayerCommands
     }
 
     @Command(desc = "Lets you fly away",
-            indexed = { @Grouped(value = @Indexed("flyspeed"), req = false),
-                        @Grouped(value = @Indexed("player"), req = false)})
+            indexed = { @Grouped(value = @Indexed(label = "flyspeed", type = Float.class), req = false),
+                        @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void fly(CommandContext context)
     {
         final CommandSender sender = context.getSender();
         User target;
         if (context.hasArg(1))
         {
-            target = context.getUser(1);
+            target = context.getArg(1);
             if (target == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(1));
                 return;
             }
         }
@@ -829,7 +829,7 @@ public class PlayerCommands
         //I Believe I Can Fly ...
         if (context.hasArg(0))
         {
-            Float speed = context.getArg(0, Float.class);
+            Float speed = context.getArg(0);
             if (speed != null && speed >= 0 && speed <= 10)
             {
                 target.setFlySpeed(speed / 10f);

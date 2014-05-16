@@ -44,11 +44,7 @@ public class TpPointCommand extends ContainerCommand
         User user;
         if (context.hasArg(i))
         {
-            user = context.getUser(i);
-            if (user == null)
-            {
-                throw new InvalidArgumentException(context.getSender().getTranslation(NEGATIVE, "Player {user} not found!", context.getString(i)));
-            }
+            user = context.getArg(i);
         }
         else if (context.isSender(User.class))
         {

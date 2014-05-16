@@ -47,7 +47,7 @@ public class CommandArgsTest extends Test
         context.sendMessage("Arg dump:");
         context.sendMessage(" ");
 
-        for (String arg : context.getArgs())
+        for (Object arg : context.getArgs())
         {
             context.sendMessage("Arg: '" + arg + "'");
         }

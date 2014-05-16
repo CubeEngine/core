@@ -82,13 +82,13 @@ public class IgnoreCommands
     }
 
     @Command(desc = "Ignores all messages from players",
-             indexed = @Grouped(@Indexed("players...")))
+             indexed = @Grouped(@Indexed(label = "players...")))
     public void ignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            String[] userNames = StringUtils.explode(",", context.getString(0));
+            String[] userNames = StringUtils.explode(",", context.<String>getArg(0));
             List<String> added = new ArrayList<>();
             for (String name : userNames)
             {
@@ -122,13 +122,13 @@ public class IgnoreCommands
     }
 
     @Command(desc = "Stops ignoring all messages from a player",
-             indexed = @Grouped(@Indexed("players...")))
+             indexed = @Grouped(@Indexed(label = "players...")))
     public void unignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            String[] userNames = StringUtils.explode(",", context.getString(0));
+            String[] userNames = StringUtils.explode(",", context.<String>getArg(0));
             List<String> added = new ArrayList<>();
             for (String name : userNames)
             {

@@ -46,12 +46,12 @@ public class EcoCommands extends ContainerCommand
 
     @Command(names = {"give", "grant"},
              desc = "Gives money to one or all players.",
-             indexed = { @Grouped(@Indexed({"player","!*"})),
-                         @Grouped(@Indexed("amount"))},
+             indexed = { @Grouped(@Indexed(label = {"players","!*"})),
+                         @Grouped(@Indexed(label = "amount"))},
              flags = @Flag(longName = "online", name = "o"))
     public void give(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
+        String amountString = context.getArg(1);
         Double amount = this.manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
@@ -59,7 +59,7 @@ public class EcoCommands extends ContainerCommand
             return;
         }
         String format = manager.format(amount);
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equalsIgnoreCase(context.<String>getArg(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -80,13 +80,13 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users = StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.<String>getArg(0));
             for (String userString : users)
             {
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                     continue;
                 }
                 Account target = this.manager.getUserAccount(user, false);
@@ -113,12 +113,12 @@ public class EcoCommands extends ContainerCommand
 
     @Command(names = {"take", "remove"},
              desc = "Takes money from given user",
-             indexed = { @Grouped(@Indexed({"player","!*"})),
-                         @Grouped(@Indexed("amount"))},
+             indexed = { @Grouped(@Indexed(label = {"player","!*"})),
+                         @Grouped(@Indexed(label = "amount"))},
              flags = @Flag(longName = "online", name = "o"))
     public void take(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
+        String amountString = context.getArg(1);
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
@@ -126,7 +126,7 @@ public class EcoCommands extends ContainerCommand
             return;
         }
         String format = manager.format(amount);
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equalsIgnoreCase(context.<String>getArg(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -147,13 +147,13 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users = StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.<String>getArg(0));
             for (String userString : users)
             {
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                     return;
                 }
                 Account target = this.manager.getUserAccount(user, false);
@@ -173,11 +173,11 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Reset the money from given user",
-             indexed = @Grouped(@Indexed({"player","!*"})),
+             indexed = @Grouped(@Indexed(label = {"players","!*"})),
              flags = @Flag(longName = "online", name = "o"))
     public void reset(ParameterizedContext context)
     {
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equalsIgnoreCase(context.<String>getArg(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -198,13 +198,13 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users = StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.<String>getArg(0));
             for (String userString : users)
             {
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                     return;
                 }
                 Account target = this.manager.getUserAccount(user, false);
@@ -225,12 +225,12 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Sets the money of a given player",
-             indexed = { @Grouped(@Indexed({"player","!*"})),
-                         @Grouped(@Indexed("amount"))},
+             indexed = { @Grouped(@Indexed(label = {"players","!*"})),
+                         @Grouped(@Indexed(label = "amount"))},
              flags = @Flag(longName = "online", name = "o"))
     public void set(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
+        String amountString = context.getArg(1);
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
@@ -238,7 +238,7 @@ public class EcoCommands extends ContainerCommand
             return;
         }
         String format = this.manager.format(amount);
-        if ("*".equalsIgnoreCase(context.getString(0)))
+        if ("*".equalsIgnoreCase(context.<String>getArg(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -259,13 +259,13 @@ public class EcoCommands extends ContainerCommand
         }
         else
         {
-            String[] users = StringUtils.explode(",", context.getString(0));
+            String[] users = StringUtils.explode(",", context.<String>getArg(0));
             for (String userString : users)
             {
                 User user = this.module.getCore().getUserManager().findUser(userString);
                 if (user == null)
                 {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                     return;
                 }
                 Account target = this.manager.getUserAccount(user, false);
@@ -285,18 +285,18 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Scales the money of a given player",
-             indexed = {@Grouped(@Indexed({"player","!*"})),
-                        @Grouped(@Indexed("factor"))},
+             indexed = {@Grouped(@Indexed(label = {"players","!*"})),
+                        @Grouped(@Indexed(label = "factor"))},
              flags = @Flag(longName = "online", name = "o"))
     public void scale(ParameterizedContext context)
     {
-        Float factor = context.getArg(1, Float.class, null);
+        Float factor = context.getArg(1, null);
         if (factor == null)
         {
-            context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
+            context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getArg(1));
             return;
         }
-        if ("*".equals(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             if (context.hasFlag("o"))
             {
@@ -316,13 +316,13 @@ public class EcoCommands extends ContainerCommand
             }
             return;
         }
-        String[] users = StringUtils.explode(",", context.getString(0));
+        String[] users = StringUtils.explode(",", context.<String>getArg(0));
         for (String userString : users)
         {
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                 return;
             }
             Account account = this.manager.getUserAccount(user, false);
@@ -337,21 +337,21 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Hides the account of a given player",
-             indexed = @Grouped(@Indexed({"player","!*"})))
+             indexed = @Grouped(@Indexed(label = {"players","!*"})))
     public void hide(ParameterizedContext context)
     {
-        if ("*".equals(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.hideAll(true, false);
             return;
         }
-        String[] users = StringUtils.explode(",", context.getString(0));
+        String[] users = StringUtils.explode(",", context.<String>getArg(0));
         for (String userString : users)
         {
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                 return;
             }
             Account target = this.manager.getUserAccount(user, false);
@@ -374,21 +374,21 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Unhides the account of a given player",
-             indexed = @Grouped(@Indexed({"player","!*"})))
+             indexed = @Grouped(@Indexed(label = {"players","!*"})))
     public void unhide(ParameterizedContext context)
     {
-        if ("*".equals(context.getString(0)))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.unhideAll(true, false);
             return;
         }
-        String[] users = StringUtils.explode(",", context.getString(0));
+        String[] users = StringUtils.explode(",", context.<String>getArg(0));
         for (String userString : users)
         {
             User user = this.module.getCore().getUserManager().findUser(userString);
             if (user == null)
             {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                 return;
             }
             Account target = this.manager.getUserAccount(user, false);
@@ -411,13 +411,13 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes a users account.", indexed = @Grouped(@Indexed("player")))
+    @Command(desc = "Deletes a users account.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void delete(CommandContext context)
     {
-        User user = context.getUser(0);
+        User user = context.getArg(0);
         if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         if (this.manager.deleteUserAccount(user))
@@ -431,7 +431,7 @@ public class EcoCommands extends ContainerCommand
     }
 
     @Command(desc = "Creates a new account",
-             indexed = @Grouped(req = false, value = @Indexed("player")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
              flags = @Flag(longName = "force", name = "f"))
     public void create(ParameterizedContext context)
     {
@@ -442,25 +442,25 @@ public class EcoCommands extends ContainerCommand
                 context.sendTranslated(NEGATIVE, "You are not allowed to create account for other users!");
                 return;
             }
-            User user = context.getUser(0);
+            User user = context.getArg(0);
             if (user == null)
             {
                 if (module.perms().ECO_CREATE_FORCE.isAuthorized(context.getSender()))
                 {
                     if (!context.hasFlag("f"))
                     {
-                        context.sendTranslated(NEUTRAL, "{user} has never played on this server!", context.getString(0));
+                        context.sendTranslated(NEUTRAL, "{user} has never played on this server!", context.getArg(0));
                         context.sendTranslated(POSITIVE, "Use the -force flag to create the account anyway.");
                         return;
                     }
                     else
                     {
-                        user = this.module.getCore().getUserManager().findExactUser(context.getString(0));
+                        user = this.module.getCore().getUserManager().findExactUser(context.<String>getArg(0)); // TODO unreachable
                     }
                 }
                 else
                 {
-                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
                     return;
                 }
             }

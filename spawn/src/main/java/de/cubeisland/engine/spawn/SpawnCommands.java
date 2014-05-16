@@ -63,13 +63,13 @@ public class SpawnCommands
 
     @Command(desc = "Changes the respawnpoint",
              indexed = {@Grouped(req = false,
-                  value = @Indexed({"role","!global"})),
+                  value = @Indexed(label = {"role","!global"})),
                      @Grouped(req = false,
-                  value = {@Indexed("x"),
-                           @Indexed("y"),
-                           @Indexed("z"),}),
+                  value = {@Indexed(label = "x"),
+                           @Indexed(label = "y"),
+                           @Indexed(label = "z"),}),
                      @Grouped(req = false,
-                  value = @Indexed("world"))})
+                  value = @Indexed(label = "world"))})
     public void setSpawn(CommandContext context)
     {
         if (!(context.getSender() instanceof User) && context.hasArg(4))
@@ -81,10 +81,10 @@ public class SpawnCommands
         World world;
         if (context.hasArg(4))
         {
-            world = context.getArg(0, World.class, null);
+            world = context.getArg(0, null);
             if (world == null)
             {
-                context.sendTranslated(NEGATIVE, "World {input} not found", context.getString(0));
+                context.sendTranslated(NEGATIVE, "World {input} not found", context.getArg(0));
                 return;
             }
         }
@@ -99,9 +99,9 @@ public class SpawnCommands
         float pitch = 0;
         if (context.hasArg(3))
         {
-            x = context.getArg(1, Double.class, null);
-            y = context.getArg(2, Double.class, null);
-            z = context.getArg(3, Double.class, null);
+            x = context.getArg(1, null);
+            y = context.getArg(2, null);
+            z = context.getArg(3, null);
             if (x == null || y == null || z == null)
             {
                 context.sendTranslated(NEGATIVE, "Coordinates are invalid!");
@@ -117,12 +117,12 @@ public class SpawnCommands
             yaw = loc.getYaw();
             pitch = loc.getPitch();
         }
-        if (context.hasArg(0) && !"global".equalsIgnoreCase(context.getString(0)))
+        if (context.hasArg(0) && !"global".equalsIgnoreCase(context.<String>getArg(0)))
         {
-            Role role = manager.getProvider(world).getRole(context.getString(0));
+            Role role = manager.getProvider(world).getRole(context.<String>getArg(0));
             if (role == null)
             {
-                context.sendTranslated(NEGATIVE, "Could not find the role {input} in {world}!", context.getString(0), world);
+                context.sendTranslated(NEGATIVE, "Could not find the role {input} in {world}!", context.getArg(0), world);
                 return;
             }
             setRoleSpawn(world, x, y, z, yaw, pitch, role);
@@ -150,7 +150,7 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleport directly to the worlds spawn.",
-             indexed = @Grouped(value = @Indexed({"players","!*"}), req = false),
+             indexed = @Grouped(value = @Indexed(label = {"players","!*"}), req = false),
              params = {@Param(names = {"world", "w", "in"}, type = World.class),
                        @Param(names = {"role", "r"}, completer = RoleCompleter.class)} ,
              flags = @Flag(longName = "force", name = "f"))
@@ -221,7 +221,7 @@ public class SpawnCommands
         if (context.hasArg(0))
         {
             boolean all = false;
-            if ("*".equals(context.getString(0)))
+            if ("*".equals(context.getArg(0)))
             {
                 all = true;
                 if (!module.perms().COMMAND_SPAWN_ALL.isAuthorized(context.getSender()))
@@ -241,13 +241,13 @@ public class SpawnCommands
             }
             else
             {
-                String[] names = StringUtils.explode(",", context.getString(0));
+                String[] names = StringUtils.explode(",", context.<String>getArg(0));
                 for (String name : names)
                 {
                     User user = context.getCore().getUserManager().findUser(name);
                     if (user == null)
                     {
-                        context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
+                        context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
                         return;
                     }
                     if (!user.isOnline())

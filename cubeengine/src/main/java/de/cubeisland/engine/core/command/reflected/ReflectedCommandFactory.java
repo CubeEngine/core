@@ -153,7 +153,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 throw new IllegalArgumentException("You have to define at least one Indexed!");
             }
             Indexed aIndexed = indexed[0];
-            String[] labels = aIndexed.value();
+            String[] labels = aIndexed.label();
             if (labels.length == 0)
             {
                 labels = new String[]{String.valueOf(index)};
@@ -189,7 +189,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 {
                     index++;
                     aIndexed = indexed[i];
-                    labels = aIndexed.value();
+                    labels = aIndexed.label();
                     if (labels.length == 0)
                     {
                         labels = new String[]{String.valueOf(index)};

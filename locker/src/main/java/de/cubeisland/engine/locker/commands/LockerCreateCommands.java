@@ -59,12 +59,12 @@ public class LockerCreateCommands extends ContainerCommand
     @Alias(names = "cprivate")
     @Command(names = "private",
     desc = "creates a private protection",
-    indexed = @Grouped(req = false, value = @Indexed("password")),
+    indexed = @Grouped(req = false, value = @Indexed(label = "password")),
     flags = @Flag(name = "key", longName = "keybook"))
     public void cPrivate(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
-        this.setCreateProtection(context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_PRIVATE, context.<String>getArg(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cpublic")
@@ -79,44 +79,44 @@ public class LockerCreateCommands extends ContainerCommand
     @Alias(names = "cdonation")
     @Command(names = "donation",
              desc = "creates a donation protection",
-             indexed = @Grouped(req = false, value = @Indexed("password")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cDonation(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
-        this.setCreateProtection(context.getSender(), C_DONATION, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_DONATION, context.<String>getArg(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cfree")
     @Command(names = "free",
              desc = "creates a free protection",
-             indexed = @Grouped(req = false, value = @Indexed("password")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cFree(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
-        this.setCreateProtection(context.getSender(), C_FREE, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_FREE, context.<String>getArg(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cpassword")
     @Command(names = "password",
              desc = "creates a donation protection",
-             indexed = @Grouped(@Indexed("password")),
+             indexed = @Grouped(@Indexed(label = "password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cPassword(ParameterizedContext context) // same as private but with pw
     {
         if (isNotUser(context.getSender())) return;
-        this.setCreateProtection(context.getSender(), C_PRIVATE, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_PRIVATE, context.<String>getArg(0), context.hasFlag("key"));
     }
 
     @Alias(names = "cguarded")
     @Command(names = "guarded",
              desc = "creates a guarded protection",
-             indexed = @Grouped(req = false, value = @Indexed("password")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "password")),
              flags = @Flag(name = "key", longName = "keybook"))
     public void cguarded(ParameterizedContext context) // same as private but with pw
     {
         if (isNotUser(context.getSender())) return;
-        this.setCreateProtection(context.getSender(), C_GUARDED, context.getString(0), context.hasFlag("key"));
+        this.setCreateProtection(context.getSender(), C_GUARDED, context.<String>getArg(0), context.hasFlag("key"));
     }
 }

@@ -87,16 +87,16 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}ms!", time);
     }
 
-    @Command(names = {"setpassword", "setpw"}, desc = "Sets your password.",
-             indexed = {@Grouped(@Indexed("password")),
-                 @Grouped(value = @Indexed("player"), req = false)}, loggable = false)
+    @Command(names = {"setpassword", "setpw"}, desc = "Sets your password.", loggable = false,
+             indexed = {@Grouped(@Indexed(label = "password")),
+                        @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void setPassword(CommandContext context)
     {
         CommandSender sender = context.getSender();
         User target;
         if (context.hasArg(1))
         {
-            target = context.getUser(1);
+            target = context.getArg(1);
             if (target == null)
             {
                 sender.sendTranslated(NEGATIVE, "Player {user} not found!");
@@ -118,7 +118,7 @@ public class CoreCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "You are not allowed to change the password of an other player!");
             return;
         }
-        core.getUserManager().setPassword(target, context.getString(0));
+        core.getUserManager().setPassword(target, context.<String>getArg(0));
         if (sender == target)
         {
             sender.sendTranslated(POSITIVE, "The player's password has been set!");
@@ -129,16 +129,14 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(names = {
-        "clearpassword", "clearpw"
-    }, desc = "Clears your password.",
-             indexed = @Grouped(value = @Indexed({"player","*"}), req = false))
+    @Command(names = {"clearpassword", "clearpw"}, desc = "Clears your password.",
+             indexed = @Grouped(value = @Indexed(label = {"player","!*"}, type = {User.class, String.class}), req = false))
     public void clearPassword(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();
         if (context.hasArg(0))
         {
-            if ("*".equals(context.getString(0)))
+            if ("*".equals(context.getArg(0)))
             {
                 if (core.perms().COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
                 {
@@ -155,14 +153,14 @@ public class CoreCommands extends ContainerCommand
                 context.sendTranslated(NEGATIVE, "You are not allowed to clear the password of other players!");
                 return;
             }
-            User target = context.getUser(0);
+            User target = context.getArg(0);
             if (target != null)
             {
                 this.core.getUserManager().resetPassword(target);
                 sender.sendTranslated(POSITIVE, "The player's password has been reset!");
                 return;
             }
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
         if (sender instanceof User)
@@ -173,7 +171,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Logs you in with your password!",
-             indexed = @Grouped(@Indexed("password"))
+             indexed = @Grouped(@Indexed(label = "password"))
         , permDefault = PermDefault.TRUE, loggable = false)
     public void login(CommandContext context)
     {
@@ -186,7 +184,7 @@ public class CoreCommands extends ContainerCommand
                 context.sendTranslated(POSITIVE, "You are already logged in!");
                 return;
             }
-            boolean isLoggedIn = core.getUserManager().login(user, context.getString(0));
+            boolean isLoggedIn = core.getUserManager().login(user, context.<String>getArg(0));
             if (isLoggedIn)
             {
                 user.sendTranslated(POSITIVE, "You logged in successfully!");
@@ -261,21 +259,13 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Changes or displays the log level of the server.",
-             indexed = @Grouped(value = @Indexed("loglevel"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
     public void loglevel(CommandContext context)
     {
         if (context.hasArgs())
         {
-            LogLevel level = LogLevel.toLevel(context.getString(0));
-            if (level != null)
-            {
-                context.getCore().getLog().setLevel(level);
-                context.sendTranslated(POSITIVE, "New log level successfully set!");
-            }
-            else
-            {
-                context.sendTranslated(NEGATIVE, "The given log level is unknown.");
-            }
+            context.getCore().getLog().setLevel(context.<LogLevel>getArg(0));
+            context.sendTranslated(POSITIVE, "New log level successfully set!");
         }
         else
         {
@@ -284,12 +274,12 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Searches for a user in the database",
-             indexed = @Grouped(@Indexed("name")),
+             indexed = @Grouped(@Indexed(label = "name")),
              async = true)
     public CommandResult searchUser(CommandContext context)
     {
-        final boolean exact = core.getUserManager().findExactUser(context.getString(0)) != null;
-        final User user = core.getUserManager().findUser(context.getString(0), true);
+        final boolean exact = core.getUserManager().findExactUser(context.<String>getArg(0)) != null;
+        final User user = core.getUserManager().findUser(context.<String>getArg(0), true);
         return new CommandResult()
         {
             @Override
@@ -297,7 +287,7 @@ public class CoreCommands extends ContainerCommand
             {
                 if (user == null)
                 {
-                    context.sendTranslated(NEUTRAL, "No match found for {input}!", context.getString(0));
+                    context.sendTranslated(NEUTRAL, "No match found for {input}!", context.getArg(0));
                 }
                 else if (exact)
                 {

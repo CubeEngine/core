@@ -61,21 +61,16 @@ public class ChatCommands
 
     @Command(desc = "Sends a private message to someone",
              names = {"tell", "message", "msg", "pm", "m", "t", "whisper", "w"},
-             indexed = { @Grouped(@Indexed("player")),
-                         @Grouped(value = @Indexed("message"), greedy = true)})
+             indexed = { @Grouped(@Indexed(label = {"player","!console"}, type = {User.class, String.class})),
+                         @Grouped(value = @Indexed(label = "message"), greedy = true)})
     public void msg(CommandContext context)
     {
-        User user = this.module.getCore().getUserManager().findUser(context.getString(0));
-        if (user == null)
+        if ("console".equalsIgnoreCase(context.<String>getArg(0)))
         {
-            if (context.getString(0).equals("console") || context.getString(0).equals("#console"))
-            {
-                sendWhisperTo(NON_PLAYER_UUID, context.getStrings(1), context);
-                return;
-            }
-            context.sendTranslated(NEGATIVE, "User {name#user} not found!", context.getString(0));
+            sendWhisperTo(NON_PLAYER_UUID, context.getStrings(1), context);
             return;
         }
+        User user = context.getArg(0);
         if (!this.sendWhisperTo(user.getUniqueId(), context.getStrings(1), context))
         {
             context.sendTranslated(NEGATIVE, "Could not find the player {user} to send the message to. Is the player offline?", user);
@@ -84,7 +79,7 @@ public class ChatCommands
 
     @Command(names = {"reply", "r"},
              desc = "Replies to the last person that whispered to you.",
-             indexed = @Grouped(value = @Indexed("message"), greedy = true))
+             indexed = @Grouped(value = @Indexed(label = "message"), greedy = true))
     public void reply(CommandContext context)
     {
         UUID lastWhisper;
@@ -157,29 +152,24 @@ public class ChatCommands
     }
 
     @Command(desc = "Broadcasts a message",
-             indexed = @Grouped(value = @Indexed("message"), greedy = true))
+             indexed = @Grouped(value = @Indexed(label = "message"), greedy = true))
     public void broadcast(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
         int i = 0;
         while (context.hasArg(i))
         {
-            sb.append(context.getString(i++)).append(" ");
+            sb.append(context.getArg(i++)).append(" ");
         }
         this.um.broadcastMessage(NEUTRAL, "[{text:Broadcast}] {}", sb.toString());
     }
 
     @Command(desc = "Mutes a player",
-             indexed = { @Grouped(@Indexed("player")),
-                         @Grouped(value = @Indexed("duration"), req = false)})
+             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
+                         @Grouped(value = @Indexed(label = "duration"), req = false)})
     public void mute(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         if (basicsUserEntity.getMuted() != null && basicsUserEntity.getMuted().getTime() < System.currentTimeMillis())
         {
@@ -190,7 +180,7 @@ public class ChatCommands
         {
             try
             {
-                dura = converter.fromNode(StringNode.of(context.getString(1)), null);
+                dura = converter.fromNode(StringNode.of(context.<String>getArg(1)), null);
             }
             catch (ConversionException e)
             {
@@ -207,15 +197,10 @@ public class ChatCommands
     }
 
     @Command(desc = "Unmutes a player",
-             indexed = @Grouped(@Indexed("player")))
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void unmute(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         BasicsUserEntity basicsUserEntity = user.attachOrGet(BasicsAttachment.class, module).getBasicsUser().getbUEntity();
         basicsUserEntity.setMuted(null);
         basicsUserEntity.update();

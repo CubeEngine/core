@@ -42,13 +42,13 @@ public class InvasionCommand
     }
 
     @Command(desc = "Spawns a mob next to every player on the server",
-             indexed = @Grouped(@Indexed("mob")))
+             indexed = @Grouped(@Indexed(label = "mob")))
     public void invasion(CommandContext context)
     {
         EntityType entityType = Match.entity().mob(context.getString(0, null));
         if (entityType == null)
         {
-            context.sendTranslated(NEGATIVE, "EntityType {input} not found", context.getString(0));
+            context.sendTranslated(NEGATIVE, "EntityType {input} not found", context.getArg(0));
             return;
         }
         final Location helperLocation = new Location(null, 0, 0, 0);

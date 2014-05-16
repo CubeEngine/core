@@ -48,7 +48,7 @@ public class HideCommands implements CommandHolder
         return ReflectedCommand.class;
     }
 
-    @Command(desc = "Hides a player.", indexed = @Grouped(req = false, value = @Indexed("player")))
+    @Command(desc = "Hides a player.", indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
     public void hide(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -83,7 +83,7 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Unhides a player.", indexed = @Grouped(req = false, value = @Indexed("player")))
+    @Command(desc = "Unhides a player.", indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
     public void unhide(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -118,7 +118,8 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Checks whether a player is hidden.", indexed = @Grouped(req = false, value = @Indexed("player")))
+    @Command(desc = "Checks whether a player is hidden.", indexed = @Grouped(req = false, value = @Indexed(
+        label = "player", type = User.class)))
     public void hidden(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -168,7 +169,8 @@ public class HideCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Toggles the ability to see hidden players.", indexed = @Grouped(req = false, value = @Indexed("player")))
+    @Command(desc = "Toggles the ability to see hidden players.", indexed = @Grouped(req = false, value = @Indexed(
+        label = "player", type = User.class)))
     public void seehiddens(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -205,7 +207,7 @@ public class HideCommands implements CommandHolder
     }
 
     @Command(desc = "Checks whether a player can see hidden players.",
-             indexed = @Grouped(req = false, value = @Indexed("player")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
     public void canseehiddens(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -258,13 +260,7 @@ public class HideCommands implements CommandHolder
     {
         if (context.getArgCount() > 0)
         {
-            User target = context.getUser(0);
-            if (target == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-                return null;
-            }
-            return target;
+            return context.getArg(0);
         }
         else if (context.getSender() instanceof User)
         {

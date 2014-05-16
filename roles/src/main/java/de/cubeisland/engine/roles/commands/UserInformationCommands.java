@@ -49,7 +49,7 @@ public class UserInformationCommands extends UserCommandHelper
 
     @Alias(names = "listuroles")
     @Command(desc = "Lists roles of a user [in world]",
-             indexed = @Grouped(req = false, value = @Indexed("player")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
              params = @Param(names = "in", label = "world", type = World.class))
     public void list(ParameterizedContext context)
     {
@@ -74,22 +74,17 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkuperm")
     @Command(names = {"checkperm", "checkpermission"},
              desc = "Checks for permissions of a user [in world]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("permission"))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "permission"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void checkpermission(ParameterizedContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // Search for permission
-        String permission = context.getString(1);
+        String permission = context.getArg(1);
         ResolvedPermission resolvedPermission = rolesAttachment.getDataHolder(world).getPermissions().get(permission);
         if (user.isOp())
         {
@@ -140,7 +135,7 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "listuperm")
     @Command(names = {"listperm", "listpermission"},
              desc = "List permission assigned to a user in a world",
-             indexed = @Grouped(req = false, value = @Indexed("player")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
              params = @Param(names = "in", label = "world", type = World.class),
              flags = @Flag(longName = "all", name = "a"))
     public void listpermission(ParameterizedContext context)
@@ -172,22 +167,17 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "checkumeta")
     @Command(names = {"checkdata", "checkmeta", "checkmetadata"},
              desc = "Checks for metadata of a user [in world]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("metadatakey"))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "metadatakey"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void checkmetadata(ParameterizedContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment rolesAttachment = this.manager.getRolesAttachment(user);
         // Check metadata
-        String metaKey = context.getString(1);
+        String metaKey = context.getArg(1);
         UserDatabaseStore dataHolder = rolesAttachment.getDataHolder(world);
         Map<String,ResolvedMetadata> metadata = dataHolder.getMetadata();
         if (!metadata.containsKey(metaKey))
@@ -209,7 +199,7 @@ public class UserInformationCommands extends UserCommandHelper
     @Alias(names = "listumeta")
     @Command(names = {"listdata", "listmeta", "listmetadata"},
              desc = "Lists assigned metadata from a user [in world]",
-             indexed = @Grouped(req = false, value = @Indexed("player")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
              params = @Param(names = "in", label = "world", type = World.class),
              flags = @Flag(longName = "all", name = "a"))
     public void listmetadata(ParameterizedContext context)

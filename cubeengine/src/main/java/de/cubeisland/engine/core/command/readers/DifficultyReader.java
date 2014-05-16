@@ -19,32 +19,38 @@ package de.cubeisland.engine.core.command.readers;
 
 import java.util.Locale;
 
-import org.bukkit.World;
+import org.bukkit.Difficulty;
 
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
-public class WorldReader extends ArgumentReader
+public class DifficultyReader extends ArgumentReader
 {
-    private final Core core;
-
-    public WorldReader(Core core)
-    {
-        this.core = core;
-    }
-
     @Override
-    public World read(String arg, Locale locale) throws InvalidArgumentException
+    public Difficulty read(String arg, Locale locale) throws InvalidArgumentException
     {
-        World world = this.core.getWorldManager().getWorld(arg);
-        if (world == null)
+        try
         {
-            throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale, NEGATIVE, "World {input} not found!", arg));
+            Difficulty difficulty = Difficulty.getByValue(Integer.valueOf(arg));
+            if (difficulty == null)
+            {
+                throw new InvalidArgumentException(CubeEngine.getCore().getI18n().translate(locale, NEGATIVE, "The given difficulty level is unknown!"));
+            }
+            return difficulty;
         }
-        return world;
+        catch (NumberFormatException e)
+        {
+            try
+            {
+                return Difficulty.valueOf(arg.toUpperCase(locale));
+            }
+            catch (IllegalArgumentException ex)
+            {
+                throw new InvalidArgumentException(CubeEngine.getCore().getI18n().translate(locale, NEGATIVE, "{input} is not a known difficulty!", arg));
+            }
+        }
     }
 }

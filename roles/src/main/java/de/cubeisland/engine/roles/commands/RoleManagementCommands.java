@@ -51,24 +51,24 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "setrperm")
     @Command(names = {"setperm", "setpermission"},
              desc = "Sets the permission for given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("permission")),
-                        @Grouped(req = false, value = @Indexed({"!true","!false","!reset"}))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "permission")),
+                        @Grouped(req = false, value = @Indexed(label = {"!true","!false","!reset"}))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void setpermission(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        String permission = context.getString(1);
+        String permission = context.getArg(1);
         String setTo = "true";
         if (context.getArgCount() > 2)
         {
-            setTo = context.getString(2);
+            setTo = context.getArg(2);
         }
         try
         {
@@ -118,21 +118,21 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "setrdata")
     @Command(names = {"setdata", "setmeta", "setmetadata"},
              desc = "Sets the metadata for given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("key")),
-                        @Grouped(req = false, value = @Indexed("value"))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "key")),
+                        @Grouped(req = false, value = @Indexed(label = "value"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void setmetadata(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        String key = context.getString(1);
-        String value = context.getString(2);
+        String key = context.getArg(1);
+        String value = context.getArg(2);
         role.setMetadata(key, value);
         role.save();
         if (value == null)
@@ -156,19 +156,19 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "resetrdata")
     @Command(names = {"resetdata", "resetmeta", "resetmetadata"},
              desc = "Resets the metadata for given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("key"))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "key"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void resetmetadata(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        String key = context.getString(1);
+        String key = context.getArg(1);
         role.setMetadata(key,null);
         role.save();
         if (global)
@@ -184,11 +184,11 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "clearrdata")
     @Command(names = {"cleardata", "clearmeta", "clearmetadata"},
              desc = "Clears the metadata for given role [in world]",
-             indexed = @Grouped(@Indexed("[g:]role")),
+             indexed = @Grouped(@Indexed(label = "[g:]role")),
              params = @Param(names = "in", label = "world", type = World.class))
     public void clearmetadata(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -207,27 +207,27 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = {"addrparent","manradd"})
     @Command(desc = "Adds a parent role to given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("[g:]parentrole"))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "[g:]parentrole"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void addParent(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Role pRole = provider.getRole(context.getString(1));
+        Role pRole = provider.getRole(context.<String>getArg(1));
         if (pRole == null)
         {
             if (global)
             {
-                context.sendTranslated(NEUTRAL, "Could not find the global parent role {name}.", context.getString(1));
+                context.sendTranslated(NEUTRAL, "Could not find the global parent role {name}.", context.getArg(1));
                 return;
             }
-            context.sendTranslated(NEUTRAL, "Could not find the parent role {name} in {world}.", context.getString(1), world);
+            context.sendTranslated(NEUTRAL, "Could not find the parent role {name} in {world}.", context.getArg(1), world);
             return;
         }
         try
@@ -263,27 +263,27 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "remrparent")
     @Command(desc = "Removes a parent role from given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("[g:]parentrole"))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "[g:]parentrole"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void removeParent(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        Role pRole = provider.getRole(context.getString(1));
+        Role pRole = provider.getRole(context.<String>getArg(1));
         if (pRole == null)
         {
             if (global)
             {
-                context.sendTranslated(NEUTRAL, "Could not find the global parent role {name}.", context.getString(1));
+                context.sendTranslated(NEUTRAL, "Could not find the global parent role {name}.", context.getArg(1));
                 return;
             }
-            context.sendTranslated(NEUTRAL, "Could not find the parent role {name} in {world}.", context.getString(1), world);
+            context.sendTranslated(NEUTRAL, "Could not find the parent role {name} in {world}.", context.getArg(1), world);
             return;
         }
         if (role.removeRole(pRole))
@@ -307,11 +307,11 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "clearrparent")
     @Command(desc = "Removes all parent roles from given role [in world]",
-             indexed = @Grouped(@Indexed("[g:]role")),
+             indexed = @Grouped(@Indexed(label = "[g:]role")),
              params = @Param(names = "in", label = "world", type = World.class))
     public void clearParent(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -330,12 +330,12 @@ public class RoleManagementCommands extends RoleCommandHelper
     @Alias(names = "setrolepriority")
     @Command(names = {"setprio", "setpriority"},
              desc = "Sets the priority of given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("priotity"))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "priotity"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void setPriority(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -346,38 +346,40 @@ public class RoleManagementCommands extends RoleCommandHelper
         Priority priority;
         try
         {
-            priority = converter.fromNode(new StringNode(context.getString(1)), null);
+            priority = converter.fromNode(new StringNode(context.<String>getArg(1)), null);
             role.setPriorityValue(priority.value);
             role.save();
             if (global)
             {
-                context.sendTranslated(POSITIVE, "Priority of the global role {name} set to {input#priority}!", role.getName(), context.getString(1));
+                context.sendTranslated(POSITIVE, "Priority of the global role {name} set to {input#priority}!", role.getName(), context.getArg(
+                    1));
                 return;
             }
-            context.sendTranslated(POSITIVE, "Priority of the role {name} set to {input#priority} in {world}!", role.getName(), context.getString(1), world);
+            context.sendTranslated(POSITIVE, "Priority of the role {name} set to {input#priority} in {world}!", role.getName(), context.getArg(
+                1), world);
         }
         catch (ConversionException ex)
         {
-            context.sendTranslated(NEGATIVE, "{input#priority} is not a valid priority!", context.getString(1));
+            context.sendTranslated(NEGATIVE, "{input#priority} is not a valid priority!", context.getArg(1));
         }
 
     }
 
     @Alias(names = "renamerole")
     @Command(desc = "Renames given role [in world]",
-             indexed = {@Grouped(@Indexed("[g:]role")),
-                        @Grouped(@Indexed("new name"))},
+             indexed = {@Grouped(@Indexed(label = "[g:]role")),
+                        @Grouped(@Indexed(label = "new name"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void rename(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
         RoleProvider provider = world == null ? this.manager.getGlobalProvider() : this.manager.getProvider(world);
         Role role = this.getRole(context, provider, roleName, world);
         if (role == null) return;
-        String newName = context.getString(1);
+        String newName = context.getArg(1);
         String oldName = role.getName();
         if (role.getName().equalsIgnoreCase(newName))
         {
@@ -404,12 +406,12 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "createrole")
     @Command(desc = "Creates a new role [in world]",
-             indexed = @Grouped(@Indexed("rolename")),
+             indexed = @Grouped(@Indexed(label = "rolename")),
              params = @Param(names = "in", label = "world", type = World.class),
              flags = @Flag(longName = "global", name = "g"))
     public void create(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = context.hasFlag("g");
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -434,11 +436,11 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Alias(names = "deleteRole")
     @Command(desc = "Deletes a role [in world]",
-             indexed = @Grouped(@Indexed("[g:]rolename")),
+             indexed = @Grouped(@Indexed(label = "[g:]rolename")),
              params = @Param(names = "in", label = "world", type = World.class))
     public void delete(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         boolean global = roleName.startsWith(GLOBAL_PREFIX);
         World world = global ? null : this.getWorld(context);
         if (!global && world == null) return;
@@ -458,11 +460,11 @@ public class RoleManagementCommands extends RoleCommandHelper
 
     @Command(names = {"toggledefault", "toggledef", "toggledefaultrole"},
              desc = "Toggles whether given role is a default role [in world]",
-             indexed = @Grouped(@Indexed("rolename")),
+             indexed = @Grouped(@Indexed(label = "rolename")),
              params = @Param(names = "in", label = "world", type = World.class))
     public void toggleDefaultRole(ParameterizedContext context)
     {
-        String roleName = context.getString(0);
+        String roleName = context.getArg(0);
         World world = this.getWorld(context);
         if (world == null) return;
         WorldRoleProvider provider = this.manager.getProvider(world);

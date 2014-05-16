@@ -66,7 +66,7 @@ public class RulebookCommands extends ContainerCommand
     @Alias( names = {"getrules", "rules"})
     @Command(
         desc = "gets the player the rulebook in the inventory",
-        indexed = @Grouped(req = false, value = @Indexed("language")),
+        indexed = @Grouped(req = false, value = @Indexed(label = "language")),
         params = @Param(names = {"player", "p"}, label = "name", type = User.class),
         permDefault = TRUE)
     public void getRuleBook(ParameterizedContext context)
@@ -106,7 +106,7 @@ public class RulebookCommands extends ContainerCommand
 
         if(context.hasArg(0))
         {
-            Language language = this.rulebookManager.getLanguage(context.getString(0));
+            Language language = this.rulebookManager.getLanguage(context.<String>getArg(0));
 
             if(language == null)
             {
@@ -186,14 +186,14 @@ public class RulebookCommands extends ContainerCommand
     @Alias(names = "removerules")
     @Command(
         desc = "removes the declared language and languagefiles!",
-        indexed = @Grouped(@Indexed("language")))
+        indexed = @Grouped(@Indexed(label = "language")))
     public void remove(CommandContext context)
     {
-        Language language = this.rulebookManager.getLanguage(context.getString(0));
+        Language language = this.rulebookManager.getLanguage(context.<String>getArg(0));
 
         if(language == null)
         {
-            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
+            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getArg(0));
             return;
         }
         if(!this.rulebookManager.contains(language.getLocale()))
@@ -218,7 +218,7 @@ public class RulebookCommands extends ContainerCommand
     @Alias(names = "modifyrules")
     @Command(
         desc = "modified the rulebook of the declared language with the book in hand",
-        indexed = @Grouped(@Indexed("language")))
+        indexed = @Grouped(@Indexed(label = "language")))
     public void modify(CommandContext context)
     {
         if(!(context.getSender() instanceof User))
@@ -235,10 +235,10 @@ public class RulebookCommands extends ContainerCommand
             return;
         }
 
-        Language language = this.rulebookManager.getLanguage(context.getString(0));
+        Language language = this.rulebookManager.getLanguage(context.<String>getArg(0));
         if(language == null)
         {
-            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
+            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getArg(0));
             return;
         }
         Locale locale = language.getLocale();
@@ -267,7 +267,7 @@ public class RulebookCommands extends ContainerCommand
     @Alias(names = "addrules")
     @Command(
         desc = "adds the book in hand as rulebook of the declared language",
-        indexed = @Grouped(@Indexed("language")))
+        indexed = @Grouped(@Indexed(label = "language")))
     public void add(CommandContext context)
     {
         if(!(context.getSender() instanceof User))
@@ -284,10 +284,10 @@ public class RulebookCommands extends ContainerCommand
             return;
         }
 
-        Language language = this.rulebookManager.getLanguage(context.getString(0));
+        Language language = this.rulebookManager.getLanguage(context.<String>getArg(0));
         if(language == null)
         {
-            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getString(0));
+            context.sendTranslated(NEGATIVE, "More than one or no language is matched with {input}", context.getArg(0));
             return;
         }
         Locale locale = language.getLocale();

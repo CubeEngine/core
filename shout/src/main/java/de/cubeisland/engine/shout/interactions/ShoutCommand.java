@@ -64,10 +64,10 @@ public class ShoutCommand extends ContainerCommand
 
     public CommandResult run(CommandContext context)
     {
-        Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.getString(0));
+        Announcement announcement = this.module.getAnnouncementManager().getAnnouncement(context.<String>getArg(0));
         if (announcement == null)
         {
-            context.sendTranslated(NEGATIVE, "{input#announcement} was not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "{input#announcement} was not found!", context.getArg(0));
             return null;
         }
         List<Player> players;
@@ -127,7 +127,7 @@ public class ShoutCommand extends ContainerCommand
     }
 
     @Command(desc = "Creates a new announcement",
-             indexed = @Grouped(@Indexed(value = "name")),
+             indexed = @Grouped(@Indexed(label = "name")),
              params = {
                      @Param(names ={"message", "m"}),
                      @Param(names ={"delay", "d"}, label = "<x> minutes|hours|days"),
@@ -159,7 +159,7 @@ public class ShoutCommand extends ContainerCommand
         {
             this.module.getAnnouncementManager().addAnnouncement(
                 this.module.getAnnouncementManager().createAnnouncement(
-                    context.getString(0),
+                    context.<String>getArg(0),
                     locale,
                     message,
                     context.getString("delay", "10 minutes"),

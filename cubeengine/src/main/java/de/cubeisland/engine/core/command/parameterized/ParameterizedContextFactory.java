@@ -196,7 +196,7 @@ public class ParameterizedContextFactory extends BasicContextFactory
         {
             return (T)new ParameterizedTabContext(command, sender, labels, args, flags, rawParams, last);
         }
-        return (T)new ParameterizedContext(command, sender, labels, args, flags, readParams(sender, rawParams));
+        return (T)new ParameterizedContext(command, sender, labels, readArgs(sender, args), flags, readParams(sender, rawParams));
     }
 
     private Type readCommand(String[] rawArgs, boolean tabComplete, Set<String> flags, List<String> args,

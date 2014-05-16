@@ -71,8 +71,8 @@ public abstract class ParameterizedCommand extends CubeCommand
             return tabCompleteParamValue(context, cFactory);
         }
         List<String> result = new ArrayList<>();
-        List<String> args = context.getArgs();
-        String last = args.get(args.size() - 1);
+        List<Object> args = context.getArgs();
+        String last = args.get(args.size() - 1).toString();
         if (context.last == FLAG_OR_INDEXED)
         {
             tabCompleteFlags(context, cFactory, result, last);

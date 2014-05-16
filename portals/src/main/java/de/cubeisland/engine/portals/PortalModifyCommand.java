@@ -49,23 +49,18 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Command(desc = "Changes the owner of a portal",
-             indexed = {@Grouped(@Indexed("owner")),
-                        @Grouped(req = false, value = @Indexed("portal"))})
+             indexed = {@Grouped(@Indexed(label = "owner", type = User.class)),
+                        @Grouped(req = false, value = @Indexed(label = "portal"))})
     public void owner(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         Portal portal = null;
         if (context.hasArg(1))
         {
-            portal = manager.getPortal(context.getString(1));
+            portal = manager.getPortal(context.<String>getArg(1));
             if (portal == null)
             {
-                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(1));
                 return;
             }
         }
@@ -86,17 +81,17 @@ public class PortalModifyCommand extends ContainerCommand
 
     @Alias(names = "mvpd")
     @Command(names = {"destination","dest"}, desc = "changes the destination of the selected portal",
-        indexed = {@Grouped(@Indexed({"!here","world","p:<portal>"})),
-                   @Grouped(req = false, value = @Indexed("portal"))})
+        indexed = {@Grouped(@Indexed(label = {"!here","world","p:<portal>"})),
+                   @Grouped(req = false, value = @Indexed(label = "portal"))})
     public void destination(CommandContext context)
     {
         Portal portal = null;
         if (context.hasArg(1))
         {
-            portal = manager.getPortal(context.getString(1));
+            portal = manager.getPortal(context.<String>getArg(1));
             if (portal == null)
             {
-                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(1));
+                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(1));
                 return;
             }
         }
@@ -110,7 +105,8 @@ public class PortalModifyCommand extends ContainerCommand
             context.sendMessage(context.getCommand().getUsage(context));
             return;
         }
-        if (context.getString(0).equalsIgnoreCase("here"))
+        String arg0 = context.getArg(0);
+        if ("here".equalsIgnoreCase(arg0))
         {
             if (!(context.getSender() instanceof User))
             {
@@ -119,22 +115,22 @@ public class PortalModifyCommand extends ContainerCommand
             }
             portal.config.destination = new Destination(((User)context.getSender()).getLocation());
         }
-        else if (context.getString(0).startsWith("p:"))
+        else if (arg0.startsWith("p:"))
         {
-            Portal destPortal = manager.getPortal(context.getString(0).substring(2));
+            Portal destPortal = manager.getPortal(arg0.substring(2));
             if (destPortal == null)
             {
-                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0).substring(2));
+                context.sendTranslated(NEGATIVE, "Portal {input} not found!", arg0.substring(2));
                 return;
             }
             portal.config.destination = new Destination(destPortal);
         }
         else
         {
-            World world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
+            World world = this.getModule().getCore().getWorldManager().getWorld(arg0);
             if (world == null)
             {
-                context.sendTranslated(NEGATIVE, "World {input} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "World {input} not found!", arg0);
                 return;
             }
             portal.config.destination = new Destination(world);
@@ -144,7 +140,7 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Command(desc = "Changes a portals location",
-             indexed = @Grouped(req = false, value = @Indexed("portal")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
     public void location(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -156,10 +152,10 @@ public class PortalModifyCommand extends ContainerCommand
                 Portal portal = sender.attachOrGet(PortalsAttachment.class, getModule()).getPortal();
                 if (context.hasArg(0))
                 {
-                    portal = manager.getPortal(context.getString(0));
+                    portal = manager.getPortal(context.<String>getArg(0));
                     if (portal == null)
                     {
-                        context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
+                        context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(0));
                         return;
                     }
                 }
@@ -184,7 +180,7 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Command(desc = "Modifies the location where a player exits when teleporting a portal",
-             indexed = @Grouped(req = false, value = @Indexed("portal")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
     public void exit(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -193,10 +189,10 @@ public class PortalModifyCommand extends ContainerCommand
             Portal portal = sender.attachOrGet(PortalsAttachment.class, getModule()).getPortal();
             if (context.hasArg(0))
             {
-                portal = manager.getPortal(context.getString(0));
+                portal = manager.getPortal(context.<String>getArg(0));
                 if (portal == null)
                 {
-                    context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(0));
                     return;
                 }
             }
@@ -221,16 +217,16 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Command(desc = "Toggles safe teleportation for this portal",
-             indexed = @Grouped(req = false, value = @Indexed("portal")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
     public void togglesafe(CommandContext context)
     {
         Portal portal = null;
         if (context.hasArg(0))
         {
-            portal = manager.getPortal(context.getString(0));
+            portal = manager.getPortal(context.<String>getArg(0));
             if (portal == null)
             {
-                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(0));
                 return;
             }
         }
@@ -257,16 +253,16 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Command(desc = "Toggles whether entities can teleport with this portal",
-             indexed = @Grouped(req = false, value = @Indexed("portal")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
     public void entity(CommandContext context)
     {
         Portal portal = null;
         if (context.hasArg(0))
         {
-            portal = manager.getPortal(context.getString(0));
+            portal = manager.getPortal(context.<String>getArg(0));
             if (portal == null)
             {
-                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(0));
                 return;
             }
         }

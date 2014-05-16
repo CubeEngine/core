@@ -56,7 +56,7 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Alias(names = "mvpc")
-    @Command(desc = "Creates a new Portal", indexed = @Grouped(@Indexed("name")),
+    @Command(desc = "Creates a new Portal", indexed = @Grouped(@Indexed(label = "name")),
     params = {@Param(names = "worlddest", label = "world", completer = WorldCompleter.class, type = World.class),
               @Param(names = "portaldest", label = "portal")})
     public void create(ParameterizedContext context)
@@ -67,7 +67,7 @@ public class PortalCommands extends ContainerCommand
             User sender = (User)context.getSender();
             if (selector.getSelection(sender) instanceof Cuboid)
             {
-                if (this.manager.getPortal(context.getString(0)) == null)
+                if (this.manager.getPortal(context.<String>getArg(0)) == null)
                 {
                     Location p1 = selector.getFirstPoint(sender);
                     Location p2 = selector.getSecondPoint(sender);
@@ -97,15 +97,15 @@ public class PortalCommands extends ContainerCommand
                         }
                         config.destination = new Destination(portal);
                     }
-                    config.setFile(new File(manager.portalsDir, context.getString(0) + ".yml"));
+                    config.setFile(new File(manager.portalsDir, context.getArg(0) + ".yml"));
                     config.save();
-                    Portal portal = new Portal(module, manager, context.getString(0), config);
+                    Portal portal = new Portal(module, manager, context.<String>getArg(0), config);
                     this.manager.addPortal(portal);
                     sender.attachOrGet(PortalsAttachment.class, module).setPortal(portal);
                     context.sendTranslated(POSITIVE, "Portal {name} created! Select a destination using portal modify destination command", portal.getName());
                     return;
                 }
-                context.sendTranslated(NEGATIVE, "A portal named {input} already exists!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "A portal named {input} already exists!", context.getArg(0));
             }
             else
             {
@@ -117,35 +117,35 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Alias(names = "mvps")
-    @Command(desc = "Selects an existing portal", indexed = @Grouped(@Indexed("portal")))
+    @Command(desc = "Selects an existing portal", indexed = @Grouped(@Indexed(label = "portal")))
     public void select(CommandContext context)
     {
-        Portal portal = this.manager.getPortal(context.getString(0));
+        Portal portal = this.manager.getPortal(context.<String>getArg(0));
         if (portal == null)
         {
-            context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(0));
             return;
         }
         if (context.getSender() instanceof User)
         {
             ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module).setPortal(portal);
-            context.sendTranslated(POSITIVE, "Portal selected: {name}", context.getString(0));
+            context.sendTranslated(POSITIVE, "Portal selected: {name}", context.getArg(0));
             return;
         }
         context.sendTranslated(NEGATIVE, "You must be ingame to do this!");
     }
 
     @Alias(names ="mvpi")
-    @Command(desc = "Show info about a portal", indexed = @Grouped(req = false, value = @Indexed("portal")))
+    @Command(desc = "Show info about a portal", indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
     public void info(CommandContext context)
     {
         Portal portal = null;
         if (context.hasArg(0))
         {
-            portal = manager.getPortal(context.getString(0));
+            portal = manager.getPortal(context.<String>getArg(0));
             if (portal == null)
             {
-                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(0));
                 return;
             }
         }
@@ -163,13 +163,13 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Alias(names = "mvpr")
-    @Command(desc = "Removes a portal permanently", indexed = @Grouped(@Indexed("portal")))
+    @Command(desc = "Removes a portal permanently", indexed = @Grouped(@Indexed(label = "portal")))
     public void remove(CommandContext context)
     {
-        Portal portal = this.manager.getPortal(context.getString(0));
+        Portal portal = this.manager.getPortal(context.<String>getArg(0));
         if (portal == null)
         {
-            context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Portal {input} not found!", context.getArg(0));
             return;
         }
         portal.delete();
@@ -177,7 +177,7 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Command(desc = "Shows debug portal information instead of teleporting",
-             indexed = @Grouped(req = false, value = @Indexed({"!on","!off"})))
+             indexed = @Grouped(req = false, value = @Indexed(label = {"!on","!off"})))
     public void debug(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -185,14 +185,14 @@ public class PortalCommands extends ContainerCommand
             PortalsAttachment attachment = ((User)context.getSender()).attachOrGet(PortalsAttachment.class, module);
             if (context.hasArg(0))
             {
-                if (context.getString(0).equalsIgnoreCase("on"))
+                if ("on".equalsIgnoreCase(context.<String>getArg(0)))
                 {
                     if (!attachment.isDebug())
                     {
                         attachment.toggleDebug();
                     }
                 }
-                else if (context.getString(0).equalsIgnoreCase("off"))
+                else if ("off".equalsIgnoreCase(context.<String>getArg(0)))
                 {
                     if (attachment.isDebug())
                     {

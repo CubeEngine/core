@@ -48,7 +48,7 @@ public class DiscoCommand
 
     @Command(
         desc = "Rapidly changes from day to night",
-        indexed = @Grouped(req = false, value = @Indexed("world")),
+        indexed = @Grouped(req = false, value = @Indexed(label = "world", type = World.class)),
         params = @Param(names = {"delay", "d"}, type = Integer.class)
     )
     public void disco(ParameterizedContext context)
@@ -63,7 +63,7 @@ public class DiscoCommand
 
         if (context.hasArg(0))
         {
-            world = context.getArg(0, World.class);
+            world = context.getArg(0);
             if (world == null)
             {
                 context.sendTranslated(NEGATIVE, "The given world was not found!");

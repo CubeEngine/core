@@ -51,13 +51,13 @@ public class DoorCommand
     @Command(
         desc = "Opens or closes doors around the player.",
         indexed = {
-            @Grouped(@Indexed({"!open","!close"})),
-            @Grouped(@Indexed("radius")),
+            @Grouped(@Indexed(label = {"!open","!close"})),
+            @Grouped(@Indexed(label = "radius")),
             @Grouped(req = false, value = {
-                @Indexed("world"),
-                @Indexed("x"),
-                @Indexed("y"),
-                @Indexed("z")})},
+                @Indexed(label = "world"),
+                @Indexed(label = "x"),
+                @Indexed(label = "y"),
+                @Indexed(label = "z")})},
         flags = {
             @Flag(longName = "all", name = "a"),
             @Flag(longName = "woodenDoor", name = "w"),
@@ -67,12 +67,12 @@ public class DoorCommand
     public void doors(ParameterizedContext context)
     {
         boolean open;
-        int radius = context.getArg(1, Integer.class, 0);
+        int radius = context.getArg(1, 0);
         Vector3 vector;
         World world;
         Set<Material> openMaterials = EnumSet.noneOf(Material.class);
 
-        String task = context.getString(0);
+        String task = context.getArg(0);
         if(task.equalsIgnoreCase("open"))
         {
             open = true;
@@ -106,28 +106,28 @@ public class DoorCommand
         }
         else
         {
-            world = context.getArg(2, World.class, null);
+            world = context.getArg(2, null);
             if(world == null)
             {
-                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getString(2));
+                context.sendTranslated(NEGATIVE, "World {input#world} not found!", context.getArg(2));
                 return;
             }
-            Integer x = context.getArg(3, Integer.class, null);
+            Integer x = context.getArg(3, null);
             if(x == null)
             {
-                context.sendTranslated(NEGATIVE, "Invalid x-value {input}!", context.getString(3));
+                context.sendTranslated(NEGATIVE, "Invalid x-value {input}!", context.getArg(3));
                 return;
             }
-            Integer y = context.getArg(4, Integer.class, null);
+            Integer y = context.getArg(4, null);
             if(y == null)
             {
-                context.sendTranslated(NEGATIVE, "Invalid y-value {input}!", context.getString(4));
+                context.sendTranslated(NEGATIVE, "Invalid y-value {input}!", context.getArg(4));
                 return;
             }
-            Integer z = context.getArg(5, Integer.class, null);
+            Integer z = context.getArg(5, null);
             if(z == null)
             {
-                context.sendTranslated(NEGATIVE, "Invalid z-value {input}!", context.getString(5));
+                context.sendTranslated(NEGATIVE, "Invalid z-value {input}!", context.getArg(5));
                 return;
             }
             vector = new Vector3(x, y, z);

@@ -60,7 +60,7 @@ public class TimeControlCommands
     @Command(desc = "Changes the time of a world",
              flags = @Flag(longName = "lock", name = "l"),
              params = @Param(names = { "w", "worlds", "in"}),
-             indexed = @Grouped(value = @Indexed("time"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "time"), req = false))
     public void time(ParameterizedContext context)
     {
         List<World> worlds;
@@ -96,7 +96,7 @@ public class TimeControlCommands
         }
         if (context.hasArg(0))
         {
-            final Long time = Match.time().matchTimeValue(context.getString(0));
+            final Long time = Match.time().matchTimeValue(context.<String>getArg(0));
             if (time == null)
             {
                 context.sendTranslated(NEGATIVE, "The time you entered is not valid!");
@@ -144,14 +144,14 @@ public class TimeControlCommands
 
     @Command(desc = "Changes the time for a player",
              flags = @Flag(longName = "lock", name = "l"),
-             indexed = { @Grouped(@Indexed(value = {"time","!reset"})),
-                         @Grouped(req = false, value = @Indexed("player"))})
+             indexed = { @Grouped(@Indexed(label = {"time","!reset"})),
+                         @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
     public void ptime(ParameterizedContext context)
     {
         Long time = 0L;
         boolean other = false;
         boolean reset = false;
-        String timeString = context.getString(0);
+        String timeString = context.getArg(0);
         if (timeString.equalsIgnoreCase("reset"))
         {
             reset = true;
@@ -173,14 +173,8 @@ public class TimeControlCommands
         }
         if (context.hasArg(1))
         {
-            user = context.getUser(1);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(1));
-                return;
-            }
-            if (!module.perms().COMMAND_PTIME_OTHER.
-                    isAuthorized(context.getSender()))
+            user = context.getArg(1);
+            if (!module.perms().COMMAND_PTIME_OTHER.isAuthorized(context.getSender()))
             {
                 context.sendTranslated(NEGATIVE, "You are not allowed to change the time of other players!");
                 return;

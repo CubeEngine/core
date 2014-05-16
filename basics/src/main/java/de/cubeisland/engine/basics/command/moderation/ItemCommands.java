@@ -68,23 +68,25 @@ public class ItemCommands
     }
 
     @Command(desc = "Looks up an item for you!",
-            indexed = @Grouped(req = false, value = @Indexed("item")))
+            indexed = @Grouped(req = false, value = @Indexed(label = "item")))
     public void itemDB(CommandContext context)
     {
         if (context.hasArg(0))
         {
-            TreeSet<Entry<ItemStack, Double>> itemSet = Match.material().itemStackList(context.getString(0));
+            TreeSet<Entry<ItemStack, Double>> itemSet = Match.material().itemStackList(context.<String>getArg(0));
             if (itemSet != null && itemSet.size() > 0)
             {
-                context.sendTranslated(POSITIVE, "Best Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(itemSet.first().getKey()), itemSet.first().getKey().getType().getId(), itemSet.first().getKey().getDurability(), context.getString(0));
+                context.sendTranslated(POSITIVE, "Best Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(itemSet.first().getKey()), itemSet.first().getKey().getType().getId(), itemSet.first().getKey().getDurability(), context.getArg(
+                    0));
                 itemSet.remove(itemSet.first());
                 for (Entry<ItemStack, Double> item : itemSet) {
-                    context.sendTranslated(POSITIVE, "Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(item.getKey()), item.getKey().getType().getId(), item.getKey().getDurability(), context.getString(0));
+                    context.sendTranslated(POSITIVE, "Matched {input#item} ({integer#id}:{short#data}) for {input}", Match.material().getNameFor(item.getKey()), item.getKey().getType().getId(), item.getKey().getDurability(), context.getArg(
+                        0));
                 }
             }
             else
             {
-                context.sendTranslated(NEGATIVE, "Could not find any item named {input}!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Could not find any item named {input}!", context.getArg(0));
             }
             return;
         }
@@ -113,8 +115,8 @@ public class ItemCommands
     }
 
     @Command(desc = "Changes the display name of the item in your hand.",
-             indexed = { @Grouped(@Indexed("name")),
-                         @Grouped(req = false, value = @Indexed("lore..."),greedy = true)})
+             indexed = { @Grouped(@Indexed(label = "name")),
+                         @Grouped(req = false, value = @Indexed(label = "lore..."),greedy = true)})
     public void rename(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -127,12 +129,12 @@ public class ItemCommands
                 return;
             }
             ItemMeta meta = item.getItemMeta();
-            String name = ChatFormat.parseFormats(context.getString(0));
+            String name = ChatFormat.parseFormats(context.<String>getArg(0));
             meta.setDisplayName(name);
             ArrayList<String> list = new ArrayList<>();
             for (int i = 1; i < context.getArgCount(); ++i)
             {
-                list.add(ChatFormat.parseFormats(context.getString(i)));
+                list.add(ChatFormat.parseFormats(context.<String>getArg(i)));
             }
             meta.setLore(list);
             item.setItemMeta(meta);
@@ -144,13 +146,13 @@ public class ItemCommands
 
     @Command(names = {"headchange", "skullchange"},
              desc = "Changes a skull to a players skin.",
-             indexed = @Grouped(req = false, value = @Indexed("name")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "name")))
     public void headchange(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            String name = context.getString(0);
+            String name = context.getArg(0);
             if (sender.getItemInHand().getType().equals(Material.SKULL_ITEM))
             {
                 sender.getItemInHand().setDurability((short)3);
@@ -167,7 +169,7 @@ public class ItemCommands
     }
 
     @Command(desc = "Grants unlimited items",
-             indexed = @Grouped(req = false, value = @Indexed(value = {"!on","!off"})))
+             indexed = @Grouped(req = false, value = @Indexed(label = {"!on","!off"})))
     public void unlimited(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -176,11 +178,11 @@ public class ItemCommands
             boolean unlimited;
             if (context.hasArg(0))
             {
-                if (context.getString(0).equalsIgnoreCase("on"))
+                if ("on".equalsIgnoreCase(context.<String>getArg(0)))
                 {
                     unlimited = true;
                 }
-                else if (context.getString(0).equalsIgnoreCase("off"))
+                else if ("off".equalsIgnoreCase(context.<String>getArg(0)))
                 {
                     unlimited = false;
                 }
@@ -210,8 +212,8 @@ public class ItemCommands
 
     @Command(desc = "Adds an Enchantment to the item in your hand",
              flags = @Flag(longName = "unsafe", name = "u"),
-             indexed = { @Grouped(value = @Indexed("enchantment"), req = false),
-                         @Grouped(value = @Indexed("level"), req = false)})
+             indexed = { @Grouped(value = @Indexed(label = "enchantment"), req = false),
+                         @Grouped(value = @Indexed(label = "level"), req = false)})
     public void enchant(ParameterizedContext context)
     {
         if (!context.hasArg(0))
@@ -228,13 +230,13 @@ public class ItemCommands
                 context.sendTranslated(NEUTRAL, "{text:ProTip}: You cannot enchant your fists!");
                 return;
             }
-            Enchantment ench = context.getArg(0, Enchantment.class, null);
+            Enchantment ench = context.getArg(0, null);
             if (ench == null)
             {
                 String possibleEnchs = this.getPossibleEnchantments(item);
                 if (possibleEnchs != null)
                 {
-                    context.sendTranslated(NEGATIVE, "Enchantment {input#enchantment} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "Enchantment {input#enchantment} not found!", context.getArg(0));
                     context.sendTranslated(NEUTRAL, "Try one of those instead:");
                     context.sendMessage(possibleEnchs);
                 }
@@ -247,7 +249,7 @@ public class ItemCommands
             int level = ench.getMaxLevel();
             if (context.hasArg(1))
             {
-                level = context.getArg(1, Integer.class, 0);
+                level = context.getArg(1, 0);
                 if (level <= 0)
                 {
                     context.sendTranslated(NEGATIVE, "The enchantment level has to be a number greater than 0!");
@@ -327,22 +329,22 @@ public class ItemCommands
 
     @Command(desc = "Gives the specified Item to a player",
              flags = {@Flag(name = "b", longName = "blacklist")},
-             indexed = { @Grouped(@Indexed("player")),
-                         @Grouped(@Indexed("material[:data]")),
-                         @Grouped(value = @Indexed("amount"), req = false)})
+             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
+                         @Grouped(@Indexed(label = "material[:data]")),
+                         @Grouped(value = @Indexed(label = "amount"), req = false)})
     @SuppressWarnings("deprecation")
     public void give(ParameterizedContext context)
     {
-        User user = context.getUser(0);
+        User user = context.getArg(0);
         if (user == null)
         {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
             return;
         }
-        ItemStack item = context.getArg(1, ItemStack.class, null);
+        ItemStack item = context.getArg(1, null);
         if (item == null)
         {
-            context.sendTranslated(NEGATIVE, "Unknown Item: {input#item}!", context.getString(1));
+            context.sendTranslated(NEGATIVE, "Unknown Item: {input#item}!", context.getArg(1));
             return;
         }
         if (!context.hasFlag("b") && module.perms().ITEM_BLACKLIST.isAuthorized(context.getSender())
@@ -354,7 +356,7 @@ public class ItemCommands
         int amount = item.getMaxStackSize();
         if (context.hasArg(2))
         {
-            amount = context.getArg(2, Integer.class, 0);
+            amount = context.getArg(2, 0);
             if (amount == 0)
             {
                 context.sendTranslated(NEGATIVE, "The amount has to be a number greater than 0!");
@@ -371,9 +373,9 @@ public class ItemCommands
 
     @Command(names = {"item", "i"}, desc = "Gives the specified Item to you",
              indexed = {
-                @Grouped(@Indexed("material[:data]")),
-                @Grouped(value = @Indexed("enchantment[:level]"), req = false),
-                @Grouped(value = @Indexed("amount"), req = false)},
+                @Grouped(@Indexed(label = "material[:data]")),
+                @Grouped(value = @Indexed(label = "enchantment[:level]"), req = false),
+                @Grouped(value = @Indexed(label = "amount"), req = false)},
              flags = {@Flag(longName = "blacklist", name = "b")})
     @SuppressWarnings("deprecation")
     public void item(ParameterizedContext context)
@@ -381,10 +383,10 @@ public class ItemCommands
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            ItemStack item = context.getArg(0, ItemStack.class, null);
+            ItemStack item = context.getArg(0, null);
             if (item == null)
             {
-                context.sendTranslated(NEGATIVE, "Item {input#item} not found!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Item {input#item} not found!", context.getArg(0));
                 return;
             }
             if (!context.hasFlag("b") && module.perms().ITEM_BLACKLIST.isAuthorized(sender)
@@ -397,10 +399,10 @@ public class ItemCommands
             int curIndex = 1;
             while (context.hasArg(curIndex))
             {
-                String enchName = context.getString(curIndex);
+                String enchName = context.getArg(curIndex);
                 if (!enchName.matches("(?!^\\d+$)^.+$"))
                 {
-                    amount = context.getArg(curIndex, Integer.class, 0);
+                    amount = context.getArg(curIndex, 0);
                     if (amount == 0)
                     {
                         context.sendTranslated(NEGATIVE, "The amount has to be a Number greater than 0!");
@@ -437,7 +439,7 @@ public class ItemCommands
     }
 
     @Command(desc = "Refills the stack in hand",
-             indexed = @Grouped(value = @Indexed({"amount","!*"}), req = false))
+             indexed = @Grouped(value = @Indexed(label = {"amount","!*"}, type = {Integer.class,String.class}), req = false))
     public void more(CommandContext context)
     {
         User sender = null;
@@ -454,7 +456,7 @@ public class ItemCommands
         Integer amount = 1;
         if (context.hasArg(0))
         {
-            if ("*".equals(context.getString(0)))
+            if ("*".equals(context.getArg(0)))
             {
                 for (ItemStack item : sender.getInventory().getContents())
                 {
@@ -467,10 +469,10 @@ public class ItemCommands
                 return;
             }
 
-            amount = context.getArg(0, Integer.class);
+            amount = context.getArg(0);
             if (amount == null || amount <= 1)
             {
-                context.sendTranslated(NEGATIVE, "Invalid amount {input#amount}", context.getString(0));
+                context.sendTranslated(NEGATIVE, "Invalid amount {input#amount}", context.getArg(0));
                 return;
             }
 

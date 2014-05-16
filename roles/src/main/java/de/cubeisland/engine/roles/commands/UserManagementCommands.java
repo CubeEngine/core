@@ -48,8 +48,8 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"manuadd", "assignurole", "addurole", "giveurole"})
     @Command(names = {"assign", "add", "give"},
              desc = "Assign a role to the player [in world] [-temp]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("role"))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "role"))},
              params = @Param(names = "in", label = "world", type = World.class),
              flags = @Flag(name = "t",longName = "temp"))
     public void assign(ParameterizedContext context)
@@ -58,7 +58,7 @@ public class UserManagementCommands extends UserCommandHelper
         if (user == null) return;
         World world = this.getWorld(context);
         if (world == null) return;
-        String roleName = context.getString(1);
+        String roleName = context.getArg(1);
         Role role = this.manager.getProvider(world).getRole(roleName);
         if (role == null)
         {
@@ -98,8 +98,8 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Alias(names = {"remurole", "manudel"})
     @Command(desc = "Removes a role from the player [in world]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("role"))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "role"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void remove(ParameterizedContext context)
     {
@@ -107,10 +107,10 @@ public class UserManagementCommands extends UserCommandHelper
         if (user == null) return;
         World world = this.getWorld(context);
         if (world == null) return;
-        Role role = this.manager.getProvider(world).getRole(context.getString(1));
+        Role role = this.manager.getProvider(world).getRole(context.<String>getArg(1));
         if (role == null)
         {
-            context.sendTranslated(NEUTRAL, "Could not find the role {name} in {world}.", context.getString(1), world);
+            context.sendTranslated(NEUTRAL, "Could not find the role {name} in {world}.", context.getArg(1), world);
             return;
         }
         if (!role.canAssignAndRemove(context.getSender()))
@@ -131,7 +131,7 @@ public class UserManagementCommands extends UserCommandHelper
 
     @Alias(names = {"clearurole", "manuclear"})
     @Command(desc = "Clears all roles from the player and sets the defaultroles [in world]",
-             indexed = @Grouped(@Indexed("player")),
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
              params = @Param(names = "in", label = "world", type = World.class))
     public void clear(ParameterizedContext context)
     {
@@ -162,19 +162,19 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = "setuperm")
     @Command(names = {"setperm", "setpermission"},
              desc = "Sets a permission for this user [in world]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("permission")),
-                        @Grouped(req = false, value = @Indexed(value = {"!true","!false","!reset"}))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "permission")),
+                        @Grouped(req = false, value = @Indexed(label = {"!true","!false","!reset"}))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void setpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
         if (user == null) return;
-        String perm = context.getString(1);
+        String perm = context.getArg(1);
         String setTo = "true";
         if (context.hasArg(2))
         {
-            setTo = context.getString(2);
+            setTo = context.getArg(2);
         }
         try
         {
@@ -205,14 +205,14 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = "resetuperm")
     @Command(names = {"resetperm", "resetpermission"},
              desc = "Resets a permission for this user [in world]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("permission"))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "permission"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void resetpermission(ParameterizedContext context)
     {
         User user = this.getUser(context, 0);
         if (user == null) return;
-        String perm = context.getString(1);
+        String perm = context.getArg(1);
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
@@ -224,20 +224,15 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"setudata","setumeta","setumetadata"})
     @Command(names = {"setdata", "setmeta", "setmetadata"},
              desc = "Sets metadata for this user [in world]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("metaKey")),
-                        @Grouped(@Indexed("metaValue"))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "metaKey")),
+                        @Grouped(@Indexed(label = "metaValue"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void setmetadata(ParameterizedContext context)
     {
-        String metaKey = context.getString(1);
-        String metaVal = context.getString(2);
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-            return;
-        }
+        String metaKey = context.getArg(1);
+        String metaVal = context.getArg(2);
+        User user = context.getArg(0);
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
@@ -249,18 +244,13 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"resetudata","resetumeta","resetumetadata"})
     @Command(names = {"resetdata", "resetmeta", "resetmetadata", "deletedata", "deletemetadata", "deletemeta"},
              desc = "Resets metadata for this user [in world]",
-             indexed = {@Grouped(@Indexed("player")),
-                        @Grouped(@Indexed("metaKey"))},
+             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
+                        @Grouped(@Indexed(label = "metaKey"))},
              params = @Param(names = "in", label = "world", type = World.class))
     public void resetmetadata(ParameterizedContext context)
     {
-        String metaKey = context.getString(1);
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-            return;
-        }
+        String metaKey = context.getArg(1);
+        User user = context.getArg(0);
         World world = this.getWorld(context);
         if (world == null) return;
         RolesAttachment attachment = this.manager.getRolesAttachment(user);
@@ -272,7 +262,7 @@ public class UserManagementCommands extends UserCommandHelper
     @Alias(names = {"clearudata","clearumeta","clearumetadata"})
     @Command(names = {"cleardata", "clearmeta", "clearmetadata"},
              desc = "Resets metadata for this user [in world]",
-             indexed = @Grouped(@Indexed("player")),
+             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
              params = @Param(names = "in", label = "world", type = World.class))
     public void clearMetaData(ParameterizedContext context)
     {

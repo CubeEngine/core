@@ -45,7 +45,7 @@ public class TeleportRequestCommands
         this.basics = basics;
     }
 
-    @Command(desc = "Requests to teleport to a player.", indexed = @Grouped(@Indexed("player")))
+    @Command(desc = "Requests to teleport to a player.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void tpa(CommandContext context)
     {
         User sender = null;
@@ -59,12 +59,7 @@ public class TeleportRequestCommands
             return;
         }
         sender.get(BasicsAttachment.class).removeTpRequestCancelTask();
-        final User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getString(0));
-            return;
-        }
+        final User user = context.getArg(0);
         user.sendTranslated(POSITIVE, "{sender} wants to teleport to you!", sender);
         user.sendTranslated(NEUTRAL, "Use {text:/tpaccept} to accept or {text:/tpdeny} to deny the request!");
         user.get(BasicsAttachment.class).setPendingTpToRequest(sender.getUniqueId());
@@ -93,19 +88,14 @@ public class TeleportRequestCommands
         }
     }
 
-    @Command(desc = "Requests to teleport a player to you.", indexed = @Grouped(@Indexed("player")))
+    @Command(desc = "Requests to teleport a player to you.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void tpahere(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
             sender.get(BasicsAttachment.class).removeTpRequestCancelTask();
-            final User user = context.getUser(0);
-            if (user == null)
-            {
-                context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-                return;
-            }
+            final User user = context.getArg(0);
             user.sendTranslated(POSITIVE, "{sender} wants to teleport you to them!", sender);
             user.sendTranslated(NEUTRAL, "Use {text:/tpaccept} to accept or {text:/tpdeny} to deny the request!");
             user.get(BasicsAttachment.class).setPendingTpFromRequest(sender.getUniqueId());

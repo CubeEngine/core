@@ -45,11 +45,11 @@ public class EcoBankCommands extends ContainerCommand
 
     @Command(names = {"give", "grant"},
              desc = "Gives money to a bank or all banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("amount"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"})),
+                         @Grouped(@Indexed(label = "amount"))})
     public void give(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
+        String amountString = context.getArg(1);
         Double amount = this.manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
@@ -57,14 +57,14 @@ public class EcoBankCommands extends ContainerCommand
             return;
         }
         String format = manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equalsIgnoreCase(context.<String>getArg(0)))
         {
             this.manager.transactionAll(false, true, amount);
             context.sendTranslated(POSITIVE, "You gave {input#amount} to every bank!", format);
         }
         else
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
+            String[] banks = StringUtils.explode(",", context.<String>getArg(0));
             for (String bankString : banks)
             {
                 BankAccount target = this.manager.getBankAccount(bankString, false);
@@ -88,11 +88,11 @@ public class EcoBankCommands extends ContainerCommand
 
     @Command(names = {"take", "remove"},
              desc = "Takes money from given bank or all banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("amount"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"})),
+                         @Grouped(@Indexed(label = "amount"))})
     public void take(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
+        String amountString = context.getArg(1);
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
@@ -100,14 +100,14 @@ public class EcoBankCommands extends ContainerCommand
             return;
         }
         String format = manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.<String>getArg(0)))
         {
             this.manager.transactionAll(false, true, -amount);
             context.sendTranslated(POSITIVE, "You took {input#amount} from every bank!", format);
         }
         else
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
+            String[] banks = StringUtils.explode(",", context.<String>getArg(0));
             for (String bankString : banks)
             {
                 BankAccount target = this.manager.getBankAccount(bankString, false);
@@ -130,17 +130,17 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Reset the money from given banks",
-             indexed = @Grouped(@Indexed({"bank","!*"})))
+             indexed = @Grouped(@Indexed(label = {"bank","!*"})))
     public void reset(ParameterizedContext context)
     {
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.<String>getArg(0)))
         {
             this.manager.setAll(false, true, this.manager.getDefaultBankBalance());
             context.sendTranslated(POSITIVE, "You reset every bank account!");
         }
         else
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
+            String[] banks = StringUtils.explode(",", context.<String>getArg(0));
             for (String bankString : banks)
             {
                 BankAccount target = this.manager.getBankAccount(bankString, false);
@@ -164,11 +164,11 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Sets the money from given banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("amount"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"})),
+                         @Grouped(@Indexed(label = "amount"))})
     public void set(ParameterizedContext context)
     {
-        String amountString = context.getString(1);
+        String amountString = context.getArg(1);
         Double amount = manager.parse(amountString, context.getSender().getLocale());
         if (amount == null)
         {
@@ -176,14 +176,14 @@ public class EcoBankCommands extends ContainerCommand
             return;
         }
         String format = this.manager.format(amount);
-        if (context.getString(0).equalsIgnoreCase("*"))
+        if ("*".equals(context.<String>getArg(0)))
         {
             this.manager.setAll(false, true, amount);
             context.sendTranslated(POSITIVE, "You have set every bank account to {input#balance}!", format);
         }
         else
         {
-            String[] banks = StringUtils.explode(",", context.getString(0));
+            String[] banks = StringUtils.explode(",", context.<String>getArg(0));
             for (String bankString : banks)
             {
                 BankAccount target = this.manager.getBankAccount(bankString, false);
@@ -206,23 +206,23 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Scales the money from given banks",
-             indexed = { @Grouped(@Indexed({"bank","!*"})),
-                         @Grouped(@Indexed("factor"))})
+             indexed = { @Grouped(@Indexed(label = {"bank","!*"})),
+                         @Grouped(@Indexed(label = "factor"))})
     public void scale(ParameterizedContext context)
     {
-        Float factor = context.getArg(1, Float.class, null);
+        Float factor = context.getArg(1, null);
         if (factor == null)
         {
-            context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getString(1));
+            context.sendTranslated(NEGATIVE, "Invalid factor: {input#factor}", context.getArg(1));
             return;
         }
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.scaleAll(false, true, factor);
             context.sendTranslated(POSITIVE, "Scaled the balance of every bank by {decimal#factor}!", factor);
             return;
         }
-        String[] banks = StringUtils.explode(",", context.getString(0));
+        String[] banks = StringUtils.explode(",", context.<String>getArg(0));
         for (String bankString : banks)
         {
             BankAccount account = this.manager.getBankAccount(bankString, false);
@@ -244,15 +244,15 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Hides the account of given bank",
-             indexed = @Grouped(@Indexed({"bank","!*"})))
+             indexed = @Grouped(@Indexed(label = {"bank","!*"})))
     public void hide(ParameterizedContext context)
     {
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.hideAll(false, true);
             return;
         }
-        String[] banks = StringUtils.explode(",", context.getString(0));
+        String[] banks = StringUtils.explode(",", context.<String>getArg(0));
         for (String bankString : banks)
         {
             BankAccount target = this.manager.getBankAccount(bankString, false);
@@ -274,15 +274,15 @@ public class EcoBankCommands extends ContainerCommand
     }
 
     @Command(desc = "Unhides the account of given banks",
-             indexed = @Grouped(@Indexed({"bank","!*"})))
+             indexed = @Grouped(@Indexed(label = {"bank","!*"})))
     public void unhide(ParameterizedContext context)
     {
-        if (context.getString(0).equals("*"))
+        if ("*".equals(context.getArg(0)))
         {
             this.manager.unhideAll(false, true);
             return;
         }
-        String[] banks = StringUtils.explode(",", context.getString(0));
+        String[] banks = StringUtils.explode(",", context.<String>getArg(0));
         for (String bankString : banks)
         {
             BankAccount target = this.manager.getBankAccount(bankString, false);

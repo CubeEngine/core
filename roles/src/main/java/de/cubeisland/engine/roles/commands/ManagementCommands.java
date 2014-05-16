@@ -64,19 +64,16 @@ public class ManagementCommands extends ContainerCommand
 
     public static World curWorldOfConsole = null;
 
-    @Command(desc = "Sets or resets the current default world", indexed = @Grouped(req = false, value = @Indexed("world")))
+    @Command(desc = "Sets or resets the current default world", indexed = @Grouped(req = false, value = @Indexed(
+        label = "world", type = World.class)))
     public void defaultworld(CommandContext context)
     {
         World world = null;
         if (context.hasArg(0))
         {
-            world = this.getModule().getCore().getWorldManager().getWorld(context.getString(0));
-            if (world == null)
-            {
-                context.sendTranslated(NEGATIVE, "World {input} not found!", context.getString(0));
-                return;
-            }
-            context.sendTranslated(POSITIVE, "All your roles commands will now have {input#world} as default world!", context.getString(0));
+            world = context.getArg(0);
+            context.sendTranslated(POSITIVE, "All your roles commands will now have {input#world} as default world!", context.getArg(
+                0));
         }
         else
         {

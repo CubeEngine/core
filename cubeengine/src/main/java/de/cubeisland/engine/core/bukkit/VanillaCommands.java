@@ -74,7 +74,7 @@ public class VanillaCommands implements CommandHolder
     @Command(
         names = {"stop", "shutdown", "killserver", "quit"},
         desc = "Shuts down the server",
-        indexed = @Grouped(req = false, value = @Indexed("message"), greedy = true))
+        indexed = @Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
     public void stop(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -117,7 +117,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Changes the difficulty level of the server",
-        indexed = @Grouped(req = false, value = @Indexed("difficulty")),
+        indexed = @Grouped(req = false, value = @Indexed(label = "difficulty", type = Difficulty.class)),
         params = @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)
     )
     public void difficulty(ParameterizedContext context)
@@ -138,29 +138,8 @@ public class VanillaCommands implements CommandHolder
         }
         if (context.hasArg(0))
         {
-            Difficulty difficulty = null;
-            Integer difficultyLevel = context.getArg(0, Integer.class);
-            if (difficultyLevel != null)
-            {
-                difficulty = Difficulty.getByValue(difficultyLevel);
-                if (difficulty == null)
-                {
-                    sender.sendTranslated(NEGATIVE, "The given difficulty level is unknown!");
-                    return;
-                }
-            }
-            if (difficulty == null)
-            {
-                try
-                {
-                    difficulty = Difficulty.valueOf(context.getString(0).toUpperCase(Locale.US));
-                }
-                catch (IllegalArgumentException e)
-                {
-                    sender.sendTranslated(NEGATIVE, "{input} is not a known difficulty!", context.getString(0));
-                    return;
-                }
-            }
+            Difficulty difficulty = context.getArg(0);
+
             world.setDifficulty(difficulty);
             context.sendTranslated(POSITIVE, "The difficulty has been successfully set!");
         }
@@ -176,7 +155,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(
         desc = "Makes a player an operator",
-        indexed = @Grouped(req = false, value = @Indexed("player")),
+        indexed = @Grouped(req = false, value = @Indexed(label = "player", type = {User.class, OfflinePlayer.class})),
         flags = @Flag(name = "f", longName = "force"),
         permDefault = FALSE
     )
@@ -204,10 +183,10 @@ public class VanillaCommands implements CommandHolder
             }
             return;
         }
-        User user = this.core.getUserManager().findExactUser(context.getString(0));
+        User user = context.getArg(0, null);
         if (user == null && !context.hasFlag("f"))
         {
-            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.getArg(0));
             context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
             return;
         }
@@ -215,7 +194,7 @@ public class VanillaCommands implements CommandHolder
         OfflinePlayer offlinePlayer = user;
         if (offlinePlayer == null)
         {
-            offlinePlayer = this.core.getServer().getOfflinePlayer(context.getString(0));
+            offlinePlayer = context.getArg(0);
         }
         if (offlinePlayer.isOp())
         {
@@ -246,14 +225,14 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Revokes the operator status of a player", permDefault = FALSE,
-             indexed = @Grouped(req = false, value = @Indexed("player")))
+             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
     public void deop(CommandContext context)
     {
         CommandSender sender = context.getSender();
         OfflinePlayer offlinePlayer;
         if (context.hasArg(0))
         {
-            offlinePlayer = context.getArg(0, OfflinePlayer.class);
+            offlinePlayer = context.getArg(0);
         }
         else
         {
@@ -321,13 +300,13 @@ public class VanillaCommands implements CommandHolder
 
     // integrate /saveoff and /saveon and provide aliases
     @Command(names = {"save-all", "saveall"},
-             indexed = @Grouped(req = false, value = @Indexed("world")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "world", type = World.class)),
              desc = "Saves all or a specific world to disk.")
     public void saveall(CommandContext context)
     {
         if (context.hasArg(0))
         {
-            World world = context.getArg(0, World.class);
+            World world = context.getArg(0);
             if (world == null)
             {
                 context.sendTranslated(NEGATIVE, "The given world was not found!");
@@ -357,7 +336,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Displays the version of the server or a given plugin",
-             indexed = @Grouped(req = false, value = @Indexed("plugin")),
+             indexed = @Grouped(req = false, value = @Indexed(label = "plugin")),
              flags = @Flag(name = "s", longName = "source"))
     public void version(ParameterizedContext context)
     {
@@ -368,7 +347,7 @@ public class VanillaCommands implements CommandHolder
             {
                 throw new PermissionDeniedException(core.perms().COMMAND_VERSION_PLUGINS);
             }
-            Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
+            Plugin plugin = server.getPluginManager().getPlugin(context.<String>getArg(0));
             if (plugin == null)
             {
                 context.sendTranslated(NEGATIVE, "The given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
@@ -425,7 +404,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(desc = "Adds a player to the whitelist.",
-                 indexed = @Grouped(@Indexed("player")))
+                 indexed = @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
         public void add(CommandContext context)
         {
             if (!context.hasArgs())
@@ -433,7 +412,7 @@ public class VanillaCommands implements CommandHolder
                 context.sendTranslated(NEGATIVE, "You have to specify the player to add to the whitelist!");
                 return;
             }
-            final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
+            final OfflinePlayer player = context.getArg(0);
             if (player.isWhitelisted())
             {
                 context.sendTranslated(NEUTRAL, "{user} is already whitelisted.", player);
@@ -447,7 +426,7 @@ public class VanillaCommands implements CommandHolder
         @Command(names = {
         "remove", "rm"
         }, desc = "Removes a player from the whitelist.",
-                 indexed = @Grouped(@Indexed("player")))
+                 indexed = @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
         public void remove(CommandContext context)
         {
             if (!context.hasArgs())
@@ -455,7 +434,7 @@ public class VanillaCommands implements CommandHolder
                 context.sendTranslated(NEGATIVE, "You have to specify the player to remove from the whitelist!");
                 return;
             }
-            final OfflinePlayer player = context.getArg(0, OfflinePlayer.class);
+            final OfflinePlayer player = context.getArg(0);
             if (!player.isWhitelisted())
             {
                 context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);

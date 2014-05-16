@@ -42,7 +42,6 @@ import org.jooq.Query;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.basics.storage.TableMail.TABLE_MAIL;
-import static de.cubeisland.engine.core.command.ArgBounds.NO_MAX;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class MailCommand extends ContainerCommand
@@ -56,7 +55,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "readmail")
-    @Command(desc = "Reads your mail.", indexed = @Grouped(value = @Indexed("player"), req = false))
+    @Command(desc = "Reads your mail.", indexed = @Grouped(value = @Indexed(label = {"player","!console"}, type = {User.class, String.class}), req = false))
     public void read(CommandContext context)
     {
         User sender;
@@ -71,16 +70,17 @@ public class MailCommand extends ContainerCommand
             }
             if (sender == null)
             {
-                context.sendTranslated(NEUTRAL, "If you wanted to look into other players mail use: {text:/mail spy} {input#player}.", context.getString(0));
+                context.sendTranslated(NEUTRAL, "If you wanted to look into other players mail use: {text:/mail spy} {input#player}.", context.getArg(
+                    0));
                 context.sendTranslated(NEGATIVE, "Otherwise be quiet!");
                 return;
             }
-            mailof = context.getUser(0);
+            mailof = context.getArg(0, null);
             if (mailof == null)
             {
-                if (!context.getString(0).equalsIgnoreCase("CONSOLE"))
+                if (!"console".equalsIgnoreCase(context.<String>getArg(0)))
                 {
-                    context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
+                    context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
                     return;
                 }
                 nameMailOf = "CONSOLE";
@@ -134,15 +134,10 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "spymail")
-    @Command(desc = "Shows the mail of other players.", indexed = @Grouped(@Indexed("player")))
+    @Command(desc = "Shows the mail of other players.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
     public void spy(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         List<Mail> mails = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().getMails();
         if (mails.isEmpty()) // Mailbox is not empty but no message from that player
         {
@@ -162,16 +157,11 @@ public class MailCommand extends ContainerCommand
     @Alias(names = "sendmail")
     @Command(desc = "Sends mails to other players.",
              indexed = {
-                 @Grouped(@Indexed("player")),
-                 @Grouped(value = @Indexed("message"), greedy = true)})
+                 @Grouped(@Indexed(label = "player", type = User.class)),
+                 @Grouped(value = @Indexed(label = "message"), greedy = true)})
     public void send(CommandContext context)
     {
-        User user = context.getUser(0);
-        if (user == null)
-        {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
-            return;
-        }
+        User user = context.getArg(0);
         String message = context.getStrings(1);
         this.mail(message, context.getSender(), user);
         context.sendTranslated(POSITIVE, "Mail send to {user}!", user);
@@ -179,7 +169,7 @@ public class MailCommand extends ContainerCommand
 
     @Alias(names = "sendallmail")
     @Command(desc = "Sends mails to all players.",
-             indexed = @Grouped(value = @Indexed("mailid"), greedy = true))
+             indexed = @Grouped(value = @Indexed(label = "mailid"), greedy = true))
     public void sendAll(CommandContext context)
     {
         Set<User> users = this.module.getCore().getUserManager().getOnlineUsers();
@@ -216,16 +206,16 @@ public class MailCommand extends ContainerCommand
     }
 
     @Command(desc = "Removes a single mail",
-             indexed = @Grouped(@Indexed("mailid")))
+             indexed = @Grouped(@Indexed(label = "mailid")))
     public void remove(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User user = (User)context.getSender();
-            Integer mailId = context.getArg(0, Integer.class, null);
+            Integer mailId = context.getArg(0, null);
             if (mailId == null)
             {
-                context.sendTranslated(NEGATIVE, "{input} is not a number!", context.getString(0));
+                context.sendTranslated(NEGATIVE, "{input} is not a number!", context.getArg(0));
                 return;
             }
             BasicsUser bUser = user.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser();
@@ -252,7 +242,7 @@ public class MailCommand extends ContainerCommand
     }
 
     @Command(names = {"clear"}, desc = "Clears your mail.",
-             indexed = @Grouped(value = @Indexed("player"), req = false))
+             indexed = @Grouped(value = @Indexed(label = "player", type = User.class), req = false))
     public void clear(CommandContext context)
     {
         User sender = null;
@@ -271,10 +261,10 @@ public class MailCommand extends ContainerCommand
             context.sendTranslated(NEUTRAL, "Cleared all mails!");
             return;
         }
-        User from = context.getUser(0);
-        if (from == null && !context.getString(0).equalsIgnoreCase("Console"))
+        User from = context.getArg(0, null);
+        if (from == null && !"console".equalsIgnoreCase(context.<String>getArg(0)))
         {
-            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getString(0));
+            context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
             return;
         }
         sender.attachOrGet(BasicsAttachment.class, this.module).getBasicsUser().clearMailFrom(from);
