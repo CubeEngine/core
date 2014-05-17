@@ -396,7 +396,7 @@ public class HomeCommand extends TpPointCommand
             context.sendTranslated(NEGATIVE, "You can't invite a person to a public home.");
             return;
         }
-        User invited = context.getArg(1);
+        User invited = context.getArg(0);
         if (invited == null)
         {
             context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
