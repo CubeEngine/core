@@ -26,6 +26,7 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
@@ -70,7 +71,11 @@ public class ChatCommands
             sendWhisperTo(NON_PLAYER_UUID, context.getStrings(1), context);
             return;
         }
-        User user = context.getArg(0);
+        User user = context.getArg(0, null);
+        if (user == null)
+        {
+            throw new IncorrectUsageException(context.getSender().getTranslation(NEGATIVE, "Invalid argument at {}: {}", 1, context.getSender().getTranslation(NEGATIVE, "Player {user} not found!", context.getArg(0))));
+        }
         if (!this.sendWhisperTo(user.getUniqueId(), context.getStrings(1), context))
         {
             context.sendTranslated(NEGATIVE, "Could not find the player {user} to send the message to. Is the player offline?", user);
