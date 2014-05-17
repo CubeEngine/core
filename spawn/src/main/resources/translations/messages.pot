@@ -18,56 +18,56 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:spawn:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-01 13:33:24+0200\n"
+"POT-Creation-Date: 2014-05-17 05:00:18+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:64
+#: de/cubeisland/engine/spawn/SpawnCommands.java:65
 msgid "Changes the respawnpoint"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:152
+#: de/cubeisland/engine/spawn/SpawnCommands.java:153
 msgid "Teleport directly to the worlds spawn."
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:107
+#: de/cubeisland/engine/spawn/SpawnCommands.java:108
 msgid "Coordinates are invalid!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:125
-#: de/cubeisland/engine/spawn/SpawnCommands.java:192
+#: de/cubeisland/engine/spawn/SpawnCommands.java:126
+#: de/cubeisland/engine/spawn/SpawnCommands.java:193
 msgid "Could not find the role {input} in {world}!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:77
+#: de/cubeisland/engine/spawn/SpawnCommands.java:78
 msgid "If not used ingame you have to specify a world and coordinates!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:204
+#: de/cubeisland/engine/spawn/SpawnCommands.java:205
 msgid ""
 "Invalid spawn location for the role {name}! Please check your role "
 "configuration!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:325
+#: de/cubeisland/engine/spawn/SpawnCommands.java:319
 msgid ""
 "Invalid spawn location for the role! Please check your role configuration!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:177
+#: de/cubeisland/engine/spawn/SpawnCommands.java:178
 msgid "Show this error to an administrator!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:286
+#: de/cubeisland/engine/spawn/SpawnCommands.java:280
 msgid "Teleported {1:user} to the spawn of {world}"
 msgid_plural "Teleported {2:integer#amount} users to the spawn of {world}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:293
+#: de/cubeisland/engine/spawn/SpawnCommands.java:287
 msgid "Teleported {2:user} to the spawn of the role {name#role} in {world}"
 msgid_plural ""
 "Teleported {3:integer#amount} users to the spawn of the role {name#role} in "
@@ -75,62 +75,58 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:198
+#: de/cubeisland/engine/spawn/SpawnCommands.java:199
 msgid "The role {name} in {world} has no spawn point!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:135
+#: de/cubeisland/engine/spawn/SpawnCommands.java:136
 msgid "The spawn in {world} is now set to {vector}"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:176
+#: de/cubeisland/engine/spawn/SpawnCommands.java:177
 msgid "Unknown main world configured!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:78
+#: de/cubeisland/engine/spawn/SpawnCommands.java:79
 msgid "Use {text:global} instead of the role name to set the default spawn."
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:250
-msgid "User {user} not found!"
-msgstr ""
-
-#: de/cubeisland/engine/spawn/SpawnCommands.java:87
+#: de/cubeisland/engine/spawn/SpawnCommands.java:88
 msgid "World {input} not found"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:170
+#: de/cubeisland/engine/spawn/SpawnCommands.java:171
 msgid "World {input} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:229
+#: de/cubeisland/engine/spawn/SpawnCommands.java:230
 msgid "You are not allowed to spawn everyone!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:260
+#: de/cubeisland/engine/spawn/SpawnCommands.java:254
 msgid "You are not allowed to spawn {user}!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:318
+#: de/cubeisland/engine/spawn/SpawnCommands.java:312
 msgid "You are now standing at the spawn in {world}!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:334
+#: de/cubeisland/engine/spawn/SpawnCommands.java:328
 msgid "You are now standing at the spawn of {name#role} in {world}!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:329
+#: de/cubeisland/engine/spawn/SpawnCommands.java:323
 msgid "You are now standing at your role's spawn!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:255
+#: de/cubeisland/engine/spawn/SpawnCommands.java:249
 msgid "You cannot teleport an offline player to spawn!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:161
+#: de/cubeisland/engine/spawn/SpawnCommands.java:162
 msgid "{text:Pro Tip}: Teleport does not work IRL!"
 msgstr ""
 
-#: de/cubeisland/engine/spawn/SpawnCommands.java:129
+#: de/cubeisland/engine/spawn/SpawnCommands.java:130
 msgid "The spawn in {world} for the role {name#role} is now set to {vector}"
 msgstr ""

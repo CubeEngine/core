@@ -18,22 +18,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:backpack:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-01 13:33:27+0200\n"
+"POT-Creation-Date: 2014-05-17 05:00:19+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:207
+#: de/cubeisland/engine/backpack/BackpackCommands.java:192
 msgid "Puts items into a backpack"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:104
+#: de/cubeisland/engine/backpack/BackpackCommands.java:99
 msgid "creates a new backpack"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:156
+#: de/cubeisland/engine/backpack/BackpackCommands.java:146
 msgid "modifies a backpack"
 msgstr ""
 
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Created singleworld backpack {input#backpack} in {world} for {user}"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:302
+#: de/cubeisland/engine/backpack/BackpackCommands.java:282
 msgid "Invalid amount {input#amount}"
 msgstr ""
 
@@ -73,7 +73,7 @@ msgstr ""
 msgid "Item added to backpack!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:253
+#: de/cubeisland/engine/backpack/BackpackCommands.java:233
 msgid "Item {input#name} not found!"
 msgstr ""
 
@@ -93,34 +93,27 @@ msgstr ""
 msgid "Pages changed!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:277
-#: de/cubeisland/engine/backpack/BackpackCommands.java:287
+#: de/cubeisland/engine/backpack/BackpackCommands.java:257
+#: de/cubeisland/engine/backpack/BackpackCommands.java:267
 msgid "Unknown Enchantment {input#enchant}"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:83
-#: de/cubeisland/engine/backpack/BackpackCommands.java:122
-#: de/cubeisland/engine/backpack/BackpackCommands.java:177
-#: de/cubeisland/engine/backpack/BackpackCommands.java:232
+#: de/cubeisland/engine/backpack/BackpackCommands.java:78
+#: de/cubeisland/engine/backpack/BackpackCommands.java:117
+#: de/cubeisland/engine/backpack/BackpackCommands.java:167
+#: de/cubeisland/engine/backpack/BackpackCommands.java:217
 msgid "Unknown World {input#world}!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:73
-#: de/cubeisland/engine/backpack/BackpackCommands.java:141
-#: de/cubeisland/engine/backpack/BackpackCommands.java:191
-#: de/cubeisland/engine/backpack/BackpackCommands.java:241
-msgid "User {user} not found!"
-msgstr ""
-
-#: de/cubeisland/engine/backpack/BackpackCommands.java:94
+#: de/cubeisland/engine/backpack/BackpackCommands.java:89
 msgid "You are not allowed to open backpacks from an other world!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:89
+#: de/cubeisland/engine/backpack/BackpackCommands.java:84
 msgid "You are not allowed to open the backpacks of other users!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:100
+#: de/cubeisland/engine/backpack/BackpackCommands.java:95
 msgid "You cannot open a inventory in console!"
 msgstr ""
 
@@ -130,14 +123,14 @@ msgstr ""
 msgid "You don't have a backpack named {input#backpack} in this world!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:133
-#: de/cubeisland/engine/backpack/BackpackCommands.java:183
+#: de/cubeisland/engine/backpack/BackpackCommands.java:128
+#: de/cubeisland/engine/backpack/BackpackCommands.java:173
 msgid "You have to specify a world for non global backpacks!"
 msgstr ""
 
-#: de/cubeisland/engine/backpack/BackpackCommands.java:147
-#: de/cubeisland/engine/backpack/BackpackCommands.java:197
-#: de/cubeisland/engine/backpack/BackpackCommands.java:247
+#: de/cubeisland/engine/backpack/BackpackCommands.java:137
+#: de/cubeisland/engine/backpack/BackpackCommands.java:182
+#: de/cubeisland/engine/backpack/BackpackCommands.java:227
 msgid "You need to specify a user"
 msgstr ""
 
