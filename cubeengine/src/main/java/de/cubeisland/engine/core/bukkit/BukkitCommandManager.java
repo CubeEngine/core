@@ -23,7 +23,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.command.Command;
 
-import de.cubeisland.cubeengine.core.command.result.paginated.PaginationManager;
+import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;

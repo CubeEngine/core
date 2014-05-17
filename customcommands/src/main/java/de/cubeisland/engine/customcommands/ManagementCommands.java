@@ -18,15 +18,12 @@
 package de.cubeisland.engine.customcommands;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 
-import de.cubeisland.cubeengine.core.command.result.paginated.PaginatedResult;
-import de.cubeisland.cubeengine.core.command.result.paginated.PaginationIterator;
+import de.cubeisland.engine.core.command.result.paginated.PaginatedResult;
+import de.cubeisland.engine.core.command.result.paginated.PaginationIterator;
 
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -37,8 +34,6 @@ import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
-import de.cubeisland.engine.core.permission.PermDefault;
-import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;

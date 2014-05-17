@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.cubeengine.core.command.result.paginated;
+package de.cubeisland.engine.core.command.result.paginated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,6 @@ import java.util.List;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 
-import static de.cubeisland.cubeengine.core.command.result.paginated.PaginationManager.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class PaginatedResult implements CommandResult
@@ -51,9 +50,9 @@ public class PaginatedResult implements CommandResult
     @Override
     public void show(CommandContext context)
     {
-        int pageCount = iterator.pageCount(LINES_PER_PAGE);
-        context.sendTranslated(NONE, HEADER, pageNumber + 1, pageCount);
-        for(String line : iterator.getPage(pageNumber, LINES_PER_PAGE))
+        int pageCount = iterator.pageCount(PaginationManager.LINES_PER_PAGE);
+        context.sendTranslated(NONE, PaginationManager.HEADER, pageNumber + 1, pageCount);
+        for(String line : iterator.getPage(pageNumber, PaginationManager.LINES_PER_PAGE))
         {
             context.sendMessage(line);
         }
@@ -61,20 +60,20 @@ public class PaginatedResult implements CommandResult
         {
             if (pageCount == 1)
             {
-                context.sendTranslated(NONE, ONE_PAGE_FOOTER, pageNumber + 1, pageCount);
+                context.sendTranslated(NONE, PaginationManager.ONE_PAGE_FOOTER, pageNumber + 1, pageCount);
             }
             else
             {
-                context.sendTranslated(NONE, FIRST_FOOTER, pageNumber + 1, pageCount);
+                context.sendTranslated(NONE, PaginationManager.FIRST_FOOTER, pageNumber + 1, pageCount);
             }
         }
         else if (pageNumber >= pageCount)
         {
-            context.sendTranslated(NONE, LAST_FOOTER, pageNumber + 1, pageCount);
+            context.sendTranslated(NONE, PaginationManager.LAST_FOOTER, pageNumber + 1, pageCount);
         }
         else
         {
-            context.sendTranslated(NONE, FOOTER, pageNumber + 1, pageCount);
+            context.sendTranslated(NONE, PaginationManager.FOOTER, pageNumber + 1, pageCount);
         }
     }
 
@@ -90,7 +89,7 @@ public class PaginatedResult implements CommandResult
 
     public void showPage(int pageNumber)
     {
-        if (pageNumber >= 0 && pageNumber < iterator.pageCount(LINES_PER_PAGE))
+        if (pageNumber >= 0 && pageNumber < iterator.pageCount(PaginationManager.LINES_PER_PAGE))
         {
             this.pageNumber = pageNumber;
             this.show(this.context);

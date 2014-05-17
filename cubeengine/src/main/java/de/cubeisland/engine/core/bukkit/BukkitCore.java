@@ -43,7 +43,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.cubeisland.cubeengine.core.command.result.paginated.PaginationCommands;
+import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CorePerms;

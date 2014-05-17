@@ -30,7 +30,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import de.cubeisland.cubeengine.core.command.result.paginated.PaginatedResult;
+import de.cubeisland.engine.core.command.result.paginated.PaginatedResult;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
