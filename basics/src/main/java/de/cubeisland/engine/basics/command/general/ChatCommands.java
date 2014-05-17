@@ -65,7 +65,7 @@ public class ChatCommands
                          @Grouped(value = @Indexed(label = "message"), greedy = true)})
     public void msg(CommandContext context)
     {
-        if ("console".equalsIgnoreCase(context.<String>getArg(0)))
+        if ("console".equalsIgnoreCase(context.getArg(0).toString()))
         {
             sendWhisperTo(NON_PLAYER_UUID, context.getStrings(1), context);
             return;

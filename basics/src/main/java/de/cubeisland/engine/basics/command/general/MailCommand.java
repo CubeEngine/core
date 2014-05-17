@@ -78,7 +78,7 @@ public class MailCommand extends ContainerCommand
             mailof = context.getArg(0, null);
             if (mailof == null)
             {
-                if (!"console".equalsIgnoreCase(context.<String>getArg(0)))
+                if (!"console".equalsIgnoreCase(context.getArg(0).toString()))
                 {
                     context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
                     return;
@@ -262,7 +262,7 @@ public class MailCommand extends ContainerCommand
             return;
         }
         User from = context.getArg(0, null);
-        if (from == null && !"console".equalsIgnoreCase(context.<String>getArg(0)))
+        if (from == null && !"console".equalsIgnoreCase(context.getArg(0).toString()))
         {
             context.sendTranslated(NEGATIVE, "User {user} not found!", context.getArg(0));
             return;
