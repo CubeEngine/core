@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:cubeengine:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-17 05:00:13+0200\n"
+"POT-Creation-Date: 2014-05-18 05:00:13+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -689,15 +689,15 @@ msgstr ""
 msgid "{user} is not whitelisted."
 msgstr ""
 
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginationCommands.java:71
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:71
 msgid "Display the given page of your previous command."
 msgstr ""
 
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginationCommands.java:45
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:45
 msgid "Display the next page of your previous command."
 msgstr ""
 
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginationCommands.java:58
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:58
 msgid "Display the previous page of your previous command."
 msgstr ""
 
@@ -705,16 +705,16 @@ msgstr ""
 msgid "Invalid argument at {}: {}"
 msgstr ""
 
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginatedResult.java:100
+#: de/cubeisland/engine/core/command/result/paginated/PaginatedResult.java:99
 msgid "The page you want to see is out of bounds."
 msgstr ""
 
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginationCommands.java:54
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginationCommands.java:67
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginationCommands.java:89
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:54
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:67
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:89
 msgid "You don't have any results to show!"
 msgstr ""
 
-#: de/cubeisland/cubeengine/core/command/result/paginated/PaginationCommands.java:84
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:84
 msgid "You have to call the command with a numeric parameter."
 msgstr ""

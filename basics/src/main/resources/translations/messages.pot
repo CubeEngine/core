@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:basics:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-17 05:00:17+0200\n"
+"POT-Creation-Date: 2014-05-18 05:00:18+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Bans the IP from this server."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:154
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:159
 msgid "Broadcasts a message"
 msgstr ""
 
@@ -106,7 +106,7 @@ msgstr ""
 msgid "Displays that you are afk"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:216
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:221
 msgid "Displays the colors"
 msgstr ""
 
@@ -172,7 +172,7 @@ msgstr ""
 msgid "Makes a player send a message (including commands)"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:167
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:172
 msgid "Mutes a player"
 msgstr ""
 
@@ -208,7 +208,7 @@ msgstr ""
 msgid "Repairs your items"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:81
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:86
 msgid "Replies to the last person that whispered to you."
 msgstr ""
 
@@ -220,7 +220,7 @@ msgstr ""
 msgid "Requests to teleport to a player."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:62
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:63
 msgid "Sends a private message to someone"
 msgstr ""
 
@@ -232,7 +232,7 @@ msgstr ""
 msgid "Sends mails to other players."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:210
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:215
 msgid "Shows a random number from 0 to 100"
 msgstr ""
 
@@ -304,7 +304,7 @@ msgstr ""
 msgid "Unbans a previously banned player."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:199
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:204
 msgid "Unmutes a player"
 msgstr ""
 
@@ -441,7 +441,7 @@ msgstr ""
 msgid "Could not find any item named {input}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:76
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:81
 msgid ""
 "Could not find the player {user} to send the message to. Is the player "
 "offline?"
@@ -589,7 +589,7 @@ msgstr ""
 msgid "Invalid amount {input#amount}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:187
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:192
 msgid "Invalid duration format!"
 msgstr ""
 
@@ -720,7 +720,7 @@ msgstr ""
 msgid "No need to repair this!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:96
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:101
 msgid "No one has sent you a message that you could reply to!"
 msgstr ""
 
@@ -780,6 +780,7 @@ msgid ""
 "Passing through firewalls in the console is not allowed! Go play outside!"
 msgstr ""
 
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:77
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:483
 #: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:352
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:102
@@ -926,8 +927,8 @@ msgstr ""
 msgid "TPS was low in the last minute!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:111
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:133
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:116
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:138
 msgid "Talking to yourself?"
 msgstr ""
 
@@ -1005,7 +1006,7 @@ msgstr ""
 msgid "The enchantment level has to be a number greater than 0!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:219
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:224
 msgid "The following chat codes are available:"
 msgstr ""
 
@@ -1123,7 +1124,7 @@ msgstr ""
 msgid "To kill living entities use the {text:/butcher} command!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:231
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:236
 msgid "To use these type {text:&} followed by the code above"
 msgstr ""
 
@@ -1209,7 +1210,7 @@ msgstr ""
 msgid "Weather in {world} is already set to {input#weather}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:123
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:128
 msgid "Who are you!?"
 msgstr ""
 
@@ -1375,7 +1376,7 @@ msgstr ""
 msgid "You are now invincible!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:195
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:200
 msgid "You are now muted for {input#amount}!"
 msgstr ""
 
@@ -1623,7 +1624,7 @@ msgstr ""
 msgid "You made everyone fat!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:196
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:201
 msgid "You muted {user} globally for {input#amount}!"
 msgstr ""
 
@@ -1757,7 +1758,7 @@ msgstr ""
 msgid "[{text:CubeEngine-Basics:color=RED}]"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:194
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:199
 msgid "ever"
 msgstr ""
 
@@ -1786,8 +1787,8 @@ msgstr ""
 msgid "{input} is not a number! Really!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:117
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:136
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:122
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:141
 msgid "{sender} -> {text:You}: {message:color=WHITE}"
 msgstr ""
 
@@ -1824,8 +1825,8 @@ msgstr ""
 msgid "{text:ProTip}: You cannot enchant your fists!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:118
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:141
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:123
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:146
 msgid "{text:You} -> {user}: {message:color=WHITE}"
 msgstr ""
 
@@ -1863,7 +1864,7 @@ msgid ""
 "him anyways."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:139
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:144
 msgid "{user} is afk!"
 msgstr ""
 
@@ -1888,7 +1889,7 @@ msgstr ""
 msgid "{user} is no longer invincible!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:207
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:212
 msgid "{user} is no longer muted!"
 msgstr ""
 
@@ -1917,7 +1918,7 @@ msgstr ""
 msgid "{user} seems to have disappeared."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:176
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:181
 msgid "{user} was already muted!"
 msgstr ""
 
@@ -2010,7 +2011,7 @@ msgid ""
 "The serverlimit is set to {amount}, you cannot spawn more mobs at once!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/general/ChatCommands.java:101
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:106
 msgid "Could not find the player to reply to. Is the player offline?"
 msgstr ""
 
@@ -2020,4 +2021,8 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:703
 msgid "{user} is offline!"
+msgstr ""
+
+#: de/cubeisland/engine/basics/command/general/ChatCommands.java:77
+msgid "Invalid argument at {}: {}"
 msgstr ""
