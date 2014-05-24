@@ -30,6 +30,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.result.paginated.PaginatedResult;
 
 import de.cubeisland.engine.basics.Basics;
@@ -43,6 +44,7 @@ import de.cubeisland.engine.core.command.reflected.Grouped;
 import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -385,8 +387,8 @@ public class ItemCommands
     @Command(names = {"item", "i"}, desc = "Gives the specified Item to you",
              indexed = {
                 @Grouped(@Indexed(label = "material[:data]", type = ItemStack.class)),
-                @Grouped(value = @Indexed(label = "enchantment[:level]"), req = false),
                 @Grouped(value = @Indexed(label = "amount", type = Integer.class), req = false)},
+             params = @Param(names = "ench", label = "enchantment[:level]"),
              flags = {@Flag(longName = "blacklist", name = "b")})
     @SuppressWarnings("deprecation")
     public void item(ParameterizedContext context)
@@ -402,38 +404,39 @@ public class ItemCommands
                 return;
             }
             int amount = item.getMaxStackSize();
-            int curIndex = 1;
-            while (context.hasArg(curIndex))
+            if (context.hasArg(0))
             {
-                String enchName = context.getArg(curIndex);
-                if (!enchName.matches("(?!^\\d+$)^.+$"))
+                amount = context.getArg(1, 0);
+                if (amount <= 0)
                 {
-                    amount = context.getArg(curIndex, 0);
-                    if (amount == 0)
-                    {
-                        context.sendTranslated(NEGATIVE, "The amount has to be a Number greater than 0!");
-                        return;
-                    }
-                    break;
+                    context.sendTranslated(NEGATIVE, "The amount has to be a Number greater than 0!");
+                    return;
                 }
-                int enchLvl = 0;
-                if (enchName.contains(":"))
+            }
+
+            if (context.hasParam("ench"))
+            {
+                String[] enchs = StringUtils.explode(",", context.getString("ench"));
+                for (String ench : enchs)
                 {
-                    enchLvl = Integer.parseInt(enchName.substring(enchName.indexOf(":") + 1, enchName.length()));
-                    enchName = enchName.substring(0, enchName.indexOf(":"));
-                }
-                if (module.perms().COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
-                {
-                    if (module.perms().COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
+                    int enchLvl = 0;
+                    if (ench.contains(":"))
                     {
-                        Match.enchant().applyMatchedEnchantment(item, enchName, enchLvl, true);
+                        enchLvl = Integer.parseInt(ench.substring(ench.indexOf(":") + 1, ench.length()));
+                        ench = ench.substring(0, ench.indexOf(":"));
                     }
-                    else
+                    if (module.perms().COMMAND_ITEM_ENCHANTMENTS.isAuthorized(sender))
                     {
-                        Match.enchant().applyMatchedEnchantment(item, enchName, enchLvl, false);
+                        if (module.perms().COMMAND_ITEM_ENCHANTMENTS_UNSAFE.isAuthorized(sender))
+                        {
+                            Match.enchant().applyMatchedEnchantment(item, ench, enchLvl, true);
+                        }
+                        else
+                        {
+                            Match.enchant().applyMatchedEnchantment(item, ench, enchLvl, false);
+                        }
                     }
                 }
-                curIndex++;
             }
             item.setAmount(amount);
             sender.getInventory().addItem(item);
