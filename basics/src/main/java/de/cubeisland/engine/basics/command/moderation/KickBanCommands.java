@@ -174,7 +174,7 @@ public class KickBanCommands
                 return;
             }
             this.banManager.addBan(new UserBan(player.getName(), context.getSender().getName(), reason));
-            if (user != null)
+            if (user != null && user.isOnline())
             {
                 user.kickPlayer(user.getTranslation(NEGATIVE, banMessage) + "\n\n" + RESET + reason);
             }
