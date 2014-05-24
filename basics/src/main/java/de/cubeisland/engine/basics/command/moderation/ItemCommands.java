@@ -386,7 +386,7 @@ public class ItemCommands
              indexed = {
                 @Grouped(@Indexed(label = "material[:data]", type = ItemStack.class)),
                 @Grouped(value = @Indexed(label = "enchantment[:level]"), req = false),
-                @Grouped(value = @Indexed(label = "amount"), req = false)},
+                @Grouped(value = @Indexed(label = "amount", type = Integer.class), req = false)},
              flags = {@Flag(longName = "blacklist", name = "b")})
     @SuppressWarnings("deprecation")
     public void item(ParameterizedContext context)

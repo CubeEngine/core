@@ -199,18 +199,13 @@ public class SpawnCommands
     }
 
     @Command(desc = "Teleports you to the spawn of given world",
-             indexed = @Grouped(@Indexed(label = "world")))
+             indexed = @Grouped(@Indexed(label = "world", type = World.class)))
     public void tpworld(CommandContext context)
     {
         if (context.getSender() instanceof User)
         {
             User sender = (User)context.getSender();
-            World world = context.getArg(0, null);
-            if (world == null)
-            {
-                context.sendTranslated(NEGATIVE, "World not found!");
-                return;
-            }
+            World world = context.getArg(0);
             final Location spawnLocation = world.getSpawnLocation().add(0.5, 0, 0.5);
             final Location userLocation = sender.getLocation();
             spawnLocation.setPitch(userLocation.getPitch());
