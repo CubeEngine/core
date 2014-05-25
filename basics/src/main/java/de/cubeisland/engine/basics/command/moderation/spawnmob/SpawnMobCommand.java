@@ -47,7 +47,7 @@ public class SpawnMobCommand
 
     @Command(desc = "Spawns the specified Mob",
              indexed = {@Grouped(@Indexed(label = "<mob>[:data][,<ridingmob>[:data]]")),
-                        @Grouped(value = @Indexed(label = "amount"), req = false),
+                        @Grouped(value = @Indexed(label = "amount", type = Integer.class), req = false),
                         @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void spawnMob(CommandContext context)
     {
@@ -79,12 +79,7 @@ public class SpawnMobCommand
         Integer amount = 1;
         if (context.hasArg(1))
         {
-            amount = context.getArg(1, null);
-            if (amount == null)
-            {
-                context.sendTranslated(NEUTRAL, "{input} is not a number! Really!", context.getArg(1));
-                return;
-            }
+            amount = context.getArg(1);
             if (amount <= 0)
             {
                 context.sendTranslated(NEUTRAL, "And how am i supposed to know which mobs to despawn?");
