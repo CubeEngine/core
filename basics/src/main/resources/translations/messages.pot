@@ -18,14 +18,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:basics:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-18 05:00:18+0200\n"
+"POT-Creation-Date: 2014-05-25 05:00:17+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:224
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:226
 msgid "Adds an Enchantment to the item in your hand"
 msgstr ""
 
@@ -50,11 +50,11 @@ msgstr ""
 msgid "Broadcasts a message"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:159
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:161
 msgid "Changes a skull to a players skin."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:128
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:130
 msgid "Changes the display name of the item in your hand."
 msgstr ""
 
@@ -130,11 +130,11 @@ msgstr ""
 msgid "Empties the hunger bar"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:341
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:343
 msgid "Gives the specified Item to a player"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:385
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:387
 msgid "Gives the specified Item to you"
 msgstr ""
 
@@ -164,7 +164,7 @@ msgstr ""
 msgid "Lets you fly away"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:73
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:75
 msgid "Looks up an item for you!"
 msgstr ""
 
@@ -184,7 +184,7 @@ msgstr ""
 msgid "Pong!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:447
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:450
 msgid "Refills the stack in hand"
 msgstr ""
 
@@ -204,7 +204,7 @@ msgstr ""
 msgid "Removes entity"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:497
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:500
 msgid "Repairs your items"
 msgstr ""
 
@@ -244,7 +244,7 @@ msgstr ""
 msgid "Spawns the specified Mob"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:545
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:548
 msgid "Stacks your items up to 64"
 msgstr ""
 
@@ -312,7 +312,7 @@ msgstr ""
 msgid "Displays chunk, memory and world information."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:182
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:184
 msgid "Grants unlimited items"
 msgstr ""
 
@@ -375,11 +375,11 @@ msgstr ""
 msgid "AFK: {text:true:color=BRIGHT_GREEN}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:294
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:296
 msgid "Added enchantment: {input#enchantment} {integer#level} to your item!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:283
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:285
 msgid ""
 "Added unsafe enchantment: {input#enchantment} {integer#level} to your item!"
 msgstr ""
@@ -437,7 +437,7 @@ msgstr ""
 msgid "Coordinates have to be numbers!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:97
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:99
 msgid "Could not find any item named {input}!"
 msgstr ""
 
@@ -471,7 +471,7 @@ msgstr ""
 msgid "Descended a level!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:444
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:447
 msgid "Did you try to use {text:/give} on your new I-Tem?"
 msgstr ""
 
@@ -483,7 +483,7 @@ msgstr ""
 msgid "Don't feed the troll!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:250
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:252
 msgid "Enchantment {input#enchantment} not found!"
 msgstr ""
 
@@ -507,7 +507,7 @@ msgstr ""
 msgid "Flymode: {text:true:color=BRIGHT_GREEN} {input#flying}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:232
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:234
 msgid "Following Enchantments are availiable:\n"
 "{input#enchs}"
 msgstr ""
@@ -565,7 +565,7 @@ msgstr ""
 msgid "If not used ingame you have to specify a world!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:542
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:545
 msgid "If you do this you'll loose your warranty!"
 msgstr ""
 
@@ -585,7 +585,7 @@ msgstr ""
 msgid "Invalid Mail Id!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:475
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:478
 msgid "Invalid amount {input#amount}"
 msgstr ""
 
@@ -601,7 +601,7 @@ msgstr ""
 msgid "Invalid height. The height has to be a whole number greater than 0!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:202
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:204
 msgid "Invalid parameter! Use {text:on} or {text:off}!"
 msgstr ""
 
@@ -634,15 +634,15 @@ msgstr ""
 msgid "It's over 9000!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:539
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:542
 msgid "Item cannot be repaired!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:536
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:539
 msgid "Item repaired!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:598
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:601
 msgid "Items stacked together!"
 msgstr ""
 
@@ -683,7 +683,7 @@ msgstr ""
 msgid "Memory Usage: {input#memused}/{integer#memcom}/{integer#memMax} MB"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:481
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:484
 msgid "More nothing is still nothing!"
 msgstr ""
 
@@ -712,11 +712,11 @@ msgstr ""
 msgid "No entities to remove!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:521
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:524
 msgid "No items to repair!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:532
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:535
 msgid "No need to repair this!"
 msgstr ""
 
@@ -733,7 +733,7 @@ msgstr ""
 msgid "No player to kill in sight!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:604
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:607
 msgid "No stacking for you."
 msgstr ""
 
@@ -754,7 +754,7 @@ msgstr ""
 msgid "Nothing to pass through!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:601
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:604
 msgid "Nothing to stack!"
 msgstr ""
 
@@ -782,7 +782,7 @@ msgstr ""
 
 #: de/cubeisland/engine/basics/command/general/ChatCommands.java:77
 #: de/cubeisland/engine/basics/command/general/PlayerCommands.java:483
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:352
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:354
 #: de/cubeisland/engine/basics/command/moderation/KickBanCommands.java:102
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:89
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:104
@@ -823,23 +823,23 @@ msgstr ""
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:111
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:158
 #: de/cubeisland/engine/basics/command/teleport/MovementCommands.java:194
-#: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:229
+#: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:224
 msgid "Pro Tip: Teleport does not work IRL!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:441
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:444
 msgid "Received: {amount} {input#item}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:469
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:472
 msgid "Refilled all stacks!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:487
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:490
 msgid "Refilled stack in hand!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:494
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:497
 msgid "Refilled {amount} stacks in hand!"
 msgstr ""
 
@@ -859,7 +859,7 @@ msgstr ""
 msgid "Removed {amount} entities nearby!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:524
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:527
 msgid "Repaired {amount} items!"
 msgstr ""
 
@@ -958,7 +958,7 @@ msgstr ""
 msgid "Teleportation only works with online players!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:225
+#: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:220
 msgid "Teleported to the spawn of world {world}!"
 msgstr ""
 
@@ -982,11 +982,11 @@ msgstr ""
 msgid "The IP {input#ip} is already banned!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:414
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:412
 msgid "The amount has to be a Number greater than 0!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:373
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:375
 msgid "The amount has to be a number greater than 0!"
 msgstr ""
 
@@ -1002,7 +1002,7 @@ msgstr ""
 msgid "The current time is:"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:266
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:268
 msgid "The enchantment level has to be a number greater than 0!"
 msgstr ""
 
@@ -1075,20 +1075,20 @@ msgid "There are no players online at the moment!"
 msgstr ""
 
 #: de/cubeisland/engine/basics/command/moderation/InventoryCommands.java:107
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:221
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:223
 msgid "This command can only be used by a player!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:303
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:305
 msgid "This enchantment is not allowed for this item!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:297
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:299
 msgid "This enchantment level is not allowed!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:364
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:401
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:366
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:403
 msgid "This item is blacklisted!"
 msgstr ""
 
@@ -1096,7 +1096,7 @@ msgstr ""
 msgid "This painting is being used by another player."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:179
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:181
 msgid "This will you only give headaches!"
 msgstr ""
 
@@ -1132,12 +1132,12 @@ msgstr ""
 msgid "Truly a hero! Trying to swap a users position with himself..."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:251
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:304
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:253
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:306
 msgid "Try one of those instead:"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:155
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:157
 msgid "Trying to give your {text:toys} a name?"
 msgstr ""
 
@@ -1147,7 +1147,7 @@ msgid ""
 "'Life'}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:358
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:360
 msgid "Unknown Item: {input#item}!"
 msgstr ""
 
@@ -1202,7 +1202,7 @@ msgstr ""
 msgid "Walk speed has to be a Number between {text:0} and {text:10}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:311
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:313
 msgid "Want to be Harry Potter?"
 msgstr ""
 
@@ -1214,7 +1214,6 @@ msgstr ""
 msgid "Who are you!?"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:211
 #: de/cubeisland/engine/basics/command/teleport/TeleportCommands.java:329
 msgid "World not found!"
 msgstr ""
@@ -1252,7 +1251,7 @@ msgstr ""
 msgid "You are no longer invincible!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:286
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:288
 msgid "You are not allowed to add unsafe enchantments!"
 msgstr ""
 
@@ -1344,7 +1343,7 @@ msgstr ""
 msgid "You are not allowed to teleport other people!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:220
+#: de/cubeisland/engine/basics/command/teleport/SpawnCommands.java:215
 msgid "You are not allowed to teleport to this world!"
 msgstr ""
 
@@ -1359,7 +1358,7 @@ msgstr ""
 msgid "You are not allowed to teleport {user}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:176
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:178
 msgid "You are not holding a head."
 msgstr ""
 
@@ -1426,8 +1425,8 @@ msgstr ""
 msgid "You can change this in your Basics-Configuration."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:256
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:308
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:258
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:310
 msgid "You can not enchant this item!"
 msgstr ""
 
@@ -1451,7 +1450,7 @@ msgstr ""
 msgid "You can only specify data for removing items!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:453
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:456
 msgid "You can't get enough of it, can you?"
 msgstr ""
 
@@ -1544,7 +1543,7 @@ msgstr ""
 msgid "You found yourself!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:381
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:383
 msgid "You gave {user} {amount} {input#item}!"
 msgstr ""
 
@@ -1580,7 +1579,7 @@ msgstr ""
 msgid "You healed everyone!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:105
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:107
 msgid "You hold nothing in your hands!"
 msgstr ""
 
@@ -1628,7 +1627,7 @@ msgstr ""
 msgid "You muted {user} globally for {input#amount}!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:123
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:125
 msgid "You need 1 parameter!"
 msgstr ""
 
@@ -1636,7 +1635,7 @@ msgstr ""
 msgid "You need to define a player!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:139
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:141
 msgid "You need to hold an item to rename in your hand!"
 msgstr ""
 
@@ -1648,19 +1647,19 @@ msgstr ""
 msgid "You never teleported!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:216
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:218
 msgid "You no longer have unlimited items to build!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:212
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:214
 msgid "You now have unlimited items to build!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:152
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:154
 msgid "You now hold {input#name} in your hands!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:173
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:175
 msgid "You now hold {user}'s head in your hands!"
 msgstr ""
 
@@ -1821,7 +1820,7 @@ msgstr ""
 msgid "{text:ProTip}: If your server flies away it will go offline."
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:241
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:243
 msgid "{text:ProTip}: You cannot enchant your fists!"
 msgstr ""
 
@@ -1909,7 +1908,7 @@ msgstr ""
 msgid "{user} is offline since {input#time}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:382
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:384
 msgid "{user} just gave you {amount} {input#item}!"
 msgstr ""
 
@@ -1940,15 +1939,15 @@ msgid ""
 "0})"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:84
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:86
 msgid "Best Matched {input#item} ({integer#id}:{short#data}) for {input}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:113
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:115
 msgid "Itemname unknown! Itemdata: {integer#id}:{short#data}"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:87
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:89
 msgid "Matched {input#item} ({integer#id}:{short#data}) for {input}"
 msgstr ""
 
@@ -1968,7 +1967,7 @@ msgstr ""
 msgid "The IP {input#ip} was not banned!"
 msgstr ""
 
-#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:117
+#: de/cubeisland/engine/basics/command/moderation/ItemCommands.java:119
 msgid "The Item in your hand is: {input#item} ({integer#id}:{short#data})"
 msgstr ""
 
