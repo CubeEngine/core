@@ -27,40 +27,6 @@
 
   <modules>
     <module>cubeengine</module>
-    <module>fly</module>
-    <module>conomy</module>
-    <module>customcommands</module>
-    <module>basics</module>
-    <module>fun</module>
-    <module>log</module>
-    <module>writer</module>
-    <module>shout</module>
-    <module>roles</module>
-    <module>rulebook</module>
-    <module>chat</module>
-    <module>border</module>
-    <module>signmarket</module>
-    <module>travel</module>
-    <module>vote</module>
-    <module>test</module>
-    <module>spawn</module>
-    <module>powersigns</module>
-    <module>itemrepair</module>
-    <module>hide</module>
-    <module>locker</module>
-    <module>mystcube</module>
-    <module>stats</module>
-    <module>reputation</module>
-    <module>worlds</module>
-    <module>portals</module>
-    <module>backpack</module>
-    <module>faq</module>
-    <module>selector</module>
-    <module>vaultlink</module>
-    <module>powertools</module>
-    <module>kits</module>
-    <module>spawner</module>
-    <module>bigdata</module>
   </modules>
 
   <build>
