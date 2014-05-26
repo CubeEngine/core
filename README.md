@@ -10,7 +10,7 @@ http://engine.cubeisland.de \[[Downloads](http://engine.cubeisland.de/download)\
 
 Bug Tracking
 ------------
-http://github.com/CubeEngineDev/CubeEngine/issues
+http://github.com/CubeEngine/core/issues
 
 Chat
 ----
